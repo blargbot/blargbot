@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class PersonalprefixCommand extends BaseCommand {
     constructor() {
         super({
             name: 'personalprefix',
             aliases: ['pprefix'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'personalprefix add|remove [prefix]',
             info: 'Adds or removes a personal prefix.'
         });

@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 function pad(value, length) {
     return (value.toString().length < length) ? pad(' ' + value, length) : value;
@@ -17,7 +18,7 @@ class StatsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'stats',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'stats [c]',
             info: 'Gives you some information about me'
         });

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 var confirmIrc = false;
 var confirmDiscord = false;
@@ -7,7 +8,7 @@ class MigrateCommand extends BaseCommand {
     constructor() {
         super({
             name: 'migrate',
-            category: bu.CommandType.CAT,
+            category: newbutils.commandTypes.CAT,
             usage: 'module <reload|unload|load> <name>',
             info: 'Loads, unloads, or reloads a command module'
         });

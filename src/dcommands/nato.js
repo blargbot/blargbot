@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 let natoMap = {
     a: 'Alpha',
@@ -33,7 +34,7 @@ class NatoCommand extends BaseCommand {
     constructor() {
         super({
             name: 'nato',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'nato <text>',
             info: 'Translates the given text into the NATO phonetic alphabet.'
         });

@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class FreeCommand extends BaseCommand {
     constructor() {
         super({
             name: 'free',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'free <caption> [flags]',
             info: 'Tells everyone what you got for free',
             flags: [{ flag: 'b', word: 'bottom', desc: 'The bottom caption.' }],
@@ -15,7 +16,7 @@ class FreeCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, `Usage: \`${this.usage}\``);
             return;

@@ -20,6 +20,7 @@ const seqErrors = require('sequelize/lib/errors');
 const { CronJob } = require('cron');
 const bbEngine = require('../structures/bbtag/Engine');
 const gameSwitcher = require('./gameSwitcher');
+const newbutils = require('../newbu');
 
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
@@ -123,10 +124,10 @@ class DiscordClient extends Client {
         TagManager.init();
         let tags = Object.keys(TagManager.list).map(k => TagManager.list[k].category);
         console.info('Tags: ' + tags.length +
-            ' | Simple: ' + tags.filter(t => t == bu.TagType.SIMPLE).length +
-            ' | Complex: ' + tags.filter(t => t == bu.TagType.COMPLEX).length +
-            ' | Array: ' + tags.filter(t => t == bu.TagType.ARRAY).length +
-            ' | CCommand: ' + tags.filter(t => t == bu.TagType.BOT).length);
+            ' | Simple: ' + tags.filter(t => t == newbutils.tagTypes.SIMPLE).length +
+            ' | Complex: ' + tags.filter(t => t == newbutils.tagTypes.COMPLEX).length +
+            ' | Array: ' + tags.filter(t => t == newbutils.tagTypes.ARRAY).length +
+            ' | CCommand: ' + tags.filter(t => t == newbutils.tagTypes.BOT).length);
 
         const CommandManagerClass = require('./CommandManager.js');
         global.CommandManager = new CommandManagerClass();

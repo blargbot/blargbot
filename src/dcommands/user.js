@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class UserCommand extends BaseCommand {
     constructor() {
         super({
             name: 'user',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'user [id/name/mention]',
             info: 'Gets information about specified user'
         });

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 const MAX_DICE_AMOUNT = 100;
 const MAX_DICE_ROLL = 2000;
@@ -17,7 +18,7 @@ class RollCommand extends BaseCommand {
     constructor() {
         super({
             name: 'roll',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'roll [dice] [modifier]',
             info: 'Rolls an amount of dice (ex. 1d20) and adds the modifier.'
         });

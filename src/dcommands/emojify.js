@@ -1,12 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 const request = require('request');
+const newbutils = require('../newbu');
 
 class EmojifyCommand extends BaseCommand {
     constructor() {
         super({
             name: 'emojify',
             aliases: ['💬'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'emojify <text>',
             info: 'Gets emojis based on input.'
         });

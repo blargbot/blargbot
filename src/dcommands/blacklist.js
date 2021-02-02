@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class BlacklistCommand extends BaseCommand {
     constructor() {
         super({
             name: 'blacklist',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'blacklist [channel]',
             info: 'Blacklists the current channel, or the channel(s) that you mention. The bot will not respond until you do `blacklist` again.'
         });

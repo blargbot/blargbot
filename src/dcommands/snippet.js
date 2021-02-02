@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 let id;
 
@@ -6,7 +7,7 @@ class SnippetCommand extends BaseCommand {
     constructor() {
         super({
             name: 'snippet',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'snippet <submit <code> <flags> | approve <id> | reject <id> <reason>>',
             info: 'submit a snippet and stuff',
             onlyOn: config.discord.guilds.home,
@@ -41,7 +42,7 @@ class SnippetCommand extends BaseCommand {
             case 'submit': {
                 let eee = text.replace(/^.*?snippet\s+/i, '');
                 console.log(eee);
-                let input = bu.parseInput(this.flags, eee, true);
+                let input = newbutils.parse.flags(this.flags, eee, true);
                 console.verbose(input);
                 if (!input.t)
                     return await bu.send(msg, 'You must include a title.');

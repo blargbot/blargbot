@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand'),
     bbEngine = require('../structures/bbtag/Engine');
+const newbutils = require('../newbu');
 
 class GreetCommand extends BaseCommand {
     constructor() {
         super({
             name: 'greet',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'greet [message]',
             info: 'Sets a greeting for when users join. To disable it, simply type the command with no content.',
             flags: [{
@@ -21,7 +22,7 @@ class GreetCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.r) {
             let g = await r.table('guild').get(msg.channel.guild.id);
             let greeting = g.settings.greeting;

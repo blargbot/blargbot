@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ShitCommand extends BaseCommand {
     constructor() {
         super({
             name: 'shit',
             aliases: ['heck'],
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'shit <text> [flags]',
             info: 'Tells everyone what\'s shit.',
             flags: [{
@@ -17,7 +18,7 @@ class ShitCommand extends BaseCommand {
     }
 
     async execute(msg, words) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let text = 'Your favourite anime';
         let plural = false;
         if (input.p) plural = true;

@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const { table } = require('table');
+const newbutils = require('../newbu');
 
 class CQLCommand extends BaseCommand {
     constructor() {
         super({
             name: 'cql',
-            category: bu.CommandType.CAT
+            category: newbutils.commandTypes.CAT
         });
     }
 

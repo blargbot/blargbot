@@ -1,12 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 const isSafeRegex = require('safe-regex');
 const moment = require('moment');
+const newbutils = require('../newbu');
 
 class TidyCommand extends BaseCommand {
     constructor() {
         super({
             name: 'tidy',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'tidy [amount] [flags]',
             info: 'Clears messages from chat. Defaults to 100.',
             flags: [{ flag: 'b', word: 'bots', desc: 'Remove messages from bots.' },
@@ -72,7 +73,7 @@ class TidyCommand extends BaseCommand {
     }
 
     async perform(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let userList = [];
         let query;
         let limit = 100;

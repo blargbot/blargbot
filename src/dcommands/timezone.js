@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class TimezoneCommand extends BaseCommand {
     constructor() {
         super({
             name: 'timezone',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'timezone [timezone]',
             info: 'Sets or retrieves your timezone. Timezones must use  the timezone codes listed here: <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones>'
         });

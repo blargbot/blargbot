@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class PollCommand extends BaseCommand {
     constructor() {
         super({
             name: 'poll',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'poll <question> [flags]',
             info: 'Creates a poll for the given question and duration. If no duration is given, defaults to 60 seconds. If emojis are given, they will be used as options for the poll.',
             flags: [{
@@ -43,7 +44,7 @@ class PollCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         let choices = ['👍', '👎'];
-        let input = bu.parseInput(this.flags, words, true);
+        let input = newbutils.parse.flags(this.flags, words, true);
         if (input.undefined.length >= 1) {
             if (input.e) {
                 choices = bu.findEmoji(input.e.join(' '), true);

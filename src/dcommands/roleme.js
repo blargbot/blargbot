@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class RolemeCommand extends BaseCommand {
     constructor() {
         super({
             name: 'roleme',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'roleme <list | add | remove | edit>',
             info: 'A roleme is a system to automatically give/remove roles to a user when they say a specific catchphrase. You can make these catchphrases anything you want, case sensitive/insensitive, and only activate in specific channels. The roleme command has three subcommands:\n\n**list**: lists all the rolemes active on the guild.\n**add**: adds a roleme to the guild. Just follow the instructions, or use flags.\n**remove**: returns a list of rolemes so you can choose one to remove.\n**edit**: modifies a roleme using the provided flags',
             flags: [{
@@ -41,7 +42,7 @@ class RolemeCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined[0]) {
             let storedGuild = await bu.getGuild(msg.guild.id);
             let roleme = storedGuild.roleme;

@@ -5,13 +5,13 @@ Airtable.configure({
     apiKey: config.airtable.key
 });
 const at = Airtable.base(config.airtable.base);
-
+const newbutils = require('../newbu');
 
 class RespondCommand extends BaseCommand {
     constructor() {
         super({
             name: 'respond',
-            category: bu.CommandType.CAT
+            category: newbutils.commandTypes.CAT
         });
     }
 

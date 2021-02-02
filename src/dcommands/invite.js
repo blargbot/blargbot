@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class InviteCommand extends BaseCommand {
     constructor() {
         super({
             name: 'invite',
             aliases: ['join'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'invite',
             info: 'Gets you invite information.'
         });

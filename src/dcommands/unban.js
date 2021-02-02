@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class UnbanCommand extends BaseCommand {
     constructor() {
         super({
             name: 'unban',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'unban <userid> [flags]',
             info: 'Unbans a user.\nIf mod-logging is enabled, the unban will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the unban.' }]
@@ -13,7 +14,7 @@ class UnbanCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length > 0) {
             var user = input.undefined.join(' ').match(/(\d+)/)[1];
             if (!user) {

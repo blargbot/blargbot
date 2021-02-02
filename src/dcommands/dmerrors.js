@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class DmerrorsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'dmerrors',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'dmerrors',
             info: 'Toggles whether to DM you errors.'
         });

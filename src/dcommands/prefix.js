@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class PrefixCommand extends BaseCommand {
     constructor() {
         super({
             name: 'prefix',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'prefix add|remove [prefix] [flags]',
             info: 'Sets the command prefix.',
             flags: [{
@@ -18,7 +19,7 @@ class PrefixCommand extends BaseCommand {
     async execute(msg, words, text) {
 
         let prefixes = await bu.guildSettings.get(msg.guild.id, 'prefix');
-        let input = bu.parseInput(this.flags, words, true);
+        let input = newbutils.parse.flags(this.flags, words, true);
         if (!prefixes) prefixes = [];
         if (!Array.isArray(prefixes)) prefixes = [prefixes.toLowerCase()];
         if (words.length > 2) {

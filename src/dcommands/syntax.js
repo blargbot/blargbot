@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 const tokens = [
     'text', 'string', 'number', 'true/false', 'emote', 'fruit',
@@ -47,7 +48,7 @@ class SyntaxCommand extends BaseCommand {
         super({
             name: 'syntax',
             aliases: ['syntaxify'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'syntax [command name]',
             info: 'Gives you the \'syntax\' for a command :wink:'
         });

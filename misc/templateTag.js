@@ -9,6 +9,7 @@
 
 //Import the builder. You dont need this, but it has a lot of built in functionality
 const Builder = require('../src/structures/TagBuilder');
+const newbutils = require('../src/newbu');
 
 module.exports =
     //Begin a new tag. Auto tags will be complex or simple based on if they have args or not.
@@ -32,13 +33,13 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         //Default case to be run if none of the conditional parameters are satisfied
         .whenDefault(async function (subtag, context, args) {
-            let values = Builder.util.flattenArgArrays(args).map(bu.parseFloat);
+            let values = Builder.util.flattenArgArrays(args).map(newbutils.parse.float);
             if (values.filter(isNaN).length > 0)
                 return Builder.errors.notANumber(subtag, context);
             values = values.map(Math.abs);
             if (values.length == 1)
                 return values[0];
-            return bu.serializeTagArray(values);
+            return newbutils.serializeTagArray(values);
         })
         //Build into an actual tag object
         .build();

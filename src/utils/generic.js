@@ -17,6 +17,7 @@ const twemoji = require('twemoji');
 const request = require('request');
 const isSafeRegex = require('safe-regex');
 const { emojify } = require('node-emoji');
+const newbutils = require('../newbu');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -996,7 +997,7 @@ bu.canExecuteCommand = async function (msg, name, quiet, options = {}) {
 
         let Command = CommandManager.commandList[name], category;
         if (Command)
-            category = bu.CommandType.properties[CommandManager.commandList[name].category];
+            category = newbutils.commandTypes.properties[CommandManager.commandList[name].category];
 
         let command = storedGuild.commandperms[name];
         let commandObj = CommandManager.list[name];
@@ -1214,72 +1215,6 @@ bu.filterMentions = async function (message, guild) {
             }
         }
     return message;
-};
-
-const timeKeywords = {
-    days: ['day', 'days', 'd'],
-    hours: ['hours', 'hour', 'h'],
-    minutes: ['minutes', 'minute', 'min', 'mins', 'm'],
-    seconds: ['seconds', 'second', 'sec', 'secs', 's']
-};
-
-bu.parseDuration = function (text) {
-    let duration = moment.duration();
-    if (/([0-9]+) ?(day|days|d)/i.test(text))
-        duration.add(parseInt(text.match(/([0-9]+) ?(day|days|d)/i)[1]) || 0, 'd');
-    if (/([0-9]+) ?(hours|hour|h)/i.test(text))
-        duration.add(parseInt(text.match(/([0-9]+) ?(hours|hour|h)/i)[1]) || 0, 'h');
-    if (/([0-9]+) ?(minutes|minute|mins|min|m)/i.test(text))
-        duration.add(parseInt(text.match(/([0-9]+) ?(minutes|minute|mins|min|m)/i)[1]) || 0, 'm');
-    if (/((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i.test(text))
-        duration.add(Math.floor(parseFloat(text.match(/((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i)[1]) * 1000) || 0, 'ms');
-    return duration;
-};
-
-bu.parseInput = function (map, text, noTrim) {
-    let words;
-    if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
-    else words = bu.splitInput(text, noTrim);
-    let output = {
-        undefined: []
-    };
-    let currentFlag = '';
-    for (let i = 0; i < words.length; i++) {
-        let pushFlag = true;
-        if (words[i].startsWith('--')) {
-            if (words[i].length > 2) {
-                let flags = map.filter(f => f.word == words[i].substring(2).toLowerCase());
-                if (flags.length > 0) {
-                    currentFlag = flags[0].flag;
-                    output[currentFlag] = [];
-                    pushFlag = false;
-                }
-            } else {
-                currentFlag = '';
-                pushFlag = false;
-            }
-        } else if (words[i].startsWith('-')) {
-            if (words[i].length > 1) {
-                let tempFlag = words[i].substring(1);
-
-                for (let char of tempFlag) {
-                    currentFlag = char;
-                    output[currentFlag] = [];
-                }
-                pushFlag = false;
-            }
-        } else if (words[i].startsWith('\\-')) {
-            words[i] = words[i].substring(1);
-        }
-        if (pushFlag) {
-            if (currentFlag != '') {
-                output[currentFlag].push(words[i]);
-            } else {
-                output['undefined'].push(words[i]);
-            }
-        }
-    }
-    return output;
 };
 
 bu.getPerms = function (channelid) {
@@ -1504,105 +1439,8 @@ bu.between = function (value, lower, upper, inclusive) {
     return value > lower && value < upper;
 };
 
-bu.parseBoolean = function (value, defValue = null, includeNumbers = true) {
-    if (typeof value == 'boolean')
-        return value;
-
-    if (includeNumbers && typeof value == 'number')
-        return value !== 0;
-
-    if (typeof value != 'string')
-        return defValue;
-
-    if (includeNumbers) {
-        let asNum = parseFloat(value);
-        if (!isNaN(asNum))
-            return asNum !== 0;
-    }
-
-    switch (value.toLowerCase()) {
-        case 'true':
-        case 't':
-        case 'yes':
-        case 'y':
-            return true;
-        case 'false':
-        case 'f':
-        case 'no':
-        case 'n':
-            return false;
-        default:
-            return defValue;
-    }
-};
-
 bu.isBoolean = function (value) {
     return typeof value == 'boolean';
-};
-
-bu.parseColor = function (text) {
-    if (typeof text == 'number') return text;
-    if (typeof text != 'string') return null;
-
-    text = text.replace(/\s+/g, '').toLowerCase();
-
-    let name = text.toLowerCase().replace(/[^a-z]/g, '');
-    if (name == 'random')
-        return bu.getRandomInt(0, 0xffffff);
-
-    //By name
-    let named = colors[name];
-    if (named != null)
-        return parseInt(named, 16);
-
-    //RGB 256,256,256
-    let match = text.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
-    if (match != null) {
-        let r = parseInt(match[1]),
-            g = parseInt(match[2]),
-            b = parseInt(match[3]),
-            valid = (v => bu.between(v, 0, 255, true)),
-            toHex = (v => v.toString(16).padStart(2, '0'));
-        if (isNaN(r + g + b) || !valid(r) || !valid(g) || !valid(b))
-            return null;
-        console.debug('color: ' + toHex(r) + toHex(g) + toHex(b));
-        return parseInt(toHex(r) + toHex(g) + toHex(b), 16);
-    }
-
-    //Hex code with 6 digits
-    match = text.match(/^#?([0-9a-f]{6})$/i);
-    if (match != null)
-        return parseInt(match[1], 16);
-
-    //Hex code with 3 digits
-    match = text.match(/^#?([0-9a-f]{3})$/i);
-    if (match != null)
-        return parseInt(match[1].split('').map(v => v + v).join(''), 16);
-
-    //Decimal number
-    match = text.match(/^\.([0-9]{1,8})$/);
-    if (match != null) {
-        let value = parseInt(match[1]);
-        if (bu.between(value, 0, 16777215, true))
-            return value;
-    }
-
-    return null;
-};
-
-bu.parseEntityId = function (text, identifier, allowJustId = false) {
-    if (typeof text != 'string') return null;
-
-    let regex = new RegExp('\\<' + identifier + '(\\d{17,23})\\>');
-    let match = text.match(regex);
-    if (match != null)
-        return match[1];
-
-    if (!allowJustId) return null;
-    match = text.match(/\d{17,23}/);
-    if (match != null)
-        return match[0];
-    return null;
 };
 
 bu.parseChannel = function (text, allowJustId = false) {
@@ -1621,72 +1459,6 @@ bu.range = function (from, to) {
         from = [to, to = from][0];
 
     return [...Array(to - from).keys()].map(v => v + from);
-};
-
-bu.parseEmbed = function (embedText) {
-    if (embedText == null)
-        return undefined;
-
-    if (!embedText || !embedText.trim())
-        return undefined;
-
-    try {
-        let parsed = JSON.parse(embedText);
-        if (typeof parsed !== 'object' || Array.isArray(parsed)) return null;
-        else return parsed;
-    } catch (e) {
-        return { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
-    }
-};
-
-const prettyTimeMagnitudes = {
-    //defaults
-    year: 'year', years: 'years', y: 'y',
-    month: 'month', months: 'months', M: 'M',
-    week: 'week', weeks: 'weeks', w: 'w',
-    day: 'day', days: 'days', d: 'd',
-    hour: 'hour', hours: 'hours', h: 'h',
-    minute: 'minute', minutes: 'minutes', m: 'm',
-    second: 'second', seconds: 'seconds', s: 's',
-    millisecond: 'millisecond', milliseconds: 'milliseconds', ms: 'ms',
-    quarter: 'quarter', quarters: 'quarters', q: 'Q',
-    //Custom
-    mins: 'minutes', min: 'minute'
-};
-
-bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
-    let now = moment.tz(timezone);
-    if (!text) return now;
-    switch (text.toLowerCase()) {
-        case 'now': return now;
-        case 'today': return now.startOf('day');
-        case 'tomorrow': return now.startOf('day').add(1, 'day');
-        case 'yesterday': return now.startOf('day').add(-1, 'days');
-    }
-
-    let match = text.match(/^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i), sign = 1;
-    if (match == null) match = text.match(/^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i), sign = -1;
-    if (match != null) {
-        let magnitude = sign * parseFloat(match[1]),
-            quantity = prettyTimeMagnitudes[match[2].toLowerCase()];
-        if (quantity == null)
-            return 'Invalid quantity ' + match[2];
-        return now.add(magnitude, quantity);
-    }
-
-    return moment.tz(text, format, timezone).utcOffset(0);
-};
-
-bu.parseInt = function (s, radix = 10) {
-    if (typeof s != 'string') return parseInt(s, radix);
-    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
-    return parseInt(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'), radix);
-};
-
-bu.parseFloat = function (s) {
-    if (typeof s != 'string') return parseFloat(s);
-    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
-    return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
 };
 
 bu.findEmoji = function (text, distinct) {
@@ -1868,7 +1640,7 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
             `\n${outputString}${moreLookup}--------------------` +
             `\nC.cancel query\`\`\`` +
             `\n**${bu.getFullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`
-            ,(msg2) => {
+            , (msg2) => {
                 return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1);
             }, undefined, args.label, args.suppress);
         let response = await query.response;

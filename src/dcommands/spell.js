@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const jsonSpells = require('../../res/spells.json');
 const { Collection } = require('eris');
+const newbutils = require('../newbu');
 
 const spells = new Collection(Object);
 for (let key in jsonSpells) {
@@ -31,7 +32,7 @@ class SpellCommand extends BaseCommand {
     constructor() {
         super({
             name: 'spell',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'spell [name]',
             info: 'Gives you a description for a D&D 5e spell.'
         });

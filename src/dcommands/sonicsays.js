@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class SonicsaysCommand extends BaseCommand {
     constructor() {
         super({
             name: 'sonicsays',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'sonicsays <text>',
             info: 'Sonic wants to share some words of wisdom.',
             userRatelimit: true,

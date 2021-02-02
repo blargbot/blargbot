@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class RestartCommand extends BaseCommand {
     constructor() {
         super({
             name: 'restart',
-            category: bu.CommandType.CAT
+            category: newbutils.commandTypes.CAT
         });
     }
 

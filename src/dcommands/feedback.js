@@ -6,6 +6,7 @@ Airtable.configure({
     apiKey: config.airtable.key
 });
 const at = Airtable.base(config.airtable.base);
+const newbutils = require('../newbu');
 
 let types = {
     Command: 'Relating to blargbot\'s base commands',
@@ -19,7 +20,7 @@ class FeedbackCommand extends BaseCommand {
         super({
             name: 'feedback',
             aliases: ['suggest', 'report'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'feedback <feedback>',
             info: 'This command has three different functions for varying purposes. Please do not abuse it.\n\n**__feedback__** - give me feedback about the bot\n**__suggest__** - tell me something you want to be added or changed\n**__report__** - let me know about a bug you found\n\nThank you for your support. It means a lot to me!',
             flags: [
@@ -43,7 +44,7 @@ class FeedbackCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (words.length > 1) {
             let blacklist = await r.table('vars').get('blacklist');
             if (blacklist.users.indexOf(msg.author.id) > -1) {

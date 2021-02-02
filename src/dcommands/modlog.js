@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ModlogCommand extends BaseCommand {
     constructor() {
         super({
             name: 'modlog',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'modlog [disable | clear [number to clear]]',
             info: 'Enables the modlog and sets it to the current channel. Doing `modlog disable` will disable it. Doing `modlog clear [number]` will clear the specified number of cases from the modlog and delete the related messages. Leaving `number` blank will clear all cases.\nWhen an admin does a moderation command (ban, unban, mute, unmute, and kick), the incident will be logged. The admin will then be encouraged to do `reason <case number> <reason>` to specify why the action took place.\nBans and unbans are logged regardless of whether the `ban` or `unban` commands are used.'
         });

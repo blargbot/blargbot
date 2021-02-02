@@ -7,19 +7,26 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
-e.init = () => {
-    e.category = bu.CommandType.GENERAL;
-};
+const BaseCommand = require('../src/structures/BaseCommand');
+const newbutils = require('../src/newbu')
 
-e.requireCtx = require;
+class AvatarCommand extends BaseCommand {
+    constructor() {
+        super({
+            name: 'command',
+            category: newbutils.commandTypes.GENERAL,
+            usage: 'command <required> [optional]',
+            info: 'some info',
+            flags: [{
+                flag: 'f',
+                word: 'format',
+                desc: 'My description'
+            }]
+        });
+    }
 
-e.isCommand = true;
-e.hidden = false;
-e.usage = '';
-e.info = '';
-e.longinfo = '<p></p>';
+    async execute(msg, words, text) {
+    }
+}
 
-e.execute = async function(msg, words, text) {
-
-};
+module.exports = AvatarCommand;

@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class PatchCommand extends BaseCommand {
     constructor() {
         super({
             name: 'patch',
-            category: bu.CommandType.CAT,
+            category: newbutils.commandTypes.CAT,
             usage: 'patch [features] [flags]',
             info: 'Makes a patch note',
             flags: [{ flag: 'f', word: 'fixes', desc: 'The bug fixes of the patch.' },
@@ -16,7 +17,7 @@ class PatchCommand extends BaseCommand {
         if (msg.author.id != bu.CAT_ID) {
             return;
         }
-        let input = bu.parseInput(this.flags, words, true);
+        let input = newbutils.parse.flags(this.flags, words, true);
         let channel = await bot.getChannel(config.discord.channels.changelog);
         let role = channel.guild.roles.get(config.discord.roles.updates);
         let content = role.mention;

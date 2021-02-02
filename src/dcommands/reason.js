@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class ReasonCommand extends BaseCommand {
     constructor() {
         super({
             name: 'reason',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'reason <caseid | latest> <reason>',
             info: 'Sets the reason for an action on the modlog.'
         });

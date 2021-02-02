@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class BanCommand extends BaseCommand {
     constructor() {
         super({
             name: 'ban',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'ban <user> [days] [flags]',
             info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the ban.' },
@@ -19,7 +20,7 @@ class BanCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         if (words[1]) {
-            let input = bu.parseInput(this.flags, words);
+            let input = newbutils.parse.flags(this.flags, words);
 
             var user = await bu.getUser(msg, input.undefined[0]);
             if (!user) {

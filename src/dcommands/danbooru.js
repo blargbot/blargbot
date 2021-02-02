@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const https = require('https');
+const newbutils = require('../newbu');
 
 class DanbooruCommand extends BaseCommand {
     constructor() {
         super({
             name: 'danbooru',
-            category: bu.CommandType.NSFW,
+            category: newbutils.commandTypes.NSFW,
             usage: 'danbooru <tags...>',
             info: 'Gets three pictures from \'<https://danbooru.donmai.us/>\' using given tags.'
         });

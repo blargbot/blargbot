@@ -1,12 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
 const fs = require('fs');
+const newbutils = require('../newbu');
 
 class CatbotCommand extends BaseCommand {
     constructor() {
         super({
             name: 'catbot',
-            category: bu.CommandType.CAT
+            category: newbutils.commandTypes.CAT
         });
     }
 

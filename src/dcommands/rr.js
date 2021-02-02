@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const { emojify } = require('node-emoji');
+const newbutils = require('../newbu');
 
 var numMap = ['zero', 'one', 'two', 'three', 'four', 'five'];
 var mojiList =
@@ -31,7 +32,7 @@ class RrCommand extends BaseCommand {
     constructor() {
         super({
             name: 'rr',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'rr [bullets] [emote]',
             info: 'Plays russian roulette with a specified number of bullets. If `emote` is specified, uses that specific emote.'
         });

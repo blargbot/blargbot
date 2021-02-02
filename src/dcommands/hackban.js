@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class HackbanCommand extends BaseCommand {
     constructor() {
         super({
             name: 'hackban',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'hackban <user...> [days]',
             info: 'Bans a user who isn\'t currently on your guild, where `<user...>` is a list of user IDs or mentions (separated by spaces) and `days` is the number of days to delete messages for (defaults to 0).\nIf mod-logging is enabled, the ban will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the ban.' }]
@@ -21,7 +22,7 @@ class HackbanCommand extends BaseCommand {
             bu.send(msg, `You don't have permission to ban users!`);
             return;
         }
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let userList = [];
         let days = 0;
         for (let i = 0; i < input.undefined.length; i++) {

@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class DonateCommand extends BaseCommand {
     constructor() {
         super({
             name: 'donate',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'donate',
             info: 'Gets you my donation information'
         });

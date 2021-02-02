@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class DistortCommand extends BaseCommand {
     constructor() {
         super({
             name: 'distort',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'distort [user]',
             info: 'Turns an avatar into modern art.',
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
@@ -15,7 +16,7 @@ class DistortCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let user = msg.author;
         let url;
         if (msg.attachments.length > 0) {

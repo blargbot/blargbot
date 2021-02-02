@@ -12,6 +12,7 @@ const hbs = require('hbs');
 const argumentFactory = require('../structures/ArgumentFactory');
 const path = require('path');
 const bbtag = require('../core/bbtag');
+const newbutils = require('../newbu');
 
 const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 let e = module.exports = {};
@@ -116,7 +117,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC && !commands[keys[i]].onlyOn) {
+            if (commands[keys[i]].category != newbutils.commandTypes.CAT && commands[keys[i]].category != newbutils.commandTypes.MUSIC && !commands[keys[i]].onlyOn) {
                 if (commands[keys[i]].category != lastType) {
                     sidebar += `<li class=\"sidebar-header blue-grey darken-3\"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/commands/#${commands[keys[i]].category}'>${commandType[commands[keys[i]].category]}</a></li>`;
                     lastType = commands[keys[i]].category;
@@ -187,19 +188,19 @@ e.init = () => {
             ... - denotes one or more arguments </p>
     </div></div>`;
                     toReturn += `<div class='row'>
-        <h3 class='centre' id='${lastType}'>${bu.TagType.properties[lastType].name}</h3>
-        <p class='flow-text centre'>${bu.TagType.properties[lastType].desc}</p>
+        <h3 class='centre' id='${lastType}'>${newbutils.tagTypes.properties[lastType].name}</h3>
+        <p class='flow-text centre'>${newbutils.tagTypes.properties[lastType].desc}</p>
     </div>`;
 
                     toReturn += `<div class="row">
         <div class="col s12 m10 offset-m1 l10 offset-l1">`;
                 } else {
                     toReturn += '</div></div>';
-                    //console.debug(lastType, bu.TagType.properties);
+                    //console.debug(lastType, newbutils.tagTypes.properties);
 
                     toReturn += `<div class='row'>
-        <h3 class='centre' id='${lastType}'>${bu.TagType.properties[lastType].name}</h3>
-        <p class='flow-text centre'>${bu.TagType.properties[lastType].desc}</p>
+        <h3 class='centre' id='${lastType}'>${newbutils.tagTypes.properties[lastType].name}</h3>
+        <p class='flow-text centre'>${newbutils.tagTypes.properties[lastType].desc}</p>
     </div>`;
                     toReturn += `<div class="row">
         <div class="col s12 m10 offset-m1 l10 offset-l1">`;
@@ -211,8 +212,7 @@ e.init = () => {
             let aliasBlock = subtag.aliases ? ` <small>(${subtag.aliases.join(', ')})</small>` : '';
             toReturn += `<h4 id='${keys[i]}'>${keys[i]}${aliasBlock}</h4>`;
             if (subtag.deprecated) {
-                toReturn += `<div class="tagdeprecated"><p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${
-                    typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''
+                toReturn += `<div class="tagdeprecated"><p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''
                     }</p></div>`;
             }
             if (subtag.args) {
@@ -224,10 +224,8 @@ e.init = () => {
             for (const key of Object.keys(bbtag.limits)) {
                 let text = bbtag.limitToSring(key, subtag.name);
                 if (text) {
-                    toReturn += `<div class="taglimit"><h5>Limits for ${
-                        bbtag.limits[key].instance._name
-                        }s</h5><blockquote>${
-                        text.replace(/\n/g, '<br />')
+                    toReturn += `<div class="taglimit"><h5>Limits for ${bbtag.limits[key].instance._name
+                        }s</h5><blockquote>${text.replace(/\n/g, '<br />')
                         }</blockquote></div>`;
                 }
             }
@@ -272,7 +270,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC && !commands[keys[i]].onlyOn) {
+            if (commands[keys[i]].category != newbutils.commandTypes.CAT && commands[keys[i]].category != newbutils.commandTypes.MUSIC && !commands[keys[i]].onlyOn) {
                 if (commands[keys[i]].category != lastType) {
                     toReturn += `<div class='centre white-text'><h2 id='${commands[keys[i]].category}' class='white-text'>${commandType[commands[keys[i]].category]}</h2></div>`;
                     lastType = commands[keys[i]].category;

@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 async function deleteLogs() {
     const date = bu.makeSnowflake(Date.now() - (7 * 24 * 60 * 60 * 1000));
@@ -14,7 +15,7 @@ class PurgelogsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'purgelogs',
-            category: bu.CommandType.CAT
+            category: newbutils.commandTypes.CAT
         });
     }
 

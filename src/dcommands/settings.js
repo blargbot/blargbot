@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 bu.settings = {
     makelogs: {
@@ -113,7 +114,7 @@ class SettingsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'settings',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'settings [keys|help|set <key>]',
             info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.'
         });

@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class TriggeredCommand extends BaseCommand {
     constructor() {
         super({
             name: 'triggered',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'triggered [user]',
             info: 'Shows everyone how triggered you are.',
             flags: [
@@ -35,7 +36,7 @@ class TriggeredCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let user = msg.author;
         let url;
         if (msg.attachments.length > 0) {

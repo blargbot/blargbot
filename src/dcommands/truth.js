@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class TruthCommand extends BaseCommand {
     constructor() {
         super({
             name: 'truth',
             aliases: ['scrolloftruth'],
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'truth <text>',
             info: 'Shows everyone what is written in the Scroll of Truth.',
             userRatelimit: true,

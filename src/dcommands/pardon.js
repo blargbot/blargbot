@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class PardonCommand extends BaseCommand {
     constructor() {
         super({
             name: 'pardon',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'pardon <user> [flags]',
             info: 'Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the pardon.' },
@@ -17,7 +18,7 @@ class PardonCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, 'Not enough input. Do `b!help pardon` for usage instructions.');
             return;

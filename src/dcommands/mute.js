@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class MuteCommand extends BaseCommand {
     constructor() {
         super({
             name: 'mute',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'mute <user> [flags]',
             info: 'Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to `manage roles` to create and assign the role, and `manage channels` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the mute.' },
@@ -90,7 +91,7 @@ class MuteCommand extends BaseCommand {
                     } else {
                         try {
                             let reason, fullReason;
-                            let input = bu.parseInput(this.flags, words);
+                            let input = newbutils.parse.flags(this.flags, words);
                             if (input.r) {
                                 reason = input.r.join(' ');
                                 fullReason = `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`;

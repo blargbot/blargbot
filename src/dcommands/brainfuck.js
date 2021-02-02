@@ -1,13 +1,14 @@
 const BaseCommand = require('../structures/BaseCommand');
 const Brainfuck = require('brainfuck-node');
 const bfClient = new Brainfuck();
+const newbutils = require('../newbu');
 
 class BrainfuckCommand extends BaseCommand {
     constructor() {
         super({
             name: 'brainfuck',
             aliases: ['rainfuck', 'br'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'brainfuck <code>',
             info: 'Executes brainfuck code.',
             flags: [{
@@ -26,7 +27,7 @@ class BrainfuckCommand extends BaseCommand {
     async execute(msg, words, text) {
         if (words[1] && /^-[-+<>\.,\[\]]/.test(words[1]))
             words[1] = '\\' + words[1];
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, 'Not enough parameters! Do `b!help brainfuck` for more details.');
             return;

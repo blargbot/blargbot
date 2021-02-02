@@ -2,12 +2,13 @@ const BaseCommand = require('../structures/BaseCommand');
 const util = require('util');
 const xml2js = require('xml2js');
 const snekfetch = require('snekfetch');
+const newbutils = require('../newbu');
 
 class Rule34Command extends BaseCommand {
     constructor() {
         super({
             name: 'rule34',
-            category: bu.CommandType.NSFW,
+            category: newbutils.commandTypes.NSFW,
             usage: 'rule34 <tags...>',
             info: 'Gets three pictures from \'<https://rule34.xxx/>\' using given tags.'
         });

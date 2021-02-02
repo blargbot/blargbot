@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ClippyCommand extends BaseCommand {
     constructor() {
         super({
             name: 'clippy',
             aliases: ['clippit', 'paperclip'],
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'clippy <text>',
             info: 'Clippy the paperclip is here to save the day!',
             userRatelimit: true,

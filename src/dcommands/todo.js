@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 var defaultOption = async function (msg, storedUser) {
     let todo = storedUser.todo.filter(m => m.active == 1);
@@ -17,7 +18,7 @@ class TodoCommand extends BaseCommand {
     constructor() {
         super({
             name: 'todo',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'todo [remove <item id> | add <item>]',
             info: 'Access your todo list.\nTo add items, do `todo add <item>`.\nTo remove items, do `todo remove <item id>`, where item id is the number shown when you do `todo` by itself.'
         });

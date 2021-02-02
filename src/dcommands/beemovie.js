@@ -1,12 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
-
+const newbutils = require('../newbu');
 const beemovie = require('../../res/beemovie.json');
 
 class BeeMovieCommand extends BaseCommand {
     constructor() {
         super({
             name: 'beemovie',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: '',
             info: 'Gives a quote from the Bee Movie.',
             flags: [{
@@ -26,7 +26,7 @@ class BeeMovieCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        const input = bu.parseInput(this.flags, words);
+        const input = newbutils.parse.flags(this.flags, words);
         const lines = input.c ? this.characterLines : this.lines;
         const { content, actor } = lines[Math.floor(Math.random() * lines.length)];
 

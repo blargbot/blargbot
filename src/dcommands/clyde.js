@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ClydeCommand extends BaseCommand {
     constructor() {
         super({
             name: 'clyde',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'clyde <text>',
             info: 'Give everyone a message from Clyde.',
             userRatelimit: true,

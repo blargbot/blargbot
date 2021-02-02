@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class VersionCommand extends BaseCommand {
     constructor() {
         super({
             name: 'version',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'version',
             info: 'Tells you what version I am on'
         });

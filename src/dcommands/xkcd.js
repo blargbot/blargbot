@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 var xkcdMax = 0;
 
@@ -37,7 +38,7 @@ class XkcdCommand extends BaseCommand {
     constructor() {
         super({
             name: 'xkcd',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'xkcd [number]',
             info: 'Gets an xkcd comic. If a number is not specified, gets a random one.'
         });

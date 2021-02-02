@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 var confirmIrc = false;
 var confirmDiscord = false;
@@ -7,7 +8,7 @@ class ModuleCommand extends BaseCommand {
     constructor() {
         super({
             name: 'module',
-            category: bu.CommandType.CAT,
+            category: newbutils.commandTypes.CAT,
             usage: 'module <reload|unload|load> <name>',
             info: 'Loads, unloads, or reloads a module',
             flags: [{
@@ -23,7 +24,7 @@ class ModuleCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         if (msg.author.id == bu.CAT_ID) {
-            let input = bu.parseInput(this.flags, words);
+            let input = newbutils.parse.flags(this.flags, words);
             if (input.undefined.length > 1) {
                 let manager = CommandManager;
                 if (input.u) manager = UtilManager;

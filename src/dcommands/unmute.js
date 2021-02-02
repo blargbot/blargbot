@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class UnmuteCommand extends BaseCommand {
     constructor() {
         super({
             name: 'unmute',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'unmute <user> [flags]',
             info: 'Unmutes a user.\nIf mod-logging is enabled, the unmute will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the unmute.' }]
@@ -35,7 +36,7 @@ class UnmuteCommand extends BaseCommand {
                         let voiceMute = msg.guild.members.get(bot.user.id).permissions.json.voiceMuteMembers;
                         try {
                             let reason, fullReason;
-                            let input = bu.parseInput(this.flags, words);
+                            let input = newbutils.parse.flags(this.flags, words);
                             if (input.r) {
                                 reason = input.r.join(' ');
                                 fullReason = `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`;

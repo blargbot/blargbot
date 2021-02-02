@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const request = require('request');
+const newbutils = require('../newbu');
 
 class StatusCommand extends BaseCommand {
     constructor() {
         super({
             name: 'status',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'status <code> [cat | dog]',
             info: 'Gets you an image of an HTTP status code.'
         });

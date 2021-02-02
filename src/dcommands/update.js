@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const { exec } = require('child_process');
+const newbutils = require('../newbu');
 
 class UpdateCommand extends BaseCommand {
     constructor() {
         super({
             name: 'update',
-            category: bu.CommandType.CAT,
+            category: newbutils.commandTypes.CAT,
             usage: 'Yo shit waddup we\'re updating',
             info: 'Does a git pull'
         });

@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ArtCommand extends BaseCommand {
     constructor() {
         super({
             name: 'art',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'art [user]',
             info: 'Shows everyone a work of art.',
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
@@ -15,7 +16,7 @@ class ArtCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let user = msg.author;
         let url;
         if (msg.attachments.length > 0) {

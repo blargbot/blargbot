@@ -3,13 +3,14 @@ const fs = require('fs');
 const path = require('path');
 const svg2png = require('svg2png');
 const twemoji = require('twemoji');
+const newbutils = require('../newbu');
 
 class EmojiCommand extends BaseCommand {
     constructor() {
         super({
             name: 'emoji',
             aliases: ['e'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'emoji <emoji> [size]',
             info: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.',
             flags: [{
@@ -21,7 +22,7 @@ class EmojiCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined) {
             let emoji = bu.findEmoji(input.undefined[0]);
             if (emoji.length > 0) {

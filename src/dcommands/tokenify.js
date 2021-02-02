@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class TokenifyCommand extends BaseCommand {
     constructor() {
         super({
             name: 'tokenify',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'tokenify <input>',
             info: 'Converts the given input into a token.'
         });

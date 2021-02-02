@@ -4,6 +4,7 @@ const BaseCommand = require('../structures/BaseCommand'),
     snekfetch = require('snekfetch'),
     crypto = require('crypto');
 const stringify = BaseCommand.stringify;
+const newbutils = require('../newbu');
 
 
 const subcommands = [
@@ -117,7 +118,7 @@ class CcommandCommand extends BaseCommand {
         super({
             name: 'ccommand',
             aliases: ['cc'],
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'ccommand <subcommand>',
             info: 'Creates a custom command, using the BBTag language.\n\n'
                 + 'Custom commands take precedent over all other commands. As such, you can use it to overwrite commands, or '
@@ -397,7 +398,7 @@ class CcommandCommand extends BaseCommand {
                     }
                     break;
                 case 'flag':
-                    let input = bu.parseInput([], words);
+                    let input = newbutils.parse.flags([], words);
                     if (input.undefined.length >= 3) {
                         let title = filterTitle(input.undefined[2]);
                         tag = await bu.ccommand.get(msg.guild.id, title);

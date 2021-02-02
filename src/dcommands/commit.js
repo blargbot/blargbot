@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand'),
     sf = require('snekfetch');
+const newbutils = require('../newbu');
 
 let total = 0;
 
@@ -7,7 +8,7 @@ class CommitCommand extends BaseCommand {
     constructor() {
         super({
             name: 'commit',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'commit [number]',
             info: 'Gets a random or specified blargbot commit.'
         });

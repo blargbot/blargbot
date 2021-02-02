@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class TimersCommand extends BaseCommand {
     constructor() {
         super({
             name: 'timers',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'timers <[page] | cancel <ids...> | clear | raw <id>>',
             info: 'Lists all the timers currently active here. You can also cancel any of them by using the cancel subcommand'
         });

@@ -4,15 +4,16 @@ const ArgFactory = require('./ArgumentFactory'),
     { Permission } = require('eris'),
     Context = require('./bbtag/Context'),
     { SubTag, BBTag } = require('./bbtag/Tag');
+const newbutils = require('../newbu');
 
 (Context, SubTag, BBTag);
 
 class TagBuilder {
-    static SimpleTag(name) { return new TagBuilder().withCategory(bu.TagType.SIMPLE).withName(name); }
-    static ComplexTag(name) { return new TagBuilder().withCategory(bu.TagType.COMPLEX).withName(name); }
-    static ArrayTag(name) { return new TagBuilder().withCategory(bu.TagType.ARRAY).withName(name).acceptsArrays(true); }
-    static BotTag(name) { return new TagBuilder().withCategory(bu.TagType.BOT).withName(name); }
-    static APITag(name) { return new TagBuilder().withCategory(bu.TagType.API).withName(name); }
+    static SimpleTag(name) { return new TagBuilder().withCategory(newbutils.tagTypes.SIMPLE).withName(name); }
+    static ComplexTag(name) { return new TagBuilder().withCategory(newbutils.tagTypes.COMPLEX).withName(name); }
+    static ArrayTag(name) { return new TagBuilder().withCategory(newbutils.tagTypes.ARRAY).withName(name).acceptsArrays(true); }
+    static BotTag(name) { return new TagBuilder().withCategory(newbutils.tagTypes.BOT).withName(name); }
+    static APITag(name) { return new TagBuilder().withCategory(newbutils.tagTypes.API).withName(name); }
     static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
     constructor(init) {
@@ -37,9 +38,9 @@ class TagBuilder {
 
         if (tag.category === 0) {
             if (tag.args != null && tag.args.length !== 0)
-                tag.category = bu.TagType.COMPLEX;
+                tag.category = newbutils.tagTypes.COMPLEX;
             else
-                tag.category = bu.TagType.SIMPLE;
+                tag.category = newbutils.tagTypes.SIMPLE;
         }
 
         tag.executeArg = executeArg.bind(tag, tag.argLimit || 1000000);

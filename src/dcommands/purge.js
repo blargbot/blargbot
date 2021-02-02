@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class PurgeCommand extends BaseCommand {
     constructor() {
         super({
             name: 'purge',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'purge',
             info: 'Purges messages made by me.'
         });

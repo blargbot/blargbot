@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ChangelogCommand extends BaseCommand {
     constructor() {
         super({
             name: 'changelog',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'changelog',
             info: 'Sets the current channel as your guild\'s changelog channel. A message will be posted in this channel whenever there is an update. The bot requires the `embed links` permission for this.'
         });

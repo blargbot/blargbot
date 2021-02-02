@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class RetardedCommand extends BaseCommand {
     constructor() {
         super({
             name: 'retarded',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'retarded <text> [flags]',
             info: 'Tells everyone who is retarded.',
             flags: [
@@ -18,7 +19,7 @@ class RetardedCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, 'Not enough input!');
             return;

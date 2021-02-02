@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class WarningsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'warnings',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'warnings [user]',
             info: 'Gets how many warnings you or a specified user has.'
         });

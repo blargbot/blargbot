@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class AvatarCommand extends BaseCommand {
     constructor() {
         super({
             name: 'avatar',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'avatar [id/name/mention]',
             info: 'Gets a user\'s avatar',
             flags: [{
@@ -22,7 +23,7 @@ class AvatarCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         var user;
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             user = msg.author;
         } else {

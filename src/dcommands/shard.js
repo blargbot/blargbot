@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const bigInteger = require('big-integer');
+const newbutils = require('../newbu');
 
 class ShardCommand extends BaseCommand {
     constructor() {
         super({
             name: 'shard',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'shard <id>',
             info: 'Gives you information about the current shard.'
         });
@@ -13,9 +14,9 @@ class ShardCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         try {
-            let id = bigInteger(words[1]||msg.guild.id);        
+            let id = bigInteger(words[1] || msg.guild.id);
             let shard = id.shiftRight(22).mod(parseInt(process.env.SHARDS_MAX));
-            let cluster = Math.floor(shard / config.shards.perCluster); 
+            let cluster = Math.floor(shard / config.shards.perCluster);
             let output = `Here's the shard and cluster information for a guild with the ID of \`${id}\`!\n\n**Cluster**: ${cluster}\n**Shard**: ${shard}`;
             output += `\n\n**Shards Per Cluster**: ${config.shards.perCluster}`;
             if (!words[1]) {
@@ -26,7 +27,7 @@ class ShardCommand extends BaseCommand {
         } catch (err) {
             await bu.send(msg, 'That wasn\'t a valid guild ID snowflake!');
         }
-        
+
     }
 }
 

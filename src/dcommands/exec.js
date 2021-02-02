@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const { exec } = require('child_process');
+const newbutils = require('../newbu');
 
 class ExecCommand extends BaseCommand {
     constructor() {
         super({
             name: 'exec',
-            category: bu.CommandType.CAT
+            category: newbutils.commandTypes.CAT
         });
     }
 

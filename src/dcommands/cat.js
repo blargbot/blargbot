@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand'),
     Wolken = require('wolken');
+const newbutils = require('../newbu');
 
 const wolken = new Wolken(config.wolke, 'Wolke', 'blargbot/6.0.0');
 
@@ -7,7 +8,7 @@ class CatCommand extends BaseCommand {
     constructor() {
         super({
             name: 'cat',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'cat',
             info: 'Gets a picture of a cat.'
         });

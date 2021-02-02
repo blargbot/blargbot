@@ -2,12 +2,13 @@ const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
 const Table = require('cli-table');
 const { exec } = require('child_process');
+const newbutils = require('../newbu');
 
 class LinesCommand extends BaseCommand {
     constructor() {
         super({
             name: 'lines',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             hidden: true,
             usage: 'lines',
             info: 'Gets the number of lines the bot is made of.'

@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class NamesCommand extends BaseCommand {
     constructor() {
         super({
             name: 'names',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'names [user] [flags]',
             info: 'Returns the names that I\'ve seen the specified user have in the past 30 days.',
             flags: [
@@ -34,7 +35,7 @@ class NamesCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let user;
         if (input.r) {
             user = msg.author;
@@ -56,7 +57,7 @@ class NamesCommand extends BaseCommand {
                     response = await prompt.response || {};
                 }
                 if ((response && bu.parseBoolean(response.content)) || input.y) {
-                    await r.table('user').get(user.id).update({usernames : filteredUserNames}).run();
+                    await r.table('user').get(user.id).update({ usernames: filteredUserNames }).run();
                     await bu.send(msg, `Succesfully removed ${storedUser.usernames.length - filteredUserNames.length} username${storedUser.usernames.length - filteredUserNames.length > 1 ? 's' : ''}.`);
                 } else {
                     await bu.send(msg, `OK, not removing your usernames!`);

@@ -1,9 +1,10 @@
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class BaseCommand {
     constructor(params = {}) {
         this.name = params.name || '';
-        this.category = params.category || bu.CommandType.GENERAL;
+        this.category = params.category || newbutils.commandTypes.GENERAL;
         this.hidden = params.hidden || false;
         this.usage = params.usage || '';
         this.info = params.info || '';

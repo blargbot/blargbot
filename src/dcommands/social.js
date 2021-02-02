@@ -1,5 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const Wolken = require('wolken');
+const newbutils = require('../newbu');
 
 const wolken = new Wolken(config.wolke, 'Wolke', 'blargbot/6.0.0');
 
@@ -163,7 +164,7 @@ for (const key in actions) {
         constructor() {
             super({
                 name: key,
-                category: bu.CommandType.SOCIAL,
+                category: newbutils.commandTypes.SOCIAL,
                 usage: key + ' ' + usage[action.type],
                 info: action.desc
             });

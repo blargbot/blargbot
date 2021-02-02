@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class DeleteCommand extends BaseCommand {
     constructor() {
         super({
             name: 'delete',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'delete [text]',
             info: 'Shows that you\'re about to delete something.'
         });

@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand'),
     bbEngine = require('../structures/bbtag/Engine');
+const newbutils = require('../newbu');
 
 class FarewellCommand extends BaseCommand {
     constructor() {
         super({
             name: 'farewell',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'farewell [message]',
             info: 'Sets a farewell message for when users leave.',
             flags: [{
@@ -21,7 +22,7 @@ class FarewellCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
 
         if (input.r) {
             let g = await r.table('guild').get(msg.channel.guild.id);

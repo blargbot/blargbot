@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const request = require('request');
+const newbutils = require('../newbu');
 
 var part = {
     verb: 'v',
@@ -13,7 +14,7 @@ class DefineCommand extends BaseCommand {
     constructor() {
         super({
             name: 'define',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'define <word>',
             info: 'Gets the definition for the specified word. The word must be in english.'
         });

@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class autoresponseCommand extends BaseCommand {
     constructor() {
         super({
             name: 'autoresponse',
             aliases: ['ar'],
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'autoresponse < add | remove | edit | list>',
             info: 'Creates autoresponses. You can create up to 20 autoresponses to certain phrases, and 1 autoresponse that responds to everything.\n\nAutoresponses will be checked in the order they\'re added, and only one will be executed (excluding the everything autoresponse). Rather than specifying the code in this command, autoresponses will execute a hidden custom command that you can modify on the IDE. The everything autoresponse will not automatically output the execution result.\nCommands:\n   ADD <text> [flags] - Adds a autoresponse with for the provided text.\n   REMOVE - Brings up a menu to remove a autoresponse\n   INFO - Displays information about autoresponses.',
             flags: [{
@@ -261,7 +262,7 @@ class autoresponseCommand extends BaseCommand {
     }
 
     async execute(msg, words) {
-        let input = bu.parseInput(this.flags, words, true);
+        let input = newbutils.parse.flags(this.flags, words, true);
         if (!msg.guild) return;
         if (input.undefined.length == 0) {
             input.undefined[0] = '';

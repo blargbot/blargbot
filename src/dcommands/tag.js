@@ -4,6 +4,7 @@ const bbtag = require('../core/bbtag');
 const bbEngine = require('../structures/bbtag/Engine');
 const Context = require('../structures/bbtag/Context');
 const { Message } = require('eris');
+const newbutils = require('../newbu');
 
 const results = 100;
 const subcommands = [
@@ -195,7 +196,7 @@ class TagCommand extends BaseCommand {
         super({
             name: 'tag',
             aliases: ['t'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: `tag [${subcommands.map(x => `${x.name}${x.args ? ' ' + x.args : ''}`).join(' | ')}]`,
             info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n'
                 + '\n__**Subcommands:**__\n'
@@ -444,7 +445,7 @@ ${command[0].desc}`);
                         await bu.send(msg, this.info);
                     break;
                 case 'flag':
-                    let input = bu.parseInput([], words);
+                    let input = newbutils.parse.flags([], words);
                     if (input.undefined.length >= 3) {
                         let title = filterTitle(input.undefined[2]);
                         let tag = await r.table('tag').get(title).run();

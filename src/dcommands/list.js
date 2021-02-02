@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ListCommand extends BaseCommand {
     constructor() {
         super({
             name: 'list',
-            category: bu.CommandType.CAT,
+            category: newbutils.commandTypes.CAT,
             hidden: true
         });
     }

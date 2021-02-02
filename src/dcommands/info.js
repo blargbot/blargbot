@@ -1,6 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const reload = require('require-reload')(require);
+const newbutils = require('../newbu');
 let patrons, donators;
 
 const startDate = 1444708800000;
@@ -34,7 +35,7 @@ class InfoCommand extends BaseCommand {
     constructor() {
         super({
             name: 'info',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'info',
             info: 'Returns some info about me.'
         });

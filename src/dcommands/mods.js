@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 function getName(member) {
     return member.user.username + '#' + member.user.discriminator;
@@ -12,7 +13,7 @@ class ModsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'mods',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'mods [online | o | away | a | dnd | d | offline]',
             info: 'Gets a list of mods.'
         });

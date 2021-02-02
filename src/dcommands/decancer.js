@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class DecancerCommand extends BaseCommand {
     constructor() {
         super({
             name: 'decancer',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'decancer <user | text>',
             info: 'Decancerify\'s the user\'s nickname/username, or the provided text, to simple ASCII.'
         });

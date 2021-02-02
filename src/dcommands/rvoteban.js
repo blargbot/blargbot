@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class RvotebanCommand extends BaseCommand {
     constructor() {
         super({
             name: 'rvoteban',
             aliases: ['rpollban', 'removevoteban', 'removepollban', 'rvb', 'rpb'],
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'rvoteban (<user> | <flags>)',
             info: 'Removes the votebans for a specific user, or removes all votebans completely.',
             flags: [{ flag: 'a', word: 'all', desc: 'Removes all votebans' }]
@@ -15,7 +16,7 @@ class RvotebanCommand extends BaseCommand {
     async execute(msg, words, text) {
         let storedGuild = await bu.getGuild(msg.guild.id);
         let votebans = storedGuild.votebans || {};
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.a) {
             let msg2 = await bu.awaitQuery(msg, 'This will remove all the votebans on this guild. Type `yes` to confirm, or anything else to cancel.');
             if (msg2.content.toLowerCase() == 'yes' || msg2.content.toLowerCase() == 'y') {

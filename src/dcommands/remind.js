@@ -1,12 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class RemindCommand extends BaseCommand {
     constructor() {
         super({
             name: 'remind',
             aliases: ['remindme'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'remind <text> -t <time>',
             info: 'Reminds you about something after a period of time in a DM.',
             flags: [{
@@ -25,7 +26,7 @@ class RemindCommand extends BaseCommand {
     async execute(msg, words, text) {
         const example = '\`remind Do a thing! -t 1 day, two hours\`';
 
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let duration = moment.duration();
         if (input.t && input.t.length > 0) duration = bu.parseDuration(input.t.join(' '));
 

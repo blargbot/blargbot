@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class KickCommand extends BaseCommand {
     constructor() {
         super({
             name: 'kick',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'kick <user> [flags]',
             info: 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the kick.' }]
@@ -18,7 +19,7 @@ class KickCommand extends BaseCommand {
         }
 
         let target = await bu.getUser(msg, words[1]);
-        let reason = bu.parseInput(this.flags, words).r;
+        let reason = newbutils.parse.flags(this.flags, words).r;
 
         if (!target) return;
 

@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 var messages = [
     `Existance is a lie.`,
@@ -17,7 +18,7 @@ class PingCommand extends BaseCommand {
     constructor() {
         super({
             name: 'ping',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'ping',
             info: 'Pong!\nFind the command latency.'
         });

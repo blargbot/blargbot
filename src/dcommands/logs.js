@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 var typeRef = {
     CREATE: 0,
@@ -10,7 +11,7 @@ class LogsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'logs',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'logs <number> [flags]',
             info: 'Creates a chatlog page for a specified channel, where `number` is the amount of lines to get. You can retrieve a maximum of 1000 logs.For more specific logs, you can specify flags.\nFor example, if you wanted to get 100 messages `stupid cat` deleted, you would do this:\n`logs 100 --type delete --user stupid cat`If you want to use multiple of the same type, separate parameters with commas or chain them together. For example:\n`logs 100 -CU -u stupid cat, dumb cat`',
             flags: [{
@@ -49,7 +50,7 @@ class LogsCommand extends BaseCommand {
             bu.send(msg, this.info);
             return;
         }
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let numberOfMessages = NaN, channel = msg.channel.id;
         if (input.undefined.length > 0) {
             numberOfMessages = parseInt(input.undefined[0]);

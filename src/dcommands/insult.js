@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class InsultCommand extends BaseCommand {
     constructor() {
         super({
             name: 'insult',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'insult [name]',
             info: 'Generates a random insult directed at the name supplied.'
         });

@@ -1,12 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 const stringify = BaseCommand.stringify;
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class HelpCommand extends BaseCommand {
     constructor() {
         super({
             name: 'help',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'help [command]',
             info: 'Gets a list of command or specific command help.'
         });
@@ -14,11 +15,11 @@ class HelpCommand extends BaseCommand {
 
     getColor(category) {
         switch (category) {
-            case bu.CommandType.CAT:
-            case bu.CommandType.ADMIN: return 0xff0000;
-            case bu.CommandType.NSFW: return 0x010101;
-            case bu.CommandType.IMAGE:
-            case bu.CommandType.GENERAL: return 0xefff00;
+            case newbutils.commandTypes.CAT:
+            case newbutils.commandTypes.ADMIN: return 0xff0000;
+            case newbutils.commandTypes.NSFW: return 0x010101;
+            case newbutils.commandTypes.IMAGE:
+            case newbutils.commandTypes.GENERAL: return 0xefff00;
             default: return 0x7289da;
         }
     }
@@ -100,7 +101,7 @@ class HelpCommand extends BaseCommand {
             for (var command in CommandManager.built) {
                 if (modifiedCommands.indexOf(command) == -1)
                     if (!CommandManager.built[command].hidden && (!CommandManager.built[command].onlyOn || (msg.guild && CommandManager.built[command].onlyOn === msg.guild.id))) {
-                        if (CommandManager.built[command].category == bu.CommandType.GENERAL) {
+                        if (CommandManager.built[command].category == newbutils.commandTypes.GENERAL) {
                             if ((await bu.canExecuteCommand(msg, command, true, { storedGuild, permOverride, staffPerms })).executable)
                                 generalCommands.push(command);
                         } else {
@@ -154,15 +155,15 @@ class HelpCommand extends BaseCommand {
             };
 
             function nextCommand(category, completeCommandList) {
-                if (!bu.CommandType.properties.hasOwnProperty(category) ||
-                    bu.CommandType.properties[category].requirement(msg, storedGuild)) {
+                if (!newbutils.commandTypes.properties.hasOwnProperty(category) ||
+                    newbutils.commandTypes.properties[category].requirement(msg, storedGuild)) {
                     if (completeCommandList.length > 0) {
                         completeCommandList.sort();
                         let categoryString = '';
-                        if (bu.CommandType.properties.hasOwnProperty(category)) {
-                            if (category == bu.CommandType.ADMIN && adminRole)
+                        if (newbutils.commandTypes.properties.hasOwnProperty(category)) {
+                            if (category == newbutils.commandTypes.ADMIN && adminRole)
                                 categoryString = adminRole;
-                            else categoryString = bu.CommandType.properties[category].name;
+                            else categoryString = newbutils.commandTypes.properties[category].name;
                         } else categoryString = category;
                         embed.fields.push({
                             name: `${categoryString.charAt(0).toUpperCase() + categoryString.slice(1)} Commands`,
@@ -192,7 +193,7 @@ class HelpCommand extends BaseCommand {
                     onComplete();
                 } else {
                     category = Object.keys(otherCommands)[i];
-                    //    if (!bu.CommandType.properties.hasOwnProperty(category) || bu.CommandType.properties[category].requirement(msg)) {
+                    //    if (!newbutils.commandTypes.properties.hasOwnProperty(category) || newbutils.commandTypes.properties[category].requirement(msg)) {
                     //otherCommands[category].sort();
                     counter = otherCommands[category].length;
                     for (ii = 0; ii < otherCommands[category].length; ii++) {

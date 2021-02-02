@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 var events = [
     'memberban',
@@ -16,7 +17,7 @@ class LogCommand extends BaseCommand {
     constructor() {
         super({
             name: 'log',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'log <list | enable <channel> <event name>... | disable <event name>... | ignore <users>... | track <users>...>',
             info: 'Toggles logging for the specified events. Available events are:' +
                 '\n- memberban - when a user gets banned' +

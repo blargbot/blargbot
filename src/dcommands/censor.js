@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class CensorCommand extends BaseCommand {
     constructor() {
         super({
             name: 'censor',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'censor help',
             info: 'Creates message censorships.\nCommands:\n   ADD <text> [flags] - Adds a censor with for the provided text.\n   EDIT [text] [flags] - Brings up a menu to edit a censor where `text` can be the new trigger phrase\n   REMOVE - Brings up a menu to remove a censor\n   EXCEPTION <add | remove> [flags] - Adds or removes an exception.\n   RULE [flags] - Sets the censorship rules.\n   INFO - Displays information about censors.',
             flags: [{
@@ -56,7 +57,7 @@ class CensorCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words, true);
+        let input = newbutils.parse.flags(this.flags, words, true);
         if (!msg.guild) return;
         if (input.undefined.length == 0) {
             input.undefined[0] = '';
@@ -382,15 +383,15 @@ class CensorCommand extends BaseCommand {
                 let output = `There are currently ${storedGuild.censor.list.length} censors active.
 **__Exceptions__**
 User Exceptions: ${storedGuild.censor.exception.user.map(u => {
-                        let user = bot.users.get(u);
-                        if (user) return bu.getFullName(user);
-                        else return u;
-                    }).join(', ')}
+                    let user = bot.users.get(u);
+                    if (user) return bu.getFullName(user);
+                    else return u;
+                }).join(', ')}
 Role Exceptions: ${storedGuild.censor.exception.role.map(r => {
-                        let role = msg.guild.roles.get(r);
-                        if (role) return role.name;
-                        else return r;
-                    }).join(', ')}
+                    let role = msg.guild.roles.get(r);
+                    if (role) return role.name;
+                    else return r;
+                }).join(', ')}
 Channel Exceptions: ${storedGuild.censor.exception.channel.map(c => `<#${c}>`).join(', ')}
 
 **__Settings__**

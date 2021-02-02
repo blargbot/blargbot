@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ShipCommand extends BaseCommand {
     constructor() {
         super({
             name: 'ship',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'ship <user1> <user2>',
             info: 'Gives you the ship name for two users.'
         });

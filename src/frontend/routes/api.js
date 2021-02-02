@@ -2,6 +2,7 @@ const Router = require('koa-router');
 const Security = require('../security');
 const argumentFactory = require('../../structures/ArgumentFactory');
 const bbtag = require('../../core/bbtag');
+const newbutils = require('../../newbu');
 
 module.exports = class ApiRoute {
     constructor(frontend) {
@@ -49,7 +50,7 @@ module.exports = class ApiRoute {
             let subtag = st[key];
             subtag.usage = argumentFactory.toString(subtag.args);
 
-            let category = bu.TagType.properties[subtag.category];
+            let category = newbutils.tagTypes.properties[subtag.category];
             if (!this.subtags[category.name]) this.subtags[category.name] = {
                 name: category.name,
                 desc: category.desc,
@@ -77,8 +78,8 @@ module.exports = class ApiRoute {
         this.commands = {};
         for (const key in co) {
             let command = co[key];
-            if (command.category === bu.CommandType.CAT) continue;
-            let category = bu.CommandType.properties[command.category];
+            if (command.category === newbutils.commandTypes.CAT) continue;
+            let category = newbutils.commandTypes.properties[command.category];
             if (!this.commands[category.name]) this.commands[category.name] = {
                 name: category.name,
                 desc: category.description,

@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class ThesearchCommand extends BaseCommand {
     constructor() {
         super({
             name: 'color',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'color [codes]...',
             info: 'Returns the provided colors'
         });

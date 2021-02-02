@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class PixelateCommand extends BaseCommand {
     constructor() {
         super({
             name: 'pixelate',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'pixelate [url] [flags]',
             info: 'Pixelates an image. If url isn\'t provided, you must give an attachment.',
             flags: [{
@@ -24,7 +25,7 @@ class PixelateCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
 
         bot.sendChannelTyping(msg.channel.id);
         let url;

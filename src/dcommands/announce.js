@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class AnnounceCommand extends BaseCommand {
     constructor() {
         super({
             name: 'announce',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'announce < <text> | flags >',
             info: 'Makes an annoucement to a configured role, or resets the announcement configuration.',
             flags: [{
@@ -17,7 +18,7 @@ class AnnounceCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         var changeChannel, roleId;
         let storedGuild = await bu.getGuild(msg.guild.id);
         if (input.r) {

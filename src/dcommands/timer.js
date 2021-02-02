@@ -1,12 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const newbutils = require('../newbu');
 
 class TimerCommand extends BaseCommand {
     constructor() {
         super({
             name: 'timer',
             aliases: ['stopwatch'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'timer <time>',
             info: 'Sets a timer for the provided amount of time, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
         });

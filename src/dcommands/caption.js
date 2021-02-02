@@ -1,4 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 const fonts = {
     arcena: 'ARCENA.ttf',
@@ -19,7 +20,7 @@ class CaptionCommand extends BaseCommand {
     constructor() {
         super({
             name: 'caption',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'caption [url] [flags]',
             info: 'Captions an image. If url isn\'t provided, you must give an attachment.',
             flags: [
@@ -39,7 +40,7 @@ class CaptionCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         if (input.l) {
             let availFonts = Object.keys(fonts).sort().map(m => '**' + m.toUpperCase() + '**').join('\n - ');
             bu.send(msg, `Currently available fonts:\n - ${availFonts}`);

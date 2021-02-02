@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class VotebanCommand extends BaseCommand {
     constructor() {
         super({
             name: 'voteban',
             aliases: ['pollban', 'vb', 'pb'],
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             usage: 'voteban [info <user> | <user> [reason]]',
             info: 'Sign a petition to ban somebody, or check the status of a petition. If no arguments are provided, get the most signed petitions.'
         });
@@ -35,8 +36,8 @@ class VotebanCommand extends BaseCommand {
                     }
                     bu.send(msg, `**${userList.length}** ${userList.length == 1 ? 'person has' : 'people have'} signed to ban **${bu.getFullName(user)}**.
 ${userList.map(u => {
-                            return ' - ' + u;
-                        }).join('\n')}`);
+                        return ' - ' + u;
+                    }).join('\n')}`);
                 }
             } else {
                 let user = await bu.getUser(msg, words[1]);

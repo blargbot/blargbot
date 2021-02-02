@@ -1,12 +1,13 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const Table = require('cli-table');
+const newbutils = require('../newbu');
 
 class SqlCommand extends BaseCommand {
     constructor() {
         super({
             name: 'sql',
-            category: bu.CommandType.CAT
+            category: newbutils.commandTypes.CAT
         });
     }
 

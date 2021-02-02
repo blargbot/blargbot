@@ -4,6 +4,7 @@ const ScopeCollection = require('./Scope');
 const Timer = require('../Timer');
 const { VariableCache, CacheEntry } = require('./Caching');
 const ReadWriteLock = require('rwlock');
+const newbutils = require('../../newbu');
 
 // stores cooldown values per-guild-per-tag-per-user
 const cooldowns = {};
@@ -40,7 +41,7 @@ class Context {
         }
 
         let flags = Array.isArray(options.flags) ? options.flags : [];
-        this.flaggedInput = bu.parseInput(flags, [].concat([''], this.input));
+        this.flaggedInput = newbutils.parse.flags(flags, [].concat([''], this.input));
         this.flaggedInput._ = this.flaggedInput.undefined;
         this.flaggedInput.undefined = undefined;
         for (const key in this.flaggedInput)

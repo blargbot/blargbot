@@ -10,6 +10,7 @@
 const argFactory = require('../structures/ArgumentFactory'),
     af = argFactory,
     bbEngine = require('../structures/bbtag/Engine');
+const newbutils = require('../newbu');
 
 async function executeTag(msg, tagName, command) {
     let tag = await r.table('tag').get(tagName).run();
@@ -96,12 +97,12 @@ async function docs(msg, command, topic) {
                 '- terminology',
                 '- dynamic\n',
                 'Available Subtag Categories:',
-                ...Object.values(bu.TagType.properties).map(k => '- ' + k.name)
+                ...Object.values(newbutils.tagTypes.properties).map(k => '- ' + k.name)
             ].join('\n');
-            // embed.fields = Object.keys(bu.TagType.properties)
+            // embed.fields = Object.keys(newbutils.tagTypes.properties)
             //     .map(k => {
             //         return {
-            //             properties: bu.TagType.properties[k],
+            //             properties: newbutils.tagTypes.properties[k],
             //             tags: tags.filter(t => t.category == k)
             //         };
             //     }).filter(c => c.tags.length > 0)
@@ -116,9 +117,9 @@ async function docs(msg, command, topic) {
             //     }).filter(f => f.value.length > 0);
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);
         case 'subtags':
-            const category = Object.keys(bu.TagType.properties).map(k => {
+            const category = Object.keys(newbutils.tagTypes.properties).map(k => {
                 return {
-                    properties: bu.TagType.properties[k],
+                    properties: newbutils.tagTypes.properties[k],
                     id: k
                 };
             }).find(k => k.properties.name.toLowerCase() === (words[1] || '').toLowerCase());
@@ -133,7 +134,7 @@ async function docs(msg, command, topic) {
             } else {
                 embed.description = [
                     'Available Subtag Categories:',
-                    ...Object.values(bu.TagType.properties).map(k => '- ' + k.name + ' - ' + k.desc)
+                    ...Object.values(newbutils.tagTypes.properties).map(k => '- ' + k.name + ' - ' + k.desc)
                 ].join('\n');
             }
             return await help.sendHelp(msg, { embed }, 'BBTag documentation', true);

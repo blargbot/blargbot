@@ -2,6 +2,7 @@ const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
 const request = require('request');
 const fs = require('fs');
+const newbutils = require('../newbu');
 
 var cah = {};
 var cad = {};
@@ -10,7 +11,7 @@ class CahCommand extends BaseCommand {
     constructor() {
         super({
             name: 'cah',
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'cah',
             info: 'Generates a set of CAH cards.'
         });

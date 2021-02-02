@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class RespawnCommand extends BaseCommand {
     constructor() {
         super({
             name: 'respawn',
-            category: bu.CommandType.GENERAL,
+            category: newbutils.commandTypes.GENERAL,
             hidden: true,
             usage: 'respawn <id>',
             info: 'Cluster respawning only for staff.'

@@ -1,10 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class SlowmodeCommand extends BaseCommand {
     constructor() {
         super({
             name: 'slowmode',
-            category: bu.CommandType.ADMIN,
+            category: newbutils.commandTypes.ADMIN,
             usage: 'slowmode [time]',
             info: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 120. Leave empty to disable slowmode.',
             flags: [{ flag: 'c', word: 'channel', desc: 'The channel to put under slowmode' },
@@ -13,7 +14,7 @@ class SlowmodeCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
 
 
         let time = parseInt(input.undefined[0]);

@@ -1,11 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
+const newbutils = require('../newbu');
 
 class StarvstheforcesofCommand extends BaseCommand {
     constructor() {
         super({
             name: 'starvstheforcesof',
             aliases: ['svtfo'],
-            category: bu.CommandType.IMAGE,
+            category: newbutils.commandTypes.IMAGE,
             usage: 'starvstheforcesof [user]',
             info: 'WHO IS STAR BATTLING THIS EPISODE?',
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
@@ -16,7 +17,7 @@ class StarvstheforcesofCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = bu.parseInput(this.flags, words);
+        let input = newbutils.parse.flags(this.flags, words);
         let user = msg.author;
         let url;
         if (msg.attachments.length > 0) {
