@@ -429,10 +429,16 @@ function getCPU() {
     });
 }
 
+/** @type {{[key: string]: number}} */
 var lastReady = {};
+
+/**
+ * @returns {number}
+ * @param {string} shard 
+ */
 function getLastReady(shard) {
     if (shard.status == 'ready')
-        return lastReady[shard.id] = new Date();
+        return lastReady[shard.id] = Date.now();
 
     return lastReady[shard.id];
 }
