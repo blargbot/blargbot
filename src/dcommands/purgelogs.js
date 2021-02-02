@@ -20,7 +20,7 @@ class PurgelogsCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             await bu.send(msg, 'Ok, I\'ll purge all chat log records that are over a week old. This is going to take a while, so I\'ll ping you once I\'m done.');
             let start = moment();
             let returnObj = await deleteLogs();

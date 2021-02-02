@@ -1,11 +1,11 @@
 const BaseCommand = require('../structures/BaseCommand');
-const newbutils = require('../newbu');
+const { parse, commandTypes, modlogColours } = require('../newbu');
 
 class WarnCommand extends BaseCommand {
     constructor() {
         super({
             name: 'warn',
-            category: newbutils.commandTypes.ADMIN,
+            category: commandTypes.ADMIN,
             usage: 'warn <user> [flags]',
             info: 'Issues a warning.\nIf mod-logging is enabled, the warning will be logged.\nIf `kickat` and `banat` have been set using the `settings` command, the target could potentially get banned or kicked.',
             flags: [{
@@ -22,7 +22,7 @@ class WarnCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        let input = newbutils.parse.flags(this.flags, words);
+        let input = parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, 'Not enough input. Do `b!help warn` for usage instructions.');
             return;
@@ -35,7 +35,7 @@ class WarnCommand extends BaseCommand {
             if (!isNaN(tempCount)) count = tempCount;
         }
         let res = await bu.issueWarning(user, msg.guild, count);
-        await bu.logAction(msg.guild, user, msg.author, 'Warning', input.r, bu.ModLogColour.WARN, [{
+        await bu.logAction(msg.guild, user, msg.author, 'Warning', input.r, modlogColours.WARN, [{
             name: 'Warnings',
             value: `Assigned: ${count}\nNew Total: ${res.count || 0}`,
             inline: true

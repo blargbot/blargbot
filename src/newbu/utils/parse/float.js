@@ -5,4 +5,4 @@ function float(s) {
     return parseFloat(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'));
 }
 
-module.exports = { float }
+module.exports = { float };

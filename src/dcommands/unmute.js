@@ -1,12 +1,12 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
-const newbutils = require('../newbu');
+const { commandTypes, parse, modlogColours } = require('../newbu');
 
 class UnmuteCommand extends BaseCommand {
     constructor() {
         super({
             name: 'unmute',
-            category: newbutils.commandTypes.ADMIN,
+            category: commandTypes.ADMIN,
             usage: 'unmute <user> [flags]',
             info: 'Unmutes a user.\nIf mod-logging is enabled, the unmute will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the unmute.' }]
@@ -36,7 +36,7 @@ class UnmuteCommand extends BaseCommand {
                         let voiceMute = msg.guild.members.get(bot.user.id).permissions.json.voiceMuteMembers;
                         try {
                             let reason, fullReason;
-                            let input = newbutils.parse.flags(this.flags, words);
+                            let input = parse.flags(this.flags, words);
                             if (input.r) {
                                 reason = input.r.join(' ');
                                 fullReason = `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`;
@@ -54,7 +54,7 @@ class UnmuteCommand extends BaseCommand {
                                 } catch (err) { /* no-op */ }
                             }
 
-                            bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', reason, bu.ModLogColour.UNMUTE);
+                            bu.logAction(msg.channel.guild, user, msg.author, 'Unmute', reason, modlogColours.UNMUTE);
                             bu.send(msg, ':ok_hand:');
                         } catch (err) {
                             bu.send(msg, `Failed to remove the muted role! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``);
@@ -92,7 +92,7 @@ class UnmuteCommand extends BaseCommand {
                 } catch (err) { /* no-op */ }
             }
 
-            bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', reason, bu.ModLogColour.UNMUTE);
+            bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', reason, modlogColours.UNMUTE);
         }
     };
 }

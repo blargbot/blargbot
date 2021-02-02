@@ -92,7 +92,7 @@ router.get('/:id', async function (req, res) {
 router.get('/:id/perm', async function (req, res) {
     res.locals.user = req.user;
 
-    if (!req.user || req.user.id !== bu.CAT_ID) {
+    if (!req.user || req.user.id !== config.discord.users.owner) {
         res.status(401);
         res.send('You do not have permission to do this.');
         return;

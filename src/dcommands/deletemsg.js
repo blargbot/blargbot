@@ -10,7 +10,7 @@ class DeletemsgCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        if (msg.author.id == config.discord.users.owner) {
             let channel = '';
             let messages = [];
             if (bot.channelGuildMap.hasOwnProperty(words[1])) {

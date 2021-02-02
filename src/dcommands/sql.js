@@ -12,7 +12,7 @@ class SqlCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             bu.send(msg, 'no');
             /*
             let query = words.slice(1).join(' ');

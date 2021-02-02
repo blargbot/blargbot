@@ -414,7 +414,7 @@ class TagCommand extends BaseCommand {
                         bu.send(msg, `❌ That tag has been permanently deleted! ❌`);
                         break;
                     }
-                    if (tag.author != msg.author.id && msg.author.id != bu.CAT_ID) {
+                    if (tag.author != msg.author.id && msg.author.id != config.discord.users.owner) {
                         bu.send(msg, `❌ You don't own this tag! ❌`);
                         break;
                     }
@@ -780,7 +780,7 @@ ${Object.keys(user.favourites).join(', ')}
 
                     break;
                 case 'permdelete':
-                    if (msg.author.id == bu.CAT_ID)
+                    if (msg.author.id == config.discord.users.owner)
                         if (words.length > 3) {
                             title = filterTitle(words[2]);
                             tag = await r.table('tag').get(words[2]).run();

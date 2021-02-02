@@ -10,7 +10,7 @@ class SayCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        if (msg.author.id == config.discord.users.owner) {
             let channel = '';
             if (bot.channelGuildMap.hasOwnProperty(words[1])) {
                 channel = words[1];

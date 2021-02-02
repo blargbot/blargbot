@@ -10,7 +10,7 @@ class ReloadCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             bu.emitter.emit('reloadConfig');
             bu.send(msg, ':ok_hand:');
         }

@@ -10,7 +10,7 @@ class GevalCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             let code = text.substring(words[0].length).trim();
             let res = await bot.sender.awaitMessage({
                 message: 'geval',

@@ -14,7 +14,7 @@ class PatchCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id != bu.CAT_ID) {
+        if (msg.author.id != config.discord.users.owner) {
             return;
         }
         let input = newbutils.parse.flags(this.flags, words, true);
@@ -26,7 +26,7 @@ class PatchCommand extends BaseCommand {
                 name: `Version ${await bu.getVersion()}`
             },
             fields: [],
-            color: bu.avatarColours[bu.avatarId]
+            color: newbutils.avatarColours[bu.avatarId]
         };
         if (input.undefined.length > 0) {
             embed.title = 'New Features and Changes';

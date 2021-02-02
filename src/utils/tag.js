@@ -9,6 +9,7 @@
 
 const bbEngine = require('../structures/bbtag/Engine'),
     ReadWriteLock = require('rwlock');
+const { tagVariableTypes } = require('../newbu');
 
 bu.serializeTagArray = function (array, varName) {
     if (!varName)
@@ -85,27 +86,27 @@ function getQuery(name, key, type, guildId) {
     };
 
     switch (type) {
-        case bu.TagVariableType.GUILD:
+        case tagVariableTypes.GUILD:
             query.type = 'GUILD_CC';
             query.scope = name;
             break;
-        case bu.TagVariableType.GUILDLOCAL:
+        case tagVariableTypes.GUILDLOCAL:
             query.type = 'LOCAL_CC';
             query.scope = guildId + '_' + name;
             break;
-        case bu.TagVariableType.TAGGUILD:
+        case tagVariableTypes.TAGGUILD:
             query.type = 'GUILD_TAG';
             query.scope = name;
             break;
-        case bu.TagVariableType.AUTHOR:
+        case tagVariableTypes.AUTHOR:
             query.type = 'AUTHOR';
             query.scope = name;
             break;
-        case bu.TagVariableType.LOCAL:
+        case tagVariableTypes.LOCAL:
             query.type = 'LOCAL_TAG';
             query.scope = name;
             break;
-        case bu.TagVariableType.GLOBAL:
+        case tagVariableTypes.GLOBAL:
             query.type = 'GLOBAL';
             query.scope = '';
             break;
@@ -173,10 +174,10 @@ bu.tagVariableScopes = [
             'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
         setter: async (context, values) =>
             await bu.setVariable(context.guild.id, values,
-                context.isCC && !context.tagVars ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+                context.isCC && !context.tagVars ? tagVariableTypes.GUILD : tagVariableTypes.TAGGUILD),
         getter: async (context, name) =>
             await bu.getVariable(context.guild.id, name,
-                context.isCC && !context.tagVars ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
+                context.isCC && !context.tagVars ? tagVariableTypes.GUILD : tagVariableTypes.TAGGUILD),
         getLock: (context, key) => bu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
     },
     {
@@ -186,12 +187,12 @@ bu.tagVariableScopes = [
             'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
         setter: async (context, values) => {
             if (context.author)
-                return await bu.setVariable(context.author, values, bu.TagVariableType.AUTHOR);
+                return await bu.setVariable(context.author, values, tagVariableTypes.AUTHOR);
             return bbEngine.addError({}, context, '`No author found`');
         },
         getter: async (context, name) => {
             if (context.author)
-                return await bu.getVariable(context.author, name, bu.TagVariableType.AUTHOR);
+                return await bu.getVariable(context.author, name, tagVariableTypes.AUTHOR);
             return bbEngine.addError({}, context, '`No author found`');
         },
         getLock: (context, key) => bu.getLock(...['AUTHOR', context.author.id, key])
@@ -202,9 +203,9 @@ bu.tagVariableScopes = [
         description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
             'These are very useful if you like pain.',
         setter: async (context, values) =>
-            await bu.setVariable(undefined, values, bu.TagVariableType.GLOBAL),
+            await bu.setVariable(undefined, values, tagVariableTypes.GLOBAL),
         getter: async (context, name) =>
-            await bu.getVariable(undefined, name, bu.TagVariableType.GLOBAL),
+            await bu.getVariable(undefined, name, tagVariableTypes.GLOBAL),
         getLock: (context, key) => bu.getLock(...['GLOBAL', key])
     },
     {
@@ -224,13 +225,13 @@ bu.tagVariableScopes = [
             'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
         setter: async (context, values) => {
             if (context.isCC && !context.tagVars)
-                return await bu.setVariable(context.tagName, values, bu.TagVariableType.GUILDLOCAL, context.guild.id);
-            return await bu.setVariable(context.tagName, values, bu.TagVariableType.LOCAL);
+                return await bu.setVariable(context.tagName, values, tagVariableTypes.GUILDLOCAL, context.guild.id);
+            return await bu.setVariable(context.tagName, values, tagVariableTypes.LOCAL);
         },
         getter: async (context, name) => {
             if (context.isCC && !context.tagVars)
-                return await bu.getVariable(context.tagName, name, bu.TagVariableType.GUILDLOCAL, context.guild.id);
-            return await bu.getVariable(context.tagName, name, bu.TagVariableType.LOCAL);
+                return await bu.getVariable(context.tagName, name, tagVariableTypes.GUILDLOCAL, context.guild.id);
+            return await bu.getVariable(context.tagName, name, tagVariableTypes.LOCAL);
         },
         getLock: (context, key) => bu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', context.tagName])
     }

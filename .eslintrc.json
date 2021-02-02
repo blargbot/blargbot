@@ -55,6 +55,7 @@
         "bbtag": false,
         "bu": false,
         "r": false,
+        "irc": false,
         "TagManager": false,
         "CommandManager": false,
         "cluster": false,

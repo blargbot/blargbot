@@ -10,7 +10,7 @@ class RestartCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             if (words[1] === 'kill') {
                 await bu.send(msg, 'Ah! You\'ve killed me! D:');
                 await r.table('vars').get('restart').replace({

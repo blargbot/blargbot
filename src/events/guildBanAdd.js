@@ -6,6 +6,7 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
+const { modlogColours } = require('../newbu');
 
 bot.on('guildBanAdd', async function (guild, user) {
 
@@ -33,7 +34,7 @@ bot.on('guildBanAdd', async function (guild, user) {
             mod = bu.bans[guild.id].mass.mod;
             type = bu.bans[guild.id].mass.type;
             reason = bu.bans[guild.id].mass.reason;
-            bu.logAction(guild, bu.bans[guild.id].mass.newUsers, mod, type, reason, bu.ModLogColour.BAN);
+            bu.logAction(guild, bu.bans[guild.id].mass.newUsers, mod, type, reason, modlogColours.BAN);
         }
         return;
     } else if (bu.bans[guild.id][user.id]) {
@@ -42,7 +43,7 @@ bot.on('guildBanAdd', async function (guild, user) {
         reason = bu.bans[guild.id][user.id].reason;
         delete bu.bans[guild.id][user.id];
     }
-    bu.logAction(guild, user, mod, type, reason, bu.ModLogColour.BAN);
+    bu.logAction(guild, user, mod, type, reason, modlogColours.BAN);
     bu.logEvent(guild.id, user.id, 'memberban', [{
         name: 'User',
         value: bu.getFullName(user) + ` (${user.id})`,

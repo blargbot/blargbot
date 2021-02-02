@@ -11,7 +11,7 @@ class ExecCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             var commandToProcess = words.slice(1).join(' ');
             console.debug(commandToProcess);
             if (commandToProcess.trim().toLowerCase().includes('pm2 restart') ||

@@ -15,7 +15,7 @@ class MigrateCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        if (msg.author.id == config.discord.users.owner) {
             let tags = bu.vars.tags;
             for (let tag in tags) {
                 await r.table('tag').get(tag).update({

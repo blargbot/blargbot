@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
-const newbutils = require('../newbu');
+const { parse, modLogColours } = require('../newbu');
 
 class MuteCommand extends BaseCommand {
     constructor() {
@@ -91,7 +91,7 @@ class MuteCommand extends BaseCommand {
                     } else {
                         try {
                             let reason, fullReason;
-                            let input = newbutils.parse.flags(this.flags, words);
+                            let input = parse.flags(this.flags, words);
                             if (input.r) {
                                 reason = input.r.join(' ');
                                 fullReason = `[ ${bu.getFullName(msg.author)} ] ${reason || ''}`;
@@ -109,7 +109,7 @@ class MuteCommand extends BaseCommand {
                                 } catch (err) { /* no-op */ }
                             }
 
-                            bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason, bu.ModLogColour.MUTE);
+                            bu.logAction(msg.channel.guild, user, msg.author, 'Mute', reason, modLogColours.MUTE);
                             let suffix = '';
                             if (input.t) {
                                 let duration = bu.parseDuration(input.t.join(' '));

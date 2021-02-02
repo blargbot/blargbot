@@ -13,7 +13,7 @@ const bbtag = require('../core/bbtag');
 const Timer = require('../structures/Timer');
 const util = require('util');
 const request = require('request');
-const newbutils = require('../newbu');
+const { commandTypes, modlogColours } = require('../newbu');
 const cleverbotIo = require('better-cleverbot-io');
 const cleverbot = new cleverbotIo({
     user: config.cleverbot.ioid,
@@ -227,8 +227,8 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
                     let timer = new Timer().start();
                     await executeCommand(commandName, msg, words, text);
                     timer.end();
-                    bu.Metrics.commandLatency.labels(commandName, newbutils.commandTypes.properties[_built.category].name.toLowerCase()).observe(timer.elapsed);
-                    bu.Metrics.commandCounter.labels(commandName, newbutils.commandTypes.properties[_built.category].name.toLowerCase()).inc();
+                    bu.Metrics.commandLatency.labels(commandName, commandTypes.properties[_built.category].name.toLowerCase()).observe(timer.elapsed);
+                    bu.Metrics.commandCounter.labels(commandName, commandTypes.properties[_built.category].name.toLowerCase()).inc();
                 } catch (err) {
                     console.error(err.stack);
                     bu.Metrics.commandError.labels(commandName).inc();
@@ -341,7 +341,7 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
                     if (cens.weight > 0) {
-                        await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', bu.ModLogColour.WARN, [{
+                        await bu.logAction(msg.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', modlogColours.WARN, [{
                             name: 'Warnings',
                             value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
                             inline: true

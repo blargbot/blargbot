@@ -14,7 +14,7 @@ module.exports = {
         },
         2: {
             name: 'CATZ MEOW MEOW',
-            requirement: msg => msg.author.id == bu.CAT_ID,
+            requirement: msg => msg.author.id == config.discord.users.owner,
             description: 'MREOW MEOWWWOW! **purr**'
         },
         3: {
@@ -45,4 +45,4 @@ module.exports = {
             description: 'Social commands for interacting with other people'
         }
     }
-}
+};

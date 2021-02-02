@@ -5,4 +5,4 @@ function int(s, radix = 10) {
     return parseInt(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'), radix);
 }
 
-module.exports = { int }
+module.exports = { int };

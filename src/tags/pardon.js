@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const { modlogColours } = require('../newbu');
 
 module.exports =
     Builder.BotTag('pardon')
@@ -44,7 +45,7 @@ module.exports =
                 return Builder.errors.notANumber(subtag, context);
 
             let result = await bu.issuePardon(user, context.guild, count);
-            await bu.logAction(context.guild, user, undefined, 'Tag Pardon', reason, bu.ModLogColour.PARDON, [{
+            await bu.logAction(context.guild, user, undefined, 'Tag Pardon', reason, modlogColours.PARDON, [{
                 name: 'Pardons',
                 value: `Assigned: ${count}\nNew Total: ${result || 0}`,
                 inline: true

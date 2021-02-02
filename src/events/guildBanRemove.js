@@ -8,6 +8,7 @@
  */
 
 const moment = require('moment-timezone');
+const { modlogColours } = require('../newbu');
 
 bot.on('guildBanRemove', async function (guild, user) {
     let storedGuild = await bu.getGuild(guild.id);
@@ -28,7 +29,7 @@ bot.on('guildBanRemove', async function (guild, user) {
 
         if (embed && (Date.now() - Date.now() - moment(embed.timestamp).format('x')) <= 60000) {
             embed.fields[0].value = 'Softban';
-            embed.color = bu.ModLogColour.SOFTBAN;
+            embed.color = modlogColours.SOFTBAN;
             embed.timestamp = moment(embed.timestamp);
 
             msg2.edit({
@@ -36,10 +37,10 @@ bot.on('guildBanRemove', async function (guild, user) {
                 embed: embed
             });
         } else {
-            bu.logAction(guild, user, mod, type || 'Unban', reason, bu.ModLogColour.UNBAN);
+            bu.logAction(guild, user, mod, type || 'Unban', reason, modlogColours.UNBAN);
         }
     } else {
-        bu.logAction(guild, user, mod, type || 'Unban', reason, bu.ModLogColour.UNBAN);
+        bu.logAction(guild, user, mod, type || 'Unban', reason, modlogColours.UNBAN);
     }
     bu.logEvent(guild.id, user.id, 'memberunban', [{
         name: 'User',

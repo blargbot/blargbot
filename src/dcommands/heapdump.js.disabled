@@ -15,7 +15,7 @@ class HeapdumpCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        if (msg.author.id == config.discord.users.owner) {
             let interval = 1800000;
             if (words[1]) interval = parseInt(words[1]);
 

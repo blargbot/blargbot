@@ -1,5 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
-const newbutils = require('../newbu');
+const { commandTypes, defaultStaff } = require('../newbu');
 
 function getName(member) {
     return member.user.username + '#' + member.user.discriminator;
@@ -13,7 +13,7 @@ class ModsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'mods',
-            category: newbutils.commandTypes.GENERAL,
+            category: commandTypes.GENERAL,
             usage: 'mods [online | o | away | a | dnd | d | offline]',
             info: 'Gets a list of mods.'
         });
@@ -24,7 +24,7 @@ class ModsCommand extends BaseCommand {
         try {
             bu.guildSettings.get(msg.channel.guild.id, 'staffperms').then(val => {
                 console.debug('aa');
-                var allow = val || bu.defaultStaff;
+                var allow = val || defaultStaff;
                 let status = 0;
                 if (words[1])
                     switch (words[1].toLowerCase()) {

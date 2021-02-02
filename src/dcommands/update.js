@@ -13,7 +13,7 @@ class UpdateCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
 
             if (!config.general.isbeta) {
                 exec('git pull', async (err, stdout, stderr) => {

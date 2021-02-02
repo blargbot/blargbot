@@ -8,7 +8,7 @@
  */
 
 const BaseCommand = require('../src/structures/BaseCommand');
-const newbutils = require('../src/newbu')
+const newbutils = require('../src/newbu');
 
 class AvatarCommand extends BaseCommand {
     constructor() {

@@ -8,6 +8,7 @@
  */
 
 const bbEngine = require('../structures/bbtag/Engine');
+const { modlogColours } = require('../newbu');
 
 bot.on('guildMemberRemove', async function (guild, member) {
     const now = Date.now();
@@ -54,6 +55,6 @@ bot.on('guildMemberRemove', async function (guild, member) {
             mod,
             'Kick',
             e.reason,
-            bu.ModLogColour.KICK);
+            modlogColours.KICK);
     }
 });

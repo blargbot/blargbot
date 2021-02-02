@@ -54,7 +54,7 @@ class FeedbackCommand extends BaseCommand {
                 bu.send(msg, 'Sorry, your guild has been blacklisted from the use of the `feedback`, `suggest`, and `report` commands. If you wish to appeal this, please join my support guild. You can find a link by doing `b!invite`.');
                 return;
             }
-            if (words.length > 3 && msg.author.id == bu.CAT_ID) {
+            if (words.length > 3 && msg.author.id == config.discord.users.owner) {
                 switch (words[1].toLowerCase()) {
                     case 'blacklist':
                         switch (words[2].toLowerCase()) {

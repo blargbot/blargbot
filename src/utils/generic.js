@@ -17,7 +17,7 @@ const twemoji = require('twemoji');
 const request = require('request');
 const isSafeRegex = require('safe-regex');
 const { emojify } = require('node-emoji');
-const newbutils = require('../newbu');
+const { commandTypes, defaultStaff } = require('../newbu');
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -216,7 +216,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
         if (!msg.channel.guild) return true;
         member = msg.member;
     }
-    if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
+    if (override && ((member.id === config.discord.users.owner && bu.catOverrides) ||
         member.guild.ownerID == member.id ||
         member.permissions.json.administrator)) {
         return true;
@@ -272,7 +272,7 @@ bu.hasRole = (msg, roles, override = true) => {
         member = msg.member;
     }
 
-    if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
+    if (override && ((member.id === config.discord.users.owner && bu.catOverrides) ||
         member.guild.ownerID == msg.member.id ||
         member.permissions.json.administrator)) {
         return true;
@@ -907,7 +907,7 @@ bu.issuePardon = async function (user, guild, count, params) {
 };
 
 bu.comparePerms = (m, allow) => {
-    if (!allow) allow = bu.defaultStaff;
+    if (!allow) allow = defaultStaff;
     let newPerm = new Permission(allow);
     for (let key in newPerm.json) {
         if (m.permissions.has(key)) {
@@ -982,7 +982,7 @@ bu.canExecuteCcommand = async function (msg, commandName, quiet) {
 };
 
 bu.canExecuteCommand = async function (msg, name, quiet, options = {}) {
-    if (msg.author.id == bu.CAT_ID && bu.catOverrides) return { executable: true, name };
+    if (msg.author.id == config.discord.users.owner && bu.catOverrides) return { executable: true, name };
     if (msg.channel.guild) {
         let { storedGuild, permOverride, staffPerms } = options;
         let adminrole;
@@ -997,7 +997,7 @@ bu.canExecuteCommand = async function (msg, name, quiet, options = {}) {
 
         let Command = CommandManager.commandList[name], category;
         if (Command)
-            category = newbutils.commandTypes.properties[CommandManager.commandList[name].category];
+            category = commandTypes.properties[CommandManager.commandList[name].category];
 
         let command = storedGuild.commandperms[name];
         let commandObj = CommandManager.list[name];
@@ -1292,7 +1292,7 @@ bu.isUserStaff = async function (userId, guildId) {
 
     let storedGuild = await bu.getGuild(guildId);
     if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
-        let allow = storedGuild.settings.staffperms || bu.defaultStaff;
+        let allow = storedGuild.settings.staffperms || defaultStaff;
         if (bu.comparePerms(bot.guilds.get(guildId).members.get(userId), allow)) {
             return true;
         }

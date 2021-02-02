@@ -26,4 +26,4 @@ module.exports = {
             desc: 'Subtags that access the discord API to perform operations'
         }
     }
-}
+};

@@ -253,7 +253,7 @@ class DiscordClient extends Client {
     }
 
     async eval(msg, text, send = true) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             let resultString, result;
             var commandToProcess = text.replace('eval ', '');
             if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
@@ -325,7 +325,7 @@ process.on('message', async msg => {
                     break;
                 }
                 case 'eval': {
-                    let result = await discord.eval({ author: { id: bu.CAT_ID } }, data.code, false);
+                    let result = await discord.eval({ author: { id: config.discord.users.owner } }, data.code, false);
                     bot.sender.send(eventKey, { result: result.result, shard: parseInt(process.env.CLUSTER_ID) });
                     break;
                 }

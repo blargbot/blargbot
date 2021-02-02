@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+const { modlogColours } = require('../newbu');
 
 module.exports =
     Builder.BotTag('warn')
@@ -40,7 +41,7 @@ module.exports =
                 return Builder.errors.notANumber(subtag, context);
 
             let result = await bu.issueWarning(user, context.guild, count);
-            await bu.logAction(context.guild, user, undefined, 'Tag Warning', reason, bu.ModLogColour.WARN, [{
+            await bu.logAction(context.guild, user, undefined, 'Tag Warning', reason, modlogColours.WARN, [{
                 name: 'Warnings',
                 value: `Assigned: ${count}\nNew Total: ${result.count || 0}`,
                 inline: true

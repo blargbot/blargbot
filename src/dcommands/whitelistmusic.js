@@ -10,7 +10,7 @@ class WhitelistmusicCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        if (msg.author.id == config.discord.users.owner) {
             if (config.discord.musicGuilds[msg.channel.guild.id]) {
                 config.discord.musicGuilds[msg.channel.guild.id] = false;
                 bu.send(msg, `Music disabled for ${msg.channel.guild.name}`);

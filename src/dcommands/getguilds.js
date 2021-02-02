@@ -10,7 +10,7 @@ class GetguildsCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
+        if (msg.author.id === config.discord.users.owner) {
             var gArray;
             var botRatio = false;
             if (words[1]) {

@@ -12,7 +12,7 @@ class CatbotCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        if (msg.author.id == config.discord.users.owner) {
             await bot.sendChannelTyping(msg.channel.id);
             if (words[1]) {
                 switch (words[1].toLowerCase()) {

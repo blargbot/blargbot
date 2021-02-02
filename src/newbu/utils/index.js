@@ -1,5 +1,3 @@
-const parse = require('./parse');
-
 module.exports = {
-    parse
-}
+    parse: require('./parse')
+};

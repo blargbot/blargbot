@@ -1,3 +1,5 @@
+const colors = require('../../../../res/colors.json');
+
 function color(text) {
     if (typeof text == 'number')
         return text;
@@ -50,4 +52,4 @@ function color(text) {
     return null;
 }
 
-module.exports = { color }
+module.exports = { color };

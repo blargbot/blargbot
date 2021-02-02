@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
-const newbutils = require('../newbu');
+const { commandTypes, avatarColours } = require('../newbu');
 
 function pad(value, length) {
     return (value.toString().length < length) ? pad(' ' + value, length) : value;
@@ -18,7 +18,7 @@ class StatsCommand extends BaseCommand {
     constructor() {
         super({
             name: 'stats',
-            category: newbutils.commandTypes.GENERAL,
+            category: commandTypes.GENERAL,
             usage: 'stats [c]',
             info: 'Gives you some information about me'
         });
@@ -40,7 +40,7 @@ class StatsCommand extends BaseCommand {
             topCommandsSession += pad(sortable[i][0] + ':', 13) + ' ' + sortable[i][1] + '\n';
         }
         let embeds = {
-            color: bu.avatarColours[bu.avatarId],
+            color: avatarColours[bu.avatarId],
             timestamp: moment(),
             description: 'Bot Statistics',
             footer: {
