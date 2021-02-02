@@ -1,8 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 
-const logLogChannel = '254034744134598676';
-
 async function deleteLogs() {
     const date = bu.makeSnowflake(Date.now() - (7 * 24 * 60 * 60 * 1000));
     return await r.table('chatlogs')
@@ -45,12 +43,12 @@ The operation took:
             endtime: r.epochTime(tomorrow.unix())
         });
 
-        await bu.send(logLogChannel, 'Doing a daily purge of logs that are over a week old.');
+        await bu.send(config.discord.channels.loglog, 'Doing a daily purge of logs that are over a week old.');
         let start = moment();
         let returnObj = await deleteLogs();
         let end = moment();
         let diff = moment.duration(end - start);
-        bu.send(logLogChannel, `I'm finished!
+        bu.send(config.discord.channels.loglog, `I'm finished!
     ${returnObj.deleted} records were deleted.
     The operation took:
         ${diff.days()} days

@@ -1,7 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 
 const beemovie = require('../../res/beemovie.json');
-const emote = '<:thinkingBEE:550930340609392650> ';
 
 class BeeMovieCommand extends BaseCommand {
     constructor() {
@@ -31,7 +30,7 @@ class BeeMovieCommand extends BaseCommand {
         const lines = input.c ? this.characterLines : this.lines;
         const { content, actor } = lines[Math.floor(Math.random() * lines.length)];
 
-        let output = [emote];
+        let output = [`<${config.discord.emotes.beemovie}> `];
         if (input.n && actor) output.push(`**${actor}**\n`);
         output.push(content);
 

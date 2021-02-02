@@ -97,18 +97,18 @@ class FeedbackCommand extends BaseCommand {
                 case 'suggest':
                     type = 'Suggestion';
                     colour = 0x1faf0c;
-                    channel = '195716879237644292';
+                    channel = config.discord.channels.suggestions;
                     break;
                 case 'report':
                     type = 'Bug Report';
                     colour = 0xaf0c0c;
-                    channel = '229137183234064384';
+                    channel = config.discord.channels.bugreports;
                     bug = true;
                     break;
                 default:
                     type = 'Feedback';
                     colour = 0xaaaf0c;
-                    channel = '268859677326966784';
+                    channel = config.discord.channels.feedback;
                     subTypes.push('Feedback');
                     break;
             }

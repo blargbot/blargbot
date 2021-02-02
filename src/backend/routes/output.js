@@ -92,7 +92,7 @@ router.get('/:id', async function (req, res) {
 router.get('/:id/perm', async function (req, res) {
     res.locals.user = req.user;
 
-    if (!req.user || req.user.id !== '103347843934212096') {
+    if (!req.user || req.user.id !== bu.CAT_ID) {
         res.status(401);
         res.send('You do not have permission to do this.');
         return;
@@ -105,8 +105,8 @@ router.get('/:id/perm', async function (req, res) {
     let m = await bu.cclient.execute(`UPDATE message_outputs USING TTL 0 
         SET content = :content, embeds = :embeds, channelid = :channelid
     WHERE id = :id`, {
-            id: output.id, content: output.content, embeds: output.embeds, channelid: output.channelid
-        }, { prepare: true });
+        id: output.id, content: output.content, embeds: output.embeds, channelid: output.channelid
+    }, { prepare: true });
 
     res.send('ok');
 });

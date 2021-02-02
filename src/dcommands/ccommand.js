@@ -262,7 +262,7 @@ class CcommandCommand extends BaseCommand {
                             ar.executes = key;
                             storedGuild.autoresponse.list.push(ar);
                             output += `✅ Import the autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''}\n`;
-                            output += `<:blank:275482460358180865>✅ Import the associated command as \`${key}\`\n`;
+                            output += `<${config.discord.emotes.blank}>✅ Import the associated command as \`${key}\`\n`;
                         }
                     }
                     if (body.are) {
@@ -283,7 +283,7 @@ class CcommandCommand extends BaseCommand {
                             body.are.executes = key;
                             storedGuild.autoresponse.everything = body.are;
                             output += `✅ Import the autoresponse to everything\n`;
-                            output += `<:blank:275482460358180865> ✅ Export the associated command as \`${key}\`\n`;
+                            output += `<${config.discord.emotes.blank}> ✅ Export the associated command as \`${key}\`\n`;
                         }
                     }
                     let key = 'thanks, commandinstaller!';

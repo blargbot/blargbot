@@ -42,11 +42,11 @@ class InfoCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         if (!titan) {
-            let t = await bot.getRESTUser('135556895086870528');
+            let t = await bot.getRESTUser(config.discord.users.titansmasher);
             titan = bu.getFullName(t);
         }
         if (!pg) {
-            let t = await bot.getRESTUser('317592077066305536');
+            let t = await bot.getRESTUser(config.discord.users.pgsvdx);
             pg = bu.getFullName(t);
         }
         let age = moment.duration(moment() - moment(startDate));

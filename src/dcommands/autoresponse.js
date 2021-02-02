@@ -246,7 +246,7 @@ class autoresponseCommand extends BaseCommand {
             values: whitelist.values
         });
         await bu.send(channel, enable ? 'Congratz, your guild has been whitelisted for autoresponses! 🎉' : 'Sorry, your guild has been rejected for autoresponses. 😿');
-        let msgs = await bot.getMessages('481857751891443722');
+        let msgs = await bot.getMessages(config.discord.channels.autoresponse);
         for (const m of msgs) {
             if (m.author.id === bot.user.id) {
                 if (m.content.includes(b64)) {
@@ -301,7 +301,7 @@ class autoresponseCommand extends BaseCommand {
                     return await bu.send(msg, 'You are already whitelisted!');
                 let reason = input.undefined.slice(1).join(' ');
                 let code = Buffer.from(JSON.stringify({ channel: msg.channel.id, guild: msg.guild.id })).toString('base64');
-                let msg2 = await bu.send('481857751891443722', `New AR request from **${bu.getFullName(msg.author)}** (${msg.author.id}):\n**Guild**: ${msg.guild.name} (${msg.guild.id})\n**Channel**: ${msg.channel.id}\n**Members**: ${msg.guild.memberCount}${reason ? '\n\n' + reason : ''}\n\n\`\`\`js\n${code}\n\`\`\``);
+                let msg2 = await bu.send(config.discord.channels.autoresponse, `New AR request from **${bu.getFullName(msg.author)}** (${msg.author.id}):\n**Guild**: ${msg.guild.name} (${msg.guild.id})\n**Channel**: ${msg.channel.id}\n**Members**: ${msg.guild.memberCount}${reason ? '\n\n' + reason : ''}\n\n\`\`\`js\n${code}\n\`\`\``);
                 await msg2.addReaction(this.approved);
                 await msg2.addReaction(this.rejected);
                 await bu.send(msg, 'Your request has been sent. Please don\'t spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.');

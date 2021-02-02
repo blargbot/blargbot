@@ -54,7 +54,7 @@ class CatbotCommand extends BaseCommand {
                 let catMsgs = await r.table('catchat').orderBy('msgid');
                 let content = [];
                 for (let message of catMsgs) {
-                    if (message.guildid != '197529405659021322' && message.nsfw == 0)
+                    if (message.guildid != '197529405659021322' && message.nsfw == 0) // TODO What guild is this?
                         content.push(message.content);
                 }
                 fs.writeFile(path.join(__dirname, '..', '..', 'catbot', 'cat.json'),

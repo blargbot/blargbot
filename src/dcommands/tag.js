@@ -6,7 +6,6 @@ const Context = require('../structures/bbtag/Context');
 const { Message } = require('eris');
 
 const results = 100;
-const reportChannel = '290890240011534337';
 const subcommands = [
     {
         name: '<name>',
@@ -432,12 +431,10 @@ class TagCommand extends BaseCommand {
                             return s.name == words[2].toLowerCase() || (s.aliases || []).includes(words[2].toLowerCase());
                         });
                         if (command.length > 0) {
-                            await bu.send(msg, `**Subcommand:** ${command[0].name}${
-                                command[0].aliases && command[0].aliases.length > 0
-                                    ? `\n**Aliases:** ${(command[0].aliases || []).join(', ')}`
-                                    : ''
-                                }${
-                                command[0].args ? `\n**Args:** \`${command[0].args}\`` : ''
+                            await bu.send(msg, `**Subcommand:** ${command[0].name}${command[0].aliases && command[0].aliases.length > 0
+                                ? `\n**Aliases:** ${(command[0].aliases || []).join(', ')}`
+                                : ''
+                                }${command[0].args ? `\n**Args:** \`${command[0].args}\`` : ''
                                 }
 ${command[0].desc}`);
                         } else {
@@ -753,14 +750,14 @@ ${tags.map(t => t.name).join(', ')}
                                 tag.reports++;
                             user.reports[title] = words.slice(3).join(' ');
                             output = `The tag \`${title}\` has been reported.`;
-                            await bu.send(reportChannel, `**${bu.getFullName(msg.author)}** has reported the tag: ${title}
+                            await bu.send(config.discord.channels.tagreports, `**${bu.getFullName(msg.author)}** has reported the tag: ${title}
 
 ${user.reports[title]}`);
                         } else if (user.reports[title] != undefined) {
                             user.reports[title] = undefined;
                             tag.reports--;
                             output = `The tag \`${title}\` is no longer being reported by you.`;
-                            await bu.send(reportChannel, `**${bu.getFullName(msg.author)}** is no longer reporting the tag: ${title}`);
+                            await bu.send(config.discord.channels.tagreports, `**${bu.getFullName(msg.author)}** is no longer reporting the tag: ${title}`);
                         } else {
                             output = `Please provide a reason for your report.`;
                         }
@@ -967,7 +964,7 @@ function logChange(action, msg, actionObj) {
             color = 0x02f2ee;
             break;
     }
-    bu.send('230810364164440065', {
+    bu.send(config.discord.channels.taglog, {
         embed: {
             title: action,
             color: color,

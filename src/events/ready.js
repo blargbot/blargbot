@@ -24,12 +24,12 @@ bot.on('ready', async function () {
     // });
 
     let g;
-    if (g = bot.guilds.get('194232473931087872')) {
-        let police = g.members.filter(m => m.roles.includes('280159905825161216')).map(m => m.id);
+    if (g = bot.guilds.get(config.discord.guilds.home)) {
+        let police = g.members.filter(m => m.roles.includes(config.discord.roles.police)).map(m => m.id);
         await r.table('vars').get('police').replace({
             value: police, varname: 'police'
         });
-        let support = g.members.filter(m => m.roles.includes('263066486636019712')).map(m => m.id);
+        let support = g.members.filter(m => m.roles.includes(config.discord.roles.support)).map(m => m.id);
         await r.table('vars').get('support').replace({
             value: support, varname: 'support'
         });
@@ -56,7 +56,7 @@ bot.on('ready', async function () {
             let percent = Math.floor(bots / members * 10000) / 100;
             var message = `:ballot_box_with_check: Guild: \`${guild.name}\`` +
                 ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
-            bu.send(`205153826162868225`, message);
+            bu.send(config.discord.channels.joinlog, message);
 
             console.log('Inserting a missing guild ' + g.id);
             await r.table('guild').insert({

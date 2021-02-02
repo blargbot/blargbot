@@ -56,7 +56,7 @@ async function handleDelete(msg, quiet) {
             delete bu.notCommandMessages[msg.guild.id][msg.id];
     }
     if (storedGuild.settings.makelogs)
-        if (msg.channel.id != '204404225914961920') {
+        if (msg.channel.id != '204404225914961920') { // TODO what channel is this?
             try {
                 bu.insertChatlog(msg, 2);
             } catch (err) {
@@ -104,6 +104,6 @@ bot.on('messageDeleteBulk', function (msgs) {
         value: msgs[0].channel.mention,
         inline: true
     }], {
-            description: 'Bulk Message Delete'
-        });
+        description: 'Bulk Message Delete'
+    });
 });

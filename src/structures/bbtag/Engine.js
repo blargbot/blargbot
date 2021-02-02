@@ -82,7 +82,7 @@ async function execute(bbtag, context) {
                     throw err;
                 }
                 result.push(addError(subtag, context, 'An internal server error has occurred'));
-                bu.send('250859956989853696', {
+                bu.send(config.discord.channels.errorlog, {
                     content: 'A tag error occurred.',
                     embed: {
                         title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),

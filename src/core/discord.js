@@ -170,10 +170,10 @@ class DiscordClient extends Client {
         });
 
         await gameSwitcher();
-        // await this.editGuild('194232473931087872', {
+        // await this.editGuild(config.discord.guilds.home, {
         //     icon: bu.avatars[id]
         // });
-        // await this.createMessage('492698595447930881', 'Switched avatar to #' + id);
+        // await this.createMessage('492698595447930881', 'Switched avatar to #' + id); // TODO what channel is this?
     }
 
     async autoresponseInterval() {

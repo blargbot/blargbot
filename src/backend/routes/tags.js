@@ -318,7 +318,7 @@ async function logChange(user, action, actionObj) {
             color = 0x02f2ee;
             break;
     }
-    bot.createMessage('230810364164440065', {
+    bot.createMessage(config.discord.channels.taglog, {
         embed: {
             title: action,
             color: color,

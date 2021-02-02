@@ -1,9 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 
 let id;
-const queue = '419235660088606739';
-const snippetChannel = '387709753758842883';
-const commandChannel = '414754839059365908';
 
 class SnippetCommand extends BaseCommand {
     constructor() {
@@ -12,7 +9,7 @@ class SnippetCommand extends BaseCommand {
             category: bu.CommandType.GENERAL,
             usage: 'snippet <submit <code> <flags> | approve <id> | reject <id> <reason>>',
             info: 'submit a snippet and stuff',
-            onlyOn: '194232473931087872',
+            onlyOn: config.discord.guilds.home,
             flags: [{ flag: 't', word: 'title', desc: 'The title of the snippet' },
             {
                 flag: 'd',
@@ -28,7 +25,7 @@ class SnippetCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.guild.id !== '194232473931087872') return;
+        if (msg.guild.id !== config.discord.guilds.home) return;
         if (!id) {
             let idVal = (await r.table('vars').get('snippetid'));
             if (!idVal) {
@@ -39,7 +36,7 @@ class SnippetCommand extends BaseCommand {
             }
         }
 
-        let isStaff = msg.member.roles.includes('280159905825161216') || msg.member.roles.includes('263066486636019712');
+        let isStaff = msg.member.roles.includes(config.discord.roles.police) || msg.member.roles.includes(config.discord.roles.support);
         switch ((words[1] || '').toLowerCase()) {
             case 'submit': {
                 let eee = text.replace(/^.*?snippet\s+/i, '');
@@ -58,7 +55,7 @@ class SnippetCommand extends BaseCommand {
                 let content = input.undefined.slice(1).join(' ');
                 content = content.replace(/```/g, '`\u200b`\u200b`\u200b');
 
-                let msg2 = await bu.send(queue, `**${snippet ? '✂ Snippet' : '💻 Command'} \`${id}\`**
+                let msg2 = await bu.send(config.discord.channels.snippetqueue, `**${snippet ? '✂ Snippet' : '💻 Command'} \`${id}\`**
 **Title**: ${title}
 **Author**: <@${msg.author.id}>
 **Description**:
@@ -89,10 +86,10 @@ ${snippet.desc}
 ${snippet.content}
 \`\`\`
 `;
-                let msg3 = await bu.send(snippet.snippet ? snippetChannel : commandChannel, content);
-                await msg3.addReaction(snippet.snippet ? '👍' : ':calp:298905944224563201');
+                let msg3 = await bu.send(snippet.snippet ? config.discord.channels.snippets : config.discord.channels.commands, content);
+                await msg3.addReaction(snippet.snippet ? '👍' : config.discord.emotes.clap);
 
-                let msg2 = await bot.getMessage(queue, snippet.msgid);
+                let msg2 = await bot.getMessage(config.discord.channels.snippetqueue, snippet.msgid);
                 content = msg2.content.split('\n');
                 content[0] = `✅ **Approved** \`${snippet.id}\``;
                 await r.table('snippet').get(snippet.id).update({ status: 'approved' });
@@ -107,7 +104,7 @@ ${snippet.content}
                 if (!snippet) return await bu.send(msg, 'There is no snippet with that ID.');
                 if (snippet.status) return await bu.send(msg, `That snippet has already been ${snippet.status}!`);
                 let reason = words.slice(3).join(' ');
-                let msg2 = await bot.getMessage(queue, snippet.msgid);
+                let msg2 = await bot.getMessage(config.discord.channels.snippetqueue, snippet.msgid);
                 let content = msg2.content.split('\n');
                 content[0] = `❌ **Rejected** \`${snippet.id}\``;
                 await r.table('snippet').get(snippet.id).update({ status: 'rejected' });

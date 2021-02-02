@@ -42,7 +42,7 @@ class Spawner extends EventEmitter {
                 let diff = moment.duration(moment() - cluster.time);
                 if (diff.asMilliseconds() > 60000) {
                     cluster.respawning = true;
-                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
+                    await this.client.discord.createMessage(config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
                     this.respawnShard(parseInt(cluster.id), true);
                 }
 
@@ -52,7 +52,7 @@ class Spawner extends EventEmitter {
                 if (downShards.length > 0) {
                     cluster.respawning = true;
                     let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n')
-                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
+                    await this.client.discord.createMessage(config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
                     this.respawnShard(parseInt(cluster.id), true);
                 }
             }
@@ -108,7 +108,7 @@ class Spawner extends EventEmitter {
                 res();
                 let output = `Cluster ${id} has been respawned.`;
 
-                await this.client.discord.createMessage('398946258854871052', output + logs);
+                await this.client.discord.createMessage(config.discord.channels.shardlog, output + logs);
             });
         });
     }

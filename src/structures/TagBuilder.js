@@ -334,7 +334,7 @@ async function executeArg(limit, subtag, arg, context) {
     let result = await bbEngine.execute(arg, context);
     if (typeof limit === 'number' && limit > 0) {
         if (result.length > limit) {
-            bu.send('250859956989853696', {
+            bu.send(config.discord.channels.errorlog, {
                 embed: {
                     title: `ERROR: SubTag arg > ${limit}`,
                     color: bu.parseColor('red'),
@@ -344,7 +344,7 @@ async function executeArg(limit, subtag, arg, context) {
             context.state.return = -1;
             return TagBuilder.util.error(arg, context, 'Argument length exceeded limit');
         } else if (result.length > (limit / 2)) {
-            bu.send('250859956989853696', {
+            bu.send(config.discord.channels.errorlog, {
                 embed: {
                     title: `WARN: SubTag arg length ${result.length}`,
                     color: bu.parseColor('yellow'),

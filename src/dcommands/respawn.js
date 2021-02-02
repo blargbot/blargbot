@@ -18,7 +18,7 @@ class RespawnCommand extends BaseCommand {
             if (isNaN(id))
                 return await bu.send(msg, 'that wasn\'t even a number pls');
 
-            await bu.send('398946258854871052', `**${bu.getFullName(msg.author)}** has called for a respawn of cluster ${id}.`);
+            await bu.send(config.discord.channels.shardlog, `**${bu.getFullName(msg.author)}** has called for a respawn of cluster ${id}.`);
             bot.sender.send('respawn', { id, channel: msg.channel.id });
             await bu.send(msg, 'ok cluster ' + id + ' is being respawned and stuff now');
         }

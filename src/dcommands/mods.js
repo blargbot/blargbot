@@ -60,22 +60,22 @@ class ModsCommand extends BaseCommand {
                 let online = [];
                 if (status == 0 || status == 1)
                     mods.filter(m => m.status == 'online').forEach(m => {
-                        online.push(`<:online:313956277808005120> **${getName(m)}** (${m.user.id})`);
+                        online.push(`<${config.discord.emotes.online}> **${getName(m)}** (${m.user.id})`);
                     });
                 let away = [];
                 if (status == 0 || status == 2)
                     mods.filter(m => m.status == 'idle').forEach(m => {
-                        away.push(`<:away:313956277220802560> **${getName(m)}** (${m.user.id})`);
+                        away.push(`<${config.discord.emotes.away}> **${getName(m)}** (${m.user.id})`);
                     });
                 let dnd = [];
                 if (status == 0 || status == 3)
                     mods.filter(m => m.status == 'dnd').forEach(m => {
-                        dnd.push(`<:dnd:313956276893646850> **${getName(m)}** (${m.user.id})`);
+                        dnd.push(`<${config.discord.emotes.busy}> **${getName(m)}** (${m.user.id})`);
                     });
                 let offline = [];
                 if (status == 0 || status == 4)
                     mods.filter(m => m.status == 'offline').forEach(m => {
-                        offline.push(`<:offline:313956277237710868> **${getName(m)}** (${m.user.id})`);
+                        offline.push(`<${config.discord.emotes.offline}> **${getName(m)}** (${m.user.id})`);
                     });
                 let message = `Mods on **${msg.guild.name}**`;
 

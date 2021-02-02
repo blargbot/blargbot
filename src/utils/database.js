@@ -244,7 +244,7 @@ bu.getChatlog = async function (id) {
 
 bu.insertChatlog = async function (msg, type) {
     if (!config.cassandra) return null;
-    if (msg.channel.id != '204404225914961920') {
+    if (msg.channel.id != '204404225914961920') { // TODO what channel is this?
         bu.Metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
         let data = {
             id: bu.makeSnowflake(),

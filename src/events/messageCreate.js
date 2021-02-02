@@ -263,7 +263,7 @@ var executeCommand = async function (commandName, msg, words, text) {
 
 
 function handleOurMessage(msg) {
-    if (msg.channel.id != '194950328393793536')
+    if (msg.channel.id != '194950328393793536') // TODO what channel is this?
         if (msg.guild)
             console.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} ` +
                 `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
@@ -522,7 +522,7 @@ async function handleBlacklist(msg, storedGuild, prefix) {
 }
 
 function logCommand(msg) {
-    bu.send('243229905360388106', {
+    bu.send(config.discord.channels.commandlog, {
         embed: {
             description: msg.content,
             fields: [{

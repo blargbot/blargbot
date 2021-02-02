@@ -1,10 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
 
-var changeChannel = '222199986123833344';
-// var changeChannel = '229692244746043393';
-const roleId = '239399475263700992';
-const betaRoleId = '455448380320251925'; // temp role for testing
-
 class PatchCommand extends BaseCommand {
     constructor() {
         super({
@@ -22,8 +17,8 @@ class PatchCommand extends BaseCommand {
             return;
         }
         let input = bu.parseInput(this.flags, words, true);
-        let channel = await bot.getChannel(changeChannel);
-        let role = channel.guild.roles.get(config.general.isbeta ? betaRoleId : roleId);
+        let channel = await bot.getChannel(config.discord.channels.changelog);
+        let role = channel.guild.roles.get(config.discord.roles.updates);
         let content = role.mention;
         let embed = {
             author: {
@@ -56,7 +51,7 @@ class PatchCommand extends BaseCommand {
             return await bu.send(msg, 'Patch canceled.');
 
         console.info(embed);
-        await bu.send(changeChannel, {
+        await bu.send(config.discord.channels.changelog, {
             content,
             embed,
             allowedMentions: {
