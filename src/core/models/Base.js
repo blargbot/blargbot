@@ -11,4 +11,4 @@ module.exports = class BaseModel {
     async sync(force = false) {
         return await this.model.sync(force);
     }
-}
+};

@@ -27,7 +27,7 @@ module.exports =
             if (number === NaN) return number;
             let roundto = bu.parseInt(args[1]);
 
-            let options = {} // create formatter options
+            let options = {}; // create formatter options
             if (roundto != NaN) {
                 roundto = Math.min(20, Math.max(-21, roundto));
                 let trunclen = Math.trunc(number).toString().length;

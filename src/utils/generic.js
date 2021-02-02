@@ -19,14 +19,6 @@ const isSafeRegex = require('safe-regex');
 const { emojify } = require('node-emoji');
 const { commandTypes, defaultStaff } = require('../newbu');
 
-bu.compareStats = (a, b) => {
-    if (a.uses < b.uses)
-        return -1;
-    if (a.uses > b.uses)
-        return 1;
-    return 0;
-};
-
 bu.awaitQuery = async function (msg, content, check, timeout, label) {
     let query = await bu.createQuery(msg, content, check, timeout, label);
     return await query.response;

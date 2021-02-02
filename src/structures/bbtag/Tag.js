@@ -8,17 +8,17 @@ const { Range } = require('../Position');
  */
 class BaseTag {
 
-    /** 
+    /**
      * @type {String}
      * The whole text from which this tag and its relatives can be derived
      * */
     get source() { return this._protected.source; }
-    /** 
+    /**
      * @type {Number}
      * The position in `source` where this tag starts
      * */
     get start() { return this._protected.start; }
-    /** 
+    /**
      * @type {Number}
      * The position in `source` where this tag ends
      * */
@@ -28,17 +28,17 @@ class BaseTag {
      * The range this tag spans
      */
     get range() { return this._protected.range; }
-    /** 
+    /**
      * @type {String}
      * The text that is contained in this tag
     */
     get content() { return this.source.slice(this.start, this.end); }
-    /** 
+    /**
      * @type {BBTag?}
      * The tag which this tag is contained within
      * */
     get parent() { return this._protected.parent; }
-    /** 
+    /**
      * @type {SubTag[]}
      * All the tags contained withinin this tag
      * */

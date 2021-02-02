@@ -442,7 +442,7 @@ function getJsonFile(path) {
 
 function sendMessageToDiscord(msg) {
     // console.irc(msg);
-    bot.createMessage(config.discord.channel, '\u200B' + msg)
+    bot.createMessage(config.discord.channel, '\u200B' + msg);
 }
 
 function changeDiscordTopic(topic) {

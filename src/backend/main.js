@@ -171,6 +171,6 @@ e.stop = function () {
             res();
         });
     });
-}
+};
 
 e.requireCtx = require;

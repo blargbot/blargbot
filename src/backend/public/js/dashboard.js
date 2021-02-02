@@ -1,4 +1,4 @@
-var workspace = document.getElementById('workspace')
+var workspace = document.getElementById('workspace');
 var index = workspace.innerHTML;
 let data;
 function save() {
@@ -32,7 +32,7 @@ wss.onmessage = function(event) {
                 break;
             case 'displayGuild':
                 let settings = data.data.guild.settings;
-                let modal = document.getElementById('settings-modal')
+                let modal = document.getElementById('settings-modal');
                 let keys = Object.keys(settings);
                 document.getElementById('modal-guild').innerText = 'Settings for ' + data.data.guild.guild.name;
 
@@ -43,7 +43,7 @@ wss.onmessage = function(event) {
                     if (select.tagName == 'SELECT') {
                         let defaultVal = select.getAttribute('data-default');
                         if (defaultVal == 'none') {
-                            let channel = document.createElement("option")
+                            let channel = document.createElement("option");
                             channel.setAttribute("value", "");
                             channel.setAttribute("selected", "");
                             channel.text = "None";
@@ -51,7 +51,7 @@ wss.onmessage = function(event) {
                         }
                         for (let ii = 0; ii < channels.length; ii++) {
                             if (channels[ii].type == 0) {
-                                let channel = document.createElement("option")
+                                let channel = document.createElement("option");
                                 channel.setAttribute("value", channels[ii].id);
                                 if (channels[ii].id == data.data.guild.guildid && defaultVal == 'default') {
                                     channel.setAttribute("selected", "");
@@ -70,7 +70,7 @@ wss.onmessage = function(event) {
                     if (select.tagName == 'SELECT') {
                         let defaultVal = select.getAttribute('data-default');
                         if (defaultVal == 'none') {
-                            let role = document.createElement("option")
+                            let role = document.createElement("option");
                             role.setAttribute("value", "");
                             role.setAttribute("selected", "");
                             role.text = "None";
@@ -101,7 +101,7 @@ wss.onmessage = function(event) {
                     if (element) {
                         switch (element.type) {
                             case 'checkbox':
-                                value = value != '0'
+                                value = value != '0';
                                 element.checked = value;
                                 break;
                             default:
@@ -146,7 +146,7 @@ wss.onmessage = function(event) {
     } else {
         Materialize.toast(data.data, 5000);
     }
-}
+};
 
 function sendData(type, data) {
     wss.send(JSON.stringify({

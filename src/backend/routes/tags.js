@@ -45,7 +45,7 @@ router.get('/json', async (req, res) => {
                 input: t.exampleIn,
                 out: t.exampleOut
             }
-        }
+        };
     }));
 });
 
@@ -103,7 +103,7 @@ async function renderEditor(req, res) {
         let title, storedTag, storedGuild;
         title = filterTitle((req.body.tagName || ''));
         let gz = await spawner.getStaffGuilds(req.user.id, req.user.guilds);
-        gz.filter(g => g.id === destination).length > 0
+        gz.filter(g => g.id === destination).length > 0;
         if (destination && gz.filter(g => g.id === destination).length > 0) {
             storedGuild = await bu.getGuild(destination);
             title = title.toLowerCase();
@@ -113,7 +113,7 @@ async function renderEditor(req, res) {
             storedGuild.ccommands[(name || title).toLowerCase()] = tag;
             await r.table('guild').get(destination).update({
                 ccommands: r.literal(storedGuild.ccommands)
-            })
+            });
         };
 
         switch (req.body.action) {

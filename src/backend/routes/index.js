@@ -23,21 +23,21 @@ router.get('/shards', (req, res) => {
     res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
 
     res.render('shards');
-})
+});
 
 router.get('/netneut', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = req.path;
 
     res.render('bsod-netneut');
-})
+});
 
 router.get('/main', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = req.path;
 
     res.render('index');
-})
+});
 
 router.get('/editor', (req, res) => {
     res.redirect('/tags/editor');

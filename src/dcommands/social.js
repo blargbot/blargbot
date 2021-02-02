@@ -143,7 +143,7 @@ const actions = {
         text: 'punches',
         desc: 'Punch someone. They probably deserved it.'
     }
-}
+};
 
 let commands = [];
 
@@ -201,7 +201,7 @@ for (const key in actions) {
                 }
             });
         }
-    }
+    };
     commands.push(command);
 }
 

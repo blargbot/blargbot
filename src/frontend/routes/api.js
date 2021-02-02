@@ -92,4 +92,4 @@ module.exports = class ApiRoute {
             value.el.sort((a, b) => a.key > b.key ? 1 : a.key < b.key ? -1 : 0);
         }
     }
-}
+};

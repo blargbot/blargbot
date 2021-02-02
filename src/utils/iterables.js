@@ -2,7 +2,7 @@
  * Returns the distinct values of an iterable in the order which they appear
  * @param {Iterable<T>} values The values to find the distinct values of
  * @returns {Iterable<T>}
- * @template T The element type 
+ * @template T The element type
  */
 function* distinct(values) {
     const distinct = new Set();
@@ -18,4 +18,4 @@ function* distinct(values) {
 
 module.exports = {
     distinct
-}
+};

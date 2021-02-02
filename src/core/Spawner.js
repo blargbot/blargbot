@@ -51,7 +51,7 @@ class Spawner extends EventEmitter {
                     .filter(s => s.diff.asMilliseconds() > 60000);
                 if (downShards.length > 0) {
                     cluster.respawning = true;
-                    let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n')
+                    let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n');
                     await this.client.discord.createMessage(config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
                     this.respawnShard(parseInt(cluster.id), true);
                 }

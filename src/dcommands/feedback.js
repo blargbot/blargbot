@@ -13,7 +13,7 @@ let types = {
     BBTag: 'Relating to BBTag and its components (subtags, tags, and custom commands)',
     Documentation: 'Relating to blargbot\'s documentation, both in commands and on the website',
     'Other Functionality': 'Anything that doesn\'t fit the other categories'
-}
+};
 
 class FeedbackCommand extends BaseCommand {
     constructor() {

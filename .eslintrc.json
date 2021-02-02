@@ -56,6 +56,7 @@
         "bu": false,
         "r": false,
         "irc": false,
+        "spawner": false,
         "TagManager": false,
         "CommandManager": false,
         "cluster": false,

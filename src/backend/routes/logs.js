@@ -79,7 +79,7 @@ async function render(hash, req, res) {
                 } catch (err) {
                     userCache[id] = {
                         id, username: 'unknown', discriminator: '0000'
-                    }
+                    };
                 }
             return userCache[id];
         }
