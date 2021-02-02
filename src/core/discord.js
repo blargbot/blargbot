@@ -429,11 +429,11 @@ function getCPU() {
     });
 }
 
-/** @type {{[key: string]: number}} */
+/** @type {{[key: string]: number | undefined}} */
 var lastReady = {};
 
 /**
- * @returns {number}
+ * @returns {number | undefined}
  * @param {string} shard 
  */
 function getLastReady(shard) {
