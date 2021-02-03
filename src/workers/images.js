@@ -61,23 +61,11 @@ process.on('message', async function (msg) {
     if (msg.cmd !== 'img')
         return;
 
-    const handler = imageProcessor.generators[msg.command];
-    if (!(handler instanceof ImageGenerator))
-        return;
-
-    try {
-        await submitBuffer(msg.code, await handler.execute(msg));
-    } catch (err) {
-        logger.error(err.stack);
-        await submitBuffer(msg.code, '');
-    }
-});
-
-async function submitBuffer(code, buffer) {
+    let buffer = await imageProcessor.execute(msg.command, msg);
     logger.worker('Finished, submitting as base64');
     process.send({
         cmd: 'img',
-        code: code,
-        buffer: typeof buffer === 'string' ? buffer : buffer.toString('base64')
+        code: msg.code,
+        buffer: buffer.toString('base64')
     });
-}
+});

@@ -20,14 +20,20 @@ class PCCheckGenerator extends ImageGenerator {
         }
         container.push({ italic, text: temp });
 
-        return await renderPhantom('pccheck.html', {}, 2, undefined, [function (m) {
-            var thing = document.getElementById('replace1');
-            for (var i = 0; i < m.length; i++) {
-                var el = document.createElement(m[i].italic ? 'em' : 'span');
-                el.innerText = m[i].text;
-                thing.appendChild(el);
+        return this.renderPhantom('pccheck.html', {
+            scale: 2,
+            transformArg: container,
+            transform(container) {
+                // eslint-disable-next-line no-undef
+                var thing = document.getElementById('replace1');
+                for (var i = 0; i < container.length; i++) {
+                    // eslint-disable-next-line no-undef
+                    var el = document.createElement(container[i].italic ? 'em' : 'span');
+                    el.innerText = container[i].text;
+                    thing.appendChild(el);
+                }
             }
-        }, getResize(this.logger)], container);
+        });
     }
 }
 module.exports = { PCCheckGenerator };

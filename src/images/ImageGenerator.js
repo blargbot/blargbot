@@ -1,5 +1,6 @@
 const Jimp = require('jimp');
 const GIFEncoder = require('gifencoder');
+const phantom = require('phantom');
 const path = require('path');
 const request = require('request');
 const { createReadStream } = require('fs');
@@ -216,9 +217,109 @@ class ImageGenerator {
             image.setFormat('png');
         });
     }
+
+    /**
+     * @template TArgs
+     * @param {string} file
+     * @param {object} options
+     * @param {{[elementId: string]: string}} options.replacements
+     * @param {number} [options.scale]
+     * @param {string} [options.format]
+     * @param {(this: undefined, args: TArgs) => any} [options.transform]
+     * @param {TArgs} [options.transformArg]
+     */
+    async renderPhantom(file, { replacements, scale = 1, format = 'PNG', transform, transformArg }) {
+        const instance = await phantom.create(['--ignore-ssl-errors=true', '--ssl-protocol=TLSv1']);
+        const page = await instance.createPage();
+
+        page.on('onConsoleMessage', (msg) => {
+            this.logger.debug('[IM]', msg);
+        });
+        page.on('onResourceError', (resourceError) => {
+            this.logger.error(resourceError.url + ': ' + resourceError.errorString);
+        });
+
+        let dPath = this.getLocalResourcePath(file).replace(/\\/g, '/').replace(/^\w:/, '');;
+        await page.open(dPath);
+        await page.on('viewportSize', { width: 1440, height: 900 });
+        await page.on('zoomFactor', scale);
+
+        let rect = await page.evaluate(phantom_replace, replacements);
+
+        await page.on('clipRect', {
+            top: rect.top,
+            left: rect.left,
+            width: rect.width * scale,
+            height: rect.height * scale
+        });
+
+        if (transform)
+            await page.evaluate(transform, transformArg);
+
+        await page.evaluate(phantom_resize);
+
+        let base64 = await page.renderBase64(format);
+        await instance.exit();
+        return base64;
+    }
 }
 
+/**
+ * @param {{[elementId: string]: string}} replacements
+ */
+function phantom_replace(replacements) {
+    var keys = Object.keys(replacements);
+    for (var i = 0; i < keys.length; i++) {
+        // eslint-disable-next-line no-undef
+        var thing = document.getElementById(keys[i]);
+        thing.innerText = replacements[keys[i]];
+    }
+    try {
+        // eslint-disable-next-line no-undef
+        var workspace = document.getElementById("workspace");
+        return workspace.getBoundingClientRect();
+    } catch (err) {
+        console.error(err); // console inside the phantom browser, not the blargbot console
+        return { top: 0, left: 0, width: 300, height: 300 };
+    }
+}
 
+/**
+ * @param {object} args
+ * @param {ImageGenerator} args.self
+ */
+function phantom_resize() {
+    var el, _i, _len, _results;
+    // eslint-disable-next-line no-undef
+    const elements = document.getElementsByClassName('resize');
+    // eslint-disable-next-line no-undef
+    const wrapper = document.getElementById('wrapper');
+    if (elements.length < 0) {
+        return;
+    }
+    _results = [];
+    for (_i = 0, _len = elements.length; _i < _len; _i++) {
+        el = elements[_i];
+        _results.push((function (el) {
+            var resizeText, _results1;
+            if (el.style['font-size'] === '') el.style['font-size'] = '65px';
+            resizeText = function () {
+                var elNewFontSize;
+                elNewFontSize = (parseInt(el.style.fontSize.slice(0, -2)) - 1) + 'px';
+                console.log(elNewFontSize); // console inside the phantom browser, not the blargbot console
+                el.style.fontSize = elNewFontSize;
+                return el;
+            };
+            _results1 = null;
+            var ii = 0;
+            while (el.scrollHeight > wrapper.clientHeight) {
+                _results1 = resizeText();
+                if (++ii == 1000) break;
+            }
+            return _results1;
+        })(el));
+    }
+}
 
 function aRequest(obj) {
     return new Promise((fulfill, reject) => {

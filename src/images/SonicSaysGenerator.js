@@ -6,7 +6,12 @@ class SonicSaysGenerator extends ImageGenerator {
     }
 
     async execute({ text }) {
-        return await renderPhantom('sonicsays.html', { replace1: text }, 2, undefined, [getResize(this.logger)], undefined);
+        return await this.renderPhantom('sonicsays.html', {
+            scale: 2,
+            replacements: {
+                "replace1": text
+            }
+        });
     }
 
 
