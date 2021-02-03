@@ -16,9 +16,15 @@ class ThesearchCommand extends BaseCommand {
         if (words[1]) text = words.slice(1).join(' ');
         text = await bu.filterMentions(text);
         bot.sendChannelTyping(msg.channel.id);
-        let buffer = await bu.blargbotApi('thesearch', {
-            text: text
+
+        let code = bu.genEventCode();
+        let buffer = await bu.awaitEvent({
+            cmd: 'img',
+            command: 'thesearch',
+            code: code,
+            text
         });
+
         await bu.send(msg, undefined, {
             file: buffer,
             name: 'TheSearch.png'

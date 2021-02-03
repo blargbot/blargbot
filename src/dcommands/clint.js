@@ -28,10 +28,17 @@ class ClintCommand extends BaseCommand {
         if (!url) url = msg.author.avatarURL;
         bot.sendChannelTyping(msg.channel.id);
 
-        let buf = await bu.blargbotApi('clint', { image: url });
+
+        let code = bu.genEventCode();
+
+        let buffer = await bu.awaitEvent({
+            cmd: 'img',
+            command: 'clint',
+            image: url
+        });
 
         await bu.send(msg, undefined, {
-            file: buf,
+            file: buffer,
             name: 'clint.png'
         });
     }

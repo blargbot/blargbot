@@ -19,10 +19,17 @@ class PccheckCommand extends BaseCommand {
         let text = words.slice(1).join(' ');
         bot.sendChannelTyping(msg.channel.id);
         text = await bu.filterMentions(text);
-        let buf = await bu.blargbotApi('pccheck', { text: text });
+
+        let code = bu.genEventCode();
+        let buffer = await bu.awaitEvent({
+            cmd: 'img',
+            command: 'pccheck',
+            code: code,
+            text
+        });
 
         await bu.send(msg, undefined, {
-            file: buf,
+            file: buffer,
             name: 'didyouknow.png'
         });
     }

@@ -34,14 +34,14 @@ if (cluster.isMaster) {
     };
 
     cluster.reset = function () {
-        reload('./worker.js');
+        reload('../workers/images.js');
         for (const worker of workers) {
             worker[1].kill(0);
         }
     };
 
     cluster.setupMaster({
-        exec: 'src/core/worker.js',
+        exec: 'src/workers/images.js',
         silent: false
     });
 

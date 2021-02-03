@@ -57,7 +57,7 @@ const reload = require('require-reload')(require);
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
-const Spawner = require('./core/Spawner');
+const ClusterManager = require('./core/ClusterManager');
 const Eris = require('eris');
 // const irc = require('./core/irc.js');
 
@@ -80,7 +80,7 @@ class BlargbotClient {
             restMode: true, defaultImageFormat: 'png'
         });
         // this.irc = irc;
-        this.spawner = global.spawner = new Spawner(this);
+        this.spawner = global.spawner = new ClusterManager(this);
 
         console.init('Initializing discord.');
         this.spawner.spawnAll();

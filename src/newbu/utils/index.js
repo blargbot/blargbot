@@ -1,3 +1,5 @@
 module.exports = {
-    parse: require('./parse')
+    parse: require('./parse'),
+    randInt: require('./randInt')
 };
+
