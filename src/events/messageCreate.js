@@ -152,12 +152,32 @@ var flipTables = async function (msg, unflip) {
     }
 };
 
-const maxTime = 60 * 1000;
-const timeoutDuration = 60000 * 10; // 10 minutes
-const maxExecutions = 40;
+let lastUpdated;
+let maxTime;
+let timeoutDuration;
+let maxExecutions;
+let penalty;
 const commandUsage = {};
 const timedOut = {};
 async function exceededRatelimit(msg) {
+    if (!lastUpdated || lastUpdated <= Date.now() + (10 * 60 * 1000)) {
+        let globalRatelimit = await r.table('vars').get('globalRatelimit');
+        if (!globalRatelimit) {
+            globalRatelimit = {
+                maxTime: 30 * 1000,
+                timeoutDuration: 60000 * 10,
+                maxExecutions: 15,
+                penalty: 5000,
+                varname: 'globalRatelimit'
+            };
+            await r.table('vars').insert(globalRatelimit);
+        }
+
+        maxTime = globalRatelimit.maxTime;
+        timeoutDuration = globalRatelimit.timeoutDuration;
+        maxExecutions = globalRatelimit.maxExecutions;
+        penalty = globalRatelimit.penalty;
+    }
     if (timedOut[msg.author.id]) {
         if (Date.now() < timedOut[msg.author.id]) {
             timedOut[msg.author.id] += 5000;
