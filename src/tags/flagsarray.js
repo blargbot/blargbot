@@ -17,8 +17,8 @@ module.exports =
             'Hello -dc world',
             '["_","d","c"]'
         )
-        .whenArgs(0, async function (_, context, __) {
-            return Object.keys(context.flaggedInput);
+        .whenArgs(0, async function(_, context, __) {
+            return Object.keys(context.flaggedInput).filter(key => context.flaggedInput[key] !== undefined);
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
