@@ -177,6 +177,7 @@ async function exceededRatelimit(msg) {
         timeoutDuration = globalRatelimit.timeoutDuration;
         maxExecutions = globalRatelimit.maxExecutions;
         penalty = globalRatelimit.penalty;
+        lastUpdated = Date.now();
     }
     if (timedOut[msg.author.id]) {
         if (Date.now() < timedOut[msg.author.id]) {
