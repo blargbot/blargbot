@@ -6,7 +6,12 @@
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
         "build": "nuxt build",
-        "prisma": "prisma"
+        "prisma": "prisma",
+        "db:migrate:dev": "prisma migrate dev --preview-feature",
+        "db:migrate:deploy": "prisma migrate deploy --preview-feature",
+        "db:reset": "prisma migrate reset --preview-feature",
+        "db:reset:seedless": "prisma migrate reset --preview-feature --skip-seed",
+        "db:seed": "prisma db seed --preview-feature"
     },
     "dependencies": {
         "@nuxtjs/axios": "^5.3.3",

@@ -21,7 +21,6 @@ servers.json
 *.txt
 *.bat
 *.psd
-*.sql
 *.diff
 *.log
 eeek/*

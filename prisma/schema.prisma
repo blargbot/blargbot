@@ -8,12 +8,13 @@ datasource db {
 }
 
 model bbtag_variables {
-  name      String
-  type      enum_bbtag_variables_type
-  scope     String
-  content   String
-  createdAt DateTime
-  updatedAt DateTime
+  name    String
+  type    enum_bbtag_variables_type
+  scope   String
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@id([name, type, scope])
 }
@@ -28,8 +29,14 @@ enum enum_bbtag_variables_type {
 }
 
 model Guild {
-  id   String @id
-  name String
+  id                  String  @id
+  name                String
+  blacklisted         Boolean @default(false)
+  feedbackBlacklisted Boolean @default(false)
+  active              Boolean @default(true)
+
+  autoresponseWhitelisted Boolean @default(false)
+  autoresponseApplied     Boolean @default(false)
 
   // settings
   antiMention          Int      @default(0)
@@ -49,20 +56,21 @@ model Guild {
   kickOverride         Int?
   banOverride          Int?
   cahNSFW              Boolean  @default(false)
-  tableFlip            Boolean  @default(false)
+  tableflip            Boolean  @default(false)
   disableNoPerms       Boolean  @default(false)
   disableEveryonePings Boolean  @default(false)
-  noCleverbot          Boolean  @default(true)
-  prefixes             String[]
+  disableCleverbot     Boolean  @default(true)
   announcementChannel  String?
   announcementRole     String?
+  changelogChannel     String?
+  prefixes             String[]
 
   censorChannelExceptions String[]
   censorRoleExceptions    String[]
   censorUserExceptions    String[]
-  censorDeleteMessage     String
-  censorKickMessage       String
-  censorBanMessage        String
+  censorDeleteMessage     String?
+  censorKickMessage       String?
+  censorBanMessage        String?
 
   logIgnore String[]
 
@@ -76,6 +84,9 @@ model Guild {
   commands       GuildCommand[]
   logs           GuildLog[]
   autoresponses  GuildAutoresponse[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model GuildCustomCommand {
@@ -90,6 +101,10 @@ model GuildCustomCommand {
   roles      String[]
   hidden     Boolean  @default(false)
   managed    Boolean  @default(false)
+  flags      Json[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@id([name, guildId])
 }
@@ -105,6 +120,9 @@ model GuildModlogEntry {
   modId  String?
   userId String
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@id([guildId, id])
 }
 
@@ -119,6 +137,9 @@ model GuildRoleme {
   message       String
   caseSensitive Boolean  @default(false)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@id([guildId, id])
 }
 
@@ -129,6 +150,9 @@ model GuildVoteban {
   voterId String
   reason  String?
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@id([guildId, userId, voterId])
 }
 
@@ -137,6 +161,9 @@ model GuildWarning {
   guild    Guild  @relation(fields: [guildId], references: [id])
   userId   String
   warnings Int    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@id([guildId, userId])
 }
@@ -153,6 +180,9 @@ model GuildCensor {
   banMessage    String?
   weight        Int     @default(0)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@id([guildId, id])
 }
 
@@ -163,6 +193,9 @@ model GuildChannel {
 
   blacklisted Boolean @default(false)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@id([guildId, channelId])
 }
 
@@ -171,9 +204,12 @@ model GuildCommand {
   guild   Guild  @relation(fields: [guildId], references: [id])
   name    String
 
-  disabled   Boolean @default(false)
+  disabled   Boolean  @default(false)
   permission Int?
-  roleName   String?
+  roles      String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@id([guildId, name])
 }
@@ -183,6 +219,9 @@ model GuildLog {
   guild     Guild  @relation(fields: [guildId], references: [id])
   event     String
   channelId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@id([guildId, event])
 }
@@ -197,5 +236,150 @@ model GuildAutoresponse {
   term       String
   everything Boolean @default(false)
 
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
   @@id([guildId, id])
+}
+
+model User {
+  id                  String   @id
+  isBot               Boolean  @default(false)
+  timezone            String?
+  username            String?
+  discriminator       String?
+  avatarURL           String?
+  prefixes            String[]
+  blacklisted         String?
+  feedbackBlacklisted Boolean  @default(false)
+
+  todos      UserTodo[]
+  usernames  UserName[]
+  tags       Tag[]
+  favourites UserTagFavourite[]
+  reports    UserTagReport[]
+  roles      UserRole[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// determine if the user is a staff or helper of Cat Town
+model UserRole {
+  userId String @id
+  user   User   @relation(fields: [userId], references: [id])
+
+  roles String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserTodo {
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  id     Int    @default(autoincrement())
+
+  active  Boolean @default(true)
+  content String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, id])
+}
+
+model UserName {
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+  id     Int    @default(autoincrement())
+
+  name String
+  date DateTime
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, id])
+}
+
+model Tag {
+  name     String    @id
+  authorId String
+  author   User      @relation(fields: [authorId], references: [id])
+  uses     Int
+  content  String
+  cooldown Int       @default(0)
+  lastUse  DateTime?
+
+  favourites UserTagFavourite[]
+  reports    UserTagReport[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model UserTagFavourite {
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+  tagName String
+  tag     Tag    @relation(fields: [tagName], references: [name])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, tagName])
+}
+
+model UserTagReport {
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+  tagName String
+  tag     Tag    @relation(fields: [tagName], references: [name])
+
+  message String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, tagName])
+}
+
+model DomainWhitelist {
+  domain  String  @id
+  allowed Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Global {
+  id Int @id
+
+  versionMajor Int
+  versionMinor Int
+  versionPatch Int
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Misc {
+  key   String @id
+  value String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CompiledChatLog {
+  key     String   @id
+  channel String
+  limit   Int
+  types   Int[]
+  users   String[]
+  ids     String[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
