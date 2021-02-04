@@ -1,0 +1,201 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model bbtag_variables {
+  name      String
+  type      enum_bbtag_variables_type
+  scope     String
+  content   String
+  createdAt DateTime
+  updatedAt DateTime
+
+  @@id([name, type, scope])
+}
+
+enum enum_bbtag_variables_type {
+  GUILD_TAG
+  GUILD_CC
+  LOCAL_TAG
+  LOCAL_CC
+  AUTHOR
+  GLOBAL
+}
+
+model Guild {
+  id   String @id
+  name String
+
+  // settings
+  antiMention          Int      @default(0)
+  banAt                Int      @default(0)
+  kickAt               Int      @default(0)
+  deleteNotif          Boolean  @default(false)
+  dmHelp               Boolean  @default(false)
+  farewellChannel      String?
+  greetingChannel      String?
+  makeLogs             Boolean  @default(false)
+  modlog               String?
+  mutedRole            String?
+  social               Boolean  @default(true)
+  permOverride         Boolean  @default(true)
+  adminRole            String?
+  staffPerms           Int?
+  kickOverride         Int?
+  banOverride          Int?
+  cahNSFW              Boolean  @default(false)
+  tableFlip            Boolean  @default(false)
+  disableNoPerms       Boolean  @default(false)
+  disableEveryonePings Boolean  @default(false)
+  noCleverbot          Boolean  @default(true)
+  prefixes             String[]
+  announcementChannel  String?
+  announcementRole     String?
+
+  censorChannelExceptions String[]
+  censorRoleExceptions    String[]
+  censorUserExceptions    String[]
+  censorDeleteMessage     String
+  censorKickMessage       String
+  censorBanMessage        String
+
+  logIgnore String[]
+
+  customCommands GuildCustomCommand[]
+  modlogEntries  GuildModlogEntry[]
+  rolemes        GuildRoleme[]
+  votebans       GuildVoteban[]
+  warnings       GuildWarning[]
+  censors        GuildCensor[]
+  channels       GuildChannel[]
+  commands       GuildCommand[]
+  logs           GuildLog[]
+  autoresponses  GuildAutoresponse[]
+}
+
+model GuildCustomCommand {
+  guildId String
+  guild   Guild  @relation(fields: [guildId], references: [id])
+  name    String
+
+  author     String
+  authorizer String
+  content    String?
+  alias      String?
+  roles      String[]
+  hidden     Boolean  @default(false)
+  managed    Boolean  @default(false)
+
+  @@id([name, guildId])
+}
+
+model GuildModlogEntry {
+  guildId String
+  guild   Guild  @relation(fields: [guildId], references: [id])
+  id      Int    @default(autoincrement())
+
+  msgId  String
+  reason String
+  type   String
+  modId  String?
+  userId String
+
+  @@id([guildId, id])
+}
+
+model GuildRoleme {
+  guildId String
+  guild   Guild  @relation(fields: [guildId], references: [id])
+  id      Int    @default(autoincrement())
+
+  add           String[]
+  remove        String[]
+  channels      String[]
+  message       String
+  caseSensitive Boolean  @default(false)
+
+  @@id([guildId, id])
+}
+
+model GuildVoteban {
+  guildId String
+  guild   Guild   @relation(fields: [guildId], references: [id])
+  userId  String
+  voterId String
+  reason  String?
+
+  @@id([guildId, userId, voterId])
+}
+
+model GuildWarning {
+  guildId  String
+  guild    Guild  @relation(fields: [guildId], references: [id])
+  userId   String
+  warnings Int    @default(0)
+
+  @@id([guildId, userId])
+}
+
+model GuildCensor {
+  guildId String
+  guild   Guild  @relation(fields: [guildId], references: [id])
+  id      Int    @default(autoincrement())
+
+  regex         Boolean @default(false)
+  term          String
+  deleteMessage String?
+  kickMessage   String?
+  banMessage    String?
+  weight        Int     @default(0)
+
+  @@id([guildId, id])
+}
+
+model GuildChannel {
+  guildId   String
+  guild     Guild  @relation(fields: [guildId], references: [id])
+  channelId String
+
+  blacklisted Boolean @default(false)
+
+  @@id([guildId, channelId])
+}
+
+model GuildCommand {
+  guildId String
+  guild   Guild  @relation(fields: [guildId], references: [id])
+  name    String
+
+  disabled   Boolean @default(false)
+  permission Int?
+  roleName   String?
+
+  @@id([guildId, name])
+}
+
+model GuildLog {
+  guildId   String
+  guild     Guild  @relation(fields: [guildId], references: [id])
+  event     String
+  channelId String
+
+  @@id([guildId, event])
+}
+
+model GuildAutoresponse {
+  guildId String
+  guild   Guild  @relation(fields: [guildId], references: [id])
+  id      Int    @default(autoincrement())
+
+  executes   String
+  regex      Boolean @default(false)
+  term       String
+  everything Boolean @default(false)
+
+  @@id([guildId, id])
+}
