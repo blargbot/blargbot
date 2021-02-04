@@ -152,6 +152,35 @@ var flipTables = async function (msg, unflip) {
     }
 };
 
+const maxTime = 30 * 1000;
+const timeoutDuration = 60000 * 10; // 10 minutes
+const maxExecutions = 15;
+const commandUsage = {};
+const timedOut = {};
+async function exceededRatelimit(msg) {
+    if (timedOut[msg.author.id]) {
+        if (Date.now() < timedOut[msg.author.id]) {
+            return true;
+        } else {
+            delete timedOut[msg.author.id];
+        }
+    }
+
+    if (!commandUsage[msg.author.id]) {
+        commandUsage[msg.author.id] = [];
+    }
+    commandUsage[msg.author.id] = commandUsage[msg.author.id].filter(d => d >= Date.now() - maxTime);
+    commandUsage[msg.author.id].push(Date.now());
+
+    if (commandUsage[msg.author.id].length >= maxExecutions) {
+        timedOut[msg.author.id] = Date.now() + timeoutDuration;
+        await bu.send(msg, 'Sorry, you\'ve been running too many commands. I need a moment to catch up.');
+        return true;
+    }
+
+    return false;
+}
+
 var handleDiscordCommand = async function (channel, user, text, msg) {
     let words = bu.splitInput(text);
     if (words.length === 0) return;
@@ -188,6 +217,10 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
         }
 
         if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
+            if (await exceededRatelimit(msg)) {
+                console.command(outputLog, '[IGNORED]');
+                return;
+            }
             console.command(outputLog);
             let command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
@@ -221,6 +254,10 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             let _built = CommandManager.built[commandName];
             let { executable } = await bu.canExecuteCommand(msg, commandName);
             if (executable) {
+                if (await exceededRatelimit(msg)) {
+                    console.command(outputLog, '[IGNORED]');
+                    return;
+                }
                 try {
                     console.command(outputLog);
                     let timer = new Timer().start();
