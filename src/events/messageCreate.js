@@ -154,7 +154,7 @@ var flipTables = async function (msg, unflip) {
 
 const maxTime = 60 * 1000;
 const timeoutDuration = 60000 * 10; // 10 minutes
-const maxExecutions = 5;
+const maxExecutions = 40;
 const commandUsage = {};
 const timedOut = {};
 async function exceededRatelimit(msg) {
