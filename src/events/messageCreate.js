@@ -152,14 +152,15 @@ var flipTables = async function (msg, unflip) {
     }
 };
 
-const maxTime = 30 * 1000;
+const maxTime = 60 * 1000;
 const timeoutDuration = 60000 * 10; // 10 minutes
-const maxExecutions = 15;
+const maxExecutions = 40;
 const commandUsage = {};
 const timedOut = {};
 async function exceededRatelimit(msg) {
     if (timedOut[msg.author.id]) {
         if (Date.now() < timedOut[msg.author.id]) {
+            timedOut[msg.author.id] += 5000;
             return true;
         } else {
             delete timedOut[msg.author.id];
@@ -174,7 +175,7 @@ async function exceededRatelimit(msg) {
 
     if (commandUsage[msg.author.id].length >= maxExecutions) {
         timedOut[msg.author.id] = Date.now() + timeoutDuration;
-        await bu.send(msg, 'Sorry, you\'ve been running too many commands. I need a moment to catch up.');
+        await bu.send(msg, 'Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out.\n\nContinuing to spam commands will lengthen your timeout!');
         return true;
     }
 
