@@ -154,7 +154,7 @@ var flipTables = async function (msg, unflip) {
 
 const maxTime = 60 * 1000;
 const timeoutDuration = 60000 * 10; // 10 minutes
-const maxExecutions = 40;
+const maxExecutions = 5;
 const commandUsage = {};
 const timedOut = {};
 async function exceededRatelimit(msg) {
@@ -219,7 +219,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
 
         if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
             if (await exceededRatelimit(msg)) {
-                console.command(outputLog, '[IGNORED]');
+                console.command(outputLog, `[IGNORED ${Math.floor((timedOut[msg.author.id] - Date.now()) / 10) / 100}s]`);
                 return;
             }
             console.command(outputLog);
@@ -256,7 +256,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             let { executable } = await bu.canExecuteCommand(msg, commandName);
             if (executable) {
                 if (await exceededRatelimit(msg)) {
-                    console.command(outputLog, '[IGNORED]');
+                    console.command(outputLog, `[IGNORED ${Math.floor((timedOut[msg.author.id] - Date.now()) / 10) / 100}s]`);
                     return;
                 }
                 try {
