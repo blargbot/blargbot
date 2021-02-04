@@ -13,9 +13,10 @@ module.exports = class Database {
                 operatorsAliases: false,
                 host: config.postgres.host,
                 dialect: 'postgres',
-                logging: console.database
+                logging: console.database,
+                ...config.sequelize
             }
-        )
+        );
     }
 
     async authenticate() {
@@ -47,4 +48,4 @@ module.exports = class Database {
         }
         console.init('Database models loaded.');
     }
-}
+};

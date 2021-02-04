@@ -76,8 +76,8 @@ class DiscordClient extends Client {
             autoReconnect: true,
             allowedMentions: {
                 everyone: false,
-                roles: true,
-                users: true
+                roles: false,
+                users: false
             },
             getAllUsers: false,
             disableEvents: {
@@ -98,6 +98,7 @@ class DiscordClient extends Client {
                 'guildPresences',
                 'guildMessages',
                 'guildMessageReactions',
+                'guildEmojis',
                 'directMessages',
                 'directmessageReactions'
             ]
@@ -185,6 +186,7 @@ class DiscordClient extends Client {
 
         let count = 0;
         let failures = 0;
+        const promises = [];
         for (const guild of guilds) {
             if (process.env.CLUSTER_ID == 2) {
                 console.info('[%s] Performing interval on %s', nonce, guild.guildid);
@@ -206,7 +208,8 @@ class DiscordClient extends Client {
                 for (const channel of g.channels.values()) {
                     if (channel.type === 0) { c = channel; break; }
                 }
-                await bbEngine.runTag({
+
+                let promise = bbEngine.runTag({
                     msg: {
                         channel: c,
                         author: u,
@@ -221,15 +224,31 @@ class DiscordClient extends Client {
                     author: interval.author,
                     authorizer: interval.authorizer,
                     silent: true
+                }).then(() => {
+                    count++;
+                }).catch(err => {
+                    console.error('Issue with interval:', guild.guildid, err);
+                    failures++;
                 });
-                count++;
+
+                promises.push(Promise.race([promise, new Promise(res => {
+                    setTimeout(() => res(guild.guildid), 10000);
+                })]));
             } catch (err) {
                 console.error('Issue with interval:', guild.guildid, err);
                 failures++;
             }
         }
 
-        console.info('[%s] Intervals complete. %i success | %i fail', nonce, count, failures);
+        const resolutions = await Promise.all(promises);
+        console.log(resolutions);
+
+        let unresolved = resolutions.filter(r => !!r);
+
+        console.info('[%s] Intervals complete. %i success | %i fail | %i unresolved', nonce, count, failures, unresolved.length);
+        if (unresolved.length > 0) {
+            console.info('[%s] Unresolved in:\n%s', nonce, unresolved.map(m => '- ' + m).join('\n'));
+        }
     }
 
     async eval(msg, text, send = true) {
@@ -409,6 +428,15 @@ function getCPU() {
         });
     });
 }
+
+var lastReady = {};
+function getLastReady(shard) {
+    if (shard.status == 'ready')
+        return lastReady[shard.id] = new Date();
+
+    return lastReady[shard.id];
+}
+
 // shard status posting
 let shardStatusInterval = setInterval(async () => {
     let mem = process.memoryUsage();
@@ -427,7 +455,7 @@ let shardStatusInterval = setInterval(async () => {
             latency: s.latency,
             guilds: bot.guilds.filter(g => g.shard.id === s.id).length,
             cluster: clusterId,
-            time: Date.now()
+            time: getLastReady(s)
         }))
     });
 }, 10000);

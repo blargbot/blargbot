@@ -18,7 +18,7 @@ class TimerCommand extends BaseCommand {
         if (duration.asMilliseconds() == 0) {
             await bu.send(msg, 'Hey, you didn\'t give me a period of time to set the timer to!\nExample: `timer 1 day, two hours`');
         } else {
-            await r.table('events').insert({
+            await bu.events.insert({
                 type: 'timer',
                 source: msg.guild ? msg.guild.id : msg.author.id,
                 user: msg.author.id,
@@ -33,7 +33,12 @@ class TimerCommand extends BaseCommand {
     async event(args) {
         let duration = moment.duration(moment() - moment(args.starttime));
         duration.subtract(duration * 2);
-        bu.send(args.channel, `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set ${duration.humanize(true)} has gone off! *Bzzt!* :alarm_clock:`);
+        bu.send(args.channel, {
+            content: `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set ${duration.humanize(true)} has gone off! *Bzzt!* :alarm_clock:`,
+            allowedMentions: {
+                users: [args.user]
+            }
+        });
     };
 }
 

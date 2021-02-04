@@ -6,7 +6,10 @@ class SonicsaysCommand extends BaseCommand {
             name: 'sonicsays',
             category: bu.CommandType.IMAGE,
             usage: 'sonicsays <text>',
-            info: 'Sonic wants to share some words of wisdom.'
+            info: 'Sonic wants to share some words of wisdom.',
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -26,7 +29,7 @@ class SonicsaysCommand extends BaseCommand {
             text: words.slice(1).join(' ')
         });
 
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'sonicsays.png'
         });

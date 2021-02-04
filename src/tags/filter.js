@@ -39,7 +39,8 @@ module.exports =
             let i = 0;
 
             for (const item of array) {
-                if (processed[item]) continue;
+                let stringifiedItem = typeof item === 'object' ? JSON.stringify(item) : null;
+                if (processed[stringifiedItem || item]) continue;
                 if (await bbengine.safeLoopIteration(context)) {
                     return Builder.errors.maxSafeLoops(subtag, context);
                 };
@@ -50,8 +51,9 @@ module.exports =
                     if (context.state.return)
                         break;
                     if (res) {
-                        processed[item] = true;
-                        result.push(...array.filter(e => e === item));
+                        processed[stringifiedItem || item] = true;
+                        //If item 'e' is an object, it stringifies it for comparison. Otherwise it will always return false
+                        result.push(...array.filter(e => typeof e === 'object' ? JSON.stringify(e) === stringifiedItem : e === item));
                     }
                     if (i++ % 1000 === 0)
                         await this.sleep();

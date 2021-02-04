@@ -19,7 +19,7 @@ class DeletemsgCommand extends BaseCommand {
                 channel = msg.channel.id;
                 messages = words.slice(1);
             }
-            if (msg.channel.guild.members.get(bot.user.id).permission.json.manageMessages) {
+            if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageMessages) {
                 bot.deleteMessages(channel, messages);
             } else {
                 messages.forEach(m => {

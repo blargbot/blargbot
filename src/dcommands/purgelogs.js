@@ -40,7 +40,7 @@ The operation took:
 
     async event(args) {
         let tomorrow = moment(moment().format('YYYY-MM-DD')).add(1, 'd');
-        await r.table('events').insert({
+        await bu.events.insert({
             type: 'purgelogs',
             endtime: r.epochTime(tomorrow.unix())
         });

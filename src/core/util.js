@@ -22,8 +22,8 @@ bu.init = () => {
         password: config.db.password,
         user: config.db.user,
         port: config.db.port,
-        max: 50,
-        buffer: 5,
+        max: 8,
+        buffer: 4,
         timeoutError: 10000
     });
     bu.trello = new Trello(config.general.trellokey, config.general.trellotoken);

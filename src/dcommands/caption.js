@@ -22,14 +22,19 @@ class CaptionCommand extends BaseCommand {
             category: bu.CommandType.IMAGE,
             usage: 'caption [url] [flags]',
             info: 'Captions an image. If url isn\'t provided, you must give an attachment.',
-            flags: [{ flag: 't', word: 'top', desc: 'The top caption.' },
-            { flag: 'b', word: 'bottom', desc: 'The bottom caption.' },
-            {
-                flag: 'f',
-                word: 'font',
-                desc: 'The font to use (case insensitive). Use the command with the -l flag to view the available fonts. Defaults to impact.'
-            },
-            { flag: 'l', word: 'list', desc: 'Lists the available fonts.' }]
+            flags: [
+                { flag: 't', word: 'top', desc: 'The top caption.' },
+                { flag: 'b', word: 'bottom', desc: 'The bottom caption.' },
+                {
+                    flag: 'f',
+                    word: 'font',
+                    desc: 'The font to use (case insensitive). Use the command with the -l flag to view the available fonts. Defaults to impact.'
+                },
+                { flag: 'l', word: 'list', desc: 'Lists the available fonts.' }
+            ],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -70,7 +75,7 @@ class CaptionCommand extends BaseCommand {
             url,
             font
         });
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'caption.jpeg'
         });

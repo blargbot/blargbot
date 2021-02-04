@@ -1,7 +1,7 @@
 const ArgFactory = require('./ArgumentFactory'),
     bbEngine = require('../structures/bbtag/Engine'),
     Timer = require('./Timer'),
-    Permission = require('eris/lib/structures/Permission'),
+    { Permission } = require('eris'),
     Context = require('./bbtag/Context'),
     { SubTag, BBTag } = require('./bbtag/Tag');
 
@@ -289,7 +289,7 @@ TagBuilder.util = {
     },
     getPerms(context) {
         return (context.guild.members.get(context.authorizer) ||
-            { permission: new Permission(0, 0) }).permission;
+            { permissions: new Permission(0, 0) }).permissions;
     }
 };
 

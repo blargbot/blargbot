@@ -29,7 +29,7 @@ class ClintCommand extends BaseCommand {
 
         let buf = await bu.blargbotApi('clint', { image: url });
 
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buf,
             name: 'clint.png'
         });

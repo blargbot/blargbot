@@ -44,7 +44,7 @@ class CahCommand extends BaseCommand {
         if (cont) {
             doit(msg, words);
         } else
-            bu.send(msg, config.general.nsfwMessage);
+            await bu.send(msg, config.general.nsfwMessage);
     }
 }
 

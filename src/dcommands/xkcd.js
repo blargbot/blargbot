@@ -37,7 +37,7 @@ class XkcdCommand extends BaseCommand {
     constructor() {
         super({
             name: 'xkcd',
-            category: bu.CommandType.IMAGE,
+            category: bu.CommandType.GENERAL,
             usage: 'xkcd [number]',
             info: 'Gets an xkcd comic. If a number is not specified, gets a random one.'
         });

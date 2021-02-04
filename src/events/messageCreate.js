@@ -60,7 +60,7 @@ async function handleUserMessage(msg, storedGuild) {
     };
     prefixes.push(config.discord.defaultPrefix, 'blargbot');
     prefixes.sort((a, b) => {
-        return a.length < b.length;
+        return b.length - a.length; //Sort descending
     });
     if (await handleBlacklist(msg, storedGuild)) return;
 
@@ -241,7 +241,7 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
 };
 var executeCommand = async function (commandName, msg, words, text) {
     try {
-        await CommandManager.built[commandName].execute(msg, words, text);
+        await CommandManager.built[commandName]._execute(msg, words, text);
     } catch (err) {
         console.error(err);
         if (err.code !== undefined) {
@@ -571,7 +571,7 @@ function query(input) {
             else {
                 let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
                 if (content)
-                    res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
+                    res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2').replace(/<br>/gm, '\n'));
                 else res('Hi, I\'m blargbot! It\'s nice to meet you.');
             }
         });
@@ -583,7 +583,7 @@ async function handleCleverbot(msg) {
     var username = msg.channel.guild.members.get(bot.user.id).nick ?
         msg.channel.guild.members.get(bot.user.id).nick :
         bot.user.username;
-    var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
+    var msgToSend = msg.cleanContent.replace(new RegExp('@' + '\u200b' + username + ',?'), '').trim();
     bu.cleverbotStats++;
     updateStats();
     try {
