@@ -9,6 +9,7 @@
 
 const Builder = require('../structures/TagBuilder');
 const url = require('url');
+const { parse } = require('../newbu');
 
 const fields = [
     {
@@ -41,7 +42,7 @@ const fields = [
         error: (e, v) => v == null
             ? 'Invalid color'
             : false,
-        parse: bu.parseColor,
+        parse: parse.color,
         setter: (e, v) => e.color = v
     },
     {
@@ -51,7 +52,7 @@ const fields = [
             : !v.isValid()
                 ? 'Invalid timestamp'
                 : false,
-        parse: v => bu.parseTime(v),
+        parse: parse.time,
         setter: (e, v) => e.timestamp = v
     },
     {
@@ -137,10 +138,10 @@ const fields = [
         desc: 'Must come after a `fields.name`',
         error: (e, v) => getObj(e, 'fields', []).length == 0
             ? 'Field name not specified'
-            : !bu.isBoolean(v)
+            : typeof v !== 'boolean'
                 ? 'Inline must be a boolean'
                 : false,
-        parse: bu.parseBoolean,
+        parse: parse.boolean,
         setter: (e, v) => lastElem(getObj(e, 'fields', [])).inline = v
     }
 ];

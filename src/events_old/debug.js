@@ -1,3 +1,4 @@
+@@ -1, 15 + 0, 0 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:03
@@ -13,3 +14,4 @@ bot.on('debug', function (message, id) {
     if (debug)
         console.debug(message);
 });
+No newline at end of file
