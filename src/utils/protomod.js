@@ -2,11 +2,11 @@
 
 const { Message, User, RequestHandler } = require('eris');
 
-Object.defineProperty(Message.prototype, "guild", {
-    get: function guild() {
-        return this.channel.guild;
-    }
-});
+// Object.defineProperty(Message.prototype, "guild", {
+//     get: function guild() {
+//         return this.channel.guild;
+//     }
+// });
 
 Object.defineProperty(User.prototype, "toString", {
     value: function tostring() {

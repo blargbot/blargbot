@@ -6,5 +6,5 @@
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
-
-bu.Metrics = require('../core/Metrics');
+const { Metrics } = require('../core/Metrics');
+bu.Metrics = new Metrics();

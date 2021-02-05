@@ -4,13 +4,13 @@ const newbutils = require('../newbu');
 let id;
 
 class SnippetCommand extends BaseCommand {
-    constructor() {
+    constructor(cluster) {
         super({
             name: 'snippet',
             category: newbutils.commandTypes.GENERAL,
             usage: 'snippet <submit <code> <flags> | approve <id> | reject <id> <reason>>',
             info: 'submit a snippet and stuff',
-            onlyOn: config.discord.guilds.home,
+            onlyOn: cluster.config.discord.guilds.home,
             flags: [{ flag: 't', word: 'title', desc: 'The title of the snippet' },
             {
                 flag: 'd',

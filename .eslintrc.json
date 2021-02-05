@@ -46,28 +46,8 @@
         ],
         "no-undef": 1,
         "no-global-assign": 1,
+        "no-console": "warn",
         "comma-dangle": "warn",
         "no-trailing-spaces": "warn"
-    },
-    "globals": {
-        "bot": false,
-        "config": false,
-        "bbtag": false,
-        "bu": false,
-        "r": false,
-        "irc": false,
-        "spawner": false,
-        "TagManager": false,
-        "CommandManager": false,
-        "cluster": false,
-        "_client": false,
-        "_constants": false,
-        "_config": false,
-        "_core": false,
-        "_discord": false,
-        "workers": false,
-        "UtilManager": false,
-        "EventManager": false,
-        "wss": false
     }
 }

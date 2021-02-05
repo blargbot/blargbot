@@ -24,8 +24,8 @@ async function reloadStrings() {
 }
 let titan;
 let pg;
-setInterval(reloadStrings, 60 * 60 * 1000);
-reloadStrings();
+// setInterval(reloadStrings, 60 * 60 * 1000);
+// reloadStrings();
 
 function pad(value, length) {
     return (value.toString().length < length) ? pad(' ' + value, length) : value;

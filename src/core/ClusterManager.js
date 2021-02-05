@@ -1,4 +1,4 @@
-const Shard = require('../structures/Shard');
+const ClusterProcess = require('../structures/ClusterProcess');
 const EventEmitter = require('eventemitter3');
 const moment = require('moment');
 const Timer = require('../structures/Timer');
@@ -123,7 +123,7 @@ class ClusterManager extends EventEmitter {
 
     spawn(id, set = true, file) {
         return new Promise((resolve, reject) => {
-            const shard = new Shard(id, this, file);
+            const shard = new ClusterProcess(id, this, file);
             if (set) {
                 if (this.shards.get(id) !== undefined) {
                     this.shards.get(id).kill();

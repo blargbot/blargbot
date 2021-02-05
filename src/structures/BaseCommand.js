@@ -2,19 +2,37 @@ const moment = require('moment-timezone');
 const newbutils = require('../newbu');
 
 class BaseCommand {
-    constructor(params = {}) {
-        this.name = params.name || '';
-        this.category = params.category || newbutils.commandTypes.GENERAL;
-        this.hidden = params.hidden || false;
-        this.usage = params.usage || '';
-        this.info = params.info || '';
-        this.aliases = params.aliases || [];
-        this.onlyOn = params.onlyOn || undefined;
-        this.flags = params.flags || undefined;
-        this.cannotDisable = params.cannotDisable || false;
-        this.userRatelimit = params.userRatelimit || false;
-        this.channelRatelimit = params.channelRatelimit || false;
-        this.cooldown = params.cooldown || false;
+    /**
+     * @param {import('../cluster').Cluster} cluster
+     * @param {object} params
+     */
+    constructor(cluster, {
+        name,
+        category = newbutils.commandTypes.GENERAL,
+        hidden = false,
+        usage = '',
+        info = '',
+        aliases = [],
+        onlyOn = undefined,
+        flags = undefined,
+        cannotDisable = false,
+        userRatelimit = false,
+        channelRatelimit = false,
+        cooldown = false
+    }) {
+        this.cluster = cluster;
+        this.name = name;
+        this.category = category;
+        this.hidden = hidden;
+        this.usage = usage;
+        this.info = info;
+        this.aliases = aliases;
+        this.onlyOn = onlyOn;
+        this.flags = flags;
+        this.cannotDisable = cannotDisable;
+        this.userRatelimit = userRatelimit;
+        this.channelRatelimit = channelRatelimit;
+        this.cooldown = cooldown;
 
         this.users = {};
         this.channels = {};
@@ -41,7 +59,7 @@ class BaseCommand {
         if (this.userRatelimit) {
             const times = this.checkBucketRatelimit(this.users, msg.author.id);
             if (times === 1) {
-                return await bu.send(msg, 'Sorry, you\'re already running this command! Please wait and try again.');
+                return await this.cluster.send(msg, 'Sorry, you\'re already running this command! Please wait and try again.');
             } else if (times > 1) {
                 return;
             }
@@ -49,7 +67,7 @@ class BaseCommand {
         if (this.channelRatelimit) {
             const times = this.checkBucketRatelimit(this.channels, msg.channel.id);
             if (times === 1) {
-                return await bu.send(msg, 'Sorry, this command is already running in this channel! Please wait and try again.');
+                return await this.cluster.send(msg, 'Sorry, this command is already running in this channel! Please wait and try again.');
             } else if (times > 1) {
                 return;
             }
@@ -65,9 +83,9 @@ class BaseCommand {
                     if (times === 1) {
                         const diffText = Math.round((this.cooldown - diff) / 100) / 10;
                         if (diffText < 0) {
-                            return await bu.send(msg, `Sorry, you ran this command too recently! Please wait and try again.`);
+                            return await this.cluster.send(msg, `Sorry, you ran this command too recently! Please wait and try again.`);
                         }
-                        return await bu.send(msg, `Sorry, you ran this command too recently! Please wait ${diffText}s and try again.`);
+                        return await this.cluster.send(msg, `Sorry, you ran this command too recently! Please wait ${diffText}s and try again.`);
                     } else if (times > 1) {
                         return;
                     }
@@ -107,7 +125,7 @@ class BaseCommand {
     }
 
     execute(msg, words, text) {
-
+        throw new Error('Not implemented');
     }
 
     static stringify(embed) {
@@ -130,5 +148,6 @@ class BaseCommand {
         return result;
     }
 }
+
 
 module.exports = BaseCommand;

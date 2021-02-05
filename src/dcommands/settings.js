@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const { commandTypes, defaultStaff } = require('../newbu');
 
-bu.settings = {
+const settings = {
     makelogs: {
         name: 'Make Chatlogs',
         desc: `Whether to record chat logs or not.`,

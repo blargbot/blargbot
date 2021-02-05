@@ -17,7 +17,7 @@ class TagBuilder {
     static AutoTag(name) { return new TagBuilder().withCategory(0).withName(name); }
 
     constructor(init) {
-        this.properties = {};
+        this.properties = { aliases: [] };
         this.execute = {
             /** @type {number[]} */
             resolveArgs: null,

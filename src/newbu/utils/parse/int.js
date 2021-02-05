@@ -1,8 +1,9 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.int = void 0;
 function int(s, radix = 10) {
-    if (typeof s != 'string')
-        return parseInt(s, radix);
-    //This replaces all , or . which have a , or . after them with nothing, then the remaining , with .
+    if (typeof s === 'number')
+        return s;
     return parseInt(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'), radix);
 }
-
-module.exports = { int };
+exports.int = int;

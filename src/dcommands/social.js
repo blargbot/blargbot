@@ -2,9 +2,6 @@ const BaseCommand = require('../structures/BaseCommand');
 const Wolken = require('wolken');
 const newbutils = require('../newbu');
 
-const wolken = new Wolken(config.wolke, 'Wolke', 'blargbot/6.0.0');
-
-
 const actions = {
     awoo: {
         type: 1,
@@ -153,25 +150,29 @@ let usage = {
     2: '[user]'
 };
 
-async function request(type) {
-    let res = await wolken.getRandom({ type, allowNSFW: false, filetype: 'gif' });
-    return res.url;
-}
 
 for (const key in actions) {
     let action = actions[key];
     let command = class SocialCommand extends BaseCommand {
-        constructor() {
+        constructor(cluster) {
             super({
                 name: key,
                 category: newbutils.commandTypes.SOCIAL,
                 usage: key + ' ' + usage[action.type],
                 info: action.desc
             });
+
+            this.wolken = new Wolken(cluster.config.wolke, 'Wolke', 'blargbot/6.0.0')
         }
 
         static get name() {
             return key;
+        }
+
+
+        async request(type) {
+            let res = await this.wolken.getRandom({ type, allowNSFW: false, filetype: 'gif' });
+            return res.url;
         }
 
         async execute(msg, words, text) {

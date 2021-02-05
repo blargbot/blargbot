@@ -1,11 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const Airtable = require('airtable');
-Airtable.configure({
-    endpointUrl: 'https://api.airtable.com',
-    apiKey: config.airtable.key
-});
-const at = Airtable.base(config.airtable.base);
 const newbutils = require('../newbu');
 
 let types = {
@@ -16,7 +11,7 @@ let types = {
 };
 
 class FeedbackCommand extends BaseCommand {
-    constructor() {
+    constructor(cluster) {
         super({
             name: 'feedback',
             aliases: ['suggest', 'report'],
@@ -32,10 +27,15 @@ class FeedbackCommand extends BaseCommand {
                 { flag: 'e', word: 'edit', desc: 'Edits an existing suggestion with the provided case number' }
             ]
         });
+
+        this.airtable = new Airtable({
+            endpointUrl: 'https://api.airtable.com',
+            apiKey: cluster.config.airtable.key
+        }).base(cluster.config.airtable.base);
     }
 
     async find(table, id) {
-        let data = await at(table).select({
+        let data = await this.airtable(table).select({
             maxRecords: 1,
             filterByFormula: `{ID} = '${id}'`
         }).firstPage();
@@ -142,7 +142,7 @@ class FeedbackCommand extends BaseCommand {
                     let data = await this.find('Suggestions', caseNum);
                     if (data) {
                         console.log(data);
-                        let author = await at('Suggestors').find(data.fields.Author[0]);
+                        let author = await this.airtable('Suggestors').find(data.fields.Author[0]);
                         console.log(author);
                         if (author.fields.ID === msg.author.id) {
                             let payload = {
@@ -151,7 +151,7 @@ class FeedbackCommand extends BaseCommand {
                                 Message: msg.id, Channel: msg.channel.id, Edits: data.fields.Edited + 1,
                                 'Last Edited': moment().valueOf()
                             };
-                            await at('Suggestions').update(data.id, payload);
+                            await this.airtable('Suggestions').update(data.id, payload);
                             await bu.send(msg, 'Your case has been updated.');
                         } else return bu.send(msg, 'You are not the author of this case.');
                     } else return bu.send(msg, 'There was no case with the provided ID.');
@@ -159,13 +159,13 @@ class FeedbackCommand extends BaseCommand {
                     let username = msg.author.username + '#' + msg.author.discriminator;
                     let u = await this.find('Suggestors', msg.author.id);
                     if (!u) {
-                        u = await at('Suggestors').create({
+                        u = await this.airtable('Suggestors').create({
                             ID: msg.author.id,
                             Username: username
                         }, { typecast: true });
                     } else {
                         if (u.fields.Username !== username)
-                            await at('Suggestors').update(u.id, {
+                            await this.airtable('Suggestors').update(u.id, {
                                 Username: username
                             });
                     }
@@ -176,7 +176,7 @@ class FeedbackCommand extends BaseCommand {
                         Description: input.d ? input.d.join(' ') : undefined,
                         Message: msg.id, Channel: msg.channel.id, Author: [u.id]
                     };
-                    let data = await at('Suggestions').create(payload);
+                    let data = await this.airtable('Suggestions').create(payload);
 
                     let url = 'https://blargbot.xyz/feedback/' + data.id;
 

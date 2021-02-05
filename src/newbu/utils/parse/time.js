@@ -1,31 +1,37 @@
-const moment = require('moment-timezone');
-
-function time(text, format = undefined, timezone = 'Etc/UTC') {
-    let now = moment.tz(timezone);
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.time = void 0;
+const moment_timezone_1 = __importDefault(require("moment-timezone"));
+function time(text, format, timezone = 'Etc/UTC') {
+    let now = moment_timezone_1.default.tz(timezone);
     if (!text)
         return now;
-
     switch (text.toLowerCase()) {
         case 'now': return now;
         case 'today': return now.startOf('day');
         case 'tomorrow': return now.startOf('day').add(1, 'day');
         case 'yesterday': return now.startOf('day').add(-1, 'days');
     }
-
     let match = text.match(/^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i), sign = 1;
     if (match == null)
         match = text.match(/^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i), sign = -1;
     if (match != null) {
-        let magnitude = sign * parseFloat(match[1]),
-            quantity = prettyTimeMagnitudes[match[2].toLowerCase()];
-        if (quantity == null)
+        let magnitude = sign * parseFloat(match[1]);
+        let key = match[2].toLowerCase();
+        if (!(key in prettyTimeMagnitudes))
             return 'Invalid quantity ' + match[2];
+        let quantity = prettyTimeMagnitudes[key];
         return now.add(magnitude, quantity);
     }
-
-    return moment.tz(text, format, timezone).utcOffset(0);
+    let tz = format === undefined
+        ? moment_timezone_1.default.tz(text, timezone)
+        : moment_timezone_1.default.tz(text, format, timezone);
+    return tz.utcOffset(0);
 }
-
+exports.time = time;
 const prettyTimeMagnitudes = {
     //defaults
     year: 'year', years: 'years', y: 'y',
@@ -40,5 +46,3 @@ const prettyTimeMagnitudes = {
     //Custom
     mins: 'minutes', min: 'minute'
 };
-
-module.exports = { time };

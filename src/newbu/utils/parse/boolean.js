@@ -1,19 +1,18 @@
-function boolean(value, defValue = null, includeNumbers = true) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.boolean = void 0;
+function boolean(value, defValue, includeNumbers = true) {
     if (typeof value == 'boolean')
         return value;
-
     if (includeNumbers && typeof value == 'number')
         return value !== 0;
-
     if (typeof value != 'string')
         return defValue;
-
     if (includeNumbers) {
         let asNum = parseFloat(value);
         if (!isNaN(asNum))
             return asNum !== 0;
     }
-
     switch (value.toLowerCase()) {
         case 'true':
         case 't':
@@ -29,5 +28,4 @@ function boolean(value, defValue = null, includeNumbers = true) {
             return defValue;
     }
 }
-
-module.exports = { boolean };
+exports.boolean = boolean;

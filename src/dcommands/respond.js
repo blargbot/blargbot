@@ -1,18 +1,18 @@
 const BaseCommand = require('../structures/BaseCommand');
 const Airtable = require('airtable');
-Airtable.configure({
-    endpointUrl: 'https://api.airtable.com',
-    apiKey: config.airtable.key
-});
-const at = Airtable.base(config.airtable.base);
 const newbutils = require('../newbu');
 
 class RespondCommand extends BaseCommand {
-    constructor() {
+    constructor(cluster) {
         super({
             name: 'respond',
             category: newbutils.commandTypes.CAT
         });
+
+        this.airtable = new Airtable({
+            endpointUrl: 'https://api.airtable.com',
+            apiKey: cluster.config.airtable.key
+        }).base(cluster.config.airtable.base);
     }
 
     async execute(msg, words, text) {
@@ -20,19 +20,19 @@ class RespondCommand extends BaseCommand {
         if (support.includes(msg.author.id)) {
             if (words.length >= 3) {
                 try {
-                    let suggestion = await at('Suggestions').select({
+                    let suggestion = await this.airtable('Suggestions').select({
                         maxRecords: 1,
                         filterByFormula: '{ID} = \'' + words[1] + '\''
                     }).firstPage();
                     suggestion = suggestion[0];
                     console.log(suggestion);
 
-                    let author = await at('Suggestors').find(suggestion.fields.Author[0]);
+                    let author = await this.airtable('Suggestors').find(suggestion.fields.Author[0]);
 
                     let response = words.slice(2).join(' ');
                     let url = 'https://blargbot.xyz/feedback/' + suggestion.id;
 
-                    await at('Suggestions').update(suggestion.id, {
+                    await this.airtable('Suggestions').update(suggestion.id, {
                         Notes: `${response} (${msg.author.username}#${msg.author.discriminator})` + (suggestion.fields.Note ? '\n\n' + suggestion.fields.Note : '')
                     });
                     let message = `**Hi, <@${author.fields.ID}>!** You recently made this suggestion:
