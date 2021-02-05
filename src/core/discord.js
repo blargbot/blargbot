@@ -429,7 +429,7 @@ function getTotalCpuTime() {
 function getCPU() {
     const totalCpuTime = getTotalCpuTime();
     const cpuUsage = process.cpuUsage();
-    const cpuTime = (cpuUsage.user) / 1000;
+    const cpuTime = (cpuUsage.user + cpuUsage.system) / 1000;
 
     const totalDiff = totalCpuTime - (lastTotalCpuTime || 0);
     const diff = cpuTime - (lastCpuTime || 0);
