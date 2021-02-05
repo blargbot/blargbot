@@ -206,6 +206,7 @@ function updateCluster(s) {
         setProperty(container, clusters[s.id], 'Guilds: ', 'guilds');
         setProperty(container, clusters[s.id], 'Memory: ', 'memory');
         setProperty(container, clusters[s.id], 'CPU: ', 'cpu');
+        setProperty(container, clusters[s.id], 'Old CPU: ', 'oldCpu');
         setProperty(container, clusters[s.id], 'Uptime: ', 'uptime');
         setProperty(container, clusters[s.id], 'Last Update: ', 'lastResponse');
         setProperty(container, clusters[s.id], 'Shards: ', 'shards');
@@ -217,11 +218,16 @@ function updateCluster(s) {
     let c = clusters[s.id].components;
     clusters[s.id].element.className = 'cluster ' + clusters[s.id].status;
 
+    console.log(clusters[s.id]);
+
     c.guilds.innerText = clusters[s.id].guilds;
     c.memory.innerText = clusters[s.id].rss ? formatBytes(clusters[s.id].rss) : 'NaN';
     if (typeof clusters[s.id].cpu === 'number')
      clusters[s.id].cpu = Math.round(clusters[s.id].cpu * 10) / 10;
+    if (typeof clusters[s.id].oldCpu === 'number')
+     clusters[s.id].oldCpu = Math.round(clusters[s.id].oldCpu * 10) / 10;
     c.cpu.innerText = (clusters[s.id].cpu || 'NaN') + '%';
+    c.oldCpu.innerText = (clusters[s.id].oldCpu || 'NaN') + '%';
     c.shards.innerText = clusters[s.id].shardCount;
     c.uptime.innerText = clusters[s.id].readyTime === 0 ? 'Starting...' : moment.duration(moment() - clusters[s.id].readyTime).toISOString();
     c.lastResponse.innerText = moment(clusters[s.id].time).format('LTS');
@@ -287,6 +293,7 @@ ws.onmessage = event => {
     let data = JSON.parse(event.data);
     switch (data.code) {
         case 'shard':
+        console.log(data.data);
             updateCluster(data.data);
             break;
     }

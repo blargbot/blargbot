@@ -20,6 +20,7 @@ const seqErrors = require('sequelize/lib/errors');
 const { CronJob } = require('cron');
 const bbEngine = require('../structures/bbtag/Engine');
 const gameSwitcher = require('./gameSwitcher');
+const os = require('os');
 
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID,
@@ -418,8 +419,28 @@ process.on('message', async msg => {
     }
 });
 
-const usage = require('usage');
+let lastTotalCpuTime;
+let lastCpuTime;
+function getTotalCpuTime() {
+  const cpus = os.cpus();
+  return cpus.reduce((acc, cur) => acc + (cur.times.user + cur.times.nice + cur.times.sys + cur.times.idle + cur.times.irq), 0) / cpus.length;
+}
+
 function getCPU() {
+    const totalCpuTime = getTotalCpuTime();
+    const cpuUsage = process.cpuUsage();
+    const cpuTime = (cpuUsage.user) / 1000;
+
+    const totalDiff = totalCpuTime - (lastTotalCpuTime || 0);
+    const diff = cpuTime - (lastCpuTime || 0);
+    lastTotalCpuTime = totalCpuTime;
+    lastCpuTime = cpuTime;
+
+    return diff / totalDiff * 100;
+}
+
+const usage = require('usage');
+function getOldCPU() {
     return new Promise((res, rej) => {
         let pid = process.pid;
         usage.lookup(pid, { keepHistory: true }, function (err, result) {
@@ -447,7 +468,8 @@ let shardStatusInterval = setInterval(async () => {
         readyTime: bot.startTime,
         guilds: bot.guilds.size,
         rss: mem.rss,
-        cpu: await getCPU(),
+        cpu: getCPU(),
+        oldCpu: await getOldCPU(),
         shardCount: parseInt(process.env.SHARDS_COUNT),
         shards: bot.shards.map(s => ({
             id: s.id,
