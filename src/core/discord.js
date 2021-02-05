@@ -420,7 +420,8 @@ process.on('message', async msg => {
 });
 
 let lastTotalCpuTime;
-let lastCpuTime;
+let lastUserCpuTime;
+let lastSystemCpuTime;
 function getTotalCpuTime() {
   const cpus = os.cpus();
   return cpus.reduce((acc, cur) => acc + (cur.times.user + cur.times.nice + cur.times.sys + cur.times.idle + cur.times.irq), 0) / cpus.length;
@@ -429,14 +430,20 @@ function getTotalCpuTime() {
 function getCPU() {
     const totalCpuTime = getTotalCpuTime();
     const cpuUsage = process.cpuUsage();
-    const cpuTime = (cpuUsage.user + cpuUsage.system) / 1000;
+    const userTime = cpuUsage.user / 1000;
+    const systemTime = cpuUsage.system / 1000;
 
     const totalDiff = totalCpuTime - (lastTotalCpuTime || 0);
-    const diff = cpuTime - (lastCpuTime || 0);
+    const userDiff = userTime - (lastUserCpuTime || 0);
+    const systemDiff = systemTime - (lastSystemCpuTime || 0);
     lastTotalCpuTime = totalCpuTime;
-    lastCpuTime = cpuTime;
+    lastUserCpuTime = userTime;
+    lastSystemCpuTime = systemTime;
 
-    return diff / totalDiff * 100;
+    return {
+        userCpu: userDiff / totalDiff * 100,
+        systemCpu: systemDiff / totalDiff * 100
+    };
 }
 
 const usage = require('usage');
@@ -468,8 +475,7 @@ let shardStatusInterval = setInterval(async () => {
         readyTime: bot.startTime,
         guilds: bot.guilds.size,
         rss: mem.rss,
-        cpu: getCPU(),
-        oldCpu: await getOldCPU(),
+        ...getCPU(),
         shardCount: parseInt(process.env.SHARDS_COUNT),
         shards: bot.shards.map(s => ({
             id: s.id,

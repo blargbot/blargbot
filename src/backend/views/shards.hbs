@@ -205,8 +205,8 @@ function updateCluster(s) {
 
         setProperty(container, clusters[s.id], 'Guilds: ', 'guilds');
         setProperty(container, clusters[s.id], 'Memory: ', 'memory');
-        setProperty(container, clusters[s.id], 'CPU: ', 'cpu');
-        setProperty(container, clusters[s.id], 'Old CPU: ', 'oldCpu');
+        setProperty(container, clusters[s.id], 'User CPU: ', 'userCpu');
+        setProperty(container, clusters[s.id], 'System CPU: ', 'systemCpu');
         setProperty(container, clusters[s.id], 'Uptime: ', 'uptime');
         setProperty(container, clusters[s.id], 'Last Update: ', 'lastResponse');
         setProperty(container, clusters[s.id], 'Shards: ', 'shards');
@@ -222,12 +222,12 @@ function updateCluster(s) {
 
     c.guilds.innerText = clusters[s.id].guilds;
     c.memory.innerText = clusters[s.id].rss ? formatBytes(clusters[s.id].rss) : 'NaN';
-    if (typeof clusters[s.id].cpu === 'number')
-     clusters[s.id].cpu = Math.round(clusters[s.id].cpu * 10) / 10;
-    if (typeof clusters[s.id].oldCpu === 'number')
-     clusters[s.id].oldCpu = Math.round(clusters[s.id].oldCpu * 10) / 10;
-    c.cpu.innerText = (clusters[s.id].cpu || 'NaN') + '%';
-    c.oldCpu.innerText = (clusters[s.id].oldCpu || 'NaN') + '%';
+    if (typeof clusters[s.id].userCpu === 'number')
+     clusters[s.id].userCpu = Math.round(clusters[s.id].userCpu * 10) / 10;
+    if (typeof clusters[s.id].systemCpu === 'number')
+     clusters[s.id].systemCpu = Math.round(clusters[s.id].systemCpu * 10) / 10;
+    c.userCpu.innerText = (!isNaN(clusters[s.id].userCpu) ? clusters[s.id].userCpu : 'NaN') + '%';
+    c.systemCpu.innerText = (!isNaN(clusters[s.id].systemCpu) ? clusters[s.id].systemCpu : 'NaN') + '%';
     c.shards.innerText = clusters[s.id].shardCount;
     c.uptime.innerText = clusters[s.id].readyTime === 0 ? 'Starting...' : moment.duration(moment() - clusters[s.id].readyTime).toISOString();
     c.lastResponse.innerText = moment(clusters[s.id].time).format('LTS');
