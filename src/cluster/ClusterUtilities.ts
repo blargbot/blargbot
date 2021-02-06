@@ -10,7 +10,6 @@ import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
 import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
-import { TypePredicate } from 'typescript';
 
 interface CanExecuteDiscordCommandOptions {
     storedGuild?: StoredGuild,

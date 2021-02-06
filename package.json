@@ -91,8 +91,9 @@
     },
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "check": "tsc --noemit",
-        "build": "tsc"
+        "check": "eslint \"**/*.ts\" && tsc --noemit",
+        "build": "eslint \"**/*.ts\" && tsc",
+        "lint": "eslint \"**/*.ts\" -o ./lint.txt -f compact"
     },
     "repository": {
         "type": "git",

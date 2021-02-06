@@ -16,7 +16,7 @@ export class ArtCommand extends BaseDCommand {
         });
     }
 
-    async execute(message: Message<TextableChannel>, words: string[], text: string) {
+    async execute(message: Message<TextableChannel>, words: string[]) {
         let input = parse.flags(this.flags, words);
         let url;
         if (message.attachments.length > 0) {

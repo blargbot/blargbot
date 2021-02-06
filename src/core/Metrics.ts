@@ -17,7 +17,7 @@ export class Metrics {
     public readonly cleverbotStats: Prometheus.Counter;
 
     get aggregated() {
-        let c = this.registryCache.filter(m => true);
+        let c = this.registryCache.filter(() => true);
         c.unshift(Prometheus.register.getMetricsAsJSON());
 
         return this.aggregate(c);

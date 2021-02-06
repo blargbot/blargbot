@@ -1,4 +1,4 @@
-import { EmbedField, EmbedOptions, Guild, Member, User } from "eris";
+import { EmbedField, EmbedOptions, Guild, User } from "eris";
 import { Cluster } from "../cluster";
 import { humanize, ModerationType } from "../newbu";
 

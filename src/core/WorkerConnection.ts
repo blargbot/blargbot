@@ -4,6 +4,8 @@ import { Snowflake } from 'catflake';
 import { snowflake } from '../newbu';
 import { Timer } from '../structures/Timer';
 
+export type WorkerMessageHandler = (message: { id: Snowflake, data: JToken }) => void;
+
 export class WorkerConnection extends EventEmitter {
     readonly #coreEmit: (type: string, id: Snowflake, data: JToken) => boolean;
     readonly file: string;
@@ -51,8 +53,8 @@ export class WorkerConnection extends EventEmitter {
 
         this.#process.on('exit', (code, signal) => this.#coreEmit('exit', snowflake.create(), { code, signal }))
         this.#process.on('close', (code, signal) => this.#coreEmit('close', snowflake.create(), { code, signal }))
-        this.#process.on('disconnect', () => this.#coreEmit('disconnect', snowflake.create(), 'Child was disconnected'));
-        this.#process.on('kill', (code) => this.#coreEmit('kill', snowflake.create(), 'Child was killed'));
+        this.#process.on('disconnect', () => this.#coreEmit('disconnect', snowflake.create(), null));
+        this.#process.on('kill', (code) => this.#coreEmit('kill', snowflake.create(), code));
         this.#process.on('error', (error) => this.#coreEmit('error', snowflake.create(), { ...error }));
 
         try {
@@ -68,6 +70,26 @@ export class WorkerConnection extends EventEmitter {
             this.logger.error(`${this.worker} worker (ID: ${this.id}) failed to start: ${err?.stack ?? err}`);
             throw err;
         }
+    }
+
+    on(event: string, handler: WorkerMessageHandler) {
+        return super.on(event, handler);
+    }
+
+    once(event: string, handler: WorkerMessageHandler) {
+        return super.once(event, handler);
+    }
+
+    addListener(event: string, handler: WorkerMessageHandler) {
+        return super.addListener(event, handler);
+    }
+
+    off(event: string, handler: WorkerMessageHandler) {
+        return super.off(event, handler);
+    }
+
+    removeListener(event: string, handler: WorkerMessageHandler) {
+        return super.removeListener(event, handler);
     }
 
     kill(code: NodeJS.Signals | number = 'SIGTERM') {

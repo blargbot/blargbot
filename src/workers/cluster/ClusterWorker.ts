@@ -1,9 +1,7 @@
 import { Cluster } from "../../cluster";
-import { Sender } from "../../structures/Sender";
 import { CommandHandler } from "./CommandHandler";
-import { Options, ResultObject } from 'usage';
 import { BaseWorker } from "../../core/BaseWorker";
-import { snowflake } from "../../newbu";
+import { cpuLoad, snowflake } from "../../newbu";
 
 export class ClusterWorker extends BaseWorker {
     public readonly cluster: Cluster;
@@ -40,20 +38,9 @@ export class ClusterWorker extends BaseWorker {
         setInterval(async () => {
             this.send('shardStats', snowflake.create(), {
                 ...this.cluster.stats.getCurrent(),
+                ...cpuLoad(),
                 rss: this.memoryUsage.rss,
-                cpu: (await lookupAsync(this.id, { keepHistory: true }))?.cpu
             });
         }, 10000);
-    }
-}
-
-async function lookupAsync(pid: number, options?: Options) {
-    try {
-        const usage = await import('usage');
-        return await new Promise<ResultObject | null>(resolve =>
-            usage.lookup(pid, options ?? { keepHistory: false }, (err, data) =>
-                err ? resolve(null) : resolve(data)))
-    } catch {
-        return null;
     }
 }

@@ -1,15 +1,13 @@
-import { AnyChannel, AnyGuildChannel, Guild, GuildChannel, GuildTextableChannel, Message, Textable, TextableChannel, TextChannel, User } from 'eris';
+import { GuildTextableChannel, Message, TextableChannel, TextChannel } from 'eris';
 import { BaseEventHandler } from '../structures/BaseEventHandler';
-// import CleverbotIO from 'better-cleverbot-io';
 import { Timer } from '../structures/Timer';
 import request from 'request';
-import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep, snowflake } from '../newbu';
+import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../newbu';
 import { Cluster } from '../cluster';
-import { StoredGuildCommand, StoredGuild, StoredTag } from '../core/RethinkDb';
+import { StoredGuildCommand, StoredGuild } from '../core/RethinkDb';
 import { BaseDCommand } from '../structures/BaseDCommand';
 
 export class MessageCreateEventHandler extends BaseEventHandler {
-    // readonly #cleverbot: CleverbotIO;
     #arWhitelist: Set<string>;
     #whitelistInterval?: NodeJS.Timeout;
 
@@ -18,15 +16,6 @@ export class MessageCreateEventHandler extends BaseEventHandler {
     ) {
         super(cluster.discord, 'messageCreate', cluster.logger);
         this.#arWhitelist = new Set<string>();
-        // this.#cleverbot = new CleverbotIO({
-        //     user: this.cluster.config.cleverbot.ioid,
-        //     key: this.cluster.config.cleverbot.iokey,
-        //     nick: 'blargbot' + snowflake.create()
-        // });
-
-        // this.#cleverbot.create().then(session => {
-        //     this.logger.init('Cleverbot.io initialized with session', session);
-        // });
     }
 
     install() {
@@ -511,16 +500,8 @@ export class MessageCreateEventHandler extends BaseEventHandler {
             await sleep(1500);
             await this.cluster.util.send(msg, response);
         } catch (err) {
-            // try {
-            //     //cleverbot.setNick('blargbot' + msg.channel.id);
-            //     let response = await this.#cleverbot.ask(msgToSend);
-            //     await sleep(1500);
-            //     await this.cluster.util.send(msg, response);
-            // } catch (err) {
-            console.error(err);
-            // await sleep(1500);
+            this.logger.error(err);
             await this.cluster.util.send(msg, `Failed to contact the API. Blame cleverbot.io`);
-            // }
         }
     }
 

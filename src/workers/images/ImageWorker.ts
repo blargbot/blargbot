@@ -7,7 +7,7 @@ export class ImageWorker extends BaseWorker {
         super(logger)
         this.logger.init(`IMAGE WORKER (pid ${this.id}) PROCESS INITIALIZED`);
 
-        this.renderers = new ImageModuleLoader(this.logger, 'images');
+        this.renderers = new ImageModuleLoader('images', this.logger);
     }
 
     async handle(type: string, id: Snowflake, data: JToken) {

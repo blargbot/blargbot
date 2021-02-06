@@ -7,6 +7,15 @@
         "esModuleInterop": true,
         "target": "ES2020",
         "strictNullChecks": true,
-        "sourceMap": true
+        "sourceMap": true,
+        "noImplicitReturns": true,
+        "strictFunctionTypes": true,
+        "strictBindCallApply": true,
+        "strictPropertyInitialization": true,
+        "alwaysStrict": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false
     }
 }

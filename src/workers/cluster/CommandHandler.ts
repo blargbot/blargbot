@@ -36,6 +36,7 @@ export class CommandHandler {
                 }
                 break;
         }
+        return null;
     }
 
     async getReply(code: string, data: any): Promise<JToken> {
@@ -103,5 +104,6 @@ export class CommandHandler {
                 }
                 return JSON.stringify(commands);
         }
+        return null;
     }
 }

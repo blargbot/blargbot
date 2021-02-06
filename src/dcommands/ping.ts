@@ -25,7 +25,7 @@ export class PingCommand extends BaseDCommand {
         });
     }
 
-    async execute(msg: Message<TextableChannel>, words: string[], text: string) {
+    async execute(msg: Message<TextableChannel>) {
         let message = messages[randInt(0, messages.length - 1)];
         let msg2 = await this.util.send(msg, message);
         if (msg2)

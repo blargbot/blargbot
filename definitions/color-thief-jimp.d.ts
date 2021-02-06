@@ -7,7 +7,7 @@ declare module 'color-thief-jimp' {
         getColor(source: Jimp, quality?: number): RGB
     }
 
-    var colorThief: ColorThief;
+    const colorThief: ColorThief;
 
     export default colorThief;
 }

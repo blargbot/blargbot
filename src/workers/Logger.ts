@@ -1,5 +1,4 @@
 import CatLoggr, { LogLevel } from 'cat-loggr/ts';
-import Chalk from 'chalk';
 import Sequelize, { ValidationError } from 'sequelize';
 
 export function createLogger(config: Configuration, clusterId: string) {
@@ -8,26 +7,26 @@ export function createLogger(config: Configuration, clusterId: string) {
         level: config.general.loglevel ?? 'info',
         shardLength: 6,
         levels: [
-            logLevel('fatal', Chalk.red.bgBlack, { err: true }),
-            logLevel('error', Chalk.black.bgRed, { err: true }),
-            logLevel('warn', Chalk.black.bgYellow, { err: true }),
-            logLevel('trace', Chalk.green.bgBlack, { trace: true }),
-            logLevel('website', Chalk.black.bgCyan),
-            logLevel('ws', Chalk.yellow.bgBlack),
-            logLevel('cluster', Chalk.black.bgMagenta),
-            logLevel('worker', Chalk.black.bgMagenta),
-            logLevel('command', Chalk.black.bgBlue),
-            logLevel('irc', Chalk.yellow.bgBlack),
-            logLevel('shardi', Chalk.blue.bgYellow),
-            logLevel('init', Chalk.black.bgBlue),
-            logLevel('info', Chalk.black.bgGreen),
-            logLevel('output', Chalk.black.bgMagenta),
-            logLevel('bbtag', Chalk.black.bgGreen),
-            logLevel('verbose', Chalk.black.bgCyan),
-            logLevel('adebug', Chalk.cyan.bgBlack),
-            logLevel('debug', Chalk.magenta.bgBlack, { aliases: ['log', 'dir'] }),
-            logLevel('database', Chalk.black.bgBlue),
-            logLevel('module', Chalk.black.bgBlue)
+            logLevel('fatal', CatLoggr._chalk.red.bgBlack, { err: true }),
+            logLevel('error', CatLoggr._chalk.black.bgRed, { err: true }),
+            logLevel('warn', CatLoggr._chalk.black.bgYellow, { err: true }),
+            logLevel('trace', CatLoggr._chalk.green.bgBlack, { trace: true }),
+            logLevel('website', CatLoggr._chalk.black.bgCyan),
+            logLevel('ws', CatLoggr._chalk.yellow.bgBlack),
+            logLevel('cluster', CatLoggr._chalk.black.bgMagenta),
+            logLevel('worker', CatLoggr._chalk.black.bgMagenta),
+            logLevel('command', CatLoggr._chalk.black.bgBlue),
+            logLevel('irc', CatLoggr._chalk.yellow.bgBlack),
+            logLevel('shardi', CatLoggr._chalk.blue.bgYellow),
+            logLevel('init', CatLoggr._chalk.black.bgBlue),
+            logLevel('info', CatLoggr._chalk.black.bgGreen),
+            logLevel('output', CatLoggr._chalk.black.bgMagenta),
+            logLevel('bbtag', CatLoggr._chalk.black.bgGreen),
+            logLevel('verbose', CatLoggr._chalk.black.bgCyan),
+            logLevel('adebug', CatLoggr._chalk.cyan.bgBlack),
+            logLevel('debug', CatLoggr._chalk.magenta.bgBlack, { aliases: ['log', 'dir'] }),
+            logLevel('database', CatLoggr._chalk.black.bgBlue),
+            logLevel('module', CatLoggr._chalk.black.bgBlue)
         ]
     });
 
@@ -45,10 +44,10 @@ export function createLogger(config: Configuration, clusterId: string) {
     return logger;
 }
 
-function logLevel(name: string, color: typeof Chalk, options?: Omit<Partial<LogLevel>, 'color' | 'name'>): LogLevel {
+function logLevel(name: string, color: typeof CatLoggr._chalk, options?: Omit<Partial<LogLevel>, 'color' | 'name'>): LogLevel {
     return {
         name,
-        color: color,
+        color: <any>color,
         aliases: options?.aliases!,
         err: options?.err!,
         trace: options?.trace!,

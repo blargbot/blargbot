@@ -6,4 +6,5 @@ export { randInt } from './randInt'
 export { getRange } from './getRange';
 export { createRegExp } from './createRegExp';
 export { sleep } from './sleep';
+export { cpuLoad } from './cpuLoad';
 

@@ -3,6 +3,7 @@ import { promises as fs } from 'fs';
 import { EventEmitter } from 'eventemitter3';
 import { MultiKeyMap } from '../structures/MultiKeyMap';
 import reloadFactory from 'require-reload';
+import { guard } from '../newbu';
 
 const reload = reloadFactory(require);
 
@@ -17,7 +18,8 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     #modules: MultiKeyMap<string, TModule>;
 
     constructor(
-        public readonly source: string
+        public readonly source: string,
+        public readonly logger: CatLogger
     ) {
         super();
         this.#root = getAbsolutePath(source);
@@ -52,18 +54,35 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
                     for (let name of names)
                         this.#modules.set(name, module);
             } catch (err) {
-                this.logFailure(err, fileName);
+                if (err instanceof Error)
+                    this.logger.error(err.stack!);
+                this.logger.module(this.source, 'Error while loading module', fileName);
             }
         }
     }
 
-    protected abstract logFailure(err: any, fileName: string): void;
 
     async reload(fileNames: Iterable<string>) {
         return await this.load(fileNames, reload);
     }
 
-    protected abstract activate(fileName: string, module: any): Promise<Iterable<ModuleResult<TModule>>> | Iterable<ModuleResult<TModule>>;
+    protected activate(fileName: string, rawModule: any) {
+        let result: Array<ModuleResult<TModule> | null> = [];
+        if (typeof rawModule === 'object' || typeof rawModule === 'function') {
+            result = [this.tryActivate(rawModule)];
+            if (result[0] === undefined) {
+                result = Object.values(rawModule)
+                    .map(m => this.tryActivate(m));
+            }
+        }
+
+        if (result.length === 0)
+            this.logger.debug(`No modules found in ${fileName}`);
+
+        return result.filter(guard.hasValue);
+    }
+
+    protected abstract tryActivate(rawModule: any): ModuleResult<TModule> | null;
 }
 
 function getAbsolutePath(...segments: string[]) {
@@ -72,5 +91,3 @@ function getAbsolutePath(...segments: string[]) {
         return result;
     return path.join(__dirname, '..', result);
 }
-
-module.exports = { BaseModuleLoader };

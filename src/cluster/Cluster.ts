@@ -9,7 +9,6 @@ import { BaseTagHandler } from '../structures/BaseTagHandler';
 import moment, { Moment } from 'moment-timezone';
 import { EventManager } from '../structures/EventManager';
 import { commandTypes, tagTypes } from '../newbu';
-import { Sender } from '../structures/Sender';
 import { BBEngine } from '../structures/BBEngine';
 import { ClusterWorker } from '../workers/cluster/ClusterWorker';
 import { WorkerConnection } from '../core/WorkerConnection';
@@ -72,9 +71,9 @@ export class Cluster extends BaseClient {
         this.id = options.id;
         this.createdAt = moment();
         this.worker = options.worker;
-        this.commands = new ClusterModuleLoader(this, 'dcommands', BaseDCommand, c => [c.name, ...c.aliases]);
-        this.tags = new ClusterModuleLoader(this, 'tags', BaseTagHandler, t => [t.name, ...t.aliases]);
-        this.events = new ClusterModuleLoader(this, 'events', BaseEventHandler, e => e.name);
+        this.commands = new ClusterModuleLoader('dcommands', this, BaseDCommand, c => [c.name, ...c.aliases]);
+        this.tags = new ClusterModuleLoader('tags', this, BaseTagHandler, t => [t.name, ...t.aliases]);
+        this.events = new ClusterModuleLoader('events', this, BaseEventHandler, e => e.name);
         this.stats = new ClusterStats(this);
         this.util = new ClusterUtilities(this);
         this.triggers = new EventManager(this);
@@ -97,11 +96,11 @@ export class Cluster extends BaseClient {
         this.logger.init(`Cluster ${this.id} started`);
     }
 
-    async eval(message: { author: { id: string } }, text: string, send: false): Promise<{ resultString: string, result: any } | undefined>;
-    async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send?: true): Promise<undefined>;
-    async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send = true) {
+    async eval(message: { author: { id: string } }, text: string, send: false): Promise<{ resultString: string, result: any }>;
+    async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send?: true): Promise<void>;
+    async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send = true): Promise<void | { resultString: string, result: any }> {
         if (message.author.id !== this.config.discord.users.owner)
-            return;
+            throw new Error(`User ${message.author.id} does not have permission to run eval`);
 
         let resultString, result;
         var commandToProcess = text.replace('eval ', '');
@@ -134,10 +133,10 @@ ${res}
 ${err.stack}
 \`\`\``;
         }
-        if (send)
-            this.util.send(message.channel.id, resultString);
-        else
+        if (!send)
             return { resultString, result };
+
+        this.util.send(message.channel.id, resultString);
     }
 }
 

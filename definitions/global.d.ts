@@ -15,6 +15,8 @@ declare global {
 
     export type ClassOf<T> = Function & { prototype: T };
 
+    export var console: never | Console;
+
     namespace NodeJS {
         type WorkerProcess = Process & Required<Pick<Process, 'send'>>;
 

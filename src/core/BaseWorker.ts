@@ -16,7 +16,7 @@ export abstract class BaseWorker {
 
         this.#process = process;
 
-        this.#process.on('unhandledRejection', (err, p) =>
+        this.#process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise' + JSON.stringify(err)));
 
         this.logger.addPostHook(({ text, level, timestamp }) => {

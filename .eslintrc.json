@@ -6,12 +6,16 @@
         "jest": false,
         "jquery": false
     },
+    "parser": "@typescript-eslint/parser",
     "extends": [
-        "plugin:vue/essential"
+        "plugin:vue/essential",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module",
+        "project": "./tsconfig.json",
         "ecmaFeatures": {
             "arrowFunctions": true,
             "binaryLiterals": true,
@@ -36,7 +40,10 @@
             "globalReturn": true
         }
     },
-    "plugins": [],
+    "plugins": [
+        "@typescript-eslint",
+        "vue"
+    ],
     "rules": {
         "strict": 0,
         "semi": "warn",

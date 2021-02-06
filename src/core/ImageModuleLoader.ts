@@ -1,38 +1,15 @@
-import { BaseModuleLoader, ModuleResult } from "./BaseModuleLoader";
+import { BaseModuleLoader } from "./BaseModuleLoader";
 import { BaseImageGenerator } from "../structures/BaseImageGenerator";
 
 export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
     constructor(
-        public readonly logger: CatLogger,
-        public readonly source: string
+        public readonly source: string,
+        logger: CatLogger
     ) {
-        super(source);
+        super(source, logger);
     }
 
-    protected logFailure(err: any, fileName: string): void {
-        if (err instanceof Error)
-            this.logger.error(err.stack!);
-        this.logger.module(this.source, 'Error while loading module', fileName);
-    }
-
-    protected activate(fileName: string, rawModule: any) {
-        let result: Array<ModuleResult<BaseImageGenerator> | undefined> = [];
-        if (typeof rawModule === 'object' || typeof rawModule === 'function') {
-            result = [this.tryActivate(rawModule)];
-            if (result[0] === undefined) {
-                result = Object.values(rawModule)
-                    .map(m => this.tryActivate(m));
-            }
-        }
-
-        if (result.length === 0)
-            this.logger.debug(`No modules found in ${fileName}`);
-
-        return result
-            .filter(m => m !== undefined) as Array<ModuleResult<BaseImageGenerator>>;
-    }
-
-    private tryActivate(rawModule: any) {
+    protected tryActivate(rawModule: any) {
         if (rawModule instanceof BaseImageGenerator) {
             return { module: rawModule, names: getNiceNames(rawModule.constructor) };
         }
@@ -41,6 +18,8 @@ export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
             let instance = new rawModule(this.logger);
             return { module: instance, names: getNiceNames(instance.constructor) };
         }
+
+        return null;
     }
 }
 
