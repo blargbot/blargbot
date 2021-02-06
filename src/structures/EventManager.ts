@@ -1,16 +1,16 @@
 import { Cluster } from "../cluster";
-import { Event } from "../core/RethinkDb";
+import { StoredEvent } from "../core/RethinkDb";
 import { ExpressionFunction } from 'rethinkdb';
 
 export class EventManager {
-    #cache: { [key: string]: Event };
+    #cache: { [key: string]: StoredEvent };
     constructor(
         public readonly cluster: Cluster
     ) {
         this.#cache = {};
     }
 
-    async insert(event: Event) {
+    async insert(event: StoredEvent) {
         const res = await this.cluster.rethinkdb.query(r =>
             r.table('events').insert(event, { returnChanges: true })
         );
@@ -59,7 +59,7 @@ export class EventManager {
     }
 
     async obtain() {
-        let events = this.cluster.rethinkdb.queryAll<Event>(r =>
+        let events = this.cluster.rethinkdb.stream<StoredEvent>(r =>
             r.table('events')
                 .between(
                     this.cluster.rethinkdb.epochTime(0),

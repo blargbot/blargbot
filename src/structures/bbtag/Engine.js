@@ -2,7 +2,7 @@
 
 const Context = require('./Context');
 const { BBTag, SubTag } = require('./Tag');
-const Timer = require('../Timer');
+const { Timer } = require('../Timer');
 
 /**
  * Parses the given text as BBTag

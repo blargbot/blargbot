@@ -1,21 +1,15 @@
-const Sender = require('./Sender');
+const { Sender } = require('./Sender');
 const childProcess = require('child_process');
 
 class ClusterProcess extends Sender {
     constructor(id, manager, file) {
-        super();
-        this.id = id;
-        this.manager = manager;
-        this.file = file || this.manager.file;
-        this.respawn = true;
-
-        let firstShard = Math.min(this.manager.max - 1, this.manager.shardsPerCluster * this.id);
-        let lastShard = Math.min(this.manager.max - 1,
-            (this.manager.shardsPerCluster * this.id) + this.manager.shardsPerCluster - 1);
+        let firstShard = Math.min(manager.max - 1, manager.shardsPerCluster * id);
+        let lastShard = Math.min(manager.max - 1, (manager.shardsPerCluster * id) + manager.shardsPerCluster - 1);
         let shardCount = lastShard - firstShard + 1;
-        this.env = Object.assign({}, process.env, this.manager.env, {
-            CLUSTER_ID: this.id,
-            SHARDS_MAX: this.manager.max,
+
+        const env = Object.assign({}, process.env, manager.env, {
+            CLUSTER_ID: id,
+            SHARDS_MAX: manager.max,
             SHARDS_FIRST: firstShard,
             SHARDS_LAST: lastShard,
             SHARDS_COUNT: shardCount
@@ -27,10 +21,15 @@ class ClusterProcess extends Sender {
         execArgv.push('--max-old-space-size=4096'); // 4GB max ram
         // execArgv.push('--prof'); // node-tick profiling
 
-        this.process = childProcess.fork(this.file, process.argv, {
-            env: this.env,
-            execArgv
-        });
+        const child = childProcess.fork(file || manager.file, process.argv, { env: env, execArgv });
+
+        super(id, child, console);
+        this.id = id;
+        this.manager = manager;
+        this.file = file || this.manager.file;
+        this.respawn = true;
+        this.env = env;
+
 
         this.process.on('message', msg => {
             const message = JSON.parse(msg);

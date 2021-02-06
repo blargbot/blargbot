@@ -3,19 +3,26 @@ import { Cluster } from "../cluster";
 
 export class ClusterModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     readonly #getNames: (module: any) => Iterable<string>;
+
     constructor(
         public readonly cluster: Cluster,
         public readonly source: string,
         public readonly type: ClassOf<TModule>,
         getNames: (module: TModule) => Iterable<string>
     ) {
-        super(source, cluster.logger);
+        super(source);
         this.#getNames = module => {
             let names = getNames(module);
             if (typeof names === 'string')
                 names = [names];
             return names;
         };
+    }
+
+    protected logFailure(err: any, fileName: string): void {
+        if (err instanceof Error)
+            this.cluster.logger.error(err.stack);
+        this.cluster.logger.module(this.source, 'Error while loading module', fileName);
     }
 
     protected activate(fileName: string, rawModule: any) {
@@ -35,7 +42,7 @@ export class ClusterModuleLoader<TModule> extends BaseModuleLoader<TModule> {
             .filter(m => m !== undefined) as Array<ModuleResult<TModule>>;
     }
 
-    private tryActivate(rawModule: any): ModuleResult<TModule> | undefined {
+    private tryActivate(rawModule: any) {
         if (rawModule instanceof this.type) {
             return { module: rawModule, names: this.#getNames(rawModule) };
         }

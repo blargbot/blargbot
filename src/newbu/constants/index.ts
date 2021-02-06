@@ -7,7 +7,7 @@ export { CommandProperties, Type as CommandType } from './commandType';
 export { TagProperties, Type as TagType } from './tagType';
 export { VariableProperties as TagVariableProperties, Type as TagVariableType } from './tagVariableType';
 export { modlogColour } from './modlogColour';
-
+export { ModerationType } from './moderationType';
 
 export const commandTypes = {
     properties: command.properties,

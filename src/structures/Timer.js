@@ -1,36 +1,52 @@
-const moment = require('moment');
-
+"use strict";
+var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, privateMap, value) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to set private field on non-instance");
+    }
+    privateMap.set(receiver, value);
+    return value;
+};
+var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, privateMap) {
+    if (!privateMap.has(receiver)) {
+        throw new TypeError("attempted to get private field on non-instance");
+    }
+    return privateMap.get(receiver);
+};
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var _elapsed, _start;
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.Timer = void 0;
+const moment_1 = __importDefault(require("moment"));
 class Timer {
     constructor() {
-        this._elapsed = 0;
-        this._start = null;
+        _elapsed.set(this, void 0);
+        _start.set(this, void 0);
+        __classPrivateFieldSet(this, _elapsed, 0);
+        __classPrivateFieldSet(this, _start, null);
     }
-
     get elapsed() {
-        if (this._start === null)
-            return this._elapsed;
+        if (__classPrivateFieldGet(this, _start) === null)
+            return __classPrivateFieldGet(this, _elapsed);
         else
-            return this._elapsed + (Date.now() - this._start);
+            return __classPrivateFieldGet(this, _elapsed) + (Date.now() - __classPrivateFieldGet(this, _start));
     }
-
     get duration() {
-        return moment.duration(this.elapsed, 'milliseconds');
+        return moment_1.default.duration(this.elapsed, 'milliseconds');
     }
-
     format() {
         let diff = this.duration;
         return `${diff.minutes()} minutes, ${diff.seconds()} seconds, and ${diff.milliseconds()} milliseconds`;
     }
-
     start(reset = true) {
-        if (this._start !== null)
+        if (__classPrivateFieldGet(this, _start) !== null)
             throw new Error('Cannot start an already started timer');
         if (reset)
-            this._elapsed = 0;
-        this._start = Date.now();
+            __classPrivateFieldSet(this, _elapsed, 0);
+        __classPrivateFieldSet(this, _start, Date.now());
         return this;
     }
-
     poll(reset = false) {
         let elapsed = this.elapsed;
         if (reset) {
@@ -39,18 +55,17 @@ class Timer {
         }
         return elapsed;
     }
-
     resume() {
         return this.start(false);
     }
-
     end() {
-        if (this._start !== null) {
-            this._elapsed += Date.now() - this._start;
-            this._start = null;
+        if (__classPrivateFieldGet(this, _start) !== null) {
+            __classPrivateFieldSet(this, _elapsed, __classPrivateFieldGet(this, _elapsed) + (Date.now() - __classPrivateFieldGet(this, _start)));
+            __classPrivateFieldSet(this, _start, null);
         }
         return this;
     }
 }
-
+exports.Timer = Timer;
+_elapsed = new WeakMap(), _start = new WeakMap();
 module.exports = Timer;

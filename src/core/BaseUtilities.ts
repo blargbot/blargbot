@@ -1,8 +1,8 @@
-import { AdvancedMessageContent, AnyChannel, Channel, EmbedOptions, Member, Message, MessageFile, Permission, TextChannel, User } from "eris";
+import { AdvancedMessageContent, AnyChannel, Channel, EmbedOptions, Member, Message, MessageFile, User } from "eris";
 import { BaseClient } from "./BaseClient";
-import { snowflake, defaultStaff } from "../newbu";
+import { snowflake } from "../newbu";
 import { Error } from "sequelize";
-import { StoredGuild } from "./RethinkDb";
+import { MessageAwaiter } from "../structures/MessageAwaiter";
 
 export type SendContext = Message | AnyChannel | string
 export type SendEmbed = EmbedOptions & { asString?: string }
@@ -26,11 +26,12 @@ export class BaseUtilities {
     get logger() { return this.client.logger; }
     get metrics() { return this.client.metrics; }
     get config() { return this.client.config; }
+    public readonly messageAwaiter: MessageAwaiter;
 
-    readonly #guildCache: Map<string, StoredGuild>;
-
-    constructor(public readonly client: BaseClient) {
-        this.#guildCache = new Map();
+    constructor(
+        public readonly client: BaseClient
+    ) {
+        this.messageAwaiter = new MessageAwaiter();
     }
 
     async send(context: SendContext, payload: SendPayload, files?: SendFiles) {
@@ -157,7 +158,7 @@ export class BaseUtilities {
 
         let privateChannel = await this.discord.getDMChannel(userid);
         await this.send(privateChannel, message, files);
-    };
+    }
 
     async generateOutputPage(payload: SendPayload, channel?: Channel) {
         switch (typeof payload) {
@@ -174,55 +175,11 @@ export class BaseUtilities {
             channelid: channel ? channel.id : null
         }, { prepare: true });
         return id;
-    };
+    }
 
     async canDmErrors(userId: string) {
         let storedUser = await this.rethinkdb.getUser(userId);
         return !storedUser?.dontdmerrors;
-    }
-
-    async isUserStaff(userId: string, guildId: string) {
-        if (userId == guildId) return true;
-
-        let guild = this.guilds.get(guildId);
-        if (!guild) return false;
-
-        let member = guild.members.get(userId);
-        if (!member) return false;
-
-        if (guild.ownerID == userId) return true;
-        if (member.permissions.has('administrator')) return true;
-
-        let storedGuild = await this.getGuild(guildId);
-        if (storedGuild?.settings?.permoverride) {
-            let allow = storedGuild.settings.staffperms || defaultStaff;
-            let member = this.guilds.get(guildId)?.members.get(userId);
-            if (member && this.comparePerms(member, allow)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    async getGuild(guildid: string) {
-        if (!this.#guildCache.has(guildid)) {
-            let guild = await this.rethinkdb.getGuild(guildid);
-            if (guild)
-                this.#guildCache.set(guildid, guild);
-        }
-        return this.#guildCache.get(guildid);
-    }
-
-    comparePerms(member: Member, allow: number) {
-        if (!allow)
-            allow = defaultStaff;
-        let newPerm = new Permission(allow, 0);
-        for (let key in newPerm.json) {
-            if (member.permissions.has(key)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
 

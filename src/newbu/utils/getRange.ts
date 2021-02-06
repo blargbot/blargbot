@@ -1,3 +1,4 @@
+import { resolveModuleName } from 'typescript';
 import { parse } from './parse';
 
 export function getRange(from: string | number, to: string | number) {
@@ -14,4 +15,4 @@ export function getRange(from: string | number, to: string | number) {
     if (descending)
         values = values.reverse();
     return values;
-};
+}

@@ -1,7 +1,7 @@
 const ClusterProcess = require('../structures/ClusterProcess');
 const EventEmitter = require('eventemitter3');
 const moment = require('moment');
-const Timer = require('../structures/Timer');
+const { Timer } = require('../structures/Timer');
 const stripAnsi = require('strip-ansi');
 
 class ClusterManager extends EventEmitter {

@@ -1,17 +1,12 @@
-import { EventEmitter } from 'eventemitter3';
+import { EventEmitter as EventEmitter3 } from 'eventemitter3';
+import { EventEmitter as NodeEventEmitter } from 'events';
 
 export abstract class BaseEventHandler {
     #handler?: (...args: any[]) => void
     get name() { return this.constructor.name; }
 
-    /**
-     * @param {import('eventemitter3').EventEmitter} events
-     * @param {string} name
-     * @param {string} type
-     * @param {import('cat-loggr')} logger
-     */
     protected constructor(
-        protected readonly events: EventEmitter,
+        protected readonly events: EventEmitter3 | NodeEventEmitter,
         public readonly type: string,
         public readonly logger: CatLogger) {
     }

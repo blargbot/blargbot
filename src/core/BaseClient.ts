@@ -10,7 +10,7 @@ export class BaseClient {
     public readonly util: BaseUtilities;
     public readonly postgres: PostgresDb;
     public readonly rethinkdb: RethinkDb;
-    public readonly cassandra: any;
+    public readonly cassandra: CassandraDb;
     public readonly discord: ErisClient;
     constructor(
         public readonly logger: CatLogger,
@@ -53,6 +53,11 @@ export class BaseClient {
     }
 
     public async start() {
-
+        await Promise.all([
+            this.postgres.authenticate().then(() => this.logger.init('postgres connected')),
+            this.rethinkdb.connect().then(() => this.logger.init('rethinkdb connected')),
+            this.cassandra.connect().then(() => this.logger.init('cassandra connected')),
+            this.discord.connect().then(() => this.logger.init('discord connected'))
+        ]);
     }
 }

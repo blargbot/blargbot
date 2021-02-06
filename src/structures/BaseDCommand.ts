@@ -1,3 +1,4 @@
+import { Message, TextableChannel } from "eris";
 import { CommandType, FlagDefinition } from "../newbu";
 
 export interface DCommandOptions {
@@ -9,6 +10,7 @@ export interface DCommandOptions {
     longinfo?: string | null;
     flags?: FlagDefinition[];
     onlyOn?: string | null;
+    cannotDisable?: boolean;
 }
 
 export abstract class BaseDCommand implements Required<DCommandOptions>{
@@ -21,6 +23,7 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     public readonly longinfo: string | null;
     public readonly flags: FlagDefinition[];
     public readonly onlyOn: string | null;
+    public readonly cannotDisable: boolean;
 
     protected constructor(
         public readonly name: string,
@@ -35,9 +38,12 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         this.longinfo = options.longinfo ?? null;
         this.flags = options.flags ?? [];
         this.onlyOn = options.onlyOn ?? null;
+        this.cannotDisable = options.cannotDisable ?? true;
     }
 
-    event(message: unknown) {
-
+    event(message: unknown): Promise<void> {
+        return Promise.resolve();
     }
+
+    abstract execute(message: Message<TextableChannel>, words: string[], text: string): Promise<void>;
 }

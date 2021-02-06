@@ -1,14 +1,13 @@
 import { Cluster } from "../../cluster";
 import { Sender } from "../../structures/Sender";
 import { CommandHandler } from "./CommandHandler";
-import usage from 'usage'
+import { Options, ResultObject } from 'usage';
 
 export class ClusterWorker {
     public readonly id: string;
     public readonly cluster: Cluster;
     public readonly commandHandler: CommandHandler;
     public readonly sender: Sender;
-    #statsInterval?: number;
     constructor(
         public readonly process: NodeJS.Process,
         public readonly logger: CatLogger,
@@ -51,18 +50,24 @@ export class ClusterWorker {
             this.cluster.sender.send(`await:${data.key}`, response);
         });
 
-        this.#statsInterval = setInterval(async () => {
+        setInterval(async () => {
             let mem = this.process.memoryUsage();
             this.cluster.sender.send('shardStats', {
                 ...this.cluster.stats.getCurrent(),
                 rss: mem.rss,
-                cpu: await new Promise(async res => {
-                    let pid = this.process.pid;
-                    usage.lookup(pid, { keepHistory: true }, (err, result) => {
-                        res(err ? 'NaN' : result.cpu);
-                    });
-                })
+                cpu: (await lookupAsync(this.process.pid, { keepHistory: true }))?.cpu
             });
         });
+    }
+}
+
+async function lookupAsync(pid: number, options?: Options) {
+    try {
+        const usage = await import('usage');
+        return await new Promise<ResultObject | null>(resolve =>
+            usage.lookup(pid, options ?? { keepHistory: false }, (err, data) =>
+                err ? resolve(null) : resolve(data)))
+    } catch {
+        return null;
     }
 }

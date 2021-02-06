@@ -43,3 +43,4 @@ kek
 jsondiff.js
 !colors.json
 .nuxt/
+**/*.js

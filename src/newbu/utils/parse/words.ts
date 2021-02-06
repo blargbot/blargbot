@@ -1,4 +1,4 @@
-export function words(content: string | string[] | number | boolean, noTrim: boolean) {
+export function words(content: string | string[] | number | boolean, noTrim: boolean = false) {
     let input;
     if (Array.isArray(content))
         content = content.join(' ');

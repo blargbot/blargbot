@@ -6,6 +6,10 @@ import reloadFactory from 'require-reload';
 
 const reload = reloadFactory(require);
 
+export type ModuleLogger = {
+    error(...args: any[]): void;
+    module(...args: any[]): void;
+}
 export type ModuleResult<TModule> = { names: Iterable<string>, module: TModule };
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter {
@@ -13,12 +17,9 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     #modules: MultiKeyMap<string, TModule>;
 
     constructor(
-        public readonly source: string,
-        public readonly logger: CatLogger
+        public readonly source: string
     ) {
         super();
-        this.source = source;
-        this.logger = logger;
         this.#root = getAbsolutePath(source);
         this.#modules = new MultiKeyMap<string, TModule>();
 
@@ -51,12 +52,12 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
                     for (let name of names)
                         this.#modules.set(name, module);
             } catch (err) {
-                if (err instanceof Error)
-                    this.logger.error(err.stack);
-                this.logger.module(this.source, 'Error while loading module', fileName);
+                this.logFailure(err, fileName);
             }
         }
     }
+
+    protected abstract logFailure(err: any, fileName: string): void;
 
     async reload(fileNames: Iterable<string>) {
         return await this.load(fileNames, reload);

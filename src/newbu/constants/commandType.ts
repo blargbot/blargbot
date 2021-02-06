@@ -1,5 +1,5 @@
 import { Message } from "eris"
-import { BaseClient } from "../../core/BaseClient"
+import { Cluster } from "../../cluster";
 
 type CommandPropertiesSet = {
     [key in Type]: CommandProperties;
@@ -9,7 +9,7 @@ export interface CommandProperties {
     readonly name: string;
     readonly description: string;
     readonly perm?: string;
-    readonly requirement: (client: BaseClient, message: Message) => boolean | Promise<boolean>
+    readonly requirement: (client: Cluster, message: Message) => boolean | Promise<boolean>
 }
 
 export enum Type {

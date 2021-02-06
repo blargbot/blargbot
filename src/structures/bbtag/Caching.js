@@ -1,6 +1,6 @@
 'use strict';
 
-const Timer = require('../Timer');
+const { Timer } = require('../Timer');
 
 class CacheEntry {
     get updated() { return JSON.stringify(this.original) != JSON.stringify(this.value); }

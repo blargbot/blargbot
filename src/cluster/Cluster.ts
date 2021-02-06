@@ -10,6 +10,7 @@ import moment, { Moment } from 'moment-timezone';
 import { EventManager } from '../structures/EventManager';
 import { commandTypes, tagTypes } from '../newbu';
 import { Sender } from '../structures/Sender';
+import { BBEngine } from '../structures/BBEngine';
 
 export interface ClusterOptions {
     id: string,
@@ -29,6 +30,7 @@ export class Cluster extends BaseClient {
     public readonly stats: ClusterStats;
     public readonly util: ClusterUtilities;
     public readonly triggers: EventManager;
+    public readonly bbtag: BBEngine;
 
     constructor(
         public readonly logger: CatLogger,
@@ -73,6 +75,7 @@ export class Cluster extends BaseClient {
         this.stats = new ClusterStats(this);
         this.util = new ClusterUtilities(this);
         this.triggers = new EventManager(this);
+        this.bbtag = new BBEngine(this);
 
         this.events.on('add', (module: BaseEventHandler) => module.install());
         this.events.on('remove', (module: BaseEventHandler) => module.uninstall());
@@ -81,13 +84,10 @@ export class Cluster extends BaseClient {
     async start() {
         this.logger.init(`Starting cluster ${this.id}`);
         await Promise.all([
-            this.discord.connect().then(() => this.logger.init('discord connected')),
+            super.start(),
             this.events.init().then(() => this.logger.init(moduleStats(this.events, 'Events', ev => ev.type))),
             this.commands.init().then(() => this.logger.init(moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name))),
             this.tags.init().then(() => this.logger.init(moduleStats(this.tags, 'Tags', c => c.category, c => tagTypes.properties[c].name))),
-            this.postgres.authenticate().then(() => this.logger.init('postgres connected')),
-            this.rethinkdb.connect().then(() => this.logger.init('rethinkdb connected')),
-            this.cassandra.connect().then(() => this.logger.init('cassandra connected'))
         ]);
         this.logger.init(`Cluster ${this.id} started`);
     }

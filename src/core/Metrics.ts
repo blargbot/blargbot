@@ -14,6 +14,7 @@ export class Metrics {
     public readonly commandError: Prometheus.Counter;
     public readonly bbtagExecutions: Prometheus.Counter;
     public readonly httpsRequests: Prometheus.Counter;
+    public readonly cleverbotStats: Prometheus.Counter;
 
     get aggregated() {
         let c = this.registryCache.filter(m => true);
@@ -49,6 +50,10 @@ export class Metrics {
             name: 'bot_chatlog_counter', help: 'Chatlogs created',
             labelNames: ['type']
         });
+
+        this.cleverbotStats = new Prometheus.Counter({
+            name: 'bot_cleverbot_counter', help: 'Calls to cleverbot made'
+        })
 
         this.commandCounter = new Prometheus.Counter({
             name: 'bot_command_counter', help: 'Commands executed',

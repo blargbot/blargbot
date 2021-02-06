@@ -1,7 +1,7 @@
 'use strict';
 
 const ScopeCollection = require('./Scope');
-const Timer = require('../Timer');
+const { Timer } = require('../Timer');
 const { VariableCache, CacheEntry } = require('./Caching');
 const ReadWriteLock = require('rwlock');
 const newbutils = require('../../newbu');

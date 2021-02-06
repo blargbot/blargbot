@@ -1,9 +1,10 @@
 import { EventEmitter } from 'eventemitter3';
+import { ChildProcess } from 'child_process';
 
 export class Sender extends EventEmitter {
     constructor(
         public readonly clusterId: string,
-        public readonly process: NodeJS.Process,
+        public readonly process: NodeJS.Process | ChildProcess,
         public readonly logger: CatLogger
     ) {
         super();
@@ -11,7 +12,7 @@ export class Sender extends EventEmitter {
             throw new Error('process must be a worker process');
     }
 
-    send(code: string, data?: JObject | JArray | JValue) {
+    async send(code: string, data?: JObject | JArray | JValue) {
         if (data === 'undefined') {
             data = code;
             code = 'generic';
@@ -22,20 +23,13 @@ export class Sender extends EventEmitter {
 
         const message = { code, data };
 
-        return new Promise<void>((fulfill, reject) => {
-            if (this.process.send === undefined)
-                return reject(new Error('process must be a worker process'));
-
-            this.process.send!(JSON.stringify(message), undefined, undefined, (err: any) => {
-                if (!err)
-                    return fulfill();
-
-                this.logger.error(err);
-                if (!this.process.connected)
-                    this.process.kill();
-                reject(err);
-            });
-        });
+        try {
+            await sendCore(this.process, JSON.stringify(message));
+        } catch (err) {
+            this.logger.error(err);
+            if (!this.process.connected)
+                this.process.kill();
+        }
     }
 
     awaitMessage(data: JObject | string) {
@@ -58,4 +52,16 @@ export class Sender extends EventEmitter {
             });
         });
     }
+}
+
+function sendCore(process: NodeJS.Process | ChildProcess, message: string) {
+    return new Promise<void>((resolve, reject) => {
+        if (!('send' in process && typeof process['send'] === 'function'))
+            return reject();
+
+        if ('exit' in process) // NodeJS
+            process.send(message, undefined, undefined, err => err ? reject(err) : resolve());
+        else // child_process
+            process.send(message, err => err ? reject(err) : resolve());
+    })
 }
