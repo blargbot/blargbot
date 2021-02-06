@@ -11,10 +11,12 @@ import { EventManager } from '../structures/EventManager';
 import { commandTypes, tagTypes } from '../newbu';
 import { Sender } from '../structures/Sender';
 import { BBEngine } from '../structures/BBEngine';
+import { ClusterWorker } from '../workers/cluster/ClusterWorker';
+import { WorkerSpawner } from '../core/WorkerSpawner';
 
 export interface ClusterOptions {
     id: string,
-    sender: Sender,
+    worker: ClusterWorker,
     shardCount: number,
     firstShardId: number,
     lastShardId: number
@@ -23,7 +25,7 @@ export interface ClusterOptions {
 export class Cluster extends BaseClient {
     public readonly id: string;
     public readonly createdAt: Moment;
-    public readonly sender: Sender;
+    public readonly worker: ClusterWorker;
     public readonly commands: ClusterModuleLoader<BaseDCommand>;
     public readonly tags: ClusterModuleLoader<BaseTagHandler>;
     public readonly events: ClusterModuleLoader<BaseEventHandler>;
@@ -31,6 +33,7 @@ export class Cluster extends BaseClient {
     public readonly util: ClusterUtilities;
     public readonly triggers: EventManager;
     public readonly bbtag: BBEngine;
+    public readonly images: WorkerSpawner;
 
     constructor(
         public readonly logger: CatLogger,
@@ -68,7 +71,7 @@ export class Cluster extends BaseClient {
         });
         this.id = options.id;
         this.createdAt = moment();
-        this.sender = options.sender;
+        this.worker = options.worker;
         this.commands = new ClusterModuleLoader(this, 'dcommands', BaseDCommand, c => [c.name, ...c.aliases]);
         this.tags = new ClusterModuleLoader(this, 'tags', BaseTagHandler, t => [t.name, ...t.aliases]);
         this.events = new ClusterModuleLoader(this, 'events', BaseEventHandler, e => e.name);
@@ -76,6 +79,7 @@ export class Cluster extends BaseClient {
         this.util = new ClusterUtilities(this);
         this.triggers = new EventManager(this);
         this.bbtag = new BBEngine(this);
+        this.images = new WorkerSpawner('src/workers/image.js');
 
         this.events.on('add', (module: BaseEventHandler) => module.install());
         this.events.on('remove', (module: BaseEventHandler) => module.uninstall());
@@ -88,6 +92,7 @@ export class Cluster extends BaseClient {
             this.events.init().then(() => this.logger.init(moduleStats(this.events, 'Events', ev => ev.type))),
             this.commands.init().then(() => this.logger.init(moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name))),
             this.tags.init().then(() => this.logger.init(moduleStats(this.tags, 'Tags', c => c.category, c => tagTypes.properties[c].name))),
+            this.images.start()
         ]);
         this.logger.init(`Cluster ${this.id} started`);
     }

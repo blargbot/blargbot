@@ -8,7 +8,7 @@ export class ArtGenerator extends BaseImageGenerator {
 
     async execute({ avatar }: JObject) {
         if (typeof avatar !== 'string')
-            return;
+            return null;
 
         let avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(370, 370);

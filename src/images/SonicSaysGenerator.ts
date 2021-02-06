@@ -7,7 +7,7 @@ export class SonicSaysGenerator extends BaseImageGenerator {
 
     async execute({ text }: JObject) {
         if (typeof text !== 'string')
-            return;
+            return null;
 
         return await this.renderPhantom('sonicsays.html', {
             scale: 2,

@@ -8,7 +8,7 @@ export class TheSearchGenerator extends BaseImageGenerator {
 
     async execute({ text }: JObject) {
         if (typeof text !== 'string')
-            return;
+            return null;
 
         let caption = await this.renderJimpText(text, {
             fill: '#393b3e',

@@ -8,7 +8,7 @@ export class DeleteGenerator extends BaseImageGenerator {
 
     async execute({ text }: JObject) {
         if (typeof text !== 'string')
-            return;
+            return null;
 
         let originalText = await this.renderJimpText(text, {
             font: 'whitneybold.ttf',

@@ -8,7 +8,7 @@ export class ShitGenerator extends BaseImageGenerator {
 
     async execute({ plural, text }: JObject) {
         if (typeof text !== 'string')
-            return;
+            return null;
 
         let caption = await this.renderJimpText(text, {
             font: 'animeace.ttf',

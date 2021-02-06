@@ -2,61 +2,48 @@ import { Cluster } from "../../cluster";
 import { Sender } from "../../structures/Sender";
 import { CommandHandler } from "./CommandHandler";
 import { Options, ResultObject } from 'usage';
-import { BaseWorker } from "../../structures/BaseWorker";
+import { BaseWorker } from "../../core/BaseWorker";
+import { snowflake } from "../../newbu";
 
 export class ClusterWorker extends BaseWorker {
-    public readonly id: string;
     public readonly cluster: Cluster;
     public readonly commandHandler: CommandHandler;
-    public readonly sender: Sender;
+
     constructor(
-        process: NodeJS.Process,
         logger: CatLogger,
         public readonly config: Configuration
     ) {
-        super(process, logger);
+        super(logger);
+        const clusterId = this.env.CLUSTER_ID ?? '??';
 
-        this.id = process.env.CLUSTER_ID!;
+        this.logger.init(`CLUSTER ${clusterId} (pid ${this.id}) PROCESS INITIALIZED`);
 
-        this.logger.init(`CLUSTER ${this.id} (pid ${this.process.pid}) PROCESS INITIALIZED`);
-        this.sender = new Sender(this.id, process, logger);
-
+        this.commandHandler = new CommandHandler(this);
         this.cluster = new Cluster(logger, config, {
-            id: this.id,
-            sender: this.sender,
+            id: clusterId,
+            worker: this,
             shardCount: parseInt(process.env.SHARDS_MAX!),
             firstShardId: parseInt(process.env.SHARDS_FIRST!),
             lastShardId: parseInt(process.env.SHARDS_LAST!)
         });
+    }
 
-        this.commandHandler = new CommandHandler(this.cluster);
+    async handle(type: string, id: Snowflake, data: JObject) {
+        const response = await this.commandHandler.execute(type, data);
+        this.send(type, id, response);
     }
 
     start() {
-        this.cluster.sender.send('threadReady', this.cluster.id);
         this.cluster.start();
-
-        this.process.on('message', async message => {
-            const { data, code } = JSON.parse(message);
-            if (code.startsWith('await:')) {
-                this.cluster.sender.emit(code, data);
-            }
-
-            const response = await this.commandHandler.execute(code, data);
-            if (response === undefined || response === null)
-                return;
-
-            this.cluster.sender.send(`await:${data.key}`, response);
-        });
+        super.start();
 
         setInterval(async () => {
-            let mem = this.process.memoryUsage();
-            this.cluster.sender.send('shardStats', {
+            this.send('shardStats', snowflake.create(), {
                 ...this.cluster.stats.getCurrent(),
-                rss: mem.rss,
-                cpu: (await lookupAsync(this.process.pid, { keepHistory: true }))?.cpu
+                rss: this.memoryUsage.rss,
+                cpu: (await lookupAsync(this.id, { keepHistory: true }))?.cpu
             });
-        });
+        }, 10000);
     }
 }
 

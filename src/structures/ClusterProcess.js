@@ -31,12 +31,14 @@ class ClusterProcess extends Sender {
         this.env = env;
 
 
-        this.process.on('message', msg => {
-            const message = JSON.parse(msg);
-            if (message.code.startsWith('await:')) {
-                this.emit(message.code, message.data);
+        this.process.on('message', message => {
+            const { type, id, data } = message;
+            if (type === undefined)
+                return;
+            if (type.startsWith('await:')) {
+                this.emit(type, data);
             } else
-                this.manager.handleMessage(this, message.code, message.data);
+                this.manager.handleMessage(this, type, message.data);
         });
         this.process.on('error', err => {
             console.error(this.id, err);

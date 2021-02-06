@@ -9,10 +9,9 @@
 
 const EventEmitter = require('eventemitter3');
 const Trello = require('node-trello');
+const { WorkerSpawner } = require('./WorkerSpawner');
 
 var bu = module.exports = {};
-
-global.cluster = require('./cluster.js');
 
 bu.emitter = new EventEmitter();
 bu.init = () => {

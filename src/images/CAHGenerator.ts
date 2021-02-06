@@ -8,7 +8,7 @@ export class CAHGenerator extends BaseImageGenerator {
 
     async execute({ white, black }: JObject) {
         if (!Array.isArray(white) || typeof black !== 'string')
-            return;
+            return null;
 
         let blackCard = await this.getLocalJimp('blackcard.png');
         let whiteCard = await this.getLocalJimp('whitecard.png');

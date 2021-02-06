@@ -9,7 +9,7 @@ export class DistortGenerator extends BaseImageGenerator {
 
     async execute({ avatar }: JObject) {
         if (typeof avatar !== 'string')
-            return;
+            return null;
         // 344x410
         // 28 - 70
         // 400x620

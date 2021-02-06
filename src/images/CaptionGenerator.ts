@@ -8,7 +8,7 @@ export class CaptionGenerator extends BaseImageGenerator {
 
     async execute({ url, input, font }: JObject) {
         if (typeof url !== 'string' || !checkInput(input) || typeof font !== 'string')
-            return;
+            return null;
 
         let img = await this.getRemoteJimp(url);
         img.scaleToFit(800, 800);

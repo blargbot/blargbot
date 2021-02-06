@@ -1,11 +1,10 @@
-import { Cluster } from '../../cluster';
+import { ClusterWorker } from './ClusterWorker';
 
 export class CommandHandler {
-    /**
-     * @param {import('../../cluster').Cluster} cluster
-     */
+    private get cluster() { return this.worker.cluster; }
+
     constructor(
-        public readonly cluster: Cluster
+        public readonly worker: ClusterWorker
     ) {
     }
 

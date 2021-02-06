@@ -8,7 +8,7 @@ export class PixelateGenerator extends BaseImageGenerator {
 
     async execute({ url, scale }: JObject) {
         if (typeof url !== 'string' || typeof scale !== 'number')
-            return;
+            return null;
 
         let image = await this.getRemoteJimp(url);
         if (image.bitmap.width >= image.bitmap.height) {

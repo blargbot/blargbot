@@ -7,7 +7,7 @@ export class RetardedGenerator extends BaseImageGenerator {
     }
     async execute({ text, avatar }: JObject) {
         if (typeof text !== 'string' || typeof avatar !== 'string')
-            return;
+            return null;
 
         let caption = await this.renderJimpText(text, {
             font: 'ARCENA.ttf',

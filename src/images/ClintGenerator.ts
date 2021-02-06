@@ -8,7 +8,7 @@ export class ClintGenerator extends BaseImageGenerator {
 
     async execute({ image }: JObject) {
         if (typeof image !== 'string')
-            return;
+            return null;
 
         let avatarImg = await this.getRemoteJimp(image);
         avatarImg.resize(700, 700);

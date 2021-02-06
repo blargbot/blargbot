@@ -1,45 +1,52 @@
 import { ImageModuleLoader } from '../../core/ImageModuleLoader';
-import { BaseWorker } from '../../structures/BaseWorker';
+import { BaseWorker } from '../../core/BaseWorker';
 
 export class ImageWorker extends BaseWorker {
     public readonly renderers: ImageModuleLoader;
-    constructor(process: NodeJS.Process, logger: CatLogger) {
-        super(process, logger)
-        this.logger.init(`IMAGE WORKER (pid ${this.process.pid}) PROCESS INITIALIZED`);
+    constructor(logger: CatLogger) {
+        super(logger)
+        this.logger.init(`IMAGE WORKER (pid ${this.id}) PROCESS INITIALIZED`);
 
         this.renderers = new ImageModuleLoader(this.logger, 'images');
+    }
+
+    async handle(type: string, id: Snowflake, data: JToken) {
+        switch (type) {
+            case 'img':
+                if (isImageData(data)) {
+                    this.logger.worker(`${type} Requested`);
+                    let buffer = await this.render(data.command, data);
+                    this.logger.worker(`${type} finished, submitting as base64. Size: ${buffer?.length ?? 'NaN'}`);
+                    this.send('img', id, buffer?.toString('base64'));
+                }
+        }
     }
 
     async render(command: string, message: JObject) {
         let generator = this.renderers.get(command);
         if (!generator)
-            return Buffer.from('');
+            return null;
 
         try {
             return await generator.execute(message);
         } catch (err) {
             let message = err instanceof Error ? err.stack : err;
             this.logger.error(`An error occurred while generating ${command}: ${message}`);
-            return Buffer.from('');
+            return null;
         }
     }
-
 
     async start() {
         await Promise.all([
             this.renderers.init()
         ])
-        this.process.on('message', async (msg) => {
-            if (msg.cmd !== 'img')
-                return;
-
-            let buffer = await this.render(msg.command, msg);
-            this.logger.worker('Finished, submitting as base64');
-            process.send!(JSON.stringify({
-                cmd: 'img',
-                code: msg.code,
-                buffer: buffer?.toString('base64') ?? ''
-            }));
-        });
+        super.start();
     }
+}
+
+function isImageData(value: JToken): value is JObject & { command: string } {
+    return typeof value === 'object'
+        && value !== null
+        && !Array.isArray(value)
+        && typeof value.command === 'string';
 }

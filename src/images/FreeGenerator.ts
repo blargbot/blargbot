@@ -10,7 +10,7 @@ export class FreeGenerator extends BaseImageGenerator {
 
     async execute({ top, bottom }: JObject) {
         if (typeof top !== 'string' || typeof bottom !== 'string')
-            return;
+            return null;
 
         let topCaption = await this.renderJimpText(top, {
             font: 'impact.ttf',

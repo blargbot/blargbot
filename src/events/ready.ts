@@ -1,6 +1,6 @@
 import moment from 'moment-timezone';
 import { BaseEventHandler } from '../structures/BaseEventHandler';
-import { humanize } from '../newbu';
+import { humanize, snowflake } from '../newbu';
 import { Cluster } from '../cluster';
 import { StoredGuild } from '../core/RethinkDb';
 
@@ -15,7 +15,7 @@ class ReadyEventHandler extends BaseEventHandler {
     }
 
     async handle() {
-        this.cluster.sender.send('ready', this.cluster.discord.guilds.map(g => g.id));
+        this.cluster.worker.send('ready', this.cluster.id, this.cluster.discord.guilds.map(g => g.id));
         this.logger.init(`Ready! Logged in as ${this.cluster.discord.user.username}#${this.cluster.discord.user.discriminator}`);
 
         let home;

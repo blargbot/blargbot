@@ -12,6 +12,9 @@ export interface DCommandOptions {
     flags?: FlagDefinition[];
     onlyOn?: string | null;
     cannotDisable?: boolean;
+    userRatelimit?: boolean;
+    channelRatelimit?: boolean;
+    cooldown?: number;
 }
 
 export abstract class BaseDCommand implements Required<DCommandOptions>{
@@ -25,8 +28,13 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     public readonly flags: FlagDefinition[];
     public readonly onlyOn: string | null;
     public readonly cannotDisable: boolean;
+    public readonly userRatelimit: boolean;
+    public readonly channelRatelimit: boolean;
+    public readonly cooldown: number;
 
     protected get util() { return this.cluster.util; }
+    protected get discord() { return this.cluster.discord; }
+    protected get logger() { return this.cluster.logger; }
 
     protected constructor(
         public readonly cluster: Cluster,
@@ -43,6 +51,9 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         this.flags = options.flags ?? [];
         this.onlyOn = options.onlyOn ?? null;
         this.cannotDisable = options.cannotDisable ?? true;
+        this.userRatelimit = options.userRatelimit ?? false;
+        this.channelRatelimit = options.channelRatelimit ?? false;
+        this.cooldown = options.cooldown ?? 0;
     }
 
     event(message: unknown): Promise<void> {

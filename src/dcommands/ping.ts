@@ -3,7 +3,7 @@ import { randInt, commandTypes } from '../newbu';
 import { Message, TextableChannel } from 'eris';
 import { Cluster } from '../cluster';
 
-var messages = [
+const messages = [
     `Existance is a lie.`,
     `You're going to die some day, perhaps soon.`,
     `Nothing matters.`,
@@ -28,6 +28,7 @@ export class PingCommand extends BaseDCommand {
     async execute(msg: Message<TextableChannel>, words: string[], text: string) {
         let message = messages[randInt(0, messages.length - 1)];
         let msg2 = await this.util.send(msg, message);
-        await msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)`);
+        if (msg2)
+            await msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)`);
     }
 }

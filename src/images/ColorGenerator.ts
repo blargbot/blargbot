@@ -8,7 +8,7 @@ export class ColorGenerator extends BaseImageGenerator {
 
     async execute({ hex }: JObject) {
         if (typeof hex !== 'number')
-            return;
+            return null;
 
         return await new Jimp(128, 128, hex)
             .getBufferAsync(Jimp.MIME_PNG);

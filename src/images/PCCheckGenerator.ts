@@ -7,7 +7,7 @@ export class PCCheckGenerator extends BaseImageGenerator {
 
     async execute({ text }: JObject) {
         if (typeof text !== 'string')
-            return;
+            return null;
 
         let container: Array<{ italic: boolean, text: string }> = [];
         let italic = false;

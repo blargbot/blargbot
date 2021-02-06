@@ -1,21 +1,40 @@
-import { BaseUtilities } from '../core/BaseUtilities';
+import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
 import { GuildSettings, StoredGuildCommand, StoredGuild, StoredUser } from '../core/RethinkDb';
 import { AnyChannel, GuildTextableChannel, Member, Message, Permission, Textable, TextableChannel, User } from 'eris';
 import * as r from 'rethinkdb';
-import { commandTypes, defaultStaff, guard, parse, snowflake } from '../newbu';
+import { commandTypes, defaultStaff, guard, humanize, parse, snowflake } from '../newbu';
 import { BaseDCommand } from '../structures/BaseDCommand';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
 import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
+import { TypePredicate } from 'typescript';
 
-type CanExecuteDiscordCommandOptions = {
+interface CanExecuteDiscordCommandOptions {
     storedGuild?: StoredGuild,
     permOverride?: GuildSettings['permoverride'],
     staffPerms?: GuildSettings['staffperms']
-};
+}
+
+interface GetUserOptions {
+    quiet?: boolean;
+    suppress?: boolean;
+    onSendCallback?: () => void;
+    label?: string;
+}
+
+interface LookupOptions {
+    onSendCallback?: () => void;
+    label?: string;
+    suppress?: boolean;
+}
+
+interface LookupMatch<T> {
+    content: string,
+    value: T
+}
 
 export class ClusterUtilities extends BaseUtilities {
     readonly #guildCache: Map<string, StoredGuild>;
@@ -44,6 +63,15 @@ export class ClusterUtilities extends BaseUtilities {
             return null;
 
         return guild.settings[key];
+    }
+
+    async renderImage(type: string, data: JObject) {
+        const result = await this.cluster.images.request('img', { command: type, ...data });
+        if (typeof result === 'string')
+            return Buffer.from(result, 'base64');
+        if (result instanceof Buffer)
+            return result;
+        return null;
     }
 
     async processUser(user: User) {
@@ -92,6 +120,190 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
+    async getUser(msg: Message, name: string, args: boolean | GetUserOptions = {}) {
+        if (!name)
+            return null;
+
+        let normName = name.toLowerCase();
+        const matchScore = (user: { name: string, nick: string, normName: string, normNick: string }) => {
+            let score = 0;
+            if (user.name.startsWith(name)) score += 100;
+            if (user.nick.startsWith(name)) score += 100;
+            if (user.normName.startsWith(normName)) score += 10;
+            if (user.normNick.startsWith(normName)) score += 10;
+            if (user.normName.includes(normName)) score += 1;
+            if (user.normNick.includes(normName)) score += 1;
+            return score;
+        }
+
+        if (typeof args !== 'object')
+            args = { quiet: args };
+
+        let user = await this.getUserById(name);
+        if (user)
+            return user;
+
+        if (!guard.isGuildMessage(msg)) {
+            return matchScore({
+                name: msg.author.username,
+                nick: msg.author.username,
+                normName: msg.author.username.toLowerCase(),
+                normNick: msg.author.username.toLowerCase()
+            }) > 0 ? msg.author : null;
+        }
+
+        let discrim: string | undefined;
+        let nameMatch = name.match(/^(.*)#(\d{4})$/);
+        if (nameMatch) {
+            [, name, discrim] = nameMatch;
+        }
+
+        let userList = msg.channel.guild.members
+            .map(m => ({
+                member: m,
+                match: matchScore({
+                    name: m.username,
+                    nick: m.nick ?? m.username,
+                    normNick: m.nick?.toLowerCase() ?? m.username.toLowerCase(),
+                    normName: m.username.toLowerCase(),
+                })
+            }))
+            .filter(m => m.match > 0 && (!discrim || discrim == m.member.discriminator))
+            .sort((a, b) => b.match - a.match)
+            .map(m => m.member.user);
+
+        switch (userList.length) {
+            case 1: return userList[0];
+            case 0:
+                if (args.quiet || args.suppress)
+                    return null;
+                if (args.onSendCallback)
+                    args.onSendCallback();
+                await this.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
+                return null;
+            default:
+                if (args.quiet || args.suppress)
+                    return null;
+                let matches = userList.map(m => ({ content: `${m.username}#${m.discriminator} - ${m.id}`, value: m }));
+                let lookupResponse = await this.createLookup(msg, 'user', matches, args);
+                return lookupResponse;
+        }
+    }
+
+
+    async createLookup<T>(msg: Message, type: string, matches: LookupMatch<T>[], args: LookupOptions = {}) {
+        let lookupList = matches.slice(0, 20);
+        let outputString = '';
+        for (let i = 0; i < lookupList.length; i++) {
+            outputString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${lookupList[i].content}\n`;
+        }
+        let moreLookup = lookupList.length < matches.length ? `...and ${matches.length - lookupList.length}more.\n` : '';
+        try {
+            if (args.onSendCallback)
+                args.onSendCallback();
+
+            let query = await this.createQuery(msg,
+                `Multiple ${type}s found! Please select one from the list.\`\`\`prolog` +
+                `\n${outputString}${moreLookup}--------------------` +
+                `\nC.cancel query\`\`\`` +
+                `\n**${humanize.fullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`,
+                (msg2) => msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1),
+                300000,
+                args.label
+            );
+            let response = await query.response;
+            if (query.prompt)
+                await this.discord.deleteMessage(query.prompt.channel.id, query.prompt.id);
+
+            if (!response || response.content.toLowerCase() === 'c') {
+                if (args.suppress)
+                    return null;
+
+                if (args.onSendCallback)
+                    args.onSendCallback();
+
+                await this.send(msg, `Query ${response ? 'cancelled' : 'timed out'}${args.label ? ' in ' + args.label : ''}.`);
+                return null;
+            }
+
+            return lookupList[parseInt(response.content) - 1].value;
+        } catch (err) {
+            return null;
+        }
+    }
+
+    async awaitQuery(
+        msg: Message,
+        content: SendPayload,
+        check: ((message: Message) => boolean) | undefined,
+        timeoutMS?: number,
+        label?: string
+    ) {
+        let query = await this.createQuery(msg, content, check, timeoutMS, label);
+        return await query.response;
+    };
+
+    async createQuery(
+        msg: Message,
+        content: SendPayload,
+        check: ((message: Message) => boolean) | undefined,
+        timeoutMS?: number,
+        label?: string
+    ) {
+        if (timeoutMS === undefined)
+            timeoutMS = 300000;
+        let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
+        return this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
+    };
+
+    async awaitPrompt(
+        msg: Message,
+        content: SendPayload,
+        check: ((message: Message) => boolean) | undefined,
+        timeoutMS: number,
+        timeoutMessage: SendPayload | undefined
+    ) {
+        let prompt = await this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
+        return await prompt.response;
+    };
+
+    async createPrompt(
+        msg: Message,
+        content: SendPayload,
+        check: ((message: Message) => boolean) | undefined,
+        timeoutMS: number,
+        timeoutMessage: SendPayload | undefined
+    ) {
+        let prompt = await this.send(msg, content);
+        let response = this.messageAwaiter.wait([msg.channel.id], [msg.author.id], timeoutMS, check);
+
+        if (timeoutMessage) {
+            response.then(m => {
+                if (m === null)
+                    this.send(msg, timeoutMessage);
+            });
+        }
+
+        return {
+            prompt,
+            response
+        };
+    };
+
+    async getUserById(userId: string) {
+        let match = userId.match(/\d{17,21}/);
+        if (!match)
+            return null;
+
+        try {
+            return this.users.get(match[0])
+                ?? await this.discord.getRESTUser(match[0])
+                ?? null;
+        } catch {
+            return null;
+        }
+    }
+
     async insertChatlog(msg: Message, type: number) {
         this.cluster.metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
         let data = {
@@ -115,7 +327,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     postStats() {
-        var stats = {
+        let stats = {
             server_count: this.guilds.size,
             shard_count: this.shards.size,
             shard_id: this.cluster.id
@@ -311,7 +523,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
 
-    async getUser(userid: string) {
+    async getCachedUser(userid: string) {
         if (!this.#userCache.has(userid)) {
             let user = await this.rethinkdb.getUser(userid);
             if (user)

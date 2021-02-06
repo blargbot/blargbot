@@ -37,7 +37,7 @@ export abstract class BaseImageGenerator {
     ) {
     }
 
-    abstract execute(message: JObject): Promise<Buffer | undefined>;
+    abstract execute(message: JObject): Promise<Buffer | null>;
 
     getLocalResourcePath(...segments: string[]) {
         return path.join(__dirname, '..', '..', 'res', 'img', ...segments);

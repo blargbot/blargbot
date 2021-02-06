@@ -1,6 +1,6 @@
 import { AnyChannel, AnyGuildChannel, Guild, GuildChannel, GuildTextableChannel, Message, Textable, TextableChannel, TextChannel, User } from 'eris';
 import { BaseEventHandler } from '../structures/BaseEventHandler';
-import CleverbotIO from 'better-cleverbot-io';
+// import CleverbotIO from 'better-cleverbot-io';
 import { Timer } from '../structures/Timer';
 import request from 'request';
 import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep, snowflake } from '../newbu';
@@ -9,8 +9,7 @@ import { StoredGuildCommand, StoredGuild, StoredTag } from '../core/RethinkDb';
 import { BaseDCommand } from '../structures/BaseDCommand';
 
 export class MessageCreateEventHandler extends BaseEventHandler {
-    readonly #cleverCache: {};
-    readonly #cleverbot: CleverbotIO;
+    // readonly #cleverbot: CleverbotIO;
     #arWhitelist: Set<string>;
     #whitelistInterval?: NodeJS.Timeout;
 
@@ -19,16 +18,15 @@ export class MessageCreateEventHandler extends BaseEventHandler {
     ) {
         super(cluster.discord, 'messageCreate', cluster.logger);
         this.#arWhitelist = new Set<string>();
-        this.#cleverCache = {};
-        this.#cleverbot = new CleverbotIO({
-            user: this.cluster.config.cleverbot.ioid,
-            key: this.cluster.config.cleverbot.iokey,
-            nick: 'blargbot' + snowflake.create()
-        });
+        // this.#cleverbot = new CleverbotIO({
+        //     user: this.cluster.config.cleverbot.ioid,
+        //     key: this.cluster.config.cleverbot.iokey,
+        //     nick: 'blargbot' + snowflake.create()
+        // });
 
-        this.#cleverbot.create().then(session => {
-            this.logger.init('Cleverbot.io initialized with session', session);
-        });
+        // this.#cleverbot.create().then(session => {
+        //     this.logger.init('Cleverbot.io initialized with session', session);
+        // });
     }
 
     install() {
@@ -65,7 +63,7 @@ export class MessageCreateEventHandler extends BaseEventHandler {
     async handleUserMessage(msg: Message, storedGuild: StoredGuild | null) {
         let prefix: string | undefined;
         let prefixes: string[] = [];
-        let storedUser = await this.cluster.util.getUser(msg.author.id);
+        let storedUser = await this.cluster.util.getCachedUser(msg.author.id);
         if (storedUser && storedUser.prefixes)
             prefixes.push(...storedUser.prefixes);
 
@@ -134,11 +132,6 @@ export class MessageCreateEventHandler extends BaseEventHandler {
             this.logger.error(err?.stack);
         }
     }
-
-    sendMessageToIrc(msg: string) {
-        this.cluster.sender.send('ircMessage', msg);
-    }
-
 
     async flipTables(msg: Message<GuildTextableChannel>, unflip: boolean) {
         let tableflip = await this.cluster.util.guildSetting(msg.channel.guild.id, 'tableflip');
@@ -518,16 +511,16 @@ export class MessageCreateEventHandler extends BaseEventHandler {
             await sleep(1500);
             await this.cluster.util.send(msg, response);
         } catch (err) {
-            try {
-                //cleverbot.setNick('blargbot' + msg.channel.id);
-                let response = await this.#cleverbot.ask(msgToSend);
-                await sleep(1500);
-                await this.cluster.util.send(msg, response);
-            } catch (err) {
-                console.error(err);
-                await sleep(1500);
-                await this.cluster.util.send(msg, `Failed to contact the API. Blame cleverbot.io`);
-            }
+            // try {
+            //     //cleverbot.setNick('blargbot' + msg.channel.id);
+            //     let response = await this.#cleverbot.ask(msgToSend);
+            //     await sleep(1500);
+            //     await this.cluster.util.send(msg, response);
+            // } catch (err) {
+            console.error(err);
+            // await sleep(1500);
+            await this.cluster.util.send(msg, `Failed to contact the API. Blame cleverbot.io`);
+            // }
         }
     }
 

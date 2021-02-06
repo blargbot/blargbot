@@ -31,7 +31,7 @@ export class BaseUtilities {
     constructor(
         public readonly client: BaseClient
     ) {
-        this.messageAwaiter = new MessageAwaiter();
+        this.messageAwaiter = new MessageAwaiter(this.logger);
     }
 
     async send(context: SendContext, payload: SendPayload, files?: SendFiles) {
@@ -66,9 +66,15 @@ export class BaseUtilities {
         }
 
         switch (typeof payload) {
-            case "string": payload = { content: payload }; break;
-            case 'boolean': case 'number': payload = { content: payload.toString() }; break;
-            case "object": break;
+            case "string":
+                payload = { content: payload };
+                break;
+            case 'boolean':
+            case 'number':
+                payload = { content: payload.toString() };
+                break;
+            case "object":
+                break;
             default: payload = {};
         }
 
@@ -102,7 +108,7 @@ export class BaseUtilities {
 
         if (!payload.content && !payload.embed && !payload.embeds && (!files || files.length == 0)) {
             this.logger.error('Tried to send an empty message!');
-            return new Error('No content');
+            throw new Error('No content');
         }
 
         if (payload.content.length > 2000) {
@@ -112,13 +118,16 @@ export class BaseUtilities {
         }
 
         this.logger.debug('Sending content: ', JSON.stringify(payload));
-        let sendPromise = this.discord.createMessage(channel.id, payload, files);
-        return await sendPromise.catch(async (error) => {
+        try {
+            return await this.discord.createMessage(channel.id, payload, files)
+        } catch (error) {
             let response = error.response;
             if (typeof response !== 'object')
                 response = JSON.parse(error.response || "{}");
-            if (!sendErrors.hasOwnProperty(response.code))
-                return this.logger.error(error.response, error.stack);
+            if (!sendErrors.hasOwnProperty(response.code)) {
+                this.logger.error(error.response, error.stack);
+                return null;
+            }
 
             let result = await sendErrors[response.code](this, channel, payload, files);
             if (typeof result === 'string' && message && await this.canDmErrors(message.author.id)) {
@@ -137,10 +146,9 @@ export class BaseUtilities {
                 result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
                 await this.sendDM(message.author.id, result);
-            } else if (typeof result === 'object' && 'id' in result) {
-                return result;
             }
-        });
+            return null;
+        }
     }
 
     async sendDM(context: Message | User | Member | string, message: SendPayload, files?: SendFiles) {
@@ -184,7 +192,7 @@ export class BaseUtilities {
 }
 
 
-const sendErrors: { [key: string]: (utilities: BaseUtilities, channel: AnyChannel | Channel, payload: SendPayload, files?: SendFiles) => string | void } = {
+const sendErrors: { [key: string]: (utilities: BaseUtilities, channel: AnyChannel | Channel, payload: SendPayload, files?: SendFiles) => Promise<string | void> | string | void } = {
     '10003': () => { /* console.error('10003: Channel not found. ', channel); */ },
     '50006': (util, _, payload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
     '50007': () => { /* console.error('50007: Can\'t send a message to this user!'); */ },

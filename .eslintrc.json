@@ -44,8 +44,8 @@
             0,
             4
         ],
-        "no-undef": 1,
-        "no-global-assign": 1,
+        "no-undef": "warn",
+        "no-global-assign": "warn",
         "no-console": "warn",
         "comma-dangle": "warn",
         "no-trailing-spaces": "warn"

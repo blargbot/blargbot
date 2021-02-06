@@ -10,7 +10,7 @@ export class TriggeredGenerator extends BaseImageGenerator {
 
     async execute({ avatar, inverted, horizontal, vertical, sepia, blur, greyscale }: JObject) {
         if (typeof avatar !== 'string')
-            return;
+            return null;
 
         let frameCount = 8;
         let avatarImg = await this.getRemoteJimp(avatar);

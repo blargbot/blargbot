@@ -3,7 +3,9 @@ import { EventEmitter } from "eventemitter3";
 
 export class MessageAwaiter {
     readonly #events: EventEmitter;
-    constructor() {
+    constructor(
+        public readonly logger: CatLogger
+    ) {
         this.#events = new EventEmitter();
     }
 
@@ -11,34 +13,46 @@ export class MessageAwaiter {
         this.#events.emit(message.channel.id, message);
     }
 
-    wait(channelId: string, userId: string | null, timeoutMS: number, filter?: (message: Message) => boolean) {
+    wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: Message) => boolean) {
+        console.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeoutMS}`);
+
         return new Promise<Message | null>(resolve => {
             const timeout = setTimeout(() => {
                 resolve(null);
-                this.#events.off(channelId, handler);
+                for (let channel of channels)
+                    this.#events.off(channel, handler);
             }, timeoutMS);
 
-            const _filter = buildFilter(userId, filter);
+            const _filter = buildFilter(users, filter);
             const handler = (message: Message) => {
                 if (!_filter(message))
                     return;
 
                 resolve(message);
-                this.#events.off(channelId, handler);
                 clearTimeout(timeout);
+                for (let channel of channels)
+                    this.#events.off(channel, handler);
             }
-            this.#events.on(channelId, handler);
+
+            for (let channel of channels)
+                this.#events.on(channel, handler);
         });
     }
 }
 
-function buildFilter(userId: string | null, filter?: (message: Message) => boolean): (message: Message) => boolean {
-    if (userId === null)
+function buildFilter(users: string[] | null, filter?: (message: Message) => boolean): (message: Message) => boolean {
+    if (users === null || users.length === 0)
         return filter ?? (() => true);
 
-    if (filter === undefined)
-        return message => message.author.id === userId;
+    if (users.length === 1) {
+        const user = users[0];
+        if (filter === undefined)
+            return m => m.author.id === user;
+        return m => m.author.id == user && filter!(m);
+    }
 
-    return message => message.author.id === userId
-        && filter!(message);
+    const userSet = new Set(users);
+    if (filter === undefined)
+        return m => userSet.has(m.author.id);
+    return m => userSet.has(m.author.id) && filter!(m);
 }
