@@ -1,7 +1,7 @@
 import { BaseImageGenerator } from '../structures/BaseImageGenerator'
 
 export class SonicSaysGenerator extends BaseImageGenerator {
-    constructor(logger: WorkerLogger) {
+    constructor(logger: CatLogger) {
         super(logger);
     }
 

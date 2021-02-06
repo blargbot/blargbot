@@ -6,7 +6,7 @@ export function createLogger(config: Configuration, clusterId: string) {
     const logger = new CatLoggr({
         shardId: clusterId,
         level: config.general.isbeta ? 'debug' : 'info',
-        shardLength: 4,
+        shardLength: 6,
         levels: [
             logLevel('fatal', Chalk.red.bgBlack, { err: true }),
             logLevel('error', Chalk.black.bgRed, { err: true }),
@@ -41,8 +41,6 @@ export function createLogger(config: Configuration, clusterId: string) {
         }
         return null;
     });
-
-    logger.error('abc')
 
     return logger;
 }

@@ -2,7 +2,7 @@ import Jimp from 'jimp';
 import { BaseImageGenerator } from '../structures/BaseImageGenerator'
 
 export class CaptionGenerator extends BaseImageGenerator {
-    constructor(logger: WorkerLogger) {
+    constructor(logger: CatLogger) {
         super(logger);
     }
 

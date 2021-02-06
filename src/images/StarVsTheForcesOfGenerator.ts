@@ -4,7 +4,7 @@ import { BetterColorAction } from '@Jimp/plugin-color';
 import Jimp from 'jimp';
 
 export class StarVsTheForcesOfGenerator extends BaseImageGenerator {
-    constructor(logger: WorkerLogger) {
+    constructor(logger: CatLogger) {
         super(logger);
     }
 

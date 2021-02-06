@@ -2,7 +2,7 @@ import { BaseImageGenerator } from '../structures/BaseImageGenerator'
 import Jimp from 'jimp';
 
 export class PixelateGenerator extends BaseImageGenerator {
-    constructor(logger: WorkerLogger) {
+    constructor(logger: CatLogger) {
         super(logger);
     }
 

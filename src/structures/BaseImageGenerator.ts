@@ -33,7 +33,7 @@ interface PhantomTransformOptions<T> extends PhantomOptions {
 
 export abstract class BaseImageGenerator {
     constructor(
-        public readonly logger: WorkerLogger
+        public readonly logger: CatLogger
     ) {
     }
 

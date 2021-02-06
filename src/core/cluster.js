@@ -45,17 +45,18 @@ if (cluster.isMaster) {
         silent: false
     });
 
-    cluster.on('message', (worker, msg, handle) => {
-        switch (msg.cmd) {
+    cluster.on('message', (worker, message, handle) => {
+        const msg = JSON.parse(message);
+        switch (msg.cmd || msg.code) {
             case 'log':
-                console[msg.level]('[IMAGE]', msg.msg);
+                // console[msg.level]('[IMAGE]', msg.msg);
                 break;
             case 'img':
                 console.cluster('base64 received, sending to the EE');
                 bu.emitter.emit(msg.code, Buffer.from(msg.buffer, 'base64'));
                 break;
             default:
-                console.cluster(`Worker ${worker.process.pid} says:\n${util.inspect(msg)}`);
+                console.cluster(`Worker ${worker.process.pid} says:\n${util.inspect(data)}`);
                 break;
         }
     });

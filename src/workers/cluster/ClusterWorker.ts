@@ -2,22 +2,21 @@ import { Cluster } from "../../cluster";
 import { Sender } from "../../structures/Sender";
 import { CommandHandler } from "./CommandHandler";
 import { Options, ResultObject } from 'usage';
+import { BaseWorker } from "../../structures/BaseWorker";
 
-export class ClusterWorker {
+export class ClusterWorker extends BaseWorker {
     public readonly id: string;
     public readonly cluster: Cluster;
     public readonly commandHandler: CommandHandler;
     public readonly sender: Sender;
     constructor(
-        public readonly process: NodeJS.Process,
-        public readonly logger: CatLogger,
+        process: NodeJS.Process,
+        logger: CatLogger,
         public readonly config: Configuration
     ) {
-        this.id = process.env.CLUSTER_ID!;
+        super(process, logger);
 
-        this.process.on('unhandledRejection', (err, p) => {
-            logger.error('Unhandled Promise Rejection: Promise', err);
-        });
+        this.id = process.env.CLUSTER_ID!;
 
         this.logger.init(`CLUSTER ${this.id} (pid ${this.process.pid}) PROCESS INITIALIZED`);
         this.sender = new Sender(this.id, process, logger);

@@ -3,7 +3,7 @@ import { randInt } from '../newbu';
 import { BetterColorAction } from '@Jimp/plugin-color';
 
 export class DistortGenerator extends BaseImageGenerator {
-    constructor(logger: WorkerLogger) {
+    constructor(logger: CatLogger) {
         super(logger);
     }
 

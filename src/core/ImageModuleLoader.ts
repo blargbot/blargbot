@@ -3,7 +3,7 @@ import { BaseImageGenerator } from "../structures/BaseImageGenerator";
 
 export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
     constructor(
-        public readonly logger: WorkerLogger,
+        public readonly logger: CatLogger,
         public readonly source: string
     ) {
         super(source);
@@ -39,7 +39,7 @@ export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
 
         if (typeof rawModule.constructor === 'function' && rawModule.prototype instanceof BaseImageGenerator) {
             let instance = new rawModule(this.logger);
-            return { module: instance, names: getNiceNames(rawModule.constructor) };
+            return { module: instance, names: getNiceNames(rawModule.constructor.name) };
         }
     }
 }

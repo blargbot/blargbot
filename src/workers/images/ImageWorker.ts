@@ -1,15 +1,10 @@
 import { ImageModuleLoader } from '../../core/ImageModuleLoader';
+import { BaseWorker } from '../../structures/BaseWorker';
 
-export class ImageWorker {
+export class ImageWorker extends BaseWorker {
     public readonly renderers: ImageModuleLoader;
-    constructor(
-        public readonly process: NodeJS.Process,
-        public readonly logger: WorkerLogger
-    ) {
-        this.process.on('unhandledRejection', (err, p) => {
-            logger.error('Unhandled Promise Rejection: Promise' + JSON.stringify(err));
-        });
-
+    constructor(process: NodeJS.Process, logger: CatLogger) {
+        super(process, logger)
         this.logger.init(`IMAGE WORKER (pid ${this.process.pid}) PROCESS INITIALIZED`);
 
         this.renderers = new ImageModuleLoader(this.logger, 'images');
@@ -40,11 +35,11 @@ export class ImageWorker {
 
             let buffer = await this.render(msg.command, msg);
             this.logger.worker('Finished, submitting as base64');
-            process.send!({
+            process.send!(JSON.stringify({
                 cmd: 'img',
                 code: msg.code,
                 buffer: buffer?.toString('base64') ?? ''
-            });
+            }));
         });
     }
 }

@@ -4,7 +4,7 @@ import { JimpGifEncoder } from '../structures/JimpGifEncoder';
 import Jimp from 'jimp';
 
 export class FreeGenerator extends BaseImageGenerator {
-    constructor(logger: WorkerLogger) {
+    constructor(logger: CatLogger) {
         super(logger);
     }
 
