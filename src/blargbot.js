@@ -14,7 +14,7 @@ const moment = require('moment');
 
 const loggr = new CatLoggr({
     shardId: 'MS',
-    level: config.general.isbeta ? 'debug' : 'info',
+    level: config.general.loglevel || 'info',
     shardLength: 6,
     levels: [
         { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },

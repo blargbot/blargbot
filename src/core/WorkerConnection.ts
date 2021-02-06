@@ -2,31 +2,38 @@ import { EventEmitter } from 'eventemitter3';
 import child_process, { ChildProcess, Serializable } from 'child_process';
 import { Snowflake } from 'catflake';
 import { snowflake } from '../newbu';
+import { Timer } from '../structures/Timer';
 
-export class WorkerSpawner extends EventEmitter {
+export class WorkerConnection extends EventEmitter {
     readonly #coreEmit: (type: string, id: Snowflake, data: JToken) => boolean;
+    readonly file: string;
     #process?: ChildProcess;
 
-    public get started() { return this.#process !== undefined; }
-    public get alive() { return this.#process && !this.#process.killed; }
+    public get connected() { return this.#process?.connected ?? false; }
 
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
 
     constructor(
-        public readonly file: string
+        public readonly id: Snowflake,
+        public readonly worker: string,
+        public readonly logger: CatLogger
     ) {
         super();
         this.args = [...process.execArgv];
         this.env = { ...process.env };
+        this.file = require.resolve(`../workers/${this.worker}`);
         this.#coreEmit = (type: string, id: Snowflake, data: JToken) =>
             super.emit(type, { id, data });
     }
 
-    start(timeoutMS: number = 10000) {
-        if (this.started)
-            throw new Error('The child process has already been started!');
+    async connect(timeoutMS: number = 10000) {
+        if (this.#process)
+            throw new Error('Cannot connect to a worker multiple times. Create a new instance for a new worker');
 
+        this.logger.worker(`Spawning a new ${this.worker} worker (ID: ${this.id})`);
+        const timer = new Timer();
+        timer.start();
         this.#process = child_process.fork(this.file, {
             env: this.env,
             execArgv: this.args
@@ -48,16 +55,24 @@ export class WorkerSpawner extends EventEmitter {
         this.#process.on('kill', (code) => this.#coreEmit('kill', snowflake.create(), 'Child was killed'));
         this.#process.on('error', (error) => this.#coreEmit('error', snowflake.create(), { ...error }));
 
-        return new Promise<JToken>((resolve, reject) => {
-            this.once('alive', ({ data }) => resolve(data));
-            this.once('stopped', ({ id, data }) => reject(new Error(`Child process has stopped with code ${id}: ${data}`)));
-            setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMS);
-        });
+        try {
+            const result = await new Promise<JToken>((resolve, reject) => {
+                this.once('alive', ({ data }) => resolve(data));
+                this.once('stopped', ({ id, data }) => reject(new Error(`Child process has stopped with code ${id}: ${data}`)));
+                setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMS);
+            });
+            timer.end();
+            this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive after ${timer.elapsed}ms and said ${JSON.stringify(result)}`);
+            return result;
+        } catch (err) {
+            this.logger.error(`${this.worker} worker (ID: ${this.id}) failed to start: ${err?.stack ?? err}`);
+            throw err;
+        }
     }
 
     kill(code: NodeJS.Signals | number = 'SIGTERM') {
-        if (!this.alive)
-            throw new Error('The child process is not running');
+        if (!this.connected)
+            throw new Error('The child process is not connected');
 
         this.#process!.kill(code);
     }

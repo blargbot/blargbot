@@ -1,0 +1,13 @@
+{
+    "files.exclude": {
+        "node_modules": true,
+        "**/*.js": {
+            "when": "$(basename).ts"
+        },
+        "**/*.map": {
+            "when": "$(basename)"
+        }
+    },
+    "npm.packageManager": "yarn",
+    "files.eol": "\n"
+}

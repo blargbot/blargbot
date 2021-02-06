@@ -24,7 +24,7 @@ export abstract class BaseWorker {
             return null
         });
 
-        this.send('alive', snowflake.create(), null);
+        this.send('alive', snowflake.create(), 'Hello!');
     }
 
     send(type: string, id: Snowflake, data: JToken) {

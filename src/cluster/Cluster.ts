@@ -12,7 +12,7 @@ import { commandTypes, tagTypes } from '../newbu';
 import { Sender } from '../structures/Sender';
 import { BBEngine } from '../structures/BBEngine';
 import { ClusterWorker } from '../workers/cluster/ClusterWorker';
-import { WorkerSpawner } from '../core/WorkerSpawner';
+import { WorkerConnection } from '../core/WorkerConnection';
 
 export interface ClusterOptions {
     id: string,
@@ -33,7 +33,7 @@ export class Cluster extends BaseClient {
     public readonly util: ClusterUtilities;
     public readonly triggers: EventManager;
     public readonly bbtag: BBEngine;
-    public readonly images: WorkerSpawner;
+    public readonly images: WorkerConnection;
 
     constructor(
         public readonly logger: CatLogger,
@@ -79,7 +79,7 @@ export class Cluster extends BaseClient {
         this.util = new ClusterUtilities(this);
         this.triggers = new EventManager(this);
         this.bbtag = new BBEngine(this);
-        this.images = new WorkerSpawner('src/workers/image.js');
+        this.images = new WorkerConnection('1', 'image', this.logger);
 
         this.events.on('add', (module: BaseEventHandler) => module.install());
         this.events.on('remove', (module: BaseEventHandler) => module.uninstall());
@@ -92,7 +92,7 @@ export class Cluster extends BaseClient {
             this.events.init().then(() => this.logger.init(moduleStats(this.events, 'Events', ev => ev.type))),
             this.commands.init().then(() => this.logger.init(moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name))),
             this.tags.init().then(() => this.logger.init(moduleStats(this.tags, 'Tags', c => c.category, c => tagTypes.properties[c].name))),
-            this.images.start()
+            this.images.connect()
         ]);
         this.logger.init(`Cluster ${this.id} started`);
     }

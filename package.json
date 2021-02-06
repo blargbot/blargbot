@@ -5,12 +5,8 @@
     "main": "blargbot.js",
     "dependencies": {
         "@nuxtjs/axios": "^5.3.3",
-        "@types/safe-regex": "^1.1.2",
         "airtable": "^0.5.7",
-        "babel-polyfill": "^6.22.0",
-        "babel-register": "^6.26.0",
         "better-cleverbot-io": "^1.0.2",
-        "big-integer": "^1.6.36",
         "body-parser": "^1.18.3",
         "brainfuck-node": "^1.0.1",
         "cassandra-driver": "^3.5.0",
@@ -22,7 +18,6 @@
         "cookieparser": "^0.1.0",
         "cron": "^1.4.1",
         "eris": "^0.14.0",
-        "eslint-plugin-vue": "^4.7.1",
         "eventemitter3": "^2.0.3",
         "express": "^4.16.3",
         "express-session": "^1.14.2",
@@ -73,9 +68,6 @@
         "xml2js": "^0.4.19",
         "xss": "^1.0.3"
     },
-    "optionalDependencies": {
-        "usage": "^0.7.1"
-    },
     "devDependencies": {
         "@types/cassandra-driver": "^3.5.0",
         "@types/gifencoder": "^2.0.0",
@@ -85,15 +77,16 @@
         "@types/phantom": "^3.2.5",
         "@types/request": "^2.48.5",
         "@types/rethinkdb": "^2.3.16",
+        "@types/safe-regex": "^1.1.2",
         "@types/sequelize": "^4.28.9",
         "@types/tinycolor2": "^1.4.2",
-        "@types/usage": "^0.0.28",
-        "eslint": "^5.6.1",
-        "eslint-loader": "^2.1.1",
+        "@typescript-eslint/eslint-plugin": "^4.14.2",
+        "@typescript-eslint/parser": "^4.14.2",
+        "eslint": "^7.19.0",
+        "eslint-plugin-vue": "^7.5.0",
         "node-sass": "^4.9.3",
         "opusscript": "^0.0.7",
         "sass-lint": "^1.12.1",
-        "sass-loader": "^7.1.0",
         "yarn": "^1.22.10"
     },
     "scripts": {

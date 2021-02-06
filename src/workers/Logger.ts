@@ -5,7 +5,7 @@ import Sequelize, { ValidationError } from 'sequelize';
 export function createLogger(config: Configuration, clusterId: string) {
     const logger = new CatLoggr({
         shardId: clusterId,
-        level: config.general.isbeta ? 'debug' : 'info',
+        level: config.general.loglevel ?? 'info',
         shardLength: 6,
         levels: [
             logLevel('fatal', Chalk.red.bgBlack, { err: true }),
