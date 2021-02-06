@@ -1,4 +1,5 @@
 import { Message, TextableChannel } from "eris";
+import { Cluster } from "../cluster";
 import { CommandType, FlagDefinition } from "../newbu";
 
 export interface DCommandOptions {
@@ -25,7 +26,10 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     public readonly onlyOn: string | null;
     public readonly cannotDisable: boolean;
 
+    protected get util() { return this.cluster.util; }
+
     protected constructor(
+        public readonly cluster: Cluster,
         public readonly name: string,
         options: DCommandOptions
     ) {

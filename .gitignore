@@ -44,3 +44,5 @@ jsondiff.js
 !colors.json
 .nuxt/
 **/*.js
+**/*.js.map
+**/*.disabled

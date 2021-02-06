@@ -62,8 +62,8 @@ export class EventManager {
         let events = this.cluster.rethinkdb.stream<StoredEvent>(r =>
             r.table('events')
                 .between(
-                    this.cluster.rethinkdb.epochTime(0),
-                    this.cluster.rethinkdb.epochTime(Date.now() / 1000 + 60 * 5),
+                    r.epochTime(0),
+                    r.epochTime(Date.now() / 1000 + 60 * 5),
                     {
                         index: 'endtime'
                     }

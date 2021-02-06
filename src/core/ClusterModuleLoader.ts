@@ -47,7 +47,7 @@ export class ClusterModuleLoader<TModule> extends BaseModuleLoader<TModule> {
             return { module: rawModule, names: this.#getNames(rawModule) };
         }
 
-        if (typeof rawModule.constructor === 'function' && rawModule.prototype instanceof this.type) {
+        if (typeof rawModule?.constructor === 'function' && rawModule.prototype instanceof this.type) {
             let instance = new rawModule(this.cluster);
             return { module: instance, names: this.#getNames(instance) };
         }

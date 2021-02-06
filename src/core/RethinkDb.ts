@@ -281,12 +281,13 @@ export class RethinkDb {
 
     async * stream<T extends object = object>(query: (rethink: typeof r) => r.Operation<r.Cursor>) {
         const cursor = await this.query(query);
-        while (cursor.hasNext())
-            yield <T>await cursor.next();
-    }
-
-    epochTime(epoch: number) {
-        return r.epochTime().add(epoch);
+        while (true) {
+            try {
+                yield <T>await cursor.next();
+            } catch (err) {
+                break;
+            }
+        }
     }
 
     connect() {

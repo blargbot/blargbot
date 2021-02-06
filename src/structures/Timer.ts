@@ -55,5 +55,3 @@ export class Timer {
         return this;
     }
 }
-
-module.exports = Timer;

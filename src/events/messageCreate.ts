@@ -8,7 +8,7 @@ import { Cluster } from '../cluster';
 import { StoredGuildCommand, StoredGuild, StoredTag } from '../core/RethinkDb';
 import { BaseDCommand } from '../structures/BaseDCommand';
 
-class MessageCreateEventHandler extends BaseEventHandler {
+export class MessageCreateEventHandler extends BaseEventHandler {
     readonly #cleverCache: {};
     readonly #cleverbot: CleverbotIO;
     #arWhitelist: Set<string>;

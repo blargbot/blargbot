@@ -9,7 +9,7 @@
 
 const router = require('express').Router();
 const hbs = require('hbs');
-const settings = require('../../dcommands/settings');
+const settings = require('../../dcommands_old/settings');
 
 router.get('/', (req, res) => {
     res.locals.user = req.user;
