@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('rolesetmentionable')
-        .withArgs(a => [a.require('role'), a.optional('value'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.optional('value'), a.optional('quiet')])
         .withDesc('Sets whether `role` can be mentioned. `value` can be either `true` to set the role as mentionable, ' +
             'or anything else to set it to unmentionable. If `value` isn\'t provided, defaults to `true`. ' +
             'If `quiet` is specified, if `role` can\'t be found it will simply return nothing')

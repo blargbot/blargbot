@@ -12,7 +12,7 @@ const moment = require('moment-timezone');
 
 module.exports =
     Builder.AutoTag('sleep')
-        .withArgs(a => a.require('duration'))
+        .withArgs(a => a.required('duration'))
         .withDesc('Pauses the current tag for the specified amount of time. Maximum is 5 minutes'
         ).withExample(
             '{sleep;10s}{send;{channelid};Hi!}',

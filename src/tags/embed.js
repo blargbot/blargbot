@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('embed')
-        .withArgs(a => a.require('embed'))
+        .withArgs(a => a.required('embed'))
         .withDesc('Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a valid json embed object.\n' +
             'This subtag works well with `{embedbuild}`. If attempting to use inside of a `{send}`, `{edit}` or `{dm}`, you should not include `{embed}`, ' +
             'and instead just pass the content direct to `{send}`/`{edit}`/`{dm}`\n' +

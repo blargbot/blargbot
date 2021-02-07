@@ -12,13 +12,13 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('jsonset')
         .withAlias('jset')
-        .withArgs(a => [a.require('input'), a.require('path'), a.require('value'), a.optional('create')])
+        .withArgs(a => [a.required('input'), a.required('path'), a.required('value'), a.optional('create')])
         .withDesc('Using the `input` as a base, navigates the provided dot-notated `path` and assigns the `value`.' +
-        '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.' +
-        'If `create` is specified, will create/convert any missing keys.')
+            '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.' +
+            'If `create` is specified, will create/convert any missing keys.')
         .withExample(
-        '{jsonset;;path.to.key;value;create}',
-        '{"path":{"to":{"key":"value"}}}'
+            '{jsonset;;path.to.key;value;create}',
+            '{"path":{"to":{"key":"value"}}}'
         )
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-4', async function (subtag, context, args) {

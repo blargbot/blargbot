@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('choose')
-        .withArgs(a => [a.require('choice'), a.require('options', true)])
+        .withArgs(a => [a.required('choice'), a.required('options', true)])
         .withDesc('Chooses from the given `options`, where `choice` is the index of the option to select.')
         .withExample(
             'I feel like eating {choose;1;cake;pie;pudding} today.',

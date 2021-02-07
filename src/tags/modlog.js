@@ -12,8 +12,8 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.BotTag('modlog')
         .withArgs(a => [
-            a.require('action'),
-            a.require('user'),
+            a.required('action'),
+            a.required('user'),
             a.optional('mod'),
             a.optional('reason'),
             a.optional('color')

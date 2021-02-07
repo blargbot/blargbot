@@ -12,9 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('map')
         .withArgs(a => [
-            a.require('variable'),
-            a.require('array'),
-            a.require('function')
+            a.required('variable'),
+            a.required('array'),
+            a.required('function')
         ])
         .withDesc('Provides a way to populate an array by executing a function on each of its elements,' +
             ' more info [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/map)\n' +
@@ -33,7 +33,7 @@ module.exports =
                 array = Array.from(arr.v),
                 newArray = [];
 
-            let remaining = context.state.limits.map || {loops : NaN};
+            let remaining = context.state.limits.map || { loops: NaN };
             for (const item of array) {
                 remaining.loops--;
                 if (!(remaining.loops >= 0)) {

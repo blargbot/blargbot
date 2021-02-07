@@ -12,19 +12,19 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.APITag('ban')
         .withArgs(a => [
-            a.require('user'),
+            a.required('user'),
             a.optional('daysToDelete'),
             a.optional('reason'),
             a.optional('timeToUnban'),
             a.optional('noperms')
         ]).withDesc('Bans `user`. ' +
-        'This functions the same as the ban command. ' +
-        'If the ban is successful, `Success` will be returned, unless a duration was provided in which case the duration in ms will be returned' +
-        'If `noperms` is provided, do not check if the command executor is actually able to ban people. ' +
-        'Only provide this if you know what you\'re doing.'
+            'This functions the same as the ban command. ' +
+            'If the ban is successful, `Success` will be returned, unless a duration was provided in which case the duration in ms will be returned' +
+            'If `noperms` is provided, do not check if the command executor is actually able to ban people. ' +
+            'Only provide this if you know what you\'re doing.'
         ).withExample(
-        '{ban;stupid cat;0;This is a test ban} @stupid cat was banned!',
-        'Success @stupid cat was banned!'
+            '{ban;stupid cat;0;This is a test ban} @stupid cat was banned!',
+            'Success @stupid cat was banned!'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-5', async function (subtag, context, args) {

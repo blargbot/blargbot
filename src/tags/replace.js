@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('replace')
-        .withArgs(a => [a.optional('text'), a.require('phrase'), a.require('replacewith')])
+        .withArgs(a => [a.optional('text'), a.required('phrase'), a.required('replacewith')])
         .withDesc('Replaces the first occurrence of `phrase` with `replacewith`. ' +
             'If `text` is specified, the subtag is replaced with the new `toreplace`. ' +
             'If not, it replaces the message that will be sent from this tag.')

@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.APITag('usersetnick')
         .withAlias('setnick')
-        .withArgs(a => [a.require('nick'), a.optional('user')])
+        .withArgs(a => [a.required('nick'), a.optional('user')])
         .withDesc('Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.')
         .withExample(
             '{usersetnick;super cool nickname}',

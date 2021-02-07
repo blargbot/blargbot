@@ -14,9 +14,9 @@ module.exports =
     Builder.AutoTag('while')
         .acceptsArrays()
         .withArgs(a => [
-            a.require('value1'),
-            a.optional([a.require('evaluator'), a.require('value2')]),
-            a.require('code')
+            a.required('value1'),
+            a.optional([a.required('evaluator'), a.required('value2')]),
+            a.required('code')
         ]).withDesc('This will continuously execute `code` for as long as the condition returns `true`. The condition is as follows:\n' +
             'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
             'If they are not provided, `value1` is read as `true` or `false`. ' +

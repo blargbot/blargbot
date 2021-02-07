@@ -20,12 +20,12 @@ const Builder = require('../structures/TagBuilder'),
 module.exports =
     Builder.AutoTag('for')
         .withArgs(a => [
-            a.require('variable'),
-            a.require('initial'),
-            a.require('comparison'),
-            a.require('limit'),
+            a.required('variable'),
+            a.required('initial'),
+            a.required('comparison'),
+            a.required('limit'),
             a.optional('increment'),
-            a.require('code')
+            a.required('code')
         ])
         .withDesc('To start, `variable` is set to `initial`. Then, the tag will loop, first checking `variable` against `limit` using `comparison`. ' +
             'If the check succeeds, `code` will be run before `variable` being incremented by `increment` and the cycle repeating.\n' +

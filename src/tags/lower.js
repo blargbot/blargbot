@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('lower')
-        .withArgs(a => a.require('text'))
+        .withArgs(a => a.required('text'))
         .withDesc('Returns `text` as lowercase.')
         .withExample(
             '{lower;THIS WILL BECOME LOWERCASE}',

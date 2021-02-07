@@ -12,7 +12,7 @@ const request = require('request');
 
 module.exports =
     Builder.AutoTag('emoji')
-        .withArgs(a => [a.require('text'), a.optional('amount')])
+        .withArgs(a => [a.required('text'), a.optional('amount')])
         .withDesc('Gets `amount` (or 5 if `amount` isn\'t specified) emojis related to `text`. There\'s a limit of 10 emojis.')
         .withExample(
             '{emoji;I am hungry;5}',

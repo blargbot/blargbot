@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('substring')
-        .withArgs(a => [a.require('text'), a.require('start'), a.optional('end')])
+        .withArgs(a => [a.required('text'), a.required('start'), a.optional('end')])
         .withDesc('Returns all text from `text` between the `start` and `end`. ' +
             '`end` defaults to the length of text.')
         .withExample(

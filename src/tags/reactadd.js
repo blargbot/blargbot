@@ -14,8 +14,8 @@ module.exports =
         .withAlias('addreact')
         .withArgs(a => [
             a.optional([a.optional('channelId'),
-            a.require('messageId')]),
-            a.require('reactions', true)
+            a.required('messageId')]),
+            a.required('reactions', true)
         ])
         .withDesc('Adds `reactions` to the given `messageId`. If the `messageId` is not supplied, ' +
             'it instead adds the `reactions` to the output from the containing tag.\n' +

@@ -9,7 +9,7 @@ const typeMap = {
 module.exports =
   Builder.APITag('channeledit')
     .withArgs(a => [
-      a.require('id'),
+      a.required('id'),
       a.optional('options')
     ])
     .withDesc('Edits a channel with the given information.\n' +

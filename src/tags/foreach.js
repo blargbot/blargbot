@@ -12,9 +12,9 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('foreach')
         .withArgs(a => [
-            a.require('variable'),
-            a.require('array'),
-            a.require('code')
+            a.required('variable'),
+            a.required('array'),
+            a.required('code')
         ])
         .withDesc('For every element in `array`, `variable` will be set and then `code` will be run.')
         .withExample(

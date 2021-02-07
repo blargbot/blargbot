@@ -13,11 +13,11 @@ const entities = new Entities();
 
 module.exports =
     Builder.AutoTag('htmldecode')
-        .withArgs(a => a.require('text'))
+        .withArgs(a => a.required('text'))
         .withDesc('Decodes html entities from `text`.')
         .withExample(
-        '{htmldecode;&lt;hello, world&gt;}',
-        '<hello, world>'
+            '{htmldecode;&lt;hello, world&gt;}',
+            '<hello, world>'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {

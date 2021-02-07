@@ -13,7 +13,7 @@ const bfClient = new Brainfuck();
 
 module.exports =
     Builder.AutoTag('brainfuck')
-        .withArgs(a => [a.require('code'), a.optional('input')])
+        .withArgs(a => [a.required('code'), a.optional('input')])
         .withDesc('Interprets `code` as brainfuck, using `input` as the text for `,`.')
         .withExample(
             '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',

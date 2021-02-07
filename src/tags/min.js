@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('min')
         .acceptsArrays()
-        .withArgs(a => a.require('number', true))
+        .withArgs(a => a.required('number', true))
         .withDesc('Returns the smallest entry out of `numbers`. If an array is provided, it will be expanded to its individual values.')
         .withExample(
             '{min;50;2;65}',

@@ -21,7 +21,7 @@ module.exports =
     Builder.BotTag('waitreaction')
         .withAlias('waitreact')
         .withArgs(a => [
-            a.require('messages'),
+            a.required('messages'),
             a.optional('users'),
             a.optional('reactions'),
             a.optional('condition'),

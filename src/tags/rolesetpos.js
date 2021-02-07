@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('rolesetpos')
-        .withArgs(a => [a.require('role'), a.require('position'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.required('position'), a.optional('quiet')])
         .withDesc('Sets the position of `role`. ' +
             'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
         .withExample(

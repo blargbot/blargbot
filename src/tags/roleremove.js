@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.APITag('roleremove')
         .withAlias('removerole')
-        .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.optional('user'), a.optional('quiet')])
         .withDesc('Removes `role` from `user`, where `role` is a role ID or mention. ' +
             'You can find a list of roles and their ids by doing \`b!roles\`. ' +
             'Returns true if `role` was removed, and false otherwise.' +

@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('realpad')
-        .withArgs(a => [a.require('text'), a.require('length'), a.optional('filler'), a.optional('direction')])
+        .withArgs(a => [a.required('text'), a.required('length'), a.optional('filler'), a.optional('direction')])
         .withDesc('Pads `text` using `filler` until it has `length` characters. `filler` is applied to the `direction` of `text` ' +
             '`filler` defaults to space, `direction` defaults to right.\n\n' +
             'This is how padding *should* be implemented, and the {pad} subtag is a sucks. ' +

@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('roledelete')
-        .withArgs(a => [a.require('role'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.optional('quiet')])
         .withDesc('Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing.\nWarning: this subtag is able to delete roles managed by integrations.')
         .withExample(
             '{roledelete;Super Cool Role!}',

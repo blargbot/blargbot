@@ -15,6 +15,17 @@
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/index.js",
             "preLaunchTask": "${defaultBuildTask}"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Program (no build)",
+            "skipFiles": [
+                "<node_internals>/**",
+                "node_modules/bluebird/**"
+            ],
+            "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}/index.js"
         }
     ]
 }

@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('edit')
-        .withArgs(a => [a.optional('channelId'), a.require('messageId'), a.require([a.optional('text'), a.optional('embed')])])
+        .withArgs(a => [a.optional('channelId'), a.required('messageId'), a.required([a.optional('text'), a.optional('embed')])])
         .withDesc('Edits `messageId` in `channelId` to say `text` or `embed`. ' +
             'Atleast one of `text` and `embed` is required. To delete the message text or the embed, enter `_delete`' +
             'If `channelId` is not supplied, it defaults to the current channel.\n' +

@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('repeat')
         .withAlias('loop')
-        .withArgs(a => [a.require('text'), a.require('amount')])
+        .withArgs(a => [a.required('text'), a.required('amount')])
         .withDesc('Repeats `text` `amount` times. `text` will be interpreted as BBTag code')
         .withExample(
             '{repeat;e;10}',

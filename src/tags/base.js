@@ -13,9 +13,9 @@ module.exports =
     Builder.AutoTag('base')
         .withAlias('radix')
         .withArgs(a => [
-            a.require('integer'),
+            a.required('integer'),
             a.optional('origin'),
-            a.require('radix')
+            a.required('radix')
         ]).withDesc('Converts a Base `origin` `integer` into a base `radix` number. Default `origin` is 10. `radix` must be between 2 and 36.')
         .withExample(
             '{base;255;16}',

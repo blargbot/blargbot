@@ -13,7 +13,7 @@ const moment = require('moment-timezone');
 module.exports =
     Builder.APITag('messagetime')
         .withAlias('timestamp')
-        .withArgs(a => [a.optional([a.optional('channel'), a.require('messageid')]), a.optional('format')])
+        .withArgs(a => [a.optional([a.optional('channel'), a.required('messageid')]), a.optional('format')])
         .withDesc('Returns the send time of the given message in the given channel using the given format.' +
             '\n`channel` defaults to the current channel' +
             '\n`messageid` defaults to the executing message id' +

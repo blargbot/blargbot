@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('delete')
-        .withArgs(a => a.optional([a.optional('channelId'), a.require('messageId')]))
+        .withArgs(a => a.optional([a.optional('channelId'), a.required('messageId')]))
         .withDesc('Deletes the specified `messageId` from `channelId`, defaulting to the message that invoked the command. ' +
             'If `channelId` is not provided, it defaults to the current channel. ' +
             'Only ccommands can delete other messages.')

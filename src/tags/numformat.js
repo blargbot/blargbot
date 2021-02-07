@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('numformat')
         .withArgs(a => [
-            a.require('number'),
+            a.required('number'),
             a.optional('roundTo'),
             a.optional('decimal'),
             a.optional('thousands')

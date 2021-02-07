@@ -13,10 +13,10 @@ module.exports =
     Builder.AutoTag('switch')
         .acceptsArrays()
         .withArgs(a => [
-            a.require('value'),
+            a.required('value'),
             a.optional([
-                a.require('case'),
-                a.require('then')
+                a.required('case'),
+                a.required('then')
             ], true),
             a.optional('default')
         ])

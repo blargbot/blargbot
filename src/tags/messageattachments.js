@@ -16,13 +16,13 @@ function getUrls(message) {
 module.exports =
     Builder.APITag('messageattachments')
         .withAlias('attachments')
-        .withArgs(a => a.optional([a.optional('channel'), a.require('messageid')]))
+        .withArgs(a => a.optional([a.optional('channel'), a.required('messageid')]))
         .withDesc('Returns the array of attachment that a message contains in the given channel.' +
-        '\n`channel` defaults to the current channel' +
-        '\n`messageid` defaults to the executing message id')
+            '\n`channel` defaults to the current channel' +
+            '\n`messageid` defaults to the executing message id')
         .withExample(
-        'You sent the attachments "{messageattachments}"',
-        'You sent the attachments "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"'
+            'You sent the attachments "{messageattachments}"',
+            'You sent the attachments "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"'
         )
         .whenArgs(0, async (_, context) => getUrls(context.msg))
         .whenArgs(1, async function (subtag, context, args) {

@@ -13,7 +13,7 @@ const snekfetch = require('snekfetch');
 module.exports =
   Builder.APITag('emojidelete')
     .withArgs(a => [
-      a.require('id')
+      a.required('id')
     ])
     .withDesc('Deletes an emoji with the provided id.')
     .withExample(

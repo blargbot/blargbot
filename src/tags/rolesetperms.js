@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.APITag('rolesetperms')
         .withAlias('rolesetpermissions')
-        .withArgs(a => [a.require('role'), a.optional('permissions'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.optional('permissions'), a.optional('quiet')])
         .withDesc('Sets the permissions of `role` with the provided `permissions` number. ' +
             'This will not apply any permissions the authorizer can\'t grant. ' +
             'Additionally, this will completely overwrite the role\'s existing permissions. ' +

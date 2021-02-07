@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('send')
-        .withArgs(a => [a.require('channel'), a.require([a.optional('message'), a.optional('embed')]), a.optional('file'), a.optional('filename')])
+        .withArgs(a => [a.required('channel'), a.required([a.optional('message'), a.optional('embed')]), a.optional('file'), a.optional('filename')])
         .withDesc('Sends `message` and `embed` to `channel`, and returns the message ID. `channel` is either an ID or channel mention. ' +
             'At least one out of `message` and `embed` must be supplied.\nIf `file` is provided, `filename` will default to `file.txt`.\n' +
             'If `file` starts with `buffer:`, the following text will be parsed as base64 to a raw buffer.\n' +

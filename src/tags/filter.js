@@ -14,9 +14,9 @@ const Builder = require('../structures/TagBuilder'),
 module.exports =
     Builder.ArrayTag('filter')
         .withArgs(a => [
-            a.require('variable'),
-            a.require('array'),
-            a.require('code')
+            a.required('variable'),
+            a.required('array'),
+            a.required('code')
         ])
         .withDesc('For every element in `array`, `variable` will be set and then `code` will be run. Returns a new array containing all the elements that returned the value `true`.\n' +
             '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + waitMessage.overrideSubtags.join(', ') + '`')

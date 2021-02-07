@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.APITag('rolecreate')
         .withArgs(a => [
-            a.require('name'),
+            a.required('name'),
             a.optional('color'),
             a.optional('permissions'),
             a.optional('mentionable'),

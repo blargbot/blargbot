@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('jsonstringify')
         .withAlias('jstringify')
-        .withArgs(a => [a.require('input'), a.optional('indent')])
+        .withArgs(a => [a.required('input'), a.optional('indent')])
         .withDesc('Pretty-prints the provided JSON `input` with the provided `indent`, defaulting to 4.')
         .withExample(
             '{jsonstringify;["one","two","three"]}',

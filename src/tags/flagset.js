@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.BotTag('flagset')
-        .withArgs(a => [a.require('code')])
+        .withArgs(a => [a.required('code')])
         .withDesc('Returns `true` or `false`, depending on whether the specified case-sensitive flag code has been set or not.')
         .withExample(
             '{flagset;a} {flagset;_}',

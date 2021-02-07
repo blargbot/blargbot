@@ -163,7 +163,7 @@ function lastElem(array, addNew = false) {
 module.exports =
     Builder.AutoTag('embedbuild')
         .withAlias('buildembed')
-        .withArgs(a => a.require('values',
+        .withArgs(a => a.required('values',
             true))
         .withDesc('This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
             'This tag uses a key/value system, with each entry in `values` looking like `key:value`.\n\n' +

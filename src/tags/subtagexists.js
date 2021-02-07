@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.BotTag('subtagexists')
-        .withArgs(a => a.require('subTag'))
+        .withArgs(a => a.required('subTag'))
         .withDesc('Checks to see if `subTag` exists.')
         .withExample(
             '{subtagexists;ban} {subtagexists;AllenKey}',

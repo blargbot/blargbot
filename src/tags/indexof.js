@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('indexof')
         .acceptsArrays()
-        .withArgs(a => [a.require('text'), a.require('searchfor'), a.optional('start')])
+        .withArgs(a => [a.required('text'), a.required('searchfor'), a.optional('start')])
         .withDesc('Finds the index of `searchfor` in `text`, after `start`. `text` can either be plain text or an array. If it\'s not found, returns -1.')
         .withExample(
             'The index of "o" in "hello world" is {indexof;hello world;o}',

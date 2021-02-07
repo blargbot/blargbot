@@ -12,7 +12,7 @@ const moment = require('moment-timezone');
 
 module.exports =
     Builder.BotTag('timer')
-        .withArgs(a => [a.require('code'), a.require('duration')])
+        .withArgs(a => [a.required('code'), a.required('duration')])
         .withDesc('Executes `code` after `duration`. ' +
             'Three timers are allowed per custom command, with no recursive timers.')
         .withExample(

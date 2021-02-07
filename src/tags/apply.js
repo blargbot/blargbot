@@ -12,12 +12,12 @@ const Builder = require('../structures/TagBuilder'),
 
 module.exports =
     Builder.ArrayTag('apply')
-        .withArgs(a => [a.require('subtag'), a.optional('args', true)])
+        .withArgs(a => [a.required('subtag'), a.optional('args', true)])
         .withDesc('Executes `subtag`, using the `args` as parameters. ' +
-        'If `args` is an array, it will get deconstructed to it\'s individual elements.'
+            'If `args` is an array, it will get deconstructed to it\'s individual elements.'
         ).withExample(
-        '{apply;randint;[1,4]}',
-        '3'
+            '{apply;randint;[1,4]}',
+            '3'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {

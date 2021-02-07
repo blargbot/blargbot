@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ArrayTag('push')
-        .withArgs(a => [a.require('array'), a.require('values', true)])
+        .withArgs(a => [a.required('array'), a.required('values', true)])
         .withDesc('Pushes `values` onto the end of `array`. If provided a variable, this will update the original variable. Otherwise, it will simply output the new array.')
         .withExample(
             '{push;["this", "is", "an"];array}',

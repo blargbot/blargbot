@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('rolesetcolor')
-        .withArgs(a => [a.require('role'), a.optional('color'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.optional('color'), a.optional('quiet')])
         .withDesc('Sets the color of `role`.' +
             'If `quiet` is specified, if `role` can\'t be found it will simply return nothing')
         .withExample(

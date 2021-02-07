@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('capitalize')
-        .withArgs(a => [a.require('text'), a.optional('lower')])
+        .withArgs(a => [a.required('text'), a.optional('lower')])
         .withDesc('Capitalizes the first letter of `text`. If `lower` is specified the rest of the text will be lowercase')
         .withExample(
             '{capitalize;hello world!}',

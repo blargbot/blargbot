@@ -13,7 +13,7 @@ module.exports =
     Builder.APITag('userhasrole')
         .withAlias('hasrole')
         .acceptsArrays()
-        .withArgs(a => [a.require('roleids'), a.optional('user'), a.optional('quiet')])
+        .withArgs(a => [a.required('roleids'), a.optional('user'), a.optional('quiet')])
         .withDesc('Checks if a user has any of the provided `roleids`, and returns either `true` or `false`. ' +
             'Roleid can be an array of role ids, or a single role id. ' +
             'You can find a list of roles and their ids by doing \`b!roles\`. ' +

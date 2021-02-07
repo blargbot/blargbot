@@ -28,7 +28,7 @@ const aliases = {
 module.exports =
     Builder.AutoTag('math')
         .acceptsArrays()
-        .withArgs(a => [a.require('operator'), a.require('values', true)])
+        .withArgs(a => [a.required('operator'), a.required('values', true)])
         .withDesc('Accepts multiple `values` and returns the result of `operator` on them. ' +
             'Valid operators are `' + Object.keys(operators).join('`, `') + '`')
         .withExample(

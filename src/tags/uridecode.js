@@ -11,11 +11,11 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('uridecode')
-        .withArgs(a => a.require('text'))
+        .withArgs(a => a.required('text'))
         .withDesc('Decodes `text` from URI format.')
         .withExample(
-        '{uridecode;Hello%20world}',
-        'Hello world!'
+            '{uridecode;Hello%20world}',
+            'Hello world!'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs(1, async function (subtag, context, args) {

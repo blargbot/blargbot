@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('jsonsort')
         .withAlias('jsort')
-        .withArgs(a => [a.require('array'), a.require('path'), a.optional('descending')])
+        .withArgs(a => [a.required('array'), a.required('path'), a.optional('descending')])
         .withDesc('Sorts an array of objects based on the provided `path`.\n' +
             '`path` is a dot-noted series of properties.\n' +
             'If `descending` is provided, sorts in descending order.\n' +
@@ -34,7 +34,7 @@ module.exports =
 
             if (arr == null || !Array.isArray(arr.v))
                 return Builder.errors.notAnArray(subtag, context);
-            if(!path) return Builder.errors.customError(subtag, context, 'No path provided');
+            if (!path) return Builder.errors.customError(subtag, context, 'No path provided');
             //Map array with values of array[item][path]
             let mappedArray = arr.v.map(item => {
                 try {
@@ -65,7 +65,7 @@ module.exports =
             //If there are any undefined values return an error stating at which index the 'faulty' object is and how many faulty there are
             let undefinedItems = mappedArray.filter(v => v === undefined);
             if (undefinedItems.length !== 0) {
-                return Builder.errors.customError(subtag, context, 'Cannot read property ' + path + ' at index ' + mappedArray.indexOf(undefined) + ', ' + undefinedItems.length + ' total failures' );
+                return Builder.errors.customError(subtag, context, 'Cannot read property ' + path + ' at index ' + mappedArray.indexOf(undefined) + ', ' + undefinedItems.length + ' total failures');
             };
             //Sort the array
             arr.v = arr.v.sort((a, b) => {
@@ -105,7 +105,7 @@ module.exports =
                     }
                     if (b.hasOwnProperty(part)) b = b[part];
                 }
-                return bu.compare(a,b);
+                return bu.compare(a, b);
             });
 
             if (descending) arr.v.reverse();

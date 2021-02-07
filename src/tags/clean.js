@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('clean')
-        .withArgs(a => a.require('text'))
+        .withArgs(a => a.required('text'))
         .withDesc('Removes all duplicated whitespace from `text`, meaning a cleaner output.')
         .withExample(
             '{clean;Hello!  \n\n  Im     here    to help}',

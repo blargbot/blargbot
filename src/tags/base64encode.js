@@ -13,11 +13,11 @@ module.exports =
     Builder.AutoTag('base64encode')
         .withAlias('btoa')
         .withArgs(a => [
-            a.require('text')
+            a.required('text')
         ]).withDesc('Converts the provided text to base64.')
         .withExample(
-        '{base64encode;Fancy!}',
-        'RmFuY3kh'
+            '{base64encode;Fancy!}',
+            'RmFuY3kh'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1', async function (subtag, context, args) {

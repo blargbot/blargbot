@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('file')
-        .withArgs(a => [a.require('file'), a.require('filename')])
+        .withArgs(a => [a.required('file'), a.required('filename')])
         .withDesc('Sets the output attachment to the provided `file` and `filename`. If `file` starts with `buffer:`, the following text will be parsed as base64 to a raw buffer - useful for uploading images.')
         .withExample(
             '{file;Hello, world!;readme.txt}',

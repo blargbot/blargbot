@@ -13,11 +13,11 @@ const entities = new Entities();
 
 module.exports =
     Builder.AutoTag('htmlencode')
-        .withArgs(a => a.require('text'))
+        .withArgs(a => a.required('text'))
         .withDesc('Encodes `text` with escaped html entities.')
         .withExample(
-        '{htmlencode;<hello, world>}',
-        '&lt;hello, world&gt;'
+            '{htmlencode;<hello, world>}',
+            '&lt;hello, world&gt;'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs(1, async function (subtag, context, args) {

@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.APITag('rolesize')
         .withAlias('inrole')
-        .withArgs(a => a.require('roleId'))
+        .withArgs(a => a.required('roleId'))
         .withDesc('Returns how many people have the `roleId` role.')
         .withExample(
             'There are {rolesize;11111111111111111} people in the role!',

@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.APITag('rolemembers')
-        .withArgs(a => [a.require('role'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.optional('quiet')])
         .withDesc('Returns an array of members in `role`. ' +
             'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.')
         .withExample(

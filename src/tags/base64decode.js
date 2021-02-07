@@ -13,11 +13,11 @@ module.exports =
     Builder.AutoTag('base64decode')
         .withAlias('atob')
         .withArgs(a => [
-            a.require('base64')
+            a.required('base64')
         ]).withDesc('Converts the provided base64 to a UTF-8 string.')
         .withExample(
-        '{base64decode;RmFuY3kh}',
-        'Fancy!'
+            '{base64decode;RmFuY3kh}',
+            'Fancy!'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1', async function (subtag, context, args) {

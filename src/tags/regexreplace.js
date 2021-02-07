@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('regexreplace')
-        .withArgs(a => [a.optional('text'), a.require('regex'), a.require('replaceWith')])
+        .withArgs(a => [a.optional('text'), a.required('regex'), a.required('replaceWith')])
         .withDesc('Replaces the `regex` phrase with `replacewith`. ' +
             'If `text` is specified, the tag is replaced with the new `toreplace`. ' +
             'If not, it is run on the output from the containing tag. ' +

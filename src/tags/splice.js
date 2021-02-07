@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ArrayTag('splice')
-        .withArgs(a => [a.require('array'), a.require('start'), a.optional('deleteCount'), a.optional('items', true)])
+        .withArgs(a => [a.required('array'), a.required('start'), a.optional('deleteCount'), a.optional('items', true)])
         .withDesc('Removes `deleteCount` elements (defaults to 0) from `array` starting at `start`. ' +
             'Then, adds each `item` at that position in `array`. Returns the removed items. ' +
             'If used with a variable this will modify the original array')

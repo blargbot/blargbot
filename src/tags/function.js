@@ -22,7 +22,7 @@ function parameters(parameters) {
 module.exports =
     Builder.AutoTag('function')
         .withAlias('func')
-        .withArgs(a => [a.require('name'), a.require('code')])
+        .withArgs(a => [a.required('name'), a.required('code')])
         .withDesc('Defines a function called `name`. Functions are called in the same way as subtags, however they are prefixed with `func.`. ' +
             'While inside the `code` block of a function, you may use the `params`, `paramsarray` and `paramslength` subtags to access the values ' +
             'passed to the function. These function identically to their `args` counterparts. ' +

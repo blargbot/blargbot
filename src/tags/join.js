@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ArrayTag('join')
-        .withArgs(a => [a.require('array'), a.require('text')])
+        .withArgs(a => [a.required('array'), a.required('text')])
         .withDesc('Joins the elements of `array` together with `text` as the separator.')
         .withExample(
             '{join;["this", "is", "an", "array"];!}',

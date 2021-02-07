@@ -13,11 +13,11 @@ module.exports =
     Builder.AutoTag('md5')
         .withAlias('md5encode')
         .withArgs(a => [
-            a.require('text')
+            a.required('text')
         ]).withDesc('Converts the provided text to md5.')
         .withExample(
-        '{md5;Woosh whap phew!}',
-        '71d97a11f770a34d7f8cf1f1d8749d85'
+            '{md5;Woosh whap phew!}',
+            '71d97a11f770a34d7f8cf1f1d8749d85'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1', async function (subtag, context, args) {

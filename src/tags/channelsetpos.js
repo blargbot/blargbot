@@ -4,8 +4,8 @@ module.exports =
   Builder.APITag('channelsetpos')
     .withAlias('channelsetposition')
     .withArgs(a => [
-      a.require('channelid'),
-      a.require('position')
+      a.required('channelid'),
+      a.required('position')
     ])
     .withDesc('Moves a channel to the provided position.')
     .withExample(

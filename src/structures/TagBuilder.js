@@ -1,4 +1,4 @@
-const ArgFactory = require('./ArgumentFactory'),
+const { argBuilder } = require('./ArgumentFactory'),
     bbEngine = require('../structures/bbtag/Engine'),
     { Timer } = require('./Timer'),
     { Permission } = require('eris'),
@@ -125,7 +125,7 @@ class TagBuilder {
 
     withArgs(args) {
         if (typeof args === 'function')
-            args = args(ArgFactory);
+            args = args(argBuilder);
         return this.withProp('args', args);
     }
 

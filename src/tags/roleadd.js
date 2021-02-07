@@ -13,7 +13,7 @@ const userHasRole = require('./userhasrole');
 module.exports =
     Builder.APITag('roleadd')
         .withAlias('addrole')
-        .withArgs(a => [a.require('role'), a.optional('user'), a.optional('quiet')])
+        .withArgs(a => [a.required('role'), a.optional('user'), a.optional('quiet')])
         .withDesc('Gives `user` the chosen `role`, where `role` is a role ID or mention. ' +
             'You can find a list of roles and their ids by doing `b!roles`. ' +
             'Returns `true` if `role` was given, and `false` otherwise. ' +

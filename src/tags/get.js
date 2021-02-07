@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('get')
-        .withArgs(a => [a.require('varName'), a.optional('index')])
+        .withArgs(a => [a.required('varName'), a.optional('index')])
         .withDesc('Returns the stored variable `varName`, or an index within it if it is a stored array. ' +
             'You can use a character prefix to determine the scope of your variable.\n' +
             'Valid scopes are: ' + bu.tagVariableScopes.map(s => '`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +

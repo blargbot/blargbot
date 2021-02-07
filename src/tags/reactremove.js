@@ -14,8 +14,8 @@ module.exports =
         .withAlias('removereact')
         .withArgs(a => [
             a.optional('channelId'),
-            a.require('messageId'),
-            a.require([a.optional('user', true), a.optional('reactions')])
+            a.required('messageId'),
+            a.required([a.optional('user', true), a.optional('reactions')])
         ])
         .withDesc('Removes `reactions` from `messageId` which were placed by `user`.\n`user` defaults to the user who executed the tag.\n' +
             '`reactions` defaults to all reactions.\n`channelId` defaults to the current channel.'

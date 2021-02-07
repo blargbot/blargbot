@@ -13,7 +13,7 @@ const snekfetch = require('snekfetch');
 module.exports =
   Builder.APITag('guildseticon')
     .withArgs(a => [
-      a.require('image')
+      a.required('image')
     ])
     .withDesc('Updates the current guild\'s icon with the provided image. ' +
       '`image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.')

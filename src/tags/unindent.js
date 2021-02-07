@@ -11,12 +11,12 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
   Builder.AutoTag('unindent')
-    .withArgs(a => [a.require('text'), a.optional('level')])
+    .withArgs(a => [a.required('text'), a.optional('level')])
     .withAlias('ui')
     .withDesc('Unindents text (or code!). If no level is provided, attempts to guess the indentation level past the first line.')
     .withExample(
-    '```\n{unindent;\n  hello\n  world\n}\n```',
-    '```\nhello\nworld\n```'
+      '```\n{unindent;\n  hello\n  world\n}\n```',
+      '```\nhello\nworld\n```'
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
     .whenArgs('1-2', async function (subtag, context, args) {

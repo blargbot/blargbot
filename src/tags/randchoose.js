@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.AutoTag('randchoose')
         .acceptsArrays()
-        .withArgs(a => a.require('choices', true))
+        .withArgs(a => a.required('choices', true))
         .withDesc('Picks one random entry from `choices`. If an array is supplied, it will be exapnded to its individual elements')
         .withExample(
             'I feel like eating {randchoose;cake;pie;pudding} today',

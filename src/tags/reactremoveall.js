@@ -14,7 +14,7 @@ module.exports =
         .withAlias('removereactall')
         .withArgs(a => [
             a.optional('channelId'),
-            a.require('messageId')
+            a.required('messageId')
         ])
         .withDesc('Removes all reactions from `messageId`.\n`channelId` defaults to the current channel.')
         .withExample(

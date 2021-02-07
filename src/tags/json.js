@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('json')
         .withAlias('j')
-        .withArgs(a => [a.require('input')])
+        .withArgs(a => [a.required('input')])
         .withDesc('Defines a raw JSON object without using subtags.')
         .withExample(
             '{json;{\n  "key": "value"\n}}',

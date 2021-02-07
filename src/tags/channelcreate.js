@@ -9,7 +9,7 @@ const typeMap = {
 module.exports =
   Builder.APITag('channelcreate')
     .withArgs(a => [
-      a.require('name'),
+      a.required('name'),
       a.optional('type'),
       a.optional('options')
     ])

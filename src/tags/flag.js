@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.BotTag('flag')
-        .withArgs(a => [a.require('code')])
+        .withArgs(a => [a.required('code')])
         .withDesc('Returns the value of the specified case-sensitive flag code. Use `_` to get the values without a flag.')
         .withExample(
             '{flag;a} {flag;_}',

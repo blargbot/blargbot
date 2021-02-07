@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.BotTag('dump')
         .withArgs(a => [
-            a.require('text')
+            a.required('text')
         ])
         .withDesc('Dumps the provided text to a blargbot output page. These expire after 7 days.')
         .withExample(

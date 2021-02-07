@@ -9,7 +9,7 @@ const typeMap = {
 module.exports =
   Builder.APITag('channeldelete')
     .withArgs(a => [
-      a.require('id')
+      a.required('id')
     ])
     .withDesc('Deletes the provided channel.')
     .withExample(

@@ -13,8 +13,8 @@ const snekfetch = require('snekfetch');
 module.exports =
   Builder.APITag('emojicreate')
     .withArgs(a => [
-      a.require('name'),
-      a.require('image'),
+      a.required('name'),
+      a.required('image'),
       a.optional('roles')
     ])
     .withDesc('Creates a emoji with the given name and image. ' +

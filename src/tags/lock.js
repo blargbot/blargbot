@@ -11,36 +11,36 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('lock')
-        .withArgs(a => [a.require('mode'), a.require('key'), a.require('code')])
+        .withArgs(a => [a.required('mode'), a.required('key'), a.required('code')])
         .withDesc('Provides read/write locking functionality for bbtag. This is a very advanced feature, ' +
-        'so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_\\(computer_science\\)).' +
-        '\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish ' +
-        'what they are doing before "releasing the lock" and letting other commands use that lock. ' +
-        'This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.' +
-        '\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing ' +
-        'is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until ' +
-        'it can aquire a lock.' +
-        '\n\n`mode` must be either `read` or `write`.' +
-        '\n`key` can be anything. This follows the same scoping rules as variables do.' +
-        '\n`code` will be run once the lock is acquired')
+            'so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_\\(computer_science\\)).' +
+            '\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish ' +
+            'what they are doing before "releasing the lock" and letting other commands use that lock. ' +
+            'This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.' +
+            '\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing ' +
+            'is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until ' +
+            'it can aquire a lock.' +
+            '\n\n`mode` must be either `read` or `write`.' +
+            '\n`key` can be anything. This follows the same scoping rules as variables do.' +
+            '\n`code` will be run once the lock is acquired')
         .withExample(
-        '\n{//;in 2 command run in quick succession}' +
-        '\n{lock;write;key;' +
-        '\n  {void;' +
-        '\n    {send;{channelid};Start}' +
-        '\n    {send;{channelid};Middle}' +
-        '\n    {send;{channelid};End}' +
-        '\n  }' +
-        '\n}' +
-        '\nThis order is guaranteed always. Without a lock it isnt',
+            '\n{//;in 2 command run in quick succession}' +
+            '\n{lock;write;key;' +
+            '\n  {void;' +
+            '\n    {send;{channelid};Start}' +
+            '\n    {send;{channelid};Middle}' +
+            '\n    {send;{channelid};End}' +
+            '\n  }' +
+            '\n}' +
+            '\nThis order is guaranteed always. Without a lock it isnt',
 
-        '\nStart' +
-        '\nMiddle' +
-        '\nEnd' +
-        '\nStart' +
-        '\nMiddle' +
-        '\nEnd' +
-        '\nThis order is guaranteed always. Without a lock it isnt'
+            '\nStart' +
+            '\nMiddle' +
+            '\nEnd' +
+            '\nStart' +
+            '\nMiddle' +
+            '\nEnd' +
+            '\nThis order is guaranteed always. Without a lock it isnt'
         )
         .resolveArgs(0, 1)
         .whenArgs('0-2', Builder.errors.notEnoughArguments)

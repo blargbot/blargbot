@@ -12,10 +12,10 @@ const Builder = require("../structures/TagBuilder");
 module.exports =
     Builder.ArrayTag('jsonvalues')
         .withAlias('jvalues')
-        .withArgs(a => [a.require('object'), a.optional('path')])
+        .withArgs(a => [a.required('object'), a.optional('path')])
         .withDesc('Retrieves all values from the provided object. ' +
-        '`object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
-        '`path` is a dot-noted series of properties.'
+            '`object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
+            '`path` is a dot-noted series of properties.'
         )
         .withExample('{set;~json;{json;{"key": "value", "key2" : "value2"}}\n'
             + '{jsonvalues;~json}',

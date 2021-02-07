@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('trim')
-        .withArgs(a => a.require('text'))
+        .withArgs(a => a.required('text'))
         .withDesc('Trims whitespace and newlines before and after `text`.')
         .withExample(
             'Hello {trim;{space;10}beautiful{space;10}} World',

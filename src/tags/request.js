@@ -22,20 +22,20 @@ function makeRequest(request) {
 }
 
 module.exports = Builder.AutoTag('request')
-    .withArgs(a => [a.require('url'), a.optional('options'), a.optional('data')])
+    .withArgs(a => [a.required('url'), a.optional('options'), a.optional('data')])
     .withDesc('Performs an HTTP request to `url`, with provided `options` and `data`.\n'
-    + 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.\n\n'
-    + '`options` is a JSON object with the following structure. It is recommended to use {jsonset} to create it.\n'
-    + '```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n'
-    + '  "headers": { "key": "value" }\n}\n```'
-    + 'If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.\n\n'
-    + 'The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n'
-    + '```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n'
-    + '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n'
-    + '  "url": "https://fancy.url/here" // the url that was requested\n}\n```')
+        + 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.\n\n'
+        + '`options` is a JSON object with the following structure. It is recommended to use {jsonset} to create it.\n'
+        + '```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n'
+        + '  "headers": { "key": "value" }\n}\n```'
+        + 'If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.\n\n'
+        + 'The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n'
+        + '```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n'
+        + '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n'
+        + '  "url": "https://fancy.url/here" // the url that was requested\n}\n```')
     .withExample(
-    '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
-    'Hello, world!'
+        '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
+        'Hello, world!'
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
     .whenArgs('1-3', async function (subtag, context, args) {

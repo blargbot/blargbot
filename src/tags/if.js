@@ -13,9 +13,9 @@ module.exports =
     Builder.AutoTag('if')
         .acceptsArrays()
         .withArgs(a => [
-            a.require('value1'),
-            a.optional([a.require('evaluator'), a.require('value2')]),
-            a.require('then'),
+            a.required('value1'),
+            a.optional([a.required('evaluator'), a.required('value2')]),
+            a.required('then'),
             a.optional('else')
         ]).withDesc('If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
             'If they are not provided, `value1` is read as `true` or `false`. ' +

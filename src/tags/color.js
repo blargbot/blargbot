@@ -3,11 +3,11 @@ var Color = require('color');
 
 module.exports =
 	Builder.AutoTag('color')
-		.withArgs(a =>[a.require('color'), a.optional('outputFormat'), a.optional('inputFormat')])
+		.withArgs(a => [a.required('color'), a.optional('outputFormat'), a.optional('inputFormat')])
 		.withDesc('Convert colors. Default outputFormat is `hex`. Default inputFormat is automatically calculated, but might be inaccurate.\nIt converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).')
 		.withExample(
-		'{color;#4286f4;RGB}',
-		'[66,134,244]'
+			'{color;#4286f4;RGB}',
+			'[66,134,244]'
 		)
 		.whenArgs('0', Builder.errors.notEnoughArguments)
 		.whenArgs('1-3', async function (subtag, context, args) {
@@ -28,7 +28,7 @@ module.exports =
 					let r = parseInt(match[1]);
 					let g = parseInt(match[2]);
 					let b = parseInt(match[3]);
-					input = [ r, g, b ];
+					input = [r, g, b];
 				} else if (args[2] && args[2].toLowerCase() === 'hsl') {
 					input = input.split(',');
 					for (let i in input) {
@@ -44,7 +44,7 @@ module.exports =
 			let color = undefined;
 			try {
 				color = Color(input, (args[2] || ''));
-			} catch(e) {
+			} catch (e) {
 				try {
 					color = Color('#' + input, (args[2] || ''));
 				} catch (e) {

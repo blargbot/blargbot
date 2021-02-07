@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('randstr')
-        .withArgs(a => [a.require('chars'), a.require('length')])
+        .withArgs(a => [a.required('chars'), a.required('length')])
         .withDesc('Creates a random string with characters from `chars` that is `length` characters long.')
         .withExample(
             '{randstr;abcdefghijklmnopqrstuvwxyz;9}',

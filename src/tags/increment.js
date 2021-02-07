@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('increment')
-        .withArgs(a => [a.require('varName'), a.optional('amount'), a.optional('floor')])
+        .withArgs(a => [a.required('varName'), a.optional('amount'), a.optional('floor')])
         .withDesc('Increases `varName`\'s value by `amount`. ' +
             '`floor` is a boolean, and if it is `true` then the value will be rounded down. ' +
             '`amount` defaults to 1. `floor` defaults to `true`')

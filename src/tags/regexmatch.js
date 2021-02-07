@@ -12,7 +12,7 @@ const Builder = require('../structures/TagBuilder');
 module.exports =
     Builder.ArrayTag('regexmatch')
         .withAlias('match')
-        .withArgs(a => [a.require('text'), a.require('regex')])
+        .withArgs(a => [a.required('text'), a.required('regex')])
         .withDesc('Returns an array of everything in `text` that matches `regex`. ' +
             '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
             '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.')

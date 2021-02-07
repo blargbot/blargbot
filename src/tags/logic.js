@@ -18,7 +18,7 @@ const Builder = require('../structures/TagBuilder'),
 
 module.exports =
     Builder.AutoTag('logic')
-        .withArgs(a => [a.require('operator'), a.require('values', true)])
+        .withArgs(a => [a.required('operator'), a.required('values', true)])
         .withDesc('Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. ' +
             'Valid logic operators are `' + Object.keys(operators).join('`, `') + '`.')
         .withExample(

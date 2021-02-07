@@ -11,7 +11,7 @@ const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.BotTag('reason')
-        .withArgs(a => [a.require('reason')])
+        .withArgs(a => [a.required('reason')])
         .withDesc('Sets the reason for the next API call (ex. roleadd, roleremove, ban, etc.)')
         .withExample(
             '{reason;This will show up in the audit logs!}{roleadd;111111111111}',

@@ -9,9 +9,9 @@ const typeMap = {
 module.exports =
   Builder.APITag('channelsetperms')
     .withArgs(a => [
-      a.require('channelid'),
-      a.require('type'),
-      a.require('itemid'),
+      a.required('channelid'),
+      a.required('type'),
+      a.required('itemid'),
       a.optional('allow'),
       a.optional('deny')
     ])
