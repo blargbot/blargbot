@@ -1,10 +1,10 @@
-import { Message, TextableChannel } from "eris";
-import { Cluster } from "../cluster";
-import { commandTypes, parse } from "../newbu";
-import { BaseDCommand } from "../structures/BaseDCommand";
+import { Message, TextableChannel } from 'eris';
+import { Cluster } from '../cluster';
+import { commandTypes, parse } from '../newbu';
+import { BaseDCommand } from '../structures/BaseDCommand';
 
 export class ArtCommand extends BaseDCommand {
-    constructor(cluster: Cluster) {
+    public constructor(cluster: Cluster) {
         super(cluster, 'art', {
             category: commandTypes.IMAGE,
             usage: 'art [user]',
@@ -16,15 +16,15 @@ export class ArtCommand extends BaseDCommand {
         });
     }
 
-    async execute(message: Message<TextableChannel>, words: string[]) {
-        let input = parse.flags(this.flags, words);
+    public async execute(message: Message<TextableChannel>, words: string[]): Promise<void> {
+        const input = parse.flags(this.flags, words);
         let url;
         if (message.attachments.length > 0) {
             url = message.attachments[0].url;
         } else if (input.I) {
             url = input.I.join(' ');
         } else if (input.undefined.length > 0) {
-            let user = await this.util.getUser(message, input.undefined.join(' '));
+            const user = await this.util.getUser(message, input.undefined.join(' '));
             if (!user)
                 return;
             url = user.avatarURL;
@@ -32,9 +32,9 @@ export class ArtCommand extends BaseDCommand {
             url = message.author.avatarURL;
         }
 
-        this.discord.sendChannelTyping(message.channel.id);
+        void this.discord.sendChannelTyping(message.channel.id);
 
-        let buffer = await this.util.renderImage('art', { avatar: url });
+        const buffer = await this.util.renderImage('art', { avatar: url });
         if (!buffer) {
             await this.util.send(message, 'Something went wrong while trying to render that!');
         } else {

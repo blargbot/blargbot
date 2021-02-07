@@ -37,4 +37,4 @@ export const properties: TagPropertiesSet = {
         name: 'API',
         desc: 'Subtags that access the discord API to perform operations'
     }
-}
+};

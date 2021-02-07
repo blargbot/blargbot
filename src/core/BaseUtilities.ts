@@ -1,8 +1,12 @@
-import { AdvancedMessageContent, AnyChannel, Channel, EmbedOptions, Member, Message, MessageFile, User } from "eris";
-import { BaseClient } from "./BaseClient";
-import { snowflake } from "../newbu";
-import { Error } from "sequelize";
-import { MessageAwaiter } from "../structures/MessageAwaiter";
+import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, Collection, EmbedOptions, ExtendedUser, Guild, Member, Message, MessageFile, Shard, User } from 'eris';
+import { BaseClient } from './BaseClient';
+import { snowflake } from '../newbu';
+import { Error } from 'sequelize';
+import { MessageAwaiter } from '../structures/MessageAwaiter';
+import { RethinkDb } from './RethinkDb';
+import { Client as CassandraDb } from 'cassandra-driver';
+import { PostgresDb } from './PostgresDb';
+import { Metrics } from './Metrics';
 
 export type SendContext = Message | AnyChannel | string
 export type SendEmbed = EmbedOptions & { asString?: string }
@@ -15,26 +19,26 @@ export type SendPayload = {
 } & AdvancedMessageContent | string | boolean
 
 export class BaseUtilities {
-    get user() { return this.client.discord.user; }
-    get guilds() { return this.client.discord.guilds; }
-    get users() { return this.client.discord.users; }
-    get shards() { return this.client.discord.shards; }
-    get discord() { return this.client.discord; }
-    get rethinkdb() { return this.client.rethinkdb; }
-    get cassandra() { return this.client.cassandra; }
-    get postgres() { return this.client.postgres; }
-    get logger() { return this.client.logger; }
-    get metrics() { return this.client.metrics; }
-    get config() { return this.client.config; }
+    public get user(): ExtendedUser { return this.client.discord.user; }
+    public get guilds(): Collection<Guild> { return this.client.discord.guilds; }
+    public get users(): Collection<User> { return this.client.discord.users; }
+    public get shards(): Collection<Shard> { return this.client.discord.shards; }
+    public get discord(): ErisClient { return this.client.discord; }
+    public get rethinkdb(): RethinkDb { return this.client.rethinkdb; }
+    public get cassandra(): CassandraDb { return this.client.cassandra; }
+    public get postgres(): PostgresDb { return this.client.postgres; }
+    public get logger(): CatLogger { return this.client.logger; }
+    public get metrics(): Metrics { return this.client.metrics; }
+    public get config(): Configuration { return this.client.config; }
     public readonly messageAwaiter: MessageAwaiter;
 
-    constructor(
+    public constructor(
         public readonly client: BaseClient
     ) {
         this.messageAwaiter = new MessageAwaiter(this.logger);
     }
 
-    async send(context: SendContext, payload: SendPayload, files?: SendFiles) {
+    public async send(context: SendContext, payload: SendPayload, files?: SendFiles): Promise<Message | null> {
         let channel: AnyChannel | Channel;
         let message: Message | undefined;
         this.metrics.sendCounter.inc();
@@ -42,14 +46,14 @@ export class BaseUtilities {
         // Process context into a channel and maybe a message
         switch (typeof context) {
             // Id provided, get channel object
-            case "string":
-                channel = await this.discord.getChannel(context);
+            case 'string':
+                channel = this.discord.getChannel(context);
                 if (!channel) {
-                    context = (context.match(/(\d+)/) || [])[1];
+                    context = (/(\d+)/.exec(context) || [])[1];
                     channel = new Channel({ id: context });
                 }
                 break;
-            case "object":
+            case 'object':
                 // Probably a message provided
                 if ('channel' in context) {
                     channel = context.channel;
@@ -62,18 +66,18 @@ export class BaseUtilities {
                 break;
             // Invalid option given
             default:
-                throw new Error("Channel not found");
+                throw new Error('Channel not found');
         }
 
         switch (typeof payload) {
-            case "string":
+            case 'string':
                 payload = { content: payload };
                 break;
             case 'boolean':
             case 'number':
                 payload = { content: payload.toString() };
                 break;
-            case "object":
+            case 'object':
                 break;
             default: payload = {};
         }
@@ -86,11 +90,12 @@ export class BaseUtilities {
             payload.allowedMentions.everyone = false;
         }
 
-        if ('permissionsOf' in channel &&
-            payload.embed &&
-            'asString' in payload.embed &&
-            !channel.permissionsOf(this.user.id).has('embedLinks')) {
-            payload.content = (payload.content || '') + payload.embed.asString;
+        if ('permissionsOf' in channel
+            && payload.embed
+            && 'asString' in payload.embed
+            && !channel.permissionsOf(this.user.id).has('embedLinks')
+        ) {
+            payload.content = `${payload.content ?? ''}${payload.embed.asString ?? ''}`;
             delete payload.embed;
         }
 
@@ -112,18 +117,20 @@ export class BaseUtilities {
         }
 
         if (payload.content.length > 2000) {
-            let id = await this.generateOutputPage(payload, channel);
-            payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ' +
-                (this.client.config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id;
+            const id = await this.generateOutputPage(payload, channel);
+            const output = this.client.config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/';
+            payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n' +
+                '\n' +
+                `To see what I would have said, please visit ${output}${id}`;
         }
 
         this.logger.debug('Sending content: ', JSON.stringify(payload));
         try {
-            return await this.discord.createMessage(channel.id, payload, files)
+            return await this.discord.createMessage(channel.id, payload, files);
         } catch (error) {
             let response = error.response;
             if (typeof response !== 'object')
-                response = JSON.parse(error.response || "{}");
+                response = JSON.parse(error.response || '{}');
             if (!sendErrors.hasOwnProperty(response.code)) {
                 this.logger.error(error.response, error.stack);
                 return null;
@@ -135,7 +142,7 @@ export class BaseUtilities {
                     if ('guild' in message.channel)
                         result += `\nGuild: ${message.channel.guild.name} (${message.channel.guild.id})`;
 
-                    let name = 'name' in channel ? channel.name : 'PRIVATE CHANNEL';
+                    const name = 'name' in channel ? channel.name : 'PRIVATE CHANNEL';
                     result += `\nChannel: ${name} (${message.channel.id})`;
                 }
                 if (message.content && message.content.length > 100)
@@ -151,7 +158,7 @@ export class BaseUtilities {
         }
     }
 
-    async sendDM(context: Message | User | Member | string, message: SendPayload, files?: SendFiles) {
+    public async sendDM(context: Message | User | Member | string, message: SendPayload, files?: SendFiles): Promise<void> {
         let userid: string;
         switch (typeof context) {
             case 'string': userid = context; break;
@@ -164,11 +171,11 @@ export class BaseUtilities {
 
         }
 
-        let privateChannel = await this.discord.getDMChannel(userid);
+        const privateChannel = await this.discord.getDMChannel(userid);
         await this.send(privateChannel, message, files);
     }
 
-    async generateOutputPage(payload: SendPayload, channel?: Channel) {
+    public async generateOutputPage(payload: SendPayload, channel?: Channel): Promise<Snowflake> {
         switch (typeof payload) {
             case 'string': payload = { content: payload }; break;
             case 'boolean': payload = { content: payload.toString() }; break;
@@ -176,7 +183,7 @@ export class BaseUtilities {
             default: payload = {}; break;
         }
         const id = snowflake.create();
-        await this.cassandra.execute(`INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid) USING TTL 604800`, {
+        await this.cassandra.execute('INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid) USING TTL 604800', {
             id,
             content: payload.content,
             embeds: JSON.stringify([payload.embed]),
@@ -185,8 +192,8 @@ export class BaseUtilities {
         return id;
     }
 
-    async canDmErrors(userId: string) {
-        let storedUser = await this.rethinkdb.getUser(userId);
+    public async canDmErrors(userId: string): Promise<boolean> {
+        const storedUser = await this.rethinkdb.getUser(userId);
         return !storedUser?.dontdmerrors;
     }
 }
@@ -212,7 +219,7 @@ const sendErrors: { [key: string]: (utilities: BaseUtilities, channel: AnyChanne
     },
     '50004': (util, channel) => {
         util.logger.warn('50004: Tried embeding a link, but had no permissions!');
-        util.send(channel.id, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
+        void util.send(channel.id, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to create embeds. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Embed Links` permission.';

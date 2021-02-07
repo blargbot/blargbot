@@ -16,14 +16,14 @@ export class Metrics {
     public readonly httpsRequests: Prometheus.Counter;
     public readonly cleverbotStats: Prometheus.Counter;
 
-    get aggregated() {
-        let c = this.registryCache.filter(() => true);
+    public get aggregated(): Prometheus.Registry {
+        const c = this.registryCache.filter(() => true);
         c.unshift(Prometheus.register.getMetricsAsJSON());
 
         return this.aggregate(c);
     }
 
-    constructor() {
+    public constructor() {
         this.registryCache = [];
         this.guildGauge = new Prometheus.Gauge({
             name: 'bot_guild_gauge', help: 'How many guilds the bot is in'
@@ -53,7 +53,7 @@ export class Metrics {
 
         this.cleverbotStats = new Prometheus.Counter({
             name: 'bot_cleverbot_counter', help: 'Calls to cleverbot made'
-        })
+        });
 
         this.commandCounter = new Prometheus.Counter({
             name: 'bot_command_counter', help: 'Commands executed',
@@ -90,8 +90,8 @@ export class Metrics {
         Prometheus.collectDefaultMetrics();
     }
 
-    aggregate(regArray: Array<Prometheus.metric>[]) { // TODO Nested array?
-        let aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
+    public aggregate(regArray: Array<Prometheus.metric>[]): Prometheus.Registry { // TODO Nested array?
+        const aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
         return aggregated;
-    };
+    }
 }

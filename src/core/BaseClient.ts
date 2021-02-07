@@ -12,7 +12,8 @@ export class BaseClient {
     public readonly rethinkdb: RethinkDb;
     public readonly cassandra: CassandraDb;
     public readonly discord: ErisClient;
-    constructor(
+
+    public constructor(
         public readonly logger: CatLogger,
         public readonly config: Configuration,
         discordConfig: Omit<ErisOptions, 'restMode' | 'defaultImageFormat'>
@@ -33,8 +34,8 @@ export class BaseClient {
             password: this.config.db.password,
             user: this.config.db.user,
             host: this.config.db.host,
-            port: this.config.db.port,
-        })
+            port: this.config.db.port
+        });
 
         this.cassandra = new CassandraDb({
             contactPoints: this.config.cassandra.contactPoints,
@@ -52,7 +53,7 @@ export class BaseClient {
         });
     }
 
-    public async start() {
+    public async start(): Promise<void> {
         await Promise.all([
             this.postgres.authenticate().then(() => this.logger.init('postgres connected')),
             this.rethinkdb.connect().then(() => this.logger.init('rethinkdb connected')),

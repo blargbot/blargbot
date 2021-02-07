@@ -1,7 +1,6 @@
-
 export function boolean(value: string | boolean | number, defValue: boolean, includeNumbers?: boolean): boolean
 export function boolean(value: string | boolean | number, defValue?: undefined, includeNumbers?: boolean): boolean | undefined
-export function boolean(value: string | boolean | number, defValue?: boolean, includeNumbers: boolean = true) {
+export function boolean(value: string | boolean | number, defValue?: boolean, includeNumbers = true): boolean | undefined {
     if (typeof value == 'boolean')
         return value;
 
@@ -12,7 +11,7 @@ export function boolean(value: string | boolean | number, defValue?: boolean, in
         return defValue;
 
     if (includeNumbers) {
-        let asNum = parseFloat(value);
+        const asNum = parseFloat(value);
         if (!isNaN(asNum))
             return asNum !== 0;
     }

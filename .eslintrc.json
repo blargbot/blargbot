@@ -45,16 +45,37 @@
         "vue"
     ],
     "rules": {
-        "strict": 0,
+        "strict": "warn",
         "semi": "warn",
-        "indent": [
-            0,
-            4
+        "quotes": [
+            "warn",
+            "single",
+            {
+                "avoidEscape": false
+            }
         ],
-        "no-undef": "warn",
+        "indent": [
+            "warn",
+            4,
+            {
+                "SwitchCase": 1
+            }
+        ],
         "no-global-assign": "warn",
-        "no-console": "warn",
+        "no-console": "error",
         "comma-dangle": "warn",
-        "no-trailing-spaces": "warn"
+        "no-trailing-spaces": "warn",
+        "@typescript-eslint/no-unsafe-return": "off",
+        "@typescript-eslint/no-unsafe-call": "off",
+        "@typescript-eslint/no-unsafe-member-access": "off",
+        "@typescript-eslint/no-unsafe-assignment": "off",
+        "@typescript-eslint/restrict-template-expressions": "off",
+        "@typescript-eslint/explicit-member-accessibility": "error",
+        "@typescript-eslint/explicit-function-return-type": [
+            "error",
+            {
+                "allowExpressions": true
+            }
+        ]
     }
 }

@@ -1,4 +1,3 @@
-
 import { ClusterModuleLoader } from '../core/ClusterModuleLoader';
 import { ClusterStats } from './ClusterStats';
 import { ClusterUtilities } from './ClusterUtilities';
@@ -10,8 +9,8 @@ import moment, { Moment } from 'moment-timezone';
 import { EventManager } from '../structures/EventManager';
 import { commandTypes, tagTypes } from '../newbu';
 import { BBEngine } from '../structures/BBEngine';
-import { ClusterWorker } from '../workers/cluster/ClusterWorker';
-import { WorkerConnection } from '../core/WorkerConnection';
+import { ClusterWorker } from '../workers/ClusterWorker';
+import { WorkerConnection } from '../workers/WorkerConnection';
 
 export interface ClusterOptions {
     id: string,
@@ -34,10 +33,10 @@ export class Cluster extends BaseClient {
     public readonly bbtag: BBEngine;
     public readonly images: WorkerConnection;
 
-    constructor(
+    public constructor(
         public readonly logger: CatLogger,
         public readonly config: Configuration,
-        options: ClusterOptions,
+        options: ClusterOptions
     ) {
         super(logger, config, {
             autoreconnect: true,
@@ -84,7 +83,7 @@ export class Cluster extends BaseClient {
         this.events.on('remove', (module: BaseEventHandler) => module.uninstall());
     }
 
-    async start() {
+    public async start(): Promise<void> {
         this.logger.init(`Starting cluster ${this.id}`);
         await Promise.all([
             super.start(),
@@ -96,14 +95,14 @@ export class Cluster extends BaseClient {
         this.logger.init(`Cluster ${this.id} started`);
     }
 
-    async eval(message: { author: { id: string } }, text: string, send: false): Promise<{ resultString: string, result: any }>;
-    async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send?: true): Promise<void>;
-    async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send = true): Promise<void | { resultString: string, result: any }> {
+    public async eval(message: { author: { id: string } }, text: string, send: false): Promise<{ resultString: string, result: unknown }>;
+    public async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send?: true): Promise<void>;
+    public async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send = true): Promise<void | { resultString: string, result: unknown }> {
         if (message.author.id !== this.config.discord.users.owner)
             throw new Error(`User ${message.author.id} does not have permission to run eval`);
 
         let resultString, result;
-        var commandToProcess = text.replace('eval ', '');
+        let commandToProcess = text.replace('eval ', '');
         if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
             commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
         else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
@@ -116,7 +115,7 @@ export class Cluster extends BaseClient {
                 func = eval(`async () => { ${commandToProcess} }`);
             }
             func.bind(this);
-            let res = await func();
+            const res = await func();
             result = res;
             resultString = `Input:
 \`\`\`js
@@ -136,7 +135,7 @@ ${err.stack}
         if (!send)
             return { resultString, result };
 
-        this.util.send(message.channel.id, resultString);
+        void this.util.send(message.channel.id, resultString);
     }
 }
 
@@ -145,7 +144,7 @@ function moduleStats<TModule, TKey extends string | number>(
     type: string,
     getKey: (module: TModule) => TKey,
     friendlyKey: (key: TKey) => string = k => k.toString()
-) {
+): string {
     const items = [...loader.list()];
     const groups = new Map<TKey, number>();
     const result = [`${type}: ${items.length}`];

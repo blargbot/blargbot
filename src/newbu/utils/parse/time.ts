@@ -1,7 +1,7 @@
-import moment, { DurationInputArg2, MomentFormatSpecification } from 'moment-timezone';
+import moment, { DurationInputArg2, Moment } from 'moment-timezone';
 
-export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone: string = 'Etc/UTC') {
-    let now = moment.tz(timezone);
+export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
+    const now = moment.tz(timezone);
     if (!text)
         return now;
 
@@ -12,25 +12,28 @@ export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, 
         case 'yesterday': return now.startOf('day').add(-1, 'days');
     }
 
-    let match = text.match(/^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i), sign = 1;
-    if (match == null)
-        match = text.match(/^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i), sign = -1;
+    let match = /^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i.exec(text);
+    let sign = 1;
+    if (match == null) {
+        match = /^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i.exec(text);
+        sign = -1;
+    }
     if (match != null) {
-        let magnitude = sign * parseFloat(match[1]);
-        let key = match[2].toLowerCase();
+        const magnitude = sign * parseFloat(match[1]);
+        const key = match[2].toLowerCase();
         if (!(key in prettyTimeMagnitudes))
-            return 'Invalid quantity ' + match[2];
-        let quantity = prettyTimeMagnitudes[key];
+            throw new Error('Invalid quantity ' + match[2]);
+        const quantity = prettyTimeMagnitudes[key];
         return now.add(magnitude, quantity);
     }
 
-    let tz = format === undefined
+    const tz = format === undefined
         ? moment.tz(text, timezone)
         : moment.tz(text, format, timezone);
     return tz.utcOffset(0);
 }
 
-const prettyTimeMagnitudes: { [key: string]: DurationInputArg2 } = {
+const prettyTimeMagnitudes: Record<string, DurationInputArg2> = {
     //defaults
     year: 'year', years: 'years', y: 'y',
     month: 'month', months: 'months', M: 'M',
@@ -43,4 +46,4 @@ const prettyTimeMagnitudes: { [key: string]: DurationInputArg2 } = {
     quarter: 'quarter', quarters: 'quarters', q: 'Q',
     //Custom
     mins: 'minutes', min: 'minute'
-} 
+};

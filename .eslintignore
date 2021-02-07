@@ -2,3 +2,4 @@
 src/backend/public/codemirror/*
 src/backend/public/js/jquery*
 src/backend/public/js/materialize*
+**/*.d.ts

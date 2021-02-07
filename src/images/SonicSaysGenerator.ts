@@ -1,11 +1,11 @@
-import { BaseImageGenerator } from '../structures/BaseImageGenerator'
+import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 
 export class SonicSaysGenerator extends BaseImageGenerator {
-    constructor(logger: CatLogger) {
+    public constructor(logger: CatLogger) {
         super(logger);
     }
 
-    async execute({ text }: JObject) {
+    public async execute({ text }: JObject): Promise<Buffer | null> {
         if (typeof text !== 'string')
             return null;
 

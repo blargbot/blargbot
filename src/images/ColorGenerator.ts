@@ -1,16 +1,16 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../structures/BaseImageGenerator'
+import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 
 export class ColorGenerator extends BaseImageGenerator {
-    constructor(logger: CatLogger) {
+    public constructor(logger: CatLogger) {
         super(logger);
     }
 
-    async execute({ hex }: JObject) {
+    public async execute({ hex }: JObject): Promise<Buffer | null> {
         if (typeof hex !== 'number')
             return null;
 
         return await new Jimp(128, 128, hex)
             .getBufferAsync(Jimp.MIME_PNG);
     }
-};
+}

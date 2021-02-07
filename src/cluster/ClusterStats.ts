@@ -1,10 +1,11 @@
-import { Cluster } from "./Cluster";
+import { Cluster } from './Cluster';
 import moment, { Moment } from 'moment-timezone';
 
 export class ClusterStats {
-    #lastReady: Map<number, Moment>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #lastReady: Map<number, Moment>;
 
-    constructor(
+    public constructor(
         public readonly cluster: Cluster
     ) {
         this.#lastReady = new Map();
@@ -18,7 +19,7 @@ export class ClusterStats {
             ?? this.cluster.createdAt;
     }
 
-    public getCurrent() {
+    public getCurrent(): JObject {
         return {
             id: this.cluster.id,
             time: Date.now(),
@@ -33,6 +34,6 @@ export class ClusterStats {
                 cluster: this.cluster.id,
                 time: this.getLastReady(s.id).valueOf()
             }))
-        }
+        };
     }
 }

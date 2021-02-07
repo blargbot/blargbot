@@ -7,7 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-global.config = require('../config.json');
+global.config = require('../../../config.json');
 const CatLoggr = require('cat-loggr');
 const snekfetch = require('snekfetch');
 const moment = require('moment');
@@ -57,13 +57,13 @@ const reload = require('require-reload')(require);
 const EventEmitter = require('eventemitter3');
 global.Promise = require('bluebird');
 const botEmitter = new EventEmitter();
-const ClusterManager = require('./core/ClusterManager');
+const ClusterManager = require('../core/ClusterManager');
 const Eris = require('eris');
 // const irc = require('./core/irc.js');
 
 /** CONFIG STUFF **/
 
-global.bu = require('./core/util.js');
+global.bu = require('../core/util.js');
 bu.init();
 
 /** LOGGING STUFF **/

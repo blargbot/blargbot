@@ -3,4 +3,13 @@ declare module 'rethinkdb' {
     export function literal(value: object): Literal;
 
     interface Literal { }
+
+    interface WriteResult {
+        changes?: WriteChange[];
+    }
+
+    interface WriteChange {
+        new_val?: unknown;
+        old_val?: unknown;
+    }
 }

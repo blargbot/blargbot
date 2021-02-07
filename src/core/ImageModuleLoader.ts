@@ -1,21 +1,21 @@
-import { BaseModuleLoader } from "./BaseModuleLoader";
-import { BaseImageGenerator } from "../structures/BaseImageGenerator";
+import { BaseModuleLoader, ModuleResult } from './BaseModuleLoader';
+import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 
 export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
-    constructor(
+    public constructor(
         public readonly source: string,
         logger: CatLogger
     ) {
         super(source, logger);
     }
 
-    protected tryActivate(rawModule: any) {
+    protected tryActivate(rawModule: unknown): ModuleResult<BaseImageGenerator> | null {
         if (rawModule instanceof BaseImageGenerator) {
             return { module: rawModule, names: getNiceNames(rawModule.constructor) };
         }
 
-        if (typeof rawModule.constructor === 'function' && rawModule.prototype instanceof BaseImageGenerator) {
-            let instance = new rawModule(this.logger);
+        if (isConstructor(rawModule)) {
+            const instance = new rawModule(this.logger);
             return { module: instance, names: getNiceNames(instance.constructor) };
         }
 
@@ -23,7 +23,12 @@ export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
     }
 }
 
-function getNiceNames(type: Function) {
+function isConstructor(value: unknown): value is new (logger: CatLogger) => BaseImageGenerator {
+    return typeof value === 'function' && value.prototype instanceof BaseImageGenerator;
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function getNiceNames(type: Function): string[] {
     let name = type.name.toLowerCase();
     if (name.endsWith('generator'))
         name = name.substring(0, name.length - 'generator'.length);

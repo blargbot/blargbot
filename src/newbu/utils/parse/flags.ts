@@ -11,19 +11,19 @@ export type FlagResult = {
     [flag: string]: string[] | undefined;
 }
 
-export function flags(definitions: FlagDefinition[], text: string | string[], noTrim: boolean = false): FlagResult {
+export function flags(definitions: FlagDefinition[], text: string | string[], noTrim = false): FlagResult {
     let words: string[];
     if (Array.isArray(text))
         words = getWords(text.slice(1).join(' '), noTrim);
     else
         words = getWords(text, noTrim);
-    let output: FlagResult = { undefined: [] } as any;
+    const output: FlagResult = { undefined: [] };
     let currentFlag = '';
     for (let i = 0; i < words.length; i++) {
         let pushFlag = true;
         if (words[i].startsWith('--')) {
             if (words[i].length > 2) {
-                let flag = definitions.find(f => f.word == words[i].substring(2).toLowerCase());
+                const flag = definitions.find(f => f.word == words[i].substring(2).toLowerCase());
                 if (flag) {
                     currentFlag = flag.flag;
                     output[currentFlag] = [];
@@ -35,9 +35,9 @@ export function flags(definitions: FlagDefinition[], text: string | string[], no
             }
         } else if (words[i].startsWith('-')) {
             if (words[i].length > 1) {
-                let tempFlag = words[i].substring(1);
+                const tempFlag = words[i].substring(1);
 
-                for (let char of tempFlag) {
+                for (const char of tempFlag) {
                     currentFlag = char;
                     output[currentFlag] = [];
                 }

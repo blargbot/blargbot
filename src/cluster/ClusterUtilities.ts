@@ -35,14 +35,21 @@ interface LookupMatch<T> {
     value: T
 }
 
-export class ClusterUtilities extends BaseUtilities {
-    readonly #guildCache: Map<string, StoredGuild>;
-    readonly #userCache: Map<string, StoredUser>;
-    readonly bans: BanStore;
-    readonly commandMessages: MessageIdQueue;
-    readonly moderation: ModerationUtils;
+interface MessagePrompt {
+    prompt: Message | null;
+    response: Promise<Message | null>;
+}
 
-    constructor(
+export class ClusterUtilities extends BaseUtilities {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #guildCache: Map<string, StoredGuild>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #userCache: Map<string, StoredUser>;
+    public readonly bans: BanStore;
+    public readonly commandMessages: MessageIdQueue;
+    public readonly moderation: ModerationUtils;
+
+    public constructor(
         public readonly cluster: Cluster
     ) {
         super(cluster);
@@ -53,8 +60,8 @@ export class ClusterUtilities extends BaseUtilities {
         this.commandMessages = new MessageIdQueue(100);
     }
 
-    async guildSetting<T extends keyof GuildSettings>(guildId: string, key: T): Promise<GuildSettings[T] | null> {
-        let guild = await this.getGuild(guildId);
+    public async guildSetting<T extends keyof GuildSettings>(guildId: string, key: T): Promise<GuildSettings[T] | null> {
+        const guild = await this.getGuild(guildId);
         if (guild === null || guild.settings === undefined)
             return null;
 
@@ -64,7 +71,7 @@ export class ClusterUtilities extends BaseUtilities {
         return guild.settings[key];
     }
 
-    async renderImage(type: string, data: JObject) {
+    public async renderImage(type: string, data: JObject): Promise<Buffer | null> {
         const result = await this.cluster.images.request('img', { command: type, ...data });
         if (typeof result === 'string')
             return Buffer.from(result, 'base64');
@@ -73,11 +80,11 @@ export class ClusterUtilities extends BaseUtilities {
         return null;
     }
 
-    async processUser(user: User) {
+    public async processUser(user: User): Promise<void> {
         if (user.discriminator == '0000') return;
-        let storedUser = await this.cluster.rethinkdb.getUser(user.id);
+        const storedUser = await this.cluster.rethinkdb.getUser(user.id);
         if (!storedUser) {
-            console.debug(`inserting user ${user.id} (${user.username})`);
+            this.logger.debug(`inserting user ${user.id} (${user.username})`);
             await this.cluster.rethinkdb.query(r =>
                 r.table('user').insert({
                     userid: user.id,
@@ -94,7 +101,7 @@ export class ClusterUtilities extends BaseUtilities {
                     todo: []
                 }));
         } else {
-            let newUser: StoredUser = {};
+            const newUser: StoredUser = {};
             let update = false;
             if (storedUser.username != user.username) {
                 newUser.username = user.username;
@@ -119,12 +126,12 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    async getUser(msg: Message, name: string, args: boolean | GetUserOptions = {}) {
+    public async getUser(msg: Message, name: string, args: boolean | GetUserOptions = {}): Promise<User | null> {
         if (!name)
             return null;
 
-        let normName = name.toLowerCase();
-        const matchScore = (user: { name: string, nick: string, normName: string, normNick: string }) => {
+        const normName = name.toLowerCase();
+        const matchScore = (user: { name: string, nick: string, normName: string, normNick: string }): number => {
             let score = 0;
             if (user.name.startsWith(name)) score += 100;
             if (user.nick.startsWith(name)) score += 100;
@@ -133,12 +140,12 @@ export class ClusterUtilities extends BaseUtilities {
             if (user.normName.includes(normName)) score += 1;
             if (user.normNick.includes(normName)) score += 1;
             return score;
-        }
+        };
 
         if (typeof args !== 'object')
             args = { quiet: args };
 
-        let user = await this.getUserById(name);
+        const user = await this.getUserById(name);
         if (user)
             return user;
 
@@ -152,19 +159,19 @@ export class ClusterUtilities extends BaseUtilities {
         }
 
         let discrim: string | undefined;
-        let nameMatch = name.match(/^(.*)#(\d{4})$/);
+        const nameMatch = /^(.*)#(\d{4})$/.exec(name);
         if (nameMatch) {
             [, name, discrim] = nameMatch;
         }
 
-        let userList = msg.channel.guild.members
+        const userList = msg.channel.guild.members
             .map(m => ({
                 member: m,
                 match: matchScore({
                     name: m.username,
                     nick: m.nick ?? m.username,
                     normNick: m.nick?.toLowerCase() ?? m.username.toLowerCase(),
-                    normName: m.username.toLowerCase(),
+                    normName: m.username.toLowerCase()
                 })
             }))
             .filter(m => m.match > 0 && (!discrim || discrim == m.member.discriminator))
@@ -183,34 +190,34 @@ export class ClusterUtilities extends BaseUtilities {
             default:
                 if (args.quiet || args.suppress)
                     return null;
-                let matches = userList.map(m => ({ content: `${m.username}#${m.discriminator} - ${m.id}`, value: m }));
-                let lookupResponse = await this.createLookup(msg, 'user', matches, args);
+                const matches = userList.map(m => ({ content: `${m.username}#${m.discriminator} - ${m.id}`, value: m }));
+                const lookupResponse = await this.createLookup(msg, 'user', matches, args);
                 return lookupResponse;
         }
     }
 
 
-    async createLookup<T>(msg: Message, type: string, matches: LookupMatch<T>[], args: LookupOptions = {}) {
-        let lookupList = matches.slice(0, 20);
+    public async createLookup<T>(msg: Message, type: string, matches: LookupMatch<T>[], args: LookupOptions = {}): Promise<T | null> {
+        const lookupList = matches.slice(0, 20);
         let outputString = '';
         for (let i = 0; i < lookupList.length; i++) {
-            outputString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${lookupList[i].content}\n`;
+            outputString += `${i + 1 < 10 ? ` ${i + 1}` : i + 1}. ${lookupList[i].content}\n`;
         }
-        let moreLookup = lookupList.length < matches.length ? `...and ${matches.length - lookupList.length}more.\n` : '';
+        const moreLookup = lookupList.length < matches.length ? `...and ${matches.length - lookupList.length}more.\n` : '';
         try {
             if (args.onSendCallback)
                 args.onSendCallback();
 
-            let query = await this.createQuery(msg,
+            const query = await this.createQuery(msg,
                 `Multiple ${type}s found! Please select one from the list.\`\`\`prolog` +
                 `\n${outputString}${moreLookup}--------------------` +
-                `\nC.cancel query\`\`\`` +
+                '\nC.cancel query```' +
                 `\n**${humanize.fullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`,
                 (msg2) => msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1),
                 300000,
                 args.label
             );
-            let response = await query.response;
+            const response = await query.response;
             if (query.prompt)
                 await this.discord.deleteMessage(query.prompt.channel.id, query.prompt.id);
 
@@ -231,55 +238,55 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    async awaitQuery(
+    public async awaitQuery(
         msg: Message,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS?: number,
         label?: string
-    ) {
-        let query = await this.createQuery(msg, content, check, timeoutMS, label);
+    ): Promise<Message<TextableChannel> | null> {
+        const query = await this.createQuery(msg, content, check, timeoutMS, label);
         return await query.response;
-    };
+    }
 
-    async createQuery(
+    public async createQuery(
         msg: Message,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS?: number,
         label?: string
-    ) {
+    ): Promise<MessagePrompt> {
         if (timeoutMS === undefined)
             timeoutMS = 300000;
-        let timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
+        const timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
         return this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
-    };
+    }
 
-    async awaitPrompt(
+    public async awaitPrompt(
         msg: Message,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS: number,
         timeoutMessage: SendPayload | undefined
-    ) {
-        let prompt = await this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
+    ): Promise<Message<TextableChannel> | null> {
+        const prompt = await this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
         return await prompt.response;
-    };
+    }
 
-    async createPrompt(
+    public async createPrompt(
         msg: Message,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS: number,
         timeoutMessage: SendPayload | undefined
-    ) {
-        let prompt = await this.send(msg, content);
-        let response = this.messageAwaiter.wait([msg.channel.id], [msg.author.id], timeoutMS, check);
+    ): Promise<MessagePrompt> {
+        const prompt = await this.send(msg, content);
+        const response = this.messageAwaiter.wait([msg.channel.id], [msg.author.id], timeoutMS, check);
 
         if (timeoutMessage) {
-            response.then(m => {
+            void response.then(async m => {
                 if (m === null)
-                    this.send(msg, timeoutMessage);
+                    await this.send(msg, timeoutMessage);
             });
         }
 
@@ -287,10 +294,10 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             response
         };
-    };
+    }
 
-    async getUserById(userId: string) {
-        let match = userId.match(/\d{17,21}/);
+    public async getUserById(userId: string): Promise<User | null> {
+        const match = /\d{17,21}/.exec(userId);
         if (!match)
             return null;
 
@@ -303,9 +310,9 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    async insertChatlog(msg: Message, type: number) {
+    public async insertChatlog(msg: Message, type: number): Promise<void> {
         this.cluster.metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
-        let data = {
+        const data = {
             id: snowflake.create(),
             content: msg.content,
             attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
@@ -325,8 +332,8 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    postStats() {
-        let stats = {
+    public postStats(): void {
+        const stats = {
             server_count: this.guilds.size,
             shard_count: this.shards.size,
             shard_id: this.cluster.id
@@ -367,7 +374,7 @@ export class ClusterUtilities extends BaseUtilities {
                     this.logger.error(err);
             });
 
-            let shards = [];
+            const shards = [];
             for (const shardId of this.shards.map(s => s.id)) {
                 shards[shardId] = this.guilds.filter(g => g.shard.id === shardId);
             }
@@ -389,13 +396,13 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    async canExecuteCustomCommand(msg: Message<GuildTextableChannel>, command: StoredGuildCommand, quiet: boolean) {
+    public async canExecuteCustomCommand(msg: Message<GuildTextableChannel>, command: StoredGuildCommand, quiet: boolean): Promise<boolean> {
         return command !== null
             && !command.hidden
             && (!command.roles?.length || await this.hasPerm(msg, command.roles, quiet));
     }
 
-    hasRole(msg: Member | Message, roles: string | string[], override = true) {
+    public hasRole(msg: Member | Message, roles: string | string[], override = true): boolean {
         let member: Member;
         if (msg instanceof Member) {
             member = msg;
@@ -418,13 +425,16 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
 
-    isBotHigher(member: Member) {
-        let botPos = this.getPosition(member.guild.members.get(this.cluster.discord.user.id)!);
-        let memPos = this.getPosition(member);
+    public isBotHigher(member: Member): boolean {
+        const bot = member.guild.members.get(this.cluster.discord.user.id);
+        if (bot === undefined)
+            return false;
+        const botPos = this.getPosition(bot);
+        const memPos = this.getPosition(member);
         return botPos > memPos;
     }
 
-    getPosition(member: Member) {
+    public getPosition(member: Member): number {
         return member.roles
             .map(r => member.guild.roles.get(r))
             .filter(guard.hasValue)
@@ -432,16 +442,16 @@ export class ClusterUtilities extends BaseUtilities {
             ?.position ?? 0;
     }
 
-    async canExecuteDiscordCommand(
+    public async canExecuteDiscordCommand(
         msg: Message<AnyChannel & Textable>,
         command: BaseDCommand,
-        quiet: boolean = false,
+        quiet = false,
         options: CanExecuteDiscordCommandOptions = {}
-    ) {
+    ): Promise<boolean> {
         if (msg.author.id == this.cluster.config.discord.users.owner)
             return true;
 
-        let category = commandTypes.properties[command.category];
+        const category = commandTypes.properties[command.category];
 
         if (!guard.isGuildMessage(msg)) {
             return category.perm === undefined;
@@ -454,12 +464,12 @@ export class ClusterUtilities extends BaseUtilities {
             if (storedGuild?.settings) {
                 permOverride = storedGuild.settings.permoverride;
                 staffPerms = storedGuild.settings.staffperms;
-                if (storedGuild.settings.adminrole !== undefined && storedGuild.settings.adminrole !== "")
+                if (storedGuild.settings.adminrole !== undefined && storedGuild.settings.adminrole !== '')
                     adminrole = storedGuild.settings.adminrole;
             }
         }
 
-        let commandPerms = storedGuild?.commandperms?.[command.name];
+        const commandPerms = storedGuild?.commandperms?.[command.name];
         if (commandPerms?.disabled && !command.cannotDisable)
             return false;
 
@@ -468,13 +478,13 @@ export class ClusterUtilities extends BaseUtilities {
 
         if (permOverride) {
             staffPerms ??= defaultStaff;
-            let allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
-            if (!isNaN(allow) && this.comparePerms(msg.member!, allow))
+            const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
+            if (!isNaN(allow) && msg.member && this.comparePerms(msg.member, allow))
                 return true;
         }
 
         if (commandPerms) {
-            if (commandPerms.permission && this.comparePerms(msg.member!, commandPerms.permission))
+            if (commandPerms.permission && msg.member && this.comparePerms(msg.member, commandPerms.permission))
                 return true;
 
             if (commandPerms.rolename)
@@ -487,24 +497,24 @@ export class ClusterUtilities extends BaseUtilities {
         return true;
     }
 
-    async isUserStaff(userId: string, guildId: string) {
+    public async isUserStaff(userId: string, guildId: string): Promise<boolean> {
         if (userId == guildId) return true;
 
-        let guild = this.guilds.get(guildId);
+        const guild = this.guilds.get(guildId);
         if (!guild) return false;
 
-        let member = guild.members.get(userId);
+        const member = guild.members.get(userId);
         if (!member) return false;
 
         if (guild.ownerID == userId) return true;
         if (member.permissions.has('administrator')) return true;
 
-        let storedGuild = await this.getGuild(guildId);
+        const storedGuild = await this.getGuild(guildId);
         if (storedGuild?.settings?.permoverride) {
             let allow = storedGuild.settings.staffperms || defaultStaff;
             if (typeof allow === 'string')
                 allow = parseInt(allow);
-            let member = this.guilds.get(guildId)?.members.get(userId);
+            const member = this.guilds.get(guildId)?.members.get(userId);
             if (member && this.comparePerms(member, allow)) {
                 return true;
             }
@@ -512,9 +522,9 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    async getGuild(guildid: string) {
+    public async getGuild(guildid: string): Promise<StoredGuild | null> {
         if (!this.#guildCache.has(guildid)) {
-            let guild = await this.rethinkdb.getGuild(guildid);
+            const guild = await this.rethinkdb.getGuild(guildid);
             if (guild)
                 this.#guildCache.set(guildid, guild);
         }
@@ -522,19 +532,19 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
 
-    async getCachedUser(userid: string) {
+    public async getCachedUser(userid: string): Promise<StoredUser | null> {
         if (!this.#userCache.has(userid)) {
-            let user = await this.rethinkdb.getUser(userid);
+            const user = await this.rethinkdb.getUser(userid);
             if (user)
                 this.#userCache.set(userid, user);
         }
         return this.#userCache.get(userid) ?? null;
-    };
+    }
 
-    comparePerms(member: Member, allow?: number) {
+    public comparePerms(member: Member, allow?: number): boolean {
         allow ??= defaultStaff;
-        let newPerm = new Permission(allow, 0);
-        for (let key in newPerm.json) {
+        const newPerm = new Permission(allow, 0);
+        for (const key in newPerm.json) {
             if (member.permissions.has(key)) {
                 return true;
             }
@@ -542,7 +552,7 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    async hasPerm(msg: Member | Message, roles: string[], quiet: boolean, override = true) {
+    public async hasPerm(msg: Member | Message, roles: string[], quiet: boolean, override = true): Promise<boolean> {
         let member: Member;
         let channel: TextableChannel | undefined;
         if (msg instanceof Member) {
@@ -564,26 +574,26 @@ export class ClusterUtilities extends BaseUtilities {
         }
 
         roles = roles.map(p => p.toLowerCase());
-        let guildRoles = member.guild.roles.filter(m =>
+        const guildRoles = member.guild.roles.filter(m =>
             roles.includes(m.name.toLowerCase())
-            || roles.some(p => parse.entityId(p, "@&", true) === m.id));
+            || roles.some(p => parse.entityId(p, '@&', true) === m.id));
 
         if (guildRoles.some(r => member.roles.includes(r.id)))
             return true;
 
         if (channel && !quiet) {
-            let guild = await this.getGuild(member.guild.id);
+            const guild = await this.getGuild(member.guild.id);
             if (!guild?.settings?.disablenoperms) {
-                let permString = roles.map(m => '`' + m + '`').join(', or ');
-                this.send(channel, `You need the role ${permString} in order to use this command!`);
+                const permString = roles.map(m => '`' + m + '`').join(', or ');
+                void this.send(channel, `You need the role ${permString} in order to use this command!`);
             }
         }
         return false;
-    };
+    }
 
     public readonly ccommand = {
-        set: async (guildid: string, key: string, value: StoredGuildCommand) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        set: async (guildid: string, key: string, value: StoredGuildCommand): Promise<boolean> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key = key.toLowerCase();
             if (!storedGuild)
                 return false;
@@ -596,19 +606,16 @@ export class ClusterUtilities extends BaseUtilities {
             await this.cluster.rethinkdb.query(r =>
                 r.table('guild')
                     .get(guildid)
-                    .update({ ccommands: storedGuild!.ccommands }));
+                    .update({ ccommands: storedGuild.ccommands }));
             return true;
         },
-        get: async (guildid: string, key: string) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        get: async (guildid: string, key: string): Promise<StoredGuildCommand | null> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key = key.toLowerCase();
-            if (!storedGuild?.ccommands?.[key])
-                return null;
-
-            return storedGuild.ccommands[key]!;
+            return storedGuild?.ccommands?.[key] ?? null;
         },
-        rename: async (guildid: string, key1: string, key2: string) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        rename: async (guildid: string, key1: string, key2: string): Promise<boolean> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key1 = key1.toLowerCase();
             key2 = key2.toLowerCase();
 
@@ -621,11 +628,11 @@ export class ClusterUtilities extends BaseUtilities {
             await this.cluster.rethinkdb.query(r =>
                 r.table('guild')
                     .get(guildid)
-                    .replace(storedGuild!));
+                    .replace(storedGuild));
             return true;
         },
-        remove: async (guildid: string, key: string) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        remove: async (guildid: string, key: string): Promise<boolean> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key = key.toLowerCase();
 
             if (!storedGuild?.ccommands?.[key])
@@ -636,45 +643,51 @@ export class ClusterUtilities extends BaseUtilities {
             await this.cluster.rethinkdb.query(r =>
                 r.table('guild')
                     .get(guildid)
-                    .replace(storedGuild!));
+                    .replace(storedGuild));
             return true;
         },
-        sethelp: async (guildid: string, key: string, help: string) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        sethelp: async (guildid: string, key: string, help: string): Promise<boolean> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key = key.toLowerCase();
-
-            if (!storedGuild?.ccommands?.[key])
+            if (!storedGuild)
                 return false;
 
-            storedGuild.ccommands[key]!.help = help;
+            const ccommand = storedGuild.ccommands?.[key];
+            if (!ccommand)
+                return false;
+
+            ccommand.help = help;
             await this.cluster.rethinkdb.query(r =>
                 r.table('guild')
                     .get(guildid)
-                    .replace(storedGuild!));
+                    .replace(storedGuild));
             return true;
         },
-        gethelp: async (guildid: string, key: string) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        gethelp: async (guildid: string, key: string): Promise<string | undefined> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key = key.toLowerCase();
 
             return storedGuild?.ccommands?.[key]?.help;
         },
-        setlang: async (guildid: string, key: string, lang: string) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        setlang: async (guildid: string, key: string, lang: string): Promise<boolean> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key = key.toLowerCase();
-
-            if (!storedGuild?.ccommands?.[key])
+            if (!storedGuild)
                 return false;
 
-            storedGuild.ccommands[key]!.lang = lang;
+            const ccommand = storedGuild.ccommands?.[key];
+            if (!ccommand)
+                return false;
+
+            ccommand.lang = lang;
             await this.cluster.rethinkdb.query(r =>
                 r.table('guild')
                     .get(guildid)
-                    .replace(storedGuild!));
+                    .replace(storedGuild));
             return true;
         },
-        getlang: async (guildid: string, key: string) => {
-            let storedGuild = await this.cluster.util.getGuild(guildid);
+        getlang: async (guildid: string, key: string): Promise<string | undefined> => {
+            const storedGuild = await this.cluster.util.getGuild(guildid);
             key = key.toLowerCase();
 
             return storedGuild?.ccommands?.[key]?.lang;

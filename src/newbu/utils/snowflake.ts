@@ -12,11 +12,11 @@ const catflake = new Catflake({
 });
 
 export const snowflake = {
-    create(date?: Date) {
+    create(date?: Date): Snowflake {
         return catflake._generate(date);
     },
-    deconstruct(snowflake: Snowflake) {
-        let decon = catflake.deconstruct(snowflake);
+    deconstruct(snowflake: Snowflake): BigInt {
+        const decon = catflake.deconstruct(snowflake);
         return decon.timestamp.valueOf();
     }
-}
+};

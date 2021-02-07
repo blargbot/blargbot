@@ -1,18 +1,18 @@
-import { BaseImageGenerator } from '../structures/BaseImageGenerator'
+import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 
 export class PCCheckGenerator extends BaseImageGenerator {
-    constructor(logger: CatLogger) {
+    public constructor(logger: CatLogger) {
         super(logger);
     }
 
-    async execute({ text }: JObject) {
+    public async execute({ text }: JObject): Promise<Buffer | null> {
         if (typeof text !== 'string')
             return null;
 
-        let container: Array<{ italic: boolean, text: string }> = [];
+        const container: Array<{ italic: boolean, text: string }> = [];
         let italic = false;
         let temp = '';
-        for (var i = 0; i < text.length; i++) {
+        for (let i = 0; i < text.length; i++) {
             if (text[i] === '*') {
                 container.push({ italic, text: temp });
                 temp = '';
@@ -27,10 +27,10 @@ export class PCCheckGenerator extends BaseImageGenerator {
             scale: 2,
             transformArg: container,
             transform(m: typeof container) {
-                var thing = document.getElementById('replace1');
+                const thing = document.getElementById('replace1');
                 if (thing) {
-                    for (var i = 0; i < m.length; i++) {
-                        var el = document.createElement(m[i].italic ? 'em' : 'span');
+                    for (let i = 0; i < m.length; i++) {
+                        const el = document.createElement(m[i].italic ? 'em' : 'span');
                         el.innerText = m[i].text;
                         thing.appendChild(el);
                     }

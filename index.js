@@ -1,1 +1,1 @@
-require('./src/blargbot');
+require('./src/entrypoint/blargbot');

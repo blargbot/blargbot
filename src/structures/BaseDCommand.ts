@@ -1,6 +1,7 @@
-import { Message, TextableChannel } from "eris";
-import { Cluster } from "../cluster";
-import { CommandType, FlagDefinition } from "../newbu";
+import { Client as ErisClient, Message, TextableChannel } from 'eris';
+import { Cluster } from '../cluster';
+import { ClusterUtilities } from '../cluster/ClusterUtilities';
+import { CommandType, FlagDefinition } from '../newbu';
 
 export interface DCommandOptions {
     aliases?: string[];
@@ -32,9 +33,9 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     public readonly channelRatelimit: boolean;
     public readonly cooldown: number;
 
-    protected get util() { return this.cluster.util; }
-    protected get discord() { return this.cluster.discord; }
-    protected get logger() { return this.cluster.logger; }
+    protected get util(): ClusterUtilities { return this.cluster.util; }
+    protected get discord(): ErisClient { return this.cluster.discord; }
+    protected get logger(): CatLogger { return this.cluster.logger; }
 
     protected constructor(
         public readonly cluster: Cluster,
@@ -45,7 +46,7 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         this.category = options.category ?? CommandType.GENERAL;
         this.isCommand = true;
         this.hidden = options.hidden ?? false;
-        this.usage = (this.name + options.usage).trimEnd();
+        this.usage = `${this.name} ${options.usage ?? ''}`.trimEnd();
         this.info = options.info ?? '';
         this.longinfo = options.longinfo ?? null;
         this.flags = options.flags ?? [];
@@ -56,7 +57,8 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         this.cooldown = options.cooldown ?? 0;
     }
 
-    event(message: unknown): Promise<void> {
+    public event(message: unknown): Promise<void> {
+        this.logger.event(message);
         return Promise.resolve();
     }
 

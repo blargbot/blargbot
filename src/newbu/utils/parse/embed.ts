@@ -1,4 +1,4 @@
-import { Embed, EmbedField } from "eris";
+import { Embed, EmbedField } from 'eris';
 
 export type MalformedEmbed = { fields: [EmbedField], malformed: true };
 
@@ -10,7 +10,7 @@ export function embed(embedText: string): Embed | MalformedEmbed | undefined | n
         return undefined;
 
     try {
-        let parsed = JSON.parse(embedText);
+        const parsed = JSON.parse(embedText);
         if (typeof parsed !== 'object' || Array.isArray(parsed))
             return null;
         else

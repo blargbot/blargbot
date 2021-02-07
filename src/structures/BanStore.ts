@@ -1,14 +1,16 @@
-import { User } from "eris";
+import { User } from 'eris';
 
 export class BanStore {
-    #guilds: Map<string, GuildBanStore>;
-    constructor() {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #guilds: Map<string, GuildBanStore>;
+
+    public constructor() {
         this.#guilds = new Map();
     }
 
-    get(guildId: string): GuildBanStore;
-    get(guildId: string, userId: string): BanDetails | undefined;
-    get(guildId: string, userId?: string): BanDetails | undefined | GuildBanStore {
+    public get(guildId: string): GuildBanStore;
+    public get(guildId: string, userId: string): BanDetails | undefined;
+    public get(guildId: string, userId?: string): BanDetails | undefined | GuildBanStore {
         let guild = this.#guilds.get(guildId);
         if (userId)
             return guild?.get(userId);
@@ -19,18 +21,18 @@ export class BanStore {
         return guild;
     }
 
-    set(guildId: string, details: MassBanDetails): void
-    set(guildId: string, userId: string, details: BanDetails): void
-    set(guildId: string, ...args: [userId: string, details: BanDetails] | [details: MassBanDetails]) {
+    public set(guildId: string, details: MassBanDetails): void
+    public set(guildId: string, userId: string, details: BanDetails): void
+    public set(guildId: string, ...args: [userId: string, details: BanDetails] | [details: MassBanDetails]): void {
         if (args.length === 2)
             this.get(guildId).set(...args);
         else
             this.get(guildId).mass = args[0];
     }
 
-    clear(guildId: string): void
-    clear(guildId: string, userId: string): void
-    clear(guildId: string, userId?: string) {
+    public clear(guildId: string): void
+    public clear(guildId: string, userId: string): void
+    public clear(guildId: string, userId?: string): void {
         if (userId)
             this.#guilds.get(guildId)?.delete(userId);
         else
@@ -39,24 +41,25 @@ export class BanStore {
 }
 
 class GuildBanStore {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #users: Map<string, BanDetails>;
-    readonly guildId: string;
-    mass: MassBanDetails | undefined;
+    public readonly guildId: string;
+    public mass: MassBanDetails | undefined;
 
-    constructor(guildId: string) {
+    public constructor(guildId: string) {
         this.#users = new Map();
         this.guildId = guildId;
     }
 
-    get(userId: string) {
+    public get(userId: string): BanDetails | undefined {
         return this.#users.get(userId);
     }
 
-    set(userId: string, details: BanDetails) {
+    public set(userId: string, details: BanDetails): void {
         this.#users.set(userId, details);
     }
 
-    delete(userId: string) {
+    public delete(userId: string): void {
         this.#users.delete(userId);
     }
 }

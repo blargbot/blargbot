@@ -1,21 +1,21 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../structures/BaseImageGenerator'
+import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 
 export class ShitGenerator extends BaseImageGenerator {
-    constructor(logger: CatLogger) {
+    public constructor(logger: CatLogger) {
         super(logger);
     }
 
-    async execute({ plural, text }: JObject) {
+    public async execute({ plural, text }: JObject): Promise<Buffer | null> {
         if (typeof text !== 'string')
             return null;
 
-        let caption = await this.renderJimpText(text, {
+        const caption = await this.renderJimpText(text, {
             font: 'animeace.ttf',
             size: '200x160',
             gravity: 'South'
         });
-        let img = await this.getLocalJimp(`SHIT${plural ? 'S' : ''}.png`);
+        const img = await this.getLocalJimp(`SHIT${plural ? 'S' : ''}.png`);
         img.composite(caption, 810, 31);
 
         return await img.getBufferAsync(Jimp.MIME_PNG);

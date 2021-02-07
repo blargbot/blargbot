@@ -1,22 +1,22 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../structures/BaseImageGenerator'
+import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 
 export class CaptionGenerator extends BaseImageGenerator {
-    constructor(logger: CatLogger) {
+    public constructor(logger: CatLogger) {
         super(logger);
     }
 
-    async execute({ url, input, font }: JObject) {
+    public async execute({ url, input, font }: JObject): Promise<Buffer | null> {
         if (typeof url !== 'string' || !checkInput(input) || typeof font !== 'string')
             return null;
 
-        let img = await this.getRemoteJimp(url);
+        const img = await this.getRemoteJimp(url);
         img.scaleToFit(800, 800);
 
-        let height = img.bitmap.height;
-        let width = img.bitmap.width;
+        const height = img.bitmap.height;
+        const width = img.bitmap.width;
         if (input.t) {
-            let topcap = await this.renderJimpText(input.t.join(' '), {
+            const topcap = await this.renderJimpText(input.t.join(' '), {
                 font,
                 size: `${width}x${height / 6}`,
                 gravity: 'north',
@@ -27,7 +27,7 @@ export class CaptionGenerator extends BaseImageGenerator {
             img.composite(topcap, 0, 0);
         }
         if (input.b) {
-            let botcap = await this.renderJimpText(input.b.join(' '), {
+            const botcap = await this.renderJimpText(input.b.join(' '), {
                 font,
                 size: `${width}x${height / 6}`,
                 gravity: 'south',
@@ -42,7 +42,7 @@ export class CaptionGenerator extends BaseImageGenerator {
     }
 }
 
-function checkInput(source: JToken): source is { t?: any[], b?: any[] } {
+function checkInput(source: JToken): source is { t?: JArray, b?: JArray } {
     if (typeof source !== 'object' || source === null || Array.isArray(source))
         return false;
 

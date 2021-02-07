@@ -1,10 +1,11 @@
-import { BaseModuleLoader } from "./BaseModuleLoader";
-import { Cluster } from "../cluster";
+import { BaseModuleLoader, ModuleResult } from './BaseModuleLoader';
+import { Cluster } from '../cluster';
 
 export class ClusterModuleLoader<TModule> extends BaseModuleLoader<TModule> {
-    readonly #getNames: (module: any) => Iterable<string>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #getNames: (module: TModule) => Iterable<string>;
 
-    constructor(
+    public constructor(
         public readonly source: string,
         public readonly cluster: Cluster,
         public readonly type: ClassOf<TModule>,
@@ -19,13 +20,13 @@ export class ClusterModuleLoader<TModule> extends BaseModuleLoader<TModule> {
         };
     }
 
-    protected tryActivate(rawModule: any) {
+    protected tryActivate(rawModule: unknown): ModuleResult<TModule> | null {
         if (rawModule instanceof this.type) {
-            return { module: rawModule, names: this.#getNames(rawModule) };
+            return { module: <TModule>rawModule, names: this.#getNames(<TModule>rawModule) };
         }
 
-        if (typeof rawModule?.constructor === 'function' && rawModule.prototype instanceof this.type) {
-            let instance = new rawModule(this.cluster);
+        if (isConstructor(rawModule, this.type)) {
+            const instance = new rawModule(this.cluster);
             return { module: instance, names: this.#getNames(instance) };
         }
 
@@ -33,4 +34,6 @@ export class ClusterModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     }
 }
 
-module.exports = { ClusterModuleLoader };
+function isConstructor<TModule>(value: unknown, type: ClassOf<TModule>): value is new (cluster: Cluster) => TModule {
+    return typeof value === 'function' && value.prototype instanceof type;
+}

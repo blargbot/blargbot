@@ -1,6 +1,6 @@
-import moment from 'moment-timezone';
+import moment, { Duration } from 'moment-timezone';
 
-export function duration(text: string) {
+export function duration(text: string): Duration {
     return moment.duration()
         .add(find(text, /([0-9]+) ?(day|days|d)/i), 'd')
         .add(find(text, /([0-9]+) ?(hours|hour|h)/i), 'h')
@@ -8,8 +8,8 @@ export function duration(text: string) {
         .add(find(text, /((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i), 'ms');
 }
 
-function find(text: string, regex: RegExp) {
-    let match = text.match(regex);
+function find(text: string, regex: RegExp): number {
+    const match = regex.exec(text);
     if (!match)
         return 0;
     return parseFloat(match[1]);

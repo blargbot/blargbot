@@ -1,7 +1,30 @@
-import { TagType } from "../newbu";
+import { TagType } from '../newbu';
 
 export interface TagArgument {
+    content: Array<string | TagArgument>;
+    types: TagArgumentType[];
+    kind: TagArgumentKind;
+    multiple: boolean;
+}
 
+export type TagArgumentType =
+    | 'anything'
+    | 'transparent'
+    | 'string'
+    | 'number'
+    | 'boolean'
+    | 'array'
+    | 'user'
+    | 'channel'
+    | 'role'
+    | 'time'
+    | string
+
+export enum TagArgumentKind {
+    REQUIRED = 1,
+    OPTIONAL,
+    LITERAL,
+    SELECTION
 }
 
 export interface TagHandlerOptions {
@@ -40,7 +63,7 @@ export abstract class BaseTagHandler implements Required<TagHandlerOptions>{
         this.exampleCode = options.exampleCode ?? null;
         this.exampleIn = options.exampleIn ?? null;
         this.exampleOut = options.exampleOut ?? null;
-        this.deprecated = options.deprecated ?? false
+        this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
     }
 }

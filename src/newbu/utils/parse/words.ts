@@ -1,4 +1,4 @@
-export function words(content: string | string[] | number | boolean, noTrim: boolean = false) {
+export function words(content: string | string[] | number | boolean, noTrim = false): string[] {
     let input;
     if (Array.isArray(content))
         content = content.join(' ');
@@ -18,35 +18,35 @@ export function words(content: string | string[] | number | boolean, noTrim: boo
     let inQuote = false;
     let quoted = '';
 
-    for (let i in input) {
+    for (const c of input) {
         if (!inQuote) {
-            if (input[i].startsWith('"') && !input[i].startsWith('\\"')) {
+            if (c.startsWith('"') && !c.startsWith('\\"')) {
                 inQuote = true;
-                if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
+                if (c.endsWith('"') && !c.endsWith('\\"')) {
                     inQuote = false;
-                    words.push(input[i].substring(1, input[i].length - 1));
+                    words.push(c.substring(1, c.length - 1));
                 } else
-                    quoted = input[i].substring(1, input[i].length) + ' ';
+                    quoted = c.substring(1, c.length) + ' ';
             } else {
-                words.push(input[i]);
+                words.push(c);
             }
         } else if (inQuote) {
-            if (input[i].endsWith('"') && !input[i].endsWith('\\"')) {
+            if (c.endsWith('"') && !c.endsWith('\\"')) {
                 inQuote = false;
-                quoted += input[i].substring(0, input[i].length - 1);
+                quoted += c.substring(0, c.length - 1);
                 words.push(quoted);
             } else {
-                quoted += input[i] + ' ';
+                quoted += c + ' ';
             }
         }
     }
     if (inQuote) {
         words = input;
     }
-    for (let i in words) {
+    for (let i = 0; i < words.length; i++) {
         words[i] = words[i].replace(/\\"/g, '"');
-        if (!noTrim) words[i] = words[i].replace(/^ +/g, '');
+        if (!noTrim)
+            words[i] = words[i].replace(/^ +/g, '');
     }
-    //console.debug(words);
     return words;
-};
+}

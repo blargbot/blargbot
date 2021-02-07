@@ -1,40 +1,42 @@
-import { Message } from "eris";
-import { EventEmitter } from "eventemitter3";
+import { Message } from 'eris';
+import { EventEmitter } from 'eventemitter3';
 
 export class MessageAwaiter {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #events: EventEmitter;
-    constructor(
+
+    public constructor(
         public readonly logger: CatLogger
     ) {
         this.#events = new EventEmitter();
     }
 
-    emit(message: Message) {
-        this.#events.emit(message.channel.id, message);
+    public emit(message: Message): boolean {
+        return this.#events.emit(message.channel.id, message);
     }
 
-    wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: Message) => boolean) {
-        console.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeoutMS}`);
+    public wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: Message) => boolean): Promise<Message | null> {
+        this.logger.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeoutMS}`);
 
         return new Promise<Message | null>(resolve => {
             const timeout = setTimeout(() => {
                 resolve(null);
-                for (let channel of channels)
+                for (const channel of channels)
                     this.#events.off(channel, handler);
             }, timeoutMS);
 
             const _filter = buildFilter(users, filter);
-            const handler = (message: Message) => {
+            const handler = (message: Message): void => {
                 if (!_filter(message))
                     return;
 
                 resolve(message);
                 clearTimeout(timeout);
-                for (let channel of channels)
+                for (const channel of channels)
                     this.#events.off(channel, handler);
-            }
+            };
 
-            for (let channel of channels)
+            for (const channel of channels)
                 this.#events.on(channel, handler);
         });
     }
@@ -48,11 +50,11 @@ function buildFilter(users: string[] | null, filter?: (message: Message) => bool
         const user = users[0];
         if (filter === undefined)
             return m => m.author.id === user;
-        return m => m.author.id == user && filter!(m);
+        return m => m.author.id == user && filter(m);
     }
 
     const userSet = new Set(users);
     if (filter === undefined)
         return m => userSet.has(m.author.id);
-    return m => userSet.has(m.author.id) && filter!(m);
+    return m => userSet.has(m.author.id) && filter(m);
 }

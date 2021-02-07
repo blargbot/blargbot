@@ -2,7 +2,7 @@ import { getRange } from '../utils';
 
 export type BBArray = { n?: string, v: JArray };
 
-export function serialize(array: JArray | BBArray, varName?: string) {
+export function serialize(array: JArray | BBArray, varName?: string): string {
     if (Array.isArray(array)) {
         if (!varName)
             return JSON.stringify(array);
@@ -15,7 +15,7 @@ export function serialize(array: JArray | BBArray, varName?: string) {
         v: array.v,
         n: varName
     });
-};
+}
 
 export function deserialize(value: string): BBArray | null {
     let parsed;
@@ -25,8 +25,10 @@ export function deserialize(value: string): BBArray | null {
     catch (err) { }
     if (!parsed) {
         try {
-            let replaced = value.replace(/([\[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
-                (_, before, from, to, after) => before + getRange(from, to).join(',') + after);
+            const replaced = value.replace(
+                /([\[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
+                (_, ...[before, from, to, after]: string[]) =>
+                    before + getRange(from, to).join(',') + after);
             parsed = JSON.parse(replaced);
         }
         catch (err) { }
@@ -41,4 +43,4 @@ export function deserialize(value: string): BBArray | null {
         }
     }
     return null;
-};
+}

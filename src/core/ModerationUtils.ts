@@ -1,16 +1,29 @@
-import { EmbedField, EmbedOptions, Guild, User } from "eris";
-import { Cluster } from "../cluster";
-import { humanize, ModerationType } from "../newbu";
+import { EmbedField, EmbedOptions, Guild, User } from 'eris';
+import { Cluster } from '../cluster';
+import { humanize, ModerationType } from '../newbu';
 
+interface WarnResult {
+    type: ModerationType;
+    count: number;
+    error: unknown;
+}
 
 export class ModerationUtils {
-    constructor(
+    public constructor(
         public readonly cluster: Cluster
     ) {
     }
 
-    async log(guild: Guild, user: User | User[], mod: User, type: string, reason?: string | string[], color?: number, fields?: EmbedField[]) {
-        let storedGuild = await this.cluster.util.getGuild(guild.id);
+    public async log(
+        guild: Guild,
+        user: User | User[],
+        mod: User,
+        type: string,
+        reason?: string | string[],
+        color?: number,
+        fields?: EmbedField[]
+    ): Promise<void> {
+        const storedGuild = await this.cluster.util.getGuild(guild.id);
         if (!storedGuild?.settings?.modlog)
             return;
 
@@ -26,7 +39,7 @@ export class ModerationUtils {
         color ??= 0x17c484;
         fields ??= [];
 
-        let embed: EmbedOptions = {
+        const embed: EmbedOptions = {
             title: `Case ${caseid}`,
             color: color,
             fields: [
@@ -57,14 +70,14 @@ export class ModerationUtils {
             };
         }
 
-        let msg = await this.cluster.util.send(storedGuild.settings.modlog, { embed: embed });
+        const msg = await this.cluster.util.send(storedGuild.settings.modlog, { embed: embed });
 
         const cases = storedGuild.modlog ??= [];
         cases.push({
             caseid: caseid,
-            modid: mod ? mod.id : null,
+            modid: mod ? mod.id : undefined,
             msgid: msg ? msg.id : '',
-            reason: reason || null,
+            reason: reason || undefined,
             type: type || 'Generic',
             userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id
         });
@@ -76,14 +89,14 @@ export class ModerationUtils {
                 .update({ modlog: cases }));
     }
 
-    async warn(user: User, guild: Guild, count: number = 1) {
-        let storedGuild = await this.cluster.util.getGuild(guild.id);
+    public async warn(user: User, guild: Guild, count = 1): Promise<WarnResult | null> {
+        const storedGuild = await this.cluster.util.getGuild(guild.id);
         if (!storedGuild)
-            return;
+            return null;
 
         let type = ModerationType.WARN;
-        let warnings = storedGuild.warnings ??= {};
-        let users = warnings.users ??= {};
+        const warnings = storedGuild.warnings ??= {};
+        const users = warnings.users ??= {};
         let warningCount = users[user.id] = (users[user.id] ?? 0) + count;
         if (warningCount < 0)
             warningCount = users[user.id] = count;
@@ -97,7 +110,7 @@ export class ModerationUtils {
                     mod: this.cluster.discord.user,
                     type: 'Auto-Ban',
                     reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
-                })
+                });
                 try {
                     await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
                 } catch (e) { error = e; }
@@ -115,5 +128,5 @@ export class ModerationUtils {
                 .update({ warnings: r.literal(warnings) }));
 
         return { type, count: warningCount, error };
-    };
+    }
 }

@@ -1,6 +1,6 @@
-import { Message } from "eris";
-import { Cluster } from "../cluster";
-import { FlagDefinition } from "../newbu";
+import { Message } from 'eris';
+import { Cluster } from '../cluster';
+import { FlagDefinition } from '../newbu';
 
 export interface BBEngineCommand {
     context: Message;
@@ -27,12 +27,13 @@ export interface BBTagLimit {
 }
 
 export class BBEngine {
-    constructor(
+    public constructor(
         public readonly cluster: Cluster
     ) {
     }
 
-    async execute(command: BBEngineCommand): Promise<void> {
+    public execute(command: BBEngineCommand): Promise<void> {
+        this.cluster.logger.bbtag(command.source);
         throw new Error('Not implemented');
     }
 }

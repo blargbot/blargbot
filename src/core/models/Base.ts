@@ -3,7 +3,7 @@ import sequelize from 'sequelize';
 export abstract class BaseModel<TInstance, TAttributes, TCreationAttributes> {
     abstract get model(): sequelize.Model<TInstance, TAttributes, TCreationAttributes>
 
-    constructor(
+    public constructor(
         public readonly db: sequelize.Sequelize,
         public readonly logger: CatLogger
     ) {
@@ -11,7 +11,7 @@ export abstract class BaseModel<TInstance, TAttributes, TCreationAttributes> {
     }
 
 
-    async sync(force = false) {
+    public async sync(force = false): Promise<sequelize.Model<TInstance, TAttributes, TCreationAttributes>> {
         return await this.model.sync({ force });
     }
-};
+}

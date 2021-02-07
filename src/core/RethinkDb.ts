@@ -12,7 +12,7 @@ export interface RestartStoredVar extends StoredVar<'restart'> {
     };
 }
 export interface TagVarsStoredVar extends StoredVar<'tagVars'> {
-    values: {} | null;
+    values: Record<string, unknown> | null;
 }
 export interface ARWhitelistStoredVar extends StoredVar<'arwhitelist'> {
     values: string[];
@@ -185,7 +185,12 @@ export interface GuildSettings {
 }
 
 export interface GuildModlogEntry {
-
+    caseid?: number;
+    modid?: string;
+    msgid?: string;
+    reason?: string;
+    type?: string;
+    userid?: string;
 }
 
 export interface ChannelSettings {
@@ -215,71 +220,76 @@ export interface RethinkDbOptions {
     port: number;
 }
 
+export type Query<T, R = r.Operation<T>> = (rethink: typeof r) => r.Operation<T> | R;
+
 export class RethinkDb {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #connectionPromise?: Promise<r.Connection>
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #connection?: r.Connection
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #options: RethinkDbOptions;
 
-    constructor(options: RethinkDbOptions) {
+    public constructor(options: RethinkDbOptions) {
         this.#options = options;
     }
 
-    async getGuild(guildId: string) {
+    public async getGuild(guildId: string): Promise<StoredGuild | null> {
         return await this.query(r => r.table('guild').get<StoredGuild>(guildId));
     }
 
-    async setGuild(guild: StoredGuild) {
+    public async setGuild(guild: StoredGuild): Promise<r.WriteResult> {
         return await this.query(r => r.table('guild').replace(guild));
     }
 
-    async getUser(userId: string) {
+    public async getUser(userId: string): Promise<StoredUser | null> {
         return await this.query(r => r.table('user').get<StoredUser>(userId));
     }
 
-    async setUser(user: StoredUser) {
+    public async setUser(user: StoredUser): Promise<r.WriteResult> {
         return await this.query(r => r.table('user').replace(user));
     }
 
-    async getTag(tagName: string) {
+    public async getTag(tagName: string): Promise<StoredTag | null> {
         return await this.query(r => r.table('tag').get<StoredTag>(tagName));
     }
 
-    async setTag(tag: StoredTag) {
+    public async setTag(tag: StoredTag): Promise<r.WriteResult> {
         return await this.query(r => r.table('tag').replace(tag));
     }
 
-    async deleteVar<T extends KnownStoredVars['varname']>(varname: T) {
+    public async deleteVar<T extends KnownStoredVars['varname']>(varname: T): Promise<r.WriteResult> {
         return await this.query(r => r.table('vars').get(varname).delete());
     }
 
-    async getVar<T extends KnownStoredVars['varname']>(varname: T) {
+    public async getVar<T extends KnownStoredVars['varname']>(varname: T): Promise<GetStoredVar<T> | null> {
         return await this.query(r => r.table('vars').get<GetStoredVar<T>>(varname));
     }
 
-    async setVar<T extends KnownStoredVars['varname']>(value: GetStoredVar<T>) {
-        let repl = await this.query(r => r.table('vars').replace(value));
+    public async setVar<T extends KnownStoredVars['varname']>(value: GetStoredVar<T>): Promise<r.WriteResult> {
+        const repl = await this.query(r => r.table('vars').replace(value));
         if (repl.replaced === 1 || repl.inserted === 1)
             return repl;
 
         return await this.query(r => r.table('vars').insert(value));
     }
 
-    async query<T extends object | null = object>(query: (rethink: typeof r) => r.Operation<T>): Promise<T>
-    async query<T extends object | null = object>(query: (rethink: typeof r) => r.Operation<T> | undefined): Promise<T | undefined>
-    async query<T extends object | null = object>(query: (rethink: typeof r) => r.Operation<T> | undefined) {
+    public async query<T>(query: Query<T>): Promise<T>
+    public async query<T>(query: Query<T | undefined>): Promise<T | undefined>
+    public async query<T>(query: Query<T | undefined>): Promise<T | undefined> {
         const connection = this.#connection ?? await this.connect();
         return await query(r)?.run(connection);
     }
 
-    async queryAll<T extends object = object>(query: (rethink: typeof r) => r.Operation<r.Cursor>) {
-        const stream = await this.stream<T>(query);
+    public async queryAll<T>(query: Query<r.Cursor>): Promise<T[]> {
+        const stream = this.stream<T>(query);
         const result = [];
-        for await (let item of stream)
+        for await (const item of stream)
             result.push(item);
         return result;
     }
 
-    async * stream<T extends object = object>(query: (rethink: typeof r) => r.Operation<r.Cursor>) {
+    public async * stream<T>(query: Query<r.Cursor>): AsyncIterableIterator<T> {
         const cursor = await this.query(query);
         while (true) {
             try {
@@ -290,7 +300,7 @@ export class RethinkDb {
         }
     }
 
-    connect() {
+    public async connect(): Promise<r.Connection> {
         if (!this.#connectionPromise) {
             this.#connectionPromise = r.connect({
                 host: this.#options.host,
@@ -302,10 +312,10 @@ export class RethinkDb {
             }).then(conn => this.#connection = conn);
         }
 
-        return this.#connectionPromise;
+        return await this.#connectionPromise;
     }
 
-    async disconnect() {
+    public async disconnect(): Promise<void> {
         if (!this.#connection) {
             if (!this.#connectionPromise) {
                 return;

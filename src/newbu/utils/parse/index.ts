@@ -22,4 +22,4 @@ export const parse = {
     int,
     time,
     words
-}
+};

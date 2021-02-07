@@ -1,9 +1,10 @@
 import { EventEmitter as EventEmitter3 } from 'eventemitter3';
 import { EventEmitter as NodeEventEmitter } from 'events';
 
-export abstract class BaseEventHandler {
-    #handler?: (...args: any[]) => void
-    get name() { return this.constructor.name; }
+export abstract class BaseEventHandler<TArgs extends unknown[] = unknown[]> {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    #handler?: (...args: unknown[]) => void;
+    public get name(): string { return this.constructor.name; }
 
     protected constructor(
         protected readonly events: EventEmitter3 | NodeEventEmitter,
@@ -11,17 +12,17 @@ export abstract class BaseEventHandler {
         public readonly logger: CatLogger) {
     }
 
-    protected abstract handle(...args: any[]): Promise<void> | void;
+    protected abstract handle(...args: TArgs): Promise<void> | void;
 
-    public install() {
+    public install(): void {
         if (this.#handler !== undefined)
             throw new Error('Already installed!');
 
-        this.#handler = (...args: any[]) => this.handle(...args);
+        this.#handler = (...args: unknown[]) => this.handle(...<TArgs>args);
         this.events.on(this.type, this.#handler);
     }
 
-    public uninstall() {
+    public uninstall(): void {
         if (this.#handler === undefined)
             return;
 

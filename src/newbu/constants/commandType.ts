@@ -1,5 +1,6 @@
-import { Message } from "eris"
-import { Cluster } from "../../cluster";
+import { Message } from 'eris';
+import { Cluster } from '../../cluster';
+import { guard } from '../utils';
 
 type CommandPropertiesSet = {
     [key in Type]: CommandProperties;
@@ -56,10 +57,10 @@ export const properties: CommandPropertiesSet = {
     },
     [Type.SOCIAL]: {
         name: 'Social',
-        requirement: async (client, msg) => {
-            if (!('guild' in msg.channel))
+        requirement: async (client: Cluster, msg: Message): Promise<boolean> => {
+            if (!guard.isGuildMessage(msg))
                 return false;
-            let guild = await client.util.getGuild(msg.channel.guild.id);
+            const guild = await client.util.getGuild(msg.channel.guild.id);
             return guild?.settings?.social ?? false;
         },
         description: 'Social commands for interacting with other people'

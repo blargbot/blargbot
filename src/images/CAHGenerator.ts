@@ -1,20 +1,20 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../structures/BaseImageGenerator'
+import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 
 export class CAHGenerator extends BaseImageGenerator {
-    constructor(logger: CatLogger) {
+    public constructor(logger: CatLogger) {
         super(logger);
     }
 
-    async execute({ white, black }: JObject) {
+    public async execute({ white, black }: JObject): Promise<Buffer | null> {
         if (!Array.isArray(white) || typeof black !== 'string')
             return null;
 
-        let blackCard = await this.getLocalJimp('blackcard.png');
-        let whiteCard = await this.getLocalJimp('whitecard.png');
+        const blackCard = await this.getLocalJimp('blackcard.png');
+        const whiteCard = await this.getLocalJimp('whitecard.png');
 
-        let finalImg = new Jimp(183 * (white.length + 1), 254);
-        let blackCaption = await this.renderJimpText(black, {
+        const finalImg = new Jimp(183 * (white.length + 1), 254);
+        const blackCaption = await this.renderJimpText(black, {
             font: 'arial.ttf',
             fill: '#ffffff',
             size: '144x190',
@@ -24,11 +24,11 @@ export class CAHGenerator extends BaseImageGenerator {
         finalImg.composite(blackCaption, 19, 19);
 
         for (let i = 0; i < white.length; i++) {
-            let w = white[i];
+            const w = white[i];
             if (typeof w !== 'string')
                 continue;
 
-            let whiteCaption = await this.renderJimpText(w, {
+            const whiteCaption = await this.renderJimpText(w, {
                 font: 'arial.ttf',
                 fill: 'black',
                 size: '144x190',

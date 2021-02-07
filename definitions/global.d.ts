@@ -8,6 +8,16 @@ declare global {
     export type JValue = string | number | boolean;
     export type JObject = { [key: string]: JToken };
     export type JArray = Array<JToken>;
+    export type JTokenType = keyof JTokenTypeMap;
+    export type JTokenTypeMap = {
+        'string': string,
+        'number': number,
+        'boolean': boolean,
+        'undefined': undefined,
+        'null': null,
+        'array': JArray,
+        'object': JObject
+    }
 
     export type Configuration = typeof configJson;
     export type CatLogger = CatLoggr;

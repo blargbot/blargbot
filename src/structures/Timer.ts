@@ -1,31 +1,33 @@
-import moment from 'moment';
+import moment, { Duration } from 'moment';
 
 export class Timer {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #elapsed: number;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #start: number | null;
 
-    constructor() {
+    public constructor() {
         this.#elapsed = 0;
         this.#start = null;
     }
 
-    get elapsed() {
+    public get elapsed(): number {
         if (this.#start === null)
             return this.#elapsed;
         else
             return this.#elapsed + (Date.now() - this.#start);
     }
 
-    get duration() {
+    public get duration(): Duration {
         return moment.duration(this.elapsed, 'milliseconds');
     }
 
-    format() {
-        let diff = this.duration;
+    public format(): string {
+        const diff = this.duration;
         return `${diff.minutes()} minutes, ${diff.seconds()} seconds, and ${diff.milliseconds()} milliseconds`;
     }
 
-    start(reset = true) {
+    public start(reset = true): this {
         if (this.#start !== null)
             throw new Error('Cannot start an already started timer');
         if (reset)
@@ -34,8 +36,8 @@ export class Timer {
         return this;
     }
 
-    poll(reset = false) {
-        let elapsed = this.elapsed;
+    public poll(reset = false): number {
+        const elapsed = this.elapsed;
         if (reset) {
             this.end();
             this.start();
@@ -43,11 +45,11 @@ export class Timer {
         return elapsed;
     }
 
-    resume() {
+    public resume(): this {
         return this.start(false);
     }
 
-    end() {
+    public end(): this {
         if (this.#start !== null) {
             this.#elapsed += Date.now() - this.#start;
             this.#start = null;

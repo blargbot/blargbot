@@ -1,7 +1,7 @@
 import CatLoggr, { LogLevel } from 'cat-loggr/ts';
 import Sequelize, { ValidationError } from 'sequelize';
 
-export function createLogger(config: Configuration, clusterId: string) {
+export function createLogger(config: Configuration, clusterId: string): CatLogger {
     const logger = new CatLoggr({
         shardId: clusterId,
         level: config.general.loglevel ?? 'info',
@@ -32,7 +32,7 @@ export function createLogger(config: Configuration, clusterId: string) {
 
     logger.addArgHook(({ arg }) => {
         if (isSequelizeValidationError(arg) && Array.isArray(arg.errors)) {
-            let text: string[] = [arg.stack || ''];
+            const text: string[] = [arg.stack || ''];
             for (const err of arg.errors) {
                 text.push(`\n - ${err.message}\n   - ${err.path} ${err.value}`);
             }
@@ -45,21 +45,29 @@ export function createLogger(config: Configuration, clusterId: string) {
 }
 
 function logLevel(name: string, color: typeof CatLoggr._chalk, options?: Omit<Partial<LogLevel>, 'color' | 'name'>): LogLevel {
-    return {
+    const level = {
         name,
-        color: <any>color,
-        aliases: options?.aliases!,
-        err: options?.err!,
-        trace: options?.trace!,
+        color: color,
+        aliases: options?.aliases,
+        err: options?.err,
+        trace: options?.trace,
         position: options?.position,
         colors: options?.colors,
-        setAliases: options?.setAliases!,
-        setColors: options?.setColors!,
-        setError: options?.setError!,
-        setTrace: options?.setTrace!
-    }
+        setAliases: options?.setAliases,
+        setColors: options?.setColors,
+        setError: options?.setError,
+        setTrace: options?.setTrace
+    };
+    if (bypassBorkedTypeDefinition(level))
+        return level;
+
+    throw new Error('errr this shouldnt have happened ever. The type check should just return true always');
 }
 
-function isSequelizeValidationError(error: any): error is ValidationError {
-    return typeof error === "object" && error instanceof Sequelize.ValidationError;
+function isSequelizeValidationError(error: unknown): error is ValidationError {
+    return typeof error === 'object' && error instanceof Sequelize.ValidationError;
+}
+
+function bypassBorkedTypeDefinition(value: Omit<Partial<LogLevel>, 'color'> & { color: typeof CatLoggr._chalk }): value is LogLevel {
+    return true;
 }

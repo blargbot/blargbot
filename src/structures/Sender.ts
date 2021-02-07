@@ -2,7 +2,7 @@ import { EventEmitter } from 'eventemitter3';
 import { ChildProcess } from 'child_process';
 
 export class Sender extends EventEmitter {
-    constructor(
+    public constructor(
         public readonly clusterId: string,
         public readonly process: NodeJS.Process | ChildProcess,
         public readonly logger: CatLogger
@@ -12,7 +12,7 @@ export class Sender extends EventEmitter {
             throw new Error('process must be a worker process');
     }
 
-    async send(code: string, data?: JObject | JArray | JValue) {
+    public async send(code: string, data?: JObject | JArray | JValue): Promise<void> {
         if (data === 'undefined') {
             data = code;
             code = 'generic';
@@ -32,17 +32,17 @@ export class Sender extends EventEmitter {
         }
     }
 
-    awaitMessage(data: JObject | string) {
+    public awaitMessage(data: JObject | string): Promise<unknown> {
         if (typeof data === 'string')
             data = { message: data };
 
         const jdata = data;
 
-        return new Promise((fulfill, reject) => {
+        return new Promise<unknown>((fulfill, reject) => {
             jdata.key = Date.now().toString();
-            let event = 'await:' + jdata.key;
-            this.send('await', jdata);
-            let timer = setTimeout(() => {
+            const event = 'await:' + jdata.key;
+            void this.send('await', jdata);
+            const timer = setTimeout(() => {
                 this.process.removeAllListeners(event);
                 reject(new Error('Rejected message after 60 seconds'));
             }, 60000);
@@ -54,7 +54,7 @@ export class Sender extends EventEmitter {
     }
 }
 
-function sendCore(process: NodeJS.Process | ChildProcess, message: string) {
+function sendCore(process: NodeJS.Process | ChildProcess, message: string): Promise<void> {
     return new Promise<void>((resolve, reject) => {
         if (!('send' in process && typeof process['send'] === 'function'))
             return reject();
@@ -63,5 +63,5 @@ function sendCore(process: NodeJS.Process | ChildProcess, message: string) {
             process.send(message, undefined, undefined, err => err ? reject(err) : resolve());
         else // child_process
             process.send(message, err => err ? reject(err) : resolve());
-    })
+    });
 }

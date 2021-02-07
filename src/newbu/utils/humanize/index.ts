@@ -4,4 +4,4 @@ import { fullName } from './fullName';
 export const humanize = {
     duration,
     fullName
-}
+};

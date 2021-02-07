@@ -1,13 +1,15 @@
 
 export class MessageIdQueue {
-    #messageQueue: Map<string, string[]>;
-    constructor(
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #messageQueue: Map<string, string[]>;
+
+    public constructor(
         public readonly maxSize: number = 100
     ) {
         this.#messageQueue = new Map();
     }
 
-    push(guildId: string, messageId: string) {
+    public push(guildId: string, messageId: string): void {
         let messageQueue = this.#messageQueue.get(guildId);
         if (!messageQueue)
             this.#messageQueue.set(guildId, messageQueue = []);
@@ -17,7 +19,7 @@ export class MessageIdQueue {
             messageQueue.shift();
     }
 
-    has(guildId: string, messageId: string) {
+    public has(guildId: string, messageId: string): boolean {
         return this.#messageQueue.get(guildId)?.includes(messageId)
             ?? false;
     }

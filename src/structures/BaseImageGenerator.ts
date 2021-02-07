@@ -3,12 +3,12 @@ import phantom from 'phantom';
 import path from 'path';
 import request, { RequiredUriUrl, CoreOptions, Response } from 'request';
 import gm from 'gm';
-import { JimpGifEncoder } from './JimpGifEncoder';
+
 const im = gm.subClass({
     imageMagick: true
 });
 
-type MagickSource = string | Jimp | Buffer | gm.State | null | [width: number, height: number, color?: string];
+type MagickSource = string | Jimp | Buffer | gm.State | [width: number, height: number, color?: string];
 
 interface TextOptions {
     font?: string;
@@ -27,34 +27,34 @@ interface PhantomOptions {
 }
 
 interface PhantomTransformOptions<T> extends PhantomOptions {
-    transform: (arg: T) => any;
+    transform: (arg: T) => void;
     transformArg: T;
 }
 
 export abstract class BaseImageGenerator {
-    constructor(
+    public constructor(
         public readonly logger: CatLogger
     ) {
     }
 
-    abstract execute(message: JObject): Promise<Buffer | null>;
+    public abstract execute(message: JObject): Promise<Buffer | null>;
 
-    getLocalResourcePath(...segments: string[]) {
+    protected getLocalResourcePath(...segments: string[]): string {
         return path.join(__dirname, '..', '..', 'res', 'img', ...segments);
     }
 
-    getLocalJimp(...segments: string[]) {
+    protected getLocalJimp(...segments: string[]): Promise<Jimp> {
         return Jimp.read(this.getLocalResourcePath(...segments));
     }
 
-    toImageData(source: Jimp) {
+    protected toImageData(source: Jimp): ImageData {
         return new ImageData(
             new Uint8ClampedArray(source.bitmap.data),
             source.bitmap.width,
             source.bitmap.height);
     }
 
-    toBuffer(source: gm.State, format?: string) {
+    protected toBuffer(source: gm.State, format?: string): Promise<Buffer> {
         return new Promise<Buffer>((resolve, reject) => {
             source.setFormat(format || 'png').toBuffer((err, buffer) => {
                 if (err) {
@@ -66,35 +66,36 @@ export abstract class BaseImageGenerator {
         });
     }
 
-    async getRemoteJimp(url: string) {
+    protected async getRemoteJimp(url: string): Promise<Jimp> {
         return await Jimp.read(await this.getRemote(url));
     }
 
-    getRemote(url: string) {
-        return new Promise<Buffer>(async (fulfill, reject) => {
-            url = url.trim();
-            if (url.startsWith('<') && url.endsWith('>')) {
-                url = url.substring(1, url.length - 1);
-            }
-            this.logger.debug(url);
-            let r = await aRequest({ uri: url });
-            if (r.res.headers['content-type'] == 'image/gif') {
-                this.toBuffer(gm(r.body, 'temp.gif').selectFrame(1).setFormat('png'))
-                    .then(fulfill).catch(reject);
-            } else if (r.res.headers['content-type'] == 'image/png' ||
-                r.res.headers['content-type'] == 'image/jpeg' ||
-                r.res.headers['content-type'] == 'image/bmp') {
-                fulfill(r.body);
-            } else {
-                reject('Wrong file type!');
-            }
-        });
+    protected async getRemote(url: string): Promise<Buffer> {
+
+        url = url.trim();
+        if (url.startsWith('<') && url.endsWith('>')) {
+            url = url.substring(1, url.length - 1);
+        }
+
+        this.logger.debug(url);
+        const r = await aRequest({ uri: url });
+
+        if (r.res.headers['content-type'] == 'image/gif') {
+            return await this.toBuffer(
+                gm(r.body, 'temp.gif')
+                    .selectFrame(1)
+                    .setFormat('png'));
+        } else if (r.res.headers['content-type'] == 'image/png' ||
+            r.res.headers['content-type'] == 'image/jpeg' ||
+            r.res.headers['content-type'] == 'image/bmp') {
+            return r.body;
+        } else {
+            throw new Error('Wrong file type!');
+        }
     }
 
-    async generate(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void)) {
-        if (source === null || source === undefined)
-            source = im(undefined!);
-        else if (typeof source === 'string')
+    protected async generate(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void)): Promise<Buffer> {
+        if (typeof source === 'string')
             source = im(source);
         else if (Array.isArray(source))
             source = im(...source);
@@ -113,11 +114,11 @@ export abstract class BaseImageGenerator {
         return await this.toBuffer(source);
     }
 
-    async generateJimp(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void)) {
+    protected async generateJimp(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void)): Promise<Jimp> {
         return await Jimp.read(await this.generate(source, configure));
     }
 
-    renderJimpText(text: string, options: TextOptions) {
+    protected renderJimpText(text: string, options: TextOptions): Promise<Jimp> {
         if (!text)
             throw new Error('No text provided');
 
@@ -130,7 +131,7 @@ export abstract class BaseImageGenerator {
 
         const { fill, gravity, font, fontsize, size, stroke, strokewidth } = options;
 
-        return this.generateJimp(null, image => {
+        return this.generateJimp(Buffer.from(''), image => {
             if (font !== undefined)
                 image.font(this.getLocalResourcePath('fonts', font), fontsize);
 
@@ -161,26 +162,21 @@ export abstract class BaseImageGenerator {
         });
     }
 
-    async renderPhantom(file: string, options: PhantomOptions): Promise<Buffer>
-    async renderPhantom<T>(file: string, options: PhantomTransformOptions<T>): Promise<Buffer>
-    async renderPhantom(file: string, options: Partial<PhantomTransformOptions<any>>): Promise<Buffer> {
+    protected async renderPhantom(file: string, options: PhantomOptions): Promise<Buffer>
+    protected async renderPhantom<T>(file: string, options: PhantomTransformOptions<T>): Promise<Buffer>
+    protected async renderPhantom(file: string, options: Partial<PhantomTransformOptions<unknown>>): Promise<Buffer> {
         const { replacements, scale = 1, format = 'PNG', transform, transformArg } = options;
         const instance = await phantom.create(['--ignore-ssl-errors=true', '--ssl-protocol=TLSv1']);
         const page = await instance.createPage();
 
-        page.on('onConsoleMessage', (msg) => {
-            this.logger.debug('[IM]', msg);
-        });
-        page.on('onResourceError', (resourceError) => {
-            this.logger.error(resourceError.url + ': ' + resourceError.errorString);
-        });
-
-        let dPath = this.getLocalResourcePath(file).replace(/\\/g, '/').replace(/^\w:/, '');;
+        const dPath = this.getLocalResourcePath(file).replace(/\\/g, '/').replace(/^\w:/, '');
+        await page.on('onConsoleMessage', (msg) => this.logger.debug('[IM]', msg));
+        await page.on('onResourceError', (resourceError) => this.logger.error(`${resourceError.url}: ${resourceError.errorString}`));
         await page.open(dPath);
         await page.on('viewportSize', { width: 1440, height: 900 });
         await page.on('zoomFactor', scale);
 
-        let rect = await page.evaluate(phantom_getrect, replacements);
+        const rect = await page.evaluate(phantom_getrect, replacements);
 
         if (rect) {
             await page.on('clipRect', {
@@ -196,7 +192,7 @@ export abstract class BaseImageGenerator {
 
         await page.evaluate(phantom_resize);
 
-        let base64 = await page.renderBase64(format);
+        const base64 = await page.renderBase64(format);
         instance.exit();
         return Buffer.from(base64);
     }
@@ -204,59 +200,57 @@ export abstract class BaseImageGenerator {
 
 function phantom_getrect(replacements: PhantomOptions['replacements']): { top: number, left: number, width: number, height: number } | undefined {
     if (replacements) {
-        var keys = Object.keys(replacements);
-        for (var i = 0; i < keys.length; i++) {
-            var thing = document.getElementById(keys[i]);
+        const keys = Object.keys(replacements);
+        for (let i = 0; i < keys.length; i++) {
+            const thing = document.getElementById(keys[i]);
             if (thing)
                 thing.innerText = replacements[keys[i]];
         }
     }
     try {
-        var workspace = document.getElementById("workspace");
+        const workspace = document.getElementById('workspace');
         return workspace?.getBoundingClientRect();
     } catch (err) {
+        // eslint-disable-next-line no-console
         console.error(err); // console inside the phantom browser, not the blargbot console
         return { top: 0, left: 0, width: 300, height: 300 };
     }
 }
 
-function phantom_resize() {
-    var el, _i, _len, _results;
+function phantom_resize(): void {
+    let el, i;
     const elements = document.getElementsByClassName('resize');
     const wrapper = document.getElementById('wrapper');
     if (elements.length < 0 || wrapper === null) {
         return;
     }
-    _results = [];
-    for (_i = 0, _len = elements.length; _i < _len; _i++) {
-        el = elements[_i];
+
+    const resizeText = function (el: HTMLElement): void {
+        const elNewFontSize = `${parseInt(el.style.fontSize.slice(0, -2)) - 1}px`;
+        // eslint-disable-next-line no-console
+        console.log(elNewFontSize); // console inside the phantom browser, not the blargbot console
+        el.style.fontSize = elNewFontSize;
+    };
+
+    for (i = 0; i < elements.length; i++) {
+        el = elements[i];
         if (el instanceof HTMLElement) {
-            _results.push((function (el) {
-                var resizeText, _results1;
-                if (el.style.fontSize === '')
-                    el.style.fontSize = '65px';
-                resizeText = function () {
-                    var elNewFontSize;
-                    elNewFontSize = (parseInt(el.style.fontSize.slice(0, -2)) - 1) + 'px';
-                    console.log(elNewFontSize); // console inside the phantom browser, not the blargbot console
-                    el.style.fontSize = elNewFontSize;
-                    return el;
-                };
-                _results1 = null;
-                var ii = 0;
-                while (el.scrollHeight > wrapper.clientHeight) {
-                    _results1 = resizeText();
-                    if (++ii == 1000)
-                        break;
-                }
-                return _results1;
-            })(el));
+            if (el.style.fontSize === '')
+                el.style.fontSize = '65px';
+
+
+            let ii = 0;
+            while (el.scrollHeight > wrapper.clientHeight) {
+                resizeText(el);
+                if (++ii == 1000)
+                    break;
+            }
         }
     }
 }
 
-function aRequest(obj: RequiredUriUrl & CoreOptions) {
-    return new Promise<{ res: Response, body: any }>((resolve, reject) => {
+function aRequest(obj: RequiredUriUrl & CoreOptions): Promise<{ res: Response, body: Buffer }> {
+    return new Promise<{ res: Response, body: Buffer }>((resolve, reject) => {
         if (!obj.encoding)
             obj.encoding = null;
 
@@ -273,18 +267,10 @@ function aRequest(obj: RequiredUriUrl & CoreOptions) {
     });
 }
 
-function isJimp(source: object): source is Pick<Jimp, 'getBufferAsync'> {
-    if (!(source instanceof Jimp && 'getBufferAsync' in source))
-        return false;
-
-    const tSource = <{ getBufferAsync: unknown }>source;
-    return typeof tSource['getBufferAsync'] === 'function';
+function isJimp(source: MagickSource): source is Jimp {
+    return source instanceof Jimp;
 }
 
-function isGm(source: object): source is Pick<gm.State, 'toBuffer'> {
-    if (!(source instanceof gm && 'toBuffer' in source))
-        return false;
-
-    const tSource = <{ toBuffer: unknown }>source;
-    return typeof tSource['toBuffer'] === 'function';
+function isGm(source: MagickSource): source is gm.State {
+    return source instanceof gm;
 }
