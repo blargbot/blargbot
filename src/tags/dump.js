@@ -16,8 +16,8 @@ module.exports =
         ])
         .withDesc('Dumps the provided text to a blargbot output page. These expire after 7 days.')
         .withExample(
-        '{dump;Hello, world!}',
-        'https://blargbot.xyz/output/1111111111111111'
+            '{dump;Hello, world!}',
+            'https://blargbot.xyz/output/1111111111111111'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
@@ -28,7 +28,7 @@ module.exports =
             let id = await bu.generateOutputPage({
                 content
             }, context.channel);
-            return (config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id;
+            return `${config.website.secure ? 'https' : 'http'}://${config.website.host}/output/${id}`;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

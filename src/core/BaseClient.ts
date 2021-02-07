@@ -55,7 +55,7 @@ export class BaseClient {
 
     public async start(): Promise<void> {
         await Promise.all([
-            this.postgres.authenticate().then(() => this.logger.init('postgres connected')),
+            void this.postgres.authenticate().then(() => this.logger.init('postgres connected')), // TODO this takes too long
             this.rethinkdb.connect().then(() => this.logger.init('rethinkdb connected')),
             this.cassandra.connect().then(() => this.logger.init('cassandra connected')),
             this.discord.connect().then(() => this.logger.init('discord connected'))

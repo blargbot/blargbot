@@ -19,7 +19,7 @@ router.get('/', async function (req, res) {
     req.session.returnTo = req.path;
     //    console.website();
     // if (req.user) {
-    //     res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
+    //     res.locals.url = `ws${config.website.secure ? 's' : ''}://${config.website.host}`;
     //     res.locals.sessionId = req.sessionID;
     //     let settings = Object.keys(bu.settings).map(k => {
     //         let returnObj = bu.settings[k];

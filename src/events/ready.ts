@@ -17,7 +17,6 @@ export class ReadyEventHandler extends BaseEventHandler<[]> {
     }
 
     public async handle(): Promise<void> {
-        this.cluster.worker.send('ready', this.cluster.id, this.cluster.discord.guilds.map(g => g.id));
         this.logger.init(`Ready! Logged in as ${this.cluster.discord.user.username}#${this.cluster.discord.user.discriminator}`);
 
         let home;

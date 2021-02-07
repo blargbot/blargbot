@@ -108,7 +108,7 @@ e.init = () => {
     });
 
     app.get('/messages', function (req, res) {
-        res.locals.url = config.general.isbeta ? 'ws://localhost:8085' : 'wss://blargbot.xyz';
+        res.locals.url = `${config.website.secure ? 'wss' : 'ws'}://${config.website.host}`;
         res.render('messages');
     });
 

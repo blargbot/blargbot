@@ -1,11 +1,12 @@
 import { Constants } from 'eris';
 import * as command from './commandType';
-import * as tag from './tagType';
-import * as variables from './tagVariableType';
+import * as tag from './subtagType';
+import * as variables from './subtagVariableType';
 
 export { CommandProperties, Type as CommandType } from './commandType';
-export { TagProperties, Type as TagType } from './tagType';
-export { VariableProperties as TagVariableProperties, Type as TagVariableType } from './tagVariableType';
+export { SubtagProperties, Type as SubtagType } from './subtagType';
+export { SubtagVariableProperties, Type as SubtagVariableType } from './subtagVariableType';
+export { SubtagArgumentKind } from './subtagArgumentKind';
 export { modlogColour } from './modlogColour';
 export { ModerationType } from './moderationType';
 

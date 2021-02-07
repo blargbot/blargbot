@@ -1,9 +1,9 @@
 
-type TagPropertiesSet = {
-    [key in Type]: TagProperties;
+type SubtagPropertiesSet = {
+    [key in Type]: SubtagProperties;
 }
 
-export interface TagProperties {
+export interface SubtagProperties {
     name: string;
     desc: string;
 }
@@ -16,7 +16,7 @@ export enum Type {
     API
 }
 
-export const properties: TagPropertiesSet = {
+export const properties: SubtagPropertiesSet = {
     [Type.SIMPLE]: {
         name: 'Simple',
         desc: 'Subtags that require no arguments.'

@@ -1,14 +1,13 @@
 import { EventEmitter } from 'eventemitter3';
 import child_process, { ChildProcess, Serializable } from 'child_process';
 import { Snowflake } from 'catflake';
-import { snowflake } from '../newbu';
-import { Timer } from '../structures/Timer';
+import { snowflake } from '../../newbu';
+import { Timer } from '../../structures/Timer';
+import { WorkerMessageHandler } from './BaseWorker';
 
-export type WorkerMessageHandler = (message: { id: Snowflake, data: JToken }) => void;
-
-export class WorkerConnection extends EventEmitter {
+export abstract class WorkerConnection extends EventEmitter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #coreEmit: (type: string, id: Snowflake, data: JToken) => boolean;
+    readonly #coreEmit: (type: string, id: Snowflake, data: unknown) => boolean;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly file: string;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -19,7 +18,7 @@ export class WorkerConnection extends EventEmitter {
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
 
-    public constructor(
+    protected constructor(
         public readonly id: Snowflake,
         public readonly worker: string,
         public readonly logger: CatLogger
@@ -27,12 +26,14 @@ export class WorkerConnection extends EventEmitter {
         super();
         this.args = [...process.execArgv];
         this.env = { ...process.env };
-        this.file = require.resolve(`../workers/${this.worker}`);
-        this.#coreEmit = (type: string, id: Snowflake, data: JToken) =>
-            super.emit(type, { id, data });
+        this.file = require.resolve(`../../entrypoint/${this.worker}`);
+        this.on('alive', () => this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive`));
+        this.#coreEmit = (type, id, data) => {
+            return super.emit(type, data, (reply: unknown) => this.send(type, id, reply), id);
+        };
     }
 
-    public async connect(timeoutMS = 10000): Promise<JToken> {
+    public async connect(timeoutMS = 10000): Promise<unknown> {
         if (this.#process)
             throw new Error('Cannot connect to a worker multiple times. Create a new instance for a new worker');
 
@@ -50,7 +51,6 @@ export class WorkerConnection extends EventEmitter {
         this.#process.on('message', (message) => {
             if (!isMessage(message))
                 return;
-
             this.#coreEmit(message.type, message.id, message.data);
         });
 
@@ -61,37 +61,38 @@ export class WorkerConnection extends EventEmitter {
         this.#process.on('error', (error) => this.#coreEmit('error', snowflake.create(), { ...error }));
 
         try {
-            const result = await new Promise<JToken>((resolve, reject) => {
-                this.once('alive', ({ data }) => resolve(data));
-                this.once('stopped', ({ id, data }) => reject(new Error(`Child process has stopped with code ${id}: ${data}`)));
+            const result = await new Promise<unknown>((resolve, reject) => {
+                this.once('ready', data => resolve(data));
+                this.once('stopped', (data, _, id) => reject(new Error(`Child process has stopped with code ${id}: ${data}`)));
                 setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMS);
             });
             timer.end();
-            this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive after ${timer.elapsed}ms and said ${JSON.stringify(result)}`);
+            this.logger.worker(`${this.worker} worker (ID: ${this.id}) is ready after ${timer.elapsed}ms and said ${JSON.stringify(result)}`);
             return result;
         } catch (err) {
+            this.#process.kill();
             this.logger.error(`${this.worker} worker (ID: ${this.id}) failed to start: ${err?.stack ?? err}`);
             throw err;
         }
     }
 
-    public on(event: string, handler: WorkerMessageHandler): this {
+    public on<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.on(event, handler);
     }
 
-    public once(event: string, handler: WorkerMessageHandler): this {
+    public once<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.once(event, handler);
     }
 
-    public addListener(event: string, handler: WorkerMessageHandler): this {
+    public addListener<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.addListener(event, handler);
     }
 
-    public off(event: string, handler: WorkerMessageHandler): this {
+    public off<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.off(event, handler);
     }
 
-    public removeListener(event: string, handler: WorkerMessageHandler): this {
+    public removeListener<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.removeListener(event, handler);
     }
 
@@ -99,6 +100,7 @@ export class WorkerConnection extends EventEmitter {
         if (this.#process === undefined || !this.#process.connected)
             throw new Error('The child process is not connected');
 
+        this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id})`);
         this.#process.kill(code);
     }
 
@@ -112,10 +114,10 @@ export class WorkerConnection extends EventEmitter {
         return this.#process.send({ type, id, data });
     }
 
-    public request(type: string, data: JToken, timeoutMS = 10000): Promise<JToken> {
+    public request<T = unknown>(type: string, data: unknown, timeoutMS = 10000): Promise<T> {
         const requestId = snowflake.create();
-        return new Promise<JToken>((resolve, reject) => {
-            const handler: WorkerMessageHandler = ({ id, data }) => {
+        return new Promise<T>((resolve, reject) => {
+            const handler: WorkerMessageHandler<T> = (data, _, id) => {
                 if (id === requestId) {
                     resolve(data);
                     this.off(type, handler);
@@ -129,7 +131,7 @@ export class WorkerConnection extends EventEmitter {
     }
 }
 
-function isMessage(value: Serializable): value is { type: string, id: Snowflake, data?: JObject } {
+function isMessage(value: Serializable): value is { type: string, id: Snowflake, data: unknown } {
     if (typeof value !== 'object')
         return false;
 

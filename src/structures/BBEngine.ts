@@ -1,9 +1,15 @@
-import { Message } from 'eris';
+import { Member, TextableChannel, User } from 'eris';
 import { Cluster } from '../cluster';
 import { FlagDefinition } from '../newbu';
 
+export interface MessageLike {
+    channel: TextableChannel;
+    author: User;
+    member: Member | null;
+}
+
 export interface BBEngineCommand {
-    context: Message;
+    context: MessageLike;
     source: string;
     input: string;
     isCC: boolean;
@@ -32,7 +38,7 @@ export class BBEngine {
     ) {
     }
 
-    public execute(command: BBEngineCommand): Promise<void> {
+    public execute(command: BBEngineCommand): Promise<string> {
         this.cluster.logger.bbtag(command.source);
         throw new Error('Not implemented');
     }

@@ -42,9 +42,8 @@ module.exports = class ApiRoute {
     }
 
     async refreshContent() {
-        let shard = spawner.shards.get(0);
-        let t = await shard.awaitMessage('tagList');
-        let st = JSON.parse(t.message);
+        let shard = spawner.get(0);
+        let st = await shard.request('tagList');
         this.subtags = {};
         for (const key in st) {
             let subtag = st[key];
@@ -73,8 +72,7 @@ module.exports = class ApiRoute {
             value.el.sort((a, b) => a.name > b.name ? 1 : a.name < b.name ? -1 : 0);
         }
 
-        let c = await shard.awaitMessage('commandList');
-        let co = JSON.parse(c.message);
+        let co = await shard.request('commandList');
         this.commands = {};
         for (const key in co) {
             let command = co[key];

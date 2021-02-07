@@ -1,116 +1,74 @@
-const chalk = require('chalk');
-const moment = require('moment-timezone');
-const util = require('util');
-
-class Logger {
-    constructor(shardId, level) {
-        this.shard = shardId;
-        if (typeof this.shard === 'number' && this.shard < 10) this.shard = '0' + this.shard;
-        this._level = level;
-        this.levels = {};
-        let max = 0;
-        this._levels = [
-            { name: 'fatal', color: chalk.red.bgBlack, err: true },
-            { name: 'error', color: chalk.black.bgRed, err: true },
-            { name: 'warn', color: chalk.black.bgYellow, err: true },
-            { name: 'trace', color: chalk.green.bgBlack, trace: true },
-            { name: 'website', color: chalk.black.bgCyan },
-            { name: 'ws', color: chalk.yellow.bgBlack },
-            { name: 'cluster', color: chalk.black.bgMagenta },
-            { name: 'worker', color: chalk.black.bgMagenta },
-            { name: 'command', color: chalk.black.bgBlue },
-            { name: 'irc', color: chalk.yellow.bgBlack },
-            { name: 'shardi', color: chalk.blue.bgYellow },
-            { name: 'init', color: chalk.black.bgBlue },
-            { name: 'info', color: chalk.black.bgGreen },
-            { name: 'output', color: chalk.black.bgMagenta },
-            { name: 'bbtag', color: chalk.black.bgGreen },
-            { name: 'verbose', color: chalk.black.bgCyan },
-            { name: 'adebug', color: chalk.cyan.bgBlack },
-            { name: 'debug', color: chalk.magenta.bgBlack, alias: ['log', 'dir'] },
-            { name: 'database', color: chalk.black.bgBlue },
-            { name: 'module', color: chalk.black.bgBlue }
-        ];
-        this._levels = this._levels.map(l => {
-            l.position = this._levels.indexOf(l);
-            this.levels[l.name] = l;
-            let func = function (...args) {
-                return this.format(l, ...args);
-            }.bind(this);
-            this[l.name] = func;
-            if (l.alias && Array.isArray(l.alias))
-                for (const alias of l.alias) this[alias] = func;
-            max = l.name.length > max ? l.name.length : max;
-            return l;
-        });
-
-        this.maxLength = max + 2;
-
-        this._meta = {};
-    }
-
-    get level() {
-        return this.levels[this._level];
-    }
-
-    setGlobal() {
-        Object.defineProperty.bind(this)(global, 'console', {
-            get: () => {
-                return this;
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.createLogger = void 0;
+const ts_1 = __importDefault(require("cat-loggr/ts"));
+const sequelize_1 = __importDefault(require("sequelize"));
+function createLogger(config, workerId) {
+    const logger = new ts_1.default({
+        shardId: workerId,
+        level: config.general.loglevel ?? 'info',
+        shardLength: 6,
+        levels: [
+            logLevel('fatal', ts_1.default._chalk.red.bgBlack, { err: true }),
+            logLevel('error', ts_1.default._chalk.black.bgRed, { err: true }),
+            logLevel('warn', ts_1.default._chalk.black.bgYellow, { err: true }),
+            logLevel('trace', ts_1.default._chalk.green.bgBlack, { trace: true }),
+            logLevel('website', ts_1.default._chalk.black.bgCyan),
+            logLevel('ws', ts_1.default._chalk.yellow.bgBlack),
+            logLevel('cluster', ts_1.default._chalk.black.bgMagenta),
+            logLevel('worker', ts_1.default._chalk.black.bgMagenta),
+            logLevel('command', ts_1.default._chalk.black.bgBlue),
+            logLevel('irc', ts_1.default._chalk.yellow.bgBlack),
+            logLevel('shardi', ts_1.default._chalk.blue.bgYellow),
+            logLevel('init', ts_1.default._chalk.black.bgBlue),
+            logLevel('info', ts_1.default._chalk.black.bgGreen),
+            logLevel('output', ts_1.default._chalk.black.bgMagenta),
+            logLevel('bbtag', ts_1.default._chalk.black.bgGreen),
+            logLevel('verbose', ts_1.default._chalk.black.bgCyan),
+            logLevel('adebug', ts_1.default._chalk.cyan.bgBlack),
+            logLevel('debug', ts_1.default._chalk.magenta.bgBlack, { aliases: ['log', 'dir'] }),
+            logLevel('database', ts_1.default._chalk.black.bgBlue),
+            logLevel('module', ts_1.default._chalk.black.bgBlue)
+        ]
+    });
+    logger.addArgHook(({ arg }) => {
+        if (isSequelizeValidationError(arg) && Array.isArray(arg.errors)) {
+            const text = [arg.stack || ''];
+            for (const err of arg.errors) {
+                text.push(`\n - ${err.message}\n   - ${err.path} ${err.value}`);
             }
-        });
-        return this;
-    }
-
-    get timestamp() {
-        return chalk.black.bgWhite(` ${moment().tz('Canada/Mountain').format('MM/DD HH:mm:ss')} `);
-    }
-
-    centrePad(text, length) {
-        return ' '.repeat(Math.floor((length - text.length) / 2))
-            + text + ' '.repeat(Math.ceil((length - text.length) / 2));
-    }
-
-    write(text, err = false) {
-        let stream = err ? process.stderr : process.stdout;
-        let shardText = chalk.black.bold.bgYellow(this.centrePad(this.shard.toString(), 4, false));
-        stream.write(`${shardText}${this.timestamp}${text}\n`);
-        return this;
-    }
-
-    meta(meta = {}) {
-        let temp = { depth: 1, color: true };
-        Object.assign(temp, meta);
-        this._meta = temp;
-        return this;
-    }
-
-    format(level, ...args) {
-        if (level.position > this.level.position) return;
-        let output = level.color(this.centrePad(level.name, this.maxLength)) + ' ';
-        let text = [];
-        for (const arg of args) {
-            if (typeof arg === 'string') {
-                text.push(chalk.magenta(this._meta.quote ? `'${arg}'` : arg));
-            } else if (typeof arg === 'number') {
-                text.push(chalk.cyan(arg));
-            } else if (typeof arg === 'object') {
-                text.push('\n');
-                if (arg instanceof Error) {
-                    text.push(chalk.red(arg.stack));
-                } else {
-                    text.push(util.inspect(arg, this._meta));
-                }
-            } else text.push(arg);
+            return text.join('');
         }
-
-        output += text.join(' ');
-        if (level.trace || this._meta.trace) {
-            output += '\n' + new Error().stack.split('\n').slice(1).join('\n');
-        }
-        if (level.err) output = chalk.red(output);
-        return this.write(output, level.err).meta();
-    }
+        return null;
+    });
+    return logger;
 }
-
-module.exports = Logger;
+exports.createLogger = createLogger;
+function logLevel(name, color, options) {
+    const level = {
+        name,
+        color: color,
+        aliases: options?.aliases,
+        err: options?.err,
+        trace: options?.trace,
+        position: options?.position,
+        colors: options?.colors,
+        setAliases: options?.setAliases,
+        setColors: options?.setColors,
+        setError: options?.setError,
+        setTrace: options?.setTrace
+    };
+    if (bypassBorkedTypeDefinition(level))
+        return level;
+    throw new Error('errr this shouldnt have happened ever. The type check should just return true always');
+}
+function isSequelizeValidationError(error) {
+    return typeof error === 'object' && error instanceof sequelize_1.default.ValidationError;
+}
+function bypassBorkedTypeDefinition(value) {
+    return value !== undefined;
+}
+//# sourceMappingURL=Logger.js.map

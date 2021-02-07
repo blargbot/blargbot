@@ -1,8 +1,8 @@
 import { Snowflake } from 'catflake';
 import { EventEmitter } from 'eventemitter3';
-import { snowflake } from '../newbu';
+import { snowflake } from '../../newbu';
 
-export type WorkerMessageHandler = (message: { id: Snowflake, data: JToken }) => void;
+export type WorkerMessageHandler<T = unknown> = (data: T, reply: (data: unknown) => void, id: Snowflake) => void;
 
 export abstract class BaseWorker extends EventEmitter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -22,8 +22,9 @@ export abstract class BaseWorker extends EventEmitter {
             throw new Error('Worker processes must be able to send messages to their parents');
 
         this.#process = process;
-        this.#coreEmit = (type: string, id: Snowflake, data: JToken) =>
-            super.emit(type, { id, data });
+        this.#coreEmit = (type: string, id: Snowflake, data: JToken) => {
+            return super.emit(type, data, (reply: unknown) => this.send(type, id, reply), id);
+        };
 
         this.#process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise' + JSON.stringify(err)));
@@ -33,7 +34,7 @@ export abstract class BaseWorker extends EventEmitter {
             return null;
         });
 
-        this.send('alive', snowflake.create(), 'Hello!');
+        this.send('alive', snowflake.create(), null);
     }
 
     public send(type: string, id: Snowflake, data: unknown): boolean {
@@ -41,27 +42,33 @@ export abstract class BaseWorker extends EventEmitter {
     }
 
     public start(): void {
-        this.#process.on('message', ({ type, id, data }) =>
-            this.#coreEmit(type, id, data));
+        this.installListeners();
+        this.send('ready', snowflake.create(), 'Hello!');
     }
 
-    public on(event: string, handler: WorkerMessageHandler): this {
+    protected installListeners(): void {
+        this.#process.on('message', ({ type, id, data }) => {
+            this.#coreEmit(type, id, data);
+        });
+    }
+
+    public on<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.on(event, handler);
     }
 
-    public once(event: string, handler: WorkerMessageHandler): this {
+    public once<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.once(event, handler);
     }
 
-    public addListener(event: string, handler: WorkerMessageHandler): this {
+    public addListener<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.addListener(event, handler);
     }
 
-    public off(event: string, handler: WorkerMessageHandler): this {
+    public off<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.off(event, handler);
     }
 
-    public removeListener(event: string, handler: WorkerMessageHandler): this {
+    public removeListener<T>(event: string, handler: WorkerMessageHandler<T>): this {
         return super.removeListener(event, handler);
     }
 

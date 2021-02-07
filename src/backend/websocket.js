@@ -39,7 +39,7 @@ e.init = function (server) {
                 switch (message.type) {
                     case 'requestShards':
                         console.ws('Shards have been requested.');
-                        for (const shard of Object.values(spawner.shardCache))
+                        for (const shard of spawner.shardStats)
                             sendData(ws, 'shard', shard);
                         break;
                     // case 'displayGuild':

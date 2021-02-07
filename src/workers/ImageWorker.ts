@@ -1,5 +1,5 @@
 import { ImageModuleLoader } from '../core/ImageModuleLoader';
-import { BaseWorker } from './BaseWorker';
+import { BaseWorker } from './core/BaseWorker';
 import { fafo } from '../newbu';
 
 export class ImageWorker extends BaseWorker {
@@ -11,13 +11,11 @@ export class ImageWorker extends BaseWorker {
 
         this.renderers = new ImageModuleLoader('images', this.logger);
 
-        this.on('img', fafo(async ({ id, data }) => {
-            if (isImageData(data)) {
-                this.logger.worker(`${data.command} Requested`);
-                const buffer = await this.render(data.command, data);
-                this.logger.worker(`${data.command} finished, submitting as base64. Size: ${buffer?.length ?? 'NaN'}`);
-                this.send('img', id, buffer?.toString('base64'));
-            }
+        this.on('img', fafo(async (data: { command: string } & JObject, reply) => {
+            this.logger.worker(`${data.command} Requested`);
+            const buffer = await this.render(data.command, data);
+            this.logger.worker(`${data.command} finished, submitting as base64. Size: ${buffer?.length ?? 'NaN'}`);
+            reply(buffer?.toString('base64'));
         }));
     }
 
@@ -41,11 +39,4 @@ export class ImageWorker extends BaseWorker {
         ]);
         super.start();
     }
-}
-
-function isImageData(value: JToken): value is JObject & { command: string } {
-    return typeof value === 'object'
-        && value !== null
-        && !Array.isArray(value)
-        && typeof value.command === 'string';
 }

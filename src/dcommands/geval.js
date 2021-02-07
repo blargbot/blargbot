@@ -26,7 +26,7 @@ class GevalCommand extends BaseCommand {
                 await bu.send(msg, start + '\n```js\nundefined\n```');
             } else if (output.length > 1500) {
                 let id = await bu.generateOutputPage(output, msg.channel);
-                await bu.send(msg, start + '\n' + (config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id);
+                await bu.send(msg, start + '\n' + `${config.website.secure ? 'https' : 'http'}://${config.website.host}/output/${id}`);
             } else
                 await bu.send(msg, start + '\n```js\n' + output + '\n```');
         }

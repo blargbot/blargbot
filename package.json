@@ -70,6 +70,7 @@
     },
     "devDependencies": {
         "@types/cassandra-driver": "^3.5.0",
+        "@types/cron": "^1.7.2",
         "@types/gifencoder": "^2.0.0",
         "@types/gm": "^1.18.9",
         "@types/node-emoji": "^1.4.1",
@@ -79,6 +80,7 @@
         "@types/rethinkdb": "^2.3.16",
         "@types/safe-regex": "^1.1.2",
         "@types/sequelize": "^4.28.9",
+        "@types/snekfetch": "^4.0.2",
         "@types/tinycolor2": "^1.4.2",
         "@typescript-eslint/eslint-plugin": "^4.14.2",
         "@typescript-eslint/parser": "^4.14.2",

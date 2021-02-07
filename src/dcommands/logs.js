@@ -166,8 +166,7 @@ class LogsCommand extends BaseCommand {
                 ids: res,
                 limit: numberOfMessages, keycode: key
             });
-            let toSend = 'Your logs are available here: https://blargbot.xyz/logs/#' + (config.general.isbeta ? 'beta' : '') + key;
-            if (config.general.isbeta) toSend += `\nhttp://localhost:8085/logs/#beta${key}`;
+            let toSend = `Your logs are available here: ${config.website.secure ? 'https' : 'http'}://${config.website.host}/logs/#${key}`;
             if (pingUser) {
                 toSend = `Sorry that took so long, ${msg.author.mention}!\n${toSend}`;
                 await bu.send(msg, {

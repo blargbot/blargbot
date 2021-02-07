@@ -23,11 +23,9 @@ let TagManager = {
 };
 
 async function updateManagers() {
-    let s = spawner.shards.get(0);
-    let t = await s.awaitMessage('tagList');
-    TagManager.list = JSON.parse(t.message);
-    let c = await s.awaitMessage('commandList');
-    CommandManager.list = JSON.parse(c.message);
+    let s = spawner.get(0);
+    TagManager.list = await s.request('tagList');
+    CommandManager.list = await s.request('commandList');
 }
 updateManagers();
 setInterval(updateManagers, 10 * 60 * 1000);

@@ -1,9 +1,9 @@
 
-type VariablePropertiesSet = {
-    [key in Type]: VariableProperties;
+type SubtagVariablePropertiesSet = {
+    [key in Type]: SubtagVariableProperties;
 }
 
-export interface VariableProperties {
+export interface SubtagVariableProperties {
     table: string;
 }
 
@@ -16,7 +16,7 @@ export enum Type {
     GUILDLOCAL
 }
 
-export const properties: VariablePropertiesSet = {
+export const properties: SubtagVariablePropertiesSet = {
     [Type.LOCAL]: {
         table: 'tag'
     },

@@ -393,7 +393,7 @@ bu.send = async function (context, payload, files) {
         // });
         let id = await bu.generateOutputPage(payload, channel);
         payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n\nTo see what I would have said, please visit ' +
-            (config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/') + id;
+            `${config.website.secure ? 'https' : 'http'}://${config.website.host}/output/${id}`;
     }
 
     console.debug('Sending content: ', JSON.stringify(payload));

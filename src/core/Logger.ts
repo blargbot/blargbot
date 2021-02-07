@@ -1,9 +1,9 @@
 import CatLoggr, { LogLevel } from 'cat-loggr/ts';
 import Sequelize, { ValidationError } from 'sequelize';
 
-export function createLogger(config: Configuration, clusterId: string): CatLogger {
+export function createLogger(config: Configuration, workerId: string): CatLogger {
     const logger = new CatLoggr({
-        shardId: clusterId,
+        shardId: workerId,
         level: config.general.loglevel ?? 'info',
         shardLength: 6,
         levels: [
@@ -69,5 +69,5 @@ function isSequelizeValidationError(error: unknown): error is ValidationError {
 }
 
 function bypassBorkedTypeDefinition(value: Omit<Partial<LogLevel>, 'color'> & { color: typeof CatLoggr._chalk }): value is LogLevel {
-    return true;
+    return value !== undefined;
 }
