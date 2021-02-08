@@ -31,8 +31,8 @@ export class EventManager {
             if ((event.channel && !this.cluster.discord.getChannel(event.channel))
                 || (event.guild && !this.cluster.discord.guilds.get(event.guild))
                 || (event.guild && !this.cluster.discord.guilds.get(event.guild))
-                || (!event.channel && !event.guild && event.user && this.cluster.id !== '0')
-                || (event.type === 'purgelogs' && this.cluster.id !== '0')) {
+                || (!event.channel && !event.guild && event.user && this.cluster.id !== 0) // TODO Why are there cluster ID checks here?
+                || (event.type === 'purgelogs' && this.cluster.id !== 0)) {
                 delete this.#cache[event.id];
                 continue;
             }

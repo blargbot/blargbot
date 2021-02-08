@@ -4,6 +4,8 @@ import { Snowflake } from 'catflake';
 import { snowflake } from '../../newbu';
 import { Timer } from '../../structures/Timer';
 import { WorkerMessageHandler } from './BaseWorker';
+import { Moment } from 'moment-timezone';
+import moment from 'moment';
 
 export abstract class WorkerConnection extends EventEmitter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -17,13 +19,15 @@ export abstract class WorkerConnection extends EventEmitter {
 
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
+    public readonly created: Moment;
 
     protected constructor(
-        public readonly id: Snowflake,
+        public readonly id: number,
         public readonly worker: string,
         public readonly logger: CatLogger
     ) {
         super();
+        this.created = moment();
         this.args = [...process.execArgv];
         this.env = { ...process.env };
         this.file = require.resolve(`../../entrypoint/${this.worker}`);

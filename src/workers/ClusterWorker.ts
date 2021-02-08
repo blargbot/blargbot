@@ -2,9 +2,11 @@ import { Cluster } from '../cluster';
 import { BaseWorker } from './core/BaseWorker';
 import { CommandType, cpuLoad, fafo, FlagDefinition, guard, sleep, snowflake, SubtagType } from '../newbu';
 import { StoredGuild } from '../core/RethinkDb';
-import { GuildTextableChannel } from 'eris';
+import { GuildTextableChannel, Shard } from 'eris';
 import { CronJob } from 'cron';
 import { SubtagArgument } from '../structures/BaseSubtagHandler';
+import { Moment } from 'moment-timezone';
+import moment from 'moment';
 
 export interface LookupChannelResult {
     channel: string;
@@ -48,9 +50,32 @@ export interface CommandResult {
     onlyOn: string | null;
 }
 
+export interface ClusterStats {
+    id: number;
+    time: number;
+    readyTime: number;
+    guilds: number;
+    rss: number;
+    userCpu: number;
+    systemCpu: number;
+    shardCount: number;
+    shards: ShardStats[]
+}
+
+export interface ShardStats {
+    id: number;
+    status: Shard['status'];
+    latency: number;
+    guilds: number;
+    cluster: number;
+    time: number;
+}
+
 export class ClusterWorker extends BaseWorker {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #intervalCron: CronJob;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #lastReady: Map<number, Moment>;
     public readonly cluster: Cluster;
 
     public constructor(
@@ -58,11 +83,12 @@ export class ClusterWorker extends BaseWorker {
         public readonly config: Configuration
     ) {
         super(logger);
-        const clusterId = this.env.CLUSTER_ID ?? '??';
+        const clusterId = envNumber(this.env, 'CLUSTER_ID');
 
         this.logger.init(`CLUSTER ${clusterId} (pid ${this.id}) PROCESS INITIALIZED`);
 
         this.#intervalCron = new CronJob('*/15 * * * *', () => void this.customCommandInterval());
+        this.#lastReady = new Map();
         this.cluster = new Cluster(logger, config, {
             id: clusterId,
             worker: this,
@@ -72,16 +98,37 @@ export class ClusterWorker extends BaseWorker {
         });
     }
 
+
+    protected getLastReady(shardId: number): Moment {
+        if (this.cluster.discord.shards.get(shardId)?.status === 'ready')
+            this.#lastReady.set(shardId, moment());
+
+        return this.#lastReady.get(shardId)
+            ?? this.cluster.createdAt;
+    }
+
     public async start(): Promise<void> {
         this.installListeners();
         await this.cluster.start();
         super.start();
         this.#intervalCron.start();
         setInterval(() => {
-            this.send('shardStats', snowflake.create(), {
-                ...this.cluster.stats.getCurrent(),
+            this.send('shardStats', snowflake.create(), <ClusterStats>{
+                id: this.cluster.id,
+                time: Date.now().valueOf(),
+                readyTime: this.cluster.createdAt.valueOf(),
+                guilds: this.cluster.discord.guilds.size,
+                rss: this.memoryUsage.rss,
                 ...cpuLoad(),
-                rss: this.memoryUsage.rss
+                shardCount: this.cluster.discord.shards.size,
+                shards: this.cluster.discord.shards.map(s => ({
+                    id: s.id,
+                    status: s.status,
+                    latency: s.latency,
+                    guilds: this.cluster.discord.guilds.filter(g => g.shard.id === s.id).length,
+                    cluster: this.cluster.id,
+                    time: this.getLastReady(s.id).valueOf()
+                }))
             });
         }, 10000);
     }

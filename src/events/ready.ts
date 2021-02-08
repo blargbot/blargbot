@@ -28,7 +28,8 @@ export class ReadyEventHandler extends BaseEventHandler<[]> {
             await this.cluster.rethinkdb.setVar({ varname: 'support', value: support });
         }
 
-        if (this.cluster.id === '0') {
+        // TODO this should be something the master process does
+        if (this.cluster.id === 0) {
             const restart = await this.cluster.rethinkdb.getVar('restart');
 
             if (restart?.varvalue) {

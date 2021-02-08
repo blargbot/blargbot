@@ -1,5 +1,4 @@
 import { ClusterModuleLoader } from '../core/ClusterModuleLoader';
-import { ClusterStats } from './ClusterStats';
 import { ClusterUtilities } from './ClusterUtilities';
 import { BaseClient } from '../core/BaseClient';
 import { BaseEventHandler } from '../structures/BaseEventHandler';
@@ -13,7 +12,7 @@ import { ClusterWorker } from '../workers/ClusterWorker';
 import { ImageConnection } from '../workers/ImageConnection';
 
 export interface ClusterOptions {
-    id: string,
+    id: number,
     worker: ClusterWorker,
     shardCount: number,
     firstShardId: number,
@@ -21,13 +20,12 @@ export interface ClusterOptions {
 }
 
 export class Cluster extends BaseClient {
-    public readonly id: string;
+    public readonly id: number;
     public readonly createdAt: Moment;
     public readonly worker: ClusterWorker;
     public readonly commands: ClusterModuleLoader<BaseDCommand>;
     public readonly subtags: ClusterModuleLoader<BaseSubtagHandler>;
     public readonly events: ClusterModuleLoader<BaseEventHandler>;
-    public readonly stats: ClusterStats;
     public readonly util: ClusterUtilities;
     public readonly triggers: EventManager;
     public readonly bbtag: BBEngine;
@@ -73,7 +71,6 @@ export class Cluster extends BaseClient {
         this.commands = new ClusterModuleLoader('dcommands', this, BaseDCommand, c => [c.name, ...c.aliases]);
         this.subtags = new ClusterModuleLoader('tags', this, BaseSubtagHandler, t => [t.name, ...t.aliases]);
         this.events = new ClusterModuleLoader('events', this, BaseEventHandler, e => e.name);
-        this.stats = new ClusterStats(this);
         this.util = new ClusterUtilities(this);
         this.triggers = new EventManager(this);
         this.bbtag = new BBEngine(this);

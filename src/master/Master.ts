@@ -31,7 +31,7 @@ export class Master extends BaseClient {
         super(logger, config, {});
         this.#avatars = options.avatars;
         this.#holidays = options.holidays;
-        this.clusters = new ClusterPool(this.config.shards, this.logger);
+        this.clusters = new ClusterPool(this, this.logger);
         this.#avatarCron = new CronJob('*/15 * * * *', () => void this.avatarInterval());
         this.#statusCron = new CronJob('*/15 * * * *', () => void this.statusInterval());
         this.discord = new DiscordClient(this.config.discord.token, {

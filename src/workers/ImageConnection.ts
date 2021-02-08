@@ -5,6 +5,6 @@ export class ImageConnection extends WorkerConnection {
         id: number,
         logger: CatLogger
     ) {
-        super(id.toString(), 'image', logger);
+        super(id, 'image', logger);
     }
 }
