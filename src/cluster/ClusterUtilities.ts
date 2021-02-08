@@ -71,15 +71,6 @@ export class ClusterUtilities extends BaseUtilities {
         return guild.settings[key];
     }
 
-    public async renderImage(type: string, data: JObject): Promise<Buffer | null> {
-        const result = await this.cluster.images.request('img', { command: type, ...data });
-        if (typeof result === 'string')
-            return Buffer.from(result, 'base64');
-        if (result instanceof Buffer)
-            return result;
-        return null;
-    }
-
     public async processUser(user: User): Promise<void> {
         if (user.discriminator == '0000') return;
         const storedUser = await this.cluster.rethinkdb.getUser(user.id);

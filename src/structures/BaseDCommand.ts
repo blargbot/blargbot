@@ -1,4 +1,4 @@
-import { Client as ErisClient, Message, TextableChannel } from 'eris';
+import { Client as ErisClient, Message } from 'eris';
 import { Cluster } from '../cluster';
 import { ClusterUtilities } from '../cluster/ClusterUtilities';
 import { CommandType, FlagDefinition } from '../newbu';
@@ -62,5 +62,5 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         return Promise.resolve();
     }
 
-    abstract execute(message: Message<TextableChannel>, words: string[], text: string): Promise<void>;
+    abstract execute(message: Message, words: string[], text: string): Promise<void>;
 }

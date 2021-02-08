@@ -37,7 +37,7 @@ export abstract class BaseWorker extends EventEmitter {
         this.send('alive', snowflake.create(), null);
     }
 
-    public send(type: string, id: Snowflake, data: unknown): boolean {
+    protected send(type: string, id: Snowflake, data: unknown): boolean {
         return this.#process.send({ type, id, data });
     }
 

@@ -8,4 +8,5 @@ export { createRegExp } from './createRegExp';
 export { sleep } from './sleep';
 export { cpuLoad } from './cpuLoad';
 export { fafo } from './fafo';
+export { codeBlock } from './codeBlock';
 

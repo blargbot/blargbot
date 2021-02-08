@@ -34,7 +34,7 @@ export class ArtCommand extends BaseDCommand {
 
         void this.discord.sendChannelTyping(message.channel.id);
 
-        const buffer = await this.util.renderImage('art', { avatar: url });
+        const buffer = await this.cluster.images.render('art', { avatar: url });
         if (!buffer) {
             await this.util.send(message, 'Something went wrong while trying to render that!');
         } else {

@@ -83,54 +83,30 @@ export class Cluster extends BaseClient {
     public async start(): Promise<void> {
         await Promise.all([
             super.start(),
-            this.events.init().then(() => this.logger.init(moduleStats(this.events, 'Events', ev => ev.type))),
-            this.commands.init().then(() => this.logger.init(moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name))),
-            this.subtags.init().then(() => this.logger.init(moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypes.properties[c].name))),
-            this.images.connect(20000).then(() => this.logger.init('images connected'))
+            this.events.init(),
+            this.commands.init(),
+            this.subtags.init(),
+            this.images.connect(20000)
         ]);
+
+        this.logger.init(moduleStats(this.events, 'Events', ev => ev.type));
+        this.logger.init(moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name));
+        this.logger.init(moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypes.properties[c].name));
     }
 
-    public async eval(message: { author: { id: string } }, text: string, send: false): Promise<{ resultString: string, result: unknown }>;
-    public async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send?: true): Promise<void>;
-    public async eval(message: { author: { id: string }, channel: { id: string } }, text: string, send = true): Promise<void | { resultString: string, result: unknown }> {
-        if (message.author.id !== this.config.discord.users.owner)
-            throw new Error(`User ${message.author.id} does not have permission to run eval`);
+    public async eval(author: string, text: string): Promise<{ success: boolean, result: unknown }> {
+        if (author !== this.config.discord.users.owner)
+            throw new Error(`User ${author} does not have permission to run eval`);
 
-        let resultString, result;
-        let commandToProcess = text.replace('eval ', '');
-        if (commandToProcess.startsWith('```js') && commandToProcess.endsWith('```'))
-            commandToProcess = commandToProcess.substring(6, commandToProcess.length - 3);
-        else if (commandToProcess.startsWith('```') && commandToProcess.endsWith('```'))
-            commandToProcess = commandToProcess.substring(4, commandToProcess.length - 3);
         try {
-            let func;
-            if (commandToProcess.split('\n').length === 1) {
-                func = eval(`async () => ${commandToProcess}`);
-            } else {
-                func = eval(`async () => { ${commandToProcess} }`);
-            }
-            func.bind(this);
-            const res = await func();
-            result = res;
-            resultString = `Input:
-\`\`\`js
-${commandToProcess}
-\`\`\`
-Output:
-\`\`\`js
-${res}
-\`\`\``;
+            const func: () => Promise<unknown>
+                = eval(text.split('\n').length === 1
+                    ? `async () => ${text}`
+                    : `async () => { ${text} }`);
+            return { success: true, result: await func.call(this) };
         } catch (err) {
-            result = err;
-            resultString = `An error occured!
-\`\`\`js
-${err.stack}
-\`\`\``;
+            return { success: false, result: err };
         }
-        if (!send)
-            return { resultString, result };
-
-        void this.util.send(message.channel.id, resultString);
     }
 }
 

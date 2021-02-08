@@ -37,7 +37,7 @@ export abstract class WorkerConnection extends EventEmitter {
         };
     }
 
-    public async connect(timeoutMS = 10000): Promise<unknown> {
+    public async connect(timeoutMS: number): Promise<unknown> {
         if (this.#process)
             throw new Error('Cannot connect to a worker multiple times. Create a new instance for a new worker');
 
@@ -58,11 +58,15 @@ export abstract class WorkerConnection extends EventEmitter {
             this.#coreEmit(message.type, message.id, message.data);
         });
 
-        this.#process.on('exit', (code, signal) => this.#coreEmit('exit', snowflake.create(), { code, signal }));
-        this.#process.on('close', (code, signal) => this.#coreEmit('close', snowflake.create(), { code, signal }));
-        this.#process.on('disconnect', () => this.#coreEmit('disconnect', snowflake.create(), null));
-        this.#process.on('kill', (code) => this.#coreEmit('kill', snowflake.create(), code));
-        this.#process.on('error', (error) => this.#coreEmit('error', snowflake.create(), { ...error }));
+        const relay = (code: string, data: unknown): void => {
+            this.logger.worker(`${this.worker} worker (ID: ${this.id}) sent ${code}`);
+            this.#coreEmit(code, snowflake.create(), data);
+        };
+        this.#process.on('exit', (code, signal) => relay('exit', { code, signal }));
+        this.#process.on('close', (code, signal) => relay('close', { code, signal }));
+        this.#process.on('disconnect', () => relay('disconnect', null));
+        this.#process.on('kill', (code) => relay('kill', code));
+        this.#process.on('error', (error) => relay('error', { error }));
 
         try {
             const result = await new Promise<unknown>((resolve, reject) => {
@@ -112,13 +116,13 @@ export abstract class WorkerConnection extends EventEmitter {
         throw new Error('Emitting custom events isnt allowed on this object');
     }
 
-    public send(type: string, id: Snowflake, data: unknown): boolean {
+    protected send(type: string, id: Snowflake, data: unknown): boolean {
         if (this.#process === undefined)
             throw new Error('Child process has not been started yet');
         return this.#process.send({ type, id, data });
     }
 
-    public request<T = unknown>(type: string, data: unknown, timeoutMS = 10000): Promise<T> {
+    protected request<T = unknown>(type: string, data: unknown, timeoutMS = 10000): Promise<T> {
         const requestId = snowflake.create();
         return new Promise<T>((resolve, reject) => {
             const handler: WorkerMessageHandler<T> = (data, _, id) => {

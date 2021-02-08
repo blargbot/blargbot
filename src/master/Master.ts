@@ -3,6 +3,7 @@ import { BotActivityType, Client as DiscordClient } from 'eris';
 import moment from 'moment';
 import { BaseClient } from '../core/BaseClient';
 import { ClusterPool } from '../workers/ClusterPool';
+import { ClusterMonitor } from './ClusterMonitor';
 import { migrateCassandra } from './migration';
 import snekfetch from 'snekfetch';
 
@@ -22,6 +23,7 @@ export class Master extends BaseClient {
     readonly #holidays: Record<string, string>;
     public readonly discord: DiscordClient;
     public readonly clusters: ClusterPool;
+    public readonly monitor: ClusterMonitor;
 
     public constructor(
         logger: CatLogger,
@@ -31,13 +33,14 @@ export class Master extends BaseClient {
         super(logger, config, {});
         this.#avatars = options.avatars;
         this.#holidays = options.holidays;
-        this.clusters = new ClusterPool(this, this.logger);
+        this.clusters = new ClusterPool(this.config.shards, this.logger);
         this.#avatarCron = new CronJob('*/15 * * * *', () => void this.avatarInterval());
         this.#statusCron = new CronJob('*/15 * * * *', () => void this.statusInterval());
         this.discord = new DiscordClient(this.config.discord.token, {
             restMode: true,
             defaultImageFormat: 'png'
         });
+        this.monitor = new ClusterMonitor(this.clusters, this.discord, this.config.discord.channels.shardlog, this.logger);
         // TODO Add websites
     }
 
@@ -48,9 +51,10 @@ export class Master extends BaseClient {
             this.discord.connect()
         ]);
         void migrateCassandra(this.cassandra, this.logger);
-        await this.clusters.spawnAll(60000);
+        await this.clusters.spawnAll();
         this.#avatarCron.start();
         this.#statusCron.start();
+        this.monitor.start();
     }
 
     private async avatarInterval(): Promise<void> {
