@@ -59,6 +59,19 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
         }
     }
 
+    public foreach(action: (module: TModule) => void): void;
+    public foreach(action: (module: TModule) => Promise<void>): Promise<void>;
+    public foreach(action: (module: TModule) => void | Promise<void>): Promise<void> | void {
+        const results = [];
+        for (const module of this.#modules.values()) {
+            const result = action(module);
+            if (result !== undefined)
+                results.push(result);
+        }
+        if (results.length > 0)
+            return Promise.all(results).then(x => void x);
+    }
+
 
     public reload(fileNames: Iterable<string>): void {
         this.load(fileNames, reload);

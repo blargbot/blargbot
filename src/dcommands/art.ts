@@ -36,9 +36,9 @@ export class ArtCommand extends BaseDCommand {
 
         const buffer = await this.cluster.images.render('art', { avatar: url });
         if (!buffer) {
-            await this.util.send(message, 'Something went wrong while trying to render that!');
+            await this.send(message, 'Something went wrong while trying to render that!');
         } else {
-            await this.util.send(message, {}, {
+            await this.send(message, {}, {
                 file: buffer,
                 name: 'sobeautifulstan.png'
             });

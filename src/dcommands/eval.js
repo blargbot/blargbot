@@ -18,7 +18,7 @@ class EvalCommand extends BaseDCommand_1.BaseDCommand {
         const response = success
             ? `Input:${newbu_1.codeBlock(text, 'js')}Output:${newbu_1.codeBlock(result)}`
             : `An error occured!${newbu_1.codeBlock(result)}`;
-        await this.util.send(msg, response);
+        await this.send(msg, response);
     }
 }
 exports.EvalCommand = EvalCommand;

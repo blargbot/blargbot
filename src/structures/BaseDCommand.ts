@@ -1,6 +1,7 @@
 import { Client as ErisClient, Message } from 'eris';
 import { Cluster } from '../cluster';
 import { ClusterUtilities } from '../cluster/ClusterUtilities';
+import { SendContext, SendPayload, SendFiles } from '../core/BaseUtilities';
 import { CommandType, FlagDefinition } from '../newbu';
 
 export interface DCommandOptions {
@@ -36,9 +37,10 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     protected get util(): ClusterUtilities { return this.cluster.util; }
     protected get discord(): ErisClient { return this.cluster.discord; }
     protected get logger(): CatLogger { return this.cluster.logger; }
+    protected get config(): Configuration { return this.cluster.config; }
 
     protected constructor(
-        public readonly cluster: Cluster,
+        protected readonly cluster: Cluster,
         public readonly name: string,
         options: DCommandOptions
     ) {
@@ -60,6 +62,10 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     public event(message: unknown): Promise<void> {
         this.logger.event(message);
         return Promise.resolve();
+    }
+
+    protected send(context: SendContext, payload: SendPayload, files?: SendFiles): Promise<Message | null> {
+        return this.cluster.util.send(context, payload, files);
     }
 
     abstract execute(message: Message, words: string[], text: string): Promise<void>;

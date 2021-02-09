@@ -27,7 +27,7 @@ export class PingCommand extends BaseDCommand {
 
     public async execute(msg: Message<TextableChannel>): Promise<void> {
         const message = messages[randInt(0, messages.length - 1)];
-        const msg2 = await this.util.send(msg, message);
+        const msg2 = await this.send(msg, message);
         if (msg2)
             await msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)`);
     }

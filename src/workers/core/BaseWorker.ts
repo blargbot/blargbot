@@ -1,14 +1,11 @@
 import { Snowflake } from 'catflake';
-import { EventEmitter } from 'eventemitter3';
+import { TypedEventEmitter } from './TypedEventEmitter';
 import { snowflake } from '../../newbu';
+import { ContractKey, MasterMessageHandler, WorkerContract, WorkerPayload, MasterPayload, MasterMessage, WorkerMessage, MasterMessageHandlers } from './Contract';
 
-export type WorkerMessageHandler<T = unknown> = (data: T, reply: (data: unknown) => void, id: Snowflake) => void;
-
-export abstract class BaseWorker extends EventEmitter {
+export abstract class BaseWorker<TContract extends WorkerContract> extends TypedEventEmitter<MasterMessageHandlers<TContract>> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #process: NodeJS.WorkerProcess
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #coreEmit: (type: string, id: Snowflake, data: JToken) => boolean;
 
     public get id(): number { return this.#process.pid; }
     public get env(): NodeJS.ProcessEnv { return this.#process.env; }
@@ -22,9 +19,6 @@ export abstract class BaseWorker extends EventEmitter {
             throw new Error('Worker processes must be able to send messages to their parents');
 
         this.#process = process;
-        this.#coreEmit = (type: string, id: Snowflake, data: JToken) => {
-            return super.emit(type, data, (reply: unknown) => this.send(type, id, reply), id);
-        };
 
         this.#process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise' + JSON.stringify(err)));
@@ -37,8 +31,8 @@ export abstract class BaseWorker extends EventEmitter {
         this.send('alive', snowflake.create(), null);
     }
 
-    protected send(type: string, id: Snowflake, data: unknown): boolean {
-        return this.#process.send({ type, id, data });
+    public send<T extends ContractKey<TContract>>(type: T, id: Snowflake, data: WorkerPayload<TContract, T>): boolean {
+        return this.#process.send(<WorkerMessage<TContract, T>>{ type, id, data });
     }
 
     public start(): void {
@@ -47,33 +41,24 @@ export abstract class BaseWorker extends EventEmitter {
     }
 
     protected installListeners(): void {
-        this.#process.on('message', ({ type, id, data }) => {
-            this.#coreEmit(type, id, data);
+        this.#process.on('message', <T extends ContractKey<TContract>>({ type, data, id }: MasterMessage<TContract, T>) =>
+            this.emit(type, data, m => this.send(type, id, m), id));
+    }
+
+    protected request<T extends ContractKey<TContract>>(type: T, data: WorkerPayload<TContract, T>, timeoutMS = 10000): Promise<MasterPayload<TContract, T>> {
+        const requestId = snowflake.create();
+        return new Promise<MasterPayload<TContract, T>>((resolve, reject) => {
+            const handler: MasterMessageHandler<TContract, T> = (data, _, id) => {
+                if (id === requestId) {
+                    resolve(data);
+                    this.off(type, handler);
+                }
+            };
+
+            this.on(type, handler);
+            setTimeout(() => reject(new Error(`Child failed to respond to '${type}' in time`)), timeoutMS);
+            this.send(type, requestId, data);
         });
-    }
-
-    public on<T>(event: string, handler: WorkerMessageHandler<T>): this {
-        return super.on(event, handler);
-    }
-
-    public once<T>(event: string, handler: WorkerMessageHandler<T>): this {
-        return super.once(event, handler);
-    }
-
-    public addListener<T>(event: string, handler: WorkerMessageHandler<T>): this {
-        return super.addListener(event, handler);
-    }
-
-    public off<T>(event: string, handler: WorkerMessageHandler<T>): this {
-        return super.off(event, handler);
-    }
-
-    public removeListener<T>(event: string, handler: WorkerMessageHandler<T>): this {
-        return super.removeListener(event, handler);
-    }
-
-    public emit(): never {
-        throw new Error('Emitting custom events isnt allowed on this object');
     }
 }
 

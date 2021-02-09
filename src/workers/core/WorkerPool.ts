@@ -1,8 +1,18 @@
-import { EventEmitter } from 'eventemitter3';
 import { getRange } from '../../newbu';
+import { WorkerContract, WorkerMessage } from './Contract';
+import { TypedEventEmitter } from './TypedEventEmitter';
 import { WorkerConnection } from './WorkerConnection';
 
-export abstract class WorkerPool<TWorker extends WorkerConnection> extends EventEmitter {
+interface WorkerPoolContract<TContract, TWorker> {
+    [type: string]: unknown[];
+    'spawningWorker': [id: number];
+    'spawnedworker': [id: number, worker: TWorker];
+    'message': [worker: TWorker, message: WorkerMessage<TContract>];
+    'killingworker': [worker: TWorker];
+    'killedworker': [worker: TWorker];
+}
+
+export abstract class WorkerPool<TContract extends WorkerContract, TWorker extends WorkerConnection<TContract>> extends TypedEventEmitter<WorkerPoolContract<TContract, TWorker>> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #workers: Map<number, TWorker>;
 

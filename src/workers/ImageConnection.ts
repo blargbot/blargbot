@@ -1,6 +1,7 @@
+import { ImageContract } from './ImageContract';
 import { WorkerConnection } from './core/WorkerConnection';
 
-export class ImageConnection extends WorkerConnection {
+export class ImageConnection extends WorkerConnection<ImageContract> {
     public constructor(
         id: number,
         logger: CatLogger
@@ -12,8 +13,6 @@ export class ImageConnection extends WorkerConnection {
         const result = await this.request('img', { command: type, ...data });
         if (typeof result === 'string')
             return Buffer.from(result, 'base64');
-        if (result instanceof Buffer)
-            return result;
         return null;
     }
 }

@@ -1,10 +1,10 @@
 import moment from 'moment-timezone';
-import { BaseEventHandler } from '../structures/BaseEventHandler';
-import { humanize } from '../newbu';
-import { Cluster } from '../cluster';
-import { StoredGuild } from '../core/RethinkDb';
+import { humanize } from '../../newbu';
+import { Cluster } from '..';
+import { StoredGuild } from '../../core/RethinkDb';
+import { DiscordEventService } from '../../structures/DiscordEventService';
 
-export class ReadyEventHandler extends BaseEventHandler<[]> {
+export class ReadyEventHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #obtainEventTimer?: NodeJS.Timeout;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -16,7 +16,7 @@ export class ReadyEventHandler extends BaseEventHandler<[]> {
         super(cluster.discord, 'ready', cluster.logger);
     }
 
-    public async handle(): Promise<void> {
+    public async execute(): Promise<void> {
         this.logger.init(`Ready! Logged in as ${this.cluster.discord.user.username}#${this.cluster.discord.user.discriminator}`);
 
         let home;

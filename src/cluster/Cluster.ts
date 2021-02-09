@@ -1,7 +1,6 @@
 import { ClusterModuleLoader } from '../core/ClusterModuleLoader';
 import { ClusterUtilities } from './ClusterUtilities';
 import { BaseClient } from '../core/BaseClient';
-import { BaseEventHandler } from '../structures/BaseEventHandler';
 import { BaseDCommand } from '../structures/BaseDCommand';
 import { BaseSubtagHandler } from '../structures/BaseSubtagHandler';
 import moment, { Moment } from 'moment-timezone';
@@ -10,6 +9,7 @@ import { commandTypes, tagTypes } from '../newbu';
 import { BBEngine } from '../structures/BBEngine';
 import { ClusterWorker } from '../workers/ClusterWorker';
 import { ImageConnection } from '../workers/ImageConnection';
+import { BaseService } from '../structures/BaseService';
 
 export interface ClusterOptions {
     id: number,
@@ -25,7 +25,7 @@ export class Cluster extends BaseClient {
     public readonly worker: ClusterWorker;
     public readonly commands: ClusterModuleLoader<BaseDCommand>;
     public readonly subtags: ClusterModuleLoader<BaseSubtagHandler>;
-    public readonly events: ClusterModuleLoader<BaseEventHandler>;
+    public readonly services: ClusterModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
     public readonly triggers: EventManager;
     public readonly bbtag: BBEngine;
@@ -70,26 +70,26 @@ export class Cluster extends BaseClient {
         this.worker = options.worker;
         this.commands = new ClusterModuleLoader('dcommands', this, BaseDCommand, c => [c.name, ...c.aliases]);
         this.subtags = new ClusterModuleLoader('tags', this, BaseSubtagHandler, t => [t.name, ...t.aliases]);
-        this.events = new ClusterModuleLoader('events', this, BaseEventHandler, e => e.name);
+        this.services = new ClusterModuleLoader('cluster/services', this, BaseService, e => e.name);
         this.util = new ClusterUtilities(this);
         this.triggers = new EventManager(this);
         this.bbtag = new BBEngine(this);
         this.images = new ImageConnection(1, this.logger);
 
-        this.events.on('add', (module: BaseEventHandler) => module.install());
-        this.events.on('remove', (module: BaseEventHandler) => module.uninstall());
+        this.services.on('add', (module: BaseService) => module.start());
+        this.services.on('remove', (module: BaseService) => module.stop());
     }
 
     public async start(): Promise<void> {
         await Promise.all([
             super.start(),
-            this.events.init(),
+            this.services.init(),
             this.commands.init(),
             this.subtags.init(),
             this.images.connect(20000)
         ]);
 
-        this.logger.init(moduleStats(this.events, 'Events', ev => ev.type));
+        this.logger.init(moduleStats(this.services, 'Services', ev => ev.type));
         this.logger.init(moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name));
         this.logger.init(moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypes.properties[c].name));
     }

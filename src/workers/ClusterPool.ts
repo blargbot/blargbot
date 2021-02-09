@@ -1,11 +1,12 @@
 import { ClusterConnection } from './ClusterConnection';
+import { ClusterContract } from './ClusterContract';
 import { WorkerPool } from './core/WorkerPool';
 
 export interface ClusterPoolOptions {
     worker?: string;
 }
 
-export class ClusterPool extends WorkerPool<ClusterConnection> {
+export class ClusterPool extends WorkerPool<ClusterContract, ClusterConnection> {
     public constructor(
         public readonly config: Configuration['shards'],
         logger: CatLogger
@@ -23,7 +24,6 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
             this.config.max,
             this.logger
         );
-
         return cluster;
     }
 

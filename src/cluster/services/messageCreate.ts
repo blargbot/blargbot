@@ -1,13 +1,13 @@
 import { GuildTextableChannel, Member, Message, TextableChannel, TextChannel } from 'eris';
-import { BaseEventHandler } from '../structures/BaseEventHandler';
-import { Timer } from '../structures/Timer';
+import { Timer } from '../../structures/Timer';
 import request from 'request';
-import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../newbu';
-import { Cluster } from '../cluster';
-import { StoredGuildCommand, StoredGuild } from '../core/RethinkDb';
-import { BaseDCommand } from '../structures/BaseDCommand';
+import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../../newbu';
+import { Cluster } from '..';
+import { StoredGuildCommand, StoredGuild } from '../../core/RethinkDb';
+import { BaseDCommand } from '../../structures/BaseDCommand';
+import { DiscordEventService } from '../../structures/DiscordEventService';
 
-export class MessageCreateEventHandler extends BaseEventHandler<[Message]> {
+export class MessageCreateEventHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #arWhitelist: Set<string>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -20,21 +20,21 @@ export class MessageCreateEventHandler extends BaseEventHandler<[Message]> {
         this.#arWhitelist = new Set<string>();
     }
 
-    public install(): void {
-        super.install();
+    public start(): void {
+        super.start();
         this.#whitelistInterval = setInterval(() => void this.checkWhitelist(), 1000 * 60 * 15);
         void this.checkWhitelist();
     }
 
-    public uninstall(): void {
-        super.uninstall();
+    public stop(): void {
+        super.stop();
         if (this.#whitelistInterval) {
             clearInterval(this.#whitelistInterval);
             this.#whitelistInterval = undefined;
         }
     }
 
-    public async handle(message: Message): Promise<void> {
+    public async execute(message: Message): Promise<void> {
         const { channel, author } = message;
         if (channel instanceof TextChannel && channel.guild.shard.ready) {
             this.cluster.metrics.messageCounter.inc();

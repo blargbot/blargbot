@@ -20,6 +20,6 @@ export class EvalCommand extends BaseDCommand {
         const response = success
             ? `Input:${codeBlock(text, 'js')}Output:${codeBlock(result)}`
             : `An error occured!${codeBlock(result)}`;
-        await this.util.send(msg, response);
+        await this.send(msg, response);
     }
 }
