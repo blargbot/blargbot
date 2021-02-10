@@ -1,10 +1,9 @@
 export abstract class BaseService {
     public readonly name: string;
-    public readonly type: string;
+    public abstract readonly type: string;
 
-    protected constructor(name?: string, type?: string) {
+    protected constructor(name?: string) {
         this.name = name ?? this.constructor.name;
-        this.type = type ?? 'Generic service';
     }
 
     public abstract start(): void | Promise<void>;

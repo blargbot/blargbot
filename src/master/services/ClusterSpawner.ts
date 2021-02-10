@@ -2,6 +2,8 @@ import { BaseService } from '../../structures/BaseService';
 import { Master } from '../Master';
 
 export class ClusterSpawner extends BaseService {
+    public readonly type = 'cluster';
+
     public constructor(
         public readonly master: Master
     ) {

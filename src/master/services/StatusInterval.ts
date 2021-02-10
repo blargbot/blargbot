@@ -6,6 +6,7 @@ import { Master, MasterOptions } from '../Master';
 export class StatusInterval extends CronService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #holidays: Record<string, string>;
+    public readonly type = 'discord';
 
     public constructor(
         public readonly master: Master,

@@ -2,7 +2,6 @@ import { BaseService } from '../../structures/BaseService';
 import { Master } from '../Master';
 
 export class MigrateCassandra extends BaseService {
-
     public readonly type = 'database';
 
     public constructor(

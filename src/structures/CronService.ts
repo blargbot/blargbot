@@ -5,7 +5,6 @@ import { BaseService } from './BaseService';
 export abstract class CronService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cronJob: CronJob;
-    public readonly type: string = 'CronJob';
 
     protected constructor(
         options: Omit<CronJobParameters, 'onTick' | 'onComplete'>,

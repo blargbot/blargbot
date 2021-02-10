@@ -4,12 +4,13 @@ import { ClusterConnection } from '../../workers/ClusterConnection';
 import { Master } from '../Master';
 
 export class ClusterMonitor extends IntervalService {
+    public readonly type = 'cluster';
+
     public constructor(
         public readonly master: Master
     ) {
         super(10000, master.logger);
     }
-
 
     public async execute(cluster?: ClusterConnection): Promise<void> {
         if (cluster === undefined) {

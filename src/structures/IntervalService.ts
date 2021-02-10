@@ -4,7 +4,6 @@ import { BaseService } from './BaseService';
 export abstract class IntervalService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #interval?: NodeJS.Timeout;
-    public readonly type: string = 'Interval';
 
     protected constructor(
         public readonly period: number,

@@ -4,7 +4,7 @@ import { ClusterConnection } from '../../workers/ClusterConnection';
 import { Master } from '../Master';
 
 export class ClusterDeath extends BaseService {
-    public readonly type = 'cluster';
+    public readonly type = 'ClusterEvent:exit';
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #messageHandler: (worker: ClusterConnection) => void;
 
@@ -19,15 +19,11 @@ export class ClusterDeath extends BaseService {
     }
 
     public start(): void {
-        this.master.clusters.on('worker:disconnect', this.#messageHandler);
         this.master.clusters.on('worker:exit', this.#messageHandler);
-        this.master.clusters.on('worker:close', this.#messageHandler);
     }
 
     public stop(): void {
-        this.master.clusters.off('worker:disconnect', this.#messageHandler);
         this.master.clusters.off('worker:exit', this.#messageHandler);
-        this.master.clusters.off('worker:close', this.#messageHandler);
     }
 
     private async respawn(id: number): Promise<void> {
