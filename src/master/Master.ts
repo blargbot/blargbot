@@ -1,29 +1,18 @@
-import { CronJob } from 'cron';
-import { BotActivityType, Client as DiscordClient } from 'eris';
 import moment from 'moment';
 import { BaseClient } from '../core/BaseClient';
 import { ClusterPool } from '../workers/ClusterPool';
-import { ClusterMonitor } from './ClusterMonitor';
-import { migrateCassandra } from './migration';
 import snekfetch from 'snekfetch';
+import { BaseService } from '../structures/BaseService';
+import { ModuleLoader } from '../core/ModuleLoader';
 
 export interface MasterOptions {
     avatars: string[];
     holidays: Record<string, string>;
 }
-
 export class Master extends BaseClient {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #avatarCron: CronJob;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #statusCron: CronJob;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #avatars: string[];
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #holidays: Record<string, string>;
-    public readonly discord: DiscordClient;
     public readonly clusters: ClusterPool;
-    public readonly monitor: ClusterMonitor;
+    public readonly eventHandlers: ModuleLoader<BaseService>;
+    public readonly services: ModuleLoader<BaseService>;
 
     public constructor(
         logger: CatLogger,
@@ -31,64 +20,28 @@ export class Master extends BaseClient {
         options: MasterOptions
     ) {
         super(logger, config, {});
-        this.#avatars = options.avatars;
-        this.#holidays = options.holidays;
         this.clusters = new ClusterPool(this.config.shards, this.logger);
-        this.#avatarCron = new CronJob('*/15 * * * *', () => void this.avatarInterval());
-        this.#statusCron = new CronJob('*/15 * * * *', () => void this.statusInterval());
-        this.discord = new DiscordClient(this.config.discord.token, {
-            restMode: true,
-            defaultImageFormat: 'png'
-        });
-        this.monitor = new ClusterMonitor(this.clusters, this.discord, this.config.discord.channels.shardlog, this.logger);
+        this.eventHandlers = new ModuleLoader('master/events', BaseService, [this, options], this.logger, e => e.name);
+        this.services = new ModuleLoader('master/services', BaseService, [this, options], this.logger, e => e.name);
         // TODO Add websites
+
+        this.services.on('add', (module: BaseService) => void module.start());
+        this.services.on('remove', (module: BaseService) => void module.stop());
+        this.eventHandlers.on('add', (module: BaseService) => void module.start());
+        this.eventHandlers.on('remove', (module: BaseService) => void module.stop());
     }
 
     public async start(): Promise<void> {
+        await this.eventHandlers.init();
+        this.logger.init(this.moduleStats(this.eventHandlers, 'Events', ev => ev.type));
+
         await Promise.all([
-            this.hello(),
             super.start(),
-            this.discord.connect()
+            this.hello()
         ]);
-        void migrateCassandra(this.cassandra, this.logger);
-        await this.clusters.spawnAll();
-        this.#avatarCron.start();
-        this.#statusCron.start();
-        this.monitor.start();
-    }
 
-    private async avatarInterval(): Promise<void> {
-        this.logger.info('!=! Performing the avatar interval !=!');
-        if (this.config.general.isbeta)
-            return;
-        const time = moment();
-        const h = parseInt(time.format('H'));
-        // account for any number of possible avatars
-        const m = Math.floor((parseInt(time.format('m')) / 15));
-        const c = (h * 4) + m;
-        const id = c % this.#avatars.length;
-        await this.discord.editSelf({
-            avatar: this.#avatars[id]
-        });
-    }
-
-    private statusInterval(): void {
-        let name = '';
-        let type: BotActivityType = 0;
-
-        const date = moment().format('MM-DD');
-        if (this.#holidays[date]) {
-            name = this.#holidays[date];
-        } else {
-            const game = games[Math.floor(Math.random() * games.length)];
-            name = game.name;
-            if (game.type)
-                type = game.type;
-        }
-
-        this.discord.editStatus('online', {
-            name, type
-        });
+        await this.services.init();
+        this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
     }
 
     private async hello(): Promise<void> {
@@ -101,12 +54,3 @@ export class Master extends BaseClient {
         }
     }
 }
-
-const games: Array<{ name: string, type?: BotActivityType }> = [
-    { name: 'with tiny bits of string!' },
-    { name: 'with a mouse!' },
-    { name: 'with a laser pointer!', type: 3 },
-    { name: 'with a ball of yarn!' },
-    { name: 'in a box!' },
-    { name: 'the pitter-patter of tiny feet.', type: 2 }
-];

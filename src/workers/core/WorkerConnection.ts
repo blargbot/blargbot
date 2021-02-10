@@ -1,16 +1,17 @@
 import child_process, { ChildProcess } from 'child_process';
-import { Snowflake } from 'catflake';
-import { snowflake } from '../../newbu';
 import { Timer } from '../../structures/Timer';
 import { Moment } from 'moment-timezone';
 import moment from 'moment';
-import { ContractKey, WorkerContract, WorkerPayload, MasterPayload, WorkerMessageHandler, WorkerMessage, MasterMessage, WorkerMessageHandlers } from './Contract';
-import { TypedEventEmitter } from './TypedEventEmitter';
+import { IPCEvents } from './IPCEvents';
+import { snowflake } from '../../newbu';
 
-export abstract class WorkerConnection<TContract extends WorkerContract> extends TypedEventEmitter<WorkerMessageHandlers<TContract>> {
+export abstract class WorkerConnection extends IPCEvents {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #process?: ChildProcess;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    #killed: boolean;
 
+    public get killed(): boolean { return this.#killed; }
     public get connected(): boolean { return this.#process?.connected ?? false; }
 
     public readonly args: string[];
@@ -28,10 +29,11 @@ export abstract class WorkerConnection<TContract extends WorkerContract> extends
         this.args = [...process.execArgv];
         this.env = { ...process.env };
         this.file = require.resolve(`../../entrypoint/${this.worker}`);
+        this.#killed = false;
         this.on('alive', () => this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive`));
     }
 
-    public async connect(timeoutMS: number): Promise<WorkerPayload<TContract, 'ready'>> {
+    public async connect(timeoutMS: number): Promise<unknown> {
         if (this.#process)
             throw new Error('Cannot connect to a worker multiple times. Create a new instance for a new worker');
 
@@ -47,23 +49,22 @@ export abstract class WorkerConnection<TContract extends WorkerContract> extends
             execArgv: this.args
         });
 
-        this.#process.on('message', <T extends ContractKey<TContract>>(message: WorkerMessage<TContract, T>) =>
-            this.emitCore(message.type, message.id, message.data));
+        super.attach(this.#process);
 
-        const relay = <T extends ContractKey<TContract>>(code: T, data: WorkerPayload<TContract, T>): void => {
+        const relay = (code: string, data?: unknown): void => {
             this.logger.worker(`${this.worker} worker (ID: ${this.id}) sent ${code}`);
-            this.emitCore(code, snowflake.create(), data);
+            this.emit(code, data, snowflake.create());
         };
         this.#process.on('exit', (code, signal) => relay('exit', { code, signal }));
         this.#process.on('close', (code, signal) => relay('close', { code, signal }));
-        this.#process.on('disconnect', () => relay('disconnect', null));
-        this.#process.on('kill', (code) => relay('kill', code));
-        this.#process.on('error', (error) => relay('error', { error }));
+        this.#process.on('disconnect', () => relay('disconnect'));
+        this.#process.on('kill', code => relay('kill', code));
+        this.#process.on('error', error => relay('error', error));
 
         try {
-            const result = await new Promise<WorkerPayload<TContract, 'ready'>>((resolve, reject) => {
-                this.once('ready', (data, _reply, _id) => resolve(data));
-                this.once('exit', (data, _reply, _id) => reject(new Error(`Child process has exited with code ${data.code}: ${data.signal}`)));
+            const result = await new Promise<unknown>((resolve, reject) => {
+                this.once('ready', data => resolve(data));
+                this.once('exit', data => reject(new Error(`Child process has exited with code ${data.code}: ${data.signal}`)));
                 setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMS);
             });
             timer.end();
@@ -80,38 +81,8 @@ export abstract class WorkerConnection<TContract extends WorkerContract> extends
         if (this.#process === undefined || !this.#process.connected)
             throw new Error('The child process is not connected');
 
+        this.#killed = true;
         this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id})`);
         this.#process.kill(code);
-    }
-
-    public emit(): never {
-        throw new Error('Emitting custom events isnt allowed on this object');
-    }
-
-    private emitCore<T extends ContractKey<TContract>>(type: T, id: Snowflake, data: WorkerPayload<TContract, T>): boolean {
-        const reply = (message: MasterPayload<TContract, T>): boolean => this.send(type, id, message);
-        return super.emit(type, data, reply, id);
-    }
-
-    public send<T extends ContractKey<TContract>>(type: T, id: Snowflake, data: MasterPayload<TContract, T>): boolean {
-        if (this.#process === undefined)
-            throw new Error('Child process has not been started yet');
-        return this.#process.send(<MasterMessage<TContract, T>>{ type, id, data });
-    }
-
-    public request<T extends ContractKey<TContract>>(type: T, data: MasterPayload<TContract, T>, timeoutMS = 10000): Promise<WorkerPayload<TContract, T>> {
-        const requestId = snowflake.create();
-        return new Promise<WorkerPayload<TContract, T>>((resolve, reject) => {
-            const handler: WorkerMessageHandler<TContract, T> = (data, _, id) => {
-                if (id === requestId) {
-                    resolve(data);
-                    this.off(type, handler);
-                }
-            };
-
-            this.on(type, handler);
-            setTimeout(() => reject(new Error(`Child failed to respond to '${type}' in time`)), timeoutMS);
-            this.send(type, requestId, data);
-        });
     }
 }

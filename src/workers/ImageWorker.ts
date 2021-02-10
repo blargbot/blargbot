@@ -1,9 +1,8 @@
 import { ImageModuleLoader } from '../core/ImageModuleLoader';
 import { BaseWorker } from './core/BaseWorker';
 import { fafo } from '../newbu';
-import { ImageContract } from './ImageContract';
 
-export class ImageWorker extends BaseWorker<ImageContract>   {
+export class ImageWorker extends BaseWorker {
     public readonly renderers: ImageModuleLoader;
 
     public constructor(logger: CatLogger) {
@@ -12,7 +11,7 @@ export class ImageWorker extends BaseWorker<ImageContract>   {
 
         this.renderers = new ImageModuleLoader('images', this.logger);
 
-        this.on('img', fafo(async (data, reply) => {
+        this.on('img', fafo(async (data, _, reply) => {
             this.logger.worker(`${data.command} Requested`);
             const buffer = await this.render(data.command, data);
             this.logger.worker(`${data.command} finished, submitting as base64. Size: ${buffer?.length ?? 'NaN'}`);

@@ -1,24 +1,23 @@
 import { Cluster } from '../cluster';
-import { ClusterContract } from '../workers/ClusterContract';
-import { ContractKey, MasterMessageHandlers } from '../workers/core/Contract';
 import { BaseService } from './BaseService';
 import { inspect } from 'util';
+import { ProcessMessageHandler } from '../workers/core/IPCEvents';
 
-export abstract class ClusterEventService<TEvent extends ContractKey<ClusterContract>> extends BaseService {
+export abstract class ClusterEventService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #execute: (...args: MasterMessageHandlers<ClusterContract>[TEvent]) => void;
+    readonly #execute: ProcessMessageHandler
     public readonly type: string;
 
     protected constructor(
         public readonly cluster: Cluster,
-        public readonly event: TEvent
+        public readonly event: string
     ) {
         super();
         this.type = `ClusterEvent:${this.event}`;
-        this.#execute = (...args: MasterMessageHandlers<ClusterContract>[TEvent]) => void this._execute(...args);
+        this.#execute = (data, id, reply) => void this._execute(data, id, reply);
     }
 
-    protected abstract execute(...args: MasterMessageHandlers<ClusterContract>[TEvent]): Promise<void> | void;
+    protected abstract execute(...args: Parameters<ProcessMessageHandler>): Promise<void> | void;
 
     public start(): void {
         this.cluster.worker.on(this.event, this.#execute);
@@ -28,7 +27,7 @@ export abstract class ClusterEventService<TEvent extends ContractKey<ClusterCont
         this.cluster.worker.off(this.event, this.#execute);
     }
 
-    private async _execute(...args: MasterMessageHandlers<ClusterContract>[TEvent]): Promise<void> {
+    private async _execute(...args: Parameters<ProcessMessageHandler>): Promise<void> {
         try {
             await this.execute(...args);
         } catch (err) {

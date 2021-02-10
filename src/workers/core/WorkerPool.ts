@@ -1,20 +1,17 @@
+import { EventEmitter, ListenerFn } from 'eventemitter3';
 import { getRange } from '../../newbu';
-import { WorkerContract, WorkerMessage } from './Contract';
-import { TypedEventEmitter } from './TypedEventEmitter';
+import { AnyProcessMessageHandler, ProcessMessageHandler } from './IPCEvents';
 import { WorkerConnection } from './WorkerConnection';
 
-interface WorkerPoolContract<TContract, TWorker> {
-    [type: string]: unknown[];
-    'spawningWorker': [id: number];
-    'spawnedworker': [id: number, worker: TWorker];
-    'message': [worker: TWorker, message: WorkerMessage<TContract>];
-    'killingworker': [worker: TWorker];
-    'killedworker': [worker: TWorker];
-}
+const workerAnyHandlers = new WeakMap<WorkerConnection, AnyProcessMessageHandler>();
 
-export abstract class WorkerPool<TContract extends WorkerContract, TWorker extends WorkerConnection<TContract>> extends TypedEventEmitter<WorkerPoolContract<TContract, TWorker>> {
+export type WorkerPoolEventHandler<TWorker extends WorkerConnection> = (worker: TWorker, ...args: Parameters<ProcessMessageHandler>) => void;
+
+export abstract class WorkerPool<TWorker extends WorkerConnection> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #workers: Map<number, TWorker>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #events: EventEmitter;
 
     public *[Symbol.iterator](): IterableIterator<TWorker | undefined> {
         for (let i = 0; i < this.workerCount; i++)
@@ -27,8 +24,29 @@ export abstract class WorkerPool<TContract extends WorkerContract, TWorker exten
         public readonly defaultTimeout: number,
         public readonly logger: CatLogger
     ) {
-        super();
         this.#workers = new Map();
+        this.#events = new EventEmitter();
+    }
+
+    public on(type: string, handler: (worker: TWorker) => void): this;
+    public on(type: string, handler: WorkerPoolEventHandler<TWorker>): this;
+    public on(type: string, handler: ListenerFn): this {
+        this.#events.on(type, handler);
+        return this;
+    }
+
+    public once(type: string, handler: (worker: TWorker) => void): this;
+    public once(type: string, handler: WorkerPoolEventHandler<TWorker>): this;
+    public once(type: string, handler: ListenerFn): this {
+        this.#events.once(type, handler);
+        return this;
+    }
+
+    public off(type: string, handler: (worker: TWorker) => void): this;
+    public off(type: string, handler: WorkerPoolEventHandler<TWorker>): this;
+    public off(type: string, handler: ListenerFn): this {
+        this.#events.off(type, handler);
+        return this;
     }
 
     public get(id: number): TWorker {
@@ -47,11 +65,15 @@ export abstract class WorkerPool<TContract extends WorkerContract, TWorker exten
             throw new Error(`${this.type} ${id} doesnt exist`);
 
         this.kill(id);
-        this.emit('spawningworker', id);
         const worker = this.createWorker(id);
+        this.#events.emit('spawningworker', worker);
+        const handler: AnyProcessMessageHandler = (type, ...args) =>
+            this.#events.emit(`worker:${type}`, worker, ...args);
+        workerAnyHandlers.set(worker, handler);
+        worker.onAny(handler);
         this.#workers.set(id, worker);
         await worker.connect(timeoutMS);
-        this.emit('spawnedworker', id, worker);
+        this.#events.emit('spawnedworker', worker);
         return worker;
     }
 
@@ -63,17 +85,27 @@ export abstract class WorkerPool<TContract extends WorkerContract, TWorker exten
             return;
 
         this.#workers.delete(id);
+        const handler = workerAnyHandlers.get(worker);
+        if (handler) {
+            worker.offAny(handler);
+            workerAnyHandlers.delete(worker);
+        }
 
         if (worker.connected) {
-            this.emit('killingworker', worker);
+            this.#events.emit('killingworker', worker);
             worker.kill();
-            this.emit('killedworker', worker);
+            this.#events.emit('killedworker', worker);
         }
     }
 
     public async spawnAll(timeoutMS = this.defaultTimeout): Promise<TWorker[]> {
         return await Promise.all(getRange(0, this.workerCount - 1)
             .map(id => this.spawn(id, timeoutMS)));
+    }
+
+    public killAll(): void {
+        for (let i = 0; i < this.workerCount; i++)
+            this.kill(i);
     }
 
     public forEach(callback: (id: number, worker: TWorker | undefined) => void): void;

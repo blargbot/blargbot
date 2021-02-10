@@ -1,8 +1,9 @@
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 import { Cluster } from '..';
-import { cpuLoad, snowflake } from '../../newbu';
+import { cpuLoad } from '../../newbu';
 import { IntervalService } from '../../structures/IntervalService';
+import { ClusterStats } from '../../workers/ClusterTypes';
 
 export class ClusterStatsInterval extends IntervalService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -16,7 +17,7 @@ export class ClusterStatsInterval extends IntervalService {
     }
 
     protected execute(): void | Promise<void> {
-        this.cluster.worker.send('clusterStats', snowflake.create(), {
+        this.cluster.worker.send('clusterStats', <ClusterStats>{
             id: this.cluster.id,
             time: Date.now().valueOf(),
             readyTime: this.cluster.createdAt.valueOf(),

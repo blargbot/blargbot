@@ -1,4 +1,4 @@
-import { ClusterModuleLoader } from '../core/ClusterModuleLoader';
+import { ModuleLoader } from '../core/ModuleLoader';
 import { ClusterUtilities } from './ClusterUtilities';
 import { BaseClient } from '../core/BaseClient';
 import { BaseDCommand } from '../structures/BaseDCommand';
@@ -23,13 +23,14 @@ export class Cluster extends BaseClient {
     public readonly id: number;
     public readonly createdAt: Moment;
     public readonly worker: ClusterWorker;
-    public readonly commands: ClusterModuleLoader<BaseDCommand>;
-    public readonly subtags: ClusterModuleLoader<BaseSubtagHandler>;
-    public readonly services: ClusterModuleLoader<BaseService>;
+    public readonly commands: ModuleLoader<BaseDCommand>;
+    public readonly subtags: ModuleLoader<BaseSubtagHandler>;
+    public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
     public readonly triggers: EventManager;
     public readonly bbtag: BBEngine;
     public readonly images: ImageConnection;
+    public readonly eventHandlers: ModuleLoader<BaseService>;
 
     public constructor(
         logger: CatLogger,
@@ -68,30 +69,37 @@ export class Cluster extends BaseClient {
         this.id = options.id;
         this.createdAt = moment();
         this.worker = options.worker;
-        this.commands = new ClusterModuleLoader('dcommands', this, BaseDCommand, c => [c.name, ...c.aliases]);
-        this.subtags = new ClusterModuleLoader('tags', this, BaseSubtagHandler, t => [t.name, ...t.aliases]);
-        this.services = new ClusterModuleLoader('cluster/services', this, BaseService, e => e.name);
+        this.commands = new ModuleLoader('dcommands', BaseDCommand, [this], this.logger, c => [c.name, ...c.aliases]);
+        this.subtags = new ModuleLoader('tags', BaseSubtagHandler, [this], this.logger, t => [t.name, ...t.aliases]);
+        this.eventHandlers = new ModuleLoader('cluster/events', BaseService, [this], this.logger, e => e.name);
+        this.services = new ModuleLoader('cluster/services', BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
         this.triggers = new EventManager(this);
         this.bbtag = new BBEngine(this);
         this.images = new ImageConnection(1, this.logger);
 
-        this.services.on('add', (module: BaseService) => module.start());
-        this.services.on('remove', (module: BaseService) => module.stop());
+        this.services.on('add', (module: BaseService) => void module.start());
+        this.services.on('remove', (module: BaseService) => void module.stop());
+        this.eventHandlers.on('add', (module: BaseService) => void module.start());
+        this.eventHandlers.on('remove', (module: BaseService) => void module.stop());
     }
 
     public async start(): Promise<void> {
+        await this.eventHandlers.init();
+        this.logger.init(this.moduleStats(this.eventHandlers, 'Events', ev => ev.type));
+
         await Promise.all([
             super.start(),
-            this.services.init(),
             this.commands.init(),
             this.subtags.init(),
             this.images.connect(20000)
         ]);
 
-        this.logger.init(moduleStats(this.services, 'Services', ev => ev.type));
-        this.logger.init(moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name));
-        this.logger.init(moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypes.properties[c].name));
+        this.logger.init(this.moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name));
+        this.logger.init(this.moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypes.properties[c].name));
+
+        await this.services.init();
+        this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
     }
 
     public async eval(author: string, text: string): Promise<{ success: boolean, result: unknown }> {
@@ -108,22 +116,4 @@ export class Cluster extends BaseClient {
             return { success: false, result: err };
         }
     }
-}
-
-function moduleStats<TModule, TKey extends string | number>(
-    loader: ClusterModuleLoader<TModule>,
-    type: string,
-    getKey: (module: TModule) => TKey,
-    friendlyKey: (key: TKey) => string = k => k.toString()
-): string {
-    const items = [...loader.list()];
-    const groups = new Map<TKey, number>();
-    const result = [];
-    for (const item of items) {
-        const key = getKey(item);
-        groups.set(key, (groups.get(key) || 0) + 1);
-    }
-    for (const [key, count] of groups)
-        result.push(`${friendlyKey(key)}: ${count}`);
-    return `${type}: ${items.length} [${result.join(' | ')}]`;
 }

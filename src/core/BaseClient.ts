@@ -4,6 +4,7 @@ import { RethinkDb } from './RethinkDb';
 import { Client as CassandraDb, auth as CassandraAuth } from 'cassandra-driver';
 import { Metrics } from './Metrics';
 import { BaseUtilities } from './BaseUtilities';
+import { BaseModuleLoader } from './BaseModuleLoader';
 
 export class BaseClient {
     public readonly metrics: Metrics;
@@ -60,5 +61,23 @@ export class BaseClient {
             this.cassandra.connect().then(() => this.logger.init('cassandra connected')),
             this.discord.connect().then(() => this.logger.init('discord connected'))
         ]);
+    }
+
+    protected moduleStats<TModule, TKey extends string | number>(
+        loader: BaseModuleLoader<TModule>,
+        type: string,
+        getKey: (module: TModule) => TKey,
+        friendlyKey: (key: TKey) => string = k => k.toString()
+    ): string {
+        const items = [...loader.list()];
+        const groups = new Map<TKey, number>();
+        const result = [];
+        for (const item of items) {
+            const key = getKey(item);
+            groups.set(key, (groups.get(key) || 0) + 1);
+        }
+        for (const [key, count] of groups)
+            result.push(`${friendlyKey(key)}: ${count}`);
+        return `${type}: ${items.length} [${result.join(' | ')}]`;
     }
 }

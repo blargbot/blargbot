@@ -1,7 +1,7 @@
 import { WorkerConnection } from './core/WorkerConnection';
-import { ClusterContract, ClusterStats } from './ClusterContract';
+import { ClusterStats } from './ClusterTypes';
 
-export class ClusterConnection extends WorkerConnection<ClusterContract> {
+export class ClusterConnection extends WorkerConnection {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #stats?: ClusterStats;
     public get stats(): ClusterStats | undefined { return this.#stats; }

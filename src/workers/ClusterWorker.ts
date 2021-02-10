@@ -1,8 +1,7 @@
 import { Cluster } from '../cluster';
 import { BaseWorker } from './core/BaseWorker';
-import { ClusterContract } from './ClusterContract';
 
-export class ClusterWorker extends BaseWorker<ClusterContract> {
+export class ClusterWorker extends BaseWorker {
     public readonly cluster: Cluster;
 
     public constructor(
@@ -24,7 +23,6 @@ export class ClusterWorker extends BaseWorker<ClusterContract> {
     }
 
     public async start(): Promise<void> {
-        this.installListeners();
         await this.cluster.start();
         super.start();
     }

@@ -1,21 +1,6 @@
-import { Shard, User } from 'eris';
-import { metric } from 'prom-client';
+import { Shard } from 'eris';
 import { SubtagType, CommandType, FlagDefinition } from '../newbu';
 import { SubtagArgument } from '../structures/BaseSubtagHandler';
-import { WorkerContract } from './core/Contract';
-
-export interface ClusterContract extends WorkerContract {
-    'respawn': [{ id: number, channel: string }, never];
-    'killshard': [never, number];
-    'metrics': [metric[], unknown];
-    'lookupChannel': [LookupChannelResult | null, string];
-    'retrieveUser': [User | null, string];
-    'getStaffGuilds': [string[], { user: string, guilds: string[] }];
-    'tagList': [TagListResult, unknown];
-    'commandList': [CommandListResult, unknown];
-    'clusterStats': [ClusterStats, never];
-}
-
 
 export interface LookupChannelResult {
     channel: string;

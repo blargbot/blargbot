@@ -1,6 +1,6 @@
 import { Message } from 'eris';
 import { Cluster } from '../cluster';
-import { commandTypes, humanize, snowflake } from '../newbu';
+import { commandTypes, humanize } from '../newbu';
 import { BaseDCommand } from '../structures/BaseDCommand';
 
 export class RespawnCommand extends BaseDCommand {
@@ -25,7 +25,7 @@ export class RespawnCommand extends BaseDCommand {
             return void await this.send(msg, 'that wasn\'t even a number pls');
 
         await this.send(this.config.discord.channels.shardlog, `**${humanize.fullName(msg.author)}** has called for a respawn of cluster ${id}.`);
-        this.cluster.worker.send('respawn', snowflake.create(), { id, channel: msg.channel.id });
+        this.cluster.worker.send('respawn', { id, channel: msg.channel.id });
         await this.send(msg, `ok cluster ${id} is being respawned and stuff now`);
     }
 }

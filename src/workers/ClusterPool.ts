@@ -1,12 +1,11 @@
 import { ClusterConnection } from './ClusterConnection';
-import { ClusterContract } from './ClusterContract';
 import { WorkerPool } from './core/WorkerPool';
 
 export interface ClusterPoolOptions {
     worker?: string;
 }
 
-export class ClusterPool extends WorkerPool<ClusterContract, ClusterConnection> {
+export class ClusterPool extends WorkerPool<ClusterConnection> {
     public constructor(
         public readonly config: Configuration['shards'],
         logger: CatLogger

@@ -1,16 +1,17 @@
 import { ClusterEventService } from '../../structures/ClusterEventService';
-import { CommandListResult } from '../../workers/ClusterContract';
+import { CommandListResult } from '../../workers/ClusterTypes';
+import { ProcessMessageHandler } from '../../workers/core/IPCEvents';
 import { Cluster } from '../Cluster';
 
 
-export class CommandListHandler extends ClusterEventService<'commandList'> {
+export class CommandListHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster
     ) {
         super(cluster, 'commandList');
     }
 
-    protected execute(_: unknown, reply: (data: CommandListResult) => void): void {
+    protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
         const commands: CommandListResult = {};
         for (const c of this.cluster.commands.list()) {
             if (c.isCommand && !c.hidden) {

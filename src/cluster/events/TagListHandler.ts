@@ -1,16 +1,17 @@
 import { ClusterEventService } from '../../structures/ClusterEventService';
-import { TagListResult } from '../../workers/ClusterContract';
+import { TagListResult } from '../../workers/ClusterTypes';
+import { ProcessMessageHandler } from '../../workers/core/IPCEvents';
 import { Cluster } from '../Cluster';
 
 
-export class TagListHandler extends ClusterEventService<'tagList'> {
+export class TagListHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster
     ) {
         super(cluster, 'tagList');
     }
 
-    protected execute(_: unknown, reply: (data: TagListResult) => void): void {
+    protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
         const tags: TagListResult = {};
         for (const t of this.cluster.subtags.list()) {
             if (t.isTag) {
