@@ -47,7 +47,7 @@
         "nuxt": "^1.4.2",
         "passport": "^0.3.2",
         "passport-discord": "^0.1.1",
-        "pg": "^7.5.0",
+        "pg": "^8.5.0",
         "phantom": "^4.0.12",
         "prom-client": "github:ratismal/prom-client",
         "request": "^2.88.0",
