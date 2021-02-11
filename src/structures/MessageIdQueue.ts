@@ -1,26 +1,23 @@
+import { RollingArray } from './RollingArray';
 
 export class MessageIdQueue {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #messageQueue: Map<string, string[]>;
+    readonly #messageQueue: Record<string, RollingArray<string> | undefined>;
 
     public constructor(
         public readonly maxSize: number = 100
     ) {
-        this.#messageQueue = new Map();
+        this.#messageQueue = {};
     }
 
     public push(guildId: string, messageId: string): void {
-        let messageQueue = this.#messageQueue.get(guildId);
-        if (!messageQueue)
-            this.#messageQueue.set(guildId, messageQueue = []);
-
+        const messageQueue = this.#messageQueue[guildId] ??= new RollingArray(this.maxSize);
         messageQueue.push(messageId);
-        while (messageQueue.length > this.maxSize)
-            messageQueue.shift();
     }
 
     public has(guildId: string, messageId: string): boolean {
-        return this.#messageQueue.get(guildId)?.includes(messageId)
+        return this.#messageQueue[guildId]?.includes(messageId)
             ?? false;
     }
 }
+

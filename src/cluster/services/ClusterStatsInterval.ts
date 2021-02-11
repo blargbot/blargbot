@@ -6,6 +6,7 @@ import { IntervalService } from '../../structures/IntervalService';
 import { ClusterStats } from '../../workers/ClusterTypes';
 
 export class ClusterStatsInterval extends IntervalService {
+    public readonly type = 'cluster';
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #lastReady: Map<number, Moment>;
 

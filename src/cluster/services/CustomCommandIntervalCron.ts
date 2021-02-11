@@ -5,6 +5,7 @@ import { CronService } from '../../structures/CronService';
 import { Cluster } from '../Cluster';
 
 export class CustomCommandIntervalCron extends CronService {
+    public readonly type = 'bbtag';
     public constructor(
         public readonly cluster: Cluster
     ) {

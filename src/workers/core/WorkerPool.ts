@@ -1,9 +1,7 @@
-import { EventEmitter, ListenerFn } from 'eventemitter3';
+import { EventEmitter } from 'eventemitter3';
 import { getRange } from '../../newbu';
-import { AnyProcessMessageHandler, ProcessMessageHandler } from './IPCEvents';
+import { ProcessMessageHandler } from './IPCEvents';
 import { WorkerConnection } from './WorkerConnection';
-
-const workerAnyHandlers = new WeakMap<WorkerConnection, AnyProcessMessageHandler>();
 
 export type WorkerPoolEventHandler<TWorker extends WorkerConnection> = (worker: TWorker, ...args: Parameters<ProcessMessageHandler>) => void;
 
@@ -28,23 +26,17 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
         this.#events = new EventEmitter();
     }
 
-    public on(type: string, handler: (worker: TWorker) => void): this;
-    public on(type: string, handler: WorkerPoolEventHandler<TWorker>): this;
-    public on(type: string, handler: ListenerFn): this {
+    public on(type: string, handler: (worker: TWorker) => void): this {
         this.#events.on(type, handler);
         return this;
     }
 
-    public once(type: string, handler: (worker: TWorker) => void): this;
-    public once(type: string, handler: WorkerPoolEventHandler<TWorker>): this;
-    public once(type: string, handler: ListenerFn): this {
+    public once(type: string, handler: (worker: TWorker) => void): this {
         this.#events.once(type, handler);
         return this;
     }
 
-    public off(type: string, handler: (worker: TWorker) => void): this;
-    public off(type: string, handler: WorkerPoolEventHandler<TWorker>): this;
-    public off(type: string, handler: ListenerFn): this {
+    public off(type: string, handler: (worker: TWorker) => void): this {
         this.#events.off(type, handler);
         return this;
     }
@@ -67,10 +59,6 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
         this.kill(id);
         const worker = this.createWorker(id);
         this.#events.emit('spawningworker', worker);
-        const handler: AnyProcessMessageHandler = (type, ...args) =>
-            this.#events.emit(`worker:${type}`, worker, ...args);
-        workerAnyHandlers.set(worker, handler);
-        worker.onAny(handler);
         this.#workers.set(id, worker);
         await worker.connect(timeoutMS);
         this.#events.emit('spawnedworker', worker);
@@ -85,11 +73,6 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
             return;
 
         this.#workers.delete(id);
-        const handler = workerAnyHandlers.get(worker);
-        if (handler) {
-            worker.offAny(handler);
-            workerAnyHandlers.delete(worker);
-        }
 
         if (worker.connected) {
             this.#events.emit('killingworker', worker);
