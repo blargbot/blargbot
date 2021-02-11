@@ -3,10 +3,9 @@ import { WorkerPoolEventService } from '../../structures/WorkerPoolEventService'
 import { ClusterConnection } from '../../workers/ClusterConnection';
 import { Master } from '../Master';
 import stripAnsi from 'strip-ansi';
+import { LogEntry } from '../../workers/core/BaseWorker';
 
-export type LogEntry = { text: string; level: string; timestamp: string; }
-
-export class ClusterLog extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterLogTracker extends WorkerPoolEventService<ClusterConnection> {
     private readonly logs: { [workerId: number]: RollingArray<LogEntry> | undefined };
 
     public constructor(
@@ -24,3 +23,4 @@ export class ClusterLog extends WorkerPoolEventService<ClusterConnection> {
         this.get(worker.id).push({ level, timestamp, text: stripAnsi(text) });
     }
 }
+

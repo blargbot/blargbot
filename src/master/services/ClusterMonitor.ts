@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { IntervalService } from '../../structures/IntervalService';
 import { ClusterConnection } from '../../workers/ClusterConnection';
+import { ClusterStatsTracker } from '../events/ClusterStatsTracker';
 import { Master } from '../Master';
 
 export class ClusterMonitor extends IntervalService {
@@ -18,12 +19,14 @@ export class ClusterMonitor extends IntervalService {
                 cluster ? this.execute(cluster) : undefined);
         }
 
+        const statsTracker = this.master.eventHandlers.get(ClusterStatsTracker.name, ClusterStatsTracker);
+        const stats = statsTracker?.get(cluster.id);
         const now = moment();
         const cutoff = moment().add(-1, 'minute');
         const alerts = [];
 
-        if (cluster.stats) {
-            for (const shard of cluster.stats?.shards) {
+        if (stats) {
+            for (const shard of stats.shards) {
                 if (cutoff.isAfter(shard.time)) {
                     const diff = moment.duration(now.diff(shard.time));
                     alerts.push(`⏰ shard ${shard.id} unresponsive for ${diff.asSeconds()} seconds`);
@@ -37,6 +40,7 @@ export class ClusterMonitor extends IntervalService {
         if (alerts.length === 0)
             return;
 
+        statsTracker?.clear(cluster.id);
         await this.master.discord.createMessage(this.master.config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n${alerts.join('\n')}`);
         await this.master.clusters.spawn(cluster.id);
     }

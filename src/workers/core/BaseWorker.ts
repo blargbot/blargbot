@@ -1,5 +1,7 @@
 import { IPCEvents } from './IPCEvents';
 
+export type LogEntry = { text: string; level: string; timestamp: string; }
+
 export abstract class BaseWorker extends IPCEvents {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #process: NodeJS.Process;
@@ -17,7 +19,7 @@ export abstract class BaseWorker extends IPCEvents {
         this.#process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise' + JSON.stringify(err)));
 
-        this.logger.addPostHook(({ text, level, timestamp }) => {
+        this.logger.addPostHook(({ text, level, timestamp }: LogEntry) => {
             this.send('log', { text, level, timestamp });
             return null;
         });

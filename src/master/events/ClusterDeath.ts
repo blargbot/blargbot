@@ -3,7 +3,7 @@ import { codeBlock } from '../../newbu';
 import { WorkerPoolEventService } from '../../structures/WorkerPoolEventService';
 import { ClusterConnection } from '../../workers/ClusterConnection';
 import { Master } from '../Master';
-import { ClusterLog } from './ClusterLog';
+import { ClusterLogTracker } from './ClusterLogTracker';
 
 export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
     public constructor(
@@ -13,8 +13,8 @@ export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
     }
 
     protected async execute(worker: ClusterConnection): Promise<void> {
-        const logTracker = this.master.eventHandlers.get(ClusterLog.name);
-        if (logTracker !== undefined && logTracker instanceof ClusterLog) {
+        const logTracker = this.master.eventHandlers.get(ClusterLogTracker.name, ClusterLogTracker);
+        if (logTracker) {
             const logs = logTracker.get(worker.id);
             const logString = logs.slice(Math.max(logs.length - 5, 0))
                 .map(m => `[${m.timestamp}][${m.level}] ${m.text}`)
