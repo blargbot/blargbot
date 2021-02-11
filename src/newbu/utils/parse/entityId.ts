@@ -1,8 +1,8 @@
-export function entityId(text: string, identifier: string, allowJustId = false): string | null {
+export function entityId(text: string, identifier = '', allowJustId = !identifier): string | null {
     if (typeof text != 'string')
         return null;
 
-    const regex = new RegExp('\\<' + identifier + '(\\d{17,23})\\>');
+    let regex = new RegExp(`\\<${identifier}(\\d{17,23})\\>`);
     let match = regex.exec(text);
     if (match != null)
         return match[1];
@@ -10,9 +10,10 @@ export function entityId(text: string, identifier: string, allowJustId = false):
     if (!allowJustId)
         return null;
 
-    match = /\d{17,23}/.exec(text);
+    regex = new RegExp(`${identifier}(\\d{17,23})`);
+    match = regex.exec(text);
     if (match != null)
-        return match[0];
+        return match[1];
 
     return null;
 }

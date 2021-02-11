@@ -31,6 +31,7 @@ export abstract class WorkerConnection extends IPCEvents {
         this.file = require.resolve(`../../entrypoint/${this.worker}`);
         this.#killed = false;
         this.on('alive', () => this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive`));
+        this.on('error', err => this.logger.error(`${this.worker} worker (ID: ${this.id}) error: `, err));
     }
 
     public async connect(timeoutMS: number): Promise<unknown> {
