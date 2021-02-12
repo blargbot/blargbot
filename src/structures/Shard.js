@@ -8,6 +8,7 @@ class Shard extends Sender {
         this.manager = manager;
         this.file = file || this.manager.file;
         this.respawn = true;
+        this.ready = false;
 
         let firstShard = Math.min(this.manager.max - 1, this.manager.shardsPerCluster * this.id);
         let lastShard = Math.min(this.manager.max - 1,
