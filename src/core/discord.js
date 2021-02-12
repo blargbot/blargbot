@@ -478,7 +478,7 @@ let shardStatusInterval = setInterval(async () => {
     bot.sender.send('shardStats', {
         id: clusterId,
         time: Date.now(),
-        readyTime: bot.startTime,
+        readyTime: bu.startTime.valueOf(),
         guilds: bot.guilds.size,
         rss: mem.rss,
         ...getCPU(),

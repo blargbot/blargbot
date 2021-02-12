@@ -34,23 +34,22 @@ class Spawner extends EventEmitter {
                 for (const shard of cluster.shards) {
                     bu.Metrics.shardStatus.labels(shard.status).inc();
                 }
-                if (cluster.respawning) {
+                const shard = this.shards.get(cluster.id);
+                if (!shard || !shard.ready) {
                     continue;
                 }
 
                 // Do we still need a check for the whole cluster being down if we respawn on shards being down instead?
                 let diff = moment.duration(moment() - cluster.time);
                 if (diff.asMilliseconds() > 60000) {
-                    cluster.respawning = true;
                     await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n⏰ Unresponsive for ${diff.asSeconds()} seconds`);
                     this.respawnShard(parseInt(cluster.id), true);
                 }
 
                 let downShards = cluster.shards
-                    .map(s => ({ diff: moment.duration(moment() - s.time), id: s.id }))
+                    .map(s => ({ diff: moment.duration(moment() - (s.time || cluster.readyTime)), id: s.id }))
                     .filter(s => s.diff.asMilliseconds() > 60000);
                 if (downShards.length > 0) {
-                    cluster.respawning = true;
                     let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n')
                     await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
                     this.respawnShard(parseInt(cluster.id), true);
@@ -86,6 +85,9 @@ class Spawner extends EventEmitter {
                     .map(m => `[${m.timestamp}][${m.level}] ${m.text}`);
                 logs = `\n\nLast 5 console outputs:\n\`\`\`md\n${consoleLines.join('\n')}\n\`\`\` `;
             }
+            let oldShard = this.shards.get(id);
+            if (oldShard)
+                oldShard.ready = false;
             let shard = await this.spawn(id, false);
             shard.on('shardReady', async (data) => {
                 if (this.shards.get(id) !== undefined) {
@@ -133,6 +135,10 @@ class Spawner extends EventEmitter {
             }
             shard.once('threadReady', () => {
                 resolve(shard);
+            });
+            shard.once('ready', () => {
+                delete this.shardCache[shard.id];
+                shard.ready = true;
             });
         });
     }
