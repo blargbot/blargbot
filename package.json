@@ -97,9 +97,9 @@
         "start": "node index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "check": "eslint \"**/*.ts\" && tsc --noemit",
-        "build": "eslint \"**/*.ts\" && tsc",
+        "build": "tsc",
+        "build:watch": "tsc -w",
         "lint": "eslint \"**/*.ts\"",
-        "lint-out": "eslint \"**/*.ts\" -o ./lint.txt -f compact",
         "lint-fix": "eslint \"**/*.ts\" --fix"
     },
     "repository": {

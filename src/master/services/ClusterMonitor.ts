@@ -1,6 +1,7 @@
 import moment from 'moment';
 import { IntervalService } from '../../structures/IntervalService';
 import { ClusterConnection } from '../../workers/ClusterConnection';
+import { WorkerState } from '../../workers/core/WorkerConnection';
 import { ClusterStatsTracker } from '../events/ClusterStatsTracker';
 import { Master } from '../Master';
 
@@ -18,6 +19,9 @@ export class ClusterMonitor extends IntervalService {
             return this.master.clusters.forEach((_, cluster) =>
                 cluster ? this.execute(cluster) : undefined);
         }
+
+        if (cluster.state !== WorkerState.RUNNING)
+            return;
 
         const statsTracker = this.master.eventHandlers.get(ClusterStatsTracker.name, ClusterStatsTracker);
         const stats = statsTracker?.get(cluster.id);

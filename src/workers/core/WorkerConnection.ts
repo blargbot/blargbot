@@ -5,14 +5,28 @@ import moment from 'moment';
 import { IPCEvents } from './IPCEvents';
 import { snowflake } from '../../newbu';
 
+export const enum WorkerState {
+    READY,
+    RUNNING,
+    KILLED,
+    EXITED
+}
+
 export abstract class WorkerConnection extends IPCEvents {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #process?: ChildProcess;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #killed: boolean;
 
-    public get killed(): boolean { return this.#killed; }
-    public get connected(): boolean { return this.#process?.connected ?? false; }
+    public get state(): WorkerState {
+        if (this.#process === undefined)
+            return WorkerState.READY;
+        if (this.#process.connected)
+            return WorkerState.RUNNING;
+        if (this.#killed)
+            return WorkerState.KILLED;
+        return WorkerState.EXITED;
+    }
 
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
@@ -82,8 +96,8 @@ export abstract class WorkerConnection extends IPCEvents {
         if (this.#process === undefined || !this.#process.connected)
             throw new Error('The child process is not connected');
 
-        this.#killed = true;
         this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id})`);
         this.#process.kill(code);
+        this.#killed = true;
     }
 }

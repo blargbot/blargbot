@@ -1,7 +1,7 @@
 import { EventEmitter } from 'eventemitter3';
 import { getRange } from '../../newbu';
 import { ProcessMessageHandler } from './IPCEvents';
-import { WorkerConnection } from './WorkerConnection';
+import { WorkerConnection, WorkerState } from './WorkerConnection';
 
 export type WorkerPoolEventHandler<TWorker extends WorkerConnection> = (worker: TWorker, ...args: Parameters<ProcessMessageHandler>) => void;
 
@@ -56,11 +56,18 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
         if (id >= this.workerCount)
             throw new Error(`${this.type} ${id} doesnt exist`);
 
-        this.kill(id);
+        const oldWorker = this.#workers.get(id);
+        this.#workers.delete(id);
+        if (oldWorker)
+            this.#events.emit('killingworker', oldWorker);
         const worker = this.createWorker(id);
         this.#events.emit('spawningworker', worker);
-        this.#workers.set(id, worker);
         await worker.connect(timeoutMS);
+        this.#workers.set(id, worker);
+        if (oldWorker?.state === WorkerState.RUNNING)
+            oldWorker.kill();
+        if (oldWorker)
+            this.#events.emit('killedworker', worker);
         this.#events.emit('spawnedworker', worker);
         return worker;
     }
@@ -74,11 +81,10 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
 
         this.#workers.delete(id);
 
-        if (worker.connected) {
-            this.#events.emit('killingworker', worker);
+        this.#events.emit('killingworker', worker);
+        if (worker.state === WorkerState.RUNNING)
             worker.kill();
-            this.#events.emit('killedworker', worker);
-        }
+        this.#events.emit('killedworker', worker);
     }
 
     public async spawnAll(timeoutMS = this.defaultTimeout): Promise<TWorker[]> {

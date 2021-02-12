@@ -10,8 +10,9 @@ export class ClusterSpawner extends BaseService {
         super();
     }
 
-    public start(): void {
-        void this.master.clusters.spawnAll();
+    public async start(): Promise<void> {
+        await this.master.clusters.spawnAll();
+        this.master.logger.info('All clusters are spawned!');
     }
 
     public stop(): void {

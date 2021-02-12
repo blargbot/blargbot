@@ -2,6 +2,7 @@ import moment from 'moment';
 import { codeBlock } from '../../newbu';
 import { WorkerPoolEventService } from '../../structures/WorkerPoolEventService';
 import { ClusterConnection } from '../../workers/ClusterConnection';
+import { WorkerState } from '../../workers/core/WorkerConnection';
 import { Master } from '../Master';
 import { ClusterLogTracker } from './ClusterLogTracker';
 
@@ -13,6 +14,8 @@ export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
     }
 
     protected async execute(worker: ClusterConnection): Promise<void> {
+        if (worker.state !== WorkerState.RUNNING)
+            return;
         const logTracker = this.master.eventHandlers.get(ClusterLogTracker.name, ClusterLogTracker);
         if (logTracker) {
             const logs = logTracker.get(worker.id);
