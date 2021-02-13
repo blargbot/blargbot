@@ -46,14 +46,14 @@ class Spawner extends EventEmitter {
                     this.respawnShard(parseInt(cluster.id), true);
                 }
 
-                let downShards = cluster.shards
-                    .map(s => ({ diff: moment.duration(moment() - (s.time || cluster.readyTime)), id: s.id }))
-                    .filter(s => s.diff.asMilliseconds() > 60000);
-                if (downShards.length > 0) {
-                    let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n')
-                    await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
-                    this.respawnShard(parseInt(cluster.id), true);
-                }
+                // let downShards = cluster.shards
+                //     .map(s => ({ diff: moment.duration(moment() - (s.time || cluster.readyTime)), id: s.id }))
+                //     .filter(s => s.diff.asMilliseconds() > 60000);
+                // if (downShards.length > 0) {
+                //     let shardsText = downShards.map(s => `⏰ shard ${s.id} unresponsive for ${s.diff.asSeconds()} seconds`).join('\n')
+                //     await this.client.discord.createMessage('398946258854871052', `Respawning unresponsive cluster ${cluster.id}...\n${shardsText}`);
+                //     this.respawnShard(parseInt(cluster.id), true);
+                // }
             }
         }, 10000);
         this.metricCache = {};

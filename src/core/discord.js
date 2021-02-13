@@ -409,12 +409,12 @@ process.on('message', async msg => {
             });
             break;
         case 'killShard':
-            let { id } = data;
-            console.shardi('Killing shard', id, 'without a reconnect.');
+            let { id, reconnect } = data;
+            console.shardi('Killing shard', id, (reconnect ? 'with' : 'without'), 'a reconnect.');
             let shard = bot.shards.find(s => s.id === id);
             if (shard)
                 shard.disconnect({
-                    reconnect: false
+                    reconnect: !!reconnect
                 });
     }
 });
@@ -462,7 +462,7 @@ var lastReady = {};
 
 /**
  * @returns {number | undefined}
- * @param {string} shard 
+ * @param {string} shard
  */
 function getLastReady(shard) {
     if (shard.status == 'ready')
