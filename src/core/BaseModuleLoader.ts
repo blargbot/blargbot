@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import { EventEmitter } from 'eventemitter3';
 import { MultiKeyMap } from '../structures/MultiKeyMap';
 import reloadFactory from 'require-reload';
-import { guard } from '../newbu';
+import { guard } from '../utils';
 
 const reload = reloadFactory(require);
 

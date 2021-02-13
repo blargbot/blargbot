@@ -1,4 +1,4 @@
-import { SubtagArgumentKind as Kind } from '../newbu';
+import { SubtagArgumentKind as Kind } from '../utils';
 import { SubtagArgument as Arg, SubtagArgumentType as Type } from './BaseSubtagHandler';
 
 export const argBuilder = {

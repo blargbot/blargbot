@@ -1,6 +1,6 @@
 import pg from 'pg';
 import sequelize, { Options as SequelizeOptions } from 'sequelize';
-import { sleep } from '../newbu';
+import { sleep } from '../utils';
 import * as models from './models';
 import { BaseModel } from './models/Base';
 

@@ -3,7 +3,7 @@ import { Timer } from '../../structures/Timer';
 import { Moment } from 'moment-timezone';
 import moment from 'moment';
 import { IPCEvents } from './IPCEvents';
-import { snowflake } from '../../newbu';
+import { snowflake } from '../../utils';
 
 export const enum WorkerState {
     READY,

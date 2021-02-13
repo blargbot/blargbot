@@ -1,12 +1,13 @@
 import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, Collection, EmbedOptions, ExtendedUser, Guild, Member, Message, MessageFile, Shard, User } from 'eris';
 import { BaseClient } from './BaseClient';
-import { snowflake } from '../newbu';
+import { snowflake } from '../utils';
 import { Error } from 'sequelize';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
 import { RethinkDb } from './RethinkDb';
 import { Client as CassandraDb } from 'cassandra-driver';
 import { PostgresDb } from './PostgresDb';
 import { Metrics } from './Metrics';
+import request from 'request';
 
 export type SendContext = Message | AnyChannel | string
 export type SendEmbed = EmbedOptions & { asString?: string }
@@ -158,7 +159,25 @@ export class BaseUtilities {
         }
     }
 
-    public async sendDM(context: Message | User | Member | string, message: SendPayload, files?: SendFiles): Promise<void> {
+    public async sendFile(context: SendContext, payload: SendPayload, fileUrl: string): Promise<Message | null> {
+        const i = fileUrl.lastIndexOf('/');
+        if (i === -1)
+            return null;
+
+        const filename = fileUrl.substring(i + 1, fileUrl.length);
+        try {
+            const response = await new Promise<string | Buffer>((res, rej) => request({ uri: fileUrl, encoding: null }, (err, _, bod) => err ? rej(err) : res(bod)));
+            return await this.send(context, payload, {
+                name: filename,
+                file: response
+            });
+        } catch (err) {
+            this.logger.error(err);
+            return null;
+        }
+    }
+
+    public async sendDM(context: Message | User | Member | string, message: SendPayload, files?: SendFiles): Promise<Message | null> {
         let userid: string;
         switch (typeof context) {
             case 'string': userid = context; break;
@@ -172,7 +191,7 @@ export class BaseUtilities {
         }
 
         const privateChannel = await this.discord.getDMChannel(userid);
-        await this.send(privateChannel, message, files);
+        return await this.send(privateChannel, message, files);
     }
 
     public async generateOutputPage(payload: SendPayload, channel?: Channel): Promise<Snowflake> {

@@ -1,7 +1,7 @@
 import { GuildTextableChannel, Member, Message, TextableChannel, TextChannel } from 'eris';
 import { Timer } from '../../structures/Timer';
 import request from 'request';
-import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../../newbu';
+import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../../utils';
 import { Cluster } from '..';
 import { StoredGuildCommand, StoredGuild } from '../../core/RethinkDb';
 import { BaseDCommand } from '../../structures/BaseDCommand';

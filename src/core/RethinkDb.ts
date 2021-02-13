@@ -1,5 +1,5 @@
 import * as r from 'rethinkdb';
-import { FlagDefinition } from '../newbu';
+import { FlagDefinition } from '../utils';
 
 export interface StoredVar<T extends string> {
     varname: T;
@@ -76,15 +76,17 @@ export interface StoredGuild {
     guildid: string;
     active: boolean;
     name: string;
-    settings?: GuildSettings;
-    channels?: { [channelId: string]: ChannelSettings | undefined };
-    ccommands?: { [key: string]: StoredGuildCommand | undefined };
+    settings: GuildSettings;
+    channels: { [channelId: string]: ChannelSettings | undefined };
+    ccommands: { [key: string]: StoredGuildCommand | undefined };
     commandperms?: { [key: string]: CommandPermissions | undefined };
     censor?: GuildCensors;
     warnings?: GuildWarnings;
     modlog?: GuildModlogEntry[];
     roleme?: GuildRolemeEntry[];
     autoresponse?: GuildAutoresponses;
+    log?: Record<string, string>;
+    logIgnore?: unknown[];
 }
 
 export interface GuildAutoresponses {
@@ -115,9 +117,9 @@ export interface GuildWarnings {
 }
 
 export interface GuildCensors {
-    list?: GuildCensor[]
-    exception?: GuildCensorExceptions;
-    rule?: GuildCensorRule;
+    list: GuildCensor[]
+    exception: GuildCensorExceptions;
+    rule: GuildCensorRule;
 }
 
 export interface GuildCensorRule {
@@ -134,9 +136,9 @@ export interface GuildCensor extends GuildCensorRule {
 }
 
 export interface GuildCensorExceptions {
-    channel?: string | string[];
-    user?: string | string[];
-    role?: string | string[];
+    channel: string | string[];
+    user: string | string[];
+    role: string | string[];
 }
 
 export interface StoredGuildCommand {
@@ -162,7 +164,7 @@ export interface CommandPermissions {
 export interface StoredTag {
     content: string;
     author?: string;
-    uses?: number;
+    uses: number;
     flags?: FlagDefinition[]
     cooldown?: number;
 }
@@ -206,7 +208,7 @@ export interface StoredUser {
     dontdmerrors?: boolean;
     prefixes?: string[];
     username?: string;
-    usernames?: StoredUsername[];
+    usernames: StoredUsername[];
     discriminator?: string;
     avatarURL?: string;
     blacklisted?: boolean;
@@ -295,7 +297,9 @@ export class RethinkDb {
             try {
                 yield <T>await cursor.next();
             } catch (err) {
-                break;
+                if (err && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
+                    break;
+                throw err;
             }
         }
     }
@@ -329,5 +333,9 @@ export class RethinkDb {
             this.#connection = undefined;
             this.#connectionPromise = undefined;
         }
+    }
+
+    public epochTime(time: number): r.Expression<r.Time> {
+        return r.epochTime(time);
     }
 }

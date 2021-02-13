@@ -1,8 +1,8 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster } from '../cluster';
-import { SubtagArgumentKind, SubtagType } from '../newbu';
+import { SubtagArgumentKind, SubtagType } from '../utils';
 export { argBuilder as arg } from '../structures/ArgumentFactory';
-export { SubtagType as Type } from '../newbu';
+export { SubtagType as Type } from '../utils';
 
 export interface SubtagArgument {
     content: Array<string | SubtagArgument>;

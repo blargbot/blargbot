@@ -1,5 +1,5 @@
 import { EventEmitter } from 'eventemitter3';
-import { getRange } from '../../newbu';
+import { getRange } from '../../utils';
 import { ProcessMessageHandler } from './IPCEvents';
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 

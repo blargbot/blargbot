@@ -1,6 +1,6 @@
 import { Message } from 'eris';
 import { Cluster } from '../cluster';
-import { codeBlock, commandTypes } from '../newbu';
+import { codeBlock, commandTypes } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
 
 export class EvalCommand extends BaseDCommand {

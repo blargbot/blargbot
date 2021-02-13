@@ -1,5 +1,5 @@
 import { BaseImageGenerator } from '../structures/BaseImageGenerator';
-import { randInt } from '../newbu';
+import { randInt } from '../utils';
 import { JimpGifEncoder } from '../structures/JimpGifEncoder';
 import Jimp from 'jimp';
 

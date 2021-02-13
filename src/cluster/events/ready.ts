@@ -1,5 +1,5 @@
 import moment from 'moment-timezone';
-import { humanize } from '../../newbu';
+import { humanize } from '../../utils';
 import { Cluster } from '..';
 import { StoredGuild } from '../../core/RethinkDb';
 import { DiscordEventService } from '../../structures/DiscordEventService';

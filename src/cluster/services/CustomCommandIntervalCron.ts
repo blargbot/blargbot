@@ -1,6 +1,6 @@
 import { GuildTextableChannel } from 'eris';
 import { StoredGuild } from '../../core/RethinkDb';
-import { guard, sleep } from '../../newbu';
+import { guard, sleep } from '../../utils';
 import { CronService } from '../../structures/CronService';
 import { Cluster } from '../Cluster';
 

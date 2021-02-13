@@ -9,7 +9,11 @@ declare module 'rethinkdb' {
     }
 
     interface WriteChange {
-        new_val?: unknown;
-        old_val?: unknown;
+        new_val?: any;
+        old_val?: any;
+    }
+
+    interface Sequence {
+        changes(opts?: Partial<ChangesOptions>): Sequence
     }
 }

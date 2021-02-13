@@ -4,7 +4,7 @@ import fs from 'fs';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
 import { Cluster } from '../cluster';
-import { commandTypes, parse } from '../newbu';
+import { commandTypes, parse } from '../utils';
 import { Message } from 'eris';
 
 export class EmojiCommand extends BaseDCommand {

@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 import { Cluster } from '..';
-import { cpuLoad } from '../../newbu';
+import { cpuLoad } from '../../utils';
 import { IntervalService } from '../../structures/IntervalService';
 import { ClusterStats } from '../../workers/ClusterTypes';
 

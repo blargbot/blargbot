@@ -1,6 +1,6 @@
 import { Message } from 'eris';
 import { Cluster } from '../cluster';
-import { commandTypes, humanize } from '../newbu';
+import { commandTypes, humanize } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
 
 export class RespawnCommand extends BaseDCommand {

@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { EventEmitter } from 'eventemitter3';
 import { ChildProcess } from 'child_process';
-import { snowflake } from '../../newbu';
+import { snowflake } from '../../utils';
 
 export type ProcessMessage = { type: string, id: Snowflake, data: unknown };
 export type ProcessMessageHandler = (data: any, id: Snowflake, reply: (data: any) => void) => void;

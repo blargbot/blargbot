@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { codeBlock } from '../../newbu';
+import { codeBlock } from '../../utils';
 import { WorkerPoolEventService } from '../../structures/WorkerPoolEventService';
 import { ClusterConnection } from '../../workers/ClusterConnection';
 import { WorkerState } from '../../workers/core/WorkerConnection';

@@ -1,6 +1,6 @@
 import { Member, TextableChannel, User } from 'eris';
 import { Cluster } from '../cluster';
-import { FlagDefinition } from '../newbu';
+import { FlagDefinition } from '../utils';
 
 export interface MessageLike {
     channel: TextableChannel;

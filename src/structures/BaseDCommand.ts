@@ -2,7 +2,7 @@ import { Client as ErisClient, Message } from 'eris';
 import { Cluster } from '../cluster';
 import { ClusterUtilities } from '../cluster/ClusterUtilities';
 import { SendContext, SendPayload, SendFiles } from '../core/BaseUtilities';
-import { CommandType, FlagDefinition } from '../newbu';
+import { CommandType, FlagDefinition } from '../utils';
 
 export interface DCommandOptions {
     aliases?: string[];

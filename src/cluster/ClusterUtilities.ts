@@ -2,9 +2,9 @@ import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
 import { GuildSettings, StoredGuildCommand, StoredGuild, StoredUser } from '../core/RethinkDb';
-import { AnyChannel, GuildTextableChannel, Member, Message, Permission, Textable, TextableChannel, User } from 'eris';
+import { AnyChannel, Guild, GuildTextableChannel, Member, Message, Permission, Role, Textable, TextableChannel, User } from 'eris';
 import * as r from 'rethinkdb';
-import { commandTypes, defaultStaff, guard, humanize, parse, snowflake } from '../newbu';
+import { commandTypes, defaultStaff, guard, humanize, parse, snowflake } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
@@ -17,7 +17,7 @@ interface CanExecuteDiscordCommandOptions {
     staffPerms?: GuildSettings['staffperms']
 }
 
-interface GetUserOptions {
+interface FindEntityOptions {
     quiet?: boolean;
     suppress?: boolean;
     onSendCallback?: () => void;
@@ -92,7 +92,7 @@ export class ClusterUtilities extends BaseUtilities {
                     todo: []
                 }));
         } else {
-            const newUser: StoredUser = {};
+            const newUser: Partial<StoredUser> = {};
             let update = false;
             if (storedUser.username != user.username) {
                 newUser.username = user.username;
@@ -117,7 +117,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getUser(msg: Message, name: string, args: boolean | GetUserOptions = {}): Promise<User | null> {
+    public async getUser(msg: Message, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
         if (!name)
             return null;
 
@@ -187,6 +187,56 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
+
+    public async getRole(msg: Message<GuildTextableChannel>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | null> {
+        if (!name)
+            return null;
+
+        const normName = name.toLowerCase();
+        const matchScore = (role: { name: string, normName: string }): number => {
+            let score = 0;
+            if (role.name.startsWith(name)) score += 100;
+            if (role.normName.startsWith(normName)) score += 10;
+            if (role.normName.includes(normName)) score += 1;
+            return score;
+        };
+
+        if (typeof args !== 'object')
+            args = { quiet: args };
+
+        const role = await this.getRoleById(msg.channel.guild, name);
+        if (role)
+            return role;
+
+        const roleList = msg.channel.guild.roles
+            .map(r => ({
+                role: r,
+                match: matchScore({
+                    name: r.name,
+                    normName: r.name.toLowerCase()
+                })
+            }))
+            .filter(r => r.match > 0)
+            .sort((a, b) => b.match - a.match)
+            .map(r => r.role);
+
+        switch (roleList.length) {
+            case 1: return roleList[0];
+            case 0:
+                if (args.quiet || args.suppress)
+                    return null;
+                if (args.onSendCallback)
+                    args.onSendCallback();
+                await this.send(msg, `No roles found${args.label ? ' in ' + args.label : ''}.`);
+                return null;
+            default:
+                if (args.quiet || args.suppress)
+                    return null;
+                const matches = roleList.map(r => ({ content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r }));
+                const lookupResponse = await this.createLookup(msg, 'role', matches, args);
+                return lookupResponse;
+        }
+    }
 
     public async createLookup<T>(msg: Message, type: string, matches: LookupMatch<T>[], args: LookupOptions = {}): Promise<T | null> {
         const lookupList = matches.slice(0, 20);
@@ -296,6 +346,35 @@ export class ClusterUtilities extends BaseUtilities {
             return this.users.get(match[0])
                 ?? await this.discord.getRESTUser(match[0])
                 ?? null;
+        } catch {
+            return null;
+        }
+    }
+
+    public async getGuildById(guildId: string): Promise<Guild | null> {
+
+        const match = /\d{17,21}/.exec(guildId);
+        if (!match)
+            return null;
+        try {
+            return this.guilds.get(match[0])
+                ?? await this.discord.getRESTGuild(match[0])
+                ?? null;
+        } catch {
+            return null;
+        }
+    }
+
+    public async getRoleById(guild: string | Guild, roleId: string): Promise<Role | null> {
+        const _guild = typeof guild === 'string' ? await this.getGuildById(guild) : guild;
+        if (!_guild)
+            return null;
+        const match = /\d{17,21}/.exec(roleId);
+        if (!match)
+            return null;
+
+        try {
+            return _guild.roles.get(match[0]) ?? null;
         } catch {
             return null;
         }

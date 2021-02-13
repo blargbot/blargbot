@@ -1,5 +1,5 @@
 import { BaseDCommand } from '../structures/BaseDCommand';
-import { randInt, commandTypes } from '../newbu';
+import { randInt, commandTypes } from '../utils';
 import { Message, TextableChannel } from 'eris';
 import { Cluster } from '../cluster';
 

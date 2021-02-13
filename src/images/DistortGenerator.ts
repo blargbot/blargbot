@@ -1,5 +1,5 @@
 import { BaseImageGenerator } from '../structures/BaseImageGenerator';
-import { randInt } from '../newbu';
+import { randInt } from '../utils';
 import { BetterColorAction } from '@Jimp/plugin-color';
 
 export class DistortGenerator extends BaseImageGenerator {

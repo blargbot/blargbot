@@ -1,6 +1,6 @@
 import { Message, TextableChannel } from 'eris';
 import { Cluster } from '../cluster';
-import { commandTypes, parse } from '../newbu';
+import { commandTypes, parse } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
 
 export class ArtCommand extends BaseDCommand {

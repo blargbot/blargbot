@@ -1,6 +1,6 @@
 import { ImageModuleLoader } from '../core/ImageModuleLoader';
 import { BaseWorker } from './core/BaseWorker';
-import { fafo } from '../newbu';
+import { fafo } from '../utils';
 
 export class ImageWorker extends BaseWorker {
     public readonly renderers: ImageModuleLoader;

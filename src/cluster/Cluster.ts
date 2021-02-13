@@ -5,7 +5,7 @@ import { BaseDCommand } from '../structures/BaseDCommand';
 import { BaseSubtagHandler } from '../structures/BaseSubtagHandler';
 import moment, { Moment } from 'moment-timezone';
 import { EventManager } from '../structures/EventManager';
-import { commandTypes, tagTypes } from '../newbu';
+import { commandTypes, tagTypes } from '../utils';
 import { BBEngine } from '../structures/BBEngine';
 import { ClusterWorker } from '../workers/ClusterWorker';
 import { ImageConnection } from '../workers/ImageConnection';

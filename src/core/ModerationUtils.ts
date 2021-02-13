@@ -1,6 +1,6 @@
 import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Cluster } from '../cluster';
-import { humanize, ModerationType } from '../newbu';
+import { humanize, ModerationType } from '../utils';
 
 interface WarnResult {
     type: ModerationType;

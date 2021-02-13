@@ -1,4 +1,4 @@
-import { guard } from '../../newbu';
+import { guard } from '../../utils';
 import { ClusterEventService } from '../../structures/ClusterEventService';
 import { ProcessMessageHandler } from '../../workers/core/IPCEvents';
 import { Cluster } from '../Cluster';
