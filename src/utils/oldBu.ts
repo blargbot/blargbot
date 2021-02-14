@@ -1434,7 +1434,8 @@ export const oldBu = {
         }
         return result;
     },
-    async blargbotApi(endpoint: string, args: string | Buffer | object = {}) {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    async blargbotApi(endpoint: string, args: string | Buffer | object = {}): Promise<Buffer | string | object | null> {
         try {
             const res = await snekfetch.post(config.blargbot_api.base + endpoint)
                 .set({ Authorization: config.blargbot_api.token })
@@ -1457,7 +1458,7 @@ export const oldBu = {
         return text;
     },
 
-    async findMessages(channelId: string, count: number, filter: (m: Message) => boolean, before?: string, after?: string) {
+    async findMessages(channelId: string, count: number, filter: (m: Message) => boolean, before?: string, after?: string): Promise<Message[]> {
         const result = [];
         filter = filter || (() => true);
 
