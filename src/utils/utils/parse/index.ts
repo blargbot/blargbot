@@ -9,6 +9,7 @@ import { int } from './int';
 import { time } from './time';
 import { words } from './words';
 import { emoji } from './emoji';
+import { bbtag } from './bbtag';
 
 export { FlagDefinition, FlagResult } from './flags';
 
@@ -23,5 +24,6 @@ export const parse = {
     int,
     time,
     words,
-    emoji
+    emoji,
+    bbtag
 };

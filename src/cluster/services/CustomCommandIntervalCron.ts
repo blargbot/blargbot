@@ -1,8 +1,10 @@
 import { GuildTextableChannel } from 'eris';
 import { StoredGuild } from '../../core/RethinkDb';
-import { guard, sleep } from '../../utils';
+import { guard, sleep, snowflake } from '../../utils';
 import { CronService } from '../../structures/CronService';
 import { Cluster } from '../Cluster';
+import { limits } from '../../core/bbtag';
+import moment from 'moment';
 
 export class CustomCommandIntervalCron extends CronService {
     public readonly type = 'bbtag';
@@ -37,20 +39,24 @@ export class CustomCommandIntervalCron extends CronService {
                 if (!m) continue;
                 const u = this.cluster.discord.users.get(id) ?? await this.cluster.discord.getRESTUser(id);
                 if (!u) continue;
-                const c = g.channels.find(guard.isGuildTextableChannel) as GuildTextableChannel;
+                const c = g.channels.find(guard.isTextableChannel) as GuildTextableChannel;
                 if (!c) continue;
 
-                const promise = this.cluster.bbtag.execute({
-                    context: {
+                const promise = this.cluster.bbtag.execute(interval.content, {
+                    message: {
                         channel: c,
                         author: u,
-                        member: m
+                        member: m,
+                        timestamp: moment.now(),
+                        attachments: [],
+                        embeds: [],
+                        content: '',
+                        id: snowflake.create().toString()
                     },
-                    limits: 'autoresponse_everything',
-                    source: interval.content,
-                    input: '',
+                    limit: limits.CustomCommandLimit,
+                    input: [],
                     isCC: true,
-                    name: '_interval',
+                    tagName: '_interval',
                     author: interval.author,
                     authorizer: interval.authorizer,
                     silent: true

@@ -2,7 +2,7 @@ import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
 import { GuildSettings, StoredGuildCommand, StoredGuild, StoredUser } from '../core/RethinkDb';
-import { AnyChannel, Guild, GuildTextableChannel, Member, Message, Permission, Role, Textable, TextableChannel, User } from 'eris';
+import { Guild, GuildTextableChannel, Member, Message, Permission, Role, TextableChannel, User } from 'eris';
 import * as r from 'rethinkdb';
 import { commandTypes, defaultStaff, guard, humanize, parse, snowflake } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
@@ -17,17 +17,11 @@ interface CanExecuteDiscordCommandOptions {
     staffPerms?: GuildSettings['staffperms']
 }
 
-interface FindEntityOptions {
+export interface FindEntityOptions {
     quiet?: boolean;
     suppress?: boolean;
     onSendCallback?: () => void;
     label?: string;
-}
-
-interface LookupOptions {
-    onSendCallback?: () => void;
-    label?: string;
-    suppress?: boolean;
 }
 
 interface LookupMatch<T> {
@@ -117,7 +111,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getUser(msg: Message, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
+    public async getUser(msg: Pick<Message, 'channel' | 'content' | 'author'>, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
         if (!name)
             return null;
 
@@ -188,7 +182,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
 
-    public async getRole(msg: Message<GuildTextableChannel>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | null> {
+    public async getRole(msg: Pick<Message<GuildTextableChannel>, 'channel' | 'author' | 'content'>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | null> {
         if (!name)
             return null;
 
@@ -238,7 +232,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async createLookup<T>(msg: Message, type: string, matches: LookupMatch<T>[], args: LookupOptions = {}): Promise<T | null> {
+    public async createLookup<T>(msg: Pick<Message, 'author' | 'channel' | 'content'>, type: string, matches: LookupMatch<T>[], args: FindEntityOptions = {}): Promise<T | null> {
         const lookupList = matches.slice(0, 20);
         let outputString = '';
         for (let i = 0; i < lookupList.length; i++) {
@@ -280,7 +274,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async awaitQuery(
-        msg: Message,
+        msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS?: number,
@@ -291,7 +285,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async createQuery(
-        msg: Message,
+        msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS?: number,
@@ -304,7 +298,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async awaitPrompt(
-        msg: Message,
+        msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS: number,
@@ -315,7 +309,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async createPrompt(
-        msg: Message,
+        msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
         check: ((message: Message) => boolean) | undefined,
         timeoutMS: number,
@@ -513,7 +507,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async canExecuteDiscordCommand(
-        msg: Message<AnyChannel & Textable>,
+        msg: Message<TextableChannel>,
         command: BaseDCommand,
         quiet = false,
         options: CanExecuteDiscordCommandOptions = {}

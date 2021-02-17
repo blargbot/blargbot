@@ -184,6 +184,7 @@ export interface GuildSettings {
     kickat?: number;
     modlog?: string;
     deletenotif?: string;
+    disableeveryone?: boolean;
 }
 
 export interface GuildModlogEntry {

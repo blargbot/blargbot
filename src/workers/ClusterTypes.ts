@@ -1,6 +1,6 @@
 import { Shard } from 'eris';
 import { SubtagType, CommandType, FlagDefinition } from '../utils';
-import { SubtagArgument } from '../structures/BaseSubtagHandler';
+import { SubtagArgument } from '../core/bbtag/BaseSubtagHandler';
 
 export interface LookupChannelResult {
     channel: string;

@@ -1,4 +1,4 @@
-import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, Collection, EmbedOptions, ExtendedUser, Guild, Member, Message, MessageFile, Shard, User } from 'eris';
+import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, Collection, EmbedOptions, ExtendedUser, Guild, Member, Message, MessageFile, Shard, TextableChannel, User } from 'eris';
 import { BaseClient } from './BaseClient';
 import { snowflake } from '../utils';
 import { Error } from 'sequelize';
@@ -9,7 +9,7 @@ import { PostgresDb } from './PostgresDb';
 import { Metrics } from './Metrics';
 import request from 'request';
 
-export type SendContext = Message | AnyChannel | string
+export type SendContext = Pick<Message, 'channel' | 'content' | 'author'> | TextableChannel | string
 export type SendEmbed = EmbedOptions & { asString?: string }
 export type SendFiles = MessageFile | Array<MessageFile>
 export type SendPayload = {
@@ -41,7 +41,7 @@ export class BaseUtilities {
 
     public async send(context: SendContext, payload: SendPayload, files?: SendFiles): Promise<Message | null> {
         let channel: AnyChannel | Channel;
-        let message: Message | undefined;
+        let message: Pick<Message, 'channel' | 'content' | 'author'> | undefined;
         this.metrics.sendCounter.inc();
 
         // Process context into a channel and maybe a message

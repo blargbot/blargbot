@@ -4,11 +4,11 @@ import { hex } from './hex';
 
 const colors = _colors as { readonly [name: string]: string };
 
-export function color(text: number | 'random' | string): number | null {
+export function color(text: number | 'random' | string): number {
     if (typeof text == 'number')
         return text;
     if (typeof text != 'string')
-        return null;
+        throw new Error('Not a colour');
 
     text = text.replace(/\s+/g, '').toLowerCase();
 
@@ -27,7 +27,7 @@ export function color(text: number | 'random' | string): number | null {
         const g = parseInt(match[2]);
         const b = parseInt(match[3]);
         if (isNaN(r + g + b) || !isByte(r) || !isByte(g) || !isByte(b))
-            return null;
+            throw new Error('Not a colour');
         return parseInt(hex(r) + hex(g) + hex(b), 16);
     }
 
@@ -49,7 +49,7 @@ export function color(text: number | 'random' | string): number | null {
             return value;
     }
 
-    return null;
+    throw new Error('Not a colour');
 }
 
 function isInt(value: number): boolean {

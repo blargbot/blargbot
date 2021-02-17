@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtagHandler, arg, Type } from '../structures/BaseSubtagHandler';
+import { BaseSubtagHandler, arg, Type } from '../core/bbtag/BaseSubtagHandler';
 
 export class AbsSubtag extends BaseSubtagHandler {
     public constructor(

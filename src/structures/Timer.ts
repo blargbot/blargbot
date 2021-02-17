@@ -11,6 +11,8 @@ export class Timer {
         this.#start = null;
     }
 
+    public get running(): boolean { return this.#start !== null; }
+
     public get elapsed(): number {
         if (this.#start === null)
             return this.#elapsed;

@@ -6,6 +6,7 @@ import { Cluster } from '..';
 import { StoredGuildCommand, StoredGuild } from '../../core/RethinkDb';
 import { BaseDCommand } from '../../structures/BaseDCommand';
 import { DiscordEventService } from '../../structures/DiscordEventService';
+import { limits } from '../../core/bbtag';
 
 export class MessageCreateEventHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -167,13 +168,12 @@ export class MessageCreateEventHandler extends DiscordEventService {
                     .get(alias)
                     .update({ uses: uses + 1, lastuse: r.now() }));
         }
-        await this.cluster.bbtag.execute({
-            context: msg,
-            name: commandName,
-            limits: 'ccommand',
-            source: content,
+        await this.cluster.bbtag.execute(content, {
+            message: msg,
+            tagName: commandName,
+            limit: limits.CustomCommandLimit,
             flags,
-            input: input,
+            input: parse.words(input),
             isCC: true,
             tagVars: alias !== undefined,
             cooldown,
@@ -332,12 +332,11 @@ export class MessageCreateEventHandler extends DiscordEventService {
                     content = cens.kickMessage ?? censor.rule?.kickMessage ?? ''; // TODO cant find the definition for the default messages
                     break;
             }
-            await this.cluster.bbtag.execute({
-                context: msg,
-                name: 'censor',
-                limits: 'ccommand',
-                source: content,
-                input: msg.content,
+            await this.cluster.bbtag.execute(content, {
+                message: msg,
+                tagName: 'censor',
+                limit: limits.CustomCommandLimit,
+                input: parse.words(msg.content),
                 isCC: true
             });
         }
@@ -368,12 +367,11 @@ export class MessageCreateEventHandler extends DiscordEventService {
             try {
                 await msg.member.edit({ roles: [...roleList] });
                 this.logger.verbose(roleme.output);
-                await this.cluster.bbtag.execute({
-                    context: msg,
-                    name: 'roleme',
-                    limits: 'ccommand',
-                    source: roleme.output || 'Your roles have been edited!',
-                    input: '',
+                await this.cluster.bbtag.execute(roleme.output || 'Your roles have been edited!', {
+                    message: msg,
+                    tagName: 'roleme',
+                    limit: limits.CustomCommandLimit,
+                    input: [],
                     isCC: true
                 });
             } catch (err) {
@@ -408,14 +406,13 @@ export class MessageCreateEventHandler extends DiscordEventService {
                 if (ars.everything && storedGuild.ccommands[ars.everything.executes]) {
                     const tag = storedGuild.ccommands[ars.everything.executes];
                     if (tag) {
-                        await this.cluster.bbtag.execute({
-                            context: msg,
-                            limits: 'autoresponse_everything',
-                            source: tag.content,
+                        await this.cluster.bbtag.execute(tag.content, {
+                            message: msg,
+                            limit: limits.EverythingAutoResponseLimit,
                             author: tag.author,
-                            input: msg.content,
+                            input: parse.words(msg.content),
                             isCC: true,
-                            name: ars.everything.executes,
+                            tagName: ars.everything.executes,
                             silent: true
                         });
                     }
@@ -438,14 +435,13 @@ export class MessageCreateEventHandler extends DiscordEventService {
                     if (storedGuild.ccommands[ar.executes]) {
                         const tag = storedGuild.ccommands[ar.executes];
                         if (tag) {
-                            await this.cluster.bbtag.execute({
-                                context: msg,
-                                limits: 'autoresponse_general',
-                                source: tag.content,
+                            await this.cluster.bbtag.execute(tag.content, {
+                                message: msg,
+                                limit: limits.GeneralAutoResponseLimit,
                                 author: tag.author,
-                                input: msg.content,
+                                input: parse.words(msg.content),
                                 isCC: true,
-                                name: ar.executes
+                                tagName: ar.executes
                             });
                         }
                     }

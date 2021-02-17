@@ -1,8 +1,11 @@
 import { Client as ErisClient } from 'eris';
-import { Cluster } from '../cluster';
-import { SubtagArgumentKind, SubtagType } from '../utils';
-export { argBuilder as arg } from '../structures/ArgumentFactory';
-export { SubtagType as Type } from '../utils';
+import { Cluster } from '../../cluster';
+import { SubtagArgumentKind, SubtagType } from '../../utils';
+import { BBSubtagCall } from './types';
+import { RuntimeContext } from './RuntimeContext';
+
+export { argBuilder as arg } from './ArgumentFactory';
+export { SubtagType as Type } from '../../utils';
 
 export interface SubtagArgument {
     content: Array<string | SubtagArgument>;
@@ -37,11 +40,13 @@ export interface SubtagHandlerOptions {
     acceptsArrays?: boolean;
 }
 
-type ArgumentFilter = number | string | (() => Promise<boolean> | boolean);
+type ArgumentCondition = (subtag: BBSubtagCall, context: RuntimeContext) => boolean | Promise<boolean>;
+
+type ArgumentFilter = number | string | ArgumentCondition;
 
 export abstract class BaseSubtagHandler implements Required<SubtagHandlerOptions>{
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #handlers: Array<{ condition: (() => Promise<boolean> | boolean), handler: string }>;
+    readonly #handlers: Array<{ condition: ArgumentCondition, handler: string }>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #default?: string;
     public readonly aliases: string[];
@@ -78,15 +83,17 @@ export abstract class BaseSubtagHandler implements Required<SubtagHandlerOptions
         this.#handlers = [];
     }
 
-    public async execute(): Promise<unknown> {
+    public async execute(subtag: BBSubtagCall, context: RuntimeContext): Promise<string> {
+        let invoke: unknown = this[this.#default as keyof this];
         for (const { condition, handler } of this.#handlers) {
-            if (condition()) {
-                return await (<() => Promise<unknown>><unknown>this[handler as keyof this])();
+            if (condition(subtag, context)) {
+                invoke = this[handler as keyof this];
+                break;
             }
         }
-        if (this.#default) {
-            return await (<() => Promise<unknown>><unknown>this[this.#default as keyof this])();
-        }
+        if (typeof invoke === 'function')
+            return await (<BaseSubtagHandler['execute']>invoke)(subtag, context);
+
         throw new Error('Unhandled call');
     }
 
