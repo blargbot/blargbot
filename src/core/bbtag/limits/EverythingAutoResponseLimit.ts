@@ -44,7 +44,7 @@ export class EverythingAutoResponseLimit extends BaseRuntimeLimit {
             .addRules('timer', DisabledRule.instance)
             .addRules('sleep', {
                 async check(context, subtag) {
-                    if (parse.int(await context.execute(subtag.args[0])) > 5000)
+                    if (parse.int(await context.eval(subtag.args[0])) > 5000)
                         subtag.args[0] = ['5000']; // Soft limit for duration
                     return true;
                 },
