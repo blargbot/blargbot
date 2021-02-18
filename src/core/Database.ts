@@ -19,6 +19,12 @@ type RethinkTableMap = {
     'events': Omit<StoredEvent, 'id'>
 }
 
+interface DatabaseOptions {
+    logger: CatLogger,
+    discord: ErisClient,
+    rethinkDb: RethinkDbOptions
+}
+
 export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #r: RethinkDb;
@@ -31,24 +37,23 @@ export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #discord: ErisClient;
 
-    public constructor(
-        options: RethinkDbOptions,
-        discord: ErisClient,
-        logger: CatLogger
-    ) {
-        this.#r = new RethinkDb(options);
-        this.#discord = discord;
+    public constructor(options: DatabaseOptions) {
+        this.#r = new RethinkDb(options.rethinkDb);
+        this.#discord = options.discord;
         this.#guildCache = {};
         this.#userCache = {};
-        this.#logger = logger;
+        this.#logger = options.logger;
     }
 
     public async connect(): Promise<void> {
         this.connect = () => Promise.resolve();
-        await this.#r.connect();
-        void this._rethinkChangeFeed('guild', 'guildid', this.#guildCache, id => !!this.#discord.guilds.get(id));
-        void this._rethinkChangeFeed('user', 'userid', this.#userCache, id => !!this.#discord.users.get(id));
-        void this._registerIndexes();
+        await this.#r.connect()
+            .then(() => {
+                this.#logger.init('rethinkdb connected');
+                void this._rethinkChangeFeed('guild', 'guildid', this.#guildCache, id => !!this.#discord.guilds.get(id));
+                void this._rethinkChangeFeed('user', 'userid', this.#userCache, id => !!this.#discord.users.get(id));
+                void this._registerIndexes();
+            });
     }
 
     public async getVariable<K extends KnownStoredVars['varname']>(key: K): Promise<DeepReadOnly<GetStoredVar<K>> | undefined> {

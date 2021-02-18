@@ -5,15 +5,6 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug current file",
-            "type": "node",
-            "program": "${file}",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**"
-            ]
-        },
-        {
             "type": "node",
             "request": "launch",
             "name": "Launch Program",
@@ -35,6 +26,15 @@
             ],
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/index.ts"
+        },
+        {
+            "name": "Debug current file",
+            "type": "node",
+            "program": "${file}",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**"
+            ]
         }
     ]
 }

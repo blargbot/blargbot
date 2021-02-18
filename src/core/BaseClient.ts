@@ -46,18 +46,22 @@ export class BaseClient {
         });
 
         this.database = new Database({
-            database: this.config.db.database,
-            password: this.config.db.password,
-            user: this.config.db.user,
-            host: this.config.db.host,
-            port: this.config.db.port
-        }, this.discord, this.logger);
+            logger: this.logger,
+            discord: this.discord,
+            rethinkDb: {
+                database: this.config.db.database,
+                password: this.config.db.password,
+                user: this.config.db.user,
+                host: this.config.db.host,
+                port: this.config.db.port
+            }
+        });
     }
 
     public async start(): Promise<void> {
         await Promise.all([
             void this.postgres.authenticate().then(() => this.logger.init('postgres connected')), // TODO this takes too long
-            this.database.connect().then(() => this.logger.init('rethinkdb connected')),
+            this.database.connect().then(() => this.logger.init('database connected')),
             this.cassandra.connect().then(() => this.logger.init('cassandra connected')),
             this.discord.connect().then(() => this.logger.init('discord connected'))
         ]);
