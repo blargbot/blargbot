@@ -21,19 +21,19 @@ export class ReadyEventHandler extends DiscordEventService {
         let home;
         if (home = this.cluster.discord.guilds.get(this.cluster.config.discord.guilds.home)) {
             const police = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.police)).map(m => m.id);
-            await this.cluster.database.setVariable({ varname: 'police', value: police });
+            await this.cluster.database.vars.set({ varname: 'police', value: police });
 
             const support = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.support)).map(m => m.id);
-            await this.cluster.database.setVariable({ varname: 'support', value: support });
+            await this.cluster.database.vars.set({ varname: 'support', value: support });
         }
 
         // TODO this should be something the master process does
         if (this.cluster.id === 0) {
-            const restart = await this.cluster.database.getVariable('restart');
+            const restart = await this.cluster.database.vars.get('restart');
 
             if (restart?.varvalue) {
                 void this.cluster.util.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + humanize.duration(moment(), moment(restart.varvalue.time)) + '.');
-                void this.cluster.database.deleteVariable('restart');
+                void this.cluster.database.vars.delete('restart');
             }
         }
 
@@ -70,7 +70,7 @@ export class ReadyEventHandler extends DiscordEventService {
         this.cluster.util.postStats();
         void this.initEvents();
 
-        const blacklist = await this.cluster.database.getVariable('guildBlacklist');
+        const blacklist = await this.cluster.database.vars.get('guildBlacklist');
         if (blacklist) {
             for (const g of Object.keys(blacklist.values)) {
                 if (blacklist.values[g] && this.cluster.discord.guilds.get(g)) {

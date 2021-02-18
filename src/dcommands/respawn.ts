@@ -16,7 +16,7 @@ export class RespawnCommand extends BaseDCommand {
     }
 
     public async execute(msg: Message, words: string[]): Promise<void> {
-        const police = await this.cluster.database.getVariable('police');
+        const police = await this.cluster.database.vars.get('police');
         if (police?.value.includes(msg.author.id) !== true)
             return;
 

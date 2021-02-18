@@ -149,7 +149,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         let { content, flags, cooldown, author } = command;
         if (alias)
             ({ content = '', flags, cooldown, author }
-                = await this.cluster.database.getTag(alias) ?? {});
+                = await this.cluster.database.tags.get(alias) ?? {});
 
         if (!content)
             return false;
@@ -163,7 +163,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
             .join('\n');
 
         if (alias !== undefined) {
-            await this.cluster.database.incrementTagUses(alias);
+            await this.cluster.database.tags.incrementUses(alias);
         }
         await this.cluster.bbtag.execute(content, {
             message: msg,
@@ -378,7 +378,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
     }
 
     public async checkWhitelist(): Promise<void> {
-        const whitelist = await this.cluster.database.getVariable('arwhitelist');
+        const whitelist = await this.cluster.database.vars.get('arwhitelist');
         this.#arWhitelist = new Set(whitelist?.values);
     }
 

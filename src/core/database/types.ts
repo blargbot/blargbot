@@ -1,13 +1,6 @@
 import { Client as ErisClient, User } from 'eris';
-import { Expression } from 'rethinkdb';
+import { Moment } from 'moment-timezone';
 import { FlagDefinition } from '../../utils';
-import { RethinkDbOptions } from './core/RethinkDb';
-
-
-export type UpdateRequest<T> = {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    [P in keyof T]?: T[P] | Expression<T[P]> | UpdateRequest<T[P]>
-}
 
 export type RethinkTableMap = {
     'guild': StoredGuild;
@@ -262,6 +255,14 @@ export interface DatabaseOptions {
     rethinkDb: RethinkDbOptions
 }
 
+export interface RethinkDbOptions {
+    database: string;
+    user: string;
+    password: string;
+    host: string;
+    port: number;
+}
+
 export interface GuildTable {
     get(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuild> | undefined>;
     add(guild: StoredGuild): Promise<boolean>;
@@ -282,4 +283,22 @@ export interface UserTable {
     get(userId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredUser> | undefined>;
     add(user: StoredUser): Promise<boolean>;
     upsert(user: User): Promise<boolean>
+}
+
+export interface VarsTable {
+    get<K extends KnownStoredVars['varname']>(key: K): Promise<DeepReadOnly<GetStoredVar<K>> | undefined>;
+    set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean>;
+    delete<K extends KnownStoredVars['varname']>(key: K): Promise<boolean>;
+}
+
+export interface EventsTable {
+    between(from: Date | Moment | number, to: Date | Moment | number): Promise<StoredEvent[]>;
+    add(event: Omit<StoredEvent, 'id'>): Promise<boolean>;
+    delete(eventId: string): Promise<boolean>;
+    delete(filter: Partial<StoredEvent>): Promise<boolean>;
+}
+
+export interface TagsTable {
+    get(tagName: string): Promise<DeepReadOnly<StoredTag> | undefined>;
+    incrementUses(tagName: string, count?: number): Promise<boolean>;
 }

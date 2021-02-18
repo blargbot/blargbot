@@ -1,12 +1,5 @@
 import * as r from 'rethinkdb';
-
-export interface RethinkDbOptions {
-    database: string;
-    user: string;
-    password: string;
-    host: string;
-    port: number;
-}
+import { RethinkDbOptions } from '../types';
 
 export type r = Parameters<Query<unknown>>[0];
 

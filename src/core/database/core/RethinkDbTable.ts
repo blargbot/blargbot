@@ -1,6 +1,12 @@
 import { RethinkDb } from './RethinkDb';
-import { RethinkTableMap, UpdateRequest } from '../types';
+import { RethinkTableMap } from '../types';
 import { r } from './RethinkDb';
+import { Expression } from 'rethinkdb';
+
+export type UpdateRequest<T> = {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    [P in keyof T]?: T[P] | Expression<T[P]> | UpdateRequest<T[P]>
+}
 
 export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
     protected constructor(

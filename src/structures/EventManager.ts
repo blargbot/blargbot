@@ -15,7 +15,7 @@ export class EventManager {
 
     public async insert(event: Omit<StoredEvent, 'id'>): Promise<void> {
         const _event = <StoredEvent>event;
-        if (!await this.cluster.database.addEvent(_event))
+        if (!await this.cluster.database.events.add(_event))
             return;
 
         if (moment().add(5, 'minutes').diff(event.endtime) < 0)
@@ -55,20 +55,18 @@ export class EventManager {
 
     public async delete(event: string): Promise<void> {
         this.#events.delete(event);
-        await this.cluster.database.removeEvent(event);
+        await this.cluster.database.events.delete(event);
     }
 
     public async deleteFilter(source: string): Promise<void> {
-        await this.cluster.database.removeEvents({ source });
+        await this.cluster.database.events.delete({ source });
         for (const event of this.#events.values())
             if (event.source === source)
                 this.#events.delete(event.id);
     }
 
     public async obtain(): Promise<void> {
-        const events = await this.cluster.database.getEvents({
-            before: moment().add(5, 'minutes').toDate()
-        });
+        const events = await this.cluster.database.events.between(0, moment().add(5, 'minutes'));
         this.#events = new Map(events.map(e => [e.id, e]));
     }
 }
