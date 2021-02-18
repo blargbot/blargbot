@@ -1,5 +1,5 @@
-import { BBSourceMarker } from '../../../core/bbtag/types';
+import { SourceMarker } from '../../../core/bbtag/types';
 
-export function bbtagLocation(location: BBSourceMarker): string {
+export function bbtagLocation(location: SourceMarker): string {
     return `${location.line},${location.column}`;
 }

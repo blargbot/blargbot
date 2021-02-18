@@ -1,8 +1,8 @@
 import { RuntimeContext } from '../../RuntimeContext';
-import { BBSubtagCall } from '../../types';
+import { SubtagCall } from '../../types';
 
 export interface RuntimeLimitRule {
-    check(context: RuntimeContext, subtag: BBSubtagCall): Promise<boolean> | boolean;
+    check(context: RuntimeContext, subtag: SubtagCall): Promise<boolean> | boolean;
     errorText(subtagName: string, scopeName: string): string;
     displayText(subtagName: string, scopeName: string): string;
 }

@@ -15,14 +15,9 @@ import { parse } from './utils';
 import snekfetch from 'snekfetch';
 import limax from 'limax';
 import { nfkd } from 'unorm';
-import { RuntimeContext } from '../core/bbtag/RuntimeContext';
+import { Engine as BBEngine, limits, RuntimeContext as BBContext, SubtagCall } from '../core/bbtag';
 
 type CassandraRow = Parameters<CassandraCallback>[1]['rows'][number]
-
-interface bbengine {
-    addError(tag: unknown, context: RuntimeContext, message: string): string;
-    runTag(args: unknown): Promise<void>;
-}
 
 interface chatlog {
     id: Snowflake;
@@ -35,12 +30,6 @@ interface chatlog {
     msgtime: number | Date;
     type: 0 | 1 | 2;
     embeds: string | JObject;
-}
-
-interface bbtag {
-    limits: {
-        ccommand: { new(): unknown }
-    }
 }
 
 interface dbquery {
@@ -77,8 +66,7 @@ interface TagLocks {
 let r: RethinkDb;
 const console: CatLogger = <CatLogger><unknown>undefined;
 const bot: bot = <bot><unknown>undefined;
-const bbEngine: bbengine = <bbengine><unknown>undefined;
-const bbtag: bbtag = <bbtag><unknown>undefined;
+const bbEngine: BBEngine = <BBEngine><unknown>undefined;
 const cluster = <NodeJS.Process & Required<Pick<NodeJS.Process, 'send'>>><unknown>process;
 let awaitReactionCounter = 0;
 
@@ -255,50 +243,50 @@ export const oldBu = {
             description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
                 'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
                 'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
-            setter: async (context: RuntimeContext, values: Record<string, JToken>): Promise<void> =>
+            setter: async (context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> =>
                 await oldBu.setVariable(context.guild.id, values,
                     context.isCC && !context.tagVars ? SubtagVariableType.GUILD : SubtagVariableType.TAGGUILD),
-            getter: async (context: RuntimeContext, name: string): Promise<JToken> =>
+            getter: async (context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> =>
                 await oldBu.getVariable(context.guild.id, name,
                     context.isCC && !context.tagVars ? SubtagVariableType.GUILD : SubtagVariableType.TAGGUILD),
-            getLock: (context: RuntimeContext, key: string): ReadWriteLock => oldBu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
+            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
         },
         {
             name: 'Author',
             prefix: '@',
             description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
                 'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
-            setter: async (context: RuntimeContext, values: Record<string, JToken>): Promise<void> => {
+            setter: async (context: BBContext, subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> => {
                 if (context.author)
                     return await oldBu.setVariable(context.author, values, SubtagVariableType.AUTHOR);
-                bbEngine.addError({}, context, '`No author found`');
+                context.addError(subtag, 'No author found');
             },
-            getter: async (context: RuntimeContext, name: string): Promise<JToken> => {
+            getter: async (context: BBContext, subtag: SubtagCall | null, name: string): Promise<JToken> => {
                 if (context.author)
                     return await oldBu.getVariable(context.author, name, SubtagVariableType.AUTHOR);
-                return bbEngine.addError({}, context, '`No author found`');
+                return context.addError(subtag, 'No author found');
             },
-            getLock: (context: RuntimeContext, key: string): ReadWriteLock => oldBu.getLock(...['AUTHOR', context.author, key])
+            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['AUTHOR', context.author, key])
         },
         {
             name: 'Global',
             prefix: '*',
             description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
                 'These are very useful if you like pain.',
-            setter: async (_context: RuntimeContext, values: Record<string, JToken>): Promise<void> =>
+            setter: async (_context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> =>
                 await oldBu.setVariable(undefined, values, SubtagVariableType.GLOBAL),
-            getter: async (_context: RuntimeContext, name: string): Promise<JToken> =>
+            getter: async (_context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> =>
                 await oldBu.getVariable(undefined, name, SubtagVariableType.GLOBAL),
-            getLock: (_context: RuntimeContext, key: string): ReadWriteLock => oldBu.getLock(...['GLOBAL', key])
+            getLock: (_context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['GLOBAL', key])
         },
         {
             name: 'Temporary',
             prefix: '~',
             description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
                 'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
-            setter: (_context: RuntimeContext, _values: Record<string, JToken>): Promise<void> => Promise.resolve(), //Temporary is never persisted to the database
-            getter: (_context: RuntimeContext, _name: string): Promise<JToken> => Promise.resolve(undefined), //Temporary is never persisted to the database
-            getLock: (context: RuntimeContext, key: string): ReadWriteLock => context.getLock(key)
+            setter: (_context: BBContext, _subtag: SubtagCall | null, _values: Record<string, JToken>): Promise<void> => Promise.resolve(), //Temporary is never persisted to the database
+            getter: (_context: BBContext, _subtag: SubtagCall | null, _name: string): Promise<JToken> => Promise.resolve(undefined), //Temporary is never persisted to the database
+            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => context.getLock(key)
         },
         {
             name: 'Local',
@@ -306,17 +294,17 @@ export const oldBu = {
             description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
                 'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
                 'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
-            setter: async (context: RuntimeContext, values: Record<string, JToken>): Promise<void> => {
+            setter: async (context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> => {
                 if (context.isCC && !context.tagVars)
                     return await oldBu.setVariable(context.tagName, values, SubtagVariableType.GUILDLOCAL, context.guild.id);
                 return await oldBu.setVariable(context.tagName, values, SubtagVariableType.LOCAL);
             },
-            getter: async (context: RuntimeContext, name: string): Promise<JToken> => {
+            getter: async (context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> => {
                 if (context.isCC && !context.tagVars)
                     return await oldBu.getVariable(context.tagName, name, SubtagVariableType.GUILDLOCAL, context.guild.id);
                 return await oldBu.getVariable(context.tagName, name, SubtagVariableType.LOCAL);
             },
-            getLock: (context: RuntimeContext, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
+            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
         }
     ],
     guildSettings: {
@@ -501,11 +489,10 @@ export const oldBu = {
                                 else content = '';
                                 break;
                         }
-                        await bbEngine.runTag({
-                            msg,
-                            limits: new bbtag.limits.ccommand(),
-                            tagContent: content,
-                            input: msg.content,
+                        await bbEngine.execute(content, {
+                            message: msg,
+                            limit: new limits.CustomCommandLimit(),
+                            input: parse.words(msg.content),
                             isCC: true,
                             tagName: 'censor'
                         });
@@ -1510,12 +1497,12 @@ export const oldBu = {
         }
         return null;
     },
-    async getArray(context: RuntimeContext, arrName: string): Promise<{ v: JArray, n: string } | undefined> {
+    async getArray(context: BBContext, subtag: SubtagCall, arrName: string): Promise<{ v: JArray, n: string } | undefined> {
         const obj = oldBu.deserializeTagArray(arrName);
         if (obj != null)
             return obj;
         try {
-            const arr = await context.variables.get(arrName);
+            const arr = await context.variables.get(subtag, arrName);
             if (arr !== undefined && Array.isArray(arr))
                 return { v: arr, n: arrName };
         } catch (err) { }

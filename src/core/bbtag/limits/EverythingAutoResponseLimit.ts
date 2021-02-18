@@ -10,7 +10,8 @@ export class EverythingAutoResponseLimit extends BaseRuntimeLimit {
     public constructor() {
         super();
 
-        this.addRules('ban', StaffOnlyRule.instance)
+        this.addRules('safeloops', new UseCountRule(100000))
+            .addRules('ban', StaffOnlyRule.instance)
             .addRules('unban', StaffOnlyRule.instance)
             .addRules('guildbans', StaffOnlyRule.instance)
             .addRules('kick', StaffOnlyRule.instance)

@@ -1,6 +1,6 @@
-import { BBString, BBSubtagCall } from '../../../core/bbtag/types';
+import { Statement, SubtagCall } from '../../../core/bbtag/types';
 
-export function stringify(bbtag: BBString | BBSubtagCall): string {
+export function stringify(bbtag: Statement | SubtagCall): string {
     if (Array.isArray(bbtag)) {
         return bbtag.map(val => typeof val === 'string' ? val : stringify(val)).join('');
     }

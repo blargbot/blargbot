@@ -2,8 +2,8 @@ import { Client as ErisClient } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
 import { humanize, parse, sleep } from '../../utils';
 import { RethinkDb } from '../RethinkDb';
-import { BBSubtagCall, RuntimeContextOptions, RuntimeReturnState } from './types';
-import { BBString } from './types';
+import { SubtagCall, RuntimeContextOptions, RuntimeReturnState } from './types';
+import { Statement } from './types';
 import { RuntimeContext, SubtagCallback } from './RuntimeContext';
 import { BaseSubtagHandler } from './BaseSubtagHandler';
 
@@ -25,7 +25,7 @@ export class Engine {
         return await this.eval(bbtag, context);
     }
 
-    public async eval(bbtag: BBSubtagCall | BBString, context: RuntimeContext): Promise<string> {
+    public async eval(bbtag: SubtagCall | Statement, context: RuntimeContext): Promise<string> {
         if (context.engine !== this)
             throw new Error('Cannot execute a context from another engine!');
 
@@ -72,7 +72,7 @@ export class Engine {
                     color: parse.color('red'),
                     fields: [
                         { name: 'SubTag', value: definition?.name ?? name, inline: true },
-                        { name: 'Arguments', value: JSON.stringify(bbtag.args.map(humanize.bbtag).map(c => c.length < 100 ? c : c.substr(0, 97) + '...')) },
+                        { name: 'Arguments', value: JSON.stringify(bbtag.args.map(humanize.bbtag).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
                         { name: 'Tag Name', value: context.tagName, inline: true },
                         { name: 'Location', value: `${humanize.bbtagRange(bbtag)}`, inline: true },
                         { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },

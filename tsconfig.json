@@ -16,7 +16,6 @@
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "allowUnreachableCode": false,
-        "allowUnusedLabels": false,
-        "outDir": "build"
+        "allowUnusedLabels": false
     }
 }

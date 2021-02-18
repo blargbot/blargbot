@@ -6,7 +6,7 @@ import { FlagDefinition, FlagResult, guard, humanize, oldBu, parse } from '../..
 import { Duration } from 'moment-timezone';
 import { GuildTextableChannel, Member, User, Guild, Role, MessageFile } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
-import { BBString, BBSubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext } from './types';
+import { Statement, SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext } from './types';
 import { StoredGuild, StoredGuildCommand, StoredTag } from '../RethinkDb';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
 import { Engine } from './Engine';
@@ -15,11 +15,11 @@ function serializeEntity(entity: { id: string }): { id: string, serialized: stri
     return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
-export type SubtagCallback = (subtag: BBSubtagCall, context: RuntimeContext) => string | Promise<string>;
+export type SubtagCallback = (subtag: SubtagCall, context: RuntimeContext) => string | Promise<string>;
 
 export class RuntimeContext implements Required<RuntimeContextOptions> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #cache: WeakMap<BBSubtagCall | BBString, Promise<string>>;
+    readonly #cache: WeakMap<SubtagCall | Statement, Promise<string>>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #isStaffPromise?: Promise<boolean>;
 
@@ -114,7 +114,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         };
     }
 
-    public eval(bbtag: BBSubtagCall | BBString, useCache = true): Promise<string> {
+    public eval(bbtag: SubtagCall | Statement, useCache = true): Promise<string> {
         let result: Promise<string> | undefined;
         if (useCache)
             result = this.#cache.get(bbtag);
@@ -135,13 +135,13 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         });
     }
 
-    public addError(bbtag: BBSubtagCall, error: string | Error): string {
+    public addError(bbtag: SubtagCall | null, error: string | Error): string {
         if (typeof error === 'string')
             error = `\`${error}\``;
         else
             error = `\`${error.message}\``;
 
-        this.errors.push({ subtag: bbtag, error: `${humanize.bbtag(bbtag.name)}: ${error}` });
+        this.errors.push({ subtag: bbtag, error: `${humanize.bbtag(bbtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}` });
         return this.scope.fallback ?? error;
     }
 
@@ -314,7 +314,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         result.state.overrides = {};
 
         for (const key of Object.keys(obj.tempVars || {}))
-            await result.variables.set(key, new CacheEntry(result, key, obj.tempVars[key]));
+            await result.variables.set(null, key, new CacheEntry(result, key, obj.tempVars[key]));
         return result;
     }
 

@@ -7,32 +7,32 @@ import { SubtagCallback, RuntimeContext } from './RuntimeContext';
 import { BBRuntimeScope, ScopeCollection } from './ScopeCollection';
 import { TagCooldownManager } from './TagCooldownManager';
 
-export type BBString = Array<string | BBSubtagCall>;
+export type Statement = Array<string | SubtagCall>;
 
-export interface BBSubtagCall {
-    name: BBString;
-    args: BBString[];
-    start: BBSourceMarker;
-    end: BBSourceMarker;
+export interface SubtagCall {
+    name: Statement;
+    args: Statement[];
+    start: SourceMarker;
+    end: SourceMarker;
 }
-export const enum BBSourceTokenType {
+export const enum SourceTokenType {
     CONTENT,
     STARTSUBTAG,
     ENDSUBTAG,
     ARGUMENTDELIMITER
 }
 
-export interface BBSourceMarker {
+export interface SourceMarker {
     index: number;
     line: number;
     column: number;
 }
 
-export interface BBSourceToken {
-    type: BBSourceTokenType;
+export interface SourceToken {
+    type: SourceTokenType;
     content: string;
-    start: BBSourceMarker;
-    end: BBSourceMarker;
+    start: SourceMarker;
+    end: SourceMarker;
 }
 
 export interface SerializedRuntimeContext {
@@ -98,17 +98,17 @@ export interface RuntimeContextState {
 }
 
 export interface RuntimeError {
-    subtag: BBSubtagCall;
+    subtag: SubtagCall | null;
     error: string | RuntimeError[]
 }
 
 export interface RuntimeDebugEntry {
-    subtag: BBSubtagCall;
+    subtag: SubtagCall;
     text: string;
 }
 
 export interface RuntimeLimit {
-    check(context: RuntimeContext, subtag: BBSubtagCall, subtagName: string): Promise<string | null> | string | null;
+    check(context: RuntimeContext, subtag: SubtagCall, subtagName: string): Promise<string | null> | string | null;
     rulesFor(subtagName: string): string[];
 }
 

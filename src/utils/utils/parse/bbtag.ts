@@ -1,14 +1,14 @@
-import { BBSourceMarker, BBSourceToken, BBSourceTokenType, BBString, BBSubtagCall } from '../../../core/bbtag/types';
+import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '../../../core/bbtag/types';
 
-export function bbtag(source: string): BBString {
-    const result: BBString = [];
-    const subtags: BBSubtagCall[] = [];
+export function bbtag(source: string): Statement {
+    const result: Statement = [];
+    const subtags: SubtagCall[] = [];
     let builder = result;
-    let subtag: BBSubtagCall | undefined;
+    let subtag: SubtagCall | undefined;
 
     for (const token of tokenize(source)) {
         switch (token.type) {
-            case BBSourceTokenType.STARTSUBTAG:
+            case SourceTokenType.STARTSUBTAG:
                 if (subtag)
                     subtags.push(subtag);
                 builder.push(subtag = {
@@ -19,7 +19,7 @@ export function bbtag(source: string): BBString {
                 });
                 builder = subtag.name;
                 break;
-            case BBSourceTokenType.ARGUMENTDELIMITER:
+            case SourceTokenType.ARGUMENTDELIMITER:
                 if (subtag === undefined)
                     builder.push(token.content);
                 else {
@@ -27,7 +27,7 @@ export function bbtag(source: string): BBString {
                     subtag.args.push(builder = []);
                 }
                 break;
-            case BBSourceTokenType.ENDSUBTAG:
+            case SourceTokenType.ENDSUBTAG:
                 if (subtag === undefined)
                     throw new Error(`Unexpected '${token.content}' at [${token.start.line}:${token.start.column}]`);
                 trim(builder);
@@ -35,7 +35,7 @@ export function bbtag(source: string): BBString {
                 subtag = subtags.pop();
                 builder = subtag === undefined ? result : currentBuilder(subtag);
                 break;
-            case BBSourceTokenType.CONTENT:
+            case SourceTokenType.CONTENT:
                 if (token.content.length === 0)
                     break;
                 builder.push(token.content);
@@ -51,8 +51,8 @@ export function bbtag(source: string): BBString {
     return result;
 }
 
-function* tokenize(source: string): IterableIterator<BBSourceToken> {
-    const marker: BBSourceMarker = {
+function* tokenize(source: string): IterableIterator<SourceToken> {
+    const marker: SourceMarker = {
         index: 0,
         line: 0,
         column: 0
@@ -60,7 +60,7 @@ function* tokenize(source: string): IterableIterator<BBSourceToken> {
 
     let previous = { ...marker };
 
-    function token(type: BBSourceTokenType, start: BBSourceMarker, end: BBSourceMarker): BBSourceToken {
+    function token(type: SourceTokenType, start: SourceMarker, end: SourceMarker): SourceToken {
         return {
             type: type,
             content: source.slice(start.index, end.index),
@@ -68,8 +68,8 @@ function* tokenize(source: string): IterableIterator<BBSourceToken> {
             end: { ...end }
         };
     }
-    function* tokens(type: BBSourceTokenType): IterableIterator<BBSourceToken> {
-        yield token(BBSourceTokenType.CONTENT, previous, marker);
+    function* tokens(type: SourceTokenType): IterableIterator<SourceToken> {
+        yield token(SourceTokenType.CONTENT, previous, marker);
         yield token(type, marker, previous = {
             index: marker.index + 1,
             column: marker.column + 1,
@@ -80,13 +80,13 @@ function* tokenize(source: string): IterableIterator<BBSourceToken> {
     for (marker.index = 0; marker.index < source.length; marker.index++, marker.column++) {
         switch (source[marker.index]) {
             case '{':
-                yield* tokens(BBSourceTokenType.STARTSUBTAG);
+                yield* tokens(SourceTokenType.STARTSUBTAG);
                 break;
             case ';':
-                yield* tokens(BBSourceTokenType.ARGUMENTDELIMITER);
+                yield* tokens(SourceTokenType.ARGUMENTDELIMITER);
                 break;
             case '}':
-                yield* tokens(BBSourceTokenType.ENDSUBTAG);
+                yield* tokens(SourceTokenType.ENDSUBTAG);
                 break;
             case '\n':
                 marker.line++;
@@ -94,21 +94,21 @@ function* tokenize(source: string): IterableIterator<BBSourceToken> {
                 break;
         }
     }
-    yield token(BBSourceTokenType.CONTENT, previous, marker);
+    yield token(SourceTokenType.CONTENT, previous, marker);
 }
 
-function currentBuilder(subtag: BBSubtagCall): BBString {
+function currentBuilder(subtag: SubtagCall): Statement {
     if (subtag.args.length === 0)
         return subtag.name;
     return subtag.args[subtag.args.length - 1];
 }
 
-function trim(str: BBString): void {
+function trim(str: Statement): void {
     modify(str, 0, str => str.trimStart());
     modify(str, str.length - 1, str => str.trimEnd());
 }
 
-function modify(str: BBString, index: number, mod: (str: string) => string): void {
+function modify(str: Statement, index: number, mod: (str: string) => string): void {
     if (str.length === 0)
         return;
 
