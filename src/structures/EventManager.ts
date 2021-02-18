@@ -1,7 +1,7 @@
 import { Cluster } from '../cluster';
-import { StoredEvent } from '../core/RethinkDb';
 import moment from 'moment';
 import { guard } from '../utils';
+import { StoredEvent } from '../core/database';
 
 export class EventManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

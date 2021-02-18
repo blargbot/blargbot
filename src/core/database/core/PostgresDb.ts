@@ -1,8 +1,8 @@
 import pg from 'pg';
 import sequelize, { Options as SequelizeOptions } from 'sequelize';
-import { sleep } from '../utils';
-import * as models from './models';
-import { BaseModel } from './models/Base';
+import { sleep } from '../../../utils';
+import * as models from '../../models';
+import { BaseModel } from '../../models/Base';
 
 delete (<Record<string, unknown>>pg).native; // TODO Do we need to do this?
 

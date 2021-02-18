@@ -24,11 +24,11 @@ export class ModerationUtils {
         fields?: EmbedField[]
     ): Promise<void> {
         if (Array.isArray(reason)) reason = reason.join(' ');
-        const val = await this.cluster.database.getGuildSetting(guild.id, 'modlog');
+        const val = await this.cluster.database.guilds.getSetting(guild.id, 'modlog');
         if (!val)
             return;
 
-        const storedGuild = await this.cluster.database.getGuild(guild.id);
+        const storedGuild = await this.cluster.database.guilds.get(guild.id);
         if (!storedGuild)
             return;
 
@@ -67,7 +67,7 @@ export class ModerationUtils {
         const msg = await this.cluster.util.send(val, {
             embed: embed
         });
-        await this.cluster.database.addGuildModlog(guild.id, {
+        await this.cluster.database.guilds.addModlog(guild.id, {
             caseid: caseid,
             modid: mod?.id,
             msgid: msg?.id ?? '',
@@ -77,7 +77,7 @@ export class ModerationUtils {
         });
     }
     public async issueWarning(user: User, guild: Guild, count?: number): Promise<WarnResult> {
-        const storedGuild = await this.cluster.database.getGuild(guild.id);
+        const storedGuild = await this.cluster.database.guilds.get(guild.id);
         if (!storedGuild) throw new Error('Cannot find guild');
         let type = ModerationType.WARN;
         let error = undefined;
@@ -102,7 +102,7 @@ export class ModerationUtils {
                 } catch (e) { error = e; }
                 type = ModerationType.KICK;
             }
-        await this.cluster.database.setGuildWarnings(guild.id, user.id, warningCount);
+        await this.cluster.database.guilds.setWarnings(guild.id, user.id, warningCount);
         return {
             type,
             count: warningCount ?? 0,
@@ -110,11 +110,11 @@ export class ModerationUtils {
         };
     }
     public async issuePardon(user: User, guild: Guild, count?: number): Promise<number> {
-        const storedGuild = await this.cluster.database.getGuild(guild.id);
+        const storedGuild = await this.cluster.database.guilds.get(guild.id);
         if (!storedGuild) throw new Error('Cannot find guild');
         const oldWarnings = storedGuild.warnings?.users?.[user.id] ?? 0;
         const warningCount = Math.max(0, oldWarnings - (count ?? 1));
-        await this.cluster.database.setGuildWarnings(guild.id, user.id, warningCount);
+        await this.cluster.database.guilds.setWarnings(guild.id, user.id, warningCount);
         return warningCount;
     }
 }

@@ -3,10 +3,10 @@ import { Timer } from '../../structures/Timer';
 import request from 'request';
 import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../../utils';
 import { Cluster } from '..';
-import { StoredGuildCommand, StoredGuild } from '../../core/RethinkDb';
 import { BaseDCommand } from '../../structures/BaseDCommand';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { limits } from '../../core/bbtag';
+import { StoredGuild, StoredGuildCommand } from '../../core/database';
 
 export class MessageCreateEventHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -39,8 +39,8 @@ export class MessageCreateEventHandler extends DiscordEventService {
         const { channel, author } = message;
         if (channel instanceof TextChannel && channel.guild.shard.ready) {
             this.cluster.metrics.messageCounter.inc();
-            void this.cluster.database.upsertUser(author);
-            const storedGuild = await this.cluster.database.getGuild(channel.guild.id);
+            void this.cluster.database.users.upsert(author);
+            const storedGuild = await this.cluster.database.guilds.get(channel.guild.id);
             if (storedGuild?.settings?.makelogs)
                 void this.cluster.util.insertChatlog(message, 0);
 
@@ -55,7 +55,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
     public async handleUserMessage(msg: Message, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<void> {
         let prefix: string | undefined;
         const prefixes: string[] = [];
-        const storedUser = await this.cluster.database.getUser(msg.author.id);
+        const storedUser = await this.cluster.database.users.get(msg.author.id);
         if (storedUser && storedUser.prefixes)
             prefixes.push(...storedUser.prefixes);
 
@@ -128,7 +128,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
     }
 
     public async flipTables(msg: Message<GuildTextableChannel>, unflip: boolean): Promise<void> {
-        const tableflip = await this.cluster.database.getGuildSetting(msg.channel.guild.id, 'tableflip');
+        const tableflip = await this.cluster.database.guilds.getSetting(msg.channel.guild.id, 'tableflip');
         if (tableflip) {
             const seed = randInt(0, 3);
             await this.cluster.util.send(msg, tables[unflip ? 'unflip' : 'flip'].prod[seed]);
@@ -141,7 +141,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         words: string[]
     ): Promise<boolean> {
         const commandName = words[0].toLowerCase();
-        const command = await this.cluster.database.getGuildCommand(msg.channel.guild.id, commandName);
+        const command = await this.cluster.database.guilds.getCommand(msg.channel.guild.id, commandName);
         if (command === undefined || !await this.cluster.util.canExecuteCustomCommand(msg, command, true))
             return false;
 
@@ -220,7 +220,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
             await command.execute(msg, words, text);
         } catch (err) {
             this.logger.error(err);
-            if (err.code === 50001 && !(await this.cluster.database.getUser(msg.author.id))?.dontdmerrors) {
+            if (err.code === 50001 && !(await this.cluster.database.users.get(msg.author.id))?.dontdmerrors) {
                 if (!guard.isGuildChannel(msg.channel))
                     void this.cluster.util.sendDM(msg.author,
                         'Oops, I dont seem to have permission to do that!');

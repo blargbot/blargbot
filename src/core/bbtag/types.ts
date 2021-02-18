@@ -1,7 +1,7 @@
 import { Attachment, Embed, GuildTextableChannel, Member, User, EmbedOptions, Message } from 'eris';
 import ReadWriteLock from 'rwlock';
 import { FlagResult, FlagDefinition } from '../../utils';
-import { StoredGuildCommand, StoredTag } from '../RethinkDb';
+import { StoredGuildCommand, StoredTag } from '../database';
 import { VariableCache } from './Caching';
 import { SubtagCallback, RuntimeContext } from './RuntimeContext';
 import { BBRuntimeScope, ScopeCollection } from './ScopeCollection';

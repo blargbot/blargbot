@@ -7,9 +7,9 @@ import { Duration } from 'moment-timezone';
 import { GuildTextableChannel, Member, User, Guild, Role, MessageFile } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
 import { Statement, SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext } from './types';
-import { StoredGuildCommand, StoredTag } from '../RethinkDb';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
 import { Engine } from './Engine';
+import { StoredGuildCommand, StoredTag } from '../database';
 
 function serializeEntity(entity: { id: string }): { id: string, serialized: string } {
     return { id: entity.id, serialized: JSON.stringify(entity) };
@@ -218,7 +218,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     private async _sendOutput(text: string, files: MessageFile | MessageFile[]): Promise<string | null> {
         let disableEveryone = true;
         if (this.isCC) {
-            disableEveryone = await this.engine.database.getGuildSetting(this.guild.id, 'disableeveryone') ?? false;
+            disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, 'disableeveryone') ?? false;
             disableEveryone ||= !this.state.allowedMentions.everybody;
 
             this.engine.logger.log('Allowed mentions:', this.state.allowedMentions, disableEveryone);

@@ -1,5 +1,21 @@
-import * as r from 'rethinkdb';
-import { FlagDefinition } from '../utils';
+import { Client as ErisClient, User } from 'eris';
+import { Expression } from 'rethinkdb';
+import { FlagDefinition } from '../../utils';
+import { RethinkDbOptions } from './core/RethinkDb';
+
+
+export type UpdateRequest<T> = {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    [P in keyof T]?: T[P] | Expression<T[P]> | UpdateRequest<T[P]>
+}
+
+export type RethinkTableMap = {
+    'guild': StoredGuild;
+    'tag': StoredTag;
+    'user': StoredUser;
+    'vars': KnownStoredVars;
+    'events': Omit<StoredEvent, 'id'>
+}
 
 export interface StoredVar<T extends string> {
     varname: T;
@@ -11,42 +27,54 @@ export interface RestartStoredVar extends StoredVar<'restart'> {
         time: number;
     };
 }
+
 export interface TagVarsStoredVar extends StoredVar<'tagVars'> {
     values: Record<string, unknown> | null;
 }
+
 export interface ARWhitelistStoredVar extends StoredVar<'arwhitelist'> {
     values: string[];
 }
+
 export interface GuildBlacklistStoredVar extends StoredVar<'guildBlacklist'> {
     values: { [guildid: string]: boolean | undefined };
 }
+
 export interface BlacklistStoredVar extends StoredVar<'blacklist'> {
     users: string[];
     guilds: string[];
 }
+
 export interface WhitelistedDomainsStoredVar extends StoredVar<'whitelistedDomains'> {
     values: { [domain: string]: boolean };
 }
+
 export interface ChangelogStoredVar extends StoredVar<'changelog'> {
     guilds: { [guildid: string]: string };
 }
+
 export interface PGStoredVar extends StoredVar<'pg'> {
     value: number;
 }
+
 export interface PoliceStoredVar extends StoredVar<'police'> {
     value: string[];
 }
+
 export interface SupportStoredVar extends StoredVar<'support'> {
     value: string[];
 }
+
 export interface CleverStatsStoredVar extends StoredVar<'cleverstats'> {
     stats: { [date: string]: { uses: number } };
 }
+
 export interface VersionStoredVar extends StoredVar<'version'> {
     major: number;
     minor: number;
     patch: number;
 }
+
 export type KnownStoredVars =
     | RestartStoredVar
     | TagVarsStoredVar
@@ -228,128 +256,30 @@ export interface UserTodo {
     content: string;
 }
 
-export interface RethinkDbOptions {
-    database: string;
-    user: string;
-    password: string;
-    host: string;
-    port: number;
+export interface DatabaseOptions {
+    logger: CatLogger,
+    discord: ErisClient,
+    rethinkDb: RethinkDbOptions
 }
 
-export type Query<T, R = r.Operation<T>> = (rethink: typeof r) => r.Operation<T> | R;
+export interface GuildTable {
+    get(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuild> | undefined>;
+    add(guild: StoredGuild): Promise<boolean>;
+    getIds(): Promise<string[]>;
+    getSetting<K extends keyof GuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<GuildSettings>[K] | undefined>;
+    setSetting<K extends keyof GuildSettings>(guildId: string, key: K, value: GuildSettings[K]): Promise<boolean>;
+    getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuildCommand> | undefined>;
+    withIntervalCommand(): Promise<DeepReadOnly<StoredGuild[]> | undefined>;
+    updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;
+    setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean>;
+    renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
+    addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
+    setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean>;
+    setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
+}
 
-export class RethinkDb {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #connectionPromise?: Promise<r.Connection>
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #connection?: r.Connection
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #options: RethinkDbOptions;
-
-    public constructor(options: RethinkDbOptions) {
-        this.#options = options;
-    }
-
-    public async getGuild(guildId: string): Promise<StoredGuild | null> {
-        return await this.query(r => r.table('guild').get<StoredGuild>(guildId));
-    }
-
-    public async setGuild(guild: StoredGuild): Promise<r.WriteResult> {
-        return await this.query(r => r.table('guild').replace(guild));
-    }
-
-    public async getUser(userId: string): Promise<StoredUser | null> {
-        return await this.query(r => r.table('user').get<StoredUser>(userId));
-    }
-
-    public async setUser(user: StoredUser): Promise<r.WriteResult> {
-        return await this.query(r => r.table('user').replace(user));
-    }
-
-    public async getTag(tagName: string): Promise<StoredTag | null> {
-        return await this.query(r => r.table('tag').get<StoredTag>(tagName));
-    }
-
-    public async setTag(tag: StoredTag): Promise<r.WriteResult> {
-        return await this.query(r => r.table('tag').replace(tag));
-    }
-
-    public async deleteVar<T extends KnownStoredVars['varname']>(varname: T): Promise<r.WriteResult> {
-        return await this.query(r => r.table('vars').get(varname).delete());
-    }
-
-    public async getVar<T extends KnownStoredVars['varname']>(varname: T): Promise<GetStoredVar<T> | null> {
-        return await this.query(r => r.table('vars').get<GetStoredVar<T>>(varname));
-    }
-
-    public async setVar<T extends KnownStoredVars['varname']>(value: GetStoredVar<T>): Promise<r.WriteResult> {
-        const repl = await this.query(r => r.table('vars').replace(value));
-        if (repl.replaced === 1 || repl.inserted === 1)
-            return repl;
-
-        return await this.query(r => r.table('vars').insert(value));
-    }
-
-    public async query<T>(query: Query<T>): Promise<T>
-    public async query<T>(query: Query<T | undefined>): Promise<T | undefined>
-    public async query<T>(query: Query<T | undefined>): Promise<T | undefined> {
-        const connection = this.#connection ?? await this.connect();
-        return await query(r)?.run(connection);
-    }
-
-    public async queryAll<T>(query: Query<r.Cursor>): Promise<T[]> {
-        const stream = this.stream<T>(query);
-        const result = [];
-        for await (const item of stream)
-            result.push(item);
-        return result;
-    }
-
-    public async * stream<T>(query: Query<r.Cursor>): AsyncIterableIterator<T> {
-        const cursor = await this.query(query);
-        while (true) {
-            try {
-                yield <T>await cursor.next();
-            } catch (err) {
-                if (err && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
-                    break;
-                throw err;
-            }
-        }
-    }
-
-    public async connect(): Promise<r.Connection> {
-        if (!this.#connectionPromise) {
-            this.#connectionPromise = r.connect({
-                host: this.#options.host,
-                db: this.#options.database,
-                password: this.#options.password,
-                user: this.#options.user,
-                port: this.#options.port,
-                timeout: 10000
-            }).then(conn => this.#connection = conn);
-        }
-
-        return await this.#connectionPromise;
-    }
-
-    public async disconnect(): Promise<void> {
-        if (!this.#connection) {
-            if (!this.#connectionPromise) {
-                return;
-            }
-
-            await this.#connectionPromise;
-        }
-
-        if (this.#connection) {
-            await this.#connection.close();
-            this.#connection = undefined;
-            this.#connectionPromise = undefined;
-        }
-    }
-
-    public epochTime(time: number): r.Expression<r.Time> {
-        return r.epochTime(time);
-    }
+export interface UserTable {
+    get(userId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredUser> | undefined>;
+    add(user: StoredUser): Promise<boolean>;
+    upsert(user: User): Promise<boolean>
 }

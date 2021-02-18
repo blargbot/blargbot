@@ -5,7 +5,7 @@ import { SubtagCall, RuntimeContextOptions, RuntimeReturnState } from './types';
 import { Statement } from './types';
 import { RuntimeContext, SubtagCallback } from './RuntimeContext';
 import { BaseSubtagHandler } from './BaseSubtagHandler';
-import { Database } from '../Database';
+import { Database } from '../database';
 
 export class Engine {
     public get discord(): ErisClient { return this.cluster.discord; }

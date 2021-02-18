@@ -39,7 +39,7 @@ export class ReadyEventHandler extends DiscordEventService {
 
         this.cluster.metrics.guildGauge.set(this.cluster.discord.guilds.size);
 
-        const guildIds = new Set(await this.cluster.database.getGuildIds());
+        const guildIds = new Set(await this.cluster.database.guilds.getIds());
         for (const guild of this.cluster.discord.guilds.values()) {
             if (guildIds.has(guild.id))
                 return;
@@ -54,7 +54,7 @@ export class ReadyEventHandler extends DiscordEventService {
             void this.cluster.util.send(this.cluster.config.discord.channels.joinlog, message);
 
             this.logger.log('Inserting a missing guild ' + guild.id);
-            void this.cluster.database.addGuild({
+            void this.cluster.database.guilds.add({
                 guildid: guild.id,
                 active: true,
                 name: guild.name,

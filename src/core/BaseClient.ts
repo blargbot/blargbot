@@ -1,10 +1,10 @@
 import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
-import { PostgresDb } from './PostgresDb';
+import { PostgresDb } from './database/core/PostgresDb';
 import { Client as CassandraDb, auth as CassandraAuth } from 'cassandra-driver';
 import { metrics } from './Metrics';
 import { BaseUtilities } from './BaseUtilities';
 import { BaseModuleLoader } from './BaseModuleLoader';
-import { Database } from './Database';
+import { Database } from './database';
 
 export class BaseClient {
     public readonly metrics: typeof metrics;

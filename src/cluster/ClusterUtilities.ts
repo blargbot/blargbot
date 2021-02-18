@@ -1,7 +1,6 @@
 import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
-import { GuildSettings, StoredGuildCommand, StoredGuild } from '../core/RethinkDb';
 import { Guild, GuildTextableChannel, Member, Message, Permission, Role, TextableChannel, User } from 'eris';
 import { commandTypes, defaultStaff, guard, humanize, parse, snowflake } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
@@ -9,6 +8,7 @@ import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
 import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
+import { GuildSettings, StoredGuild, StoredGuildCommand } from '../core/database';
 
 interface CanExecuteDiscordCommandOptions {
     storedGuild?: DeepReadOnly<StoredGuild>,
@@ -460,7 +460,7 @@ export class ClusterUtilities extends BaseUtilities {
         let { storedGuild, permOverride, staffPerms } = options;
         let adminrole: string | undefined;
         if (!storedGuild) {
-            storedGuild = await this.database.getGuild(msg.channel.guild.id) ?? undefined;
+            storedGuild = await this.database.guilds.get(msg.channel.guild.id) ?? undefined;
             if (storedGuild?.settings) {
                 permOverride = storedGuild.settings.permoverride;
                 staffPerms = storedGuild.settings.staffperms;
@@ -509,7 +509,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (guild.ownerID == userId) return true;
         if (member.permissions.has('administrator')) return true;
 
-        const storedGuild = await this.database.getGuild(guildId);
+        const storedGuild = await this.database.guilds.get(guildId);
         if (storedGuild?.settings?.permoverride) {
             let allow = storedGuild.settings.staffperms || defaultStaff;
             if (typeof allow === 'string')
@@ -563,7 +563,7 @@ export class ClusterUtilities extends BaseUtilities {
             return true;
 
         if (channel && !quiet) {
-            const guild = await this.database.getGuild(member.guild.id);
+            const guild = await this.database.guilds.get(member.guild.id);
             if (!guild?.settings?.disablenoperms) {
                 const permString = roles.map(m => '`' + m + '`').join(', or ');
                 void this.send(channel, `You need the role ${permString} in order to use this command!`);

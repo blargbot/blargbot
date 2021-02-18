@@ -4,7 +4,6 @@ import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
 import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User, Member, DiscordRESTError, DiscordHTTPError, TextableChannel, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
-import { StoredGuild, StoredTag } from '../core/RethinkDb';
 import { metrics } from '../core/Metrics';
 import { Client as CassandraDb, auth as CassandraAuth, ResultCallback as CassandraCallback } from 'cassandra-driver';
 import { fafo, getRange, humanize, randInt, snowflake, SubtagVariableType } from '.';
@@ -16,6 +15,7 @@ import limax from 'limax';
 import { nfkd } from 'unorm';
 import { Engine as BBEngine, limits, RuntimeContext as BBContext, SubtagCall } from '../core/bbtag';
 import { ClusterUtilities } from '../cluster';
+import { StoredGuild, StoredTag } from '../core/database';
 
 type CassandraRow = Parameters<CassandraCallback>[1]['rows'][number]
 
@@ -375,7 +375,7 @@ export const oldBu = {
             //console.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
             return false;
         }
-        const guild = await util.database.getGuild(guildid);
+        const guild = await util.database.guilds.get(guildid);
 
         return guild?.channels[channelid]?.blacklisted ?? false;
     },
@@ -566,7 +566,7 @@ export const oldBu = {
             }
         }
         if (!quiet && 'content' in msg) {
-            const guild = await util.database.getGuild(member.guild.id);
+            const guild = await util.database.guilds.get(member.guild.id);
             if (!guild?.settings.disablenoperms) {
                 const permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
                 void util.send(msg, `You need the role ${permString} in order to use this command!`);
@@ -644,7 +644,7 @@ export const oldBu = {
     },
 
     async canDmErrors(userId: string): Promise<boolean> {
-        const storedUser = await util.database.getUser(userId, true);
+        const storedUser = await util.database.users.get(userId, true);
         return !storedUser?.dontdmerrors;
     },
     async getUserById(userId: string): Promise<User | null> {
@@ -720,7 +720,7 @@ export const oldBu = {
         fields: EmbedField[],
         embed: EmbedOptions
     ): Promise<void> {
-        const storedGuild = await util.database.getGuild(guildid);
+        const storedGuild = await util.database.guilds.get(guildid);
         if (!storedGuild) throw new Error('Cannot find guild');
         const log = storedGuild.log ?? {};
         const logIgnore = storedGuild.logIgnore ?? [];
@@ -797,7 +797,7 @@ export const oldBu = {
             try {
                 await util.send(channel, { embed });
             } catch (err) {
-                await util.database.setLogChannel(guildid, event, undefined);
+                await util.database.guilds.setLogChannel(guildid, event, undefined);
                 await util.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
             }
         }

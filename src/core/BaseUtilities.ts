@@ -4,10 +4,10 @@ import { snowflake } from '../utils';
 import { Error } from 'sequelize';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
 import { Client as CassandraDb } from 'cassandra-driver';
-import { PostgresDb } from './PostgresDb';
+import { PostgresDb } from './database/core/PostgresDb';
 import request from 'request';
 import { metrics } from './Metrics';
-import { Database } from './Database';
+import { Database } from './database';
 
 export type SendContext = Pick<Message, 'channel' | 'content' | 'author'> | TextableChannel | string
 export type SendEmbed = EmbedOptions & { asString?: string }
@@ -211,7 +211,7 @@ export class BaseUtilities {
     }
 
     public async canDmErrors(userId: string): Promise<boolean> {
-        const storedUser = await this.database.getUser(userId);
+        const storedUser = await this.database.users.get(userId);
         return !storedUser?.dontdmerrors;
     }
 }

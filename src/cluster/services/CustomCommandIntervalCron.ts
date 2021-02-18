@@ -16,7 +16,7 @@ export class CustomCommandIntervalCron extends CronService {
     protected async execute(): Promise<void> {
         const nonce = (Math.floor(Math.random() * 0xffffffff)).toString(16).padStart(8, '0').toUpperCase();
 
-        const guilds = (await this.cluster.database.getIntervalGuilds())
+        const guilds = (await this.cluster.database.guilds.withIntervalCommand())
             ?.filter(g => this.cluster.discord.guilds.get(g.guildid))
             ?? [];
 
