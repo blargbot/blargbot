@@ -5,7 +5,7 @@ import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
 import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User, Member, DiscordRESTError, DiscordHTTPError, TextableChannel, Role, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
 import { GuildSettings, RethinkDb, StoredGuild, StoredGuildCommand, StoredTag, StoredUser } from '../core/RethinkDb';
-import { Metrics } from '../core/Metrics';
+import { metrics } from '../core/Metrics';
 import { Client as CassandraDb, auth as CassandraAuth, ResultCallback as CassandraCallback } from 'cassandra-driver';
 import { fafo, getRange, humanize, ModerationType, randInt, snowflake, SubtagVariableType } from '.';
 import isSafeRegex from 'safe-regex';
@@ -319,7 +319,6 @@ export const oldBu = {
             getLock: (context: RuntimeContext, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
         }
     ],
-    Metrics: new Metrics(),
     guildSettings: {
         async set<K extends keyof GuildSettings>(guildid: string, key: K, value: GuildSettings[K]): Promise<boolean> {
             const storedGuild = await oldBu.getGuild(guildid);
@@ -597,7 +596,7 @@ export const oldBu = {
         if (!config.cassandra)
             return null;
         if (msg.channel.id != '204404225914961920') {
-            oldBu.Metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
+            metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
             const data: chatlog = {
                 id: snowflake.create(),
                 content: msg.content,

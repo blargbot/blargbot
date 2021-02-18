@@ -2,12 +2,12 @@ import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
 import { PostgresDb } from './PostgresDb';
 import { RethinkDb } from './RethinkDb';
 import { Client as CassandraDb, auth as CassandraAuth } from 'cassandra-driver';
-import { Metrics } from './Metrics';
+import { metrics } from './Metrics';
 import { BaseUtilities } from './BaseUtilities';
 import { BaseModuleLoader } from './BaseModuleLoader';
 
 export class BaseClient {
-    public readonly metrics: Metrics;
+    public readonly metrics: typeof metrics;
     public readonly util: BaseUtilities;
     public readonly postgres: PostgresDb;
     public readonly rethinkdb: RethinkDb;
@@ -19,7 +19,7 @@ export class BaseClient {
         public readonly config: Configuration,
         discordConfig: Omit<ErisOptions, 'restMode' | 'defaultImageFormat'>
     ) {
-        this.metrics = new Metrics();
+        this.metrics = metrics;
         this.util = new BaseUtilities(this);
 
         this.postgres = new PostgresDb(this.logger, {

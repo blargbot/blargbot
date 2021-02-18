@@ -6,8 +6,8 @@ import { MessageAwaiter } from '../structures/MessageAwaiter';
 import { RethinkDb } from './RethinkDb';
 import { Client as CassandraDb } from 'cassandra-driver';
 import { PostgresDb } from './PostgresDb';
-import { Metrics } from './Metrics';
 import request from 'request';
+import { metrics } from './Metrics';
 
 export type SendContext = Pick<Message, 'channel' | 'content' | 'author'> | TextableChannel | string
 export type SendEmbed = EmbedOptions & { asString?: string }
@@ -29,7 +29,6 @@ export class BaseUtilities {
     public get cassandra(): CassandraDb { return this.client.cassandra; }
     public get postgres(): PostgresDb { return this.client.postgres; }
     public get logger(): CatLogger { return this.client.logger; }
-    public get metrics(): Metrics { return this.client.metrics; }
     public get config(): Configuration { return this.client.config; }
     public readonly messageAwaiter: MessageAwaiter;
 
@@ -42,7 +41,7 @@ export class BaseUtilities {
     public async send(context: SendContext, payload: SendPayload, files?: SendFiles): Promise<Message | null> {
         let channel: AnyChannel | Channel;
         let message: Pick<Message, 'channel' | 'content' | 'author'> | undefined;
-        this.metrics.sendCounter.inc();
+        metrics.sendCounter.inc();
 
         // Process context into a channel and maybe a message
         switch (typeof context) {

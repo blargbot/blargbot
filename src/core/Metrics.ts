@@ -1,97 +1,67 @@
-import Prometheus from 'prom-client';
+import Prometheus, { metric } from 'prom-client';
 
-export class Metrics {
-    public readonly registryCache: Array<Prometheus.metric>[]; // TODO nested array?
-    public readonly guildGauge: Prometheus.Gauge;
-    public readonly shardStatus: Prometheus.Gauge;
-    public readonly userGauge: Prometheus.Gauge;
-    public readonly messageCounter: Prometheus.Counter;
-    public readonly sendCounter: Prometheus.Counter;
-    public readonly chatlogCounter: Prometheus.Counter;
-    public readonly commandCounter: Prometheus.Counter;
-    public readonly commandLatency: Prometheus.Histogram;
-    public readonly subtagLatency: Prometheus.Histogram;
-    public readonly commandError: Prometheus.Counter;
-    public readonly bbtagExecutions: Prometheus.Counter;
-    public readonly httpsRequests: Prometheus.Counter;
-    public readonly cleverbotStats: Prometheus.Counter;
-
-    public get aggregated(): Prometheus.Registry {
-        const c = this.registryCache.filter(() => true);
+export const metrics = {
+    registryCache: <Array<Array<metric>>>[],
+    guildGauge: new Prometheus.Gauge({
+        name: 'bot_guild_gauge', help: 'How many guilds the bot is in'
+    }),
+    shardStatus: new Prometheus.Gauge({
+        name: 'bot_shard_status', help: 'The status of the shards',
+        labelNames: ['status']
+    }),
+    userGauge: new Prometheus.Gauge({
+        name: 'bot_user_gauge', help: 'How many users the bot can see'
+    }),
+    messageCounter: new Prometheus.Counter({
+        name: 'bot_message_counter', help: 'Messages the bot sees'
+    }),
+    sendCounter: new Prometheus.Counter({
+        name: 'bot_send_counter', help: 'Messages the bot has sent'
+    }),
+    chatlogCounter: new Prometheus.Counter({
+        name: 'bot_chatlog_counter', help: 'Chatlogs created',
+        labelNames: ['type']
+    }),
+    cleverbotStats: new Prometheus.Counter({
+        name: 'bot_cleverbot_counter', help: 'Calls to cleverbot made'
+    }),
+    commandCounter: new Prometheus.Counter({
+        name: 'bot_command_counter', help: 'Commands executed',
+        labelNames: ['command', 'category']
+    }),
+    commandLatency: new Prometheus.Histogram({
+        name: 'bot_command_latency_ms', help: 'The latency of commands',
+        labelNames: ['command', 'category'],
+        buckets: [10, 100, 500, 1000, 2000, 5000]
+    }),
+    subtagLatency: new Prometheus.Histogram({
+        name: 'bot_subtag_latency_ms', help: 'Latency of subtag execution',
+        labelNames: ['subtag'],
+        buckets: [0, 5, 10, 100, 500, 1000, 2000, 5000]
+    }),
+    commandError: new Prometheus.Counter({
+        name: 'bot_command_error_counter', help: 'Commands errored',
+        labelNames: ['command']
+    }),
+    bbtagExecutions: new Prometheus.Counter({
+        name: 'bot_bbtag_executions', help: 'BBTag strings parsed',
+        labelNames: ['type']
+    }),
+    httpsRequests: new Prometheus.Counter({
+        name: 'https_requests', help: 'HTTPS Requests',
+        labelNames: ['method', 'endpoint']
+    }),
+    get aggregated(): Prometheus.Registry {
+        const c = metrics.registryCache.filter(() => true);
         c.unshift(Prometheus.register.getMetricsAsJSON());
 
-        return this.aggregate(c);
+        return aggregate(c);
     }
+};
 
-    public constructor() {
-        this.registryCache = [];
-        this.guildGauge = new Prometheus.Gauge({
-            name: 'bot_guild_gauge', help: 'How many guilds the bot is in'
-        });
-
-        this.shardStatus = new Prometheus.Gauge({
-            name: 'bot_shard_status', help: 'The status of the shards',
-            labelNames: ['status']
-        });
-
-        this.userGauge = new Prometheus.Gauge({
-            name: 'bot_user_gauge', help: 'How many users the bot can see'
-        });
-
-        this.messageCounter = new Prometheus.Counter({
-            name: 'bot_message_counter', help: 'Messages the bot sees'
-        });
-
-        this.sendCounter = new Prometheus.Counter({
-            name: 'bot_send_counter', help: 'Messages the bot has sent'
-        });
-
-        this.chatlogCounter = new Prometheus.Counter({
-            name: 'bot_chatlog_counter', help: 'Chatlogs created',
-            labelNames: ['type']
-        });
-
-        this.cleverbotStats = new Prometheus.Counter({
-            name: 'bot_cleverbot_counter', help: 'Calls to cleverbot made'
-        });
-
-        this.commandCounter = new Prometheus.Counter({
-            name: 'bot_command_counter', help: 'Commands executed',
-            labelNames: ['command', 'category']
-        });
-
-        this.commandLatency = new Prometheus.Histogram({
-            name: 'bot_command_latency_ms', help: 'The latency of commands',
-            labelNames: ['command', 'category'],
-            buckets: [10, 100, 500, 1000, 2000, 5000]
-        });
-
-        this.subtagLatency = new Prometheus.Histogram({
-            name: 'bot_subtag_latency_ms', help: 'Latency of subtag execution',
-            labelNames: ['subtag'],
-            buckets: [0, 5, 10, 100, 500, 1000, 2000, 5000]
-        });
-
-        this.commandError = new Prometheus.Counter({
-            name: 'bot_command_error_counter', help: 'Commands errored',
-            labelNames: ['command']
-        });
-
-        this.bbtagExecutions = new Prometheus.Counter({
-            name: 'bot_bbtag_executions', help: 'BBTag strings parsed',
-            labelNames: ['type']
-        });
-
-        this.httpsRequests = new Prometheus.Counter({
-            name: 'https_requests', help: 'HTTPS Requests',
-            labelNames: ['method', 'endpoint']
-        });
-
-        Prometheus.collectDefaultMetrics();
-    }
-
-    public aggregate(regArray: Array<Prometheus.metric>[]): Prometheus.Registry { // TODO Nested array?
-        const aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
-        return aggregated;
-    }
+function aggregate(regArray: Array<Prometheus.metric>[]): Prometheus.Registry { // TODO Nested array?
+    const aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
+    return aggregated;
 }
+
+Prometheus.collectDefaultMetrics();
