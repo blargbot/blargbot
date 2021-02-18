@@ -48,7 +48,7 @@ export interface SerializedRuntimeContext {
     isCC: boolean,
     state: Omit<RuntimeContextState, 'cache' | 'overrides'>,
     scope: BBRuntimeScope,
-    input: string[],
+    input: readonly string[],
     flaggedInput: FlagResult,
     tagName: string,
     author: string,
@@ -120,8 +120,8 @@ export const enum RuntimeReturnState {
 
 export interface RuntimeContextOptions {
     message: RuntimeContextMessage | Message<GuildTextableChannel>;
-    input: string[];
-    flags?: FlagDefinition[];
+    input: readonly string[];
+    flags?: DeepReadOnly<FlagDefinition[]>;
     isCC: boolean;
     tagVars?: boolean;
     author?: string;

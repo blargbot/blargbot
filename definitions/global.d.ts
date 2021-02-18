@@ -25,6 +25,10 @@ declare global {
 
     export type ClassOf<T> = Function & { prototype: T };
 
+    type DeepReadOnly<T> = {
+        readonly [P in keyof T]: DeepReadOnly<T[P]>
+    }
+
     export var console: never | Console;
 
     namespace NodeJS {

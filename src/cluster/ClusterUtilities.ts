@@ -1,9 +1,8 @@
 import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
-import { GuildSettings, StoredGuildCommand, StoredGuild, StoredUser } from '../core/RethinkDb';
+import { GuildSettings, StoredGuildCommand, StoredGuild } from '../core/RethinkDb';
 import { Guild, GuildTextableChannel, Member, Message, Permission, Role, TextableChannel, User } from 'eris';
-import * as r from 'rethinkdb';
 import { commandTypes, defaultStaff, guard, humanize, parse, snowflake } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
 import { BanStore } from '../structures/BanStore';
@@ -12,7 +11,7 @@ import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
 
 interface CanExecuteDiscordCommandOptions {
-    storedGuild?: StoredGuild,
+    storedGuild?: DeepReadOnly<StoredGuild>,
     permOverride?: GuildSettings['permoverride'],
     staffPerms?: GuildSettings['staffperms']
 }
@@ -35,10 +34,6 @@ interface MessagePrompt {
 }
 
 export class ClusterUtilities extends BaseUtilities {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #guildCache: Map<string, StoredGuild>;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #userCache: Map<string, StoredUser>;
     public readonly bans: BanStore;
     public readonly commandMessages: MessageIdQueue;
     public readonly moderation: ModerationUtils;
@@ -47,68 +42,9 @@ export class ClusterUtilities extends BaseUtilities {
         public readonly cluster: Cluster
     ) {
         super(cluster);
-        this.#guildCache = new Map();
-        this.#userCache = new Map();
         this.bans = new BanStore();
         this.moderation = new ModerationUtils(this.cluster);
         this.commandMessages = new MessageIdQueue(100);
-    }
-
-    public async guildSetting<T extends keyof GuildSettings>(guildId: string, key: T): Promise<GuildSettings[T] | null> {
-        const guild = await this.getGuild(guildId);
-        if (guild === null || guild.settings === undefined)
-            return null;
-
-        if (!(key in guild.settings))
-            return null;
-
-        return guild.settings[key];
-    }
-
-    public async processUser(user: User): Promise<void> {
-        if (user.discriminator == '0000') return;
-        const storedUser = await this.cluster.rethinkdb.getUser(user.id);
-        if (!storedUser) {
-            this.logger.debug(`inserting user ${user.id} (${user.username})`);
-            await this.cluster.rethinkdb.query(r =>
-                r.table('user').insert({
-                    userid: user.id,
-                    username: user.username,
-                    usernames: [{
-                        name: user.username,
-                        date: r.epochTime(moment().valueOf() / 1000)
-                    }],
-                    isbot: user.bot,
-                    lastspoke: r.epochTime(moment().valueOf() / 1000),
-                    lastcommand: null,
-                    lastcommanddate: null,
-                    discriminator: user.discriminator,
-                    todo: []
-                }));
-        } else {
-            const newUser: Partial<StoredUser> = {};
-            let update = false;
-            if (storedUser.username != user.username) {
-                newUser.username = user.username;
-                newUser.usernames = storedUser.usernames ?? [];
-                newUser.usernames.push({
-                    name: user.username,
-                    date: r.epochTime(moment().valueOf() / 1000)
-                });
-                update = true;
-            }
-            if (storedUser.discriminator != user.discriminator) {
-                newUser.discriminator = user.discriminator;
-                update = true;
-            }
-            if (storedUser.avatarURL != user.avatarURL) {
-                newUser.avatarURL = user.avatarURL;
-                update = true;
-            }
-
-            if (update)
-                await this.cluster.rethinkdb.query(r => r.table('user').get(user.id).update(newUser));
-        }
     }
 
     public async getUser(msg: Pick<Message, 'channel' | 'content' | 'author'>, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
@@ -460,13 +396,13 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async canExecuteCustomCommand(msg: Message<GuildTextableChannel>, command: StoredGuildCommand, quiet: boolean): Promise<boolean> {
+    public async canExecuteCustomCommand(msg: Message<GuildTextableChannel>, command: DeepReadOnly<StoredGuildCommand>, quiet: boolean): Promise<boolean> {
         return command !== null
             && !command.hidden
             && (!command.roles?.length || await this.hasPerm(msg, command.roles, quiet));
     }
 
-    public hasRole(msg: Member | Message, roles: string | string[], override = true): boolean {
+    public hasRole(msg: Member | Message, roles: string | readonly string[], override = true): boolean {
         let member: Member;
         if (msg instanceof Member) {
             member = msg;
@@ -482,7 +418,7 @@ export class ClusterUtilities extends BaseUtilities {
                 || member.permissions.json.administrator))
             return true;
 
-        if (!Array.isArray(roles))
+        if (typeof roles === 'string')
             roles = [roles];
 
         return roles.some(r => member.roles.includes(r));
@@ -524,7 +460,7 @@ export class ClusterUtilities extends BaseUtilities {
         let { storedGuild, permOverride, staffPerms } = options;
         let adminrole: string | undefined;
         if (!storedGuild) {
-            storedGuild = await this.getGuild(msg.channel.guild.id) ?? undefined;
+            storedGuild = await this.database.getGuild(msg.channel.guild.id) ?? undefined;
             if (storedGuild?.settings) {
                 permOverride = storedGuild.settings.permoverride;
                 staffPerms = storedGuild.settings.staffperms;
@@ -573,7 +509,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (guild.ownerID == userId) return true;
         if (member.permissions.has('administrator')) return true;
 
-        const storedGuild = await this.getGuild(guildId);
+        const storedGuild = await this.database.getGuild(guildId);
         if (storedGuild?.settings?.permoverride) {
             let allow = storedGuild.settings.staffperms || defaultStaff;
             if (typeof allow === 'string')
@@ -584,25 +520,6 @@ export class ClusterUtilities extends BaseUtilities {
             }
         }
         return false;
-    }
-
-    public async getGuild(guildid: string): Promise<StoredGuild | null> {
-        if (!this.#guildCache.has(guildid)) {
-            const guild = await this.rethinkdb.getGuild(guildid);
-            if (guild)
-                this.#guildCache.set(guildid, guild);
-        }
-        return this.#guildCache.get(guildid) ?? null;
-    }
-
-
-    public async getCachedUser(userid: string): Promise<StoredUser | null> {
-        if (!this.#userCache.has(userid)) {
-            const user = await this.rethinkdb.getUser(userid);
-            if (user)
-                this.#userCache.set(userid, user);
-        }
-        return this.#userCache.get(userid) ?? null;
     }
 
     public comparePerms(member: Member, allow?: number): boolean {
@@ -616,7 +533,7 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public async hasPerm(msg: Member | Message, roles: string[], quiet: boolean, override = true): Promise<boolean> {
+    public async hasPerm(msg: Member | Message, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
         let member: Member;
         let channel: TextableChannel | undefined;
         if (msg instanceof Member) {
@@ -646,7 +563,7 @@ export class ClusterUtilities extends BaseUtilities {
             return true;
 
         if (channel && !quiet) {
-            const guild = await this.getGuild(member.guild.id);
+            const guild = await this.database.getGuild(member.guild.id);
             if (!guild?.settings?.disablenoperms) {
                 const permString = roles.map(m => '`' + m + '`').join(', or ');
                 void this.send(channel, `You need the role ${permString} in order to use this command!`);
@@ -654,111 +571,6 @@ export class ClusterUtilities extends BaseUtilities {
         }
         return false;
     }
-
-    public readonly ccommand = {
-        set: async (guildid: string, key: string, value: StoredGuildCommand): Promise<boolean> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key = key.toLowerCase();
-            if (!storedGuild)
-                return false;
-
-            if (!storedGuild.ccommands)
-                storedGuild.ccommands = {};
-
-            storedGuild.ccommands[key] = value;
-
-            await this.cluster.rethinkdb.query(r =>
-                r.table('guild')
-                    .get(guildid)
-                    .update({ ccommands: storedGuild.ccommands }));
-            return true;
-        },
-        get: async (guildid: string, key: string): Promise<StoredGuildCommand | null> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key = key.toLowerCase();
-            return storedGuild?.ccommands?.[key] ?? null;
-        },
-        rename: async (guildid: string, key1: string, key2: string): Promise<boolean> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key1 = key1.toLowerCase();
-            key2 = key2.toLowerCase();
-
-            if (!storedGuild?.ccommands?.[key1])
-                return false;
-
-            storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
-            delete storedGuild.ccommands[key1];
-
-            await this.cluster.rethinkdb.query(r =>
-                r.table('guild')
-                    .get(guildid)
-                    .replace(storedGuild));
-            return true;
-        },
-        remove: async (guildid: string, key: string): Promise<boolean> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key = key.toLowerCase();
-
-            if (!storedGuild?.ccommands?.[key])
-                return false;
-
-            delete storedGuild.ccommands[key];
-
-            await this.cluster.rethinkdb.query(r =>
-                r.table('guild')
-                    .get(guildid)
-                    .replace(storedGuild));
-            return true;
-        },
-        sethelp: async (guildid: string, key: string, help: string): Promise<boolean> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key = key.toLowerCase();
-            if (!storedGuild)
-                return false;
-
-            const ccommand = storedGuild.ccommands?.[key];
-            if (!ccommand)
-                return false;
-
-            ccommand.help = help;
-            await this.cluster.rethinkdb.query(r =>
-                r.table('guild')
-                    .get(guildid)
-                    .replace(storedGuild));
-            return true;
-        },
-        gethelp: async (guildid: string, key: string): Promise<string | undefined> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key = key.toLowerCase();
-
-            return storedGuild?.ccommands?.[key]?.help;
-        },
-        setlang: async (guildid: string, key: string, lang: string): Promise<boolean> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key = key.toLowerCase();
-            if (!storedGuild)
-                return false;
-
-            const ccommand = storedGuild.ccommands?.[key];
-            if (!ccommand)
-                return false;
-
-            ccommand.lang = lang;
-            await this.cluster.rethinkdb.query(r =>
-                r.table('guild')
-                    .get(guildid)
-                    .replace(storedGuild));
-            return true;
-        },
-        getlang: async (guildid: string, key: string): Promise<string | undefined> => {
-            const storedGuild = await this.cluster.util.getGuild(guildid);
-            key = key.toLowerCase();
-
-            return storedGuild?.ccommands?.[key]?.lang;
-        }
-    };
-
-
 }
 
 

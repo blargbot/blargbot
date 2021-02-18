@@ -3,19 +3,19 @@ import avatars from '../../res/avatars.json';
 import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
-import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User, Member, DiscordRESTError, DiscordHTTPError, TextableChannel, Role, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
-import { GuildSettings, RethinkDb, StoredGuild, StoredGuildCommand, StoredTag, StoredUser } from '../core/RethinkDb';
+import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User, Member, DiscordRESTError, DiscordHTTPError, TextableChannel, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
+import { StoredGuild, StoredTag } from '../core/RethinkDb';
 import { metrics } from '../core/Metrics';
 import { Client as CassandraDb, auth as CassandraAuth, ResultCallback as CassandraCallback } from 'cassandra-driver';
-import { fafo, getRange, humanize, ModerationType, randInt, snowflake, SubtagVariableType } from '.';
+import { fafo, getRange, humanize, randInt, snowflake, SubtagVariableType } from '.';
 import isSafeRegex from 'safe-regex';
-import { WriteChange } from 'rethinkdb';
 import request from 'request';
 import { parse } from './utils';
 import snekfetch from 'snekfetch';
 import limax from 'limax';
 import { nfkd } from 'unorm';
 import { Engine as BBEngine, limits, RuntimeContext as BBContext, SubtagCall } from '../core/bbtag';
+import { ClusterUtilities } from '../cluster';
 
 type CassandraRow = Parameters<CassandraCallback>[1]['rows'][number]
 
@@ -63,22 +63,19 @@ interface TagLocks {
     [TagLock]?: ReadWriteLock;
 }
 
-let r: RethinkDb;
 const console: CatLogger = <CatLogger><unknown>undefined;
-const bot: bot = <bot><unknown>undefined;
+const bot = <bot><unknown>undefined;
 const bbEngine: BBEngine = <BBEngine><unknown>undefined;
 const cluster = <NodeJS.Process & Required<Pick<NodeJS.Process, 'send'>>><unknown>process;
+const util = <ClusterUtilities><unknown>undefined;
 let awaitReactionCounter = 0;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const oldBu = {
-    async send<TCHAN extends TextableChannel>(...args: [Message<TCHAN> | string, ...unknown[]]): Promise<Message<TCHAN> | null> { return await Promise.reject(args.join(' ')); },
     commandMessages: {},
     notCommandMessages: {},
     bans: {} as Record<string, Record<string, { mod: User, type: string, reason: string }>>,
     unbans: {},
-    guildCache: {} as Record<string, StoredGuild | undefined>,
-    userCache: {} as Record<string, StoredUser | undefined>,
     globalVars: {},
     commandStats: {},
     commandUses: 0,
@@ -89,8 +86,6 @@ export const oldBu = {
     tagLocks: {} as TagLocks,
     stats: {} as Record<string, unknown>,
     cleverStats: {},
-    catOverrides: true,
-    debug: false,
     startTime: moment(),
     avatars: avatars,//JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
     emitter: new EventEmitter(),
@@ -307,139 +302,6 @@ export const oldBu = {
             getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
         }
     ],
-    guildSettings: {
-        async set<K extends keyof GuildSettings>(guildid: string, key: K, value: GuildSettings[K]): Promise<boolean> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            if (!storedGuild)
-                return false;
-
-            storedGuild.settings[key] = value;
-
-            await r.query(r => r.table('guild').get(guildid).update({
-                settings: r.literal(storedGuild.settings)
-            }));
-
-            return true;
-        },
-        async get<K extends keyof GuildSettings>(guildid: string, key: K): Promise<GuildSettings[K] | undefined> {
-            const storedGuild = await oldBu.getGuild(guildid);
-
-            if (!storedGuild)
-                return undefined;
-            return storedGuild.settings[key];
-        },
-        async remove<K extends keyof GuildSettings>(guildid: string, key: K): Promise<void> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            if (!storedGuild)
-                return;
-
-            delete storedGuild.settings[key];
-
-            await r.query(r => r.table('guild').get(guildid).replace(storedGuild));
-            console.debug(':thonkang:');
-            return;
-        }
-    },
-    ccommand: {
-        async set(guildid: string, key: string, value: StoredGuildCommand): Promise<void> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key = key.toLowerCase();
-            if (!storedGuild)
-                return;
-
-            storedGuild.ccommands[key] = value;
-
-            await r.query(r => r.table('guild').get(guildid).update({
-                ccommands: storedGuild.ccommands
-            }));
-        },
-        async get(guildid: string, key: string): Promise<StoredGuildCommand | null> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key = key.toLowerCase();
-            if (!storedGuild || !storedGuild.ccommands[key])
-                return null;
-            return storedGuild.ccommands[key] ?? null;
-        },
-        async rename(guildid: string, key1: string, key2: string): Promise<void> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key1 = key1.toLowerCase();
-            key2 = key2.toLowerCase();
-            if (!storedGuild)
-                return;
-
-            storedGuild.ccommands[key2] = storedGuild.ccommands[key1];
-            delete storedGuild.ccommands[key1];
-
-            await r.query(r => r.table('guild').get(guildid).replace(storedGuild));
-        },
-        async remove(guildid: string, key: string): Promise<void> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key = key.toLowerCase();
-            if (!storedGuild)
-                return;
-
-            delete storedGuild.ccommands[key];
-
-            await r.query(r => r.table('guild').get(guildid).replace(storedGuild));
-        },
-        async sethelp(guildid: string, key: string, help: string): Promise<boolean> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key = key.toLowerCase();
-            const ccommand = storedGuild?.ccommands[key];
-            if (!storedGuild || !ccommand)
-                return false;
-
-            ccommand.help = help;
-            await r.query(r => r.table('guild').get(guildid).replace(storedGuild));
-            return true;
-        },
-        async gethelp(guildid: string, key: string): Promise<string | undefined> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key = key.toLowerCase();
-            const ccommand = storedGuild?.ccommands[key];
-
-            return ccommand?.help;
-        },
-        async setlang(guildid: string, key: string, lang: string): Promise<boolean> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key = key.toLowerCase();
-            const ccommand = storedGuild?.ccommands[key];
-            if (!storedGuild || !ccommand)
-                return false;
-
-            ccommand.lang = lang;
-            await r.query(r => r.table('guild').get(guildid).replace(storedGuild));
-            return true;
-        },
-        async getlang(guildid: string, key: string): Promise<string | undefined> {
-            const storedGuild = await oldBu.getGuild(guildid);
-            key = key.toLowerCase();
-            const ccommand = storedGuild?.ccommands[key];
-
-            return ccommand?.help;
-        }
-    },
-    init(): void {
-        r = new RethinkDb({
-            host: config.db.host,
-            database: config.db.database,
-            password: config.db.password,
-            user: config.db.user,
-            port: config.db.port
-        });
-        void oldBu.registerChangefeed()
-            .then(() => oldBu.registerIndexes());
-    },
-    async registerChangefeed(): Promise<void> {
-        await registerSubChangefeed('guild', 'guildid', oldBu.guildCache);
-        await registerSubChangefeed('user', 'userid', oldBu.userCache);
-    },
-    async registerIndexes(): Promise<void> {
-        const indexes = await r.query(r => r.table('guild').indexList());
-        if (!indexes.includes('interval')) {
-            await r.query(r => r.table('guild').indexCreate('interval', r.row('ccommands').hasFields('_interval')));
-        }
-    },
     async handleCensor(msg: Message<GuildTextableChannel>, storedGuild: StoredGuild): Promise<void> {
         const censor = storedGuild.censor;
         if (censor?.list.length) {
@@ -458,9 +320,9 @@ export const oldBu = {
                         } catch (err) { }
                     } else if (msg.content.toLowerCase().indexOf(term.toLowerCase()) > -1) violation = true;
                     if (violation == true) { // Uh oh, they did a bad!
-                        const res = await oldBu.issueWarning(msg.author, msg.channel.guild, cens.weight);
+                        const res = await util.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
                         if (cens.weight > 0) {
-                            await oldBu.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', oldBu.ModLogColour.WARN, [{
+                            await util.moderation.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', oldBu.ModLogColour.WARN, [{
                                 name: 'Warnings',
                                 value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
                                 inline: true
@@ -501,10 +363,6 @@ export const oldBu = {
             }
         }
     },
-    async getVersion(): Promise<Version> {
-        const v = await r.query(r => r.table('vars').get<Version>('version'));
-        return new Version(v?.major ?? 0, v?.minor ?? 0, v?.patch ?? 0);
-    },
     isNsfwChannel(channelid: string): boolean {
         const channel = bot.getChannel(channelid);
         if ('nsfw' in channel)
@@ -517,29 +375,9 @@ export const oldBu = {
             //console.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
             return false;
         }
-        const guild = await oldBu.getGuild(guildid);
+        const guild = await util.database.getGuild(guildid);
 
         return guild?.channels[channelid]?.blacklisted ?? false;
-    },
-    async getCachedUser(userid: string): Promise<StoredUser | undefined> {
-        let storedUser: StoredUser | undefined;
-        if (oldBu.userCache[userid]) {
-            storedUser = oldBu.userCache[userid];
-        } else {
-            storedUser = await r.query(r => r.table('user').get<StoredUser>(userid)) ?? undefined;
-            oldBu.userCache[userid] = storedUser;
-        }
-        return storedUser;
-    },
-    async getGuild(guildid: string): Promise<StoredGuild | undefined> {
-        let storedGuild: StoredGuild | undefined;
-        if (oldBu.guildCache[guildid]) {
-            storedGuild = oldBu.guildCache[guildid];
-        } else {
-            storedGuild = await r.query(r => r.table('guild').get<StoredGuild>(guildid)) ?? undefined;
-            oldBu.guildCache[guildid] = storedGuild;
-        }
-        return storedGuild;
     },
     normalize(r: CassandraRow): chatlog {
         if (!r)
@@ -603,49 +441,6 @@ export const oldBu = {
             } catch (err) {
 
             }
-        }
-    },
-    async processUser(user: User): Promise<void> {
-        if (user.discriminator == '0000') return;
-        const storedUser: StoredUser | null = await r.query(r => r.table('user').get(user.id));
-        if (!storedUser) {
-            console.debug(`inserting user ${user.id} (${user.username})`);
-            await r.query(r => r.table('user').insert({
-                userid: user.id,
-                username: user.username,
-                usernames: [{
-                    name: user.username,
-                    date: r.epochTime(moment().valueOf() / 1000)
-                }],
-                isbot: user.bot,
-                lastspoke: r.epochTime(moment().valueOf() / 1000),
-                lastcommand: null,
-                lastcommanddate: null,
-                discriminator: user.discriminator,
-                todo: []
-            }));
-        } else {
-            const newUser: Partial<StoredUser> = {};
-            let update = false;
-            if (storedUser.username != user.username) {
-                newUser.username = user.username;
-                newUser.usernames = storedUser.usernames;
-                newUser.usernames.push({
-                    name: user.username,
-                    date: r.epochTime(moment().valueOf() / 1000)
-                });
-                update = true;
-            }
-            if (storedUser.discriminator != user.discriminator) {
-                newUser.discriminator = user.discriminator;
-                update = true;
-            }
-            if (storedUser.avatarURL != user.avatarURL) {
-                newUser.avatarURL = user.avatarURL;
-                update = true;
-            }
-            if (update)
-                await r.query(r => r.table('user').get(user.id).update(newUser));
         }
     },
     compareStats(a: StoredTag, b: StoredTag): -1 | 0 | 1 {
@@ -739,7 +534,7 @@ export const oldBu = {
         if (!member)
             return false;
 
-        if (override && ((member.id === oldBu.CAT_ID && oldBu.catOverrides) ||
+        if (override && ((member.id === oldBu.CAT_ID) ||
             member.guild.ownerID == member.id ||
             member.permissions.json.administrator)) {
             return true;
@@ -771,10 +566,10 @@ export const oldBu = {
             }
         }
         if (!quiet && 'content' in msg) {
-            const guild = await oldBu.getGuild(member.guild.id);
+            const guild = await util.database.getGuild(member.guild.id);
             if (!guild?.settings.disablenoperms) {
                 const permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
-                void oldBu.send(msg, `You need the role ${permString} in order to use this command!`);
+                void util.send(msg, `You need the role ${permString} in order to use this command!`);
             }
         }
         return false;
@@ -788,7 +583,7 @@ export const oldBu = {
         if (!member)
             return false;
 
-        if (override && ((member.id === oldBu.CAT_ID && oldBu.catOverrides) ||
+        if (override && ((member.id === oldBu.CAT_ID) ||
             member.guild.ownerID == member.id ||
             member.permissions.json.administrator)) {
             return true;
@@ -849,7 +644,7 @@ export const oldBu = {
     },
 
     async canDmErrors(userId: string): Promise<boolean> {
-        const storedUser: StoredUser | null = await r.query(r => r.table('user').get(userId));
+        const storedUser = await util.database.getUser(userId, true);
         return !storedUser?.dontdmerrors;
     },
     async getUserById(userId: string): Promise<User | null> {
@@ -890,152 +685,6 @@ export const oldBu = {
         const memory = process.memoryUsage();
         return memory.rss / 1024 / 1024;
     },
-    getPosition(member: Member): number {
-        return member.roles
-            .map(r => member.guild.roles.get(r))
-            .filter((role): role is Role => role !== undefined)
-            .sort((a, b) => b.position - a.position)[0]
-            ?.position ?? 0;
-    },
-    isBotHigher(member: Member): boolean {
-        const botMember = member.guild.members.get(bot.user.id);
-        if (!botMember)
-            return false;
-        const botPos = this.getPosition(botMember);
-        const memPos = this.getPosition(member);
-        return botPos > memPos;
-    },
-    async logAction(
-        guild: Guild,
-        user: User | User[],
-        mod?: User,
-        type?: string,
-        reason?: string,
-        color = 0x17c484,
-        fields?: EmbedField[]
-    ): Promise<void> {
-        if (Array.isArray(reason)) reason = reason.join(' ');
-        const val = await oldBu.guildSettings.get(guild.id, 'modlog');
-        if (!val)
-            return;
-
-        const storedGuild = await oldBu.getGuild(guild.id);
-        if (!storedGuild)
-            return;
-
-        storedGuild.modlog ??= [];
-        const caseid = storedGuild.modlog.length;
-        const users = Array.isArray(user) ?
-            user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n') :
-            `${user.username}#${user.discriminator} (${user.id})`;
-        reason = reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`;
-
-        fields ??= [];
-
-        const embed: EmbedOptions = {
-            title: `Case ${caseid}`,
-            color: color,
-            timestamp: new Date(),
-            fields: [
-                {
-                    name: 'Type',
-                    value: type ?? '',
-                    inline: true
-                }, {
-                    name: 'Reason',
-                    value: reason,
-                    inline: true
-                },
-                ...fields
-            ]
-        };
-        if (mod) {
-            embed.footer = {
-                text: `${humanize.fullName(mod)} (${mod.id})`,
-                icon_url: mod.avatarURL
-            };
-        }
-        if (Array.isArray(user)) {
-            embed.description = users;
-        } else {
-            embed.author = {
-                name: users,
-                icon_url: user.avatarURL
-            };
-        }
-        const msg = await oldBu.send(val, {
-            embed: embed
-        });
-        let cases = storedGuild.modlog;
-        if (!Array.isArray(cases)) {
-            cases = [];
-        }
-        cases.push({
-            caseid: caseid,
-            modid: mod?.id,
-            msgid: msg?.id ?? '',
-            reason: reason,
-            type: type || 'Generic',
-            userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id
-        });
-
-
-        await r.query(r => r.table('guild').get(guild.id).update({
-            modlog: cases
-        }));
-    },
-    async issueWarning(user: User, guild: Guild, count?: number): Promise<{ type: ModerationType, count: number, error?: unknown }> {
-        const storedGuild = await oldBu.getGuild(guild.id);
-        if (!storedGuild) throw new Error('Cannot find guild');
-        count ??= 1;
-        let type = ModerationType.WARN;
-        let error = undefined;
-        const warnings = storedGuild.warnings ??= {};
-        const users = warnings.users ??= {};
-        const warningCount = users[user.id] = Math.max(0, (users[user.id] ?? 0) + count);
-        const member = guild.members.get(user.id);
-        if (member && oldBu.isBotHigher(member))
-            if (storedGuild.settings.banat && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
-                if (!oldBu.bans[guild.id])
-                    oldBu.bans[guild.id] = {};
-                oldBu.bans[guild.id][user.id] = {
-                    mod: bot.user,
-                    type: 'Auto-Ban',
-                    reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
-                };
-                try {
-                    await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
-                } catch (e) { error = e; }
-                warnings.users[user.id] = undefined;
-                type = ModerationType.BAN;
-            } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-                try {
-                    await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
-                } catch (e) { error = e; }
-                type = ModerationType.KICK;
-            }
-        await r.query(r => r.table('guild').get(guild.id).update({
-            warnings: r.literal(warnings)
-        }));
-        return {
-            type,
-            count: warningCount,
-            error
-        };
-    },
-    async issuePardon(user: User, guild: Guild, count?: number): Promise<number> {
-        const storedGuild = await oldBu.getGuild(guild.id);
-        if (!storedGuild) throw new Error('Cannot find guild');
-        count ??= 1;
-        const warnings = storedGuild.warnings ??= {};
-        const users = warnings.users ??= {};
-        const warningCount = users[user.id] = Math.max(0, (users[user.id] ?? 0) + count);
-
-        await r.query(r => r.table('guild').get(guild.id).update({
-            warnings: r.literal(warnings)
-        }));
-        return warningCount;
-    },
     comparePerms(m: Member, allow: number): boolean {
         if (!allow) allow = oldBu.defaultStaff;
         const newPerm = new Permission(allow, 0);
@@ -1071,10 +720,10 @@ export const oldBu = {
         fields: EmbedField[],
         embed: EmbedOptions
     ): Promise<void> {
-        const storedGuild = await oldBu.getGuild(guildid);
+        const storedGuild = await util.database.getGuild(guildid);
         if (!storedGuild) throw new Error('Cannot find guild');
-        const log = storedGuild.log ??= {};
-        const logIgnore = storedGuild.logIgnore ??= [];
+        const log = storedGuild.log ?? {};
+        const logIgnore = storedGuild.logIgnore ?? [];
         if (!Array.isArray(userids)) userids = [userids];
         // If there are not any userId's that are not contained in the ignore, then return
         // I.e. if all the users are contained in the ignore list
@@ -1146,13 +795,10 @@ export const oldBu = {
             embed.fields = fields;
             embed.color = color;
             try {
-                await oldBu.send(channel, {
-                    embed
-                });
+                await util.send(channel, { embed });
             } catch (err) {
-                delete log[event];
-                await r.query(r => r.table('guild').get(guildid).replace(storedGuild));
-                await oldBu.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
+                await util.database.setLogChannel(guildid, event, undefined);
+                await util.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
             }
         }
     },
@@ -1559,35 +1205,6 @@ export const oldBu = {
     }
 };
 
-async function registerSubChangefeed(type: string, idName: string, cache: Record<string, unknown>): Promise<void> {
-    try {
-        console.info('Registering a ' + type + ' changefeed!');
-        while (true) {
-            const changefeed = r.stream<WriteChange>(r => r.table(type).changes({
-                squash: true
-            }));
-
-            try {
-                for await (const data of changefeed) {
-                    if (data.new_val) {
-                        // Return if user or guild is not on thread OR cache
-                        if (idName === 'guildid' && (!cache[data.new_val[idName]] && !bot.guilds.get(data.new_val[idName])))
-                            return;
-                        if (idName === 'userid' && (!cache[data.new_val[idName]] && !bot.users.get(data.new_val[idName])))
-                            return;
-                        cache[data.new_val[idName]] = data.new_val;
-                    } else delete cache[data.old_val[idName]];
-                }
-            } catch (err) {
-                console.error(err);
-            }
-        }
-    } catch (err) {
-        console.warn(`Failed to register a ${type} changefeed, will try again in 10 seconds.`);
-        setTimeout(() => void registerSubChangefeed(type, idName, cache), 10000);
-    }
-}
-
 function getQuery(
     name: string | undefined,
     key: string,
@@ -1632,38 +1249,6 @@ function getQuery(
         query.scope = query.scope.substring(0, 255);
     return <dbquery>query;
 }
-
-class Version {
-    public constructor(
-        public major: number,
-        public minor: number,
-        public patch: number
-    ) {
-    }
-    public incrementPatch(): void {
-        this.patch++;
-    }
-    public incrementMinor(): void {
-        this.minor++;
-        this.patch = 0;
-    }
-    public incrementMajor(): void {
-        this.major++;
-        this.minor = 0;
-        this.patch = 0;
-    }
-    public async save(): Promise<void> {
-        await r.query(r => r.table('vars').get('version').update({
-            major: this.major,
-            minor: this.minor,
-            patch: this.patch
-        }));
-    }
-    public toString(): string {
-        return `${this.major}.${this.minor}.${this.patch}`;
-    }
-}
-
 
 class TimeoutError extends Error {
     public constructor(

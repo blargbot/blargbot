@@ -1,39 +1,35 @@
 import { Cluster } from '../cluster';
 import { StoredEvent } from '../core/RethinkDb';
-import { ExpressionFunction } from 'rethinkdb';
+import moment from 'moment';
+import { guard } from '../utils';
 
 export class EventManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #cache: { [key: string]: StoredEvent };
+    #events: Map<string, StoredEvent>;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
-        this.#cache = {};
+        this.#events = new Map();
     }
 
-    public async insert(event: StoredEvent): Promise<void> {
-        const res = await this.cluster.rethinkdb.query(r =>
-            r.table('events').insert(event, { returnChanges: true })
-        );
+    public async insert(event: Omit<StoredEvent, 'id'>): Promise<void> {
+        const _event = <StoredEvent>event;
+        if (!await this.cluster.database.addEvent(_event))
+            return;
 
-        const val = res.changes?.[0].new_val as StoredEvent;
-        if (Date.now() - +val.endtime <= 1000 * 60 * 5) {
-            this.#cache[val.id] = val;
-        }
+        if (moment().add(5, 'minutes').diff(event.endtime) < 0)
+            this.#events.set(_event.id, _event);
     }
 
     public async process(): Promise<void> {
-        const events = Object.values(this.#cache)
-            .filter(e => +e.endtime <= Date.now());
+        for (const event of this.#events.values()) {
+            if (moment().diff(event.endtime) > 0)
+                continue;
 
-        for (const event of events) {
-            if ((event.channel && !this.cluster.discord.getChannel(event.channel))
-                || (event.guild && !this.cluster.discord.guilds.get(event.guild))
-                || (event.guild && !this.cluster.discord.guilds.get(event.guild))
-                || (!event.channel && !event.guild && event.user && this.cluster.id !== 0) // TODO Why are there cluster ID checks here?
-                || (event.type === 'purgelogs' && this.cluster.id !== 0)) {
-                delete this.#cache[event.id];
+            const shardId = this.getShardId(event);
+            if (this.cluster.discord.shards.has(shardId)) {
+                this.#events.delete(event.id);
                 continue;
             }
 
@@ -43,39 +39,36 @@ export class EventManager {
         }
     }
 
-    public async delete(id: string): Promise<void> {
-        delete this.#cache[id];
-        await this.cluster.rethinkdb.query(r =>
-            r.table('events').get(id).delete()
-        );
+    private getShardId(event: StoredEvent): number {
+        if (event.channel !== undefined) {
+            const channel = this.cluster.discord.getChannel(event.channel);
+            if (guard.isGuildChannel(channel))
+                return channel.guild.shard.id;
+        }
+        if (event.guild !== undefined) {
+            const guild = this.cluster.discord.guilds.get(event.guild);
+            if (guild)
+                return guild.shard.id;
+        }
+        return 0;
     }
 
-    public async deleteFilter(filter: ExpressionFunction<boolean>): Promise<void> {
-        const res = await this.cluster.rethinkdb.query(r =>
-            r.table('events').filter(filter).delete({ returnChanges: true })
-        );
+    public async delete(event: string): Promise<void> {
+        this.#events.delete(event);
+        await this.cluster.database.removeEvent(event);
+    }
 
-        if (res.changes) {
-            for (const change of res.changes) {
-                delete this.#cache[(<StoredEvent>change.old_val).id];
-            }
-        }
+    public async deleteFilter(source: string): Promise<void> {
+        await this.cluster.database.removeEvents({ source });
+        for (const event of this.#events.values())
+            if (event.source === source)
+                this.#events.delete(event.id);
     }
 
     public async obtain(): Promise<void> {
-        const events = this.cluster.rethinkdb.stream<StoredEvent>(r =>
-            r.table('events')
-                .between(
-                    r.epochTime(0),
-                    r.epochTime(Date.now() / 1000 + 60 * 5),
-                    {
-                        index: 'endtime'
-                    }
-                )
-        );
-
-        for await (const event of events) {
-            this.#cache[event.id] = event;
-        }
+        const events = await this.cluster.database.getEvents({
+            before: moment().add(5, 'minutes').toDate()
+        });
+        this.#events = new Map(events.map(e => [e.id, e]));
     }
 }

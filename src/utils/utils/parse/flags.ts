@@ -11,9 +11,9 @@ export type FlagResult = {
     [flag: string]: string[] | undefined;
 }
 
-export function flags(definitions: FlagDefinition[], text: string | string[], noTrim = false): FlagResult {
+export function flags(definitions: DeepReadOnly<FlagDefinition[]>, text: string | readonly string[], noTrim = false): FlagResult {
     let words: string[];
-    if (Array.isArray(text))
+    if (typeof text !== 'string')
         words = getWords(text.slice(1).join(' '), noTrim);
     else
         words = getWords(text, noTrim);

@@ -1,16 +1,16 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
 import { humanize, parse, sleep } from '../../utils';
-import { RethinkDb } from '../RethinkDb';
 import { SubtagCall, RuntimeContextOptions, RuntimeReturnState } from './types';
 import { Statement } from './types';
 import { RuntimeContext, SubtagCallback } from './RuntimeContext';
 import { BaseSubtagHandler } from './BaseSubtagHandler';
+import { Database } from '../Database';
 
 export class Engine {
     public get discord(): ErisClient { return this.cluster.discord; }
     public get logger(): CatLogger { return this.cluster.logger; }
-    public get rethinkdb(): RethinkDb { return this.cluster.rethinkdb; }
+    public get database(): Database { return this.cluster.database; }
     public get util(): ClusterUtilities { return this.cluster.util; }
 
     public constructor(

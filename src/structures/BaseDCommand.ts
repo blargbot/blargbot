@@ -2,6 +2,7 @@ import { Client as ErisClient, Message } from 'eris';
 import { Cluster } from '../cluster';
 import { ClusterUtilities } from '../cluster/ClusterUtilities';
 import { SendContext, SendPayload, SendFiles } from '../core/BaseUtilities';
+import { StoredEvent } from '../core/RethinkDb';
 import { CommandType, FlagDefinition } from '../utils';
 
 export interface DCommandOptions {
@@ -59,8 +60,8 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         this.cooldown = options.cooldown ?? 0;
     }
 
-    public event(message: unknown): Promise<void> {
-        this.logger.event(message);
+    public event(event: StoredEvent): Promise<void> {
+        this.logger.event(event);
         return Promise.resolve();
     }
 

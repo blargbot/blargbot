@@ -1,16 +1,16 @@
 import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
 import { PostgresDb } from './PostgresDb';
-import { RethinkDb } from './RethinkDb';
 import { Client as CassandraDb, auth as CassandraAuth } from 'cassandra-driver';
 import { metrics } from './Metrics';
 import { BaseUtilities } from './BaseUtilities';
 import { BaseModuleLoader } from './BaseModuleLoader';
+import { Database } from './Database';
 
 export class BaseClient {
     public readonly metrics: typeof metrics;
     public readonly util: BaseUtilities;
     public readonly postgres: PostgresDb;
-    public readonly rethinkdb: RethinkDb;
+    public readonly database: Database;
     public readonly cassandra: CassandraDb;
     public readonly discord: ErisClient;
 
@@ -30,14 +30,6 @@ export class BaseClient {
             sequelize: this.config.sequelize
         });
 
-        this.rethinkdb = new RethinkDb({
-            database: this.config.db.database,
-            password: this.config.db.password,
-            user: this.config.db.user,
-            host: this.config.db.host,
-            port: this.config.db.port
-        });
-
         this.cassandra = new CassandraDb({
             contactPoints: this.config.cassandra.contactPoints,
             keyspace: this.config.cassandra.keyspace,
@@ -52,12 +44,20 @@ export class BaseClient {
             defaultImageFormat: 'png',
             ...discordConfig
         });
+
+        this.database = new Database({
+            database: this.config.db.database,
+            password: this.config.db.password,
+            user: this.config.db.user,
+            host: this.config.db.host,
+            port: this.config.db.port
+        }, this.discord, this.logger);
     }
 
     public async start(): Promise<void> {
         await Promise.all([
             void this.postgres.authenticate().then(() => this.logger.init('postgres connected')), // TODO this takes too long
-            this.rethinkdb.connect().then(() => this.logger.init('rethinkdb connected')),
+            this.database.connect().then(() => this.logger.init('rethinkdb connected')),
             this.cassandra.connect().then(() => this.logger.init('cassandra connected')),
             this.discord.connect().then(() => this.logger.init('discord connected'))
         ]);

@@ -1,7 +1,6 @@
 import moment from 'moment-timezone';
 import { humanize } from '../../utils';
 import { Cluster } from '..';
-import { StoredGuild } from '../../core/RethinkDb';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 
 export class ReadyEventHandler extends DiscordEventService {
@@ -22,25 +21,25 @@ export class ReadyEventHandler extends DiscordEventService {
         let home;
         if (home = this.cluster.discord.guilds.get(this.cluster.config.discord.guilds.home)) {
             const police = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.police)).map(m => m.id);
-            await this.cluster.rethinkdb.setVar({ varname: 'police', value: police });
+            await this.cluster.database.setVariable({ varname: 'police', value: police });
 
             const support = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.support)).map(m => m.id);
-            await this.cluster.rethinkdb.setVar({ varname: 'support', value: support });
+            await this.cluster.database.setVariable({ varname: 'support', value: support });
         }
 
         // TODO this should be something the master process does
         if (this.cluster.id === 0) {
-            const restart = await this.cluster.rethinkdb.getVar('restart');
+            const restart = await this.cluster.database.getVariable('restart');
 
             if (restart?.varvalue) {
                 void this.cluster.util.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + humanize.duration(moment(), moment(restart.varvalue.time)) + '.');
-                void this.cluster.rethinkdb.deleteVar('restart');
+                void this.cluster.database.deleteVariable('restart');
             }
         }
 
         this.cluster.metrics.guildGauge.set(this.cluster.discord.guilds.size);
 
-        const guildIds = new Set((await this.cluster.rethinkdb.queryAll<StoredGuild>(r => r.table('guild').withFields('guildid'))).map(g => g.guildid));
+        const guildIds = new Set(await this.cluster.database.getGuildIds());
         for (const guild of this.cluster.discord.guilds.values()) {
             if (guildIds.has(guild.id))
                 return;
@@ -55,7 +54,7 @@ export class ReadyEventHandler extends DiscordEventService {
             void this.cluster.util.send(this.cluster.config.discord.channels.joinlog, message);
 
             this.logger.log('Inserting a missing guild ' + guild.id);
-            void this.cluster.rethinkdb.setGuild({
+            void this.cluster.database.addGuild({
                 guildid: guild.id,
                 active: true,
                 name: guild.name,
@@ -71,7 +70,7 @@ export class ReadyEventHandler extends DiscordEventService {
         this.cluster.util.postStats();
         void this.initEvents();
 
-        const blacklist = await this.cluster.rethinkdb.getVar('guildBlacklist');
+        const blacklist = await this.cluster.database.getVariable('guildBlacklist');
         if (blacklist) {
             for (const g of Object.keys(blacklist.values)) {
                 if (blacklist.values[g] && this.cluster.discord.guilds.get(g)) {

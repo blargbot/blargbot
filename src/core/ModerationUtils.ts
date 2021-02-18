@@ -14,98 +14,78 @@ export class ModerationUtils {
     ) {
     }
 
-    public async log(
+    public async logAction(
         guild: Guild,
         user: User | User[],
-        mod: User,
-        type: string,
-        reason?: string | string[],
-        color?: number,
+        mod?: User,
+        type?: string,
+        reason?: string,
+        color = 0x17c484,
         fields?: EmbedField[]
     ): Promise<void> {
-        const storedGuild = await this.cluster.util.getGuild(guild.id);
-        if (!storedGuild?.settings?.modlog)
+        if (Array.isArray(reason)) reason = reason.join(' ');
+        const val = await this.cluster.database.getGuildSetting(guild.id, 'modlog');
+        if (!val)
             return;
 
-        let caseid = 0;
-        if (storedGuild.modlog?.length) {
-            caseid = storedGuild.modlog.length;
-        }
+        const storedGuild = await this.cluster.database.getGuild(guild.id);
+        if (!storedGuild)
+            return;
 
+        const caseid = storedGuild.modlog?.length ?? 0;
+        const users = Array.isArray(user) ?
+            user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n') :
+            `${user.username}#${user.discriminator} (${user.id})`;
+        reason = reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`;
 
-        if (Array.isArray(reason))
-            reason = reason.join(' ');
-        reason ??= `Responsible moderator, please do \`reason ${caseid}\` to set.`;
-        color ??= 0x17c484;
         fields ??= [];
 
         const embed: EmbedOptions = {
             title: `Case ${caseid}`,
             color: color,
+            timestamp: new Date(),
             fields: [
-                {
-                    name: 'Type',
-                    value: type,
-                    inline: true
-                }, {
-                    name: 'Reason',
-                    value: reason,
-                    inline: true
-                },
+                { name: 'Type', value: type ?? '', inline: true },
+                { name: 'Reason', value: reason, inline: true },
                 ...fields
-            ],
-            footer: {
+            ]
+        };
+        if (mod) {
+            embed.footer = {
                 text: `${humanize.fullName(mod)} (${mod.id})`,
                 icon_url: mod.avatarURL
-            },
-            timestamp: new Date()
-        };
-
+            };
+        }
         if (Array.isArray(user)) {
-            embed.description = user.map(u => `${humanize.fullName(u)} (${u.id})`).join('\n');
+            embed.description = users;
         } else {
             embed.author = {
-                name: `${humanize.fullName(user)} (${user.id})`,
+                name: users,
                 icon_url: user.avatarURL
             };
         }
-
-        const msg = await this.cluster.util.send(storedGuild.settings.modlog, { embed: embed });
-
-        const cases = storedGuild.modlog ??= [];
-        cases.push({
+        const msg = await this.cluster.util.send(val, {
+            embed: embed
+        });
+        await this.cluster.database.addGuildModlog(guild.id, {
             caseid: caseid,
-            modid: mod ? mod.id : undefined,
-            msgid: msg ? msg.id : '',
-            reason: reason || undefined,
-            type: type || 'Generic',
+            modid: mod?.id,
+            msgid: msg?.id ?? '',
+            reason: reason,
+            type: type ?? 'Generic',
             userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id
         });
-
-
-        await this.cluster.rethinkdb.query(r =>
-            r.table('guild')
-                .get(guild.id)
-                .update({ modlog: cases }));
     }
-
-    public async warn(user: User, guild: Guild, count = 1): Promise<WarnResult | null> {
-        const storedGuild = await this.cluster.util.getGuild(guild.id);
-        if (!storedGuild)
-            return null;
-
+    public async issueWarning(user: User, guild: Guild, count?: number): Promise<WarnResult> {
+        const storedGuild = await this.cluster.database.getGuild(guild.id);
+        if (!storedGuild) throw new Error('Cannot find guild');
         let type = ModerationType.WARN;
-        const warnings = storedGuild.warnings ??= {};
-        const users = warnings.users ??= {};
-        let warningCount = users[user.id] = (users[user.id] ?? 0) + count;
-        if (warningCount < 0)
-            warningCount = users[user.id] = count;
-
         let error = undefined;
+        const oldWarnings = storedGuild.warnings?.users?.[user.id] ?? 0;
+        let warningCount: number | undefined = Math.max(0, oldWarnings + (count ?? 1));
         const member = guild.members.get(user.id);
-        if (member && this.cluster.util.isBotHigher(member) && storedGuild.settings) {
+        if (member && this.cluster.util.isBotHigher(member))
             if (storedGuild.settings.banat && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
-                type = ModerationType.BAN;
                 this.cluster.util.bans.set(guild.id, user.id, {
                     mod: this.cluster.discord.user,
                     type: 'Auto-Ban',
@@ -114,19 +94,27 @@ export class ModerationUtils {
                 try {
                     await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
                 } catch (e) { error = e; }
-                delete users[user.id];
+                warningCount = undefined;
+                type = ModerationType.BAN;
             } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
-                type = ModerationType.KICK;
                 try {
                     await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
                 } catch (e) { error = e; }
+                type = ModerationType.KICK;
             }
-        }
-        await this.cluster.rethinkdb.query(r =>
-            r.table('guild')
-                .get(guild.id)
-                .update({ warnings: r.literal(warnings) }));
-
-        return { type, count: warningCount, error };
+        await this.cluster.database.setGuildWarnings(guild.id, user.id, warningCount);
+        return {
+            type,
+            count: warningCount ?? 0,
+            error
+        };
+    }
+    public async issuePardon(user: User, guild: Guild, count?: number): Promise<number> {
+        const storedGuild = await this.cluster.database.getGuild(guild.id);
+        if (!storedGuild) throw new Error('Cannot find guild');
+        const oldWarnings = storedGuild.warnings?.users?.[user.id] ?? 0;
+        const warningCount = Math.max(0, oldWarnings - (count ?? 1));
+        await this.cluster.database.setGuildWarnings(guild.id, user.id, warningCount);
+        return warningCount;
     }
 }

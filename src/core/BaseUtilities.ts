@@ -3,11 +3,11 @@ import { BaseClient } from './BaseClient';
 import { snowflake } from '../utils';
 import { Error } from 'sequelize';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
-import { RethinkDb } from './RethinkDb';
 import { Client as CassandraDb } from 'cassandra-driver';
 import { PostgresDb } from './PostgresDb';
 import request from 'request';
 import { metrics } from './Metrics';
+import { Database } from './Database';
 
 export type SendContext = Pick<Message, 'channel' | 'content' | 'author'> | TextableChannel | string
 export type SendEmbed = EmbedOptions & { asString?: string }
@@ -25,7 +25,7 @@ export class BaseUtilities {
     public get users(): Collection<User> { return this.client.discord.users; }
     public get shards(): Collection<Shard> { return this.client.discord.shards; }
     public get discord(): ErisClient { return this.client.discord; }
-    public get rethinkdb(): RethinkDb { return this.client.rethinkdb; }
+    public get database(): Database { return this.client.database; }
     public get cassandra(): CassandraDb { return this.client.cassandra; }
     public get postgres(): PostgresDb { return this.client.postgres; }
     public get logger(): CatLogger { return this.client.logger; }
@@ -211,7 +211,7 @@ export class BaseUtilities {
     }
 
     public async canDmErrors(userId: string): Promise<boolean> {
-        const storedUser = await this.rethinkdb.getUser(userId);
+        const storedUser = await this.database.getUser(userId);
         return !storedUser?.dontdmerrors;
     }
 }

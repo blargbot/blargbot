@@ -60,7 +60,7 @@ export const properties: CommandPropertiesSet = {
         requirement: async (client: Cluster, msg: Message): Promise<boolean> => {
             if (!guard.isGuildMessage(msg))
                 return false;
-            const guild = await client.util.getGuild(msg.channel.guild.id);
+            const guild = await client.database.getGuild(msg.channel.guild.id);
             return guild?.settings?.social ?? false;
         },
         description: 'Social commands for interacting with other people'

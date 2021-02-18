@@ -7,7 +7,7 @@ import { Duration } from 'moment-timezone';
 import { GuildTextableChannel, Member, User, Guild, Role, MessageFile } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
 import { Statement, SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext } from './types';
-import { StoredGuild, StoredGuildCommand, StoredTag } from '../RethinkDb';
+import { StoredGuildCommand, StoredTag } from '../RethinkDb';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
 import { Engine } from './Engine';
 
@@ -24,8 +24,8 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     #isStaffPromise?: Promise<boolean>;
 
     public readonly message: RuntimeContextMessage;
-    public readonly input: string[];
-    public readonly flags: FlagDefinition[];
+    public readonly input: readonly string[];
+    public readonly flags: DeepReadOnly<FlagDefinition[]>;
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
     public readonly author: string;
@@ -218,8 +218,8 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     private async _sendOutput(text: string, files: MessageFile | MessageFile[]): Promise<string | null> {
         let disableEveryone = true;
         if (this.isCC) {
-            const s = await this.engine.rethinkdb.query(r => r.table('guild').get<StoredGuild>(this.guild.id));
-            disableEveryone = s?.settings.disableeveryone === true || !this.state.allowedMentions.everybody;
+            disableEveryone = await this.engine.database.getGuildSetting(this.guild.id, 'disableeveryone') ?? false;
+            disableEveryone ||= !this.state.allowedMentions.everybody;
 
             this.engine.logger.log('Allowed mentions:', this.state.allowedMentions, disableEveryone);
         }

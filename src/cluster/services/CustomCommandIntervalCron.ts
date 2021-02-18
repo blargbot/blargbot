@@ -1,5 +1,4 @@
 import { GuildTextableChannel } from 'eris';
-import { StoredGuild } from '../../core/RethinkDb';
 import { guard, sleep, snowflake } from '../../utils';
 import { CronService } from '../../structures/CronService';
 import { Cluster } from '../Cluster';
@@ -17,8 +16,10 @@ export class CustomCommandIntervalCron extends CronService {
     protected async execute(): Promise<void> {
         const nonce = (Math.floor(Math.random() * 0xffffffff)).toString(16).padStart(8, '0').toUpperCase();
 
-        let guilds = await this.cluster.rethinkdb.queryAll<StoredGuild>(r => r.table('guild').getAll('interval'));
-        guilds = guilds.filter(g => this.cluster.discord.guilds.get(g.guildid));
+        const guilds = (await this.cluster.database.getIntervalGuilds())
+            ?.filter(g => this.cluster.discord.guilds.get(g.guildid))
+            ?? [];
+
         this.logger.info('[%s] Running intervals on %i guilds', nonce, guilds.length);
 
         let count = 0;

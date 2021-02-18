@@ -66,7 +66,8 @@ export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownSt
 export interface StoredEvent {
     id: string;
     type: string;
-    endtime: number;
+    endtime: Date;
+    source?: string;
     channel?: string;
     guild?: string;
     user?: string;
@@ -86,7 +87,7 @@ export interface StoredGuild {
     roleme?: GuildRolemeEntry[];
     autoresponse?: GuildAutoresponses;
     log?: Record<string, string>;
-    logIgnore?: unknown[];
+    logIgnore?: string[];
 }
 
 export interface GuildAutoresponses {
@@ -167,6 +168,7 @@ export interface StoredTag {
     uses: number;
     flags?: FlagDefinition[]
     cooldown?: number;
+    lastuse?: Date;
 }
 
 export interface GuildSettings {
@@ -202,10 +204,11 @@ export interface ChannelSettings {
 
 export interface StoredUsername {
     name: string,
-    date: r.Expression<r.Time>
+    date: Date
 }
 
 export interface StoredUser {
+    userid: string;
     dontdmerrors?: boolean;
     prefixes?: string[];
     username?: string;
@@ -213,6 +216,16 @@ export interface StoredUser {
     discriminator?: string;
     avatarURL?: string;
     blacklisted?: boolean;
+    isbot: boolean;
+    lastspoke: Date;
+    lastcommand?: string;
+    lastcommanddate?: Date;
+    todo: UserTodo[];
+}
+
+export interface UserTodo {
+    active: 1 | false;
+    content: string;
 }
 
 export interface RethinkDbOptions {
