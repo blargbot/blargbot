@@ -14,7 +14,7 @@ export class CommandListHandler extends ClusterEventService {
     protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
         const commands: CommandListResult = {};
         for (const c of this.cluster.commands.list()) {
-            if (c.isCommand && !c.hidden) {
+            if (!c.hidden) {
                 commands[c.name] = {
                     name: c.name,
                     usage: c.usage,

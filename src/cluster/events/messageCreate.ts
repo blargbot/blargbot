@@ -3,11 +3,11 @@ import { Timer } from '../../structures/Timer';
 import request from 'request';
 import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../../utils';
 import { Cluster } from '..';
-import { BaseDCommand } from '../../structures/BaseDCommand';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { limits } from '../../core/bbtag';
 import { ChatlogType, StoredGuild, StoredGuildCommand } from '../../core/database';
 import { metrics } from '../../core/Metrics';
+import { BaseCommand } from '../../core/command';
 
 export class MessageCreateEventHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -216,7 +216,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async executeCommand(command: BaseDCommand, msg: Message<TextableChannel>, words: string[], text: string): Promise<void> {
+    public async executeCommand(command: BaseCommand, msg: Message<TextableChannel>, words: string[], text: string): Promise<void> {
         try {
             await command.execute(msg, words, text);
         } catch (err) {

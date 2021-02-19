@@ -34,7 +34,9 @@ export class EventManager {
             }
 
             const type = event.type;
-            void this.cluster.commands.get(type)?.event(event);
+            const command = this.cluster.commands.get(type);
+            if (canHandleEvents(command))
+                void command.event(event);
             await this.delete(event.id);
         }
     }
@@ -69,4 +71,9 @@ export class EventManager {
         const events = await this.cluster.database.events.between(0, moment().add(5, 'minutes'));
         this.#events = new Map(events.map(e => [e.id, e]));
     }
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function canHandleEvents(command: any): command is { event(event: StoredEvent): Promise<void> } {
+    return command !== undefined && 'event' in command;
 }

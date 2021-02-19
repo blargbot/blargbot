@@ -1,7 +1,7 @@
 import { ModuleLoader } from '../core/ModuleLoader';
 import { ClusterUtilities } from './ClusterUtilities';
 import { BaseClient } from '../core/BaseClient';
-import { BaseDCommand } from '../structures/BaseDCommand';
+import { BaseCommand } from '../core/command';
 import { BaseSubtagHandler } from '../core/bbtag/BaseSubtagHandler';
 import moment, { Moment } from 'moment-timezone';
 import { EventManager } from '../structures/EventManager';
@@ -23,7 +23,7 @@ export class Cluster extends BaseClient {
     public readonly id: number;
     public readonly createdAt: Moment;
     public readonly worker: ClusterWorker;
-    public readonly commands: ModuleLoader<BaseDCommand>;
+    public readonly commands: ModuleLoader<BaseCommand>;
     public readonly subtags: ModuleLoader<BaseSubtagHandler>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
@@ -69,7 +69,7 @@ export class Cluster extends BaseClient {
         this.id = options.id;
         this.createdAt = moment();
         this.worker = options.worker;
-        this.commands = new ModuleLoader('dcommands', BaseDCommand, [this], this.logger, c => [c.name, ...c.aliases]);
+        this.commands = new ModuleLoader('dcommands', BaseCommand, [this], this.logger, c => [c.name, ...c.aliases]);
         this.subtags = new ModuleLoader('tags', BaseSubtagHandler, [this], this.logger, t => [t.name, ...t.aliases]);
         this.eventHandlers = new ModuleLoader('cluster/events', BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader('cluster/services', BaseService, [this], this.logger, e => e.name);

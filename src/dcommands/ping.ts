@@ -1,7 +1,8 @@
-import { BaseDCommand } from '../structures/BaseDCommand';
+import { BaseCommand } from '../core/command';
 import { randInt, commandTypes } from '../utils';
-import { Message, TextableChannel } from 'eris';
+import { Message } from 'eris';
 import { Cluster } from '../cluster';
+import { CommandHandlerTree } from '../core/command/types';
 
 const messages = [
     'Existance is a lie.',
@@ -16,18 +17,23 @@ const messages = [
     'We are all already dead.'
 ];
 
-export class PingCommand extends BaseDCommand {
+export class PingCommand extends BaseCommand {
+    public readonly handlers: CommandHandlerTree<this>;
     public constructor(cluster: Cluster) {
-        super(cluster, 'ping', {
+        super(cluster, {
+            name: 'ping',
             category: commandTypes.GENERAL,
-            usage: 'ping',
             info: 'Pong!\nFind the command latency.'
         });
+
+        this.handlers = {
+            _run: message => this.ping(message)
+        };
     }
 
-    public async execute(msg: Message<TextableChannel>): Promise<void> {
+    private async ping(msg: Message): Promise<void> {
         const message = messages[randInt(0, messages.length - 1)];
-        const msg2 = await this.send(msg, message);
+        const msg2 = await this.util.send(msg, message);
         if (msg2)
             await msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)`);
     }

@@ -3,12 +3,12 @@ import request from 'request';
 import { Cluster } from './Cluster';
 import { AnyChannel, Guild, GuildTextableChannel, Member, Message, Permission, Role, TextableChannel, User } from 'eris';
 import { commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
-import { BaseDCommand } from '../structures/BaseDCommand';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
 import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
 import { StoredGuildSettings, StoredGuild, StoredGuildCommand } from '../core/database';
+import { BaseCommand } from '../core/command';
 
 interface CanExecuteDiscordCommandOptions {
     storedGuild?: DeepReadOnly<StoredGuild>,
@@ -488,7 +488,7 @@ export class ClusterUtilities extends BaseUtilities {
 
     public async canExecuteDiscordCommand(
         msg: Message<TextableChannel>,
-        command: BaseDCommand,
+        command: BaseCommand,
         quiet = false,
         options: CanExecuteDiscordCommandOptions = {}
     ): Promise<boolean> {

@@ -1,13 +1,13 @@
 import { Message, TextableChannel } from 'eris';
 import { Cluster } from '../cluster';
 import { commandTypes, parse } from '../utils';
-import { BaseDCommand } from '../structures/BaseDCommand';
+import { BaseCommand } from '../core/command';
 
-export class ArtCommand extends BaseDCommand {
+export class ArtCommand extends BaseCommand {
     public constructor(cluster: Cluster) {
-        super(cluster, 'art', {
+        super(cluster, {
+            name: 'art',
             category: commandTypes.IMAGE,
-            usage: 'art [user]',
             info: 'Shows everyone a work of art.',
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
             userRatelimit: true,
