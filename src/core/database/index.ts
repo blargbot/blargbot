@@ -7,8 +7,8 @@ import { RethinkDbUserTable } from './RethinkDbUserTable';
 import { RethinkDbVarsTable } from './RethinkDbVarsTable';
 import { RethinkDbEventsTable } from './RethinkDbEventsTable';
 import { RethinkDbTagTable } from './RethinkDbTagTable';
-import { CassandraChatlogDbTable } from './CassandraChatlogDbTable';
-import { CassandraDumpsDbTable } from './CassandraDumpsDbTable';
+import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
+import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
 
 export * from './types';
 
@@ -28,9 +28,9 @@ export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #tags: RethinkDbTagTable;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #chatlogs: CassandraChatlogDbTable;
+    readonly #chatlogs: CassandraDbChatlogTable;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #dumps: CassandraDumpsDbTable;
+    readonly #dumps: CassandraDbDumpsTable;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #logger: CatLogger;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -61,8 +61,8 @@ export class Database {
         this.#vars = new RethinkDbVarsTable(this.#rethinkDb, this.#logger);
         this.#events = new RethinkDbEventsTable(this.#rethinkDb, this.#logger);
         this.#tags = new RethinkDbTagTable(this.#rethinkDb, this.#logger);
-        this.#chatlogs = new CassandraChatlogDbTable(this.#cassandra, this.#logger);
-        this.#dumps = new CassandraDumpsDbTable(this.#cassandra, this.#logger);
+        this.#chatlogs = new CassandraDbChatlogTable(this.#cassandra, this.#logger);
+        this.#dumps = new CassandraDbDumpsTable(this.#cassandra, this.#logger);
     }
 
     public async connect(): Promise<void> {

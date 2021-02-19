@@ -15,12 +15,53 @@ function stringifyType(type: ChatlogType): string {
 }
 
 
-export class CassandraChatlogDbTable implements ChatlogsTable {
+export class CassandraDbChatlogTable implements ChatlogsTable {
     public constructor(
         protected readonly cassandra: Cassandra,
         protected readonly logger: CatLogger
     ) {
 
+    }
+    public async get(messageId: string): Promise<Chatlog | undefined> {
+        const map = await this.cassandra.execute(
+            'SELECT channelid, id ' +
+            'FROM chatlogs_map ' +
+            'WHERE msgid = :id ' +
+            'LIMIT 1',
+            { id: messageId },
+            { prepare: true });
+        if (map.rows.length === 0)
+            return undefined;
+        const messages = await this.cassandra.execute(
+            'SELECT * FROM chatlogs ' +
+            'WHERE channelid = :channelid and id = :id ' +
+            'LIMIT 1',
+            map.rows[0],
+            { prepare: true });
+        if (messages.rows.length === 0)
+            return undefined;
+        const r = messages.rows[0];
+        const message: Chatlog = {
+            id: r.id,
+            content: r.content,
+            attachment: r.attachment,
+            userid: r.userid,
+            msgid: r.msgid,
+            channelid: r.channelid,
+            guildid: r.guildid,
+            msgtime: new Date(r.msgtime),
+            type: r.type,
+            embeds: r.embeds
+        };
+        if (typeof message.embeds === 'string') {
+            try {
+                message.embeds = JSON.parse(message.embeds);
+            } catch (err) {
+                this.logger.log(r, message);
+                this.logger.error(err);
+            }
+        }
+        return message;
     }
 
     public async add(message: Message, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {

@@ -3,7 +3,7 @@ import { Duration } from 'moment-timezone';
 import { Dump, DumpsTable } from './types';
 
 
-export class CassandraDumpsDbTable implements DumpsTable {
+export class CassandraDbDumpsTable implements DumpsTable {
     public constructor(
         protected readonly cassandra: Cassandra,
         protected readonly logger: CatLogger

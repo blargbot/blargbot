@@ -1,21 +1,15 @@
 import pg from 'pg';
-import sequelize, { Options as SequelizeOptions } from 'sequelize';
+import sequelize from 'sequelize';
 import { sleep } from '../../../utils';
 import * as models from '../../models';
 import { BaseModel } from '../../models/Base';
+import { PostgresDbOptions } from '../types';
 
 delete (<Record<string, unknown>>pg).native; // TODO Do we need to do this?
 
 type Models = typeof models;
 type ModelType<T> = T extends BaseModel<infer T1, infer T2, infer T3> ? sequelize.Model<T1, T2, T3> : unknown
 
-export interface PostgresDbOptions {
-    database: string;
-    user: string;
-    pass: string;
-    host: string;
-    sequelize: SequelizeOptions;
-}
 
 export class PostgresDb {
     public readonly sequelize: sequelize.Sequelize;

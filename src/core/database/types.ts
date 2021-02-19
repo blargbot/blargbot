@@ -1,6 +1,7 @@
 import { Client as ErisClient, Message, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import { FlagDefinition } from '../../utils';
+import { Options as SequelizeOptions } from 'sequelize';
 
 export type RethinkTableMap = {
     'guild': StoredGuild;
@@ -280,6 +281,7 @@ export interface DatabaseOptions {
     discord: ErisClient;
     rethinkDb: RethinkDbOptions;
     cassandra: CassandraDbOptions;
+    postgres: PostgresDbOptions;
 }
 
 export interface RethinkDbOptions {
@@ -295,6 +297,14 @@ export interface CassandraDbOptions {
     password: string;
     keyspace: string;
     contactPoints: string[];
+}
+
+export interface PostgresDbOptions {
+    database: string;
+    user: string;
+    pass: string;
+    host: string;
+    sequelize: SequelizeOptions;
 }
 
 export interface GuildTable {
@@ -339,6 +349,7 @@ export interface TagsTable {
 
 export interface ChatlogsTable {
     add(message: Message, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
+    get(messageId: string): Promise<Chatlog | undefined>;
 }
 
 export interface DumpsTable {

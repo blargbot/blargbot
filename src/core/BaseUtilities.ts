@@ -3,7 +3,6 @@ import { BaseClient } from './BaseClient';
 import { snowflake } from '../utils';
 import { Error } from 'sequelize';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
-import { PostgresDb } from './database/core/PostgresDb';
 import request from 'request';
 import { metrics } from './Metrics';
 import { Database } from './database';
@@ -25,7 +24,6 @@ export class BaseUtilities {
     public get shards(): Collection<Shard> { return this.client.discord.shards; }
     public get discord(): ErisClient { return this.client.discord; }
     public get database(): Database { return this.client.database; }
-    public get postgres(): PostgresDb { return this.client.postgres; }
     public get logger(): CatLogger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
     public readonly messageAwaiter: MessageAwaiter;

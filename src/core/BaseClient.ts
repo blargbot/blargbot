@@ -1,12 +1,10 @@
 import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
-import { PostgresDb } from './database/core/PostgresDb';
 import { BaseUtilities } from './BaseUtilities';
 import { BaseModuleLoader } from './BaseModuleLoader';
 import { Database } from './database';
 
 export class BaseClient {
     public readonly util: BaseUtilities;
-    public readonly postgres: PostgresDb;
     public readonly database: Database;
     public readonly discord: ErisClient;
 
@@ -16,14 +14,6 @@ export class BaseClient {
         discordConfig: Omit<ErisOptions, 'restMode' | 'defaultImageFormat'>
     ) {
         this.util = new BaseUtilities(this);
-
-        this.postgres = new PostgresDb(this.logger, {
-            database: this.config.postgres.database,
-            host: this.config.postgres.host,
-            pass: this.config.postgres.pass,
-            user: this.config.postgres.user,
-            sequelize: this.config.sequelize
-        });
 
         this.discord = new ErisClient(this.config.discord.token, {
             restMode: true,
@@ -41,13 +31,16 @@ export class BaseClient {
                 host: this.config.db.host,
                 port: this.config.db.port
             },
-            cassandra: this.config.cassandra
+            cassandra: this.config.cassandra,
+            postgres: {
+                ...this.config.postgres,
+                sequelize: this.config.sequelize
+            }
         });
     }
 
     public async start(): Promise<void> {
         await Promise.all([
-            void this.postgres.authenticate().then(() => this.logger.init('postgres connected')), // TODO this takes too long
             this.database.connect().then(() => this.logger.init('database connected')),
             this.discord.connect().then(() => this.logger.init('discord connected'))
         ]);

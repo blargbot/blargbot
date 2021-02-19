@@ -3,10 +3,8 @@ import avatars from '../../res/avatars.json';
 import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
-import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User, Member, DiscordRESTError, DiscordHTTPError, TextableChannel, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
-import { metrics } from '../core/Metrics';
-import { Client as CassandraDb, auth as CassandraAuth, ResultCallback as CassandraCallback } from 'cassandra-driver';
-import { fafo, getRange, humanize, randInt, snowflake, SubtagVariableType } from '.';
+import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
+import { fafo, getRange, humanize, randInt, SubtagVariableType } from '.';
 import isSafeRegex from 'safe-regex';
 import request from 'request';
 import { parse } from './utils';
@@ -15,9 +13,7 @@ import limax from 'limax';
 import { nfkd } from 'unorm';
 import { Engine as BBEngine, limits, RuntimeContext as BBContext, SubtagCall } from '../core/bbtag';
 import { ClusterUtilities } from '../cluster';
-import { Chatlog, StoredGuild, StoredTag } from '../core/database';
-
-type CassandraRow = Parameters<CassandraCallback>[1]['rows'][number]
+import { StoredGuild, StoredTag } from '../core/database';
 
 interface dbquery {
     type: string;
@@ -77,13 +73,6 @@ export const oldBu = {
     avatars: avatars,//JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
     emitter: new EventEmitter(),
     events: new EventEmitter(),
-    cclient: new CassandraDb({
-        contactPoints: config.cassandra.contactPoints,
-        keyspace: config.cassandra.keyspace,
-        authProvider: new CassandraAuth.PlainTextAuthProvider(
-            config.cassandra.username,
-            config.cassandra.password)
-    }),
     settings: {
         makelogs: {
             name: 'Make Chatlogs',
@@ -366,70 +355,6 @@ export const oldBu = {
 
         return guild?.channels[channelid]?.blacklisted ?? false;
     },
-    normalize(r: CassandraRow): Chatlog {
-        if (!r)
-            throw new Error('No valid message was provided.');
-        const n: Chatlog = {
-            id: r.id,
-            content: r.content,
-            attachment: r.attachment,
-            userid: r.userid,
-            msgid: r.msgid,
-            channelid: r.channelid,
-            guildid: r.guildid,
-            msgtime: new Date(r.msgtime),
-            type: r.type,
-            embeds: r.embeds
-        };
-        if (typeof n.embeds === 'string') {
-            try {
-                n.embeds = JSON.parse(n.embeds);
-            } catch (err) {
-                console.log(r, n);
-                console.error(err);
-            }
-        }
-        return n;
-    },
-    async getChatlog(id: string): Promise<Chatlog | null> {
-        if (!config.cassandra) return null;
-        const res = await oldBu.cclient.execute('SELECT channelid, id FROM chatlogs_map WHERE msgid = :id LIMIT 1', { id }, { prepare: true });
-        if (res.rows.length > 0) {
-            const msg = await oldBu.cclient.execute('SELECT * FROM chatlogs WHERE channelid = :channelid and id = :id LIMIT 1', {
-                id: res.rows[0].id,
-                channelid: res.rows[0].channelid
-            }, { prepare: true });
-            if (msg.rows.length > 0)
-                return oldBu.normalize(msg.rows[0]);
-            else return null;
-        } else return null;
-    },
-    async insertChatlog(msg: Message<GuildTextableChannel>, type: 0 | 1 | 2): Promise<void | null> {
-        if (!config.cassandra)
-            return null;
-        if (msg.channel.id != '204404225914961920') {
-            metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
-            const data: Chatlog = {
-                id: snowflake.create(),
-                content: msg.content,
-                attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
-                userid: msg.author.id,
-                msgid: msg.id,
-                channelid: msg.channel.id,
-                guildid: msg.channel.guild ? msg.channel.guild.id : 'DM',
-                msgtime: Date.now(),
-                type: type,
-                embeds: JSON.stringify(msg.embeds)
-            };
-            try {
-                await oldBu.cclient.execute(insertQuery1, data, { prepare: true });
-                await oldBu.cclient.execute(insertQuery2, { id: data.id, msgid: msg.id, channelid: msg.channel.id },
-                    { prepare: true });
-            } catch (err) {
-
-            }
-        }
-    },
     compareStats(a: StoredTag, b: StoredTag): -1 | 0 | 1 {
         if (a.uses < b.uses)
             return -1;
@@ -611,23 +536,6 @@ export const oldBu = {
         }
 
         return errors;
-    },
-    async generateOutputPage(
-        payload: string | Pick<Message, 'content' | 'embeds'>,
-        channel: TextableChannel
-    ): Promise<Snowflake> {
-        if (typeof payload === 'string') payload = {
-            content: payload,
-            embeds: []
-        };
-        const id = snowflake.create();
-        await oldBu.cclient.execute('INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid) USING TTL 604800', {
-            id,
-            content: payload.content.toString(),
-            embeds: JSON.stringify([payload.embeds]),
-            channelid: channel ? channel.id : null
-        }, { prepare: true });
-        return id;
     },
 
     async canDmErrors(userId: string): Promise<boolean> {
@@ -1254,12 +1162,3 @@ function getId(text: string): string | null {
 const SANITIZED = /(\w+:\d+)/;
 
 const tokenChoices = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-
-const insertQuery1 = `
-    INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
-        VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
-        USING TTL 604800
-`;
-const insertQuery2 = `
-    INSERT INTO chatlogs_map (id, msgid, channelid) VALUES (:id, :msgid, :channelid) USING TTL 604800
-`;
