@@ -178,6 +178,13 @@ bu.isBlacklistedChannel = async function (channelid) {
     return guild.channels[channelid] ? guild.channels[channelid].blacklisted : false;
 };
 
+const cacheTimeout = {
+    user: {},
+    guild: {}
+};
+
+const CACHE_LIFESPAN = 1000 * 60 * 2; // 2 minutes
+
 bu.getCachedUser = async function (userid) {
     let storedUser;
     if (bu.userCache[userid]) {
@@ -186,6 +193,13 @@ bu.getCachedUser = async function (userid) {
         storedUser = await r.table('user').get(userid);
         bu.userCache[userid] = storedUser;
     }
+    if (cacheTimeout.user[userid]) {
+        clearTimeout(cacheTimeout.user[userid]);
+    }
+    cacheTimeout.user[userid] = setTimeout(() => {
+        delete cacheTimeout.user[userid];
+        delete bu.userCache[userid];
+    }, CACHE_LIFESPAN);
     return storedUser;
 };
 
@@ -197,6 +211,13 @@ bu.getGuild = async function (guildid) {
         storedGuild = await r.table('guild').get(guildid);
         bu.guildCache[guildid] = storedGuild;
     }
+    if (cacheTimeout.guild[guildid]) {
+        clearTimeout(cacheTimeout.guild[guildid]);
+    }
+    cacheTimeout.guild[guildid] = setTimeout(() => {
+        delete cacheTimeout.guild[guildid];
+        delete bu.guildCache[guildid];
+    }, CACHE_LIFESPAN);
     return storedGuild;
 };
 
