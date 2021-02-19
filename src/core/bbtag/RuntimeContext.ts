@@ -9,7 +9,7 @@ import { TagCooldownManager } from './TagCooldownManager';
 import { Statement, SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext } from './types';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
 import { Engine } from './Engine';
-import { StoredGuildCommand, StoredTag } from '../database';
+import { Database, StoredGuildCommand, StoredTag } from '../database';
 
 function serializeEntity(entity: { id: string }): { id: string, serialized: string } {
     return { id: entity.id, serialized: JSON.stringify(entity) };
@@ -54,6 +54,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     public get user(): User { return this.message.author; }
     public get scope(): BBRuntimeScope { return this.scopes.local; }
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
+    public get database(): Database { return this.engine.database; }
 
     public constructor(
         public readonly engine: Engine,

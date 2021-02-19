@@ -1,8 +1,8 @@
 import pg from 'pg';
 import sequelize from 'sequelize';
 import { sleep } from '../../../utils';
-import * as models from '../../models';
-import { BaseModel } from '../../models/Base';
+import * as models from './postgresModels';
+import { BaseModel } from './postgresModels/Base';
 import { PostgresDbOptions } from '../types';
 
 delete (<Record<string, unknown>>pg).native; // TODO Do we need to do this?
@@ -17,6 +17,8 @@ export class PostgresDb {
     #clientModels: { [P in keyof Models]?: ModelType<InstanceType<Models[P]>> };
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #models: { [P in keyof Models]?: InstanceType<Models[P]> };
+
+    public get models(): { [P in keyof Models]?: ModelType<InstanceType<Models[P]>> } { return this.#clientModels; }
 
     public constructor(
         public readonly logger: CatLogger,

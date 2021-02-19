@@ -8,12 +8,12 @@ export interface SubtagVariableProperties {
 }
 
 export enum Type {
-    LOCAL = 1,
-    AUTHOR,
-    GUILD,
-    GLOBAL,
-    TAGGUILD,
-    GUILDLOCAL
+    LOCAL = 'LOCAL_TAG',
+    AUTHOR = 'AUTHOR',
+    GUILD = 'GUILD_CC',
+    GLOBAL = 'GLOBAL',
+    TAGGUILD = 'GUILD_TAG',
+    GUILDLOCAL = 'LOCAL_CC'
 }
 
 export const properties: SubtagVariablePropertiesSet = {

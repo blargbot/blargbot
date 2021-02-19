@@ -1,7 +1,7 @@
 import { RethinkDb } from './core/RethinkDb';
 import { Client as Cassandra, auth as CassandraAuth } from 'cassandra-driver';
 import { Client as ErisClient } from 'eris';
-import { DatabaseOptions, GuildTable, UserTable, VarsTable, EventsTable, TagsTable, ChatlogsTable, DumpsTable } from './types';
+import { DatabaseOptions, GuildTable, UserTable, VarsTable, EventsTable, TagsTable, ChatlogsTable, DumpsTable, TagVariablesTable } from './types';
 import { RethinkDbGuildTable } from './RethinkDbGuildTable';
 import { RethinkDbUserTable } from './RethinkDbUserTable';
 import { RethinkDbVarsTable } from './RethinkDbVarsTable';
@@ -9,6 +9,8 @@ import { RethinkDbEventsTable } from './RethinkDbEventsTable';
 import { RethinkDbTagTable } from './RethinkDbTagTable';
 import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
 import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
+import { PostgresDbTagVariablesTable } from './PostgresDbTagVariablesTable';
+import { PostgresDb } from './core/PostgresDb';
 
 export * from './types';
 
@@ -17,6 +19,8 @@ export class Database {
     readonly #rethinkDb: RethinkDb;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cassandra: Cassandra;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #postgres: PostgresDb;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #guilds: RethinkDbGuildTable;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -32,6 +36,8 @@ export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #dumps: CassandraDbDumpsTable;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #tagVariables: PostgresDbTagVariablesTable;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #logger: CatLogger;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #discord: ErisClient;
@@ -43,9 +49,11 @@ export class Database {
     public get tags(): TagsTable { return this.#tags; }
     public get chatlogs(): ChatlogsTable { return this.#chatlogs; }
     public get dumps(): DumpsTable { return this.#dumps; }
+    public get tagVariables(): TagVariablesTable { return this.#tagVariables; }
 
     public constructor(options: DatabaseOptions) {
         this.#rethinkDb = new RethinkDb(options.rethinkDb);
+        this.#postgres = new PostgresDb(options.logger, options.postgres);
         this.#cassandra = new Cassandra({
             contactPoints: options.cassandra.contactPoints,
             keyspace: options.cassandra.keyspace,
@@ -63,14 +71,18 @@ export class Database {
         this.#tags = new RethinkDbTagTable(this.#rethinkDb, this.#logger);
         this.#chatlogs = new CassandraDbChatlogTable(this.#cassandra, this.#logger);
         this.#dumps = new CassandraDbDumpsTable(this.#cassandra, this.#logger);
+        this.#tagVariables = new PostgresDbTagVariablesTable(this.#postgres, this.#logger);
     }
 
     public async connect(): Promise<void> {
         this.connect = () => Promise.resolve();
+
         await Promise.all([
             this.#rethinkDb.connect().then(() => this.#logger.init('rethinkdb connected')),
-            this.#cassandra.connect().then(() => this.#logger.init('cassandra connected'))
+            this.#cassandra.connect().then(() => this.#logger.init('cassandra connected')),
+            this.#postgres.authenticate().then(() => this.#logger.init('postgresdb connected'))
         ]);
+
         await Promise.all([
             this.#guilds.migrate(),
             this.#users.migrate(),
@@ -80,6 +92,7 @@ export class Database {
             this.#chatlogs.migrate(),
             this.#dumps.migrate()
         ]);
+
         void this.#guilds.watchChanges(id => this.#discord.guilds.get(id) !== undefined);
         void this.#users.watchChanges(id => this.#discord.users.get(id) !== undefined);
     }

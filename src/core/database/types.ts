@@ -1,6 +1,6 @@
 import { Client as ErisClient, Message, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
-import { FlagDefinition } from '../../utils';
+import { FlagDefinition, SubtagVariableType } from '../../utils';
 import { Options as SequelizeOptions } from 'sequelize';
 
 export type RethinkTableMap = {
@@ -276,6 +276,17 @@ export interface Chatlog {
     embeds: string | JObject;
 }
 
+export interface BBTagVariableReference {
+    name: string;
+    type: SubtagVariableType;
+    scope: string;
+
+}
+
+export interface BBTagVariable extends BBTagVariableReference {
+    value: JToken;
+}
+
 export interface DatabaseOptions {
     logger: CatLogger;
     discord: ErisClient;
@@ -354,4 +365,9 @@ export interface ChatlogsTable {
 
 export interface DumpsTable {
     add(dump: Dump, lifespan?: number | Duration): Promise<void>;
+}
+
+export interface TagVariablesTable {
+    upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void>;
+    get(name: string, type: SubtagVariableType, scope: string): Promise<JToken | undefined>;
 }

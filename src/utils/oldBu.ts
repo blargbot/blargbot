@@ -15,31 +15,6 @@ import { Engine as BBEngine, limits, RuntimeContext as BBContext, SubtagCall } f
 import { ClusterUtilities } from '../cluster';
 import { StoredGuild, StoredTag } from '../core/database';
 
-interface dbquery {
-    type: string;
-    scope: string;
-    name: string;
-    content?: string;
-}
-
-type bot = DiscordClient & {
-    models: {
-        BBTagVariable: {
-            upsert(query: dbquery): Promise<void>;
-            findOne(filter: { where: dbquery }): Promise<{
-                get(key: string): JToken;
-            }>;
-        };
-    };
-    database: {
-        sequelize: {
-            transaction(): Promise<{
-                commit(): Promise<void>;
-            }>;
-        };
-    };
-};
-
 const TagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
     [key: string]: TagLocks
@@ -47,7 +22,7 @@ interface TagLocks {
 }
 
 const console: CatLogger = <CatLogger><unknown>undefined;
-const bot = <bot><unknown>undefined;
+const bot = <DiscordClient><unknown>undefined;
 const bbEngine: BBEngine = <BBEngine><unknown>undefined;
 const cluster = <NodeJS.Process & Required<Pick<NodeJS.Process, 'send'>>><unknown>process;
 const util = <ClusterUtilities><unknown>undefined;
@@ -214,12 +189,15 @@ export const oldBu = {
             description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
                 'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
                 'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
-            setter: async (context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> =>
-                await oldBu.setVariable(context.guild.id, values,
-                    context.isCC && !context.tagVars ? SubtagVariableType.GUILD : SubtagVariableType.TAGGUILD),
-            getter: async (context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> =>
-                await oldBu.getVariable(context.guild.id, name,
-                    context.isCC && !context.tagVars ? SubtagVariableType.GUILD : SubtagVariableType.TAGGUILD),
+            tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
+                return [context.isCC && !context.tagVars ? SubtagVariableType.GUILD : SubtagVariableType.TAGGUILD, context.guild.id];
+            },
+            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
+            },
+            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+                return await context.database.tagVariables.get(name, ...this.tagScope(context));
+            },
             getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
         },
         {
@@ -227,15 +205,14 @@ export const oldBu = {
             prefix: '@',
             description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
                 'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
-            setter: async (context: BBContext, subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> => {
-                if (context.author)
-                    return await oldBu.setVariable(context.author, values, SubtagVariableType.AUTHOR);
-                context.addError(subtag, 'No author found');
+            tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
+                return [SubtagVariableType.AUTHOR, context.author];
             },
-            getter: async (context: BBContext, subtag: SubtagCall | null, name: string): Promise<JToken> => {
-                if (context.author)
-                    return await oldBu.getVariable(context.author, name, SubtagVariableType.AUTHOR);
-                return context.addError(subtag, 'No author found');
+            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
+            },
+            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+                return await context.database.tagVariables.get(name, ...this.tagScope(context));
             },
             getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['AUTHOR', context.author, key])
         },
@@ -244,10 +221,15 @@ export const oldBu = {
             prefix: '*',
             description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
                 'These are very useful if you like pain.',
-            setter: async (_context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> =>
-                await oldBu.setVariable(undefined, values, SubtagVariableType.GLOBAL),
-            getter: async (_context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> =>
-                await oldBu.getVariable(undefined, name, SubtagVariableType.GLOBAL),
+            tagScope(_context: BBContext): [type: SubtagVariableType, scope: string] {
+                return [SubtagVariableType.GLOBAL, ''];
+            },
+            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
+            },
+            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+                return await context.database.tagVariables.get(name, ...this.tagScope(context));
+            },
             getLock: (_context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['GLOBAL', key])
         },
         {
@@ -265,15 +247,16 @@ export const oldBu = {
             description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
                 'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
                 'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
-            setter: async (context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> => {
-                if (context.isCC && !context.tagVars)
-                    return await oldBu.setVariable(context.tagName, values, SubtagVariableType.GUILDLOCAL, context.guild.id);
-                return await oldBu.setVariable(context.tagName, values, SubtagVariableType.LOCAL);
+            tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
+                return context.isCC && !context.tagVars
+                    ? [SubtagVariableType.GUILDLOCAL, `${context.guild.id}_${context.tagName}`]
+                    : [SubtagVariableType.LOCAL, context.tagName];
             },
-            getter: async (context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> => {
-                if (context.isCC && !context.tagVars)
-                    return await oldBu.getVariable(context.tagName, name, SubtagVariableType.GUILDLOCAL, context.guild.id);
-                return await oldBu.getVariable(context.tagName, name, SubtagVariableType.LOCAL);
+            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
+            },
+            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+                return await context.database.tagVariables.get(name, ...this.tagScope(context));
             },
             getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
         }
@@ -557,7 +540,7 @@ export const oldBu = {
         return null;
     },
     async getMessage(channelId: string, messageId: string): Promise<Message | null> {
-        if (/^\d{17,23}$/.test(messageId)) {
+        if (/^\d{ 17, 23 } $ /.test(messageId)) {
             const channel = bot.getChannel(channelId);
             if ('messages' in channel) {
                 const messageAttempt = channel.messages.get(messageId);
@@ -1049,46 +1032,6 @@ export const oldBu = {
         } catch (err) { }
         return undefined;
     },
-    async setVariable(scope: string | undefined, values: Record<string, JToken>, type: SubtagVariableType, guildId?: string): Promise<void> {
-        const trans = await bot.database.sequelize.transaction();
-        for (const key in values) {
-            const query = getQuery(scope, key, type, guildId);
-            let val = values[key];
-            val = JSON.stringify(val);
-            query.content = val;
-            try {
-                await bot.models.BBTagVariable.upsert(query);
-            } catch (err) {
-                console.error(err);
-                if (err.errors) {
-                    for (const e of err.errors)
-                        console.error(e.path, e.validatorKey, e.value);
-                }
-                console.info(query);
-            }
-        }
-        return await trans.commit();
-    },
-
-    async getVariable(scope: string | undefined, key: string, type: SubtagVariableType, guildId?: string): Promise<JToken> {
-        const query = getQuery(scope, key, type, guildId);
-
-        const v = await bot.models.BBTagVariable.findOne({
-            where: query
-        });
-        if (v) {
-            let result = v.get('content');
-            // try parsing to a json value
-            if (typeof result === 'string') {
-                try {
-                    result = JSON.parse(result);
-                } catch (err) { /* no-op */ }
-            }
-
-            return result;
-        }
-        else return null;
-    },
 
     getLock(...path: string[]): ReadWriteLock {
         let node = oldBu.tagLocks || (oldBu.tagLocks = {});
@@ -1099,51 +1042,6 @@ export const oldBu = {
         return node[TagLock] || (node[TagLock] = new ReadWriteLock());
     }
 };
-
-function getQuery(
-    name: string | undefined,
-    key: string,
-    type: SubtagVariableType,
-    guildId: string | undefined
-): dbquery {
-    const query: Partial<dbquery> = {
-        name: key.substring(0, 255)
-    };
-
-    switch (type) {
-        case SubtagVariableType.GUILD:
-            query.type = 'GUILD_CC';
-            query.scope = name;
-            break;
-        case SubtagVariableType.GUILDLOCAL:
-            query.type = 'LOCAL_CC';
-            query.scope = `${guildId}_${name}`;
-            break;
-        case SubtagVariableType.TAGGUILD:
-            query.type = 'GUILD_TAG';
-            query.scope = name;
-            break;
-        case SubtagVariableType.AUTHOR:
-            query.type = 'AUTHOR';
-            query.scope = name;
-            break;
-        case SubtagVariableType.LOCAL:
-            query.type = 'LOCAL_TAG';
-            query.scope = name;
-            break;
-        case SubtagVariableType.GLOBAL:
-            query.type = 'GLOBAL';
-            query.scope = '';
-            break;
-    }
-    if (query.scope === null) {
-        query.scope = '';
-        console.info(type, key, name, guildId);
-    }
-    if (typeof query.scope === 'string')
-        query.scope = query.scope.substring(0, 255);
-    return <dbquery>query;
-}
 
 class TimeoutError extends Error {
     public constructor(

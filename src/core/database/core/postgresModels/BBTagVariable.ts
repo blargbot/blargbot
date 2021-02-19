@@ -1,22 +1,15 @@
 import sequelize, { ENUM, STRING, TEXT } from 'sequelize';
+import { SubtagVariableType } from '../../../../utils';
 import { BaseModel } from './Base';
 
 type CreationAttributes = Attributes;
 type Instance = Attributes
 type Attributes = {
     name: string;
-    type: keyof typeof VariableType;
+    type: SubtagVariableType;
     scope: string;
     content: string;
 };
-
-export enum VariableType {
-    GUILD_TAG = 1,
-    GUILD_CC,
-    LOCAL_TAG,
-    AUTHOR,
-    GLOBAL
-}
 
 export class BBTagVariableModel extends BaseModel<Instance, Attributes, CreationAttributes> {
     public readonly model: sequelize.Model<Instance, Attributes, CreationAttributes>;
@@ -34,7 +27,7 @@ export class BBTagVariableModel extends BaseModel<Instance, Attributes, Creation
                 allowNull: false
             },
             type: {
-                type: ENUM(...Object.keys(VariableType)),
+                type: ENUM(...Object.values(SubtagVariableType)),
                 primaryKey: true,
                 allowNull: false
             },
