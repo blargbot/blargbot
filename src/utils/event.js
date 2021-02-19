@@ -28,7 +28,9 @@ class EventManager {
       }
 
       let type = event.type;
-      CommandManager.built[type].event(event);
+      if (CommandManager.built[type]) {
+        CommandManager.built[type].event(event);
+      }
       await this.delete(event.id);
     }
   }
