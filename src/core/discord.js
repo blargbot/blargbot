@@ -446,17 +446,6 @@ function getCPU() {
     };
 }
 
-const usage = require('usage');
-function getOldCPU() {
-    return new Promise((res, rej) => {
-        let pid = process.pid;
-        usage.lookup(pid, { keepHistory: true }, function (err, result) {
-            if (err) res('NaN');
-            else res(result.cpu);
-        });
-    });
-}
-
 /** @type {{[key: string]: number | undefined}} */
 var lastReady = {};
 

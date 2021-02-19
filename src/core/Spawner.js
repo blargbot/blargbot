@@ -164,7 +164,6 @@ class Spawner extends EventEmitter {
         const shards = this.shards;
         return new Promise((fulfill, reject) => {
             let datum = [];
-            let i = 0;
             function onComplete(received) {
                 datum.push(received);
                 if (datum.length >= shards.size)
@@ -172,7 +171,6 @@ class Spawner extends EventEmitter {
             }
             for (const [id, shard] of shards) {
                 if (shard.file === this.file) {
-                    i++;
                     shard.awaitMessage(data).then(received => {
                         onComplete(received);
                     }).catch(reject);

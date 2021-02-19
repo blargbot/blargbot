@@ -8,9 +8,11 @@ class EventManager {
       returnChanges: true
     });
 
-    const val = res.changes[0].new_val;
-    if (Date.now() - +val.endtime <= 1000 * 60 * 5) {
-      this.cache[val.id] = val;
+    if (res.changes) {
+      const val = res.changes[0].new_val;
+      if (Date.now() - +val.endtime <= 1000 * 60 * 5) {
+        this.cache[val.id] = val;
+      }
     }
   }
 
