@@ -2,6 +2,7 @@ import moment from 'moment-timezone';
 import { humanize } from '../../utils';
 import { Cluster } from '..';
 import { DiscordEventService } from '../../structures/DiscordEventService';
+import { metrics } from '../../core/Metrics';
 
 export class ReadyEventHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -37,7 +38,7 @@ export class ReadyEventHandler extends DiscordEventService {
             }
         }
 
-        this.cluster.metrics.guildGauge.set(this.cluster.discord.guilds.size);
+        metrics.guildGauge.set(this.cluster.discord.guilds.size);
 
         const guildIds = new Set(await this.cluster.database.guilds.getIds());
         for (const guild of this.cluster.discord.guilds.values()) {

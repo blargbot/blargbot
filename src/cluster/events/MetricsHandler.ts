@@ -1,6 +1,7 @@
 import { ClusterEventService } from '../../structures/ClusterEventService';
 import { ProcessMessageHandler } from '../../workers/core/IPCEvents';
 import { Cluster } from '../Cluster';
+import { metrics } from '../../core/Metrics';
 
 
 export class MetricsHandler extends ClusterEventService {
@@ -11,7 +12,7 @@ export class MetricsHandler extends ClusterEventService {
     }
 
     protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
-        this.cluster.metrics.userGauge.set(this.cluster.discord.users.size);
-        reply(this.cluster.metrics.aggregated.getMetricsAsJSON());
+        metrics.userGauge.set(this.cluster.discord.users.size);
+        reply(metrics.aggregated.getMetricsAsJSON());
     }
 }

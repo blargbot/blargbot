@@ -3,7 +3,6 @@ import { BaseClient } from './BaseClient';
 import { snowflake } from '../utils';
 import { Error } from 'sequelize';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
-import { Client as CassandraDb } from 'cassandra-driver';
 import { PostgresDb } from './database/core/PostgresDb';
 import request from 'request';
 import { metrics } from './Metrics';
@@ -26,7 +25,6 @@ export class BaseUtilities {
     public get shards(): Collection<Shard> { return this.client.discord.shards; }
     public get discord(): ErisClient { return this.client.discord; }
     public get database(): Database { return this.client.database; }
-    public get cassandra(): CassandraDb { return this.client.cassandra; }
     public get postgres(): PostgresDb { return this.client.postgres; }
     public get logger(): CatLogger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
@@ -201,12 +199,12 @@ export class BaseUtilities {
             default: payload = {}; break;
         }
         const id = snowflake.create();
-        await this.cassandra.execute('INSERT INTO message_outputs (id, content, embeds, channelid) VALUES (:id, :content, :embeds, :channelid) USING TTL 604800', {
-            id,
+        await this.database.dumps.add({
+            id: id.toString(),
             content: payload.content,
             embeds: JSON.stringify([payload.embed]),
-            channelid: channel ? channel.id : null
-        }, { prepare: true });
+            channelid: channel?.id
+        });
         return id;
     }
 

@@ -15,22 +15,9 @@ import limax from 'limax';
 import { nfkd } from 'unorm';
 import { Engine as BBEngine, limits, RuntimeContext as BBContext, SubtagCall } from '../core/bbtag';
 import { ClusterUtilities } from '../cluster';
-import { StoredGuild, StoredTag } from '../core/database';
+import { Chatlog, StoredGuild, StoredTag } from '../core/database';
 
 type CassandraRow = Parameters<CassandraCallback>[1]['rows'][number]
-
-interface chatlog {
-    id: Snowflake;
-    content: string;
-    attachment?: string;
-    userid: string;
-    msgid: string;
-    channelid: string;
-    guildid: string;
-    msgtime: number | Date;
-    type: 0 | 1 | 2;
-    embeds: string | JObject;
-}
 
 interface dbquery {
     type: string;
@@ -379,10 +366,10 @@ export const oldBu = {
 
         return guild?.channels[channelid]?.blacklisted ?? false;
     },
-    normalize(r: CassandraRow): chatlog {
+    normalize(r: CassandraRow): Chatlog {
         if (!r)
             throw new Error('No valid message was provided.');
-        const n: chatlog = {
+        const n: Chatlog = {
             id: r.id,
             content: r.content,
             attachment: r.attachment,
@@ -404,7 +391,7 @@ export const oldBu = {
         }
         return n;
     },
-    async getChatlog(id: string): Promise<chatlog | null> {
+    async getChatlog(id: string): Promise<Chatlog | null> {
         if (!config.cassandra) return null;
         const res = await oldBu.cclient.execute('SELECT channelid, id FROM chatlogs_map WHERE msgid = :id LIMIT 1', { id }, { prepare: true });
         if (res.rows.length > 0) {
@@ -422,7 +409,7 @@ export const oldBu = {
             return null;
         if (msg.channel.id != '204404225914961920') {
             metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
-            const data: chatlog = {
+            const data: Chatlog = {
                 id: snowflake.create(),
                 content: msg.content,
                 attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,

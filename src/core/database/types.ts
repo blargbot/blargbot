@@ -1,5 +1,5 @@
-import { Client as ErisClient, User } from 'eris';
-import { Moment } from 'moment-timezone';
+import { Client as ErisClient, Message, User } from 'eris';
+import { Duration, Moment } from 'moment-timezone';
 import { FlagDefinition } from '../../utils';
 
 export type RethinkTableMap = {
@@ -249,10 +249,37 @@ export interface UserTodo {
     content: string;
 }
 
+export interface Dump {
+    id: string;
+    content?: string;
+    embeds?: string;
+    channelid?: string;
+}
+
+export const enum ChatlogType {
+    CREATE = 0,
+    UPDATE = 1,
+    DELETE = 2
+}
+
+export interface Chatlog {
+    id: Snowflake;
+    content: string;
+    attachment?: string;
+    userid: string;
+    msgid: string;
+    channelid: string;
+    guildid: string;
+    msgtime: number | Date;
+    type: ChatlogType;
+    embeds: string | JObject;
+}
+
 export interface DatabaseOptions {
-    logger: CatLogger,
-    discord: ErisClient,
-    rethinkDb: RethinkDbOptions
+    logger: CatLogger;
+    discord: ErisClient;
+    rethinkDb: RethinkDbOptions;
+    cassandra: CassandraDbOptions;
 }
 
 export interface RethinkDbOptions {
@@ -261,6 +288,13 @@ export interface RethinkDbOptions {
     password: string;
     host: string;
     port: number;
+}
+
+export interface CassandraDbOptions {
+    username: string;
+    password: string;
+    keyspace: string;
+    contactPoints: string[];
 }
 
 export interface GuildTable {
@@ -301,4 +335,12 @@ export interface EventsTable {
 export interface TagsTable {
     get(tagName: string): Promise<DeepReadOnly<StoredTag> | undefined>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;
+}
+
+export interface ChatlogsTable {
+    add(message: Message, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
+}
+
+export interface DumpsTable {
+    add(dump: Dump, lifespan?: number | Duration): Promise<void>;
 }

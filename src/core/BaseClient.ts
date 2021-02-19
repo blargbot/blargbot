@@ -1,17 +1,13 @@
 import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
 import { PostgresDb } from './database/core/PostgresDb';
-import { Client as CassandraDb, auth as CassandraAuth } from 'cassandra-driver';
-import { metrics } from './Metrics';
 import { BaseUtilities } from './BaseUtilities';
 import { BaseModuleLoader } from './BaseModuleLoader';
 import { Database } from './database';
 
 export class BaseClient {
-    public readonly metrics: typeof metrics;
     public readonly util: BaseUtilities;
     public readonly postgres: PostgresDb;
     public readonly database: Database;
-    public readonly cassandra: CassandraDb;
     public readonly discord: ErisClient;
 
     public constructor(
@@ -19,7 +15,6 @@ export class BaseClient {
         public readonly config: Configuration,
         discordConfig: Omit<ErisOptions, 'restMode' | 'defaultImageFormat'>
     ) {
-        this.metrics = metrics;
         this.util = new BaseUtilities(this);
 
         this.postgres = new PostgresDb(this.logger, {
@@ -28,15 +23,6 @@ export class BaseClient {
             pass: this.config.postgres.pass,
             user: this.config.postgres.user,
             sequelize: this.config.sequelize
-        });
-
-        this.cassandra = new CassandraDb({
-            contactPoints: this.config.cassandra.contactPoints,
-            keyspace: this.config.cassandra.keyspace,
-            authProvider: new CassandraAuth.PlainTextAuthProvider(
-                this.config.cassandra.username,
-                this.config.cassandra.password
-            )
         });
 
         this.discord = new ErisClient(this.config.discord.token, {
@@ -54,7 +40,8 @@ export class BaseClient {
                 user: this.config.db.user,
                 host: this.config.db.host,
                 port: this.config.db.port
-            }
+            },
+            cassandra: this.config.cassandra
         });
     }
 
@@ -62,7 +49,6 @@ export class BaseClient {
         await Promise.all([
             void this.postgres.authenticate().then(() => this.logger.init('postgres connected')), // TODO this takes too long
             this.database.connect().then(() => this.logger.init('database connected')),
-            this.cassandra.connect().then(() => this.logger.init('cassandra connected')),
             this.discord.connect().then(() => this.logger.init('discord connected'))
         ]);
     }

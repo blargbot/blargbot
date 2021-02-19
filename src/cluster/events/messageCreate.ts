@@ -6,7 +6,8 @@ import { Cluster } from '..';
 import { BaseDCommand } from '../../structures/BaseDCommand';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { limits } from '../../core/bbtag';
-import { StoredGuild, StoredGuildCommand } from '../../core/database';
+import { ChatlogType, StoredGuild, StoredGuildCommand } from '../../core/database';
+import { metrics } from '../../core/Metrics';
 
 export class MessageCreateEventHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -38,11 +39,11 @@ export class MessageCreateEventHandler extends DiscordEventService {
     public async execute(message: Message): Promise<void> {
         const { channel, author } = message;
         if (channel instanceof TextChannel && channel.guild.shard.ready) {
-            this.cluster.metrics.messageCounter.inc();
+            metrics.messageCounter.inc();
             void this.cluster.database.users.upsert(author);
             const storedGuild = await this.cluster.database.guilds.get(channel.guild.id);
             if (storedGuild?.settings?.makelogs)
-                void this.cluster.util.insertChatlog(message, 0);
+                void this.cluster.database.chatlogs.add(message, ChatlogType.CREATE);
 
             if (author.id == this.cluster.discord.user.id)
                 this.handleOurMessage(message);
@@ -177,7 +178,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
             author,
             authorizer
         });
-        this.cluster.metrics.commandCounter.labels('custom', 'custom').inc();
+        metrics.commandCounter.labels('custom', 'custom').inc();
 
         return true;
     }
@@ -205,11 +206,11 @@ export class MessageCreateEventHandler extends DiscordEventService {
             const timer = new Timer().start();
             await this.executeCommand(command, msg, words, text);
             timer.end();
-            this.cluster.metrics.commandLatency.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).observe(timer.elapsed);
-            this.cluster.metrics.commandCounter.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).inc();
+            metrics.commandLatency.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).observe(timer.elapsed);
+            metrics.commandCounter.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).inc();
         } catch (err) {
             this.logger.error(err.stack);
-            this.cluster.metrics.commandError.labels(command.name).inc();
+            metrics.commandError.labels(command.name).inc();
         } finally {
             return true;
         }
@@ -486,7 +487,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
 
         const msgToSend = msg.content.replace(new RegExp('@' + '\u200b' + username + ',?'), '').trim();
-        this.cluster.metrics.cleverbotStats.inc();
+        metrics.cleverbotStats.inc();
         try {
             const response = await this.queryCleverbot(msgToSend);
             await sleep(1500);

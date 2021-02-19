@@ -2,7 +2,7 @@ import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
 import { Guild, GuildTextableChannel, Member, Message, Permission, Role, TextableChannel, User } from 'eris';
-import { commandTypes, defaultStaff, guard, humanize, parse, snowflake } from '../utils';
+import { commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
 import { BaseDCommand } from '../structures/BaseDCommand';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
@@ -310,28 +310,6 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async insertChatlog(msg: Message, type: number): Promise<void> {
-        this.cluster.metrics.chatlogCounter.labels(type === 0 ? 'create' : type === 1 ? 'update' : 'delete').inc();
-        const data = {
-            id: snowflake.create(),
-            content: msg.content,
-            attachment: msg.attachments[0] ? msg.attachments[0].url : undefined,
-            userid: msg.author.id,
-            msgid: msg.id,
-            channelid: msg.channel.id,
-            guildid: 'guild' in msg.channel ? msg.channel.guild.id : 'DM',
-            msgtime: Date.now(),
-            type: type,
-            embeds: JSON.stringify(msg.embeds)
-        };
-        try {
-            await this.cluster.cassandra.execute(insertChatlog, data, { prepare: true });
-            await this.cluster.cassandra.execute(insertChatlogMap, { id: data.id, msgid: msg.id, channelid: msg.channel.id }, { prepare: true });
-        } catch (err) {
-
-        }
-    }
-
     public postStats(): void {
         const stats = {
             server_count: this.guilds.size,
@@ -572,13 +550,3 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 }
-
-
-const insertChatlog = `
-    INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)
-        VALUES (:id, :content, :attachment, :userid, :msgid, :channelid, :guildid, :msgtime, :type, :embeds)
-        USING TTL 604800
-`;
-const insertChatlogMap = `
-    INSERT INTO chatlogs_map (id, msgid, channelid) VALUES (:id, :msgid, :channelid) USING TTL 604800
-`;
