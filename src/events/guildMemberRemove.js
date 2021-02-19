@@ -12,8 +12,12 @@ const bbEngine = require('../structures/bbtag/Engine');
 bot.on('guildMemberRemove', async function (guild, member) {
     const now = Date.now();
     let val = await bu.guildSettings.get(guild.id, 'farewell');
-    let chan = bot.getChannel(await bu.guildSettings.get(guild.id, 'farewellchan'));
+    let chan = await bu.guildSettings.get(guild.id, 'farewellchan');
+    let channel;
     if (chan && val) {
+        channel = bot.getChannel(chan);
+    }
+    if (channel) {
         let ccommandContent;
         let author, authorizer;
         if (typeof val == "object") {
