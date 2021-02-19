@@ -47,8 +47,10 @@ class EventManager {
       returnChanges: true
     }).run();
 
-    for (const change of res.changes) {
-      delete this.cache[change.old_val.id];
+    if (res.changes) {
+      for (const change of res.changes) {
+        delete this.cache[change.old_val.id];
+      }
     }
   }
 
