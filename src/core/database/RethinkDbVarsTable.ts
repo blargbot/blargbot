@@ -15,7 +15,7 @@ export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTa
     }
 
     public async set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean> {
-        return await this.rupdate(value.varname, r => <UpdateRequest<GetStoredVar<K>>>r.literal(value))
+        return await this.rupdate(value.varname, r => <UpdateRequest<GetStoredVar<K>>>r.literal(...(value !== undefined ? [value] : [])))
             || await this.rinsert(value);
     }
 

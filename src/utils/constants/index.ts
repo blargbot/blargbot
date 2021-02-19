@@ -9,6 +9,7 @@ export { SubtagVariableProperties, Type as SubtagVariableType } from './subtagVa
 export { SubtagArgumentKind } from './subtagArgumentKind';
 export { modlogColour } from './modlogColour';
 export { ModerationType } from './moderationType';
+export * from './guildSettings';
 
 export const commandTypes = {
     properties: command.properties,

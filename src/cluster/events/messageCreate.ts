@@ -254,7 +254,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         if (antimention === undefined)
             return;
 
-        const parsedAntiMention = parseInt(antimention);
+        const parsedAntiMention = typeof antimention === 'string' ? parseInt(antimention) : antimention;
         if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || msg.mentions.length < parsedAntiMention)
             return;
 
@@ -457,8 +457,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
     }
 
     public handleDeleteNotif(msg: Message<GuildTextableChannel>, storedGuild: DeepReadOnly<StoredGuild>): void {
-        const deletenotif = storedGuild.settings?.deletenotif;
-        if (deletenotif && deletenotif != '0')
+        if (parse.boolean(storedGuild.settings?.deletenotif, false, true))
             this.cluster.util.commandMessages.push(msg.channel.guild.id, msg.id);
     }
 

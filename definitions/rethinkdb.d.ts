@@ -1,6 +1,6 @@
 declare module 'rethinkdb' {
     export function epochTime(time: number): Expression<Time>;
-    export function literal<T>(value: T): Expression<T>;
+    export function literal<T>(value?: T): Expression<T>;
 
     interface WriteResult {
         changes?: WriteChange[];

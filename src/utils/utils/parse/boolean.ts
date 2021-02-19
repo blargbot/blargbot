@@ -1,13 +1,13 @@
-export function boolean(value: string | boolean | number, defValue: boolean, includeNumbers?: boolean): boolean
-export function boolean(value: string | boolean | number, defValue?: undefined, includeNumbers?: boolean): boolean | undefined
-export function boolean(value: string | boolean | number, defValue?: boolean, includeNumbers = true): boolean | undefined {
+export function boolean(value: string | boolean | number | undefined, defValue: boolean, includeNumbers?: boolean): boolean
+export function boolean(value: string | boolean | number | undefined, defValue?: undefined, includeNumbers?: boolean): boolean | undefined
+export function boolean(value: string | boolean | number | undefined, defValue?: boolean, includeNumbers = true): boolean | undefined {
     if (typeof value == 'boolean')
         return value;
 
     if (includeNumbers && typeof value == 'number')
         return value !== 0;
 
-    if (typeof value != 'string')
+    if (typeof value !== 'string')
         return defValue;
 
     if (includeNumbers) {

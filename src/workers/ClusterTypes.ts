@@ -37,7 +37,6 @@ export interface CommandResult {
     name: string;
     usage: string;
     info: string;
-    longinfo: string | null;
     category: CommandType;
     aliases: string[];
     flags: FlagDefinition[];

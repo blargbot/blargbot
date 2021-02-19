@@ -1,4 +1,4 @@
-import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, Collection, EmbedOptions, ExtendedUser, Guild, Member, Message, MessageFile, Shard, TextableChannel, User } from 'eris';
+import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, EmbedOptions, ExtendedUser, Member, Message, MessageFile, TextableChannel, User } from 'eris';
 import { BaseClient } from './BaseClient';
 import { snowflake } from '../utils';
 import { Error } from 'sequelize';
@@ -19,9 +19,6 @@ export type SendPayload = {
 
 export class BaseUtilities {
     public get user(): ExtendedUser { return this.client.discord.user; }
-    public get guilds(): Collection<Guild> { return this.client.discord.guilds; }
-    public get users(): Collection<User> { return this.client.discord.users; }
-    public get shards(): Collection<Shard> { return this.client.discord.shards; }
     public get discord(): ErisClient { return this.client.discord; }
     public get database(): Database { return this.client.database; }
     public get logger(): CatLogger { return this.client.logger; }

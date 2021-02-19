@@ -99,7 +99,7 @@ export interface StoredGuild {
     guildid: string;
     active: boolean;
     name: string;
-    settings: GuildSettings;
+    settings: StoredGuildSettings;
     channels: { [channelId: string]: ChannelSettings | undefined };
     ccommands: { [key: string]: StoredGuildCommand | undefined };
     commandperms?: { [key: string]: CommandPermissions | undefined };
@@ -193,7 +193,7 @@ export interface StoredTag {
     lastuse?: Date;
 }
 
-export interface GuildSettings {
+export interface StoredGuildSettings {
     permoverride?: boolean;
     staffperms?: number | string;
     social?: boolean;
@@ -203,12 +203,20 @@ export interface GuildSettings {
     tableflip?: boolean;
     disablenoperms?: boolean;
     adminrole?: string;
-    antimention?: string;
+    antimention?: number;
     banat?: number;
     kickat?: number;
     modlog?: string;
-    deletenotif?: string;
+    deletenotif?: boolean;
     disableeveryone?: boolean;
+    greeting?: string;
+    greetChan?: string;
+    farewell?: string;
+    farewellchan?: string;
+    mutedrole?: string;
+    dmhelp?: boolean;
+    kickoverride?: number;
+    banoverride?: number;
 }
 
 export interface GuildModlogEntry {
@@ -222,6 +230,7 @@ export interface GuildModlogEntry {
 
 export interface ChannelSettings {
     blacklisted?: boolean;
+    nsfw?: boolean;
 }
 
 export interface StoredUsername {
@@ -322,8 +331,8 @@ export interface GuildTable {
     get(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuild> | undefined>;
     add(guild: StoredGuild): Promise<boolean>;
     getIds(): Promise<string[]>;
-    getSetting<K extends keyof GuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<GuildSettings>[K] | undefined>;
-    setSetting<K extends keyof GuildSettings>(guildId: string, key: K, value: GuildSettings[K]): Promise<boolean>;
+    getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<StoredGuildSettings>[K] | undefined>;
+    setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
     getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuildCommand> | undefined>;
     withIntervalCommand(): Promise<DeepReadOnly<StoredGuild[]> | undefined>;
     updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;

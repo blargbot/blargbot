@@ -4,6 +4,7 @@ import { isGuildMessage } from './isGuildMessage';
 import { notUndefined } from './notUndefined';
 import { notNull } from './notNull';
 import { hasValue } from './hasValue';
+import { isGuildSetting } from './isGuildSetting';
 
 export const guard = {
     isGuildChannel,
@@ -11,6 +12,7 @@ export const guard = {
     isTextableChannel,
     notUndefined,
     notNull,
-    hasValue
+    hasValue,
+    isGuildSetting
 };
 

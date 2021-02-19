@@ -2,7 +2,7 @@ import { Client as ErisClient, Message } from 'eris';
 import { Cluster } from '../cluster';
 import { ClusterUtilities } from '../cluster/ClusterUtilities';
 import { SendContext, SendPayload, SendFiles } from '../core/BaseUtilities';
-import { StoredEvent } from '../core/database';
+import { Database, StoredEvent } from '../core/database';
 import { CommandType, FlagDefinition } from '../utils';
 
 export interface DCommandOptions {
@@ -11,7 +11,6 @@ export interface DCommandOptions {
     hidden?: boolean;
     usage?: string;
     info?: string;
-    longinfo?: string | null;
     flags?: FlagDefinition[];
     onlyOn?: string | null;
     cannotDisable?: boolean;
@@ -27,7 +26,6 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     public readonly hidden: boolean;
     public readonly usage: string;
     public readonly info: string;
-    public readonly longinfo: string | null;
     public readonly flags: FlagDefinition[];
     public readonly onlyOn: string | null;
     public readonly cannotDisable: boolean;
@@ -39,6 +37,7 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
     protected get discord(): ErisClient { return this.cluster.discord; }
     protected get logger(): CatLogger { return this.cluster.logger; }
     protected get config(): Configuration { return this.cluster.config; }
+    protected get database(): Database { return this.cluster.database; }
 
     protected constructor(
         protected readonly cluster: Cluster,
@@ -51,7 +50,6 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         this.hidden = options.hidden ?? false;
         this.usage = `${this.name} ${options.usage ?? ''}`.trimEnd();
         this.info = options.info ?? '';
-        this.longinfo = options.longinfo ?? null;
         this.flags = options.flags ?? [];
         this.onlyOn = options.onlyOn ?? null;
         this.cannotDisable = options.cannotDisable ?? true;
@@ -69,5 +67,5 @@ export abstract class BaseDCommand implements Required<DCommandOptions>{
         return this.cluster.util.send(context, payload, files);
     }
 
-    abstract execute(message: Message, words: string[], text: string): Promise<void>;
+    public abstract execute(message: Message, words: string[], text: string): Promise<void>
 }

@@ -1,4 +1,4 @@
-import { GuildModlogEntry, GuildSettings, StoredGuild, StoredGuildCommand } from './types';
+import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand } from './types';
 import { GuildTable } from './types';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { RethinkDb } from './core/RethinkDb';
@@ -29,12 +29,12 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rgetCached(guildId, skipCache);
     }
 
-    public async getSetting<K extends keyof GuildSettings>(guildId: string, key: K, skipCache = false): Promise<DeepReadOnly<GuildSettings>[K] | undefined> {
+    public async getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache = false): Promise<DeepReadOnly<StoredGuildSettings>[K] | undefined> {
         const guild = await this.get(guildId, skipCache);
         return guild?.settings[key];
     }
 
-    public async setSetting<K extends keyof GuildSettings>(guildId: string, key: K, value: GuildSettings[K]): Promise<boolean> {
+    public async setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean> {
         const guild = await this._get(guildId);
         if (!guild)
             return false;
@@ -47,7 +47,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
         return await this.rupdate(guildId, r => ({
             settings: {
-                [key]: r.literal(value)
+                [key]: r.literal(...(value !== undefined ? [value] : []))
             }
         }));
     }
@@ -91,7 +91,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
         return await this.rupdate(guildId, r => ({
             ccommands: {
-                [commandName]: r.literal(command)
+                [commandName]: r.literal(...(command !== undefined ? [command] : []))
             }
         }));
     }
@@ -110,7 +110,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         delete guild.ccommands[oldName];
         return await this.rupdate(guildId, r => ({
             ccommands: {
-                [oldName]: r.literal(undefined),
+                [oldName]: r.literal(),
                 [newName]: r.literal(guild.ccommands[newName])
             }
         }));
@@ -143,7 +143,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
         return await this.rupdate(guildId, r => ({
             log: <UpdateRequest<Record<string, string>>>{
-                [event]: r.literal(channel)
+                [event]: r.literal(...(channel !== undefined ? [channel] : []))
             }
         }));
     }
@@ -159,7 +159,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rupdate(guildId, r => ({
             warnings: {
                 users: {
-                    [userId]: r.literal(count)
+                    [userId]: r.literal(...(count !== undefined ? [count] : []))
                 }
             }
         }));

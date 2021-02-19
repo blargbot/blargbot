@@ -10,6 +10,7 @@ import { time } from './time';
 import { words } from './words';
 import { emoji } from './emoji';
 import { bbtag } from './bbtag';
+import { guildSetting } from './guildSetting';
 
 export { FlagDefinition, FlagResult } from './flags';
 
@@ -25,5 +26,6 @@ export const parse = {
     time,
     words,
     emoji,
-    bbtag
+    bbtag,
+    guildSetting
 };
