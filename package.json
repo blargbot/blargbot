@@ -8,7 +8,6 @@
         "airtable": "^0.5.7",
         "babel-polyfill": "^6.22.0",
         "babel-register": "^6.26.0",
-        "better-cleverbot-io": "^1.0.2",
         "big-integer": "^1.6.36",
         "body-parser": "^1.18.3",
         "brainfuck-node": "^1.0.1",

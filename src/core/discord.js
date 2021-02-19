@@ -12,6 +12,7 @@ global.Promise = require('bluebird');
 global.config = require('../../config.json');
 const CatLoggr = require('cat-loggr');
 const moment = require('moment-timezone');
+moment.suppressDeprecationWarnings = true;
 const path = require('path');
 const fs = require('fs');
 const { Client } = require('eris');
@@ -66,6 +67,14 @@ const Sender = require('../structures/Sender');
 
 process.on('unhandledRejection', (err, p) => {
     console.error('Unhandled Promise Rejection: Promise', err);
+});
+
+process.on('exit', code => {
+    loggr.info('Cluster is exiting with code:', code);
+});
+
+process.on('disconnect', () => {
+    loggr.info('Cluster has disconnected from IPC.');
 });
 
 /** CONFIG STUFF **/

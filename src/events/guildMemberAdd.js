@@ -12,7 +12,7 @@ const moment = require('moment-timezone');
 bot.on('guildMemberAdd', async function (guild, member) {
     await bu.processUser(member.user);
     let val = await bu.guildSettings.get(guild.id, 'greeting');
-    let chan = await bu.guildSettings.get(guild.id, 'greetchan');
+    let chan = bot.getChannel(await bu.guildSettings.get(guild.id, 'greetchan'));
     if (chan && val) {
         let ccommandContent;
         let author, authorizer;
@@ -25,7 +25,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
         }
         await bbEngine.runTag({
             msg: {
-                channel: bot.getChannel(chan),
+                channel: chan,
                 author: member.user,
                 member: member,
                 guild: guild

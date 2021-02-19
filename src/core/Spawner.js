@@ -324,7 +324,7 @@ class Spawner extends EventEmitter {
                 if (!this.logCache[shard.id]) this.logCache[shard.id] = [];
                 data.text = stripAnsi(data.text);
                 this.logCache[shard.id].unshift(data);
-                if (this.logCache[shard.id].length >= 30) this.logCache[shard.id].pop();
+                if (this.logCache[shard.id].length >= 10) this.logCache[shard.id].pop();
                 break;
             case 'shardStats':
                 if (global.wss) {

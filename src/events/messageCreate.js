@@ -13,16 +13,6 @@ const bbtag = require('../core/bbtag');
 const Timer = require('../structures/Timer');
 const util = require('util');
 const request = require('request');
-const cleverbotIo = require('better-cleverbot-io');
-const cleverbot = new cleverbotIo({
-    user: config.cleverbot.ioid,
-    key: config.cleverbot.iokey,
-    nick: 'blargbot' + bu.makeSnowflake()
-});
-
-cleverbot.create().then(function (session) {
-    console.init('Cleverbot.io initialized with session', session);
-});
 
 bot.on('messageCreate', async function (msg) {
     if (!msg.guild || (msg.guild && !msg.guild.shard.ready)) return;
@@ -650,16 +640,7 @@ async function handleCleverbot(msg) {
         await bu.sleep(1500);
         await bu.send(msg, response);
     } catch (err) {
-        try {
-            //cleverbot.setNick('blargbot' + msg.channel.id);
-            let response = await cleverbot.ask(msgToSend);
-            await bu.sleep(1500);
-            await bu.send(msg, response);
-        } catch (err) {
-            console.error(err);
-            await bu.sleep(1500);
-            await bu.send(msg, `Failed to contact the API. Blame cleverbot.io`);
-        }
+        // NO-OP
     }
 }
 
