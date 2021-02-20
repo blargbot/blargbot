@@ -16,15 +16,19 @@ class EventManager {
     }
   }
 
+  isEventRelevant(event) {
+    return !((event.channel && !bot.getChannel(event.channel))
+      || (event.guild && !bot.guilds.get(event.guild))
+      || (event.guild && !bot.guilds.get(event.guild))
+      || (!event.channel && !event.guild && event.user && process.env.CLUSTER_ID != 0)
+      || (event.type === 'purgelogs'));
+  }
+
   async process() {
     const events = Object.values(this.cache).filter(e => +e.endtime <= Date.now());
 
     for (const event of events) {
-      if ((event.channel && !bot.getChannel(event.channel))
-        || (event.guild && !bot.guilds.get(event.guild))
-        || (event.guild && !bot.guilds.get(event.guild))
-        || (!event.channel && !event.guild && event.user && process.env.CLUSTER_ID != 0)
-        || (event.type === 'purgelogs' && process.env.CLUSTER_ID != 0)) {
+      if (!this.isEventRelevant(event)) {
         delete this.cache[event.id];
         continue;
       }
@@ -60,7 +64,9 @@ class EventManager {
     });
 
     for (const event of events) {
-      this.cache[event.id] = event;
+      if (this.isEventRelevant(event)) {
+        this.cache[event.id] = event;
+      }
     }
   }
 }
