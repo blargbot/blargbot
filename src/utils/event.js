@@ -19,7 +19,6 @@ class EventManager {
   isEventRelevant(event) {
     return !((event.channel && !bot.getChannel(event.channel))
       || (event.guild && !bot.guilds.get(event.guild))
-      || (event.guild && !bot.guilds.get(event.guild))
       || (!event.channel && !event.guild && event.user && process.env.CLUSTER_ID != 0)
       || (event.type === 'purgelogs'));
   }
