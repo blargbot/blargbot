@@ -1,4 +1,4 @@
-import { parse } from '../../utils';
+import { FlagResult, parse } from '../../utils';
 import { CommandHandler, CommandHandlerTree } from './types';
 
 interface CompiledHandlerTree<T> {
@@ -11,9 +11,9 @@ interface CompiledHandlerChild<T> extends CompiledHandlerTree<T> {
     greedy: boolean;
 }
 
-export function compileHandlerTree<T>(tree: CommandHandlerTree<T>, name: string): (args: string[]) => CommandHandler<T> {
+export function compileHandlerTree<T>(tree: CommandHandlerTree<T>, name: string): (flags: FlagResult) => CommandHandler<T> {
     const compiled = compileTree(tree, name);
-    return args => traverse(compiled, args, 1);
+    return flags => traverse(compiled, flags.undefined, 0);
 }
 
 function traverse<T>(tree: CompiledHandlerTree<T>, args: string[], index: number): CommandHandler<T> {

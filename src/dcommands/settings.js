@@ -10,20 +10,20 @@ class SettingsCommand extends command_1.BaseCommand {
             category: utils_1.CommandType.ADMIN,
             info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.'
         });
-        this.handlers = {
+        this.setHandlers({
             _run: message => this.all(message),
             'keys': () => this.keys(),
             'set': {
                 '{key}': {
-                    _run: (message, [, , setting]) => this.set(message, setting, ''),
-                    '{...value}': (message, [, , setting, ...values]) => this.set(message, setting, values.join(' '))
+                    _run: (message, [, setting]) => this.set(message, setting, ''),
+                    '{...value}': (message, [, setting, ...values]) => this.set(message, setting, values.join(' '))
                 }
             },
             '{key}': {
-                _run: (message, [, setting]) => this.set(message, setting, ''),
-                '{...value}': (message, [, setting, ...values]) => this.set(message, setting, values.join(' '))
+                _run: (message, [setting]) => this.set(message, setting, ''),
+                '{...value}': (message, [setting, ...values]) => this.set(message, setting, values.join(' '))
             }
-        };
+        });
     }
     async all(message) {
         if (!utils_1.guard.isGuildMessage(message))

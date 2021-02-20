@@ -15,10 +15,10 @@ export class MessageAwaiter {
         return this.#events.emit(message.channel.id, message);
     }
 
-    public wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: Message) => boolean): Promise<Message | null> {
+    public async wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: Message) => boolean): Promise<Message | null> {
         this.logger.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeoutMS}`);
 
-        return new Promise<Message | null>(resolve => {
+        return await new Promise<Message | null>(resolve => {
             const timeout = setTimeout(() => {
                 resolve(null);
                 for (const channel of channels)

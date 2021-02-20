@@ -54,8 +54,8 @@ export abstract class BaseImageGenerator {
             source.bitmap.height);
     }
 
-    protected toBuffer(source: gm.State, format?: string): Promise<Buffer> {
-        return new Promise<Buffer>((resolve, reject) => {
+    protected async toBuffer(source: gm.State, format?: string): Promise<Buffer> {
+        return await new Promise<Buffer>((resolve, reject) => {
             source.setFormat(format || 'png').toBuffer((err, buffer) => {
                 if (err) {
                     reject(err);
@@ -249,8 +249,8 @@ function phantom_resize(): void {
     }
 }
 
-function aRequest(obj: RequiredUriUrl & CoreOptions): Promise<{ res: Response, body: Buffer }> {
-    return new Promise<{ res: Response, body: Buffer }>((resolve, reject) => {
+async function aRequest(obj: RequiredUriUrl & CoreOptions): Promise<{ res: Response, body: Buffer }> {
+    return await new Promise<{ res: Response, body: Buffer }>((resolve, reject) => {
         if (!obj.encoding)
             obj.encoding = null;
 

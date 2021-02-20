@@ -40,9 +40,9 @@ export class JimpGifEncoder {
         }
     }
 
-    public render(): Promise<Buffer> {
+    public async render(): Promise<Buffer> {
         this.#encoder.finish();
-        return this.#promise;
+        return await this.#promise;
     }
 }
 

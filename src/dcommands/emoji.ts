@@ -1,20 +1,20 @@
-import { BaseDCommand } from '../structures/BaseDCommand';
-
 import fs from 'fs';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
 import { Cluster } from '../cluster';
-import { commandTypes, parse } from '../utils';
-import { Message } from 'eris';
+import { commandTypes, FlagResult, parse } from '../utils';
+import { MessageFile } from 'eris';
+import { BaseCommand } from '../core/command';
+import { SendPayload } from '../core/BaseUtilities';
 
-export class EmojiCommand extends BaseDCommand {
+export class EmojiCommand extends BaseCommand {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'emoji', {
+        super(cluster, {
+            name: 'emoji',
             aliases: ['e'],
             category: commandTypes.GENERAL,
-            usage: 'emoji <emoji> [size]',
             info: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.',
             flags: [{
                 flag: 's',
@@ -22,45 +22,41 @@ export class EmojiCommand extends BaseDCommand {
                 desc: 'Get the emote as an svg instead of a png.'
             }]
         });
+        this.setHandlers({
+            '{emoji}': {
+                _run: (_, [emoji], flags) => this.emoji(emoji, 668, flags),
+                '{size:number}': (_, [emoji, size], flags) => this.emoji(emoji, parse.int(size), flags)
+            }
+        });
     }
 
-    public async execute(msg: Message, words: string[]): Promise<void> {
-        const input = parse.flags(this.flags, words);
-        if (!input.undefined)
-            return void await this.send(msg, 'Not enough arguments!');
+    public async emoji(emoji: string, size: number, flags: FlagResult): Promise<MessageFile | SendPayload> {
+        const parsedEmoji = parse.emoji(emoji)[0];
+        if (!parsedEmoji)
+            return 'No emoji found!';
 
-        const emoji = parse.emoji(input.undefined[0])[0];
-        if (!emoji)
-            return void await this.send(msg, 'No emoji found!');
-
-        if (emoji.startsWith('a:') || emoji.startsWith(':')) {
-            const id = parse.entityId(emoji, 'a?:\\w+:', true);
+        if (parsedEmoji.startsWith('a:') || parsedEmoji.startsWith(':')) {
+            const id = parse.entityId(parsedEmoji, 'a?:\\w+:', true);
             if (id) {
-                const url = `https://cdn.discordapp.com/emojis/${id}.${emoji[0] == 'a' ? 'gif' : 'png'}`;
-                return void await this.send(msg, { embed: { image: { url } } });
+                const url = `https://cdn.discordapp.com/emojis/${id}.${parsedEmoji[0] == 'a' ? 'gif' : 'png'}`;
+                return { embed: { image: { url } } };
             }
         }
 
         try {
-            const codePoint = twemoji.convert.toCodePoint(emoji);
+            const codePoint = twemoji.convert.toCodePoint(parsedEmoji);
             const file = require.resolve(`twemoji/2/svg/${codePoint}.svg`);
             const body = fs.readFileSync(file);
-            if (input.s) {
-                return void await this.send(msg, {}, { name: 'emoji.svg', file: body });
-            }
-            let size = 668;
-            if (input.undefined[1]) {
-                const tempSize = parse.int(input.undefined[1]);
-                if (!isNaN(tempSize))
-                    size = tempSize;
+            if (flags.s) {
+                return { name: 'emoji.svg', file: body };
             }
             const buffer = await svg2png(body, {
                 width: size,
                 height: size
             });
-            return void await this.send(msg, {}, { name: 'emoji.png', file: buffer });
+            return { name: 'emoji.png', file: buffer };
         } catch { }
 
-        return void await this.send(msg, 'Invalid emoji!');
+        return 'Invalid emoji!';
     }
 }

@@ -1,25 +1,27 @@
-import { Message } from 'eris';
 import { Cluster } from '../cluster';
 import { codeBlock, commandTypes } from '../utils';
-import { BaseDCommand } from '../structures/BaseDCommand';
+import { BaseCommand } from '../core/command';
 
-export class EvalCommand extends BaseDCommand {
+export class EvalCommand extends BaseCommand {
     public constructor(cluster: Cluster) {
-        super(cluster, 'eval', {
+        super(cluster, {
+            name: 'eval',
             category: commandTypes.CAT
+        });
+        this.setHandlers({
+            '{...code}': (msg, _, __, code) => this.eval(msg.author.id, code)
         });
     }
 
-    public async execute(msg: Message, _: never, text: string): Promise<void> {
-        if (text.startsWith(this.name))
-            text = text.substring(this.name.length);
-        if (text.startsWith('```') && text.endsWith('```'))
-            [text] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(text) ?? [text];
+    public async eval(userId: string, code: string): Promise<string> {
+        if (code.startsWith(this.name))
+            code = code.substring(this.name.length);
+        if (code.startsWith('```') && code.endsWith('```'))
+            [code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [code];
 
-        const { success, result } = await this.cluster.eval(msg.author.id, text);
-        const response = success
-            ? `Input:${codeBlock(text, 'js')}Output:${codeBlock(result)}`
+        const { success, result } = await this.cluster.eval(userId, code);
+        return success
+            ? `Input:${codeBlock(code, 'js')}Output:${codeBlock(result)}`
             : `An error occured!${codeBlock(result)}`;
-        await this.send(msg, response);
     }
 }

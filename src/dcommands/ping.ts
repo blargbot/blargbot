@@ -2,7 +2,6 @@ import { BaseCommand } from '../core/command';
 import { randInt, commandTypes } from '../utils';
 import { Message } from 'eris';
 import { Cluster } from '../cluster';
-import { CommandHandlerTree } from '../core/command/types';
 
 const messages = [
     'Existance is a lie.',
@@ -18,17 +17,15 @@ const messages = [
 ];
 
 export class PingCommand extends BaseCommand {
-    public readonly handlers: CommandHandlerTree<this>;
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'ping',
             category: commandTypes.GENERAL,
             info: 'Pong!\nFind the command latency.'
         });
-
-        this.handlers = {
+        this.setHandlers({
             _run: message => this.ping(message)
-        };
+        });
     }
 
     private async ping(msg: Message): Promise<void> {

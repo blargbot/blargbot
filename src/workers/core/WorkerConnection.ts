@@ -86,8 +86,9 @@ export abstract class WorkerConnection extends IPCEvents {
             this.logger.worker(`${this.worker} worker (ID: ${this.id}) is ready after ${timer.elapsed}ms and said ${JSON.stringify(result)}`);
             return result;
         } catch (err) {
+            Error.captureStackTrace(err);
             this.#process.kill();
-            this.logger.error(`${this.worker} worker (ID: ${this.id}) failed to start: ${err?.stack ?? err}`);
+            this.logger.error(`${this.worker} worker (ID: ${this.id}) failed to start: ${err.stack}`);
             throw err;
         }
     }

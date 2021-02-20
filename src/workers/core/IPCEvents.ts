@@ -70,20 +70,28 @@ export class IPCEvents {
         return this;
     }
 
-    public request(type: string, data: unknown, timeoutMS = 10000): Promise<unknown> {
+    public async request(type: string, data: unknown, timeoutMS = 10000): Promise<unknown> {
         const requestId = snowflake.create();
-        return new Promise<unknown>((resolve, reject) => {
-            const handler: ProcessMessageHandler = (data, id) => {
-                if (id === requestId) {
-                    resolve(data);
-                    this.off(type, handler);
-                }
-            };
+        try {
+            return await new Promise<unknown>((resolve, reject) => {
+                const handler: ProcessMessageHandler = (data, id) => {
+                    if (id === requestId) {
+                        resolve(data);
+                        this.off(type, handler);
+                    }
+                };
 
-            this.on(type, handler);
-            setTimeout(() => reject(new Error(`Failed to get a response to '${type}' in time`)), timeoutMS);
-            this.send(type, data, requestId);
-        });
+                this.on(type, handler);
+                setTimeout(() => {
+                    this.off(type, handler);
+                    reject(new Error(`Failed to get a response to '${type}' in time`));
+                }, timeoutMS);
+                this.send(type, data, requestId);
+            });
+        } catch (err) {
+            Error.captureStackTrace(err);
+            throw err;
+        }
     }
 }
 

@@ -1,6 +1,6 @@
-import { Message, TextableChannel } from 'eris';
+import { Message, MessageFile } from 'eris';
 import { Cluster } from '../cluster';
-import { commandTypes, parse } from '../utils';
+import { commandTypes, FlagResult } from '../utils';
 import { BaseCommand } from '../core/command';
 
 export class ArtCommand extends BaseCommand {
@@ -10,24 +10,27 @@ export class ArtCommand extends BaseCommand {
             category: commandTypes.IMAGE,
             info: 'Shows everyone a work of art.',
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
-            userRatelimit: true,
-            channelRatelimit: true,
             cooldown: 5000
+        });
+        this.lockKeys.push(m => m.author.id);
+        this.lockKeys.push(m => m.channel.id);
+        this.setHandlers({
+            _run: (msg, _, flags) => this.art(msg, undefined, flags),
+            '{user}': (msg, [user], flags) => this.art(msg, user, flags)
         });
     }
 
-    public async execute(message: Message<TextableChannel>, words: string[]): Promise<void> {
-        const input = parse.flags(this.flags, words);
+    private async art(message: Message, user: string | undefined, flags: FlagResult): Promise<void | string | MessageFile> {
         let url;
         if (message.attachments.length > 0) {
             url = message.attachments[0].url;
-        } else if (input.I) {
-            url = input.I.join(' ');
-        } else if (input.undefined.length > 0) {
-            const user = await this.util.getUser(message, input.undefined.join(' '));
-            if (!user)
+        } else if (flags.I) {
+            url = flags.I.join(' ');
+        } else if (user) {
+            const u = await this.util.getUser(message, user);
+            if (!u)
                 return;
-            url = user.avatarURL;
+            url = u.avatarURL;
         } else {
             url = message.author.avatarURL;
         }
@@ -35,13 +38,13 @@ export class ArtCommand extends BaseCommand {
         void this.discord.sendChannelTyping(message.channel.id);
 
         const buffer = await this.cluster.images.render('art', { avatar: url });
-        if (!buffer) {
-            await this.send(message, 'Something went wrong while trying to render that!');
+        if (!buffer || buffer.length === 0) {
+            return 'Something went wrong while trying to render that!';
         } else {
-            await this.send(message, {}, {
+            return {
                 file: buffer,
                 name: 'sobeautifulstan.png'
-            });
+            };
         }
     }
 }

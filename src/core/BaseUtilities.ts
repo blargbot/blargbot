@@ -31,7 +31,7 @@ export class BaseUtilities {
         this.messageAwaiter = new MessageAwaiter(this.logger);
     }
 
-    public async send(context: SendContext, payload: SendPayload, files?: SendFiles): Promise<Message | null> {
+    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<Message | null> {
         let channel: AnyChannel | Channel;
         let message: Pick<Message, 'channel' | 'content' | 'author'> | undefined;
         metrics.sendCounter.inc();

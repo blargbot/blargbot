@@ -14,7 +14,10 @@
             ],
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/index.ts",
-            "preLaunchTask": "${defaultBuildTask}"
+            "preLaunchTask": "${defaultBuildTask}",
+            "args": [
+                "--async-stack-traces"
+            ]
         },
         {
             "type": "node",
@@ -25,7 +28,10 @@
                 "node_modules/bluebird/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/index.ts"
+            "program": "${workspaceFolder}/index.ts",
+            "args": [
+                "--async-stack-traces"
+            ]
         },
         {
             "name": "Debug current file",
@@ -34,6 +40,9 @@
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
+            ],
+            "args": [
+                "--async-stack-traces"
             ]
         }
     ]

@@ -744,8 +744,8 @@ export const oldBu = {
         }
         return output;
     },
-    awaitEvent(obj: Record<string, unknown>): Promise<unknown> {
-        return new Promise((fulfill, reject) => {
+    async awaitEvent(obj: Record<string, unknown>): Promise<unknown> {
+        return await new Promise((fulfill, reject) => {
             cluster.send(obj);
             oldBu.emitter.once(<string>obj.code, fulfill);
 

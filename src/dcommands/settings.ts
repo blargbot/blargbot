@@ -1,12 +1,9 @@
 import { EmbedOptions, Message } from 'eris';
 import { Cluster } from '../cluster';
 import { BaseCommand } from '../core/command';
-import { CommandHandlerTree } from '../core/command/types';
 import { CommandType, defaultStaff, guard, guildSettings, humanize, parse } from '../utils';
 
 export class SettingsCommand extends BaseCommand {
-    public readonly handlers: CommandHandlerTree<this>;
-
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'settings',
@@ -14,20 +11,20 @@ export class SettingsCommand extends BaseCommand {
             info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.'
         });
 
-        this.handlers = {
+        this.setHandlers({
             _run: message => this.all(message),
             'keys': () => this.keys(),
             'set': {
                 '{key}': {
-                    _run: (message, [, , setting]) => this.set(message, setting, ''),
-                    '{...value}': (message, [, , setting, ...values]) => this.set(message, setting, values.join(' '))
+                    _run: (message, [, setting]) => this.set(message, setting, ''),
+                    '{...value}': (message, [, setting, ...values]) => this.set(message, setting, values.join(' '))
                 }
             },
             '{key}': {
-                _run: (message, [, setting]) => this.set(message, setting, ''),
-                '{...value}': (message, [, setting, ...values]) => this.set(message, setting, values.join(' '))
+                _run: (message, [setting]) => this.set(message, setting, ''),
+                '{...value}': (message, [setting, ...values]) => this.set(message, setting, values.join(' '))
             }
-        };
+        });
     }
 
     private async all(message: Message): Promise<string | { embed: EmbedOptions }> {

@@ -32,25 +32,30 @@ export class Sender extends EventEmitter {
         }
     }
 
-    public awaitMessage(data: JObject | string): Promise<unknown> {
+    public async awaitMessage(data: JObject | string): Promise<unknown> {
         if (typeof data === 'string')
             data = { message: data };
 
         const jdata = data;
 
-        return new Promise<unknown>((fulfill, reject) => {
-            jdata.key = Date.now().toString();
-            const event = 'await:' + jdata.key;
-            void this.send('await', jdata);
-            const timer = setTimeout(() => {
-                this.process.removeAllListeners(event);
-                reject(new Error('Rejected message after 60 seconds'));
-            }, 60000);
-            this.once(event, data => {
-                clearTimeout(timer);
-                fulfill(data);
+        try {
+            return await new Promise<unknown>((fulfill, reject) => {
+                jdata.key = Date.now().toString();
+                const event = 'await:' + jdata.key;
+                void this.send('await', jdata);
+                const timer = setTimeout(() => {
+                    this.process.removeAllListeners(event);
+                    reject(new Error('Rejected message after 60 seconds'));
+                }, 60000);
+                this.once(event, data => {
+                    clearTimeout(timer);
+                    fulfill(data);
+                });
             });
-        });
+        } catch (err) {
+            Error.captureStackTrace(err);
+            throw err;
+        }
     }
 }
 

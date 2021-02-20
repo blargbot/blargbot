@@ -2,23 +2,26 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EvalCommand = void 0;
 const utils_1 = require("../utils");
-const BaseDCommand_1 = require("../structures/BaseDCommand");
-class EvalCommand extends BaseDCommand_1.BaseDCommand {
+const command_1 = require("../core/command");
+class EvalCommand extends command_1.BaseCommand {
     constructor(cluster) {
-        super(cluster, 'eval', {
+        super(cluster, {
+            name: 'eval',
             category: utils_1.commandTypes.CAT
         });
+        this.setHandlers({
+            '{...code}': (msg, _, __, code) => this.eval(msg.author.id, code)
+        });
     }
-    async execute(msg, _, text) {
-        if (text.startsWith(this.name))
-            text = text.substring(this.name.length);
-        if (text.startsWith('```') && text.endsWith('```'))
-            [text] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(text) ?? [text];
-        const { success, result } = await this.cluster.eval(msg.author.id, text);
-        const response = success
-            ? `Input:${utils_1.codeBlock(text, 'js')}Output:${utils_1.codeBlock(result)}`
+    async eval(userId, code) {
+        if (code.startsWith(this.name))
+            code = code.substring(this.name.length);
+        if (code.startsWith('```') && code.endsWith('```'))
+            [code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [code];
+        const { success, result } = await this.cluster.eval(userId, code);
+        return success
+            ? `Input:${utils_1.codeBlock(code, 'js')}Output:${utils_1.codeBlock(result)}`
             : `An error occured!${utils_1.codeBlock(result)}`;
-        await this.send(msg, response);
     }
 }
 exports.EvalCommand = EvalCommand;

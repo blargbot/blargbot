@@ -462,8 +462,8 @@ export class MessageCreateEventHandler extends DiscordEventService {
     }
 
 
-    public queryCleverbot(input: string): Promise<string> {
-        return new Promise<string>((res, rej) => {
+    public async queryCleverbot(input: string): Promise<string> {
+        return await new Promise<string>((res, rej) => {
             request.post(this.cluster.config.cleverbot.endpoint, { form: { input } }, (err, _, bod: string) => {
                 if (err) rej(err);
                 else {
