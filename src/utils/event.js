@@ -33,10 +33,15 @@ class EventManager {
       }
 
       let type = event.type;
-      if (CommandManager.built[type]) {
-        CommandManager.built[type].event(event);
+      try {
+        if (CommandManager.built[type]) {
+          CommandManager.built[type].event(event);
+        }
+      } catch (err) {
+        console.error('Event failed to execute:', err.message);
+      } finally {
+        await this.delete(event.id);
       }
-      await this.delete(event.id);
     }
   }
 
