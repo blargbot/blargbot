@@ -1,8 +1,8 @@
-import { parse } from './parse';
+import { int as parseInt } from '../parse/int';
 
 export function getRange(from: string | number, to: string | number): number[] {
-    from = parse.int(from);
-    to = parse.int(to);
+    from = parseInt(from);
+    to = parseInt(to);
     if (isNaN(from) || isNaN(to))
         throw new Error('Invalid from or to');
     const descending = from > to;

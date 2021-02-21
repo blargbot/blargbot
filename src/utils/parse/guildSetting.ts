@@ -1,7 +1,7 @@
 import { Message } from 'eris';
-import { ClusterUtilities } from '../../../cluster';
-import { StoredGuildSettings } from '../../../core/database';
-import { guildSettings } from '../../constants';
+import { ClusterUtilities } from '../../cluster';
+import { StoredGuildSettings } from '../../core/database';
+import { guildSettings } from '../constants';
 import { guard } from '../guard';
 import { boolean } from './boolean';
 import { int } from './int';

@@ -27,7 +27,15 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         if (applyChanges && result.changes?.[0]?.new_val)
             Object.apply(value, result.changes?.[0].new_val);
         throwIfErrored(result);
-        return result.inserted + result.unchanged > 0;
+        return result.inserted > 0;
+    }
+
+    protected async rset(key: string, value: RethinkTableMap[T], applyChanges = false): Promise<boolean> {
+        const result = await this.rethinkDb.query(r => r.table(this.table).get(key).replace(value, { returnChanges: applyChanges }));
+        if (applyChanges && result.changes?.[0]?.new_val)
+            Object.apply(value, result.changes?.[0].new_val);
+        throwIfErrored(result);
+        return result.inserted + result.replaced > 0;
     }
 
     protected async rupdate(

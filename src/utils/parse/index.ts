@@ -7,9 +7,7 @@ import { flags } from './flags';
 import { float } from './float';
 import { int } from './int';
 import { time } from './time';
-import { words } from './words';
 import { emoji } from './emoji';
-import { bbtag } from './bbtag';
 import { guildSetting } from './guildSetting';
 
 export { FlagDefinition, FlagResult } from './flags';
@@ -24,8 +22,6 @@ export const parse = {
     float,
     int,
     time,
-    words,
     emoji,
-    bbtag,
     guildSetting
 };

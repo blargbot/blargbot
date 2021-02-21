@@ -2,7 +2,7 @@ import { BBRuntimeScope, ScopeCollection } from './ScopeCollection';
 import { Timer } from '../../structures/Timer';
 import { VariableCache, CacheEntry } from './Caching';
 import ReadWriteLock from 'rwlock';
-import { FlagDefinition, FlagResult, guard, humanize, oldBu, parse } from '../../utils';
+import { bbtagUtil, FlagDefinition, FlagResult, guard, oldBu, parse } from '../../utils';
 import { Duration } from 'moment-timezone';
 import { GuildTextableChannel, Member, User, Guild, Role, MessageFile } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
@@ -142,7 +142,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         else
             error = `\`${error.message}\``;
 
-        this.errors.push({ subtag: bbtag, error: `${humanize.bbtag(bbtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}` });
+        this.errors.push({ subtag: bbtag, error: `${bbtagUtil.stringify(bbtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}` });
         return this.scope.fallback ?? error;
     }
 

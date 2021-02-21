@@ -29,7 +29,7 @@ export interface TagResult {
     readonly exampleCode: string | null;
     readonly exampleIn: string | null;
     readonly exampleOut: string | null;
-    readonly deprecated: boolean;
+    readonly deprecated: false | string;
     readonly staff: boolean;
     readonly aliases: readonly string[];
 }

@@ -1,6 +1,7 @@
-import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '../../../core/bbtag/types';
+import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '../../core/bbtag/types';
+import { BBTagError } from '../../core/bbtag/BBTagError';
 
-export function bbtag(source: string): Statement {
+export function parse(source: string): Statement {
     const result: Statement = [];
     const subtags: SubtagCall[] = [];
     let builder = result;
@@ -29,7 +30,7 @@ export function bbtag(source: string): Statement {
                 break;
             case SourceTokenType.ENDSUBTAG:
                 if (subtag === undefined)
-                    throw new Error(`Unexpected '${token.content}' at [${token.start.line}:${token.start.column}]`);
+                    throw new BBTagError(token.start, `Unexpected '${token.content}'`);
                 trim(builder);
                 subtag.end = token.end;
                 subtag = subtags.pop();
@@ -43,9 +44,8 @@ export function bbtag(source: string): Statement {
         }
     }
 
-    if (subtag !== undefined) {
-        throw new Error(`Unterminated subtag at [${subtag.start.line}:${subtag.start.column}]`);
-    }
+    if (subtag !== undefined)
+        throw new BBTagError(subtag.start, 'Subtag is missing a \'}\'');
 
     trim(result);
     return result;

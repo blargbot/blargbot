@@ -47,9 +47,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     }
 
     public async init(): Promise<void> {
-        let fileNames = await fs.readdir(this.#root);
-        fileNames = fileNames.filter(fileName => /\.js$/.test(fileName));
-        this.load(fileNames);
+        this.load(await this.findFiles());
     }
 
     private load(fileNames: Iterable<string>, loader = require): void {
@@ -82,7 +80,12 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     }
 
 
-    public reload(fileNames: Iterable<string>): void {
+    public reload(): Promise<void>
+    public reload(fileNames: Iterable<string>): void
+    public reload(fileNames?: Iterable<string>): void | Promise<void> {
+        if (fileNames === undefined) {
+            return this.findFiles().then(files => this.load(files, reload));
+        }
         this.load(fileNames, reload);
     }
 
@@ -106,6 +109,11 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     }
 
     protected abstract tryActivate(rawModule: unknown): ModuleResult<TModule> | null;
+
+    private async findFiles(): Promise<Iterable<string>> {
+        const fileNames = await fs.readdir(this.#root);
+        return fileNames.filter(n => /\.js$/.test(n));
+    }
 }
 
 function getAbsolutePath(...segments: string[]): string {

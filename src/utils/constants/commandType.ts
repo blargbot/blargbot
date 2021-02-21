@@ -1,6 +1,6 @@
 import { Message } from 'eris';
 import { Cluster } from '../../cluster';
-import { guard } from '../utils';
+import { isGuildMessage } from '../guard/isGuildMessage';
 
 type CommandPropertiesSet = {
     [key in Type]: CommandProperties;
@@ -58,7 +58,7 @@ export const properties: CommandPropertiesSet = {
     [Type.SOCIAL]: {
         name: 'Social',
         requirement: async (client: Cluster, msg: Message): Promise<boolean> => {
-            if (!guard.isGuildMessage(msg))
+            if (!isGuildMessage(msg))
                 return false;
             const guild = await client.database.guilds.get(msg.channel.guild.id);
             return guild?.settings?.social ?? false;

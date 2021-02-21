@@ -9,6 +9,16 @@ import { TagCooldownManager } from './TagCooldownManager';
 
 export type Statement = Array<string | SubtagCall>;
 
+export interface AnalysisResults {
+    errors: AnalysisResult[];
+    warnings: AnalysisResult[];
+}
+
+export interface AnalysisResult {
+    location: SourceMarker;
+    message: string;
+}
+
 export interface SubtagCall {
     name: Statement;
     args: Statement[];

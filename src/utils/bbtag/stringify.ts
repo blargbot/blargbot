@@ -1,4 +1,4 @@
-import { Statement, SubtagCall } from '../../../core/bbtag/types';
+import { Statement, SubtagCall } from '../../core/bbtag/types';
 
 export function stringify(bbtag: Statement | SubtagCall): string {
     if (Array.isArray(bbtag)) {

@@ -1,7 +1,6 @@
 import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, EmbedOptions, ExtendedUser, Member, Message, MessageFile, TextableChannel, User } from 'eris';
 import { BaseClient } from './BaseClient';
 import { snowflake } from '../utils';
-import { Error } from 'sequelize';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
 import request from 'request';
 import { metrics } from './Metrics';

@@ -1,4 +1,4 @@
-import { words as getWords } from './words';
+import { smartSplit } from '../humanize/smartSplit';
 
 export type FlagDefinition = {
     flag: string
@@ -11,12 +11,12 @@ export type FlagResult = {
     [flag: string]: string[] | undefined;
 }
 
+export function flags(definitions: Iterable<FlagDefinition>, text: string): FlagResult;
 export function flags(definitions: Iterable<FlagDefinition>, text: string[]): FlagResult;
 export function flags(definitions: Iterable<FlagDefinition>, text: readonly string[]): FlagResult;
-export function flags(definitions: Iterable<FlagDefinition>, text: string, noTrim?: boolean): FlagResult;
-export function flags(definitions: Iterable<FlagDefinition>, text: string | readonly string[], noTrim = false): FlagResult {
+export function flags(definitions: Iterable<FlagDefinition>, text: string | readonly string[]): FlagResult {
     const def: readonly FlagDefinition[] = Array.isArray(definitions) ? definitions : [...definitions];
-    const words = typeof text === 'string' ? getWords(text, noTrim) : [...text];
+    const words = typeof text === 'string' ? smartSplit(text) : [...text];
     const output: FlagResult = { undefined: [] };
     let currentFlag = '';
     for (let i = 0; i < words.length; i++) {

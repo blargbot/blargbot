@@ -1,7 +1,7 @@
 import { GuildTextableChannel, Member, Message, TextableChannel, TextChannel } from 'eris';
 import { Timer } from '../../structures/Timer';
 import request from 'request';
-import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep } from '../../utils';
+import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep, humanize } from '../../utils';
 import { Cluster } from '..';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { limits } from '../../core/bbtag';
@@ -171,7 +171,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
             tagName: commandName,
             limit: limits.CustomCommandLimit,
             flags,
-            input: parse.words(input),
+            input: humanize.smartSplit(input),
             isCC: true,
             tagVars: alias !== undefined,
             cooldown,
@@ -187,8 +187,8 @@ export class MessageCreateEventHandler extends DiscordEventService {
         if (msg.author.bot)
             return false;
 
-        const words = parse.words(text);
-        if (words.length === 0)
+        const words = humanize.smartSplit(text, 2);
+        if (words.length !== 2)
             return false;
 
         if (guard.isGuildMessage(msg) && await this.handleCustomCommand(msg, text, words))
@@ -204,7 +204,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
                 : `Command '${text}' executed by ${msg.author.username} (${msg.author.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`;
             this.logger.command(outputLog);
             const timer = new Timer().start();
-            await this.executeCommand(command, msg, words.slice(1), text);
+            await this.executeCommand(command, msg, words[1]);
             timer.end();
             metrics.commandLatency.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).observe(timer.elapsed);
             metrics.commandCounter.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).inc();
@@ -216,7 +216,8 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async executeCommand(command: BaseCommand, msg: Message<TextableChannel>, words: string[], text: string): Promise<void> {
+    public async executeCommand(command: BaseCommand, msg: Message<TextableChannel>, text: string): Promise<void> {
+        const words = humanize.smartSplit(text);
         try {
             await command.execute(msg, words, text);
         } catch (err) {
@@ -334,7 +335,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
                 message: msg,
                 tagName: 'censor',
                 limit: limits.CustomCommandLimit,
-                input: parse.words(msg.content),
+                input: humanize.smartSplit(msg.content),
                 isCC: true
             });
         }
@@ -408,7 +409,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
                             message: msg,
                             limit: limits.EverythingAutoResponseLimit,
                             author: tag.author,
-                            input: parse.words(msg.content),
+                            input: humanize.smartSplit(msg.content),
                             isCC: true,
                             tagName: ars.everything.executes,
                             silent: true
@@ -437,7 +438,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
                                 message: msg,
                                 limit: limits.GeneralAutoResponseLimit,
                                 author: tag.author,
-                                input: parse.words(msg.content),
+                                input: humanize.smartSplit(msg.content),
                                 isCC: true,
                                 tagName: ar.executes
                             });

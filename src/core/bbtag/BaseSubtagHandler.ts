@@ -35,7 +35,7 @@ export interface SubtagHandlerOptions {
     exampleCode?: string | null;
     exampleIn?: string | null;
     exampleOut?: string | null;
-    deprecated?: boolean;
+    deprecated?: string | false;
     staff?: boolean;
     acceptsArrays?: boolean;
 }
@@ -57,7 +57,7 @@ export abstract class BaseSubtagHandler implements Required<SubtagHandlerOptions
     public readonly exampleCode: string | null;
     public readonly exampleIn: string | null;
     public readonly exampleOut: string | null;
-    public readonly deprecated: boolean;
+    public readonly deprecated: string | false;
     public readonly staff: boolean;
     public readonly acceptsArrays: boolean;
 

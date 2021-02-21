@@ -1,4 +1,4 @@
-import { getRange } from '../utils';
+import { getRange } from '../misc/getRange';
 
 export type BBArray = { n?: string, v: JArray };
 

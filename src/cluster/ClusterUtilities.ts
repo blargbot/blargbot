@@ -265,7 +265,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async awaitQuery(
         msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
-        check: ((message: Message) => boolean) | undefined,
+        check?: ((message: Message) => boolean),
         timeoutMS?: number,
         label?: string
     ): Promise<Message<TextableChannel> | null> {
@@ -276,12 +276,10 @@ export class ClusterUtilities extends BaseUtilities {
     public async createQuery(
         msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
-        check: ((message: Message) => boolean) | undefined,
-        timeoutMS?: number,
+        check?: ((message: Message) => boolean),
+        timeoutMS = 300000,
         label?: string
     ): Promise<MessagePrompt> {
-        if (timeoutMS === undefined)
-            timeoutMS = 300000;
         const timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
         return this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
     }
@@ -289,9 +287,9 @@ export class ClusterUtilities extends BaseUtilities {
     public async awaitPrompt(
         msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
-        check: ((message: Message) => boolean) | undefined,
-        timeoutMS: number,
-        timeoutMessage: SendPayload | undefined
+        check?: ((message: Message) => boolean),
+        timeoutMS?: number,
+        timeoutMessage?: SendPayload
     ): Promise<Message<TextableChannel> | null> {
         const prompt = await this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
         return await prompt.response;
@@ -300,9 +298,9 @@ export class ClusterUtilities extends BaseUtilities {
     public async createPrompt(
         msg: Pick<Message, 'channel' | 'content' | 'author'>,
         content: SendPayload,
-        check: ((message: Message) => boolean) | undefined,
-        timeoutMS: number,
-        timeoutMessage: SendPayload | undefined
+        check?: ((message: Message) => boolean),
+        timeoutMS = 300000,
+        timeoutMessage?: SendPayload
     ): Promise<MessagePrompt> {
         const prompt = await this.send(msg, content);
         const response = this.messageAwaiter.wait([msg.channel.id], [msg.author.id], timeoutMS, check);

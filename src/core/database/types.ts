@@ -185,12 +185,17 @@ export interface CommandPermissions {
 }
 
 export interface StoredTag {
+    name: string;
     content: string;
-    author?: string;
+    author: string;
+    authorizer?: string;
     uses: number;
     flags?: FlagDefinition[]
     cooldown?: number;
     lastuse?: Date;
+    lastmodified?: Date;
+    deleted?: boolean;
+    lang?: string;
 }
 
 export interface StoredGuildSettings {
@@ -351,7 +356,7 @@ export interface UserTable {
 
 export interface VarsTable {
     get<K extends KnownStoredVars['varname']>(key: K): Promise<DeepReadOnly<GetStoredVar<K>> | undefined>;
-    set<K extends KnownStoredVars['varname']>(key: K, value: Omit<GetStoredVar<K>, 'varname'>): Promise<boolean>;
+    set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean>;
     delete<K extends KnownStoredVars['varname']>(key: K): Promise<boolean>;
 }
 
@@ -363,7 +368,12 @@ export interface EventsTable {
 }
 
 export interface TagsTable {
+    delete(name: string): Promise<boolean>;
     get(tagName: string): Promise<DeepReadOnly<StoredTag> | undefined>;
+    set(tag: StoredTag): Promise<boolean>;
+    set(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
+    add(tag: StoredTag): Promise<boolean>;
+    add(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;
 }
 

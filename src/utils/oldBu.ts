@@ -7,7 +7,7 @@ import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User
 import { fafo, getRange, humanize, randInt, SubtagVariableType } from '.';
 import isSafeRegex from 'safe-regex';
 import request from 'request';
-import { parse } from './utils';
+import { parse } from './parse';
 import snekfetch from 'snekfetch';
 import limax from 'limax';
 import { nfkd } from 'unorm';
@@ -313,7 +313,7 @@ export const oldBu = {
                         await bbEngine.execute(content, {
                             message: msg,
                             limit: new limits.CustomCommandLimit(),
-                            input: parse.words(msg.content),
+                            input: humanize.smartSplit(msg.content),
                             isCC: true,
                             tagName: 'censor'
                         });
