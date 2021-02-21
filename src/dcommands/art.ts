@@ -12,8 +12,9 @@ export class ArtCommand extends BaseCommand {
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
             cooldown: 5000,
             handler: {
-                parameters: '{user?}',
-                execute: (msg, [user], flags) => this.art(msg, user, flags),
+                parameters: '{user}',
+                dontBind: true,
+                execute: (msg, args, flags) => this.art(msg, args.join(' '), flags),
                 description: 'Shows everyone a work of art.'
             }
         });

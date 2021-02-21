@@ -14,7 +14,7 @@ export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
     }
 
     protected async execute(worker: ClusterConnection): Promise<void> {
-        if (worker.state !== WorkerState.RUNNING)
+        if (worker.state !== WorkerState.EXITED)
             return;
         const logTracker = this.master.eventHandlers.get(ClusterLogTracker.name, ClusterLogTracker);
         if (logTracker) {
@@ -24,7 +24,7 @@ export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
                 .join('\n');
             void this.master.discord.createMessage(
                 this.master.config.discord.channels.shardlog,
-                `Last 5 console outputs:${codeBlock(logString, 'md')}`.slice(0, 2000));
+                `Cluster ${worker.id} has died.\n\nLast 5 console outputs:${codeBlock(logString, 'md')}`.slice(0, 2000));
             logs.splice(0, logs.length);
         }
         const diedAt = moment();

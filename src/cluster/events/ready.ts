@@ -22,10 +22,10 @@ export class ReadyEventHandler extends DiscordEventService {
         let home;
         if (home = this.cluster.discord.guilds.get(this.cluster.config.discord.guilds.home)) {
             const police = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.police)).map(m => m.id);
-            await this.cluster.database.vars.set({ varname: 'police', value: police });
+            await this.cluster.database.vars.set('police', { value: police });
 
             const support = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.support)).map(m => m.id);
-            await this.cluster.database.vars.set({ varname: 'support', value: support });
+            await this.cluster.database.vars.set('support', { value: support });
         }
 
         // TODO this should be something the master process does

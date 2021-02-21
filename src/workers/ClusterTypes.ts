@@ -12,6 +12,11 @@ export interface GetStaffGuildsRequest {
     guilds: string[];
 }
 
+export interface ClusterRespawnRequest {
+    id?: number;
+    channel: string;
+}
+
 export interface TagListResult {
     [tagName: string]: TagResult | undefined;
 }

@@ -84,7 +84,9 @@ function populateTree(definition: CommandDefinition, tree: CommandTreeNode, path
             throw new Error(`Cannot have more than 1 rest parameter, but found ${restParams.map(p => p.name).join(',')}`);
         if (restParams.length === 1 && parameters[parameters.length - 1] !== restParams[0])
             throw new Error('Rest parameters must be the last parameter of a command');
-        const binder = compileArgBinder(path, parameters);
+        const binder = definition.dontBind ?? false
+            ? (args: string[]) => args
+            : compileArgBinder(path, parameters, definition.allowOverflow ?? false);
         tree.handler = {
             description: definition.description,
             parameters,
@@ -130,27 +132,28 @@ function* buildUsageInner(tree: CommandTreeNode): IterableIterator<CommandParame
             yield* buildUsage(test.node);
 }
 
-function compileArgBinder(prefixes: CommandParameter[], params: CommandParameter[]): (args: string[]) => unknown[] | string {
+function compileArgBinder(prefixes: CommandParameter[], params: CommandParameter[], allowOverflow: boolean): (args: string[]) => unknown[] | string {
     const v_args = 'args';
     const v_params = 'params';
     const v_parsed = 'parsed';
     const v_result = 'result';
     const v_rest = 'rest';
     const v_i = 'i';
+    const v_argRaw = `${v_args}[${v_i}]`;
     let m_push = `${v_result}.push(${v_parsed});`;
 
-    const body = [
-        `const ${v_result} = [];`,
-        `let ${v_i} = 0, ${v_rest}, ${v_parsed};`
-    ];
-
     const allParams = [...prefixes, ...params];
+    const body = [`const ${v_result} = [];`];
+    if (allParams.length > 0)
+        body.push(`let ${v_i} = 0, ${v_rest}, ${v_parsed};`);
+    else if (!allowOverflow)
+        body.push(`let ${v_i} = 0;`);
+
     let i = 0;
     for (; i < allParams.length; i++) {
         const param = allParams[i];
         const isPrefix = i < prefixes.length;
-        const v_argRaw = `${v_args}[${v_i}]`; // 'args[i]'
-        const m_parse = `${v_params}[${i}].parse(${v_argRaw});`; //  'params[5].parse(args[i])'
+        const m_parse = `${v_params}[${i}].parse(${v_argRaw});`;
 
         body.push(`// ******** Binding ${param.display} ********`);
         if (param.required) {
@@ -213,6 +216,12 @@ function compileArgBinder(prefixes: CommandParameter[], params: CommandParameter
                 }
             }
         }
+    }
+
+    if (!allowOverflow) {
+        body.push(
+            `if (${v_argRaw} !== undefined)`,
+            `   return \`❌ Invalid arguments! \${${v_i}} argument\${${v_i} === 1 ? ' is' : 's are'} expected, but you gave \${${v_args}.length}\`;`);
     }
 
     const src = [

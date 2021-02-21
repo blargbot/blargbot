@@ -3,9 +3,10 @@ import { RethinkTableMap } from '../types';
 import { RethinkDbTable } from './RethinkDbTable';
 import { sleep } from '../../../utils';
 import { WriteChange } from 'rethinkdb';
+import { Cache } from '../../../structures/Cache';
 
 export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K extends string & keyof RethinkTableMap[T]> extends RethinkDbTable<T> {
-    protected readonly cache: Record<string, RethinkTableMap[T] | undefined>;
+    protected readonly cache: Cache<string, RethinkTableMap[T]>;
 
     protected constructor(
         table: T,
@@ -14,17 +15,19 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
         logger: CatLogger
     ) {
         super(table, rethinkDb, logger);
-        this.cache = {};
+        this.cache = new Cache(5, 'minutes');
     }
 
     protected async rgetCached(
         key: string,
         skipCache: boolean
     ): Promise<RethinkTableMap[T] | undefined> {
-        const result = skipCache ? undefined : this.cache[key];
-        if (result !== undefined)
-            return result;
-        return this.cache[key] = await this.rget(key);
+        if (skipCache || !this.cache.has(key)) {
+            const result = await this.rget(key);
+            if (result !== undefined)
+                this.cache.set(key, result);
+        }
+        return this.cache.get(key, true);
     }
 
 
@@ -35,11 +38,11 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
                 const changefeed = this.rethinkDb.stream<WriteChange>(r => r.table(this.table).changes({ squash: true }));
                 for await (const data of changefeed) {
                     if (!data.new_val)
-                        delete this.cache[data.old_val[this.keyName]];
+                        this.cache.delete(data.old_val[this.keyName]);
                     else {
                         const id = data.new_val[this.keyName];
-                        if (this.cache[id] !== undefined || shouldCache(id))
-                            this.cache[id] = data.new_val;
+                        if (this.cache.has(id) || shouldCache(id))
+                            this.cache.set(id, data.new_val);
                     }
                 }
             }

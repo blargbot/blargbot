@@ -1,5 +1,4 @@
 import { Client as ErisClient } from 'eris';
-import { inspect } from 'util';
 import { BaseService } from './BaseService';
 
 export abstract class DiscordEventService extends BaseService {
@@ -31,7 +30,7 @@ export abstract class DiscordEventService extends BaseService {
         try {
             await this.execute(...args);
         } catch (err) {
-            this.logger.error(`Discord event handler ${this.name} threw an error: ${inspect(err)}`);
+            this.logger.error(`Discord event handler ${this.name} threw an error:`, err);
             this.stop();
         }
     }

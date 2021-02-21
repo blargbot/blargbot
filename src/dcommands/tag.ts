@@ -1,130 +1,129 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TagCommand = void 0;
-const command_1 = require("../core/command");
-const utils_1 = require("../utils");
-class TagCommand extends command_1.BaseCommand {
-    constructor(cluster) {
+import { Cluster } from '../cluster';
+import { BaseCommand } from '../core/command';
+import { commandTypes } from '../utils';
+
+export class TagCommand extends BaseCommand {
+    public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'tag',
             aliases: ['t'],
-            category: utils_1.commandTypes.GENERAL,
+            category: commandTypes.GENERAL,
             info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n',
             handler: {
                 parameters: '{tagName} {args*}',
-                execute: () => '',
+                execute: () => '', //(msg, [tagName, ...args]) => '',
                 subcommands: {
                     'create|add': {
                         parameters: '{tagName} {content*}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName, ...content]) => '',
                         description: ''
                     },
                     'edit': {
                         parameters: '{tagName} {content*}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName, ...content]) => '',
                         description: ''
                     },
                     'delete|remove': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'permdelete': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'set': {
                         parameters: '{tagName} {content*}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'rename': {
                         parameters: '{oldName} {newName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [oldName, newName]) => '',
                         description: ''
                     },
                     'cooldown': {
                         parameters: '{tagName} {duration?:duration}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName, duration]) => '',
                         description: ''
                     },
                     'raw': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'info': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'top': {
                         parameters: '',
-                        execute: () => '',
+                        execute: () => '', //(msg) => '',
                         description: ''
                     },
                     'author': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'search': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'list': {
                         parameters: '{author?}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [author]) => '',
                         description: ''
                     },
                     'favourite|favorite': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: ''
                     },
                     'report': {
                         parameters: '{tagName} {reason+}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName, ...reason]) => '',
                         description: ''
                     },
                     'test|eval|exec|vtest': {
                         parameters: 'debug? {code+}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [debug, ...code]) => '',
                         description: ''
                     },
                     'debug': {
                         parameters: '{tagName} {args*}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName, ...args]) => '',
                         description: ''
                     },
                     'flag': {
                         parameters: '{tagName}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName]) => '',
                         description: '',
                         subcommands: {
                             'create|add': {
                                 parameters: '{tagName} {flags+}',
-                                execute: () => '',
+                                execute: () => '', //(msg, [tagName, ...flags]) => '',
                                 description: ''
                             },
                             'delete|remove': {
                                 parameters: '{tagName} {flags+}',
-                                execute: () => '',
+                                execute: () => '', //(msg, [tagName, ...flags]) => '',
                                 description: ''
                             }
                         }
                     },
                     'setlang': {
                         parameters: '{tagName} {language}',
-                        execute: () => '',
+                        execute: () => '', //(msg, [tagName, language]) => '',
                         description: ''
                     }
                 }
             }
         });
+
+
     }
 }
-exports.TagCommand = TagCommand;
-//# sourceMappingURL=tag.js.map

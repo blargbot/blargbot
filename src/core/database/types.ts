@@ -351,7 +351,7 @@ export interface UserTable {
 
 export interface VarsTable {
     get<K extends KnownStoredVars['varname']>(key: K): Promise<DeepReadOnly<GetStoredVar<K>> | undefined>;
-    set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean>;
+    set<K extends KnownStoredVars['varname']>(key: K, value: Omit<GetStoredVar<K>, 'varname'>): Promise<boolean>;
     delete<K extends KnownStoredVars['varname']>(key: K): Promise<boolean>;
 }
 

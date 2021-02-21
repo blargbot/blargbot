@@ -2,6 +2,7 @@ import { RethinkDb } from './RethinkDb';
 import { RethinkTableMap } from '../types';
 import { r } from './RethinkDb';
 import { Expression } from 'rethinkdb';
+import { WriteResult } from 'rethinkdb';
 
 export type UpdateRequest<T> = {
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -25,6 +26,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         const result = await this.rethinkDb.query(r => r.table(this.table).insert(value, { returnChanges: applyChanges }));
         if (applyChanges && result.changes?.[0]?.new_val)
             Object.apply(value, result.changes?.[0].new_val);
+        throwIfErrored(result);
         return result.inserted + result.unchanged > 0;
     }
 
@@ -34,6 +36,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
     ): Promise<boolean> {
         const getter = typeof value === 'function' ? value : () => value;
         const result = await this.rethinkDb.query(r => r.table(this.table).get(key).update(getter(r)));
+        throwIfErrored(result);
         return result.replaced + result.unchanged > 0;
     }
 
@@ -43,10 +46,23 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         const result = typeof key === 'string'
             ? await this.rethinkDb.query(r => r.table(this.table).get(key).delete())
             : await this.rethinkDb.query(r => r.table(this.table).delete(key));
+        throwIfErrored(result);
         return result.deleted > 0;
     }
 
     public migrate(): Promise<void> {
         return Promise.resolve();
     }
+}
+
+function throwIfErrored(result: WriteResult): void | never {
+    if (result.errors === 0)
+        return;
+
+    const error = typeof result.first_error === 'string'
+        ? new Error(result.first_error)
+        : result.first_error;
+
+    Error.captureStackTrace(error, throwIfErrored);
+    throw error;
 }

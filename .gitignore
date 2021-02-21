@@ -46,3 +46,4 @@ jsondiff.js
 **/*.js
 **/*.js.map
 **/*.disabled
+!*cache.ts

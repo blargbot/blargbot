@@ -38,6 +38,8 @@ export interface CommandHandlerDefinition {
     readonly parameters: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly execute: (message: Message, args: any[], flags: FlagResult, raw: string) => Promise<CommandResult> | CommandResult
+    readonly allowOverflow?: boolean;
+    readonly dontBind?: boolean;
 }
 
 export interface SubcommandDefinitionHolder {
