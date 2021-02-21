@@ -66,7 +66,8 @@ export interface CommandLiteralParameter {
 export interface CompiledCommand {
     readonly structure: DeepReadOnly<CommandTreeNode>;
     readonly usage: ReadonlyArray<readonly CommandParameter[]>;
-    readonly execute: (message: Message, flagDefinitions: readonly FlagDefinition[], args: string[], raw: string) => Promise<CommandResult> | CommandResult;
+    readonly execute: (message: Message, flags: FlagResult, raw: string) => Promise<CommandResult> | CommandResult;
+    // readonly getHandler: (message: Message, flags: FlagResult, raw: string) => CommandHandler | CommandHandler[];
 }
 
 export interface ChildCommandHandlerTreeNode extends CommandTreeNode {
@@ -80,6 +81,7 @@ export interface CommandTreeNode {
 }
 
 export interface CommandHandler {
+    readonly description: string;
     readonly parameters: readonly CommandParameter[];
     readonly execute: (message: Message, flags: FlagResult, raw: string) => Promise<CommandResult> | CommandResult;
 }

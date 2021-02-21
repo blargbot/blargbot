@@ -6,9 +6,8 @@ export function compileCommand(definition: CommandDefinition): CompiledCommand {
     return {
         structure: tree,
         usage: [...buildUsage(tree)],
-        execute: (message, flagDefinitions, args, raw) => {
+        execute: (message, flags, raw) => {
             let node = tree;
-            const flags = parse.flags(flagDefinitions, args);
             for (const arg of flags.undefined) {
                 const switched = node.switch[arg.toLowerCase()];
                 if (switched) {
@@ -87,6 +86,7 @@ function populateTree(definition: CommandDefinition, tree: CommandTreeNode, dept
             throw new Error('Rest parameters must be the last parameter of a command');
         const binder = compileArgBinder(parameters, depth);
         tree.handler = {
+            description: definition.description,
             parameters,
             execute: (message, flags, raw) => {
                 const boundArgs = binder(flags.undefined);
