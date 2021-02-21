@@ -1,7 +1,7 @@
-import { EmbedOptions, Message } from 'eris';
+import { EmbedOptions, Guild, Message } from 'eris';
 import { Cluster } from '../cluster';
 import { BaseCommand } from '../core/command';
-import { CommandType, defaultStaff, guard, guildSettings, humanize, parse } from '../utils';
+import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '../utils';
 
 export class SettingsCommand extends BaseCommand {
     public constructor(cluster: Cluster) {
@@ -10,10 +10,12 @@ export class SettingsCommand extends BaseCommand {
             category: CommandType.ADMIN,
             info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.',
             handler: {
-                parameters: '',
-                execute: message => this.all(message),
-                description: 'Gets the current settings for this guild',
                 subcommands: {
+                    'list': {
+                        parameters: '',
+                        execute: message => this.list(message),
+                        description: 'Gets the current settings for this guild'
+                    },
                     'keys': {
                         parameters: '',
                         description: 'Lists all the setting keys and their types',
@@ -29,151 +31,72 @@ export class SettingsCommand extends BaseCommand {
         });
     }
 
-    private async all(message: Message): Promise<string | { embed: EmbedOptions }> {
+    private async list(message: Message): Promise<string | { embed: EmbedOptions }> {
         if (!guard.isGuildMessage(message))
-            return 'Settings are only available in a guild';
+            return '❌ Settings are only available in a guild';
 
         const storedGuild = await this.database.guilds.get(message.channel.guild.id);
         if (!storedGuild)
-            return 'Your guild is not correctly configured yet! Please try again later';
+            return '❌ Your guild is not correctly configured yet! Please try again later';
 
         const settings = storedGuild.settings;
-        const channels = storedGuild.channels;
+        const guild = message.channel.guild;
 
-        const nsfw = [];
-        const blacklisted = [];
-        let i: number;
-        for (const channel in channels) {
-            if (channels[channel]?.nsfw) nsfw.push(channel);
-            if (channels[channel]?.blacklisted) blacklisted.push(channel);
-        }
-        let prefix = settings.prefix ?
-            settings.prefix : 'Not Set';
-        if (Array.isArray(prefix)) prefix = prefix[0];
-        let nsfwMessage = 'None Set';
-        if (nsfw.length > 0) {
-            nsfwMessage = '';
-            for (i = 0; i < nsfw.length; i++) {
-                const channel = this.discord.getChannel(nsfw[i]);
-                if (channel)
-                    nsfwMessage += `${humanize.channelName(channel)} (${nsfw[i]})\n                - `;
-            }
-            nsfwMessage = nsfwMessage.substring(0, nsfwMessage.length - 19);
-        }
-        let blacklistMessage = 'None Set';
-        if (blacklisted.length > 0) {
-            blacklistMessage = '';
-            for (i = 0; i < blacklisted.length; i++) {
-                const channel = this.discord.getChannel(blacklisted[i]);
-                if (channel)
-                    blacklistMessage += `${humanize.channelName(channel)} (${blacklisted[i]})\n                - `;
-            }
-            blacklistMessage = blacklistMessage.substring(0, blacklistMessage.length - 19);
-        }
-        let greeting = settings.greeting ?
-            settings.greeting : 'Not Set';
-        if (greeting.length > 100) greeting = greeting.substring(0, 100) + '...';
-        let farewell = settings.farewell ?
-            settings.farewell : 'Not Set';
-        if (farewell.length > 100) farewell = farewell.substring(0, 100) + '...';
-        let modlogChannel: string;
-        if (settings.modlog) {
-            const channel = this.discord.getChannel(settings.modlog);
-            if (channel)
-                modlogChannel = `${humanize.channelName(channel)} (${settings.modlog})`;
-            else
-                modlogChannel = `Channel Not Found (${settings.modlog})`;
-        } else {
-            modlogChannel = 'Not Set';
-        }
-        const deleteNotif = parse.boolean(settings.deletenotif, false, true);
-        // const cahNsfw = settings.cahnsfw && settings.cahnsfw != 0 ? true : false;
-        const mutedRole = settings.mutedrole ? await this.util.getRole(message, settings.mutedrole, { suppress: true }) : null;
-        const tableFlip = parse.boolean(settings.tableflip, false, true);
-        let parsedAntiMention: string;
-        if (settings.antimention) {
-            parsedAntiMention = parse.int(settings.antimention).toString();
-            if (parsedAntiMention == '0' || parsedAntiMention === 'NaN') {
-                parsedAntiMention = 'Disabled';
-            }
-        } else {
-            parsedAntiMention = 'Disabled';
-        }
-        const antiMention = parsedAntiMention;
-        const permOverride = parse.boolean(settings.permoverride, false, true);
-        const dmHelp = parse.boolean(settings.dmhelp, false, true);
-        const makeLogs = parse.boolean(settings.makelogs, false, true);
-
-
-        const staffPerms = settings.staffperms || defaultStaff;
-        const kickPerms = settings.kickoverride || 0;
-        const banPerms = settings.banoverride || 0;
-        const disableEveryone = settings.disableeveryone || false;
-        const disableNoPerms = settings.disablenoperms || false;
-        const greetChan = settings.greetChan ? this.discord.getChannel(settings.greetChan) ?? undefined : undefined;
-        const farewellChan = settings.farewellchan ? this.discord.getChannel(settings.farewellchan) ?? undefined : undefined;
-        const cleverbot = settings.nocleverbot || false;
-        const kickAt = settings.kickat || 'Disabled';
-        const banAt = settings.banat || 'Disabled';
-        const social = settings.social || 'Disabled';
-        const adminRoleName = settings.adminrole || 'Admin';
         return {
             embed: {
                 fields: [
                     {
                         name: 'General',
-                        value: `\`\`\`
-          Prefix : ${prefix}
-         DM Help : ${dmHelp}
-Disable No Perms : ${disableNoPerms}
- Social Commands : ${social}
-\`\`\``
+                        value: settingGroup([
+                            ['prefix', Array.isArray(settings.prefix) ? settings.prefix[0] : settings.prefix],
+                            ['dmhelp', parse.boolean(settings.dmhelp, false, true)],
+                            ['disablenoperms', settings.disablenoperms ?? false],
+                            ['social', settings.social ?? false]
+                        ])
                     },
                     {
                         name: 'Messages',
-                        value: `\`\`\`
-         Greeting : ${greeting}
-         Farewell : ${farewell}
-       Tableflips : ${tableFlip}
-        Cleverbot : ${!cleverbot}
-Disable @everyone : ${disableEveryone}
-\`\`\``
+                        value: settingGroup([
+                            ['greeting', settings.greeting],
+                            ['farewell', settings.farewell],
+                            ['tableflip', parse.boolean(settings.tableflip, false, true)],
+                            ['nocleverbot', settings.nocleverbot ?? false],
+                            ['disableeveryone', settings.disableeveryone ?? false]
+                        ])
                     },
                     {
                         name: 'Channels',
-                        value: `\`\`\`
-Farewell Channel : ${farewellChan ? humanize.channelName(farewellChan) : 'Default Channel'}
-Greeting Channel : ${greetChan ? humanize.channelName(greetChan) : 'Default Channel'}
-   NSFW Channels : ${nsfwMessage}
-  Modlog Channel : ${modlogChannel}
-     Blacklisted : ${blacklistMessage}
-\`\`\``
+                        value: settingGroup([
+                            ['farewellchan', resolveChannel(guild, settings.farewellchan) ?? 'Default Channel'],
+                            ['greetChan', resolveChannel(guild, settings.greetChan) ?? 'Default Channel'],
+                            ['modlog', resolveChannel(guild, settings.modlog)]
+                        ])
                     },
                     {
                         name: 'Permissions',
-                        value: `\`\`\`
-Perm Override : ${permOverride}
-  Staff Perms : ${staffPerms}
-Kick Override : ${kickPerms}
- Ban Override : ${banPerms}
-\`\`\``
+                        value: settingGroup([
+                            ['permoverride', parse.boolean(settings.permoverride, false, true)],
+                            ['staffperms', settings.staffperms ?? defaultStaff],
+                            ['kickoverride', settings.kickoverride],
+                            ['banoverride', settings.banoverride]
+                        ])
                     },
                     {
                         name: 'Warnings',
-                        value: `\`\`\`
-Kick At : ${kickAt}
- Ban At : ${banAt}
-\`\`\``
+                        value: settingGroup([
+                            ['kickat', settings.kickat],
+                            ['banat', settings.banat]
+                        ])
                     },
                     {
                         name: 'Moderation',
-                        value: `\`\`\`
-      Chat Logs : ${makeLogs}
-   Anti-Mention : ${antiMention}
-     Muted Role : ${mutedRole ? `${mutedRole.name} (${mutedRole.id})` : 'Not Set'}
-  Track Deletes : ${deleteNotif}
-Admin Role Name : ${adminRoleName}
-\`\`\``
+                        value: settingGroup([
+                            ['makelogs', parse.boolean(settings.makelogs, false, true)],
+                            ['antimention', settings.antimention],
+                            ['mutedrole', resolveRole(guild, settings.mutedrole)],
+                            ['deletenotif', parse.boolean(settings.deletenotif, false, true)],
+                            ['adminrole', resolveRole(guild, settings.adminrole)]
+                        ])
                     }
                 ]
             }
@@ -182,28 +105,66 @@ Admin Role Name : ${adminRoleName}
 
     private async set(message: Message, setting: string, value: string): Promise<string> {
         if (!guard.isGuildMessage(message))
-            return 'Settings are only available in a guild';
+            return '❌ Settings are only available in a guild';
 
         const key = setting.toLowerCase();
         if (!guard.isGuildSetting(key))
-            return 'Invalid key!';
+            return '❌ Invalid key!';
 
         const parsed = await parse.guildSetting(message, this.util, key, value);
         if (!parsed.success)
-            return `'${value}' is not a ${guildSettings[key]?.type}`;
+            return `❌ '${value}' is not a ${guildSettings[key]?.type}`;
 
         if (!await this.database.guilds.setSetting(message.channel.guild.id, key, parsed.value))
-            return 'Failed to set';
+            return '❌ Failed to set';
 
-        return ':ok_hand:';
+        return `✅ ${guildSettings[key]?.name} is set to ${parsed.display}`;
     }
 
     private keys(): string {
         let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
         for (const key in guildSettings) {
-            if (guard.isGuildSetting(key))
-                message += ` - **${key.toUpperCase()}** (${guildSettings[key]?.type})\n`;
+            if (guard.isGuildSetting(key)) {
+                const setting = guildSettings[key];
+                if (setting !== undefined) {
+                    message += ` - **${setting.name}** \`settings set ${setting.key.toUpperCase()} [value]\` (${setting.type})\n`;
+                }
+            }
         }
         return message;
     }
+}
+
+function resolveChannel(guild: Guild, channelId: string | undefined): string | undefined {
+    if (channelId === undefined)
+        return undefined;
+    const channel = guild.channels.get(channelId)
+        ?? guild.channels.find(c => c.name.toLowerCase() === channelId.toLowerCase());
+    if (!channel)
+        return `Unknown channel (${channelId})`;
+    return `${channel.name} (${channel.id})`;
+}
+
+function resolveRole(guild: Guild, roleId: string | undefined): string | undefined {
+    if (roleId === undefined)
+        return undefined;
+    const role = guild.roles.get(roleId)
+        ?? guild.roles.find(r => r.name.toLowerCase() === roleId.toLowerCase());
+    if (!role)
+        return `Unknown role (${roleId})`;
+    return `${role.name} (${role.id})`;
+}
+
+function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | undefined | boolean | number]>): string {
+    const mapped = values.map<[string, unknown]>(([key, value]) => {
+        const setting = guildSettings[key];
+        return [
+            setting?.name ?? key,
+            `${value ?? 'Not set'}`.substring(0, 100)
+        ];
+    });
+    const keyLength = Math.max(...mapped.map(([key]) => key.length));
+    const content = mapped.map(v => `${v[0].padStart(keyLength, ' ')} : ${v[1]}`)
+        .join('\n');
+    return codeBlock(content, '');
 }
