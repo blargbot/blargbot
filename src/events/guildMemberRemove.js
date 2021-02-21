@@ -29,7 +29,7 @@ bot.on('guildMemberRemove', async function (guild, member) {
         }
         await bbEngine.runTag({
             msg: {
-                channel: chan,
+                channel: channel,
                 author: member.user,
                 member: member,
                 guild: guild
