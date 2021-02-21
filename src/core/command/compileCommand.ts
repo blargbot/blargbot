@@ -2,22 +2,22 @@ import { humanize, parse } from '../../utils';
 import { CommandDefinition, CompiledCommand, CommandTreeNode, ChildCommandHandlerTreeNode, CommandParameter } from './types';
 
 export function compileCommand(definition: CommandDefinition): CompiledCommand {
-    const tree = populateTree(definition, { switch: {}, tests: [] }, 0);
+    const tree = populateTree(definition, { switch: {}, tests: [] }, []);
     return {
         structure: tree,
         usage: [...buildUsage(tree)],
         execute: (message, flags, raw) => {
             let node = tree;
-            for (const arg of flags.undefined) {
+            args: for (const arg of flags.undefined) {
                 const switched = node.switch[arg.toLowerCase()];
                 if (switched) {
                     node = switched;
-                    continue;
+                    continue args;
                 }
                 for (const test of node.tests) {
                     if (test.check(arg)) {
                         node = test.node;
-                        continue;
+                        continue args;
                     }
                 }
                 if (node.handler)
@@ -37,14 +37,14 @@ export function compileCommand(definition: CommandDefinition): CompiledCommand {
     };
 }
 
-function populateTree(definition: CommandDefinition, tree: CommandTreeNode, depth: number): CommandTreeNode {
+function populateTree(definition: CommandDefinition, tree: CommandTreeNode, path: CommandParameter[]): CommandTreeNode {
     if ('subcommands' in definition) {
         for (const key of Object.keys(definition.subcommands)) {
             const subDefinition = definition.subcommands[key];
+            const _path = [...path];
             let _node = tree;
-            let _depth = depth;
             for (const parameter of compileParameters(key)) {
-                _depth++;
+                _path.push(parameter);
                 switch (parameter.type) {
                     case 'literal': {
                         const nextNode = _node.switch[parameter.name.toLowerCase()] ??= { switch: {}, tests: [], name: parameter };
@@ -71,20 +71,20 @@ function populateTree(definition: CommandDefinition, tree: CommandTreeNode, dept
                     default: throw new Error(`Unexpected parameter type '${(<CommandParameter>parameter).type}'`);
                 }
             }
-            populateTree(subDefinition, _node, _depth);
+            populateTree(subDefinition, _node, _path);
         }
     }
 
     if ('execute' in definition) {
         if (tree.handler !== undefined)
-            throw new Error('Duplicate handler found!');
+            throw new Error(`Duplicate handler '${path.map(p => p.display).join(' ')}' found!`);
         const parameters = [...compileParameters(definition.parameters)];
         const restParams = parameters.filter(p => p.type === 'variable' && p.rest);
         if (restParams.length > 1)
             throw new Error(`Cannot have more than 1 rest parameter, but found ${restParams.map(p => p.name).join(',')}`);
         if (restParams.length === 1 && parameters[parameters.length - 1] !== restParams[0])
             throw new Error('Rest parameters must be the last parameter of a command');
-        const binder = compileArgBinder(parameters, depth);
+        const binder = compileArgBinder(path, parameters);
         tree.handler = {
             description: definition.description,
             parameters,
@@ -130,62 +130,98 @@ function* buildUsageInner(tree: CommandTreeNode): IterableIterator<CommandParame
             yield* buildUsage(test.node);
 }
 
-function compileArgBinder(params: CommandParameter[], skipCount: number): (args: string[]) => unknown[] | string {
+function compileArgBinder(prefixes: CommandParameter[], params: CommandParameter[]): (args: string[]) => unknown[] | string {
+    const v_args = 'args';
+    const v_params = 'params';
+    const v_parsed = 'parsed';
+    const v_result = 'result';
+    const v_rest = 'rest';
+    const v_i = 'i';
+    let m_push = `${v_result}.push(${v_parsed});`;
+
     const body = [
-        'const variables = [];',
-        `let i = ${skipCount}, arg, argRaw;`
+        `const ${v_result} = [];`,
+        `let ${v_i} = 0, ${v_rest}, ${v_parsed};`
     ];
 
+    const allParams = [...prefixes, ...params];
     let i = 0;
-    for (; i < params.length; i++) {
-        const param = params[i];
-        body.push('argRaw = args[i];');
-        body.push(`arg = argRaw === undefined ? undefined : parameters[${i}].parse(argRaw);`);
-        if (param.required)
-            body.push(`if (argRaw === undefined) return \`❌ Invalid arguments! A value for \\\`${param.name}\\\` is required!\`;`);
+    for (; i < allParams.length; i++) {
+        const param = allParams[i];
+        const isPrefix = i < prefixes.length;
+        const v_argRaw = `${v_args}[${v_i}]`; // 'args[i]'
+        const m_parse = `${v_params}[${i}].parse(${v_argRaw});`; //  'params[5].parse(args[i])'
+
+        body.push(`// ******** Binding ${param.display} ********`);
+        if (param.required) {
+            body.push(
+                `if (${v_argRaw} === undefined)`,
+                `    return \`❌ Invalid arguments! A value for \\\`${param.display}\\\` is required!\`;`,
+                `${v_parsed} = ${m_parse}`);
+        } else {
+            body.push(`${v_parsed} = ${v_argRaw} === undefined ? undefined : ${m_parse}`);
+        }
         switch (param.type) {
             case 'literal': {
                 if (param.required) {
-                    body.push(`if (arg === undefined) return \`❌ Invalid arguments! \\\`\${argRaw}\\\` is not a valid value for \\\`${param.name}\\\`\`;`);
-                    body.push('variables.push(arg);');
-                    body.push('i++;');
+                    body.push(
+                        `if (${v_parsed} === undefined)`,
+                        `    return \`❌ Invalid arguments! \\\`\${${v_argRaw}}\\\` is not a valid value for \\\`${param.display}\\\`\`;`,
+                        `${v_i}++;`);
+                    if (!isPrefix)
+                        body.push(m_push);
                 } else {
-                    body.push('variables.push(arg);');
-                    body.push('if (arg !== undefined) i++');
+                    if (!isPrefix)
+                        body.push(m_push);
+                    body.push(
+                        `if (${v_parsed} !== undefined)`,
+                        `    ${v_i}++`);
                 }
                 break;
             }
             case 'variable': {
                 let indent = '';
                 if (param.rest) {
-                    body.push('for (;i < args.length;) {');
-                    body.push('    argRaw = args[i];');
-                    body.push(`    arg = argRaw === undefined ? undefined : parameters[${i}].parse(argRaw);`);
                     indent = '    ';
+                    body.pop();
+                    body.push(
+                        `${v_rest} = [];`,
+                        `for (;${v_i} < ${v_args}.length;) {`,
+                        `${indent}${v_parsed} = ${v_argRaw} === undefined ? undefined : ${m_parse}`);
+                    m_push = `${v_rest}.push(${v_parsed})`;
                 }
 
                 if (param.required) {
-                    body.push(`${indent}if (arg === undefined) return \`❌ Invalid arguments! \\\`${param.name}\\\` expects a ${param.valueType} but \\\`\${argRaw}\\\` is not\`;`);
+                    body.push(
+                        `${indent}if (${v_parsed} === undefined)`,
+                        `${indent}    return \`❌ Invalid arguments! \\\`${param.display}\\\` expects a ${param.valueType} but \\\`\${${v_argRaw}}\\\` is not\`;`);
                 } else {
-                    body.push(`${indent}if (argRaw !== undefined && arg === undefined) return \`❌ Invalid arguments! \\\`${param.name}\\\` expects a ${param.valueType} but \\\`\${argRaw}\\\` is not\`;`);
+                    body.push(
+                        `${indent}if (${v_argRaw} !== undefined && ${v_parsed} === undefined)`,
+                        `${indent}    return \`❌ Invalid arguments! \\\`${param.display}\\\` expects a ${param.valueType} but \\\`\${${v_argRaw}}\\\` is not\`;`);
                 }
 
-                body.push(`${indent}variables.push(arg)`);
-                body.push(`${indent}i++;`);
+                body.push(
+                    `${indent}${m_push}`,
+                    `${indent}${v_i}++;`);
 
-                if (param.rest)
-                    body.push('}');
+                if (param.rest) {
+                    body.push(
+                        '}',
+                        `${v_result}.push(${v_rest});`);
+                    m_push = `${v_result}.push(${v_parsed})`;
+                }
             }
         }
     }
 
     const src = [
-        '(parameters) => (args) => {',
+        `(${v_params}) => (${v_args}) => {`,
         ...body.map(l => '    ' + l),
-        '    return variables;',
+        `    return ${v_result};`,
         '}'
     ];
-    return eval(src.join('\n'))(params);
+    return eval(src.join('\n'))(allParams);
 }
 
 function* compileParameters(raw: string): IterableIterator<CommandParameter> {

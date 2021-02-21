@@ -22,7 +22,7 @@ export class SettingsCommand extends BaseCommand {
                     'set': {
                         parameters: '{key} {value*}',
                         description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
-                        execute: (message, [setting, ...values]) => this.set(message, setting, values.join(' '))
+                        execute: (message, [setting, value]) => this.set(message, setting, value.join(' '))
                     }
                 }
             }

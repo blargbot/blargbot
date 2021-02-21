@@ -7,6 +7,11 @@ import { Client as ErisClient } from 'eris';
 import { SendPayload } from '../BaseUtilities';
 import { compileCommand } from './compileCommand';
 
+export const handlerDefaults = Object.seal<CommandDefinition>({
+    subcommands: {
+    }
+});
+
 export abstract class BaseCommand implements Required<CommandOptions> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #runner: CompiledCommand;
@@ -50,7 +55,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         this.onlyOn = options.onlyOn ?? null;
         this.cooldown = options.cooldown ?? 0;
         this.lockKeys = [];
-        this.handler = options.handler;
+        this.handler = { ...handlerDefaults, ...options.handler };
         this.#locks = {};
         this.#cooldowns = {};
 
