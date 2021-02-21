@@ -20,12 +20,11 @@ export class EmojiCommand extends BaseCommand {
                 flag: 's',
                 word: 'svg',
                 desc: 'Get the emote as an svg instead of a png.'
-            }]
-        });
-        this.setHandlers({
-            '{emoji}': {
-                _run: (_, [emoji], flags) => this.emoji(emoji, 668, flags),
-                '{size:number}': (_, [emoji, size], flags) => this.emoji(emoji, parse.int(size), flags)
+            }],
+            handler: {
+                parameters: '{emoji} {size?:number}',
+                execute: (_, [emoji, size = 668], flags) => this.emoji(emoji, size, flags),
+                description: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.'
             }
         });
     }

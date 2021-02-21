@@ -17,16 +17,16 @@ export interface TagListResult {
 }
 
 export interface TagResult {
-    category: SubtagType;
-    name: string;
-    args: SubtagArgument[];
-    desc: string;
-    exampleCode: string | null;
-    exampleIn: string | null;
-    exampleOut: string | null;
-    deprecated: boolean;
-    staff: boolean;
-    aliases: string[];
+    readonly category: SubtagType;
+    readonly name: string;
+    readonly args: readonly SubtagArgument[];
+    readonly desc: string;
+    readonly exampleCode: string | null;
+    readonly exampleIn: string | null;
+    readonly exampleOut: string | null;
+    readonly deprecated: boolean;
+    readonly staff: boolean;
+    readonly aliases: readonly string[];
 }
 
 export interface CommandListResult {
@@ -34,32 +34,32 @@ export interface CommandListResult {
 }
 
 export interface CommandResult {
-    name: string;
-    usage: string;
-    info: string;
-    category: CommandType;
-    aliases: string[];
-    flags: FlagDefinition[];
-    onlyOn: string | null;
+    readonly name: string;
+    readonly usage: string;
+    readonly info: string;
+    readonly category: CommandType;
+    readonly aliases: readonly string[];
+    readonly flags: readonly FlagDefinition[];
+    readonly onlyOn: string | null;
 }
 
 export interface ClusterStats {
-    id: number;
-    time: number;
-    readyTime: number;
-    guilds: number;
-    rss: number;
-    userCpu: number;
-    systemCpu: number;
-    shardCount: number;
-    shards: ShardStats[]
+    readonly id: number;
+    readonly time: number;
+    readonly readyTime: number;
+    readonly guilds: number;
+    readonly rss: number;
+    readonly userCpu: number;
+    readonly systemCpu: number;
+    readonly shardCount: number;
+    readonly shards: readonly ShardStats[]
 }
 
 export interface ShardStats {
-    id: number;
-    status: Shard['status'];
-    latency: number;
-    guilds: number;
-    cluster: number;
-    time: number;
+    readonly id: number;
+    readonly status: Shard['status'];
+    readonly latency: number;
+    readonly guilds: number;
+    readonly cluster: number;
+    readonly time: number;
 }

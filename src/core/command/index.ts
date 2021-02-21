@@ -1,33 +1,32 @@
 import { Message, MessageFile } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
-import { CommandType, FlagDefinition, FlagResult, parse } from '../../utils';
+import { CommandType, FlagDefinition } from '../../utils';
 import { Database } from '../database';
-import { compileHandlerTree } from './compileHandlerTree';
-import { CommandHandler, CommandHandlerTree, CommandOptions, HandlerResult } from './types';
+import { CommandDefinition, CommandOptions, CommandResult, CompiledCommand } from './types';
 import { Client as ErisClient } from 'eris';
 import { SendPayload } from '../BaseUtilities';
+import { compileCommand } from './compileCommand';
 
 export abstract class BaseCommand implements Required<CommandOptions> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #getHandler: (flags: FlagResult) => CommandHandler<this>;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #handlers: CommandHandlerTree<this>;
+    readonly #runner: CompiledCommand;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #locks: Record<string, { times: number } | undefined>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cooldowns: Record<string, { lasttime: number, times: number }>;
 
-    public get handlers(): CommandHandlerTree<this> { return this.#handlers; }
+    public get runner(): CompiledCommand { return this.#runner; }
 
     protected readonly lockKeys: Array<(message: Message) => string>;
+    public readonly handler: CommandDefinition;
     public readonly name: string;
-    public readonly aliases: string[];
+    public readonly aliases: readonly string[];
     public readonly category: CommandType;
     public readonly cannotDisable: boolean;
     public readonly hidden: boolean;
     public readonly usage: string;
     public readonly info: string;
-    public readonly flags: FlagDefinition[];
+    public readonly flags: readonly FlagDefinition[];
     public readonly onlyOn: string | null;
     public readonly cooldown: number;
 
@@ -46,42 +45,34 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         this.category = options.category;
         this.cannotDisable = options.cannotDisable ?? true;
         this.hidden = options.hidden ?? false;
-        this.usage = 'WIP';
         this.info = options.info ?? 'WIP';
         this.flags = options.flags ?? [];
         this.onlyOn = options.onlyOn ?? null;
         this.cooldown = options.cooldown ?? 0;
         this.lockKeys = [];
+        this.handler = options.handler;
         this.#locks = {};
         this.#cooldowns = {};
 
-        this.#handlers = {};
-        this.#getHandler = compileHandlerTree(this.#handlers, this.name);
-    }
-
-    protected setHandlers(handlers: CommandHandlerTree<this>): this {
-        this.#handlers = handlers;
-        this.#getHandler = compileHandlerTree(this.handlers, this.name);
-        return this;
+        this.#runner = compileCommand(this.handler);
+        this.usage = this.#runner.usage.map(u => u.map(p => p.display).join(' ')).join('\n');
     }
 
     public async execute(message: Message, args: string[], raw: string): Promise<void> {
-        const flags = parse.flags(this.flags, args);
         try {
-            const handler = this.#getHandler(flags);
-            let result = await this.preExecute(message, flags, raw);
+            let result = await this.preExecute(message, args, raw);
             if (result === undefined)
-                result = await handler.call(this, message, flags.undefined, flags, raw);
+                result = await this.#runner.execute(message, this.flags, args, raw);
             const [payload, files] = splitResult(result);
             if (payload !== undefined || files !== undefined)
                 await this.util.send(message, payload, files);
         }
         finally {
-            await this.postExecute(message, flags, raw);
+            await this.postExecute(message, args, raw);
         }
     }
 
-    protected preExecute(message: Message, _flags: FlagResult, _raw: string): Promise<HandlerResult | null> | HandlerResult | null {
+    protected preExecute(message: Message, _args: string[], _raw: string): Promise<CommandResult | null> | CommandResult | null {
         for (const getKey of this.lockKeys) {
             const lock = this.#locks[getKey(message)] ??= { times: 0 };
             lock.times++;
@@ -104,7 +95,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         }
     }
 
-    protected postExecute(message: Message, _flags: FlagResult, _raw: string): Promise<void> | void {
+    protected postExecute(message: Message, _args: string[], _raw: string): Promise<void> | void {
         for (const getKey of this.lockKeys)
             delete this.#locks[getKey(message)];
 
@@ -119,7 +110,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
     }
 }
 
-function splitResult(result: HandlerResult | null): [SendPayload | undefined, MessageFile[] | undefined] {
+function splitResult(result: CommandResult | null): [SendPayload | undefined, MessageFile[] | undefined] {
     if (result === undefined || result === null)
         return [undefined, undefined];
     if (typeof result !== 'object')

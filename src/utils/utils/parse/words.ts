@@ -1,14 +1,10 @@
 export function words(content: string | readonly string[] | number | boolean, noTrim = false): string[] {
-    let input;
     if (Array.isArray(content))
         content = content.join(' ');
     if (typeof content !== 'string')
         content = content.toString();
-    if (!noTrim)
-        input = content.replace(/ +/g, ' ').split(' ');
-    else
-        input = content.split(' ');
 
+    const input = content.split(noTrim ? ' ' : / +/);
     if (input.length > 0 && input[0] == '')
         input.shift();
     if (input.length > 0 && input.slice(-1)[0] == '')

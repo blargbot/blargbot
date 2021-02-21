@@ -8,20 +8,23 @@ class SettingsCommand extends command_1.BaseCommand {
         super(cluster, {
             name: 'settings',
             category: utils_1.CommandType.ADMIN,
-            info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.'
-        });
-        this.setHandlers({
-            _run: message => this.all(message),
-            'keys': () => this.keys(),
-            'set': {
-                '{key}': {
-                    _run: (message, [, setting]) => this.set(message, setting, ''),
-                    '{...value}': (message, [, setting, ...values]) => this.set(message, setting, values.join(' '))
+            info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.',
+            handler: {
+                parameters: '',
+                execute: message => this.all(message),
+                description: 'Gets the current settings for this guild',
+                subcommands: {
+                    'keys': {
+                        parameters: '',
+                        description: 'Lists all the setting keys and their types',
+                        execute: () => this.keys()
+                    },
+                    'set': {
+                        parameters: '{key} {value*}',
+                        description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
+                        execute: (message, [setting, ...values]) => this.set(message, setting, values.join(' '))
+                    }
                 }
-            },
-            '{key}': {
-                _run: (message, [setting]) => this.set(message, setting, ''),
-                '{...value}': (message, [setting, ...values]) => this.set(message, setting, values.join(' '))
             }
         });
     }

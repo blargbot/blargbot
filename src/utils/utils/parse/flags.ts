@@ -11,19 +11,19 @@ export type FlagResult = {
     [flag: string]: string[] | undefined;
 }
 
-export function flags(definitions: DeepReadOnly<FlagDefinition[]>, text: string | readonly string[], noTrim = false): FlagResult {
-    let words: string[];
-    if (typeof text !== 'string')
-        words = getWords(text.slice(1).join(' '), noTrim);
-    else
-        words = getWords(text, noTrim);
+export function flags(definitions: Iterable<FlagDefinition>, text: string[]): FlagResult;
+export function flags(definitions: Iterable<FlagDefinition>, text: readonly string[]): FlagResult;
+export function flags(definitions: Iterable<FlagDefinition>, text: string, noTrim?: boolean): FlagResult;
+export function flags(definitions: Iterable<FlagDefinition>, text: string | readonly string[], noTrim = false): FlagResult {
+    const def: readonly FlagDefinition[] = Array.isArray(definitions) ? definitions : [...definitions];
+    const words = typeof text === 'string' ? getWords(text, noTrim) : [...text];
     const output: FlagResult = { undefined: [] };
     let currentFlag = '';
     for (let i = 0; i < words.length; i++) {
         let pushFlag = true;
         if (words[i].startsWith('--')) {
             if (words[i].length > 2) {
-                const flag = definitions.find(f => f.word == words[i].substring(2).toLowerCase());
+                const flag = def.find(f => f.word == words[i].substring(2).toLowerCase());
                 if (flag) {
                     currentFlag = flag.flag;
                     output[currentFlag] = [];

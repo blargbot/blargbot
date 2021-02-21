@@ -4,6 +4,7 @@ import { stringify as bbtag } from './bbtag';
 import { bbtagLocation } from './bbtagLocation';
 import { bbtagRange } from './bbtagRange';
 import { channelName } from './channelName';
+import { smartJoin } from './smartJoin';
 
 export const humanize = {
     duration,
@@ -11,5 +12,6 @@ export const humanize = {
     bbtag,
     bbtagLocation,
     bbtagRange,
-    channelName
+    channelName,
+    smartJoin
 };

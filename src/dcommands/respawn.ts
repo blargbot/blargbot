@@ -1,6 +1,6 @@
 import { Message } from 'eris';
 import { Cluster } from '../cluster';
-import { commandTypes, humanize, parse } from '../utils';
+import { commandTypes, humanize } from '../utils';
 import { BaseCommand } from '../core/command';
 
 export class RespawnCommand extends BaseCommand {
@@ -11,11 +11,12 @@ export class RespawnCommand extends BaseCommand {
             name: 'respawn',
             category: commandTypes.GENERAL,
             hidden: true,
-            info: 'Cluster respawning only for staff.'
-        });
-
-        this.setHandlers({
-            '{clusterId:number}': (msg, [clusterId]) => this.respawn(msg, parse.int(clusterId))
+            info: 'Cluster respawning only for staff.',
+            handler: {
+                parameters: '{clusterId:integer}',
+                execute: (msg, [clusterId]) => this.respawn(msg, clusterId),
+                description: 'Respawns the cluster specified'
+            }
         });
     }
 

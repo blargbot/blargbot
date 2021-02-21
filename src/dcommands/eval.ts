@@ -6,10 +6,12 @@ export class EvalCommand extends BaseCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'eval',
-            category: commandTypes.CAT
-        });
-        this.setHandlers({
-            '{...code}': (msg, _, __, code) => this.eval(msg.author.id, code)
+            category: commandTypes.CAT,
+            handler: {
+                parameters: '{code+}',
+                execute: (msg, _, __, code) => this.eval(msg.author.id, code),
+                description: 'Runs the code you enter on the current cluster'
+            }
         });
     }
 

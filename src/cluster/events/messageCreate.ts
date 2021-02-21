@@ -204,7 +204,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
                 : `Command '${text}' executed by ${msg.author.username} (${msg.author.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`;
             this.logger.command(outputLog);
             const timer = new Timer().start();
-            await this.executeCommand(command, msg, words, text);
+            await this.executeCommand(command, msg, words.slice(1), text);
             timer.end();
             metrics.commandLatency.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).observe(timer.elapsed);
             metrics.commandCounter.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).inc();

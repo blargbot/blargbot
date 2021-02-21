@@ -21,10 +21,12 @@ export class PingCommand extends BaseCommand {
         super(cluster, {
             name: 'ping',
             category: commandTypes.GENERAL,
-            info: 'Pong!\nFind the command latency.'
-        });
-        this.setHandlers({
-            _run: message => this.ping(message)
+            info: 'Pong!\nFind the command latency.',
+            handler: {
+                parameters: '',
+                execute: message => this.ping(message),
+                description: 'Gets the current latency.'
+            }
         });
     }
 

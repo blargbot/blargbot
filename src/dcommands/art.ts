@@ -10,14 +10,15 @@ export class ArtCommand extends BaseCommand {
             category: commandTypes.IMAGE,
             info: 'Shows everyone a work of art.',
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
-            cooldown: 5000
+            cooldown: 5000,
+            handler: {
+                parameters: '{user?}',
+                execute: (msg, [user], flags) => this.art(msg, user, flags),
+                description: 'Shows everyone a work of art.'
+            }
         });
         this.lockKeys.push(m => m.author.id);
         this.lockKeys.push(m => m.channel.id);
-        this.setHandlers({
-            _run: (msg, _, flags) => this.art(msg, undefined, flags),
-            '{user}': (msg, [user], flags) => this.art(msg, user, flags)
-        });
     }
 
     private async art(message: Message, user: string | undefined, flags: FlagResult): Promise<void | string | MessageFile> {

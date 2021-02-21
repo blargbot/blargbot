@@ -7,10 +7,12 @@ class EvalCommand extends command_1.BaseCommand {
     constructor(cluster) {
         super(cluster, {
             name: 'eval',
-            category: utils_1.commandTypes.CAT
-        });
-        this.setHandlers({
-            '{...code}': (msg, _, __, code) => this.eval(msg.author.id, code)
+            category: utils_1.commandTypes.CAT,
+            handler: {
+                parameters: '{code+}',
+                execute: (msg, _, __, code) => this.eval(msg.author.id, code),
+                description: 'Runs the code you enter on the current cluster'
+            }
         });
     }
     async eval(userId, code) {
