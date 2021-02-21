@@ -122,16 +122,17 @@ export class SettingsCommand extends BaseCommand {
     }
 
     private keys(): string {
-        let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
+        const message = [];
         for (const key in guildSettings) {
             if (guard.isGuildSetting(key)) {
                 const setting = guildSettings[key];
                 if (setting !== undefined) {
-                    message += ` - **${setting.name}** \`settings set ${setting.key.toUpperCase()} [value]\` (${setting.type})\n`;
+                    message.push(` - **${setting.name}:** \`${setting.key.toUpperCase()}\` (${setting.type})`);
                 }
             }
         }
-        return message;
+        return 'You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n'
+            + message.sort().join('\n');
     }
 }
 

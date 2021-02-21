@@ -112,16 +112,17 @@ class SettingsCommand extends command_1.BaseCommand {
         return `✅ ${utils_1.guildSettings[key]?.name} is set to ${parsed.display}`;
     }
     keys() {
-        let message = '\nYou can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n';
+        const message = [];
         for (const key in utils_1.guildSettings) {
             if (utils_1.guard.isGuildSetting(key)) {
                 const setting = utils_1.guildSettings[key];
                 if (setting !== undefined) {
-                    message += ` - **${setting.name}** \`settings set ${setting.key.toUpperCase()} [value]\` (${setting.type})\n`;
+                    message.push(` - **${setting.name}:** \`${setting.key.toUpperCase()}\` (${setting.type})`);
                 }
             }
         }
-        return message;
+        return 'You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n'
+            + message.sort().join('\n');
     }
 }
 exports.SettingsCommand = SettingsCommand;
