@@ -25,9 +25,19 @@ declare global {
 
     export type ClassOf<T> = Function & { prototype: T };
 
-    type DeepReadOnly<T> = {
-        readonly [P in keyof T]: DeepReadOnly<T[P]>
-    }
+    type x = DeepReadOnly<Date>;
+
+    type ValueType =
+        | ((...args: any) => any)
+        | Date
+        | number
+        | string
+        | boolean
+        | undefined
+        | null
+        | never;
+
+    type DeepReadOnly<T> = T extends ValueType ? T : { readonly [P in keyof T]: DeepReadOnly<T[P]> }
 
     export var console: never | Console;
 

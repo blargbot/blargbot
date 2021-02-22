@@ -16,10 +16,7 @@ export class EvalCommand extends BaseCommand {
     }
 
     public async eval(userId: string, code: string): Promise<string> {
-        if (code.startsWith(this.name))
-            code = code.substring(this.name.length);
-        if (code.startsWith('```') && code.endsWith('```'))
-            [code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [code];
+        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [, code];
 
         const { success, result } = await this.cluster.eval(userId, code);
         return success

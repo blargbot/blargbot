@@ -2,7 +2,7 @@ import { smartSplit } from '../humanize/smartSplit';
 
 export type FlagDefinition = {
     flag: string
-    word?: string,
+    word: string,
     desc?: string
 };
 

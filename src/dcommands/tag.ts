@@ -1,5 +1,8 @@
-import { EmbedField, Message, MessageFile, User } from 'eris';
-import { Cluster } from '../cluster';
+import { EmbedField, EmbedOptions, Message, MessageFile, User } from 'eris';
+import moment from 'moment';
+import { Duration } from 'moment-timezone';
+import { Cluster, ClusterUtilities } from '../cluster';
+import { SendPayload } from '../core/BaseUtilities';
 import { BaseCommand } from '../core/command';
 import { StoredTag } from '../core/database';
 import { bbtagUtil, commandTypes, humanize } from '../utils';
@@ -17,67 +20,67 @@ export class TagCommand extends BaseCommand {
                 subcommands: {
                     'create|add': {
                         parameters: '{tagName?} {content*}',
-                        execute: (msg, [tagName], _, raw) => this.create(msg, tagName, humanize.smartSplitSkip(raw, 2)),
+                        execute: (msg, [tagName], _, raw) => this.createTag(msg, tagName, humanize.smartSplitSkip(raw, 2)),
                         description: 'Creates a new tag with the content you give'
                     },
                     'edit': {
                         parameters: '{tagName?} {content*}',
-                        execute: (msg, [tagName], _, raw) => this.edit(msg, tagName, humanize.smartSplitSkip(raw, 2)),
+                        execute: (msg, [tagName], _, raw) => this.editTag(msg, tagName, humanize.smartSplitSkip(raw, 2)),
                         description: 'Edits an existing tag to have the content you specify'
                     },
                     'set': {
                         parameters: '{tagName?} {content*}',
-                        execute: (msg, [tagName], _, raw) => this.set(msg, tagName, humanize.smartSplitSkip(raw, 2)),
+                        execute: (msg, [tagName], _, raw) => this.setTag(msg, tagName, humanize.smartSplitSkip(raw, 2)),
                         description: 'Sets the tag to have the content you specify. If the tag doesnt exist it will be created.'
                     },
                     'delete|remove': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => this.delete(msg, tagName),
+                        execute: (msg, [tagName]) => this.deleteTag(msg, tagName),
                         description: 'Deletes an existing tag'
                     },
                     'rename': {
                         parameters: '{oldName?} {newName?}',
-                        execute: (msg, [oldName, newName]) => this.rename(msg, oldName, newName),
+                        execute: (msg, [oldName, newName]) => this.renameTag(msg, oldName, newName),
                         description: 'Renames the tag'
                     },
                     'raw': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => this.raw(msg, tagName),
+                        execute: (msg, [tagName]) => this.getRawTag(msg, tagName),
+                        description: ''
+                    },
+                    'list': {
+                        parameters: '{author*}',
+                        execute: (msg, [author]) => this.listTags(msg, author.join('')),
+                        description: ''
+                    },
+                    'search': {
+                        parameters: '{tagName?}',
+                        execute: (msg, [tagName]) => this.searchTags(msg, tagName),
                         description: ''
                     },
                     'permdelete': {
-                        parameters: '{tagName}',
-                        execute: () => '', //(msg, [tagName]) => '',
+                        parameters: '{tagName} {reason+}',
+                        execute: (msg, [tagName, reason]) => this.disableTag(msg, tagName, reason.join(' ')),
                         description: ''
                     },
                     'cooldown': {
                         parameters: '{tagName} {duration?:duration}',
-                        execute: () => '', //(msg, [tagName, duration]) => '',
+                        execute: (msg, [tagName, duration]) => this.setTagCooldown(msg, tagName, duration),
+                        description: ''
+                    },
+                    'author': {
+                        parameters: '{tagName?}',
+                        execute: (msg, [tagName]) => this.getTagAuthor(msg, tagName),
                         description: ''
                     },
                     'info': {
-                        parameters: '{tagName}',
-                        execute: () => '', //(msg, [tagName]) => '',
+                        parameters: '{tagName?}',
+                        execute: (msg, [tagName]) => this.getTagInfo(msg, tagName),
                         description: ''
                     },
                     'top': {
                         parameters: '',
                         execute: () => '', //(msg) => '',
-                        description: ''
-                    },
-                    'author': {
-                        parameters: '{tagName}',
-                        execute: () => '', //(msg, [tagName]) => '',
-                        description: ''
-                    },
-                    'search': {
-                        parameters: '{tagName}',
-                        execute: () => '', //(msg, [tagName]) => '',
-                        description: ''
-                    },
-                    'list': {
-                        parameters: '{author?}',
-                        execute: () => '', //(msg, [author]) => '',
                         description: ''
                     },
                     'favourite|favorite': {
@@ -129,7 +132,7 @@ export class TagCommand extends BaseCommand {
     }
 
 
-    public async create(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async createTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableTag(message, tagName);
         if (typeof match !== 'object')
             return match;
@@ -140,7 +143,7 @@ export class TagCommand extends BaseCommand {
         return await this.saveTag(message, 'set', match.tagName, content, match.tag);
     }
 
-    public async edit(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async editTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableTag(message, tagName);
         if (typeof match !== 'object')
             return match;
@@ -151,7 +154,7 @@ export class TagCommand extends BaseCommand {
         return await this.saveTag(message, 'set', match.tagName, content, match.tag);
     }
 
-    public async delete(message: Message, tagName: string | undefined): Promise<string | undefined> {
+    public async deleteTag(message: Message, tagName: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableTag(message, tagName);
         if (typeof match !== 'object')
             return match;
@@ -168,7 +171,7 @@ export class TagCommand extends BaseCommand {
         return `✅ The \`${match.tagName}\` tag is gone forever!`;
     }
 
-    public async set(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async setTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableTag(message, tagName);
         if (typeof match !== 'object')
             return match;
@@ -176,7 +179,7 @@ export class TagCommand extends BaseCommand {
         return await this.saveTag(message, 'set', match.tagName, content, match.tag);
     }
 
-    public async rename(message: Message, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
+    public async renameTag(message: Message, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
         const from = await this.requestEditableTag(message, oldName);
         if (typeof from !== 'object')
             return from;
@@ -204,21 +207,168 @@ export class TagCommand extends BaseCommand {
         return `✅ The \`${from.tagName}\` tag has been renamed to \`${to.tagName}\`.`;
     }
 
-    private async raw(message: Message, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
+    public async getRawTag(message: Message, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
         const match = await this.requestReadableTag(message, tagName);
         if (typeof match !== 'object')
             return match;
 
-        const response = `The raw code for \`${match.tagName}\` is:\n\`\`\`${match.tag.lang}\n${match.tag.content}\n\`\`\``;
+        const response = `The raw code for \`${match.name}\` is:\n\`\`\`${match.lang}\n${match.content}\n\`\`\``;
         return response.length < 2000
             ? response
             : {
-                content: `The raw code for \`${match.tagName}\` is attached`,
+                content: `The raw code for \`${match.name}\` is attached`,
                 files: {
-                    name: match.tag.name + '.bbtag',
-                    file: match.tag.content
+                    name: match.name + '.bbtag',
+                    file: match.content
                 }
             };
+    }
+
+    public async listTags(message: Message, author?: string): Promise<string | undefined> {
+        const args: Parameters<ClusterUtilities['displayPaged']> = [
+            message.channel,
+            message.author,
+            ' tags',
+            async (skip, take) => await this.database.tags.list(skip, take),
+            async () => await this.database.tags.count(),
+            100,
+            ', '
+        ];
+
+        if (author) {
+            const user = await this.util.getUser(message, author);
+            if (!user)
+                return;
+
+            args[2] += ` made by **${humanize.fullName(user)}**`;
+            args[3] = async (skip, take) => await this.database.tags.byAuthor(user.id, skip, take);
+            args[4] = async () => await this.database.tags.byAuthorCount(user.id);
+        }
+
+        switch (await this.util.displayPaged(...args)) {
+            case false: return '❌ No results found!';
+            case true: return '✅ I hope you found what you were looking for!';
+            case null: return undefined;
+        }
+    }
+
+    public async searchTags(message: Message, query?: string): Promise<string | undefined> {
+        if (query === undefined || query?.length === 0)
+            query = (await this.util.awaitQuery(message.channel, message.author, 'What would you like to search for?'))?.content;
+        if (query === undefined || query?.length === 0)
+            return;
+
+        const _query = query;
+        const result = await this.util.displayPaged(
+            message.channel,
+            message.author,
+            ` tags matching \`${query}\``,
+            (skip, take) => this.database.tags.search(_query, skip, take),
+            () => this.database.tags.searchCount(_query),
+            100,
+            ', ');
+
+        switch (result) {
+            case false: return '❌ No results found!';
+            case true: return '✅ I hope you found what you were looking for!';
+            case null: return undefined;
+        }
+    }
+
+    public async disableTag(message: Message, tagName: string, reason: string): Promise<string | undefined> {
+        tagName = normalizeName(tagName);
+        if (!await this.database.tags.disable(tagName, message.author.id, reason))
+            return `❌ The \`${tagName}\` tag doesn\'t exist!`;
+        return `✅ The \`${tagName}\` tag has been deleted`;
+    }
+
+    public async setTagCooldown(message: Message, tagName: string, cooldown?: Duration): Promise<string | undefined> {
+        if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
+            return '❌ The cooldown must be greater than 0ms';
+
+        const match = await this.requestEditableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        if (match.tag === undefined)
+            return `❌ The \`${match.tagName}\` tag doesn\'t exist!`;
+
+        await this.database.tags.setCooldown(match.tagName, cooldown?.asMilliseconds());
+        cooldown ??= moment.duration();
+        return `✅ The \`${match.tagName}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
+    }
+
+    public async getTagAuthor(message: Message, tagName: string | undefined): Promise<string | undefined> {
+        const match = await this.requestReadableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        const response = [];
+        const author = await this.database.users.get(match.author);
+        response.push(`The tag \`${match.name}\` was made by **${humanize.fullName(author)}**`);
+        if (match.authorizer !== undefined && match.authorizer !== match.author) {
+            const authorizer = await this.database.users.get(match.authorizer);
+            response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
+        }
+
+        return response.join(' ');
+    }
+
+    public async getTagInfo(message: Message, tagName: string | undefined): Promise<string | SendPayload | undefined> {
+        const match = await this.requestReadableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        const fields: EmbedField[] = [];
+        const embed: EmbedOptions = {
+            title: `__**Tag | ${match.name}**__`,
+            fields: fields,
+            color: 978212,
+            timestamp: new Date(),
+            footer: {
+                text: humanize.fullName(message.author),
+                icon_url: message.author.avatarURL
+            }
+        };
+
+        const favouriteCount = Object.values(match.favourites ?? {}).filter(v => v).length;
+        const author = await this.database.users.get(match.author);
+        embed.author = {
+            name: humanize.fullName(author),
+            icon_url: author?.avatarURL
+        };
+
+        fields.push({
+            name: 'Author',
+            value: `${humanize.fullName(author)} (${author?.userid ?? match.author})`,
+            inline: true
+        });
+
+        if (match.authorizer !== undefined && match.authorizer !== match.author) {
+            const authorizer = await this.database.users.get(match.authorizer);
+            fields.push({
+                name: 'Authorizer',
+                value: `${humanize.fullName(authorizer)} (${authorizer?.userid ?? match.authorizer})`,
+                inline: true
+            });
+        }
+
+        if (match.cooldown !== undefined)
+            fields.push({ name: 'Cooldown', value: humanize.duration(moment.duration(match.cooldown)), inline: true });
+
+        fields.push({ name: 'Last modified', value: moment(match.lastmodified.valueOf()).format('LLLL'), inline: true });
+        fields.push({ name: 'Use count', value: `${match.uses} time${match.uses == 1 ? '' : 's'}`, inline: true });
+        fields.push({ name: 'Favourite count', value: `${favouriteCount} time${favouriteCount == 1 ? '' : 's'}`, inline: true });
+
+        if (match.reports !== undefined && match.reports > 0)
+            fields.push({ name: '⚠️ Reports ⚠️', value: `${match.reports} time${match.reports == 1 ? '' : 's'}**`, inline: true });
+
+        if (match.flags !== undefined && match.flags.length > 0) {
+            const flags = match.flags.map(flag => `\`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc ?? 'No description.'}`);
+            fields.push({ name: 'Flags', value: flags.join('\n') });
+        }
+
+        return { embed };
     }
 
     private async saveTag(message: Message, operation: string, tagName: string, content: string | undefined, oldTag?: DeepReadOnly<StoredTag>): Promise<string | undefined> {
@@ -257,7 +407,7 @@ export class TagCommand extends BaseCommand {
                 return name;
         }
 
-        name = (await this.util.awaitQuery(message, query))?.content;
+        name = (await this.util.awaitQuery(message.channel, message.author, query))?.content;
         if (name === undefined)
             return undefined;
 
@@ -269,7 +419,7 @@ export class TagCommand extends BaseCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        content = (await this.util.awaitQuery(message, 'Enter the tag\'s contents:'))?.content;
+        content = (await this.util.awaitQuery(message.channel, message.author, 'Enter the tag\'s contents:'))?.content;
         if (content === undefined)
             return undefined;
 
@@ -296,7 +446,7 @@ export class TagCommand extends BaseCommand {
     private async requestReadableTag(
         message: Message,
         tagName: string | undefined
-    ): Promise<{ tagName: string, tag: DeepReadOnly<StoredTag> } | string | undefined> {
+    ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
         const match = await this.requestTag(message, tagName);
         if (typeof match !== 'object')
             return match;
@@ -304,7 +454,7 @@ export class TagCommand extends BaseCommand {
         if (match.tag === undefined)
             return `❌ The \`${tagName}\` tag doesn\'t exist!`;
 
-        return { tagName: match.tagName, tag: match.tag };
+        return match.tag;
     }
 
     private async requestTag(

@@ -11,7 +11,7 @@ export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTa
     }
 
     public async get<K extends KnownStoredVars['varname']>(key: K): Promise<DeepReadOnly<GetStoredVar<K>> | undefined> {
-        return <GetStoredVar<K> | undefined>await this.rget(key);
+        return <DeepReadOnly<GetStoredVar<K>> | undefined>await this.rget(key);
     }
 
     public async set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean> {

@@ -16,6 +16,7 @@ declare module 'rethinkdb' {
     }
     interface Expression<T> {
         append<E>(prop: E): Expression<E[]>;
+        match: T extends string ? (re2: string) => Expression<string> : never;
     }
 
     interface Row extends Expression<any> {

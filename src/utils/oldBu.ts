@@ -1,9 +1,8 @@
 import moment from 'moment';
-import avatars from '../../res/avatars.json';
 import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
-import { Client as DiscordClient, GuildTextableChannel, Message, Constants, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
+import { Client as DiscordClient, GuildTextableChannel, Message, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
 import { fafo, getRange, humanize, randInt, SubtagVariableType } from '.';
 import isSafeRegex from 'safe-regex';
 import request from 'request';
@@ -14,6 +13,7 @@ import { nfkd } from 'unorm';
 import { Engine as BBEngine, limits, RuntimeContext as BBContext, SubtagCall } from '../core/bbtag';
 import { ClusterUtilities } from '../cluster';
 import { StoredGuild, StoredTag } from '../core/database';
+import { defaultStaff, modlogColour } from './constants';
 
 const TagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
@@ -45,143 +45,8 @@ export const oldBu = {
     stats: {} as Record<string, unknown>,
     cleverStats: {},
     startTime: moment(),
-    avatars: avatars,//JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'res', `avatars${config.general.isbeta ? '2' : ''}.json`), 'utf8'));
     emitter: new EventEmitter(),
     events: new EventEmitter(),
-    settings: {
-        makelogs: {
-            name: 'Make Chatlogs',
-            desc: 'Whether to record chat logs or not.',
-            type: 'bool'
-        },
-        cahnsfw: {
-            name: 'Is CAH NSFW',
-            desc: 'Whether \'cah\' can only be done in nsfw channels or not.',
-            type: 'bool'
-        },
-        deletenotif: {
-            name: 'Delete Notifications',
-            desc: 'If enabled, notifies you if a user deleted their command.',
-            type: 'bool'
-        },
-        greeting: {
-            name: 'Greeting Message',
-            desc: 'What to say to new users when they join. You can also use the <code>greet</code> command',
-            type: 'string'
-        },
-        farewell: {
-            name: 'Farewell Message',
-            desc: 'What to say when a user leaves. You can also use the <code>farewell</code> command',
-            type: 'string'
-        },
-        modlog: {
-            name: 'Modlog Channel',
-            desc: 'The id of the modlog channel. You can also use the <code>modlog</code> command',
-            type: 'string'
-        },
-        mutedrole: {
-            name: 'Muted Role',
-            desc: 'The id of the muted role.',
-            type: 'string'
-        },
-        tableflip: {
-            name: 'Tableflips',
-            desc: 'Whether the bot should respond to tableflips/unflips.',
-            type: 'bool'
-        },
-        antimention: {
-            name: 'Anti-Mention',
-            desc: 'The number of unique mentions required to warrant a ban (for anti-mention spam). Set to \'0\' to disable. Recommended: 25',
-            type: 'int'
-        },
-        dmhelp: {
-            name: 'DM Help',
-            desc: 'Whether or not to dm help messages or output them in channels',
-            type: 'bool'
-        },
-        permoverride: {
-            name: 'Permission Override',
-            desc: 'Whether or not specific permissions override role requirement',
-            type: 'bool'
-        },
-        staffperms: {
-            name: 'Staff Permissions',
-            desc: 'The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <a href=https://discordapi.com/permissions.html>here</a> for a permission calculator.',
-            type: 'int'
-        },
-        kickoverride: {
-            name: 'Kick Override',
-            desc: 'Same as staffperms, but allows users to use the kick command regardless of permissions',
-            type: 'int'
-        },
-        banoverride: {
-            name: 'Ban Override',
-            desc: 'Same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions',
-            type: 'int'
-        },
-        banat: {
-            name: 'Ban At',
-            desc: 'The number of warnings before a ban. Set to 0 or below to disable.',
-            type: 'int'
-        },
-        kickat: {
-            name: 'Kick At',
-            desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
-            type: 'int'
-        },
-        adminrole: {
-            name: 'Admin Role Name',
-            desc: 'The name of the Admin role.',
-            type: 'string'
-        },
-        nocleverbot: {
-            name: 'No Cleverbot',
-            desc: 'Disables cleverbot functionality',
-            type: 'bool'
-        },
-        disableeveryone: {
-            name: 'Disable Everyone Pings',
-            desc: 'Disables everyone pings in custom commands.',
-            type: 'bool'
-        },
-        disablenoperms: {
-            name: 'Disable No Perms',
-            desc: 'Disables the \'You need the role to use this command\' message.',
-            type: 'bool'
-        },
-        social: {
-            name: 'Enable Social Commands',
-            desc: 'Enables social commands.',
-            type: 'bool'
-        }
-    },
-    CAT_ID: config.discord.users.owner,
-    avatarColours: [
-        0x2df952,
-        0x2df9eb,
-        0x2d6ef9,
-        0x852df9,
-        0xf92dd3,
-        0xf92d3b,
-        0xf9b82d,
-        0xa0f92d
-    ],
-    defaultStaff: Constants.Permissions.kickMembers +
-        Constants.Permissions.banMembers +
-        Constants.Permissions.administrator +
-        Constants.Permissions.manageChannels +
-        Constants.Permissions.manageGuild +
-        Constants.Permissions.manageMessages,
-    ModLogColour: {
-        BAN: 0xcc0c1c,
-        UNBAN: 0x79add1,
-        SOFTBAN: 0xffee02,
-        KICK: 0xdb7b1c,
-        UNMUTE: 0x1cdb68,
-        MUTE: 0xd80f66,
-        WARN: 0xd1be79,
-        PARDON: 0x79d196
-    },
     tagVariableScopes: [
         {
             name: 'Server',
@@ -281,7 +146,7 @@ export const oldBu = {
                     if (violation == true) { // Uh oh, they did a bad!
                         const res = await util.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
                         if (cens.weight > 0) {
-                            await util.moderation.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', oldBu.ModLogColour.WARN, [{
+                            await util.moderation.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', modlogColour.WARN, [{
                                 name: 'Warnings',
                                 value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
                                 inline: true
@@ -429,7 +294,7 @@ export const oldBu = {
         if (!member)
             return false;
 
-        if (override && ((member.id === oldBu.CAT_ID) ||
+        if (override && ((member.id === config.discord.users.owner) ||
             member.guild.ownerID == member.id ||
             member.permissions.json.administrator)) {
             return true;
@@ -478,7 +343,7 @@ export const oldBu = {
         if (!member)
             return false;
 
-        if (override && ((member.id === oldBu.CAT_ID) ||
+        if (override && ((member.id === config.discord.users.owner) ||
             member.guild.ownerID == member.id ||
             member.permissions.json.administrator)) {
             return true;
@@ -564,7 +429,7 @@ export const oldBu = {
         return memory.rss / 1024 / 1024;
     },
     comparePerms(m: Member, allow: number): boolean {
-        if (!allow) allow = oldBu.defaultStaff;
+        if (!allow) allow = defaultStaff;
         const newPerm = new Permission(allow, 0);
         for (const key in newPerm.json) {
             if (m.permissions.has(key)) {

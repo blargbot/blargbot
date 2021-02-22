@@ -193,9 +193,13 @@ export interface StoredTag {
     flags?: FlagDefinition[]
     cooldown?: number;
     lastuse?: Date;
-    lastmodified?: Date;
+    lastmodified: Date;
     deleted?: boolean;
     lang?: string;
+    deleter?: string;
+    reason?: string;
+    favourites?: Record<string, boolean | undefined>;
+    reports?: number;
 }
 
 export interface StoredGuildSettings {
@@ -368,13 +372,21 @@ export interface EventsTable {
 }
 
 export interface TagsTable {
+    list(skip: number, take: number): Promise<readonly string[]>;
+    count(): Promise<number>;
+    byAuthor(userId: string, skip: number, take: number): Promise<readonly string[]>;
+    byAuthorCount(userId: string): Promise<number>;
+    search(partialName: string, skip: number, take: number): Promise<readonly string[]>;
+    searchCount(partialName: string): Promise<number>;
     delete(name: string): Promise<boolean>;
+    disable(tagName: string, userId: string, reason: string): Promise<boolean>;
     get(tagName: string): Promise<DeepReadOnly<StoredTag> | undefined>;
     set(tag: StoredTag): Promise<boolean>;
     set(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
     add(tag: StoredTag): Promise<boolean>;
     add(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;
+    setCooldown(tagName: string, cooldown: number | undefined): Promise<boolean>;
 }
 
 export interface ChatlogsTable {

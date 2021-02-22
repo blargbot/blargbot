@@ -2,7 +2,7 @@ import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
 import { AnyChannel, Guild, GuildTextableChannel, Member, Message, Permission, Role, TextableChannel, User } from 'eris';
-import { commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
+import { codeBlock, commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
 import { MessageIdQueue } from '../structures/MessageIdQueue';
@@ -221,6 +221,45 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
+    public async displayPaged(
+        channel: TextableChannel,
+        user: User,
+        filterText: string,
+        getItems: (skip: number, take: number) => Promise<readonly string[]>,
+        itemCount: () => Promise<number>,
+        pageSize = 20,
+        separator = '\n'
+    ): Promise<boolean | null> {
+        let page = 0;
+        while (!isNaN(page)) {
+            const items = await getItems(page * pageSize, pageSize);
+            if (items.length === 0)
+                return false;
+            const total = await itemCount();
+            const pageCount = Math.ceil(total / pageSize);
+            const query = await this.createQuery(channel, user,
+                `Found ${items.length}/${total}${filterText}.\n` +
+                `Page **#${page + 1}/${pageCount}**\n` +
+                `${codeBlock(items.join(separator), 'fix')}\n` +
+                `Type a number between **1 and ${pageCount}** to view that page, or type \`c\` to cancel.`,
+                reply => {
+                    page = parse.int(reply.content) - 1;
+                    return (page >= 0 && page < pageCount)
+                        || reply.content.toLowerCase() === 'c';
+                });
+
+            const response = await query.response;
+            try {
+                await query.prompt?.delete();
+            } catch (err) {
+                this.logger.error(`Failed to paging prompt (channel: ${query.prompt?.channel.id} message: ${query.prompt?.id}):`, err);
+            }
+            if (!response)
+                return null;
+        }
+        return true;
+    }
+
     public async createLookup<T>(msg: Pick<Message, 'author' | 'channel' | 'content'>, type: string, matches: LookupMatch<T>[], args: FindEntityOptions = {}): Promise<T | null> {
         const lookupList = matches.slice(0, 20);
         let outputString = '';
@@ -232,7 +271,7 @@ export class ClusterUtilities extends BaseUtilities {
             if (args.onSendCallback)
                 args.onSendCallback();
 
-            const query = await this.createQuery(msg,
+            const query = await this.createQuery(msg.channel, msg.author,
                 `Multiple ${type}s found! Please select one from the list.\`\`\`prolog` +
                 `\n${outputString}${moreLookup}--------------------` +
                 '\nC.cancel query```' +
@@ -263,52 +302,56 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async awaitQuery(
-        msg: Pick<Message, 'channel' | 'content' | 'author'>,
+        channel: TextableChannel,
+        user: User,
         content: SendPayload,
         check?: ((message: Message) => boolean),
         timeoutMS?: number,
         label?: string
     ): Promise<Message<TextableChannel> | null> {
-        const query = await this.createQuery(msg, content, check, timeoutMS, label);
+        const query = await this.createQuery(channel, user, content, check, timeoutMS, label);
         return await query.response;
     }
 
     public async createQuery(
-        msg: Pick<Message, 'channel' | 'content' | 'author'>,
+        channel: TextableChannel,
+        user: User,
         content: SendPayload,
         check?: ((message: Message) => boolean),
         timeoutMS = 300000,
         label?: string
     ): Promise<MessagePrompt> {
         const timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
-        return this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
+        return this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
     }
 
     public async awaitPrompt(
-        msg: Pick<Message, 'channel' | 'content' | 'author'>,
+        channel: TextableChannel,
+        user: User,
         content: SendPayload,
         check?: ((message: Message) => boolean),
         timeoutMS?: number,
         timeoutMessage?: SendPayload
     ): Promise<Message<TextableChannel> | null> {
-        const prompt = await this.createPrompt(msg, content, check, timeoutMS, timeoutMessage);
+        const prompt = await this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
         return await prompt.response;
     }
 
     public async createPrompt(
-        msg: Pick<Message, 'channel' | 'content' | 'author'>,
+        channel: TextableChannel,
+        user: User,
         content: SendPayload,
         check?: ((message: Message) => boolean),
         timeoutMS = 300000,
         timeoutMessage?: SendPayload
     ): Promise<MessagePrompt> {
-        const prompt = await this.send(msg, content);
-        const response = this.messageAwaiter.wait([msg.channel.id], [msg.author.id], timeoutMS, check);
+        const prompt = await this.send(channel, content);
+        const response = this.messageAwaiter.wait([channel.id], [user.id], timeoutMS, check);
 
         if (timeoutMessage) {
             void response.then(async m => {
                 if (m === null)
-                    await this.send(msg, timeoutMessage);
+                    await this.send(channel, timeoutMessage);
             });
         }
 

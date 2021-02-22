@@ -4,10 +4,10 @@ export function duration(text: string, fallback: Duration): Duration;
 export function duration(text: string, fallback?: Duration): Duration | undefined;
 export function duration(text: string, fallback?: Duration): Duration | undefined {
     const durations = [
-        find(text, /([0-9]+) ?(day|days|d)/i, 'd'),
-        find(text, /([0-9]+) ?(hours|hour|h)/i, 'h'),
-        find(text, /([0-9]+) ?(minutes|minute|mins|min|m)/i, 'm'),
-        find(text, /((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)/i, 's')
+        find(text, /([0-9]+) ?(day|days|d)\b/i, 'd'),
+        find(text, /([0-9]+) ?(hours|hour|h)\b/i, 'h'),
+        find(text, /([0-9]+) ?(minutes|minute|mins|min|m)\b/i, 'm'),
+        find(text, /((?:[0-9]*[.])?[0-9]+) ?(seconds|second|secs|sec|s)\b/i, 's')
     ].filter((d): d is Duration => d !== undefined);
     if (durations.length === 0)
         return fallback;

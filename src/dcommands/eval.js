@@ -16,10 +16,7 @@ class EvalCommand extends command_1.BaseCommand {
         });
     }
     async eval(userId, code) {
-        if (code.startsWith(this.name))
-            code = code.substring(this.name.length);
-        if (code.startsWith('```') && code.endsWith('```'))
-            [code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [code];
+        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [, code];
         const { success, result } = await this.cluster.eval(userId, code);
         return success
             ? `Input:${utils_1.codeBlock(code, 'js')}Output:${utils_1.codeBlock(result)}`
