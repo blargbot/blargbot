@@ -95,13 +95,14 @@
         "yarn": "^1.22.10"
     },
     "scripts": {
-        "start": "node index.js",
+        "start": "node ./out/index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
-        "check": "eslint \"**/*.ts\" && tsc --noemit",
+        "check": "yarn run lint && yarn run build:check",
         "build": "tsc",
         "build:watch": "tsc -w",
-        "lint": "eslint \"**/*.ts\"",
-        "lint-fix": "eslint \"**/*.ts\" --fix"
+        "build:check": "tsc --noemit",
+        "lint": "eslint --ext .js,.ts,.vue ./",
+        "lint-fix": "eslint --ext .js,.ts,.vue ./ --fix"
     },
     "repository": {
         "type": "git",

@@ -6,11 +6,46 @@
         "jest": false,
         "jquery": false
     },
-    "parser": "@typescript-eslint/parser",
-    "extends": [
-        "plugin:vue/essential",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking"
+    "extends": "plugin:vue/essential",
+    "overrides": [
+        {
+            "files": [
+                "*.ts",
+                "*.ts"
+            ],
+            "parser": "@typescript-eslint/parser",
+            "parserOptions": {
+                "project": "./tsconfig.json"
+            },
+            "extends": [
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@typescript-eslint/recommended-requiring-type-checking"
+            ],
+            "plugins": [
+                "@typescript-eslint"
+            ],
+            "rules": {
+                "@typescript-eslint/no-unused-vars": [
+                    "error",
+                    {
+                        "argsIgnorePattern": "^_"
+                    }
+                ],
+                "@typescript-eslint/unbound-method": "off",
+                "@typescript-eslint/no-unsafe-return": "off",
+                "@typescript-eslint/no-unsafe-call": "off",
+                "@typescript-eslint/no-unsafe-member-access": "off",
+                "@typescript-eslint/no-unsafe-assignment": "off",
+                "@typescript-eslint/restrict-template-expressions": "off",
+                "@typescript-eslint/explicit-member-accessibility": "error",
+                "@typescript-eslint/explicit-function-return-type": [
+                    "error",
+                    {
+                        "allowExpressions": true
+                    }
+                ]
+            }
+        }
     ],
     "parserOptions": {
         "ecmaVersion": 8,
@@ -41,7 +76,6 @@
         }
     },
     "plugins": [
-        "@typescript-eslint",
         "vue"
     ],
     "rules": {
@@ -64,25 +98,6 @@
         "no-global-assign": "warn",
         "no-console": "error",
         "comma-dangle": "warn",
-        "no-trailing-spaces": "warn",
-        "@typescript-eslint/no-unused-vars": [
-            "error",
-            {
-                "argsIgnorePattern": "^_"
-            }
-        ],
-        "@typescript-eslint/unbound-method": "off",
-        "@typescript-eslint/no-unsafe-return": "off",
-        "@typescript-eslint/no-unsafe-call": "off",
-        "@typescript-eslint/no-unsafe-member-access": "off",
-        "@typescript-eslint/no-unsafe-assignment": "off",
-        "@typescript-eslint/restrict-template-expressions": "off",
-        "@typescript-eslint/explicit-member-accessibility": "error",
-        "@typescript-eslint/explicit-function-return-type": [
-            "error",
-            {
-                "allowExpressions": true
-            }
-        ]
+        "no-trailing-spaces": "warn"
     }
 }

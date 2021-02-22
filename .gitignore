@@ -25,6 +25,7 @@ servers.json
 *.diff
 *.log
 eeek/*
+out/*
 out.png
 music/*
 img/avatars/*
@@ -41,7 +42,6 @@ testgithub.js
 processwhite.js
 kek
 jsondiff.js
-!colors.json
 .nuxt/
 **/*.js
 **/*.js.map
