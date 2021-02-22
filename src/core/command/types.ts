@@ -40,6 +40,8 @@ export interface CommandHandlerDefinition {
     readonly execute: (message: Message, args: any[], flags: FlagResult, raw: string) => Promise<CommandResult> | CommandResult
     readonly allowOverflow?: boolean;
     readonly dontBind?: boolean;
+    readonly useFlags?: boolean;
+    readonly strictFlags?: boolean;
 }
 
 export interface SubcommandDefinitionHolder {
@@ -68,7 +70,7 @@ export interface CommandLiteralParameter {
 export interface CompiledCommand {
     readonly structure: DeepReadOnly<CommandTreeNode>;
     readonly usage: ReadonlyArray<readonly CommandParameter[]>;
-    readonly execute: (message: Message, flags: FlagResult, raw: string) => Promise<CommandResult> | CommandResult;
+    readonly execute: (message: Message, args: string[], raw: string) => Promise<CommandResult> | CommandResult;
     // readonly getHandler: (message: Message, flags: FlagResult, raw: string) => CommandHandler | CommandHandler[];
 }
 
@@ -85,7 +87,7 @@ export interface CommandTreeNode {
 export interface CommandHandler {
     readonly description: string;
     readonly parameters: readonly CommandParameter[];
-    readonly execute: (message: Message, flags: FlagResult, raw: string) => Promise<CommandResult> | CommandResult;
+    readonly execute: (message: Message, args: string[], raw: string) => Promise<CommandResult> | CommandResult;
 }
 
 export interface VariableCommandHandlerTreeNode {

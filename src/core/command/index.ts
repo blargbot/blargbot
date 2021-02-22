@@ -1,6 +1,6 @@
 import { Message, MessageFile } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
-import { CommandType, FlagDefinition, FlagResult, parse } from '../../utils';
+import { CommandType, FlagDefinition } from '../../utils';
 import { Database } from '../database';
 import { CommandDefinition, CommandOptions, CommandResult, CompiledCommand } from './types';
 import { Client as ErisClient } from 'eris';
@@ -59,26 +59,25 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         this.#locks = {};
         this.#cooldowns = {};
 
-        this.#runner = compileCommand(this.handler);
+        this.#runner = compileCommand(this.handler, this.flags);
         this.usage = this.#runner.usage.map(u => u.map(p => p.display).join(' ')).join('\n');
     }
 
     public async execute(message: Message, args: string[], raw: string): Promise<void> {
-        const flags = parse.flags(this.flags, args);
         try {
-            let result = await this.preExecute(message, flags, raw);
+            let result = await this.preExecute(message, args, raw);
             if (result === undefined)
-                result = await this.#runner.execute(message, flags, raw);
+                result = await this.#runner.execute(message, args, raw);
             const [payload, files] = splitResult(result);
             if (payload !== undefined || files !== undefined)
                 await this.util.send(message, payload, files);
         }
         finally {
-            await this.postExecute(message, flags, raw);
+            await this.postExecute(message, args, raw);
         }
     }
 
-    protected preExecute(message: Message, _args: FlagResult, _raw: string): Promise<CommandResult | null> | CommandResult | null {
+    protected preExecute(message: Message, _args: string[], _raw: string): Promise<CommandResult | null> | CommandResult | null {
         for (const getKey of this.lockKeys) {
             const lock = this.#locks[getKey(message)] ??= { times: 0 };
             lock.times++;
@@ -101,7 +100,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         }
     }
 
-    protected postExecute(message: Message, _args: FlagResult, _raw: string): Promise<void> | void {
+    protected postExecute(message: Message, _args: string[], _raw: string): Promise<void> | void {
         for (const getKey of this.lockKeys)
             delete this.#locks[getKey(message)];
 

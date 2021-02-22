@@ -5,7 +5,7 @@ import { Cluster, ClusterUtilities } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
 import { BaseCommand } from '../core/command';
 import { StoredTag } from '../core/database';
-import { bbtagUtil, commandTypes, humanize } from '../utils';
+import { bbtagUtil, codeBlock, commandTypes, humanize, parse } from '../utils';
 
 export class TagCommand extends BaseCommand {
     public constructor(cluster: Cluster) {
@@ -18,6 +18,16 @@ export class TagCommand extends BaseCommand {
                 parameters: '{tagName} {args*}',
                 execute: () => '', //(msg, [tagName, ...args]) => '',
                 subcommands: {
+                    'test|eval|exec|vtest': {
+                        parameters: 'debug? {code+}',
+                        execute: () => '', //(msg, [debug, ...code]) => '',
+                        description: ''
+                    },
+                    'debug': {
+                        parameters: '{tagName} {args*}',
+                        execute: () => '', //(msg, [tagName, ...args]) => '',
+                        description: ''
+                    },
                     'create|add': {
                         parameters: '{tagName?} {content*}',
                         execute: (msg, [tagName], _, raw) => this.createTag(msg, tagName, humanize.smartSplitSkip(raw, 2)),
@@ -80,49 +90,43 @@ export class TagCommand extends BaseCommand {
                     },
                     'top': {
                         parameters: '',
-                        execute: () => '', //(msg) => '',
+                        execute: () => this.getTopTags(),
                         description: ''
                     },
-                    'favourite|favorite': {
-                        parameters: '{tagName}',
-                        execute: () => '', //(msg, [tagName]) => '',
+                    'favourite|favorite|favourites|favorites': {
+                        parameters: '{tagName?}',
+                        execute: (msg, [tagName]) => typeof tagName === 'string'
+                            ? this.toggleFavouriteTag(msg, tagName)
+                            : this.listFavouriteTags(msg),
                         description: ''
                     },
                     'report': {
-                        parameters: '{tagName} {reason+}',
-                        execute: () => '', //(msg, [tagName, ...reason]) => '',
+                        parameters: '{tagName} {reason*}',
+                        execute: (msg, [tagName, reason]) => this.reportTag(msg, tagName, reason.join(' ')),
                         description: ''
                     },
-                    'test|eval|exec|vtest': {
-                        parameters: 'debug? {code+}',
-                        execute: () => '', //(msg, [debug, ...code]) => '',
-                        description: ''
-                    },
-                    'debug': {
-                        parameters: '{tagName} {args*}',
-                        execute: () => '', //(msg, [tagName, ...args]) => '',
-                        description: ''
-                    },
-                    'flag': {
+                    'flag|flags': {
                         parameters: '{tagName}',
-                        execute: () => '', //(msg, [tagName]) => '',
-                        description: '',
+                        execute: (msg, [tagName]) => this.getTagFlags(msg, tagName),
+                        description: 'Lists the flags the tag accepts',
                         subcommands: {
                             'create|add': {
                                 parameters: '{tagName} {flags+}',
-                                execute: () => '', //(msg, [tagName, ...flags]) => '',
-                                description: ''
+                                execute: (msg, [tagName, flags]) => this.addTagFlags(msg, tagName, flags),
+                                description: 'Adds multiple flags to your tag. Flags should be of the form `-<f> <flag> [flag description]`\n' +
+                                    'e.g. `b!t flags add mytag -c category The category you want to use -n name Your name`'
                             },
                             'delete|remove': {
                                 parameters: '{tagName} {flags+}',
-                                execute: () => '', //(msg, [tagName, ...flags]) => '',
-                                description: ''
+                                execute: (msg, [tagName, flags]) => this.removeTagFlags(msg, tagName, flags),
+                                description: 'Removes multiple flags from your tag. Flags should be of the form `-<f>`\n' +
+                                    'e.g. `b!t flags remove mytag -c -n`'
                             }
                         }
                     },
                     'setlang': {
                         parameters: '{tagName} {language}',
-                        execute: () => '', //(msg, [tagName, language]) => '',
+                        execute: (msg, [tagName, language]) => this.setTagLanguage(msg, tagName, language),
                         description: ''
                     }
                 }
@@ -131,16 +135,12 @@ export class TagCommand extends BaseCommand {
 
     }
 
-
     public async createTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestEditableTag(message, tagName);
+        const match = await this.requestCreatableTag(message, tagName);
         if (typeof match !== 'object')
             return match;
 
-        if (match.tag !== undefined)
-            return `❌ The \`${match.tagName}\` tag already exists!`;
-
-        return await this.saveTag(message, 'set', match.tagName, content, match.tag);
+        return await this.saveTag(message, 'set', match.name, content, undefined);
     }
 
     public async editTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -148,10 +148,7 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (match.tag === undefined)
-            return `❌ The \`${match.tagName}\` tag doesn\'t exist!`;
-
-        return await this.saveTag(message, 'set', match.tagName, content, match.tag);
+        return await this.saveTag(message, 'set', match.name, content, match);
     }
 
     public async deleteTag(message: Message, tagName: string | undefined): Promise<string | undefined> {
@@ -159,24 +156,21 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (match.tag === undefined)
-            return `❌ The \`${match.tagName}\` tag doesn\'t exist!`;
-
-        await this.database.tags.delete(match.tagName);
+        await this.database.tags.delete(match.name);
         void this.logChange(TagChangeAction.DELETE, message.author, message.id, {
-            author: `${(await this.database.users.get(match.tag.author))?.username} (${match.tag.author})`,
-            tag: match.tagName,
-            content: match.tag.content
+            author: `${(await this.database.users.get(match.author))?.username} (${match.author})`,
+            tag: match.name,
+            content: match.content
         });
-        return `✅ The \`${match.tagName}\` tag is gone forever!`;
+        return `✅ The \`${match.name}\` tag is gone forever!`;
     }
 
     public async setTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestEditableTag(message, tagName);
+        const match = await this.requestSettableTag(message, tagName);
         if (typeof match !== 'object')
             return match;
 
-        return await this.saveTag(message, 'set', match.tagName, content, match.tag);
+        return await this.saveTag(message, 'set', match.name, content, match.tag);
     }
 
     public async renameTag(message: Message, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
@@ -184,27 +178,21 @@ export class TagCommand extends BaseCommand {
         if (typeof from !== 'object')
             return from;
 
-        if (from.tag === undefined)
-            return `❌ The \`${from.tagName}\` tag doesn\'t exist!`;
-
-        const to = await this.requestEditableTag(message, newName);
+        const to = await this.requestCreatableTag(message, newName);
         if (typeof to !== 'object')
             return to;
 
-        if (to.tag !== undefined)
-            return `❌ The \`${to.tagName}\` tag doesn\'t exist!`;
-
-        await this.database.tags.delete(from.tagName);
+        await this.database.tags.delete(from.name);
         await this.database.tags.add({
-            ...from.tag,
-            name: to.tagName
+            ...from,
+            name: to.name
         });
 
         void this.logChange(TagChangeAction.RENAME, message.author, message.id, {
-            oldName: from.tagName,
-            newName: to.tagName
+            oldName: from.name,
+            newName: to.name
         });
-        return `✅ The \`${from.tagName}\` tag has been renamed to \`${to.tagName}\`.`;
+        return `✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`;
     }
 
     public async getRawTag(message: Message, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
@@ -290,12 +278,9 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (match.tag === undefined)
-            return `❌ The \`${match.tagName}\` tag doesn\'t exist!`;
-
-        await this.database.tags.setCooldown(match.tagName, cooldown?.asMilliseconds());
+        await this.database.tags.setCooldown(match.name, cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
-        return `✅ The \`${match.tagName}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
+        return `✅ The \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
 
     public async getTagAuthor(message: Message, tagName: string | undefined): Promise<string | undefined> {
@@ -357,18 +342,144 @@ export class TagCommand extends BaseCommand {
             fields.push({ name: 'Cooldown', value: humanize.duration(moment.duration(match.cooldown)), inline: true });
 
         fields.push({ name: 'Last modified', value: moment(match.lastmodified.valueOf()).format('LLLL'), inline: true });
-        fields.push({ name: 'Use count', value: `${match.uses} time${match.uses == 1 ? '' : 's'}`, inline: true });
-        fields.push({ name: 'Favourite count', value: `${favouriteCount} time${favouriteCount == 1 ? '' : 's'}`, inline: true });
+        fields.push({ name: 'Used', value: `${match.uses} time${match.uses == 1 ? '' : 's'}`, inline: true });
+        fields.push({ name: 'Favourited', value: `${favouriteCount} time${favouriteCount == 1 ? '' : 's'}`, inline: true });
 
         if (match.reports !== undefined && match.reports > 0)
-            fields.push({ name: '⚠️ Reports ⚠️', value: `${match.reports} time${match.reports == 1 ? '' : 's'}**`, inline: true });
+            fields.push({ name: '⚠️ Reported ⚠️', value: `${match.reports} time${match.reports == 1 ? '' : 's'}`, inline: true });
 
-        if (match.flags !== undefined && match.flags.length > 0) {
-            const flags = match.flags.map(flag => `\`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc ?? 'No description.'}`);
+        const flags = stringifyFlags(match);
+        if (flags.length > 0)
             fields.push({ name: 'Flags', value: flags.join('\n') });
-        }
 
         return { embed };
+    }
+
+    public async getTopTags(): Promise<string> {
+        const tags = await this.database.tags.top(10);
+        const result = ['__Here are the top 10 tags:__'];
+        let i = 1;
+        for (const tag of tags) {
+            const author = await this.database.users.get(tag.author);
+            result.push(`**${i++}.** **${tag.name}** (**${humanize.fullName(author)}**) - used **${tag.uses} time${tag.uses === 1 ? '' : 's'}**`);
+        }
+        return result.join('\n');
+    }
+
+    public async toggleFavouriteTag(message: Message, tagName: string): Promise<string | undefined> {
+        const match = await this.requestReadableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        const isFavourited = !match.favourites?.[message.author.id];
+        await this.database.tags.setFavourite(match.name, message.author.id, isFavourited);
+        return isFavourited
+            ? `✅ The \`${match.name}\` tag is now on your favourites list!\n\n` +
+            'Note: there is no way for a tag to tell if you\'ve favourited it, and thus it\'s impossible to give rewards for favouriting.\n' +
+            'Any tag that claims otherwise is lying, and should be reported.'
+            : `✅ The \`${match.name}\` tag is no longer on your favourites list!`;
+    }
+
+    public async listFavouriteTags(message: Message): Promise<string> {
+        const tags = await this.database.tags.getFavourites(message.author.id);
+        if (tags.length === 0)
+            return 'You have no favourite tags!';
+        return `You have ${tags.length} favourite tag${tags.length === 1 ? '' : 's'}. ${codeBlock(tags.join(', '), 'fix')}`;
+    }
+
+    public async reportTag(message: Message, tagName: string, reason: string | undefined): Promise<string | undefined> {
+        const match = await this.requestReadableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        const user = await this.database.users.get(message.author.id);
+        if (user === undefined)
+            return '❌ Sorry, you cannot report tags at this time. Please try again later!';
+
+        if (user.reportblock !== undefined)
+            return user.reportblock;
+
+        if (reason?.length === 0) reason = undefined;
+        if (reason === undefined) {
+            if (user.reports?.[match.name] !== undefined) {
+                await this.database.tags.incrementReports(match.name, -1);
+                await this.database.users.setTagReport(message.author.id, match.name, undefined);
+                return `✅ The \`${match.name}\` tag is no longer being reported by you.`;
+            }
+            reason = (await this.util.awaitQuery(message.channel, message.author, 'Please provide a reason for your report or type `c` to cancel:'))?.content;
+            if (reason === undefined || reason === 'c')
+                return;
+        }
+
+        if (user.reports?.[match.name] !== undefined)
+            await this.database.tags.incrementReports(match.name, 1);
+        await this.database.users.setTagReport(message.author.id, match.name, reason);
+        await this.util.send(this.config.discord.channels.tagreports,
+            `**${humanize.fullName(message.author)}** has reported the tag: ${match.name}\n\n${reason}`);
+        return `✅ The \`${match.name}\` tag has been reported.`;
+    }
+
+    public async getTagFlags(message: Message, tagName: string): Promise<string | undefined> {
+        const match = await this.requestReadableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        const flags = stringifyFlags(match);
+        if (flags.length === 0)
+            return `The \`${match.name}\` tag has no flags.`;
+
+        return `The \`${match.name}\` tag has the following flags:\n\n${flags.join('\n')}`;
+    }
+
+    public async addTagFlags(message: Message, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+        const match = await this.requestEditableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { undefined: _, ...addFlags } = parse.flags([], flagsRaw);
+        const flags = [...(match.flags ?? [])];
+        for (const flag of Object.keys(addFlags)) {
+            const args = addFlags[flag];
+            if (args === undefined || args.length === 0)
+                return `❌ No word was specified for the \`${flag}\` flag`;
+
+            if (flags.some(f => f.flag === flag))
+                return `❌ The flag \`${flag}\` already exists!`;
+
+            const word = args[0].replace(/[^a-z]/g, '').toLowerCase();
+            if (flags.some(f => f.word === word))
+                return `❌ A flag with the word \`${word}\` already exists!`;
+
+            const desc = args.slice(1).join(' ').replace(/\n/g, ' ');
+            flags.push({ flag, word, desc });
+        }
+
+        await this.database.tags.setFlags(match.name, flags);
+        return `✅ The flags for \`${match.name}\` have been updated.`;
+    }
+
+    public async removeTagFlags(message: Message, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+        const match = await this.requestEditableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { undefined: _, ...removeFlags } = parse.flags([], flagsRaw);
+        const flags = [...(match.flags ?? [])]
+            .filter(f => removeFlags[f.flag] === undefined);
+
+        await this.database.tags.setFlags(match.name, flags);
+        return `✅ The flags for \`${match.name}\` have been updated.`;
+    }
+
+    public async setTagLanguage(message: Message, tagName: string, language: string): Promise<string | undefined> {
+        const match = await this.requestEditableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        await this.database.tags.setLanguage(match.name, language);
+        return `✅ Lang for tag \`${match.name}\` set.`;
     }
 
     private async saveTag(message: Message, operation: string, tagName: string, content: string | undefined, oldTag?: DeepReadOnly<StoredTag>): Promise<string | undefined> {
@@ -400,7 +511,7 @@ export class TagCommand extends BaseCommand {
         return `✅ Tag \`${tagName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`;
     }
 
-    private async requestTagName(message: Message, name: string | undefined, query = 'Enter the name of the tag:'): Promise<string | undefined> {
+    private async requestTagName(message: Message, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {
         if (name !== undefined) {
             name = normalizeName(name);
             if (name.length > 0)
@@ -408,7 +519,7 @@ export class TagCommand extends BaseCommand {
         }
 
         name = (await this.util.awaitQuery(message.channel, message.author, query))?.content;
-        if (name === undefined)
+        if (name === undefined || name === 'c')
             return undefined;
 
         name = normalizeName(name);
@@ -419,17 +530,17 @@ export class TagCommand extends BaseCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        content = (await this.util.awaitQuery(message.channel, message.author, 'Enter the tag\'s contents:'))?.content;
-        if (content === undefined)
+        content = (await this.util.awaitQuery(message.channel, message.author, 'Enter the tag\'s contents or type `c` to cancel:'))?.content;
+        if (content === undefined || content === 'c')
             return undefined;
 
         return content.length > 0 ? content : undefined;
     }
 
-    private async requestEditableTag(
+    private async requestSettableTag(
         message: Message,
         tagName: string | undefined
-    ): Promise<{ tagName: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
+    ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
         const match = await this.requestTag(message, tagName);
         if (typeof match !== 'object')
             return match;
@@ -437,10 +548,24 @@ export class TagCommand extends BaseCommand {
         if (message.author.id !== this.config.discord.users.owner
             && match.tag !== undefined
             && match.tag.author !== message.author.id) {
-            return `❌ You don\'t own the \`${tagName}\` tag!`;
+            return `❌ You don\'t own the \`${match.name}\` tag!`;
         }
 
-        return { tagName: match.tagName, tag: match.tag };
+        return { name: match.name, tag: match.tag };
+    }
+
+    private async requestEditableTag(
+        message: Message,
+        tagName: string | undefined
+    ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
+        const match = await this.requestSettableTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        if (match.tag === undefined)
+            return `❌ The \`${match.name}\` tag doesn\'t exist!`;
+
+        return match.tag;
     }
 
     private async requestReadableTag(
@@ -452,25 +577,40 @@ export class TagCommand extends BaseCommand {
             return match;
 
         if (match.tag === undefined)
-            return `❌ The \`${tagName}\` tag doesn\'t exist!`;
+            return `❌ The \`${match.name}\` tag doesn\'t exist!`;
 
         return match.tag;
+    }
+
+    private async requestCreatableTag(
+        message: Message,
+        tagName: string | undefined
+    ): Promise<{ name: string } | string | undefined> {
+        const match = await this.requestTag(message, tagName);
+        if (typeof match !== 'object')
+            return match;
+
+        if (match.tag !== undefined)
+            return `❌ The \`${match.name}\` tag already exists!`;
+
+        return { name: match.name };
     }
 
     private async requestTag(
         message: Message,
         tagName: string | undefined
-    ): Promise<{ tagName: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
+    ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
         tagName = await this.requestTagName(message, tagName);
-        if (tagName === undefined) return;
+        if (tagName === undefined)
+            return;
 
         const tag = await this.database.tags.get(tagName);
         if (tag === undefined)
-            return { tagName: tagName };
+            return { name: tagName };
         if (tag !== undefined && tag.deleted)
-            return `❌ The \`${tagName}\` tag has been permanently deleted!`;
+            return `❌ The \`${tag.name}\` tag has been permanently deleted!`;
 
-        return { tagName, tag };
+        return { name: tag.name, tag };
     }
 
     private async logChange(
@@ -512,6 +652,12 @@ export class TagCommand extends BaseCommand {
 
 function normalizeName(title: string): string {
     return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
+}
+
+function stringifyFlags(tag: DeepReadOnly<StoredTag>): string[] {
+    return tag.flags?.map(flag =>
+        `\`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}`
+    ) ?? [];
 }
 
 const enum TagChangeAction {

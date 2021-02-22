@@ -18,12 +18,12 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
         this.cache = new Cache(5, 'minutes');
     }
 
-    protected async rgetCached(
+    protected async rget(
         key: string,
-        skipCache: boolean
+        skipCache = false
     ): Promise<RethinkTableMap[T] | undefined> {
         if (skipCache || !this.cache.has(key)) {
-            const result = await this.rget(key);
+            const result = await super.rget(key);
             if (result !== undefined)
                 this.cache.set(key, result);
         }
@@ -35,7 +35,7 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
         this.logger.info(`Registering a ${this.table} changefeed!`);
         while (true) {
             try {
-                const changefeed = this.rethinkDb.stream<WriteChange>(r => r.table(this.table).changes({ squash: true }));
+                const changefeed = this.rstream<WriteChange>(t => t.changes({ squash: true }));
                 for await (const data of changefeed) {
                     if (!data.new_val)
                         this.cache.delete(data.old_val[this.keyName]);

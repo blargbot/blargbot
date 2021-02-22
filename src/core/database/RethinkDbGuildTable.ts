@@ -22,11 +22,11 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     }
 
     public async getIds(): Promise<string[]> {
-        return await this.rethinkDb.queryAll(r => r.table(this.table).getField('guildid'));
+        return await this.rqueryAll(t => t.getField('guildid'));
     }
 
     private async _get(guildId: string, skipCache = false): Promise<StoredGuild | undefined> {
-        return await this.rgetCached(guildId, skipCache);
+        return await this.rget(guildId, skipCache);
     }
 
     public async getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache = false): Promise<DeepReadOnly<StoredGuildSettings>[K] | undefined> {
@@ -58,7 +58,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     }
 
     public async withIntervalCommand(): Promise<DeepReadOnly<StoredGuild[]> | undefined> {
-        return await this.rethinkDb.queryAll(r => r.table(this.table).getAll('interval'));
+        return await this.rqueryAll(t => t.getAll('interval'));
     }
 
     public async updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean> {
@@ -166,9 +166,9 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     }
 
     public async migrate(): Promise<void> {
-        const indexes = await this.rethinkDb.query(r => r.table(this.table).indexList());
+        const indexes = await this.rquery(t => t.indexList());
         if (!indexes.includes('interval')) {
-            await this.rethinkDb.query(r => r.table(this.table).indexCreate('interval', r.row('ccommands').hasFields('_interval')));
+            await this.rquery((t, r) => t.indexCreate('interval', r.row('ccommands').hasFields('_interval')));
         }
     }
 }

@@ -3,7 +3,7 @@ import { smartSplit } from '../humanize/smartSplit';
 export type FlagDefinition = {
     flag: string
     word: string,
-    desc?: string
+    desc: string
 };
 
 export type FlagResult = {
@@ -11,21 +11,27 @@ export type FlagResult = {
     [flag: string]: string[] | undefined;
 }
 
-export function flags(definitions: Iterable<FlagDefinition>, text: string): FlagResult;
-export function flags(definitions: Iterable<FlagDefinition>, text: string[]): FlagResult;
-export function flags(definitions: Iterable<FlagDefinition>, text: readonly string[]): FlagResult;
-export function flags(definitions: Iterable<FlagDefinition>, text: string | readonly string[]): FlagResult {
-    const def: readonly FlagDefinition[] = Array.isArray(definitions) ? definitions : [...definitions];
+export function flags(definitions: Iterable<FlagDefinition>, text: string, strict?: boolean): FlagResult;
+export function flags(definitions: Iterable<FlagDefinition>, text: string[], strict?: boolean): FlagResult;
+export function flags(definitions: Iterable<FlagDefinition>, text: readonly string[], strict?: boolean): FlagResult;
+export function flags(definitions: Iterable<FlagDefinition>, text: string | readonly string[], strict = false): FlagResult {
     const words = typeof text === 'string' ? smartSplit(text) : [...text];
+    const flagmap = new Map<string, string>();
+    for (const definition of definitions) {
+        flagmap.set(definition.flag, definition.flag);
+        flagmap.set(definition.word, definition.flag);
+    }
+
     const output: FlagResult = { undefined: [] };
+
     let currentFlag = '';
     for (let i = 0; i < words.length; i++) {
         let pushFlag = true;
         if (words[i].startsWith('--')) {
             if (words[i].length > 2) {
-                const flag = def.find(f => f.word == words[i].substring(2).toLowerCase());
+                const flag = flagmap.get(words[i].substr(2).toLowerCase());
                 if (flag) {
-                    currentFlag = flag.flag;
+                    currentFlag = flag;
                     output[currentFlag] = [];
                     pushFlag = false;
                 }
@@ -38,10 +44,12 @@ export function flags(definitions: Iterable<FlagDefinition>, text: string | read
                 const tempFlag = words[i].substring(1);
 
                 for (const char of tempFlag) {
-                    currentFlag = char;
-                    output[currentFlag] = [];
+                    if (!strict || flagmap.has(char.toLowerCase())) {
+                        currentFlag = char;
+                        output[currentFlag] = [];
+                        pushFlag = false;
+                    }
                 }
-                pushFlag = false;
             }
         } else if (words[i].startsWith('\\-')) {
             words[i] = words[i].substring(1);

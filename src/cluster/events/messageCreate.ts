@@ -188,9 +188,6 @@ export class MessageCreateEventHandler extends DiscordEventService {
             return false;
 
         const words = humanize.smartSplit(text, 2);
-        if (words.length !== 2)
-            return false;
-
         if (guard.isGuildMessage(msg) && await this.handleCustomCommand(msg, text, words))
             return true;
 
@@ -204,7 +201,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
                 : `Command '${text}' executed by ${msg.author.username} (${msg.author.id}) in a PM (${msg.channel.id}) Message ID: ${msg.id}`;
             this.logger.command(outputLog);
             const timer = new Timer().start();
-            await this.executeCommand(command, msg, words[1]);
+            await this.executeCommand(command, msg, words[1] ?? '');
             timer.end();
             metrics.commandLatency.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).observe(timer.elapsed);
             metrics.commandCounter.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).inc();

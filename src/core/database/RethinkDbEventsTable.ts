@@ -16,7 +16,7 @@ export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements Ev
     public async between(from: Date | Moment | number, to: Date | Moment | number): Promise<StoredEvent[]> {
         const after = moment(from).toDate();
         const before = moment(to).toDate();
-        return await this.rethinkDb.queryAll(r => r.table(this.table).between(after, before, { index: 'endtime' }));
+        return await this.rqueryAll(t => t.between(after, before, { index: 'endtime' }));
     }
 
     public async add(event: Omit<StoredEvent, 'id'>): Promise<boolean> {

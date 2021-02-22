@@ -1,14 +1,15 @@
-import { humanize, parse } from '../../utils';
+import { FlagDefinition, FlagResult, humanize, parse } from '../../utils';
 import { CommandDefinition, CompiledCommand, CommandTreeNode, ChildCommandHandlerTreeNode, CommandParameter } from './types';
 
-export function compileCommand(definition: CommandDefinition): CompiledCommand {
-    const tree = populateTree(definition, { switch: {}, tests: [] }, []);
+export function compileCommand(definition: CommandDefinition, flagDefinitions: DeepReadOnly<FlagDefinition[]>): CompiledCommand {
+    const tree = populateTree(definition, flagDefinitions, { switch: {}, tests: [] }, []);
     return {
         structure: tree,
         usage: [...buildUsage(tree)],
-        execute: (message, flags, raw) => {
+        execute: (message, args, raw) => {
             let node = tree;
-            args: for (const arg of flags.undefined) {
+            args: for (const arg of args) {
+                // TODO improve traversal here
                 const switched = node.switch[arg.toLowerCase()];
                 if (switched) {
                     node = switched;
@@ -21,7 +22,7 @@ export function compileCommand(definition: CommandDefinition): CompiledCommand {
                     }
                 }
                 if (node.handler)
-                    return node.handler.execute(message, flags, raw);
+                    return node.handler.execute(message, args, raw);
 
                 const expected = [...buildUsage(node)].map(u => `\`${u[0].display}\``);
                 return `❌ Invalid arguments! Expected ${humanize.smartJoin(expected, ', ', ' or ')} but got \`${arg}\``;
@@ -29,7 +30,7 @@ export function compileCommand(definition: CommandDefinition): CompiledCommand {
             }
 
             if (node.handler)
-                return node.handler.execute(message, flags, raw);
+                return node.handler.execute(message, args, raw);
 
             const expected = [...buildUsage(node)].map(u => `\`${u[0].display}\``);
             return `❌ Not enough arguments! Expected ${humanize.smartJoin(expected, ', ', ' or ')}`;
@@ -37,7 +38,12 @@ export function compileCommand(definition: CommandDefinition): CompiledCommand {
     };
 }
 
-function populateTree(definition: CommandDefinition, tree: CommandTreeNode, path: CommandParameter[]): CommandTreeNode {
+function populateTree(
+    definition: CommandDefinition,
+    flagDefinitions: DeepReadOnly<FlagDefinition[]>,
+    tree: CommandTreeNode,
+    path: CommandParameter[]
+): CommandTreeNode {
     if ('subcommands' in definition) {
         for (const key of Object.keys(definition.subcommands)) {
             const subDefinition = definition.subcommands[key];
@@ -71,27 +77,37 @@ function populateTree(definition: CommandDefinition, tree: CommandTreeNode, path
                     default: throw new Error(`Unexpected parameter type '${(<CommandParameter>parameter).type}'`);
                 }
             }
-            populateTree(subDefinition, _node, _path);
+            populateTree(subDefinition, flagDefinitions, _node, _path);
         }
     }
 
     if ('execute' in definition) {
         if (tree.handler !== undefined)
             throw new Error(`Duplicate handler '${path.map(p => p.display).join(' ')}' found!`);
+
         const parameters = [...compileParameters(definition.parameters)];
         const restParams = parameters.filter(p => p.type === 'variable' && p.rest);
+
         if (restParams.length > 1)
             throw new Error(`Cannot have more than 1 rest parameter, but found ${restParams.map(p => p.name).join(',')}`);
         if (restParams.length === 1 && parameters[parameters.length - 1] !== restParams[0])
             throw new Error('Rest parameters must be the last parameter of a command');
+
+        const strictFlags = definition.strictFlags ?? false;
         const binder = definition.dontBind ?? false
             ? (args: string[]) => args
             : compileArgBinder(path, parameters, definition.allowOverflow ?? false);
+
+        const getArgs = (definition.useFlags ?? flagDefinitions.length > 0)
+            ? (_args: string[], flags: FlagResult) => flags.undefined
+            : (args: string[], _flags: FlagResult) => args;
+
         tree.handler = {
             description: definition.description,
             parameters,
-            execute: (message, flags, raw) => {
-                const boundArgs = binder(flags.undefined);
+            execute: (message, args, raw) => {
+                const flags = parse.flags(flagDefinitions, args, strictFlags);
+                const boundArgs = binder(getArgs(args, flags));
                 return typeof boundArgs === 'string'
                     ? boundArgs
                     : definition.execute(message, boundArgs, flags, raw);

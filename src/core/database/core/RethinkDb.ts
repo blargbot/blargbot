@@ -3,7 +3,9 @@ import { RethinkDbOptions } from '../types';
 
 export type r = Parameters<Query<unknown>>[0];
 
-export type Query<T, R = r.Operation<T>> = (rethink: typeof r) => r.Operation<T> | R;
+export type Query<T> = (rethink: typeof r) => r.Operation<T>;
+export type TableQuery<T> = (table: r.Table, rethink: typeof r) => r.Operation<T>;
+export type Cursor = r.Cursor;
 
 export class RethinkDb {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

@@ -261,6 +261,8 @@ export interface StoredUser {
     lastcommand?: string;
     lastcommanddate?: Date;
     todo: UserTodo[];
+    reportblock?: string;
+    reports?: Record<string, string>;
 }
 
 export interface UserTodo {
@@ -356,6 +358,7 @@ export interface UserTable {
     get(userId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredUser> | undefined>;
     add(user: StoredUser): Promise<boolean>;
     upsert(user: User): Promise<boolean>
+    setTagReport(userId: string, tagName: string, reason: string | undefined): Promise<boolean>;
 }
 
 export interface VarsTable {
@@ -372,6 +375,7 @@ export interface EventsTable {
 }
 
 export interface TagsTable {
+    setLanguage(tagName: string, language: string | undefined): Promise<boolean>;
     list(skip: number, take: number): Promise<readonly string[]>;
     count(): Promise<number>;
     byAuthor(userId: string, skip: number, take: number): Promise<readonly string[]>;
@@ -380,13 +384,18 @@ export interface TagsTable {
     searchCount(partialName: string): Promise<number>;
     delete(name: string): Promise<boolean>;
     disable(tagName: string, userId: string, reason: string): Promise<boolean>;
+    top(count: number): Promise<DeepReadOnly<StoredTag[]>>;
     get(tagName: string): Promise<DeepReadOnly<StoredTag> | undefined>;
     set(tag: StoredTag): Promise<boolean>;
     set(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
     add(tag: StoredTag): Promise<boolean>;
     add(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
+    setFlags(tagName: string, flags: FlagDefinition[]): Promise<boolean>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;
+    incrementReports(tagName: string, count?: number): Promise<boolean>;
     setCooldown(tagName: string, cooldown: number | undefined): Promise<boolean>;
+    getFavourites(userId: string): Promise<readonly string[]>;
+    setFavourite(tagName: string, userId: string, favourite: boolean): Promise<boolean>;
 }
 
 export interface ChatlogsTable {

@@ -11,13 +11,8 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         super('user', 'userid', rethinkDb, logger);
     }
 
-
     public async get(userId: string, skipCache = false): Promise<DeepReadOnly<StoredUser> | undefined> {
-        return this._get(userId, skipCache);
-    }
-
-    private async _get(userId: string, skipCache = false): Promise<StoredUser | undefined> {
-        return await this.rgetCached(userId, skipCache);
+        return await this.rget(userId, skipCache);
     }
 
     public async add(user: StoredUser): Promise<boolean> {
@@ -27,7 +22,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
     public async upsert(user: User): Promise<boolean> {
         if (user.discriminator === '0000')
             return false;
-        const currentUser = await this._get(user.id);
+        const currentUser = await this.rget(user.id, true);
         if (currentUser === undefined) {
             this.logger.debug(`inserting user ${user.id} (${user.username})`);
             return await this.add({
@@ -45,7 +40,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         } else {
             const update: Partial<StoredUser> = {};
             if (currentUser.username != user.username) {
-                update.username = user.username;
+                currentUser.username = update.username = user.username;
                 update.usernames = currentUser.usernames;
                 update.usernames.push({
                     name: user.username,
@@ -53,15 +48,33 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
                 });
             }
             if (currentUser.discriminator != user.discriminator) {
-                update.discriminator = user.discriminator;
+                currentUser.discriminator = update.discriminator = user.discriminator;
             }
             if (currentUser.avatarURL != user.avatarURL) {
-                update.avatarURL = user.avatarURL;
+                currentUser.avatarURL = update.avatarURL = user.avatarURL;
             }
             // eslint-disable-next-line @typescript-eslint/no-unused-vars
             for (const _ in update)
                 return await this.rupdate(user.id, update);
         }
         return false;
+    }
+
+    public async setTagReport(userId: string, tagName: string, reason: string | undefined): Promise<boolean> {
+        const user = await this.rget(userId);
+        if (!user)
+            return false;
+
+        const reports = user.reports ??= {};
+        if (reason !== undefined)
+            reports[tagName] = reason;
+        else
+            delete reports[tagName];
+
+        return await this.rupdate(userId, r => ({
+            reports: {
+                [tagName]: reason === undefined ? r.literal() : reason
+            }
+        }));
     }
 }
