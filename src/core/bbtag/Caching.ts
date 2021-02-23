@@ -40,7 +40,7 @@ export class VariableCache {
         this.#cache = {};
     }
 
-    private async _get(subtag: SubtagCall | null, variable: string): Promise<CacheEntry> {
+    private async _get(variable: string, subtag?: SubtagCall): Promise<CacheEntry> {
         const forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
         const entry = this.#cache[variable];
@@ -54,17 +54,17 @@ export class VariableCache {
             return this.#cache[variable] = new CacheEntry(this.context, variable,
                 await scope.getter(this.context, subtag, variable.substring(scope.prefix.length)) || '');
         } catch (err) {
-            this.context.engine.logger.error(err, this.context.isCC, this.context.tagName);
+            this.context.logger.error(err, this.context.isCC, this.context.tagName);
             throw err;
         }
     }
 
-    public async get(subtag: SubtagCall | null, variable: string): Promise<JToken> {
-        const entry = await this._get(subtag, variable);
+    public async get(variable: string, subtag?: SubtagCall): Promise<JToken> {
+        const entry = await this._get(variable, subtag);
         return entry.value;
     }
 
-    public async set(subtag: SubtagCall | null, variable: string, value: JToken | CacheEntry): Promise<void> {
+    public async set(variable: string, value: JToken | CacheEntry, subtag?: SubtagCall): Promise<void> {
         if (value instanceof CacheEntry) {
             this.#cache[variable] = value;
             return;
@@ -76,18 +76,18 @@ export class VariableCache {
 
         const forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
-        const entry = await this._get(subtag, variable);
+        const entry = await this._get(variable, subtag);
         entry.value = value;
         if (forced)
-            await this.persist(subtag, [variable]);
+            await this.persist([variable], subtag);
     }
 
-    public async reset(subtag: SubtagCall | null, variable: string): Promise<void> {
-        const entry = await this._get(subtag, variable);
+    public async reset(variable: string, subtag?: SubtagCall): Promise<void> {
+        const entry = await this._get(variable, subtag);
         entry.reset();
     }
 
-    public async persist(subtag: SubtagCall | null, variables?: string[]): Promise<void> {
+    public async persist(variables?: string[], subtag?: SubtagCall): Promise<void> {
         const execRunning = this.context.execTimer.running;
         if (execRunning)
             this.context.execTimer.end();
@@ -111,10 +111,10 @@ export class VariableCache {
             if (scope == null)
                 throw new Error('Missing default variable scope!');
             const objectCount = Object.keys(pools[key]).length;
-            this.context.engine.logger.bbtag('Committing', objectCount, 'objects to the', key, 'pool.');
+            this.context.logger.bbtag('Committing', objectCount, 'objects to the', key, 'pool.');
             await scope.setter(this.context, subtag, pools[key]);
             timer.end();
-            this.context.engine.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', key, 'pool in', timer.elapsed, 'ms.');
+            this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', key, 'pool in', timer.elapsed, 'ms.');
             this.context.dbObjectsCommitted += objectCount;
         }
         this.context.dbTimer.end();

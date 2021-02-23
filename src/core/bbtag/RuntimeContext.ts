@@ -4,7 +4,7 @@ import { VariableCache, CacheEntry } from './Caching';
 import ReadWriteLock from 'rwlock';
 import { bbtagUtil, FlagDefinition, FlagResult, guard, oldBu, parse } from '../../utils';
 import { Duration } from 'moment-timezone';
-import { GuildTextableChannel, Member, User, Guild, Role, MessageFile } from 'eris';
+import { GuildTextableChannel, Member, User, Guild, Role } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
 import { Statement, SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext } from './types';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
@@ -35,7 +35,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     public readonly cooldowns: TagCooldownManager;
     public readonly locks: Record<string, ReadWriteLock | undefined>;
     public readonly limit: RuntimeLimit;
-    public readonly outputModify: (context: RuntimeContext, output: string) => string;
+    // public readonly outputModify: (context: RuntimeContext, output: string) => string;
     public readonly silent: boolean;
     public readonly execTimer: Timer;
     public readonly dbTimer: Timer;
@@ -55,6 +55,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     public get scope(): BBRuntimeScope { return this.scopes.local; }
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
     public get database(): Database { return this.engine.database; }
+    public get logger(): CatLogger { return this.engine.logger; }
 
     public constructor(
         public readonly engine: Engine,
@@ -67,7 +68,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         this.input = options.input;
         this.flags = options.flags ?? [];
         this.isCC = options.isCC;
-        this.tagVars = options.tagVars ?? false;
+        this.tagVars = options.tagVars ?? !this.isCC;
         this.author = options.author ?? this.guild.id;
         this.authorizer = options.authorizer ?? this.author;
         this.tagName = options.tagName;
@@ -75,7 +76,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
         this.locks = options.locks ?? {};
         this.limit = typeof options.limit === 'function' ? new options.limit() : options.limit;
-        this.outputModify = options.outputModify ?? ((_, r) => r);
+        // this.outputModify = options.outputModify ?? ((_, r) => r);
         this.silent = options.silent ?? false;
         this.flaggedInput = parse.flags(this.flags, this.input);
         this.errors = [];
@@ -96,7 +97,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
             return: RuntimeReturnState.NONE,
             stackSize: 0,
             embed: undefined,
-            file: null,
+            file: undefined,
             reactions: [],
             nsfw: undefined,
             replace: null,
@@ -216,7 +217,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         return this.locks[key] ??= new ReadWriteLock();
     }
 
-    private async _sendOutput(text: string, files: MessageFile | MessageFile[]): Promise<string | null> {
+    private async _sendOutput(text: string): Promise<string | null> {
         let disableEveryone = true;
         if (this.isCC) {
             disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, 'disableeveryone') ?? false;
@@ -227,7 +228,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         try {
             const response = await this.engine.util.send(this.message,
                 {
-                    content: this.outputModify(this, text),
+                    content: text,
                     embed: this.state.embed,
                     nsfw: this.state.nsfw,
                     allowedMentions: {
@@ -235,7 +236,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
                         roles: !!this.isCC ? this.state.allowedMentions.roles : false,
                         users: !!this.isCC ? this.state.allowedMentions.users : false
                     }
-                }, files || this.state.file);
+                }, this.state.file);
 
             if (response) {
                 await oldBu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
@@ -254,9 +255,9 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         }
     }
 
-    public async sendOutput(text: string, files: MessageFile | MessageFile[]): Promise<string | null> {
+    public async sendOutput(text: string): Promise<string | null> {
         if (this.silent) return await this.state.outputMessage;
-        return await (this.state.outputMessage ??= this._sendOutput(text, files));
+        return await (this.state.outputMessage ??= this._sendOutput(text));
     }
 
     public getCached(key: string, getIfNotSet: (key: string) => StoredGuildCommand | StoredTag): StoredGuildCommand | StoredTag | undefined {
@@ -315,7 +316,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         result.state.overrides = {};
 
         for (const key of Object.keys(obj.tempVars || {}))
-            await result.variables.set(null, key, new CacheEntry(result, key, obj.tempVars[key]));
+            await result.variables.set(key, new CacheEntry(result, key, obj.tempVars[key]));
         return result;
     }
 

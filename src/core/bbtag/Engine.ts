@@ -1,13 +1,14 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
 import { bbtagUtil, parse, sleep } from '../../utils';
-import { SubtagCall, RuntimeContextOptions, RuntimeReturnState, AnalysisResults } from './types';
+import { SubtagCall, RuntimeContextOptions, RuntimeReturnState, AnalysisResults, ExecutionResult } from './types';
 import { Statement } from './types';
 import { RuntimeContext, SubtagCallback } from './RuntimeContext';
 import { BaseSubtagHandler } from './BaseSubtagHandler';
 import { Database } from '../database';
 import { BBTagError } from './BBTagError';
 import { ModuleLoader } from '../ModuleLoader';
+import { Timer } from '../../structures/Timer';
 
 export class Engine {
     public get discord(): ErisClient { return this.cluster.discord; }
@@ -21,10 +22,34 @@ export class Engine {
     ) {
     }
 
-    public async execute(source: string, options: RuntimeContextOptions): Promise<string> {
+    public async execute(source: string, options: RuntimeContextOptions): Promise<ExecutionResult> {
+        this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.tagName}`);
+        const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source);
+        this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
         const context = new RuntimeContext(this, { ...options });
-        return await this.eval(bbtag, context);
+        this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
+        const content = await this.eval(bbtag, context);
+        this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
+        await context.variables.persist();
+        this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
+        await context.sendOutput(content);
+        this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
+        return {
+            content: content,
+            debug: context.debug,
+            errors: context.errors,
+            duration: {
+                active: context.execTimer.elapsed,
+                database: context.dbTimer.elapsed,
+                total: context.totalDuration.asMilliseconds(),
+                subtag: context.state.subtags
+            },
+            database: {
+                committed: context.dbObjectsCommitted,
+                values: context.variables.list.reduce((v, c) => (v[c.key] = c.value, v), <Record<string, JToken>>{})
+            }
+        };
     }
 
     public async eval(bbtag: SubtagCall | Statement, context: RuntimeContext): Promise<string> {

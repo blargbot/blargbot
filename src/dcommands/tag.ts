@@ -3,9 +3,10 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster, ClusterUtilities } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
+import { ExecutionResult, limits } from '../core/bbtag';
 import { BaseCommand } from '../core/command';
 import { StoredTag } from '../core/database';
-import { bbtagUtil, codeBlock, commandTypes, humanize, parse } from '../utils';
+import { bbtagUtil, codeBlock, commandTypes, guard, humanize, parse } from '../utils';
 
 export class TagCommand extends BaseCommand {
     public constructor(cluster: Cluster) {
@@ -13,19 +14,21 @@ export class TagCommand extends BaseCommand {
             name: 'tag',
             aliases: ['t'],
             category: commandTypes.GENERAL,
-            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n',
+            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
+                + 'For more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
+                + 'By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)',
             handler: {
                 parameters: '{tagName} {args*}',
-                execute: () => '', //(msg, [tagName, ...args]) => '',
+                execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 1), false),
                 subcommands: {
                     'test|eval|exec|vtest': {
                         parameters: 'debug? {code+}',
-                        execute: () => '', //(msg, [debug, ...code]) => '',
+                        execute: (msg, [debug], _, raw) => this.runRaw(msg, humanize.smartSplitSkip(raw, debug === undefined ? 1 : 2), '', debug !== undefined),
                         description: ''
                     },
                     'debug': {
                         parameters: '{tagName} {args*}',
-                        execute: () => '', //(msg, [tagName, ...args]) => '',
+                        execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 2), true),
                         description: ''
                     },
                     'create|add': {
@@ -133,6 +136,62 @@ export class TagCommand extends BaseCommand {
             }
         });
 
+    }
+
+    public async runTag(
+        message: Message,
+        tagName: string,
+        input: string,
+        debug: boolean
+    ): Promise<string | { content: string, files: MessageFile } | undefined> {
+        if (!guard.isGuildMessage(message))
+            return '❌ Tags can only be run on guilds.';
+
+        const match = await this.requestReadableTag(message, tagName, false);
+        if (typeof match !== 'object')
+            return match;
+
+        if (debug && match.author !== message.author.id)
+            return '❌ You cannot debug someone elses tag.';
+
+        await this.database.tags.incrementUses(match.name, 1);
+
+        const args = humanize.smartSplit(input);
+        const result = await this.cluster.bbtag.execute(match.content, {
+            message: message,
+            input: args,
+            isCC: false,
+            limit: new limits.TagLimit(),
+            tagName: match.name,
+            author: match.author,
+            authorizer: match.authorizer,
+            flags: match.flags,
+            cooldown: match.cooldown
+        });
+
+        return debug ? createDebugOutput(match.name, match.content, args, result) : undefined;
+    }
+
+    public async runRaw(
+        message: Message,
+        content: string,
+        input: string,
+        debug: boolean
+    ): Promise<string | { content: string, files: MessageFile } | undefined> {
+        if (!guard.isGuildMessage(message))
+            return '❌ Tags can only be run on guilds.';
+
+        const args = humanize.smartSplit(input);
+        const result = await this.cluster.bbtag.execute(content, {
+            message: message,
+            input: args,
+            isCC: false,
+            limit: new limits.TagLimit(),
+            tagName: 'test',
+            author: message.author.id
+        });
+
+        return debug ? createDebugOutput('test', content, args, result) : undefined;
     }
 
     public async createTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -518,6 +577,9 @@ export class TagCommand extends BaseCommand {
                 return name;
         }
 
+        if (query.length === 0)
+            return undefined;
+
         name = (await this.util.awaitQuery(message.channel, message.author, query))?.content;
         if (name === undefined || name === 'c')
             return undefined;
@@ -539,9 +601,10 @@ export class TagCommand extends BaseCommand {
 
     private async requestSettableTag(
         message: Message,
-        tagName: string | undefined
+        tagName: string | undefined,
+        allowQuery = true
     ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
-        const match = await this.requestTag(message, tagName);
+        const match = await this.requestTag(message, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -556,9 +619,10 @@ export class TagCommand extends BaseCommand {
 
     private async requestEditableTag(
         message: Message,
-        tagName: string | undefined
+        tagName: string | undefined,
+        allowQuery = true
     ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
-        const match = await this.requestSettableTag(message, tagName);
+        const match = await this.requestSettableTag(message, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -570,9 +634,10 @@ export class TagCommand extends BaseCommand {
 
     private async requestReadableTag(
         message: Message,
-        tagName: string | undefined
+        tagName: string | undefined,
+        allowQuery = true
     ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
-        const match = await this.requestTag(message, tagName);
+        const match = await this.requestTag(message, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -584,9 +649,10 @@ export class TagCommand extends BaseCommand {
 
     private async requestCreatableTag(
         message: Message,
-        tagName: string | undefined
+        tagName: string | undefined,
+        allowQuery = true
     ): Promise<{ name: string } | string | undefined> {
-        const match = await this.requestTag(message, tagName);
+        const match = await this.requestTag(message, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -598,17 +664,27 @@ export class TagCommand extends BaseCommand {
 
     private async requestTag(
         message: Message,
-        tagName: string | undefined
+        tagName: string | undefined,
+        allowQuery: boolean
     ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
-        tagName = await this.requestTagName(message, tagName);
+        tagName = await this.requestTagName(message, tagName, allowQuery ? undefined : '');
         if (tagName === undefined)
             return;
 
         const tag = await this.database.tags.get(tagName);
         if (tag === undefined)
             return { name: tagName };
-        if (tag !== undefined && tag.deleted)
-            return `❌ The \`${tag.name}\` tag has been permanently deleted!`;
+        if (tag !== undefined && tag.deleted) {
+            let result = `❌ The \`${tag.name}\` tag has been permanently deleted`;
+            if (tag.deleter !== undefined) {
+                const deleter = await this.database.users.get(tag.deleter);
+                if (deleter !== undefined)
+                    result += ` by **${humanize.fullName(deleter)}**`;
+            }
+            if (tag.reason)
+                result += `\n\nReason: ${tag.reason}`;
+            return result;
+        }
 
         return { name: tag.name, tag };
     }
@@ -658,6 +734,43 @@ function stringifyFlags(tag: DeepReadOnly<StoredTag>): string[] {
     return tag.flags?.map(flag =>
         `\`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}`
     ) ?? [];
+}
+
+function createDebugOutput(name: string, code: string, args: string[], result: ExecutionResult): { content: string, files: MessageFile } {
+    const performance: Record<string, unknown> = {};
+    for (const key of Object.keys(result.duration.subtag)) {
+        const times = result.duration.subtag[key];
+        if (times !== undefined && times.length > 0) {
+            const totalTime = times.reduce((l, r) => l + r);
+            performance[key] = {
+                count: times.length,
+                totalMs: totalTime,
+                averageMs: totalTime / times.length,
+                timesMs: times
+            };
+        }
+    }
+
+    return {
+        content: codeBlock(
+            `         Execution Time: ${humanize.duration(moment.duration(result.duration.active, 'ms'))}\n` +
+            `    Variables Committed: ${result.database.committed}\n` +
+            `Database Execution Time: ${humanize.duration(moment.duration(result.duration.database, 'ms'))}\n` +
+            `   Total Execution Time: ${humanize.duration(moment.duration(result.duration.total, 'ms'))}`,
+            'js'),
+        files: {
+            name: 'bbtag.debug.json',
+            file: JSON.stringify({
+                tagName: name,
+                userInput: args,
+                code: code,
+                debug: result.debug,
+                errors: result.errors,
+                variables: result.database.values,
+                performance: performance
+            }, undefined, 2)
+        }
+    };
 }
 
 const enum TagChangeAction {

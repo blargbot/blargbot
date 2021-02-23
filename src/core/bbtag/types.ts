@@ -1,4 +1,4 @@
-import { Attachment, Embed, GuildTextableChannel, Member, User, EmbedOptions, Message } from 'eris';
+import { Attachment, Embed, GuildTextableChannel, Member, User, EmbedOptions, Message, MessageFile } from 'eris';
 import ReadWriteLock from 'rwlock';
 import { FlagResult, FlagDefinition } from '../../utils';
 import { StoredGuildCommand, StoredTag } from '../database';
@@ -89,7 +89,7 @@ export interface RuntimeContextState {
     return: RuntimeReturnState,
     stackSize: number,
     embed: undefined | EmbedOptions,
-    file: null | { file: string | Buffer, name: string },
+    file: undefined | MessageFile,
     reactions: string[],
     nsfw: undefined | string,
     /** @type {{regex: RegExp|string, with: string}} */
@@ -141,9 +141,25 @@ export interface RuntimeContextOptions {
     cooldowns?: TagCooldownManager;
     locks?: Record<string, ReadWriteLock | undefined>;
     limit: RuntimeLimit | (new () => RuntimeLimit);
-    outputModify?: (context: RuntimeContext, output: string) => string;
+    // outputModify?: (context: RuntimeContext, output: string) => string;
     silent?: boolean;
     state?: Partial<RuntimeContextState>;
     scopes?: ScopeCollection;
     variables?: VariableCache;
+}
+
+export interface ExecutionResult {
+    content: string;
+    errors: RuntimeError[];
+    debug: RuntimeDebugEntry[];
+    duration: {
+        total: number;
+        database: number;
+        active: number;
+        subtag: Record<string, number[] | undefined>;
+    };
+    database: {
+        committed: number;
+        values: Record<string, JToken>;
+    };
 }

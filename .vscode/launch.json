@@ -9,8 +9,7 @@
             "request": "launch",
             "name": "Launch Program",
             "skipFiles": [
-                "<node_internals>/**",
-                "node_modules/bluebird/**"
+                "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/index.ts",
@@ -24,8 +23,7 @@
             "request": "launch",
             "name": "Launch Program (no build)",
             "skipFiles": [
-                "<node_internals>/**",
-                "node_modules/bluebird/**"
+                "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/index.ts",

@@ -55,15 +55,17 @@ export const oldBu = {
                 'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
                 'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
             tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
-                return [context.isCC && !context.tagVars ? SubtagVariableType.GUILD : SubtagVariableType.TAGGUILD, context.guild.id];
+                return context.tagVars
+                    ? [SubtagVariableType.TAGGUILD, context.guild.id]
+                    : [SubtagVariableType.GUILD, context.guild.id];
             },
-            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, JToken>): Promise<void> {
                 return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
             },
-            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<JToken> {
                 return await context.database.tagVariables.get(name, ...this.tagScope(context));
             },
-            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
+            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
         },
         {
             name: 'Author',
@@ -73,13 +75,13 @@ export const oldBu = {
             tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
                 return [SubtagVariableType.AUTHOR, context.author];
             },
-            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, JToken>): Promise<void> {
                 return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
             },
-            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<JToken> {
                 return await context.database.tagVariables.get(name, ...this.tagScope(context));
             },
-            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['AUTHOR', context.author, key])
+            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['AUTHOR', context.author, key])
         },
         {
             name: 'Global',
@@ -89,22 +91,22 @@ export const oldBu = {
             tagScope(_context: BBContext): [type: SubtagVariableType, scope: string] {
                 return [SubtagVariableType.GLOBAL, ''];
             },
-            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, JToken>): Promise<void> {
                 return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
             },
-            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<JToken> {
                 return await context.database.tagVariables.get(name, ...this.tagScope(context));
             },
-            getLock: (_context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['GLOBAL', key])
+            getLock: (_context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['GLOBAL', key])
         },
         {
             name: 'Temporary',
             prefix: '~',
             description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
                 'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
-            setter: (_context: BBContext, _subtag: SubtagCall | null, _values: Record<string, JToken>): Promise<void> => Promise.resolve(), //Temporary is never persisted to the database
-            getter: (_context: BBContext, _subtag: SubtagCall | null, _name: string): Promise<JToken> => Promise.resolve(undefined), //Temporary is never persisted to the database
-            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => context.getLock(key)
+            setter: (_context: BBContext, _subtag: SubtagCall | undefined, _values: Record<string, JToken>): Promise<void> => Promise.resolve(), //Temporary is never persisted to the database
+            getter: (_context: BBContext, _subtag: SubtagCall | undefined, _name: string): Promise<JToken> => Promise.resolve(undefined), //Temporary is never persisted to the database
+            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => context.getLock(key)
         },
         {
             name: 'Local',
@@ -113,17 +115,17 @@ export const oldBu = {
                 'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
                 'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
             tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
-                return context.isCC && !context.tagVars
-                    ? [SubtagVariableType.GUILDLOCAL, `${context.guild.id}_${context.tagName}`]
-                    : [SubtagVariableType.LOCAL, context.tagName];
+                return context.tagVars
+                    ? [SubtagVariableType.LOCAL, context.tagName]
+                    : [SubtagVariableType.GUILDLOCAL, `${context.guild.id}_${context.tagName}`];
             },
-            async setter(context: BBContext, _subtag: SubtagCall | null, values: Record<string, JToken>): Promise<void> {
+            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, JToken>): Promise<void> {
                 return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
             },
-            async getter(context: BBContext, _subtag: SubtagCall | null, name: string): Promise<JToken> {
+            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<JToken> {
                 return await context.database.tagVariables.get(name, ...this.tagScope(context));
             },
-            getLock: (context: BBContext, _subtag: SubtagCall | null, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
+            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
         }
     ],
     async handleCensor(msg: Message<GuildTextableChannel>, storedGuild: StoredGuild): Promise<void> {
@@ -891,7 +893,7 @@ export const oldBu = {
         if (obj != null)
             return obj;
         try {
-            const arr = await context.variables.get(subtag, arrName);
+            const arr = await context.variables.get(arrName, subtag);
             if (arr !== undefined && Array.isArray(arr))
                 return { v: arr, n: arrName };
         } catch (err) { }
