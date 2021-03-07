@@ -18,7 +18,6 @@ export class TagListHandler extends ClusterEventService {
                 tags[t.name] = {
                     category: t.category,
                     name: t.name,
-                    args: t.args,
                     desc: t.desc,
                     exampleCode: t.exampleCode,
                     exampleIn: t.exampleIn,

@@ -1,11 +1,25 @@
 import { FlagDefinition, FlagResult, humanize, parse } from '../../utils';
-import { CommandDefinition, CompiledCommand, CommandTreeNode, ChildCommandHandlerTreeNode, CommandParameter } from './types';
+import { CommandDefinition, CommandHandler, CommandParameter, CommandSignatureHandler } from './types';
 
-export function compileCommand(definition: CommandDefinition, flagDefinitions: DeepReadOnly<FlagDefinition[]>): CompiledCommand {
-    const tree = populateTree(definition, flagDefinitions, { switch: {}, tests: [] }, []);
+interface ChildCommandTree extends CommandTree {
+    readonly name: CommandParameter;
+}
+
+interface CommandTree {
+    readonly switch: { [key: string]: ChildCommandTree | undefined };
+    readonly tests: VariableCommandTree[];
+    handler?: CommandSignatureHandler;
+}
+
+interface VariableCommandTree {
+    readonly check: (arg: string) => boolean;
+    readonly node: ChildCommandTree;
+}
+
+export function compileHandler(definition: CommandDefinition, flagDefinitions: DeepReadOnly<FlagDefinition[]>): CommandHandler {
+    const tree = buildTree(definition, flagDefinitions);
     return {
-        structure: tree,
-        usage: [...buildUsage(tree)],
+        signatures: [...buildUsage(tree)],
         execute: (message, args, raw) => {
             let node = tree;
             args: for (const arg of args) {
@@ -38,12 +52,21 @@ export function compileCommand(definition: CommandDefinition, flagDefinitions: D
     };
 }
 
+function buildTree(
+    definition: CommandDefinition,
+    flagDefinitions: DeepReadOnly<FlagDefinition[]>
+): CommandTree {
+    const tree: CommandTree = { switch: {}, tests: [] };
+    populateTree(definition, flagDefinitions, tree, []);
+    return tree;
+}
+
 function populateTree(
     definition: CommandDefinition,
     flagDefinitions: DeepReadOnly<FlagDefinition[]>,
-    tree: CommandTreeNode,
+    tree: CommandTree,
     path: CommandParameter[]
-): CommandTreeNode {
+): void {
     if ('subcommands' in definition) {
         for (const key of Object.keys(definition.subcommands)) {
             const subDefinition = definition.subcommands[key];
@@ -65,7 +88,7 @@ function populateTree(
                         break;
                     }
                     case 'variable': {
-                        const nextNode: ChildCommandHandlerTreeNode = { switch: {}, tests: [], name: parameter };
+                        const nextNode: ChildCommandTree = { switch: {}, tests: [], name: parameter };
                         const parse = getParser(parameter.valueType);
                         _node.tests.push({
                             check: str => parse(str) !== undefined,
@@ -114,11 +137,9 @@ function populateTree(
             }
         };
     }
-
-    return tree;
 }
 
-function* buildUsage(tree: CommandTreeNode | ChildCommandHandlerTreeNode): IterableIterator<CommandParameter[]> {
+function* buildUsage(tree: CommandTree | ChildCommandTree): IterableIterator<CommandParameter[]> {
     const res = [];
     if ('name' in tree)
         res.push(tree.name);
@@ -136,7 +157,7 @@ function* buildUsage(tree: CommandTreeNode | ChildCommandHandlerTreeNode): Itera
 
 }
 
-function* buildUsageInner(tree: CommandTreeNode): IterableIterator<CommandParameter[]> {
+function* buildUsageInner(tree: CommandTree): IterableIterator<CommandParameter[]> {
     const yielded = new Set();
     for (const key of Object.keys(tree.switch)) {
         const def = tree.switch[key];

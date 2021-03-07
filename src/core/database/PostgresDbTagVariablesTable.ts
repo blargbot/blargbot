@@ -9,17 +9,24 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
     ) {
     }
 
-    public async upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void> {
+    public async upsert(values: Record<string, string | undefined>, type: SubtagVariableType, scope: string): Promise<void> {
+        const model = this.postgres.models.BBTagVariableModel;
+        if (model === undefined)
+            throw new Error('The postgres models havent been configured!');
+
         const trans = await this.postgres.sequelize.transaction();
         for (const key in values) {
+            const value = values[key];
             const query = {
-                content: JSON.stringify(values[key]),
                 name: key.substring(0, 255),
                 scope: scope,
                 type: type
             };
             try {
-                await this.postgres.models.BBTagVariableModel?.upsert(query);
+                if (key !== undefined && key.length > 0)
+                    await model.upsert({ ...query, content: JSON.stringify(value) });
+                else
+                    await model.destroy({ where: query });
             } catch (err) {
                 this.logger.error(err);
                 if (err.errors) {
@@ -32,7 +39,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
         return await trans.commit();
     }
 
-    public async get(name: string, type: SubtagVariableType, scope: string): Promise<JToken> {
+    public async get(name: string, type: SubtagVariableType, scope: string): Promise<string | undefined> {
         const record = await this.postgres.models.BBTagVariableModel?.findOne({
             where: {
                 name: name.substring(0, 255),
@@ -44,7 +51,15 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
             return undefined;
 
         try {
-            return JSON.parse(record.content);
+            const result = JSON.parse(record.content);
+            switch (typeof result) {
+                case 'string': return result;
+                case 'undefined': return undefined;
+                case 'object':
+                    if (result === null)
+                        return undefined;
+                default: return record.content;
+            }
         } catch {
             return record.content;
         }

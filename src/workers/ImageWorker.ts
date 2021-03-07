@@ -27,8 +27,7 @@ export class ImageWorker extends BaseWorker {
         try {
             return await generator.execute(message);
         } catch (err) {
-            const message = err instanceof Error ? err.stack : err;
-            this.logger.error(`An error occurred while generating ${command}: ${message}`);
+            this.logger.error(`An error occurred while generating ${command}:`, err);
             return null;
         }
     }

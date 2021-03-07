@@ -7,7 +7,7 @@ export class EvalCommand extends BaseCommand {
         super(cluster, {
             name: 'eval',
             category: commandTypes.CAT,
-            handler: {
+            definition: {
                 parameters: '{code+}',
                 execute: (msg, _, __, code) => this.eval(msg.author.id, code),
                 description: 'Runs the code you enter on the current cluster'

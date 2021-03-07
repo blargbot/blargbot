@@ -43,7 +43,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
 
         for (const rule of collection) {
             if (!await rule.check(context, subtag)) {
-                return context.addError(subtag, rule.errorText(rulekey, this.scopeName));
+                return context.addError(rule.errorText(rulekey, this.scopeName), subtag);
             }
         }
         return null;

@@ -17,18 +17,18 @@ export class TagCommand extends BaseCommand {
             info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
                 + 'For more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
                 + 'By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)',
-            handler: {
+            definition: {
                 parameters: '{tagName} {args*}',
-                execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 1), false),
+                execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 1) ?? '', false),
                 subcommands: {
                     'test|eval|exec|vtest': {
                         parameters: 'debug? {code+}',
-                        execute: (msg, [debug], _, raw) => this.runRaw(msg, humanize.smartSplitSkip(raw, debug === undefined ? 1 : 2), '', debug !== undefined),
+                        execute: (msg, [debug], _, raw) => this.runRaw(msg, humanize.smartSplitSkip(raw, debug === undefined ? 1 : 2) ?? '', '', debug !== undefined),
                         description: ''
                     },
                     'debug': {
                         parameters: '{tagName} {args*}',
-                        execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 2), true),
+                        execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 2) ?? '', true),
                         description: ''
                     },
                     'create|add': {

@@ -11,15 +11,15 @@ export class ArtCommand extends BaseCommand {
             info: 'Shows everyone a work of art.',
             flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
             cooldown: 5000,
-            handler: {
-                parameters: '{user}',
+            definition: {
+                parameters: '{user?}',
                 dontBind: true,
                 execute: (msg, args, flags) => this.art(msg, args.join(' '), flags),
                 description: 'Shows everyone a work of art.'
             }
         });
-        this.lockKeys.push(m => m.author.id);
-        this.lockKeys.push(m => m.channel.id);
+        this.ratelimit.push(m => m.author.id);
+        this.ratelimit.push(m => m.channel.id);
     }
 
     private async art(message: Message, user: string | undefined, flags: FlagResult): Promise<void | string | MessageFile> {
@@ -41,7 +41,7 @@ export class ArtCommand extends BaseCommand {
 
         const buffer = await this.cluster.images.render('art', { avatar: url });
         if (!buffer || buffer.length === 0) {
-            return 'Something went wrong while trying to render that!';
+            return '❌ Something went wrong while trying to render that!';
         } else {
             return {
                 file: buffer,

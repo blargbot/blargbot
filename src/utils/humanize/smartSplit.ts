@@ -2,7 +2,7 @@ export function smartSplit(source: string, limit = 0): string[] {
     return [...smartSplitIter(source, limit)];
 }
 
-export function smartSplitSkip(source: string, count: number): string {
+export function smartSplitSkip(source: string, count: number): string | undefined {
     const iter = smartSplitIter(source, count + 1);
     let value = '';
     for (let i = 0; i <= count; i++) {

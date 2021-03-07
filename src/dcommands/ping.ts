@@ -22,7 +22,7 @@ export class PingCommand extends BaseCommand {
             name: 'ping',
             category: commandTypes.GENERAL,
             info: 'Pong!\nFind the command latency.',
-            handler: {
+            definition: {
                 parameters: '',
                 execute: message => this.ping(message),
                 description: 'Gets the current latency.'

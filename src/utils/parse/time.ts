@@ -14,11 +14,11 @@ export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, 
 
     let match = /^\s*in\s+(-?\d+(?:\.\d+)?)\s+(\S+)\s*$/i.exec(text);
     let sign = 1;
-    if (match == null) {
+    if (match === null) {
         match = /^\s*(-?\d+(?:\.\d+)?)\s+(\S+)\s+ago\s*$/i.exec(text);
         sign = -1;
     }
-    if (match != null) {
+    if (match !== null) {
         const magnitude = sign * parseFloat(match[1]);
         const key = match[2].toLowerCase();
         if (!(key in prettyTimeMagnitudes))

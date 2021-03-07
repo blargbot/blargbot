@@ -1,6 +1,5 @@
 import { Shard } from 'eris';
 import { SubtagType, CommandType, FlagDefinition } from '../utils';
-import { SubtagArgument } from '../core/bbtag/BaseSubtagHandler';
 
 export interface LookupChannelResult {
     channel: string;
@@ -24,7 +23,7 @@ export interface TagListResult {
 export interface TagResult {
     readonly category: SubtagType;
     readonly name: string;
-    readonly args: readonly SubtagArgument[];
+    // readonly args: readonly SubtagArgument[];
     readonly desc: string;
     readonly exampleCode: string | null;
     readonly exampleIn: string | null;

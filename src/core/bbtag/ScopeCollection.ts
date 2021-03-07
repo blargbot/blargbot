@@ -18,7 +18,7 @@ export class ScopeCollection {
     }
 
     public beginScope(): BBRuntimeScope {
-        const scope = { ...this.local };
+        const scope = Object.create(this.local);
         this.#scopes.push(scope);
         return scope;
     }

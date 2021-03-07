@@ -13,7 +13,7 @@ export class RespawnCommand extends BaseCommand {
             category: commandTypes.GENERAL,
             hidden: true,
             info: 'Cluster respawning only for staff.',
-            handler: {
+            definition: {
                 parameters: '{clusterId:integer}',
                 execute: (msg, [clusterId]) => this.respawn(msg, clusterId),
                 description: 'Respawns the cluster specified'

@@ -1,10 +1,10 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
 import { bbtagUtil, parse, sleep } from '../../utils';
-import { SubtagCall, RuntimeContextOptions, RuntimeReturnState, AnalysisResults, ExecutionResult } from './types';
+import { SubtagCall, RuntimeContextOptions, RuntimeReturnState, AnalysisResults, ExecutionResult, SubtagHandler } from './types';
 import { Statement } from './types';
-import { RuntimeContext, SubtagCallback } from './RuntimeContext';
-import { BaseSubtagHandler } from './BaseSubtagHandler';
+import { RuntimeContext } from './RuntimeContext';
+import { BaseSubtag } from './BaseSubtag';
 import { Database } from '../database';
 import { BBTagError } from './BBTagError';
 import { ModuleLoader } from '../ModuleLoader';
@@ -15,7 +15,7 @@ export class Engine {
     public get logger(): CatLogger { return this.cluster.logger; }
     public get database(): Database { return this.cluster.database; }
     public get util(): ClusterUtilities { return this.cluster.util; }
-    public get subtags(): ModuleLoader<BaseSubtagHandler> { return this.cluster.subtags; }
+    public get subtags(): ModuleLoader<BaseSubtag> { return this.cluster.subtags; }
 
     public constructor(
         public readonly cluster: Cluster
@@ -29,7 +29,9 @@ export class Engine {
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
         const context = new RuntimeContext(this, { ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
+        context.execTimer.start();
         const content = await this.eval(bbtag, context);
+        context.execTimer.end();
         this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
         await context.variables.persist();
         this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
@@ -47,7 +49,7 @@ export class Engine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: context.variables.list.reduce((v, c) => (v[c.key] = c.value, v), <Record<string, JToken>>{})
+                values: context.variables.list.reduce((v, c) => (v[c.key] = c.value, v), <Record<string, string | undefined>>{})
             }
         };
     }
@@ -59,36 +61,39 @@ export class Engine {
         if (context.state.return !== RuntimeReturnState.NONE)
             return '';
 
-        if (Array.isArray(bbtag)) {
+        if (!('name' in bbtag)) {
+            const results = [];
             context.scopes.beginScope();
-            const results = await Promise.all(bbtag.map(elem => typeof elem === 'string' ? Promise.resolve(elem) : this.eval(elem, context)));
+            for (const elem of bbtag)
+                results.push(typeof elem === 'string' ? elem : await this.eval(elem, context));
             context.scopes.finishScope();
             return results.join('');
         }
 
-        // sleep for 100ms every 1000 subtag calls
-        if (context.state.subtagCount++ % 1000)
-            await sleep(100);
 
         const name = (await this.eval(bbtag.name, context)).toLowerCase();
         const override = context.state.overrides[name];
         const native = this.cluster.subtags.get(name);
-        const [handle, definition]: [SubtagCallback?, BaseSubtagHandler?] =
+        const [handler, definition]: [SubtagHandler?, BaseSubtag?] =
             override ? [override, undefined]
-                : native ? [(subtag, context) => native.execute(subtag, context), native]
+                : native ? [native, native]
                     : [undefined, undefined];
 
-        if (handle === undefined)
-            return context.addError(bbtag, `Unknown subtag ${name}`);
+        if (handler === undefined)
+            return context.addError(`Unknown subtag ${name}`, bbtag);
 
         if (definition !== undefined) {
             const result = await context.limit.check(context, bbtag, definition.name);
             if (result !== null)
-                return context.addError(bbtag, result);
+                return context.addError(result, bbtag);
         }
 
         try {
-            return await handle(bbtag, context);
+            // sleep for 100ms every 1000 subtag calls
+            if (++context.state.subtagCount % 1000 === 0)
+                await sleep(100);
+            const result = await handler.execute(context, bbtag);
+            return typeof result === 'string' ? result : '';
         } catch (err) {
             this.logger.error(err);
             await this.util.send(this.cluster.config.discord.channels.errorlog, {
@@ -107,7 +112,7 @@ export class Engine {
                     ]
                 }
             });
-            return context.addError(bbtag, 'An internal server error has occurred');
+            return context.addError('An internal server error has occurred', bbtag);
         }
     }
 

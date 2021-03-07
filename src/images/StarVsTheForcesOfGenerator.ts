@@ -1,6 +1,6 @@
 import colorThief from 'color-thief-jimp';
 import { BaseImageGenerator } from '../structures/BaseImageGenerator';
-import { BetterColorAction } from '@Jimp/plugin-color';
+import { BetterColorAction } from '@jimp/plugin-color';
 import Jimp from 'jimp';
 
 export class StarVsTheForcesOfGenerator extends BaseImageGenerator {

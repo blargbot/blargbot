@@ -3,7 +3,7 @@ import ReadWriteLock from 'rwlock';
 import { FlagResult, FlagDefinition } from '../../utils';
 import { StoredGuildCommand, StoredTag } from '../database';
 import { VariableCache } from './Caching';
-import { SubtagCallback, RuntimeContext } from './RuntimeContext';
+import { RuntimeContext } from './RuntimeContext';
 import { BBRuntimeScope, ScopeCollection } from './ScopeCollection';
 import { TagCooldownManager } from './TagCooldownManager';
 
@@ -25,6 +25,7 @@ export interface SubtagCall {
     start: SourceMarker;
     end: SourceMarker;
 }
+
 export const enum SourceTokenType {
     CONTENT,
     STARTSUBTAG,
@@ -64,7 +65,7 @@ export interface SerializedRuntimeContext {
     author: string,
     authorizer: string,
     tagVars: boolean,
-    tempVars: Record<string, JToken>
+    tempVars: Record<string, string | undefined>
 }
 
 export interface RuntimeContextMessage {
@@ -97,7 +98,7 @@ export interface RuntimeContextState {
     break: number,
     continue: number,
     subtags: Record<string, number[] | undefined>,
-    overrides: Record<string, SubtagCallback | undefined>,
+    overrides: Record<string, SubtagHandler | undefined>,
     cache: Record<string, StoredGuildCommand | StoredTag | undefined>,
     subtagCount: number,
     allowedMentions: {
@@ -160,6 +161,41 @@ export interface ExecutionResult {
     };
     database: {
         committed: number;
-        values: Record<string, JToken>;
+        values: Record<string, string | undefined>;
     };
+}
+export type SubtagResult =
+    | string
+    | undefined
+    | void;
+
+export interface SubtagArgument {
+    readonly isCached: boolean;
+    value: string;
+    raw: Statement;
+    wait(): Promise<string>;
+}
+
+export interface SubtagSignatureHandler {
+    readonly resolve?: Array<number> | false;
+    readonly execute: (context: RuntimeContext, args: SubtagArgument[], call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+}
+
+interface DefaultSubtagHandlerDefinition {
+    readonly default: SubtagSignatureHandler | SubtagSignatureHandler['execute'];
+}
+
+interface ConditionalSubtagHandlerDefinition {
+    readonly whenArgCount: {
+        readonly [argCount: string]: SubtagSignatureHandler | SubtagSignatureHandler['execute']
+    }
+}
+
+export type SubtagHandlerDefintion =
+    | DefaultSubtagHandlerDefinition
+    | ConditionalSubtagHandlerDefinition
+    | (DefaultSubtagHandlerDefinition & ConditionalSubtagHandlerDefinition)
+
+export interface SubtagHandler {
+    readonly execute: (context: RuntimeContext, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }

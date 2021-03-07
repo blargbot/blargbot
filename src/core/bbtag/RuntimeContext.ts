@@ -6,7 +6,7 @@ import { bbtagUtil, FlagDefinition, FlagResult, guard, oldBu, parse } from '../.
 import { Duration } from 'moment-timezone';
 import { GuildTextableChannel, Member, User, Guild, Role } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
-import { Statement, SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext } from './types';
+import { SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext, SubtagHandler, Statement } from './types';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
 import { Engine } from './Engine';
 import { Database, StoredGuildCommand, StoredTag } from '../database';
@@ -15,11 +15,8 @@ function serializeEntity(entity: { id: string }): { id: string, serialized: stri
     return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
-export type SubtagCallback = (subtag: SubtagCall, context: RuntimeContext) => string | Promise<string>;
-
 export class RuntimeContext implements Required<RuntimeContextOptions> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #cache: WeakMap<SubtagCall | Statement, Promise<string>>;
+
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #isStaffPromise?: Promise<boolean>;
 
@@ -61,7 +58,6 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         public readonly engine: Engine,
         options: RuntimeContextOptions
     ) {
-        this.#cache = new WeakMap();
         if (options.message.member === null)
             throw new Error('The member of a message must be set');
         this.message = <RuntimeContextMessage>options.message;
@@ -116,14 +112,8 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         };
     }
 
-    public eval(bbtag: SubtagCall | Statement, useCache = true): Promise<string> {
-        let result: Promise<string> | undefined;
-        if (useCache)
-            result = this.#cache.get(bbtag);
-        if (result === undefined)
-            this.#cache.set(bbtag, result = this.engine.eval(bbtag, this));
-
-        return result;
+    public async eval(bbtag: Statement): Promise<string> {
+        return await this.engine.eval(bbtag, this);
     }
 
     public ownsMessage(messageId: string): boolean {
@@ -137,13 +127,13 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         });
     }
 
-    public addError(bbtag: SubtagCall | null, error: string | Error): string {
+    public addError(error: string | Error, subtag?: SubtagCall): string {
         if (typeof error === 'string')
             error = `\`${error}\``;
         else
             error = `\`${error.message}\``;
 
-        this.errors.push({ subtag: bbtag, error: `${bbtagUtil.stringify(bbtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}` });
+        this.errors.push({ subtag: subtag ?? null, error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}` });
         return this.scope.fallback ?? error;
     }
 
@@ -197,11 +187,11 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         return result;
     }
 
-    public override(subtag: string, callback: SubtagCallback): { previous: SubtagCallback | undefined, revert: () => void } {
+    public override(subtag: string, handler: SubtagHandler): { previous: SubtagHandler | undefined, revert: () => void } {
         const overrides = this.state.overrides;
         const exists = overrides.hasOwnProperty(subtag);
         const previous = overrides[subtag];
-        overrides[subtag] = callback;
+        overrides[subtag] = handler;
         return {
             previous,
             revert() {

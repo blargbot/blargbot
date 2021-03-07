@@ -47,3 +47,4 @@ jsondiff.js
 **/*.js.map
 **/*.disabled
 !*cache.ts
+*.cpuprofile

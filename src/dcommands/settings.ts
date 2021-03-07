@@ -9,7 +9,7 @@ export class SettingsCommand extends BaseCommand {
             name: 'settings',
             category: CommandType.ADMIN,
             info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.',
-            handler: {
+            definition: {
                 subcommands: {
                     'list': {
                         parameters: '',

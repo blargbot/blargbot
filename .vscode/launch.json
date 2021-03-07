@@ -7,13 +7,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Program (no build)",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/index.ts",
-            "preLaunchTask": "${defaultBuildTask}",
             "args": [
                 "--async-stack-traces"
             ]
@@ -21,12 +20,13 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program (no build)",
+            "name": "Launch Program",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/index.ts",
+            "preLaunchTask": "yarn: build",
             "args": [
                 "--async-stack-traces"
             ]

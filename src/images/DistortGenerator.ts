@@ -1,6 +1,6 @@
 import { BaseImageGenerator } from '../structures/BaseImageGenerator';
 import { randInt } from '../utils';
-import { BetterColorAction } from '@Jimp/plugin-color';
+import { BetterColorAction } from '@jimp/plugin-color';
 
 export class DistortGenerator extends BaseImageGenerator {
     public constructor(logger: CatLogger) {

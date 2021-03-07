@@ -5,15 +5,15 @@ import { SubtagCall } from './types';
 
 export class CacheEntry {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #original: JToken;
-    public value: JToken;
+    #original: string | undefined;
+    public value: string | undefined;
 
-    public get changed(): boolean { return JSON.stringify(this.#original) !== JSON.stringify(this.value); }
+    public get changed(): boolean { return this.#original !== this.value; }
 
     public constructor(
         public readonly context: RuntimeContext,
         public readonly key: string,
-        original: JToken
+        original: string | undefined
     ) {
         this.#original = original;
         this.value = original;
@@ -64,14 +64,10 @@ export class VariableCache {
         return entry.value;
     }
 
-    public async set(variable: string, value: JToken | CacheEntry, subtag?: SubtagCall): Promise<void> {
+    public async set(variable: string, value: string | undefined | CacheEntry, subtag?: SubtagCall): Promise<void> {
         if (value instanceof CacheEntry) {
             this.#cache[variable] = value;
             return;
-        }
-
-        if (typeof value === 'object') {
-            value = <JToken>JSON.parse(JSON.stringify(value));
         }
 
         const forced = variable.startsWith('!');
@@ -95,13 +91,13 @@ export class VariableCache {
         const vars = (variables || Object.keys(this.#cache))
             .map(key => this.#cache[key])
             .filter((c): c is CacheEntry => c !== undefined);
-        const pools: Record<string, Record<string, JToken>> = {};
+        const pools: Record<string, Record<string, string | undefined>> = {};
         for (const v of vars) {
             if (v.changed) {
                 const scope = oldBu.tagVariableScopes.find(s => v.key.startsWith(s.prefix));
                 if (scope == null) throw new Error('Missing default variable scope!');
                 const pool = pools[scope.prefix] ??= {};
-                pool[v.key.substring(scope.prefix.length)] = v.value === undefined || v.value === '' ? null : v.value;
+                pool[v.key.substring(scope.prefix.length)] = v.value === '' ? undefined : v.value;
                 v.persist();
             }
         }

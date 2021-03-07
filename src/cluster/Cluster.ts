@@ -1,8 +1,7 @@
 import { ModuleLoader } from '../core/ModuleLoader';
 import { ClusterUtilities } from './ClusterUtilities';
 import { BaseClient } from '../core/BaseClient';
-import { BaseCommand } from '../core/command';
-import { BaseSubtagHandler } from '../core/bbtag/BaseSubtagHandler';
+import { BaseSubtag } from '../core/bbtag/BaseSubtag';
 import moment, { Moment } from 'moment-timezone';
 import { EventManager } from '../structures/EventManager';
 import { commandTypes, tagTypes } from '../utils';
@@ -10,6 +9,7 @@ import { Engine as BBEngine } from '../core/bbtag/Engine';
 import { ClusterWorker } from '../workers/ClusterWorker';
 import { ImageConnection } from '../workers/ImageConnection';
 import { BaseService } from '../structures/BaseService';
+import { BaseCommand } from '../core/command';
 
 export interface ClusterOptions {
     id: number,
@@ -24,7 +24,7 @@ export class Cluster extends BaseClient {
     public readonly createdAt: Moment;
     public readonly worker: ClusterWorker;
     public readonly commands: ModuleLoader<BaseCommand>;
-    public readonly subtags: ModuleLoader<BaseSubtagHandler>;
+    public readonly subtags: ModuleLoader<BaseSubtag>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
     public readonly triggers: EventManager;
@@ -70,7 +70,7 @@ export class Cluster extends BaseClient {
         this.createdAt = moment();
         this.worker = options.worker;
         this.commands = new ModuleLoader('dcommands', BaseCommand, [this], this.logger, c => [c.name, ...c.aliases]);
-        this.subtags = new ModuleLoader('tags', BaseSubtagHandler, [this], this.logger, t => [t.name, ...t.aliases]);
+        this.subtags = new ModuleLoader('tags', BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
         this.eventHandlers = new ModuleLoader('cluster/events', BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader('cluster/services', BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);

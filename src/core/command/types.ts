@@ -12,7 +12,7 @@ export interface CommandOptions {
     readonly flags?: readonly FlagDefinition[];
     readonly onlyOn?: string | null;
     readonly cooldown?: number;
-    readonly handler: CommandDefinition;
+    readonly definition: CommandDefinition;
 }
 
 export type CommandResult =
@@ -67,30 +67,13 @@ export interface CommandLiteralParameter {
     readonly parse: (value: string) => unknown;
 }
 
-export interface CompiledCommand {
-    readonly structure: DeepReadOnly<CommandTreeNode>;
-    readonly usage: ReadonlyArray<readonly CommandParameter[]>;
-    readonly execute: (message: Message, args: string[], raw: string) => Promise<CommandResult> | CommandResult;
-    // readonly getHandler: (message: Message, flags: FlagResult, raw: string) => CommandHandler | CommandHandler[];
-}
-
-export interface ChildCommandHandlerTreeNode extends CommandTreeNode {
-    readonly name: CommandParameter;
-}
-
-export interface CommandTreeNode {
-    readonly switch: { [key: string]: ChildCommandHandlerTreeNode | undefined };
-    readonly tests: VariableCommandHandlerTreeNode[];
-    handler?: CommandHandler;
-}
-
 export interface CommandHandler {
+    readonly signatures: ReadonlyArray<readonly CommandParameter[]>;
+    readonly execute: (message: Message, args: string[], raw: string) => Promise<CommandResult> | CommandResult;
+}
+
+export interface CommandSignatureHandler {
     readonly description: string;
     readonly parameters: readonly CommandParameter[];
     readonly execute: (message: Message, args: string[], raw: string) => Promise<CommandResult> | CommandResult;
-}
-
-export interface VariableCommandHandlerTreeNode {
-    readonly check: (arg: string) => boolean;
-    readonly node: ChildCommandHandlerTreeNode;
 }

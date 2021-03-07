@@ -1,39 +1,43 @@
 import { Cluster } from '../cluster';
-import { BaseSubtagHandler, arg, Type } from '../core/bbtag/BaseSubtagHandler';
+import { BaseSubtag, RuntimeContext, SubtagCall } from '../core/bbtag';
+import { bbtagUtil, parse, SubtagType } from '../utils';
 
-export class AbsSubtag extends BaseSubtagHandler {
+export class AbsSubtag extends BaseSubtag {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'abs', {
-            category: Type.COMPLEX,
+        super(cluster, {
+            name: 'abs',
+            category: SubtagType.COMPLEX,
             aliases: ['absolute'],
             acceptsArrays: true,
-            args: [arg.required('number', 'any', true)],
             desc: 'Gets the absolute value of `number`. If multiple are supplied, then an array will be returned',
             exampleCode: '{abs;-535}',
-            exampleOut: '535'
+            exampleOut: '535',
+            definition: {
+                whenArgCount: {
+                    '1': (ctx, [value], subtag) => this.abs(ctx, value.value, subtag),
+                    '>1': (ctx, args, subtag) => this.absAll(ctx, args.map(arg => arg.value), subtag)
+                }
+            }
         });
-
-        this.whenArgs(0, 'notEnoughArguments')
-            .whenArgs(1, 'handleOne')
-            .default('handleMany');
     }
 
-    public handleOne(): string {
-        /*
-            let values = Builder.util.flattenArgArrays(args).map(parse.float);
-            if (values.filter(isNaN).length > 0)
-                return Builder.errors.notANumber(subtag, context);
-            values = values.map(Math.abs);
-            if (values.length == 1)
-                return values[0];
-            return tagArray.serialize(values);
-        */
-        return 'WIP';
+    public absAll(context: RuntimeContext, values: string[], subtag: SubtagCall): string {
+        const result = [];
+        for (const value of values) {
+            const parsed = parse.float(value);
+            if (isNaN(parsed))
+                return this.notANumber(context, subtag);
+            result.push(Math.abs(parsed));
+        }
+        return bbtagUtil.tagArray.serialize(result);
     }
 
-    public handleMany(): string[] {
-        return ['WIP', 'WIP'];
+    public abs(context: RuntimeContext, value: string, subtag: SubtagCall): string {
+        const val = parse.float(value);
+        if (isNaN(val))
+            return this.notANumber(context, subtag);
+        return Math.abs(val).toString();
     }
 }

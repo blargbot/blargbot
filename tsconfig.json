@@ -12,10 +12,12 @@
         "strictFunctionTypes": true,
         "strictBindCallApply": true,
         "strictPropertyInitialization": true,
+        "forceConsistentCasingInFileNames": true,
         "alwaysStrict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
         "allowUnreachableCode": false,
-        "allowUnusedLabels": false
+        "allowUnusedLabels": false,
+        // "noUncheckedIndexedAccess": true
     }
 }
