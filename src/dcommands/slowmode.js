@@ -21,7 +21,7 @@ class SlowmodeCommand extends BaseCommand {
 
         time = Math.min(time, 120);
 
-        let channel = msg.channel.id;
+        let channel = msg.channel;
         if (input.c && /(\d+)/.test(input.c[0])) {
             let c = input.c[0].match(/(\d+)/)[1];
             let guild = bot.channelGuildMap[channel];
