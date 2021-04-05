@@ -28,19 +28,19 @@ bot.on('guildCreate', async function (guild) {
 
     let storedGuild = await bu.getGuild(guild.id);
     if (!storedGuild || !storedGuild.active) {
-        var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
-- 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
-- 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
-If you are the owner of this server, here are a few things to know.
-- 🗨 To enable modlogging, please create a channel for me to log in and do \`${config.discord.defaultPrefix}modlog\`
-- ❗ To change my command prefix for your guild, please do \`${config.discord.defaultPrefix}prefix add <anything>\`. I also have a personnal prefix feature! Check it out with \`${config.discord.defaultPrefix}help personalprefix\`.
-- 🗄 To enable chatlogs, please do \`${config.discord.defaultPrefix}settings makelogs true\`.
-- ⚙ To receive messages whenever there's an update, do \`${config.discord.defaultPrefix}changelog\` in the desired channel. I need the \`embed links\` permission for this.
-- ⚙ Check out my web interface! <https://blargbot.xyz/dashboard/>
+//         var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
+// - 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
+// - 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
+// If you are the owner of this server, here are a few things to know.
+// - 🗨 To enable modlogging, please create a channel for me to log in and do \`${config.discord.defaultPrefix}modlog\`
+// - ❗ To change my command prefix for your guild, please do \`${config.discord.defaultPrefix}prefix add <anything>\`. I also have a personnal prefix feature! Check it out with \`${config.discord.defaultPrefix}help personalprefix\`.
+// - 🗄 To enable chatlogs, please do \`${config.discord.defaultPrefix}settings makelogs true\`.
+// - ⚙ To receive messages whenever there's an update, do \`${config.discord.defaultPrefix}changelog\` in the desired channel. I need the \`embed links\` permission for this.
+// - ⚙ Check out my web interface! <https://blargbot.xyz/dashboard/>
 
-❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}feedback <feedback>\`. Thanks!
-👍 I hope you enjoy my services! 👍`;
-        bu.send(guild.id, message2);
+// ❓ If you have any questions, comments, or concerns, please do \`${config.discord.defaultPrefix}feedback <feedback>\`. Thanks!
+// 👍 I hope you enjoy my services! 👍`;
+//         bu.send(guild.id, message2);
         if (!storedGuild) {
             r.table('guild').insert({
                 guildid: guild.id,
