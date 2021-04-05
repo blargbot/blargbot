@@ -50,13 +50,6 @@ bot.on('ready', async function () {
     bot.guilds.forEach(async function (g) {
         if (guilds.indexOf(g.id) == -1) {
             let guild = bot.guilds.get(g.id);
-            let members = guild.memberCount;
-            let users = guild.members.filter(m => !m.user.bot).length;
-            let bots = guild.members.filter(m => m.user.bot).length;
-            let percent = Math.floor(bots / members * 10000) / 100;
-            var message = `:ballot_box_with_check: Guild: \`${guild.name}\`` +
-                ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
-            bu.send(`205153826162868225`, message);
 
             console.log('Inserting a missing guild ' + g.id);
             await r.table('guild').insert({
