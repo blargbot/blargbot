@@ -160,10 +160,18 @@ class DiscordClient extends Client {
             this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
             this.avatarTask.start();
         }
+        this.gameTask = new CronJob('*/15 * * * *', this.gameInterval.bind(this));
+        this.gameTask.start();
         this.intervalTask = new CronJob('*/15 * * * *', this.autoresponseInterval.bind(this));
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
 
         this.intervalTask.start();
+
+        this.gameInterval();
+    }
+
+    async gameInterval() {
+        await gameSwitcher();
     }
 
     async avatarInterval() {
@@ -179,7 +187,6 @@ class DiscordClient extends Client {
             avatar: bu.avatars[id]
         });
 
-        await gameSwitcher();
         // await this.editGuild('194232473931087872', {
         //     icon: bu.avatars[id]
         // });

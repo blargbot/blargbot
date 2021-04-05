@@ -2,7 +2,7 @@ const moment = require('moment');
 const holidays = require('../../holidays.json');
 
 const games = [
-  { name: 'Important Update about Recent Events: https://blargbot.xyz/update' }
+  { name: 'Important Update About Recent Events: https://blargbot.xyz/update' }
   // { name: `with tiny bits of string!` },
   // { name: `with a mouse!` },
   // { name: `with a laser pointer!`, type: 3 },
