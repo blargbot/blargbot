@@ -21,6 +21,10 @@ module.exports =
         .withProp('clean', function(obj) {
             if (typeof obj === 'string') {
                 try {
+                    // don't parse ints, because it will break snowflakes
+                    if (/^\d+$/.test(obj)) {
+                        return obj;
+                    }
                     const raw = JSON.parse(obj);
 
                     return this.clean(raw);
