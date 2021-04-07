@@ -41,8 +41,8 @@ module.exports =
         return Builder.util.error(subtag, context, 'Type must be member or role');
 
       const itemId = args[2];
-      const allow = args[3] || '';
-      const deny = args[4] || '';
+      const allow = args[3] || '0';
+      const deny = args[4] || '0';
 
       try {
         let fullReason = bu.formatAuditReason(context.user, context.scope.reason);
