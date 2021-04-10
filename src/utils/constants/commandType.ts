@@ -10,7 +10,8 @@ export interface CommandProperties {
     readonly name: string;
     readonly description: string;
     readonly perm?: string;
-    readonly requirement: (client: Cluster, message: Message) => boolean | Promise<boolean>
+    readonly requirement: (client: Cluster, message: Message) => boolean | Promise<boolean>;
+    readonly color: number;
 }
 
 export enum Type {
@@ -27,42 +28,48 @@ export const properties: CommandPropertiesSet = {
     [Type.GENERAL]: {
         name: 'General',
         requirement: () => true,
-        description: 'General commands.'
+        description: 'General commands.',
+        color: 0xefff00
     },
     [Type.CAT]: {
         name: 'CATZ MEOW MEOW',
         requirement: (client, message) => message.author.id == client.config.discord.users.owner,
-        description: 'MREOW MEOWWWOW! **purr**'
+        description: 'MREOW MEOWWWOW! **purr**',
+        color: 0xff0000
     },
     [Type.NSFW]: {
         name: 'NSFW',
         requirement: () => true,
-        description: 'Commands that can only be executed in NSFW channels.'
+        description: 'Commands that can only be executed in NSFW channels.',
+        color: 0x010101
     },
     [Type.IMAGE]: {
         name: 'Image',
         requirement: () => true,
-        description: 'Commands that generate or display images.'
+        description: 'Commands that generate or display images.',
+        color: 0xefff00
     },
     [Type.MUSIC]: {
         name: 'Music',
         requirement: () => false,
-        description: ''
+        description: '',
+        color: 0xefff00
     },
     [Type.ADMIN]: {
         name: 'Admin',
         requirement: () => true,
         perm: 'Admin',
-        description: 'Powerful commands that require an `admin` role or special permissions.'
+        description: 'Powerful commands that require an `admin` role or special permissions.',
+        color: 0xff0000
     },
     [Type.SOCIAL]: {
         name: 'Social',
         requirement: async (client: Cluster, msg: Message): Promise<boolean> => {
             if (!isGuildMessage(msg))
                 return false;
-            const guild = await client.database.guilds.get(msg.channel.guild.id);
-            return guild?.settings?.social ?? false;
+            return await client.database.guilds.getSetting(msg.channel.guild.id, 'social') ?? false;
         },
-        description: 'Social commands for interacting with other people'
+        description: 'Social commands for interacting with other people',
+        color: 0xefff00
     }
 };

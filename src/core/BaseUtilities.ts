@@ -1,6 +1,6 @@
 import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, EmbedOptions, ExtendedUser, Member, Message, MessageFile, TextableChannel, User } from 'eris';
 import { BaseClient } from './BaseClient';
-import { snowflake } from '../utils';
+import { guard, snowflake, stringify } from '../utils';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
 import request from 'request';
 import { metrics } from './Metrics';
@@ -12,8 +12,8 @@ export type SendFiles = MessageFile | Array<MessageFile>
 export type SendPayload = {
     disableEveryone?: boolean,
     embed?: SendEmbed,
-    embeds?: Array<SendEmbed>,
-    nsfw?: string
+    nsfw?: string,
+    isHelp?: boolean
 } & AdvancedMessageContent | string | boolean
 
 export class BaseUtilities {
@@ -30,36 +30,43 @@ export class BaseUtilities {
         this.messageAwaiter = new MessageAwaiter(this.logger);
     }
 
-    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<Message | null> {
-        let channel: AnyChannel | Channel;
-        let message: Pick<Message, 'channel' | 'content' | 'author'> | undefined;
-        metrics.sendCounter.inc();
-
+    private async getSendChannel(context: SendContext): Promise<TextableChannel> {
         // Process context into a channel and maybe a message
         switch (typeof context) {
             // Id provided, get channel object
             case 'string':
-                channel = this.discord.getChannel(context);
-                if (!channel) {
-                    context = (/(\d+)/.exec(context) || [])[1];
-                    channel = new Channel({ id: context });
-                }
+                const foundChannel = this.discord.getChannel(context)
+                    ?? await this.discord.getRESTChannel(context);
+
+                if (guard.isTextableChannel(foundChannel))
+                    return foundChannel;
+                else if (foundChannel)
+                    throw new Error('Cannot send messages to the given channel');
+
                 break;
             case 'object':
                 // Probably a message provided
-                if ('channel' in context) {
-                    channel = context.channel;
-                    message = context;
-                }
+                if ('channel' in context)
+                    return context.channel;
                 // Probably a channel provided
-                else {
-                    channel = context;
-                }
-                break;
-            // Invalid option given
-            default:
-                throw new Error('Channel not found');
+                return context;
         }
+
+        throw new Error('Channel not found');
+    }
+
+    public websiteLink(path: string): string {
+        path = path.replace(/^[\/\\]+/, '');
+        const scheme = this.config.website.secure ? 'https' : 'http';
+        const host = this.config.website.host;
+        return `${scheme}://${host}/${path}`;
+    }
+
+    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<Message | null> {
+        metrics.sendCounter.inc();
+
+        let channel = await this.getSendChannel(context);
+        const message = context instanceof Message ? context : undefined;
 
         switch (typeof payload) {
             case 'string':
@@ -82,12 +89,22 @@ export class BaseUtilities {
             payload.allowedMentions.everyone = false;
         }
 
-        if ('permissionsOf' in channel
-            && payload.embed
-            && 'asString' in payload.embed
+        // Send help messages to DMs if the message is marked as a help message
+        if (payload.isHelp
+            && guard.isGuildChannel(channel)
+            && await this.database.guilds.getSetting(channel.guild.id, 'dmhelp')
+            && message !== undefined) {
+            await this.send(channel, '📧 DMing you the help 📧');
+            payload.content = `Here is the help you requested in ${channel.mention}:\n${payload.content ?? ''}`;
+            channel = await message.author.getDMChannel();
+        }
+
+        // Stringifies embeds if we lack permissions to send embeds
+        if (payload.embed !== undefined
+            && guard.isGuildChannel(channel)
             && !channel.permissionsOf(this.user.id).has('embedLinks')
         ) {
-            payload.content = `${payload.content ?? ''}${payload.embed.asString ?? ''}`;
+            payload.content = `${payload.content ?? ''}${stringify.embed(payload.embed)}`;
             delete payload.embed;
         }
 
@@ -100,20 +117,22 @@ export class BaseUtilities {
             payload.content = payload.content.trim();
         if (payload.nsfw && !('nsfw' in channel && channel.nsfw)) {
             payload.content = payload.nsfw;
-            payload.embed = payload.embeds = files = undefined;
+            payload.embed = files = undefined;
         }
 
-        if (!payload.content && !payload.embed && !payload.embeds && (!files || files.length == 0)) {
+        if (!payload.content && !payload.embed && (!files || files.length == 0)) {
             this.logger.error('Tried to send an empty message!');
             throw new Error('No content');
         }
 
-        if (payload.content.length > 2000) {
+        if (payload.content.length > 2000 || !guard.checkEmbedSize(payload.embed)) {
             const id = await this.generateOutputPage(payload, channel);
-            const output = this.client.config.general.isbeta ? 'http://localhost:8085/output/' : 'https://blargbot.xyz/output/';
+            const output = this.websiteLink('/output');
             payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n' +
                 '\n' +
                 `To see what I would have said, please visit ${output}${id}`;
+            if (payload.embed)
+                delete payload.embed;
         }
 
         this.logger.debug('Sending content: ', JSON.stringify(payload));

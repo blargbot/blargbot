@@ -4,6 +4,7 @@ import { channelName } from './channelName';
 import { smartJoin } from './smartJoin';
 import { smartSplit, smartSplitSkip } from './smartSplit';
 import { truncate } from './truncate';
+import { flags } from './flags';
 
 export const humanize = {
     duration,
@@ -12,5 +13,6 @@ export const humanize = {
     smartJoin,
     smartSplit,
     smartSplitSkip,
-    truncate
+    truncate,
+    flags
 };

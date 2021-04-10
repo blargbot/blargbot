@@ -15,8 +15,8 @@ export class TagCommand extends BaseCommand {
             aliases: ['t'],
             category: commandTypes.GENERAL,
             info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
-                + 'For more information about BBTag, visit <https://blargbot.xyz/tags>.\n'
-                + 'By creating a tag, you acknowledge that you agree to the Terms of Service (<https://blargbot.xyz/tags/tos>)',
+                + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
+                + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
             definition: {
                 parameters: '{tagName} {args*}',
                 execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 1) ?? '', false),
@@ -407,7 +407,7 @@ export class TagCommand extends BaseCommand {
         if (match.reports !== undefined && match.reports > 0)
             fields.push({ name: '⚠️ Reported ⚠️', value: `${match.reports} time${match.reports == 1 ? '' : 's'}`, inline: true });
 
-        const flags = stringifyFlags(match);
+        const flags = humanize.flags(match.flags ?? []);
         if (flags.length > 0)
             fields.push({ name: 'Flags', value: flags.join('\n') });
 
@@ -483,7 +483,7 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        const flags = stringifyFlags(match);
+        const flags = humanize.flags(match.flags ?? []);
         if (flags.length === 0)
             return `The \`${match.name}\` tag has no flags.`;
 
@@ -730,11 +730,7 @@ function normalizeName(title: string): string {
     return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
 }
 
-function stringifyFlags(tag: DeepReadOnly<StoredTag>): string[] {
-    return tag.flags?.map(flag =>
-        `\`-${flag.flag}\`/\`--${flag.word}\`: ${flag.desc || 'No description.'}`
-    ) ?? [];
-}
+
 
 function createDebugOutput(name: string, code: string, args: string[], result: ExecutionResult): { content: string, files: MessageFile } {
     const performance: Record<string, unknown> = {};

@@ -8,7 +8,7 @@ export class SettingsCommand extends BaseCommand {
         super(cluster, {
             name: 'settings',
             category: CommandType.ADMIN,
-            info: 'Gets or sets the settings for the current guild. Visit https://blargbot.xyz/commands/settings for key documentation.',
+            info: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/commands/settings')} for key documentation.`,
             definition: {
                 subcommands: {
                     'list': {

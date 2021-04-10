@@ -164,6 +164,10 @@ export interface GuildCensorExceptions {
     role: string | string[];
 }
 
+export interface NamedStoredGuildCommand extends StoredGuildCommand {
+    name: string;
+}
+
 export interface StoredGuildCommand {
     help?: string;
     lang?: string;
@@ -181,7 +185,7 @@ export interface StoredGuildCommand {
 export interface CommandPermissions {
     disabled?: boolean;
     permission?: number;
-    rolename?: string;
+    rolename?: string | string[];
 }
 
 export interface StoredTag {
@@ -339,19 +343,21 @@ export interface PostgresDbOptions {
 }
 
 export interface GuildTable {
+    listCommands(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<NamedStoredGuildCommand[]>>;
     get(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuild> | undefined>;
     add(guild: StoredGuild): Promise<boolean>;
-    getIds(): Promise<string[]>;
+    getIds(skipCache?: boolean): Promise<string[]>;
     getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<StoredGuildSettings>[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
     getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuildCommand> | undefined>;
-    withIntervalCommand(): Promise<DeepReadOnly<StoredGuild[]> | undefined>;
+    withIntervalCommand(skipCache?: boolean): Promise<DeepReadOnly<StoredGuild[]> | undefined>;
     updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;
     setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean>;
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
     setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean>;
     setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
+    getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<DeepReadOnly<CommandPermissions> | undefined>;
 }
 
 export interface UserTable {

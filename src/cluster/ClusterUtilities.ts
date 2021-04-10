@@ -10,7 +10,7 @@ import moment from 'moment';
 import { StoredGuildSettings, StoredGuild, StoredGuildCommand } from '../core/database';
 import { BaseCommand } from '../core/command';
 
-interface CanExecuteDiscordCommandOptions {
+interface CanExecuteDefaultCommandOptions {
     storedGuild?: DeepReadOnly<StoredGuild>,
     permOverride?: StoredGuildSettings['permoverride'],
     staffPerms?: StoredGuildSettings['staffperms']
@@ -527,42 +527,29 @@ export class ClusterUtilities extends BaseUtilities {
             ?.position ?? 0;
     }
 
-    public async canExecuteDiscordCommand(
+    public async canExecuteDefaultCommand(
         msg: Message<TextableChannel>,
         command: BaseCommand,
         quiet = false,
-        options: CanExecuteDiscordCommandOptions = {}
+        options: CanExecuteDefaultCommandOptions = {}
     ): Promise<boolean> {
         if (msg.author.id == this.cluster.config.discord.users.owner)
             return true;
 
         const category = commandTypes.properties[command.category];
-
-        if (!guard.isGuildMessage(msg)) {
+        if (!guard.isGuildMessage(msg))
             return category.perm === undefined;
-        }
-
-        let { storedGuild, permOverride, staffPerms } = options;
-        let adminrole: string | undefined;
-        if (!storedGuild) {
-            storedGuild = await this.database.guilds.get(msg.channel.guild.id) ?? undefined;
-            if (storedGuild?.settings) {
-                permOverride = storedGuild.settings.permoverride;
-                staffPerms = storedGuild.settings.staffperms;
-                if (storedGuild.settings.adminrole !== undefined && storedGuild.settings.adminrole !== '')
-                    adminrole = storedGuild.settings.adminrole;
-            }
-        }
-
-        const commandPerms = storedGuild?.commandperms?.[command.name];
-        if (commandPerms?.disabled && !command.cannotDisable)
-            return false;
 
         if (!await category.requirement(this.cluster, msg))
             return false;
 
+        const commandPerms = await this.database.guilds.getCommandPerms(msg.channel.guild.id, command.name);
+        if (commandPerms?.disabled && !command.cannotDisable)
+            return false;
+
+        const permOverride = options.permOverride ?? await this.database.guilds.getSetting(msg.channel.guild.id, 'permoverride');
         if (permOverride) {
-            staffPerms ??= defaultStaff;
+            const staffPerms = options.staffPerms ?? await this.database.guilds.getSetting(msg.channel.guild.id, 'staffperms') ?? defaultStaff;
             const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
             if (!isNaN(allow) && msg.member && this.comparePerms(msg.member, allow))
                 return true;
@@ -572,10 +559,14 @@ export class ClusterUtilities extends BaseUtilities {
             if (commandPerms.permission && msg.member && this.comparePerms(msg.member, commandPerms.permission))
                 return true;
 
-            if (commandPerms.rolename)
-                return await this.hasPerm(msg, [commandPerms.rolename], quiet);
+            switch (typeof commandPerms.rolename) {
+                case 'undefined': break;
+                case 'string': return await this.hasPerm(msg, [commandPerms.rolename], quiet);
+                case 'object': return await this.hasPerm(msg, commandPerms.rolename, quiet);
+            }
         }
 
+        const adminrole = await this.database.guilds.getSetting(msg.channel.guild.id, 'adminrole');
         if (category.perm && !await this.hasPerm(msg, [adminrole || category.perm], quiet))
             return false;
 

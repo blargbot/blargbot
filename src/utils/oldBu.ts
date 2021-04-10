@@ -631,7 +631,7 @@ export const oldBu = {
     getAuthor(user: User): EmbedAuthorOptions {
         return {
             name: humanize.fullName(user),
-            url: `https://blargbot.xyz/user/${user.id}`,
+            url: util.websiteLink(`/user/${user.id}`),
             icon_url: user.avatarURL
         };
     },

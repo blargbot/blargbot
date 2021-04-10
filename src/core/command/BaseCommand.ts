@@ -38,6 +38,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
     protected get database(): Database { return this.cluster.database; }
     protected get discord(): ErisClient { return this.cluster.discord; }
     protected get config(): Configuration { return this.cluster.config; }
+    public get names(): readonly string[] { return [this.name, ...this.aliases]; }
 
     protected constructor(
         protected readonly cluster: Cluster,
@@ -53,11 +54,11 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         this.onlyOn = options.onlyOn ?? null;
         this.cooldown = options.cooldown ?? 0;
         this.ratelimit = [];
-        this.definition = { ...handlerDefaults, ...options.definition };
+        this.definition = { ...options.definition };
         this.#locks = {};
         this.#cooldowns = {};
 
-        this.handler = compileHandler(this.definition, this.flags);
+        this.handler = compileHandler({ ...handlerDefaults, ...this.definition }, this.flags);
         this.usage = this.handler.signatures.map(u => u.map(p => p.display).join(' ')).join('\n');
     }
 

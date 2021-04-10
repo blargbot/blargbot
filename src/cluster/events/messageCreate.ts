@@ -47,8 +47,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
 
             if (author.id == this.cluster.discord.user.id)
                 this.handleOurMessage(message);
-
-            if (author.id !== this.cluster.discord.user.id)
+            else
                 void this.handleUserMessage(message, storedGuild);
         }
     }
@@ -109,7 +108,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
 
         try {
             const command = msg.content.substring(prefix.length).trim();
-            if (await this.handleDiscordCommand(msg, command)) {
+            if (await this.handleDefaultCommand(msg, command)) {
                 if (guard.isGuildMessage(msg) && storedGuild)
                     this.handleDeleteNotif(msg, storedGuild);
                 return;
@@ -183,7 +182,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         return true;
     }
 
-    public async handleDiscordCommand(msg: Message<TextableChannel>, text: string): Promise<boolean> {
+    public async handleDefaultCommand(msg: Message<TextableChannel>, text: string): Promise<boolean> {
         if (msg.author.bot)
             return false;
 
@@ -192,7 +191,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
             return true;
 
         const command = this.cluster.commands.get(words[0].toLowerCase());
-        if (!command || !await this.cluster.util.canExecuteDiscordCommand(msg, command))
+        if (!command || !await this.cluster.util.canExecuteDefaultCommand(msg, command))
             return false;
 
         try {
@@ -239,12 +238,13 @@ export class MessageCreateEventHandler extends DiscordEventService {
 
 
     public handleOurMessage(msg: Message): void {
-        if (guard.isGuildChannel(msg.channel))
-            this.logger.output(`${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name} ` +
-                `(${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
-        else
-            this.logger.output(`PM> ${msg.channel.recipient.username} (${msg.channel.id})> ` +
-                `${msg.author.username}> ${msg.content} (${msg.id})`);
+        const log = (
+            guard.isGuildChannel(msg.channel)
+                ? `${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name}`
+                : `PM> ${msg.channel.recipient.username} (${msg.channel.id})>`
+        ) + ` (${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`;
+
+        this.logger.output(log);
     }
 
     public async handleAntiMention(msg: Message<GuildTextableChannel>, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {

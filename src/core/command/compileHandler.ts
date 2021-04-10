@@ -108,7 +108,7 @@ function populateTree(
         if (tree.handler !== undefined)
             throw new Error(`Duplicate handler '${path.map(p => p.display).join(' ')}' found!`);
 
-        const parameters = [...compileParameters(definition.parameters)];
+        const parameters = [...compileParameters(definition.parameters ?? '')];
         const restParams = parameters.filter(p => p.type === 'variable' && p.rest);
 
         if (restParams.length > 1)
