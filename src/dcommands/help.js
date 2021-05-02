@@ -31,10 +31,10 @@ class HelpCommand extends BaseCommand {
                     return stringify(this);
                 }
             };
-            let customCommand = await bu.ccommand.get(msg.guild.id, words[1]);
-            if(customCommand) {
-                let helpText = customCommand.help;
-                if(helpText) {
+            const customCommand = await bu.ccommand.get(msg.guild.id, words[1]);
+            if (customCommand) {
+                const helpText = customCommand.help;
+                if (helpText) {
                     embed.color = this.getColor('CUSTOM');
                     embed.title = `Help for ${words[1].toLowerCase()} (Custom Command)`;
                     embed.description = helpText;
@@ -42,8 +42,8 @@ class HelpCommand extends BaseCommand {
             } else {
                 if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
                 && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
-                    let instance = CommandManager.built[CommandManager.commandList[words[1]].name];
-                    let definition = CommandManager.commandList[words[1]];
+                    const instance = CommandManager.built[CommandManager.commandList[words[1]].name];
+                    const definition = CommandManager.commandList[words[1]];
                     embed.title = `Help for ${definition.name}`;
                     embed.url = `https://blargbot.xyz/commands#${definition.name}`;
                     embed.description = `**__Usage__**:\`${definition.usage}\`\n${definition.info}`;
