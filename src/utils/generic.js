@@ -770,7 +770,7 @@ bu.logAction = async function (guild, user, mod, type, reason, color = 0x17c484,
     let isArray = Array.isArray(user);
     if (Array.isArray(reason)) reason = reason.join(' ');
     let val = await bu.guildSettings.get(guild.id, 'modlog');
-    if (val) {
+    if (val && val !== 'false') {
         let storedGuild = await bu.getGuild(guild.id);
         let caseid = 0;
         if (storedGuild.modlog.length > 0) {
