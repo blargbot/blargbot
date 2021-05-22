@@ -37,6 +37,11 @@ bu.guildSettings = {
                     returnObj = 'Expected `1`, `0`, `true`, or `false`';
                 };
                 break;
+            case 'id':
+                if (!/^\d+$/.test(value)) {
+                    value = undefined;
+                }
+                break;
         }
         storedGuild.settings[key] = value;
 
