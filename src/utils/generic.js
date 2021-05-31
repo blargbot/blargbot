@@ -240,7 +240,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
                 role = getId(perm);
                 if (role === null) return false;
             };
-            Array.isArray(role) ?
+            return Array.isArray(role) ?
                 role.indexOf(m.id) > -1 :
                 m.id == role;
         }
