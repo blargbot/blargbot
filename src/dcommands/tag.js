@@ -389,7 +389,7 @@ class TagCommand extends BaseCommand {
                         content: content,
                         lastmodified: r.epochTime(moment() / 1000),
                         uses: tag ? tag.uses : 0,
-                        flags: [],
+                        flags: tag ? (tag.flags || []) : [],
                         lang: tag ? tag.lang : ''
                     }).run();
                     result = bbtag.addAnalysis(content, `✅ Tag \`${title}\` set. ✅`);
@@ -437,7 +437,7 @@ class TagCommand extends BaseCommand {
                                     ? `\n**Aliases:** ${(command[0].aliases || []).join(', ')}`
                                     : ''
                                 }${
-                                command[0].args ? `**Args:** \`${command[0].args}\`` : ''
+                                command[0].args ? `\n**Args:** \`${command[0].args}\`` : ''
                                 }
 ${command[0].desc}`);
                         } else {

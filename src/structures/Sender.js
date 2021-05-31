@@ -49,7 +49,9 @@ class Sender extends EventEmitter {
             this.send('await', data);
             let timer = setTimeout(() => {
                 this.process.removeAllListeners(event);
-                reject(new Error('Rejected message after 60 seconds'));
+                reject(new Error('Rejected message after 60 seconds: '
+                    + data.message.substring(0, 16)
+                    + (this.process.env ? ' (' + this.process.env.CLUSTER_ID + ')' : '')));
             }, 60000);
             this.once(event, data => {
                 clearTimeout(timer);

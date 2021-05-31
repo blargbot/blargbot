@@ -49,10 +49,10 @@ class KickCommand extends BaseCommand {
     }
 
     async kick(msg, target, reason, tag = false, noPerms = false) {
-        if (!msg.channel.guild.members.get(bot.user.id).permission.json.kickMembers)
+        if (!msg.channel.guild.members.get(bot.user.id).permissions.json.kickMembers)
             return 1;
         let kickPerms = await bu.guildSettings.get(msg.guild.id, 'kickoverride') || 0;
-        if (!noPerms && !bu.comparePerms(msg.member, kickPerms) && !msg.member.permission.json.kickMembers)
+        if (!noPerms && !bu.comparePerms(msg.member, kickPerms) && !msg.member.permissions.json.kickMembers)
             return 3;
 
         var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));

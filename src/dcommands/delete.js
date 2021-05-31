@@ -16,7 +16,7 @@ class DeleteCommand extends BaseCommand {
             let code = bu.genEventCode();
             bot.sendChannelTyping(msg.channel.id);
             let buf = await bu.blargbotApi('delete', { text });
-            bu.send(msg, undefined, {
+            await bu.send(msg, undefined, {
                 file: buf,
                 name: 'deleted.png'
             });

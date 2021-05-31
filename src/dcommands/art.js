@@ -7,7 +7,10 @@ class ArtCommand extends BaseCommand {
             category: bu.CommandType.IMAGE,
             usage: 'art [user]',
             info: 'Shows everyone a work of art.',
-            flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }]
+            flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -36,7 +39,7 @@ class ArtCommand extends BaseCommand {
             avatar: url
         });
 
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'sobeautifulstan.png'
         });

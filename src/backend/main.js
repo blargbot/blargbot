@@ -61,7 +61,8 @@ e.init = () => {
         clientID: config.website.clientid,
         clientSecret: config.website.secret,
         callbackURL: config.website.callback,
-        scope: scopes
+        scope: scopes,
+        prompt : 'none'
     }, function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
             return done(null, profile);

@@ -18,7 +18,7 @@ class PurgeCommand extends BaseCommand {
                  * Checks if we have the permissions to remove them all at once
                  */
                 var i;
-                if (msg.channel.guild.members.get(bot.user.id).permission.json.manageMessages) {
+                if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageMessages) {
                     console.debug(`Purging all of my messages in one fell swoop-da-whoop!`);
                     var messageIdArray = [];
                     for (i = 0; i < messageArray.length; i++) {

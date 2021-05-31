@@ -1,7 +1,5 @@
 const BaseCommand = require('../structures/BaseCommand');
 
-const Endpoints = require('eris/lib/rest/Endpoints');
-
 class SlowmodeCommand extends BaseCommand {
     constructor() {
         super({
@@ -23,18 +21,16 @@ class SlowmodeCommand extends BaseCommand {
 
         time = Math.min(time, 120);
 
-        let channel = msg.channel.id;
+        let channel = msg.channel;
         if (input.c && /(\d+)/.test(input.c[0])) {
             let c = input.c[0].match(/(\d+)/)[1];
             let guild = bot.channelGuildMap[channel];
             if (guild == msg.guild.id) channel = c;
         }
 
-        let endpoint = Endpoints.CHANNEL(channel);
-
         try {
-            await bot.requestHandler.request('PATCH', endpoint, true, {
-                rate_limit_per_user: time,
+            await channel.edit({
+                rateLimitPerUser: time,
                 reason: encodeURIComponent(`[${bu.getFullName(msg.author)}] ${input.r ? input.r.join(' ') : ''}`)
             });
 

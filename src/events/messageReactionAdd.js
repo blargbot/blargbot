@@ -1,4 +1,3 @@
-const User = require('eris/lib/structures/User');
 
 bot.on('messageReactionAdd', async function (msg, emoji, user) {
     let emojiString = emoji.name;
@@ -14,7 +13,7 @@ bot.on('messageReactionAdd', async function (msg, emoji, user) {
         }
     }
     if (msg && msg.guild) {
-        user = await bu.getUserById(user);
+        user = await bu.getUserById(user.id);
         handleAwaitReaction(msg, emojiString, user);
 
         const member = msg.channel.guild.members.get(user.id);

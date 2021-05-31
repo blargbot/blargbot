@@ -38,8 +38,8 @@ ${bu.padLeft('Nickname', 19)} : ${userToGet.nick}
 ${bu.padLeft('Discriminator', 19)} : ${userToGet.user.discriminator}
 ${!userToGet.user.bot ? `${bu.padLeft('Account Type', 19)} : User` : `${bu.padLeft('Account Type', 19)} : Bot`}
 ${bu.padLeft('ID', 19)} : ${userToGet.user.id}
-${bu.padLeft('Allowed Permissions', 19)} : ${userToGet.permission.allow}
-${bu.padLeft('Denied Permissions', 19)} : ${userToGet.permission.deny}
+${bu.padLeft('Allowed Permissions', 19)} : ${userToGet.permissions.allow}
+${bu.padLeft('Denied Permissions', 19)} : ${userToGet.permissions.deny}
 ${bu.padLeft('Avatar URL', 19)} : ${userToGet.user.avatarURL}
 Account created on ${moment(userToGet.user.createdAt).format('llll')}
 Account joined guild '${msg.channel.guild.name}' on ${moment(userToGet.joinedAt).format('llll')}

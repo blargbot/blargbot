@@ -11,6 +11,7 @@ global.config = require('../config.json');
 const CatLoggr = require('cat-loggr');
 const snekfetch = require('snekfetch');
 const moment = require('moment');
+moment.suppressDeprecationWarnings = true;
 
 const loggr = new CatLoggr({
     shardId: 'MS',

@@ -8,7 +8,10 @@ class StarvstheforcesofCommand extends BaseCommand {
             category: bu.CommandType.IMAGE,
             usage: 'starvstheforcesof [user]',
             info: 'WHO IS STAR BATTLING THIS EPISODE?',
-            flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }]
+            flags: [{ flag: 'I', word: 'image', desc: 'A custom image.' }],
+            userRatelimit: true,
+            channelRatelimit: true,
+            cooldown: 5000
         });
     }
 
@@ -37,7 +40,7 @@ class StarvstheforcesofCommand extends BaseCommand {
             avatar: url
         });
 
-        bu.send(msg, undefined, {
+        await bu.send(msg, undefined, {
             file: buffer,
             name: 'starvstheforcesof.png'
         });

@@ -7,7 +7,7 @@ class CommitCommand extends BaseCommand {
     constructor() {
         super({
             name: 'commit',
-            category: bu.CommandType.IMAGE,
+            category: bu.CommandType.GENERAL,
             usage: 'commit [number]',
             info: 'Gets a random or specified blargbot commit.'
         });

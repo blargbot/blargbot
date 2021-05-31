@@ -22,7 +22,7 @@ bu.init = () => {
         password: config.db.password,
         user: config.db.user,
         port: config.db.port,
-        max: 12,
+        max: 8,
         buffer: 4,
         timeoutError: 10000
     });

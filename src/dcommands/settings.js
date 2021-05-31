@@ -29,12 +29,12 @@ bu.settings = {
     modlog: {
         name: 'Modlog Channel',
         desc: `The id of the modlog channel. You can also use the <code>modlog</code> command`,
-        type: 'string'
+        type: 'id'
     },
     mutedrole: {
         name: 'Muted Role',
         desc: `The id of the muted role.`,
-        type: 'string'
+        type: 'id'
     },
     tableflip: {
         name: 'Tableflips',

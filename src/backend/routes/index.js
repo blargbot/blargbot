@@ -24,16 +24,24 @@ router.get('/netneut', (req, res) => {
     req.session.returnTo = req.path;
 
     res.render('bsod-netneut');
-})
+});
 
 router.get('/main', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = req.path;
 
     res.render('index');
-})
+});
 
 router.get('/editor', (req, res) => {
     res.redirect('/tags/editor');
 });
+
+router.get('/update', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = req.path;
+
+    res.render('update');
+});
+
 module.exports = router;

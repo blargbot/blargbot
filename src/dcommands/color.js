@@ -22,12 +22,12 @@ class ThesearchCommand extends BaseCommand {
             if (!buffer) {
                 return await bu.send(msg, 'Whoops, one of the things you provided was not a color!');
             }
-            bu.send(msg, undefined, {
+            await bu.send(msg, undefined, {
                 file: buffer,
                 name: 'color.png'
             });
         } catch (err) {
-            bu.send(msg, 'Whoops, something went wrong: `' + err.message + '`');
+            await bu.send(msg, 'Whoops, something went wrong: `' + err.message + '`');
         }
     }
 }
