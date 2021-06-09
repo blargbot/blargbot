@@ -1158,7 +1158,7 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
         } catch (err) {
             storedGuild.log[event] = undefined;
             await r.table('guild').get(guildid).replace(storedGuild);
-            await bu.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
+            await bu.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.\n\`\`\`${err.message}\`\`\``);
         }
     }
 };
