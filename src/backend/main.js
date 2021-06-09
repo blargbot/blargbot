@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:20:47
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-12 08:51:08
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2020-07-01 21:07:33
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -61,7 +61,8 @@ e.init = () => {
         clientID: config.website.clientid,
         clientSecret: config.website.secret,
         callbackURL: config.website.callback,
-        scope: scopes
+        scope: scopes,
+        prompt : 'none'
     }, function (accessToken, refreshToken, profile, done) {
         process.nextTick(function () {
             return done(null, profile);
@@ -155,7 +156,8 @@ e.init = () => {
     app.use('/color', require('./routes/colour'));
     app.use('/output', require('./routes/output'));
     app.use('/domains', require('./routes/domains'));
-
+    app.use('/shards', require('./routes/shards'));
+    
     app.use(router);
     console.website('Website listening on :8085');
     server.listen(8085, () => {

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:21
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-04 11:39:51
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-05-11 18:54:06
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -46,11 +46,12 @@ module.exports =
                 case 1:
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '');
                 case 2:
-                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1]);
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1], ccommand.flags);
                 default:
                     let a = Builder.util.flattenArgArrays(args.slice(1));
-                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"' + a.join('" "') + '"');
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"' + a.join('" "') + '"', ccommand.flags);
             }
+            // ! This line can be removed as the 'default' case already returns
             return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1] || '');
         })
         .build();

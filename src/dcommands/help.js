@@ -31,30 +31,33 @@ class HelpCommand extends BaseCommand {
                     return stringify(this);
                 }
             };
-            if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
-                && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
-                let instance = CommandManager.built[CommandManager.commandList[words[1]].name];
-                let definition = CommandManager.commandList[words[1]];
-                embed.title = `Help for ${definition.name}`;
-                embed.url = `https://blargbot.xyz/commands#${definition.name}`;
-                embed.description = `**__Usage__**:\`${definition.usage}\`\n${definition.info}`;
-                embed.color = this.getColor(instance.category);
-                if (instance.aliases && instance.aliases.length > 0)
-                    embed.fields.push({
-                        name: '**Aliases**',
-                        value: instance.aliases.join(', ')
-                    });
-                if (instance.flags && instance.flags.length > 0)
-                    embed.fields.push({
-                        name: '**Flags**',
-                        value: instance.flags.map(flag => `\`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}`).join('\n')
-                    });
-            } else {
-                let helpText = await bu.ccommand.gethelp(msg.guild.id, words[1]);
+            const customCommand = await bu.ccommand.get(msg.guild.id, words[1]);
+            if (customCommand) {
+                const helpText = customCommand.help;
                 if (helpText) {
                     embed.color = this.getColor('CUSTOM');
                     embed.title = `Help for ${words[1].toLowerCase()} (Custom Command)`;
                     embed.description = helpText;
+                }
+            } else {
+                if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
+                && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
+                    const instance = CommandManager.built[CommandManager.commandList[words[1]].name];
+                    const definition = CommandManager.commandList[words[1]];
+                    embed.title = `Help for ${definition.name}`;
+                    embed.url = `https://blargbot.xyz/commands#${definition.name}`;
+                    embed.description = `**__Usage__**:\`${definition.usage}\`\n${definition.info}`;
+                    embed.color = this.getColor(instance.category);
+                    if (instance.aliases && instance.aliases.length > 0)
+                        embed.fields.push({
+                            name: '**Aliases**',
+                            value: instance.aliases.join(', ')
+                        });
+                    if (instance.flags && instance.flags.length > 0)
+                        embed.fields.push({
+                            name: '**Flags**',
+                            value: instance.flags.map(flag => `\`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}`).join('\n')
+                        });
                 }
             }
             if (!embed.title)

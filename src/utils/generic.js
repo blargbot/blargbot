@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: RagingLink
- * @Last Modified time: 2020-06-11 16:58:11
+ * @Last Modified time: 2020-06-16 00:00:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -240,7 +240,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
                 role = getId(perm);
                 if (role === null) return false;
             };
-            Array.isArray(role) ?
+            return Array.isArray(role) ?
                 role.indexOf(m.id) > -1 :
                 m.id == role;
         }
@@ -1654,8 +1654,8 @@ const prettyTimeMagnitudes = {
     mins: 'minutes', min: 'minute'
 };
 
-bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
-    let now = moment.tz(timezone);
+bu.parseTime = function (text, format = undefined, fromTimezone = 'Etc/UTC', toTimezone = 'Etc/UTC') {
+    let now = moment.tz(fromTimezone).tz(toTimezone);
     if (!text) return now;
     switch (text.toLowerCase()) {
         case 'now': return now;
@@ -1674,7 +1674,7 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
         return now.add(magnitude, quantity);
     }
 
-    return moment.tz(text, format, timezone).utcOffset(0);
+    return moment.tz(text, format, fromTimezone).tz(toTimezone);
 };
 
 bu.parseInt = function (s, radix = 10) {

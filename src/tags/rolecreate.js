@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
- * @Last Modified by: stupid cat
- * @Last Modified time: 2019-09-26 09:29:09
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-05-20 23:45:03
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -47,7 +47,7 @@ module.exports =
             if (isNaN(options.permissions))
                 return Builder.util.error(subtag, context, 'Permissions not a number');
 
-            if ((options.permissions & permission.allow) != options.permissions)
+            if ((BigInt(options.permissions) & permission.allow) != options.permissions)
                 return Builder.util.error(subtag, context, 'Author missing requested permissions');
 
             try {
