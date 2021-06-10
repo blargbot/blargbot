@@ -18,7 +18,7 @@ class PatchCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id != bu.CAT_ID) {
+        if (!bu.isDeveloper(msg.author.id)) {
             return;
         }
         let input = bu.parseInput(this.flags, words, true);

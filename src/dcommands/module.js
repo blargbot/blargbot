@@ -22,7 +22,7 @@ class ModuleCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id == bu.CAT_ID) {
+        if (bu.isDeveloper(msg.author.id)) {
             let input = bu.parseInput(this.flags, words);
             if (input.undefined.length > 1) {
                 let manager = CommandManager;

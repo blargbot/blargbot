@@ -12,8 +12,7 @@ class UpdateCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id === bu.CAT_ID) {
-
+        if (bu.isDeveloper(msg.author.id)) {
             if (!config.general.isbeta) {
                 exec('git pull', async (err, stdout, stderr) => {
                     var message = '```xl\n';
@@ -28,7 +27,7 @@ class UpdateCommand extends BaseCommand {
                     }
 
                     message += '```';
-                    if (stdout.indexOf('Already up-to-date.') == -1) {
+                    if (stdout.indexOf('Already up to date.') === -1) {
                         var type = 2;
                         if (words.length > 1) {
                             switch (words[1].toLowerCase()) {

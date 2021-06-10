@@ -18,6 +18,10 @@ const request = require('request');
 const isSafeRegex = require('safe-regex');
 const { emojify } = require('node-emoji');
 
+bu.isDeveloper = (id) => {
+    return bu.DEVELOPERS.includes(id);
+};
+
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
         return -1;
