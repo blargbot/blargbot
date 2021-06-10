@@ -76,17 +76,21 @@ loggr.addPreHook(({ level, error, args, shard, context }) => {
                 break;
             }
         }
-        if (error) {
-            Sentry.captureException(error, {
-                ...logContext,
-                args
-            });
-        } else {
-            Sentry.captureException(args[0], {
-                ...logContext,
-                args: args.slice(1)
-            });
-        }
+
+        Sentry.withScope(scope => {
+            scope.setLevel(level);
+            if (error) {
+                Sentry.captureException(error, {
+                    ...logContext,
+                    args
+                });
+            } else {
+                Sentry.captureException(args[0], {
+                    ...logContext,
+                    args: args.slice(1)
+                });
+            }
+        });
     }
 });
 
