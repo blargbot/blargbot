@@ -1,12 +1,3 @@
-/*
- * @Author: stupid cat
- * @Date: 2017-05-07 18:57:14
- * @Last Modified by: RagingLink
- * @Last Modified time: 2021-06-10 13:19:26
- *
- * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
- */
-
 import moment from 'moment';
 import { Cluster } from '../cluster';
 import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';

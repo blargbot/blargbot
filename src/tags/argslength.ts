@@ -1,10 +1,3 @@
-/*
- * @Author: RagingLink
- * @Date: 2021-06-10 13:19:00
- * @Last Modified by:   RagingLink
- * @Last Modified time: 2021-06-10 13:19:00
- */
-
 import { Cluster } from '../cluster';
 import { BaseSubtag } from '../core/bbtag';
 import { SubtagType } from '../utils';

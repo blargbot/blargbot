@@ -1,10 +1,3 @@
-/*
- * @Author: RagingLink
- * @Date: 2021-06-10 13:19:13
- * @Last Modified by:   RagingLink
- * @Last Modified time: 2021-06-10 13:19:13
- */
-
 import { Cluster } from '../cluster';
 import { BaseSubtag } from '../core/bbtag';
 import { SubtagType } from '../utils';
@@ -17,7 +10,7 @@ export class Base64encodeSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             desc: 'Converts the provided text to base64.',
             usage: '{base64decode;<text>}',
-            exampleCode: '{base64decode;Fancy!',
+            exampleCode: '{base64decode;Fancy!}',
             exampleOut: 'RmFuY3kh!',
             definition: [
                 {

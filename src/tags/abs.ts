@@ -1,10 +1,3 @@
-/*
- * @Author: danny-may
- * @Date: 2021-06-10 13:17:57
- * @Last Modified by: RagingLink
- * @Last Modified time: 2021-06-10 13:18:42
- */
-
 import { Cluster } from '../cluster';
 import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { bbtagUtil, parse, SubtagType } from '../utils';
