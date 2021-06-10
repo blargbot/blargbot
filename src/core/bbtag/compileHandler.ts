@@ -86,9 +86,9 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
                 return await execute(context, call);
 
             if (call.args.length < minArgs)
-                context.addError('Not enough arguments', call);
+                return context.addError('Not enough arguments', call);
             else if (call.args.length > maxArgs)
-                context.addError('Too many arguments', call);
+                return context.addError('Too many arguments', call);
             else
                 throw new Error(`Missing handler for ${call.args.length} arguments!`);
         }
