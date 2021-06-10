@@ -12,6 +12,7 @@ export interface SubtagOptions {
     aliases?: string[];
     category: SubtagType;
     desc?: string;
+    usage: string;
     exampleCode?: string | null;
     exampleIn?: string | null;
     exampleOut?: string | null;
@@ -27,6 +28,7 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public readonly category: SubtagType;
     public readonly isTag: true;
     public readonly desc: string;
+    public readonly usage: string;
     public readonly exampleCode: string | null;
     public readonly exampleIn: string | null;
     public readonly exampleOut: string | null;
@@ -49,6 +51,7 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
         this.category = options.category;
         this.isTag = true;
         this.desc = options.desc ?? '';
+        this.usage = options.usage;
         this.exampleCode = options.exampleCode ?? null;
         this.exampleIn = options.exampleIn ?? null;
         this.exampleOut = options.exampleOut ?? null;
@@ -73,5 +76,13 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
 
     public notANumber(context: RuntimeContext, subtag?: SubtagCall): string {
         return context.addError('Not a number', subtag);
+    }
+
+    public notEnoughArguments(context: RuntimeContext, subtag?: SubtagCall): string {
+        return context.addError('Not enough arguments', subtag);
+    }
+
+    public customError(errorText: string, context: RuntimeContext, subtag?: SubtagCall): string {
+        return context.addError(errorText, subtag);
     }
 }
