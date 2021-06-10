@@ -16,7 +16,7 @@ export class LbSubtag extends BaseSubtag {
             definition: [
                 {
                     args: [],
-                    description: 'Returns `{}`',
+                    description: 'Returns `{`',
                     execute: () => '{'
                 }
             ]
