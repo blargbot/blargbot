@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtag, RuntimeContext, SubtagCall } from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType, bbtagUtil } from '../utils';
 
 export class ApplySubtag extends BaseSubtag {
@@ -13,23 +13,20 @@ export class ApplySubtag extends BaseSubtag {
             usage: '{apply;<subtag>;[args...]',
             exampleCode: '{apply;randint;[1,4]}',
             exampleOut: '3',
-            definition: {
-                whenArgCount: {
-                    '0': (ctx, _, subtag) =>
-                        this.notEnoughArguments(ctx, subtag)
-                },
-                default: (ctx, args, subtag) =>
-                    this.defaultApply(
-                        ctx,
-                        args.map((arg) => arg.value),
-                        subtag
-                    )
-            }
+            definition: [
+                {
+                    args: ['subtag', 'args*'],
+                    description:
+                        'Executes `subtag`, using the `args` as parameters. ' +
+                        'If `args` is an array, it will get deconstructed to it\'s individual elements.',
+                    execute: (ctx, args, subtag) => this.defaultApply(ctx, args.map(a => a.value), subtag)
+                }
+            ]
         });
     }
 
     public async defaultApply(
-        context: RuntimeContext,
+        context: BBTagContext,
         args: string[],
         subtag: SubtagCall
     ): Promise<string> {
@@ -45,9 +42,9 @@ export class ApplySubtag extends BaseSubtag {
             if (arr != null && Array.isArray(arr.v))
                 flattenedArgs.push(
                     ...arr.v.map((i) =>
-                        typeof i === 'object'
+                        typeof i === 'object' || i === null || i === undefined
                             ? [JSON.stringify(i)]
-                            : [i!.toString()]
+                            : [i.toString()]
                     )
                 );
             else flattenedArgs.push([arg]);
