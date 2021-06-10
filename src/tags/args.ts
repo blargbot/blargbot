@@ -54,7 +54,9 @@ export class ArgsSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): string {
         let from = parse.int(start);
-        let to = parse.int(end);
+        let to = end.toLowerCase() === 'n'
+            ? context.input.length
+            : parse.int(end);
 
         if (isNaN(from) || isNaN(to))
             return this.notANumber(context, subtag);

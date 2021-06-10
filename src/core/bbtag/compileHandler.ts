@@ -147,8 +147,7 @@ function createBinding(args: SubtagHandlerArgument[]): ArgumentBinder {
 
 function* permuteArguments(index: number, args: readonly SubtagHandlerArgument[]): IterableIterator<SubtagHandlerArgument[]> {
     if (index >= args.length) {
-        if (args.length > 0)
-            yield [];
+        yield [];
         return;
     }
 
