@@ -19,12 +19,13 @@ export class Base64encodeSubtag extends BaseSubtag {
             usage: '{base64decode;<text>}',
             exampleCode: '{base64decode;Fancy!',
             exampleOut: 'RmFuY3kh!',
-            definition: {
-                whenArgCount: {
-                    '1': (_, args, __) =>
-                        this.encode(args.map((arg) => arg.value))
+            definition: [
+                {
+                    args: ['text+'],
+                    description: 'Converts the provided text to base64.',
+                    execute: (_, args) => this.encode(args.map(arg => arg.value))
                 }
-            }
+            ]
         });
     }
 

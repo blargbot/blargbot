@@ -12,9 +12,13 @@ export class ArgsarraySubtag extends BaseSubtag {
             exampleCode: 'Your input was {argsarray}',
             exampleIn: 'Hello world!',
             exampleOut: 'Your input was ["Hello","world!"]',
-            definition: {
-                default: (ctx) => JSON.stringify(ctx.input)
-            }
+            definition: [
+                {
+                    args: [],
+                    description: 'Return the number of arguments the user provided.',
+                    execute: (ctx) => JSON.stringify(ctx.input)
+                }
+            ]
         });
     }
 }

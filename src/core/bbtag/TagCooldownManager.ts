@@ -1,6 +1,6 @@
 import { Moment } from 'moment-timezone';
 import moment from 'moment';
-import { RuntimeContext } from './RuntimeContext';
+import { BBTagContext } from './BBTagContext';
 
 
 export class TagCooldownManager {
@@ -11,13 +11,13 @@ export class TagCooldownManager {
         this.#cooldowns = {};
     }
 
-    public get(context: RuntimeContext): Moment {
+    public get(context: BBTagContext): Moment {
         return this.#cooldowns[this.getKey(context)] ??= moment();
     }
-    public set(context: RuntimeContext): Moment {
+    public set(context: BBTagContext): Moment {
         return this.#cooldowns[this.getKey(context)] = moment().add(context.cooldown);
     }
-    private getKey(context: RuntimeContext): string {
+    private getKey(context: BBTagContext): string {
         return `${context.guild.id}:${context.isCC}:${context.user.id}:${context.tagName}`;
     }
 }

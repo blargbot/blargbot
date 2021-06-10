@@ -3,7 +3,7 @@ import ReadWriteLock from 'rwlock';
 import { FlagResult, FlagDefinition } from '../../utils';
 import { StoredGuildCommand, StoredTag } from '../database';
 import { VariableCache } from './Caching';
-import { RuntimeContext } from './RuntimeContext';
+import { BBTagContext } from './BBTagContext';
 import { BBRuntimeScope, ScopeCollection } from './ScopeCollection';
 import { TagCooldownManager } from './TagCooldownManager';
 
@@ -46,7 +46,7 @@ export interface SourceToken {
     end: SourceMarker;
 }
 
-export interface SerializedRuntimeContext {
+export interface SerializedBBTagContext {
     msg: {
         id: string,
         timestamp: number,
@@ -57,7 +57,7 @@ export interface SerializedRuntimeContext {
         embeds: Embed[]
     },
     isCC: boolean,
-    state: Omit<RuntimeContextState, 'cache' | 'overrides'>,
+    state: Omit<BBTagContextState, 'cache' | 'overrides'>,
     scope: BBRuntimeScope,
     input: readonly string[],
     flaggedInput: FlagResult,
@@ -68,7 +68,7 @@ export interface SerializedRuntimeContext {
     tempVars: Record<string, string | undefined>
 }
 
-export interface RuntimeContextMessage {
+export interface BBTagContextMessage {
     id: string;
     timestamp: number,
     content: string,
@@ -79,7 +79,7 @@ export interface RuntimeContextMessage {
     embeds: Embed[]
 }
 
-export interface RuntimeContextState {
+export interface BBTagContextState {
     query: {
         count: 0,
         user: Record<string, string | undefined>,
@@ -119,7 +119,7 @@ export interface RuntimeDebugEntry {
 }
 
 export interface RuntimeLimit {
-    check(context: RuntimeContext, subtag: SubtagCall, subtagName: string): Promise<string | null> | string | null;
+    check(context: BBTagContext, subtag: SubtagCall, subtagName: string): Promise<string | null> | string | null;
     rulesFor(subtagName: string): string[];
 }
 
@@ -129,8 +129,8 @@ export const enum RuntimeReturnState {
     ALL = -1
 }
 
-export interface RuntimeContextOptions {
-    message: RuntimeContextMessage | Message<GuildTextableChannel>;
+export interface BBTagContextOptions {
+    message: BBTagContextMessage | Message<GuildTextableChannel>;
     input: readonly string[];
     flags?: DeepReadOnly<FlagDefinition[]>;
     isCC: boolean;
@@ -142,9 +142,8 @@ export interface RuntimeContextOptions {
     cooldowns?: TagCooldownManager;
     locks?: Record<string, ReadWriteLock | undefined>;
     limit: RuntimeLimit | (new () => RuntimeLimit);
-    // outputModify?: (context: RuntimeContext, output: string) => string;
     silent?: boolean;
-    state?: Partial<RuntimeContextState>;
+    state?: Partial<BBTagContextState>;
     scopes?: ScopeCollection;
     variables?: VariableCache;
 }
@@ -169,33 +168,43 @@ export type SubtagResult =
     | undefined
     | void;
 
-export interface SubtagArgument {
+export interface SubtagArgumentValue {
     readonly isCached: boolean;
     value: string;
-    raw: Statement;
+    code: Statement;
+    raw: string;
     wait(): Promise<string>;
+    execute(): Promise<string>;
 }
 
-export interface SubtagSignatureHandler {
-    readonly resolve?: Array<number> | false;
-    readonly execute: (context: RuntimeContext, args: SubtagArgument[], call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+export interface SubtagHandlerCallSignature {
+    readonly description: string;
+    readonly args: readonly SubtagHandlerArgument[];
+    readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
-
-interface DefaultSubtagHandlerDefinition {
-    readonly default: SubtagSignatureHandler | SubtagSignatureHandler['execute'];
-}
-
-interface ConditionalSubtagHandlerDefinition {
-    readonly whenArgCount: {
-        readonly [argCount: string]: SubtagSignatureHandler | SubtagSignatureHandler['execute']
-    }
-}
-
-export type SubtagHandlerDefintion =
-    | DefaultSubtagHandlerDefinition
-    | ConditionalSubtagHandlerDefinition
-    | (DefaultSubtagHandlerDefinition & ConditionalSubtagHandlerDefinition)
 
 export interface SubtagHandler {
-    readonly execute: (context: RuntimeContext, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
+
+export interface SubtagHandlerArgument {
+    readonly name?: string;
+    readonly required: boolean;
+    readonly many: boolean;
+    readonly autoResolve: boolean;
+    readonly nestedArgs: readonly SubtagHandlerArgument[];
+}
+
+export interface SubtagHandlerDefinition {
+    readonly args: ReadonlyArray<string | SubtagHandlerDefinitionArgumentGroup>;
+    readonly description: string;
+    readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+}
+
+export interface SubtagHandlerDefinitionArgumentGroup {
+    readonly name?: string;
+    readonly type?: 'optional' | 'required' | 'oneOrMore' | 'zeroOrMore';
+    readonly args: ReadonlyArray<string | SubtagHandlerDefinitionArgumentGroup>;
+}
+
+

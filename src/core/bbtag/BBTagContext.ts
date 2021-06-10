@@ -6,7 +6,7 @@ import { bbtagUtil, FlagDefinition, FlagResult, guard, oldBu, parse } from '../.
 import { Duration } from 'moment-timezone';
 import { GuildTextableChannel, Member, User, Guild, Role } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
-import { SubtagCall, RuntimeContextMessage, RuntimeContextOptions, RuntimeContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedRuntimeContext, SubtagHandler, Statement } from './types';
+import { SubtagCall, BBTagContextMessage, BBTagContextOptions, BBTagContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, SubtagHandler, Statement } from './types';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
 import { Engine } from './Engine';
 import { Database, StoredGuildCommand, StoredTag } from '../database';
@@ -15,12 +15,12 @@ function serializeEntity(entity: { id: string }): { id: string, serialized: stri
     return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
-export class RuntimeContext implements Required<RuntimeContextOptions> {
+export class BBTagContext implements Required<BBTagContextOptions> {
 
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #isStaffPromise?: Promise<boolean>;
 
-    public readonly message: RuntimeContextMessage;
+    public readonly message: BBTagContextMessage;
     public readonly input: readonly string[];
     public readonly flags: DeepReadOnly<FlagDefinition[]>;
     public readonly isCC: boolean;
@@ -32,7 +32,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     public readonly cooldowns: TagCooldownManager;
     public readonly locks: Record<string, ReadWriteLock | undefined>;
     public readonly limit: RuntimeLimit;
-    // public readonly outputModify: (context: RuntimeContext, output: string) => string;
+    // public readonly outputModify: (context: BBTagContext, output: string) => string;
     public readonly silent: boolean;
     public readonly execTimer: Timer;
     public readonly dbTimer: Timer;
@@ -42,7 +42,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
     public readonly scopes: ScopeCollection;
     public readonly variables: VariableCache;
     public dbObjectsCommitted: number;
-    public readonly state: RuntimeContextState;
+    public readonly state: BBTagContextState;
 
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
     public get channel(): GuildTextableChannel { return this.message.channel; }
@@ -56,11 +56,11 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
 
     public constructor(
         public readonly engine: Engine,
-        options: RuntimeContextOptions
+        options: BBTagContextOptions
     ) {
         if (options.message.member === null)
             throw new Error('The member of a message must be set');
-        this.message = <RuntimeContextMessage>options.message;
+        this.message = <BBTagContextMessage>options.message;
         this.input = options.input;
         this.flags = options.flags ?? [];
         this.isCC = options.isCC;
@@ -120,8 +120,8 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         return messageId == this.message.id || this.state.ownedMsgs.indexOf(messageId) != -1;
     }
 
-    public makeChild(options: Partial<RuntimeContextOptions> = {}): RuntimeContext {
-        return new RuntimeContext(this.engine, {
+    public makeChild(options: Partial<BBTagContextOptions> = {}): BBTagContext {
+        return new BBTagContext(this.engine, {
             ...this,
             ...options
         });
@@ -256,13 +256,13 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         return this.state.cache[key] = getIfNotSet(key);
     }
 
-    public static async deserialize(engine: Engine, limit: RuntimeLimit, obj: SerializedRuntimeContext): Promise<RuntimeContext> {
-        let message: RuntimeContextMessage | undefined;
+    public static async deserialize(engine: Engine, limit: RuntimeLimit, obj: SerializedBBTagContext): Promise<BBTagContext> {
+        let message: BBTagContextMessage | undefined;
         try {
             const msg = await engine.discord.getMessage(obj.msg.channel.id, obj.msg.id);
             if (!guard.isGuildMessage(msg))
                 throw new Error('Channel must be a guild channel to work with BBTag');
-            message = <RuntimeContextMessage>msg;
+            message = <BBTagContextMessage>msg;
         } catch (err) {
             let channel = engine.discord.getChannel(obj.msg.channel.id);
             if (!guard.isGuildChannel(channel))
@@ -289,7 +289,7 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
                 embeds: obj.msg.embeds
             };
         }
-        const result = new RuntimeContext(engine, {
+        const result = new BBTagContext(engine, {
             input: obj.input,
             message: message,
             isCC: obj.isCC,
@@ -310,10 +310,10 @@ export class RuntimeContext implements Required<RuntimeContextOptions> {
         return result;
     }
 
-    public serialize(): SerializedRuntimeContext {
+    public serialize(): SerializedBBTagContext {
         const newState = { ...this.state, cache: undefined, overrides: undefined };
         const newScope = { ...this.scope };
-        return <SerializedRuntimeContext>{
+        return <SerializedBBTagContext>{
             msg: {
                 id: this.message.id,
                 timestamp: this.message.timestamp,

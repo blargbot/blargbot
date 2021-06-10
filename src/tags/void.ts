@@ -22,11 +22,13 @@ export class VoidSubtag extends BaseSubtag {
             usage: '{void;[code]}',
             exampleCode: '{void;This won\'t be output!}',
             exampleOut: '',
-            definition: {
-                whenArgCount: {
-                    '0-1': () => ''
+            definition: [
+                {
+                    args: ['code?'],
+                    description: 'Silently executes `code`',
+                    execute: () => ''
                 }
-            }
+            ]
         });
     }
 }

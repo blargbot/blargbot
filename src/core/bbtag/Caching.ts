@@ -1,6 +1,6 @@
 import { Timer } from '../../structures/Timer';
 import { oldBu } from '../../utils';
-import { RuntimeContext } from './RuntimeContext';
+import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './types';
 
 export class CacheEntry {
@@ -11,7 +11,7 @@ export class CacheEntry {
     public get changed(): boolean { return this.#original !== this.value; }
 
     public constructor(
-        public readonly context: RuntimeContext,
+        public readonly context: BBTagContext,
         public readonly key: string,
         original: string | undefined
     ) {
@@ -35,7 +35,7 @@ export class VariableCache {
     public get list(): CacheEntry[] { return Object.keys(this.#cache).map(k => this.#cache[k]).filter((e): e is CacheEntry => e !== undefined); }
 
     public constructor(
-        public readonly context: RuntimeContext
+        public readonly context: BBTagContext
     ) {
         this.#cache = {};
     }

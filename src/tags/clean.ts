@@ -20,11 +20,13 @@ export class CleanSubtag extends BaseSubtag {
             usage: '{clean;<text>}',
             exampleCode: '{clean;Hello!  \n\n  Im     here    to help}',
             exampleOut: 'Hello!\nIm here to help',
-            definition: {
-                whenArgCount: {
-                    '1': (_, [text]) => this.clean(text.value)
+            definition: [
+                {
+                    args: ['text'],
+                    description: 'Removes all duplicated whitespace from `text`, meaning a cleaner output.',
+                    execute: (_, [text]) => this.clean(text.value)
                 }
-            }
+            ]
         });
     }
 

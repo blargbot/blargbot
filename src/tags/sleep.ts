@@ -9,7 +9,7 @@
 
 import moment from 'moment';
 import { Cluster } from '../cluster';
-import { BaseSubtag, RuntimeContext, SubtagCall } from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { parse, sleep } from '../utils';
 import { Type } from '../utils/constants/subtagType';
 
@@ -24,14 +24,16 @@ export class SleepTag extends BaseSubtag {
             usage: '{sleep;<duration>}',
             exampleCode: '{sleep;10s}{send;{channelid};Hi!}',
             exampleOut: '(After 10s) Hi!',
-            definition: {
-                whenArgCount: {
-                    '1': (ctx, [duration], subtag) => this.sleep(ctx, duration.value, subtag)
+            definition: [
+                {
+                    args: ['duration'],
+                    description: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
+                    execute: (ctx, [duration], subtag) => this.sleep(ctx, duration.value, subtag)
                 }
-            }
+            ]
         });
     }
-    public async sleep(context: RuntimeContext, duration: string, subtag: SubtagCall): Promise<void | string> {
+    public async sleep(context: BBTagContext, duration: string, subtag: SubtagCall): Promise<void | string> {
         let delay = parse.duration(duration);
         if (delay === undefined)
             return context.addError('Invalid duration', subtag);

@@ -22,11 +22,13 @@ export class ZwsSubtag extends BaseSubtag {
             usage: '{zws}',
             exampleCode: '{zws}',
             exampleOut: '\u200B',
-            definition: {
-                whenArgCount:{
-                    '0': () => '\u200B'
+            definition: [
+                {
+                    args: [],
+                    description: 'returns a single zero width space (unicode 200B)',
+                    execute: () => '\u200B'
                 }
-            }
+            ]
         });
     }
 }

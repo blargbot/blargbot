@@ -19,9 +19,13 @@ export class Argslength extends BaseSubtag {
             exampleCode: 'You said {argslength} words.',
             exampleIn: 'I am saying things.',
             exampleOut: 'You said 4 words.',
-            definition: {
-                default: (ctx) => ctx.input.length.toString()
-            }
+            definition: [
+                {
+                    args: [],
+                    description: 'Return the number of arguments the user provided.',
+                    execute: (ctx) => ctx.input.length.toString()
+                }
+            ]
         });
     }
 }

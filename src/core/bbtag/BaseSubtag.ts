@@ -1,15 +1,15 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster } from '../../cluster';
 import { SubtagType } from '../../utils';
-import { SubtagCall, SubtagHandler, SubtagHandlerDefintion, SubtagResult } from './types';
-import { RuntimeContext } from './RuntimeContext';
-import { compileHandler } from './compileHandler';
+import { SubtagCall, SubtagHandler, SubtagHandlerDefinition, SubtagResult } from './types';
+import { BBTagContext } from './BBTagContext';
+import { compileSignatures, parseDefinitions } from './compileHandler';
 import { Timer } from '../../structures/Timer';
 import { metrics } from '../Metrics';
 
 export interface SubtagOptions {
     name: string;
-    aliases?: string[];
+    aliases?: readonly string[];
     category: SubtagType;
     desc?: string;
     usage: string;
@@ -19,12 +19,12 @@ export interface SubtagOptions {
     deprecated?: string | false;
     staff?: boolean;
     acceptsArrays?: boolean;
-    definition: SubtagHandlerDefintion;
+    definition: readonly SubtagHandlerDefinition[];
 }
 
 export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandler {
     public readonly name: string;
-    public readonly aliases: string[];
+    public readonly aliases: readonly string[];
     public readonly category: SubtagType;
     public readonly isTag: true;
     public readonly desc: string;
@@ -35,7 +35,7 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public readonly deprecated: string | false;
     public readonly staff: boolean;
     public readonly acceptsArrays: boolean;
-    public readonly definition: SubtagHandlerDefintion;
+    public readonly definition: readonly SubtagHandlerDefinition[];
     public readonly handler: SubtagHandler;
 
     public get logger(): CatLogger { return this.cluster.logger; }
@@ -45,6 +45,9 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
         public readonly cluster: Cluster,
         options: SubtagOptions
     ) {
+        if (options.definition.length === 0)
+            throw new Error('Cannot have no handler definitions!');
+
         this.name = options.name;
         this.definition = options.definition;
         this.aliases = options.aliases ?? [];
@@ -59,10 +62,11 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
         this.staff = options.staff ?? false;
         this.acceptsArrays = options.acceptsArrays ?? false;
 
-        this.handler = compileHandler(this.definition);
+        const signatures = parseDefinitions(this.definition);
+        this.handler = compileSignatures(signatures);
     }
 
-    public async execute(context: RuntimeContext, subtag: SubtagCall): Promise<SubtagResult> {
+    public async execute(context: BBTagContext, subtag: SubtagCall): Promise<SubtagResult> {
         const timer = new Timer().start();
         try {
             return await this.handler.execute(context, subtag);
@@ -74,15 +78,15 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
         }
     }
 
-    public notANumber(context: RuntimeContext, subtag?: SubtagCall): string {
+    public notANumber(context: BBTagContext, subtag?: SubtagCall): string {
         return context.addError('Not a number', subtag);
     }
 
-    public notEnoughArguments(context: RuntimeContext, subtag?: SubtagCall): string {
+    public notEnoughArguments(context: BBTagContext, subtag?: SubtagCall): string {
         return context.addError('Not enough arguments', subtag);
     }
 
-    public customError(errorText: string, context: RuntimeContext, subtag?: SubtagCall): string {
+    public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall): string {
         return context.addError(errorText, subtag);
     }
 }

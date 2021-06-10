@@ -6,7 +6,7 @@
  */
 
 import { Cluster } from '../cluster';
-import { BaseSubtag, RuntimeContext, SubtagCall } from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType, parse, between } from '../utils';
 
 export class BaseNumberSubtag extends BaseSubtag {
@@ -20,32 +20,34 @@ export class BaseNumberSubtag extends BaseSubtag {
             usage: '{base;<integer>;[origin];<radix>}',
             exampleCode: '{base;255;16}',
             exampleOut: 'FF',
-            definition: {
-                whenArgCount: {
-                    '2-3': (ctx, args, subtag) =>
-                        this.toBase(
-                            ctx,
-                            args.map((arg) => arg.value),
-                            subtag
-                        )
+            definition: [
+                {
+                    args: ['integer', 'radix'],
+                    description: 'Converts a Base 10 `integer` into a base `radix` number. Default `origin` is 10. `radix` must be between 2 and 36.',
+                    execute: (ctx, [integer, radix], subtag) => this.toBase(ctx, integer.value, '10', radix.value, subtag)
+                },
+                {
+                    args: ['integer', 'origin', 'radix'],
+                    description: 'Converts a Base `origin` `integer` into a base `radix` number. Default `origin` is 10. `radix` must be between 2 and 36.',
+                    execute: (ctx, [integer, origin, radix], subtag) => this.toBase(ctx, integer.value, origin.value, radix.value, subtag)
                 }
-            }
+            ]
         });
     }
 
     public toBase(
-        context: RuntimeContext,
-        args: string[],
+        context: BBTagContext,
+        valueStr: string,
+        originStr: string,
+        radixStr: string,
         subtag: SubtagCall
     ): string {
-        if (args.length === 2) args.splice(1, 0, '10');
-
         let fallback;
         if (context.scope.fallback)
             fallback = parse.int(context.scope.fallback);
 
-        let origin = parse.int(args[1]);
-        let radix = parse.int(args[2]);
+        let origin = parse.int(originStr);
+        let radix = parse.int(radixStr);
         const radixFallback =
             fallback !== undefined
                 ? !isNaN(fallback) && between(fallback, 2, 36, true)
@@ -70,7 +72,7 @@ export class BaseNumberSubtag extends BaseSubtag {
                 subtag
             );
 
-        let value = parse.int(args[0], origin);
+        let value = parse.int(valueStr, origin);
         if (isNaN(value)) {
             if (fallback && !isNaN(fallback)) {
                 value = fallback;

@@ -22,11 +22,13 @@ export class RbSubtag extends BaseSubtag {
             usage: '{rb}',
             exampleCode: 'This is a bracket! {rb}',
             exampleOut: 'This is a bracket! }',
-            definition: {
-                whenArgCount: {
-                    '0' : () => '}'
+            definition: [
+                {
+                    args: [],
+                    description: 'Returns `]`',
+                    execute: () => ']'
                 }
-            }
+            ]
         });
     }
 }

@@ -1,4 +1,4 @@
-import { RuntimeContext } from '../RuntimeContext';
+import { BBTagContext } from '../BBTagContext';
 import { SubtagCall, RuntimeLimit } from '../types';
 import { RuntimeLimitRule } from './rules/RuntimeLimitRule';
 
@@ -34,7 +34,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         return this;
     }
 
-    public async check(context: RuntimeContext, subtag: SubtagCall, rulekey: string): Promise<string | null> {
+    public async check(context: BBTagContext, subtag: SubtagCall, rulekey: string): Promise<string | null> {
         const [rootKey, subKey] = this.getKeys(rulekey);
         const set = this.#rules[rootKey] ?? {};
         const collection = set[subKey];

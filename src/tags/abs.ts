@@ -6,7 +6,7 @@
  */
 
 import { Cluster } from '../cluster';
-import { BaseSubtag, RuntimeContext, SubtagCall } from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { bbtagUtil, parse, SubtagType } from '../utils';
 
 export class AbsSubtag extends BaseSubtag {
@@ -22,16 +22,22 @@ export class AbsSubtag extends BaseSubtag {
             usage: '{abs;<number...>}',
             exampleCode: '{abs;-535}',
             exampleOut: '535',
-            definition: {
-                whenArgCount: {
-                    '1': (ctx, [value], subtag) => this.abs(ctx, value.value, subtag),
-                    '>1': (ctx, args, subtag) => this.absAll(ctx, args.map(arg => arg.value), subtag)
+            definition: [
+                {
+                    args: ['number'],
+                    description: 'Gets the absolute value of `number`',
+                    execute: (ctx, [value], subtag) => this.abs(ctx, value.value, subtag)
+                },
+                {
+                    args: ['number+'],
+                    description: 'Gets the absolute value of each `number` and returns an array containing the results',
+                    execute: (ctx, args, subtag) => this.absAll(ctx, args.map(arg => arg.value), subtag)
                 }
-            }
+            ]
         });
     }
 
-    public absAll(context: RuntimeContext, values: string[], subtag: SubtagCall): string {
+    public absAll(context: BBTagContext, values: string[], subtag: SubtagCall): string {
         const result = [];
         for (const value of values) {
             const parsed = parse.float(value);
@@ -42,7 +48,7 @@ export class AbsSubtag extends BaseSubtag {
         return bbtagUtil.tagArray.serialize(result);
     }
 
-    public abs(context: RuntimeContext, value: string, subtag: SubtagCall): string {
+    public abs(context: BBTagContext, value: string, subtag: SubtagCall): string {
         const val = parse.float(value);
         if (isNaN(val))
             return this.notANumber(context, subtag);

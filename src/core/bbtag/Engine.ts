@@ -1,9 +1,9 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
 import { bbtagUtil, parse, sleep } from '../../utils';
-import { SubtagCall, RuntimeContextOptions, RuntimeReturnState, AnalysisResults, ExecutionResult, SubtagHandler } from './types';
+import { SubtagCall, BBTagContextOptions, RuntimeReturnState, AnalysisResults, ExecutionResult, SubtagHandler } from './types';
 import { Statement } from './types';
-import { RuntimeContext } from './RuntimeContext';
+import { BBTagContext } from './BBTagContext';
 import { BaseSubtag } from './BaseSubtag';
 import { Database } from '../database';
 import { BBTagError } from './BBTagError';
@@ -22,12 +22,12 @@ export class Engine {
     ) {
     }
 
-    public async execute(source: string, options: RuntimeContextOptions): Promise<ExecutionResult> {
+    public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult> {
         this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.tagName}`);
         const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
-        const context = new RuntimeContext(this, { ...options });
+        const context = new BBTagContext(this, { ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
         context.execTimer.start();
         const content = await this.eval(bbtag, context);
@@ -54,7 +54,7 @@ export class Engine {
         };
     }
 
-    public async eval(bbtag: SubtagCall | Statement, context: RuntimeContext): Promise<string> {
+    public async eval(bbtag: SubtagCall | Statement, context: BBTagContext): Promise<string> {
         if (context.engine !== this)
             throw new Error('Cannot execute a context from another engine!');
 

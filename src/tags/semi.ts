@@ -22,11 +22,13 @@ export class SemiSubtag extends BaseSubtag {
             usage: '{semi}',
             exampleCode: 'This is a semicolon! {semi}',
             exampleOut: 'This is a semicolon! ;',
-            definition: {
-                whenArgCount: {
-                    '0' : () => ';'
+            definition: [
+                {
+                    args: [],
+                    description: 'Returns `;`',
+                    execute: () => ';'
                 }
-            }
+            ]
         });
     }
 }

@@ -22,11 +22,13 @@ export class LbSubtag extends BaseSubtag {
             usage: '{lb}',
             exampleCode: 'This is a bracket! {lb}',
             exampleOut: 'This is a bracket! {',
-            definition: {
-                whenArgCount: {
-                    '0' : () => '{'
+            definition: [
+                {
+                    args: [],
+                    description: 'Returns `[`',
+                    execute: () => '['
                 }
-            }
+            ]
         });
     }
 }
