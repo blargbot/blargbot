@@ -25,9 +25,7 @@ if (config.sentryURL) {
         tracesSampleRate: 1.0
     });
 
-    Sentry.setContext('cluster', {
-        clusterId: process.env.CLUSTER_ID || 'master'
-    });
+    Sentry.setTag('cluster', process.env.CLUSTER_ID || 'master');
 }
 
 const loggr = new CatLoggr({
