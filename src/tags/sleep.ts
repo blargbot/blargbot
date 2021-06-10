@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:14
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-22 16:12:48
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-10 13:19:26
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -21,6 +21,7 @@ export class SleepTag extends BaseSubtag {
             name: 'sleep',
             category: Type.COMPLEX,
             desc: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
+            usage: '{sleep;<duration>}',
             exampleCode: '{sleep;10s}{send;{channelid};Hi!}',
             exampleOut: '(After 10s) Hi!',
             definition: {
