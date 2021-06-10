@@ -60,7 +60,7 @@ const loggr = new CatLoggr({
 
 loggr.addPreHook(({ level, error, args, shard, context }) => {
     if (config.sentryURL && error) {
-        if (typeof args[0] === 'string' && args[0].test(/Creating a pool connected to|Invalid session, reidentifying/i)) {
+        if (typeof args[0] === 'string' && args[0].match(/Creating a pool connected to|Invalid session, reidentifying/i)) {
             return;
         }
 
