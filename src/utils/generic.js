@@ -412,7 +412,7 @@ bu.send = async function (context, payload, files) {
                 response = JSON.parse(error.response || "{}");
             } catch (err) {
                 console.error("Error parsing error response code", err);
-                bot.createMessage('197529405659021322', "Error parsing error response code\n" + err.stack);
+                bot.createMessage('197529405659021322', "Error parsing error response code\n" + err.stack + '\n\n' + error.response);
                 return;
             }
         }
