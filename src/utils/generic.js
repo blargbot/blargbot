@@ -407,8 +407,14 @@ bu.send = async function (context, payload, files) {
     let sendPromise = bot.createMessage(channel.id, payload, files);
     return await sendPromise.catch(async function (error) {
         let response = error.response;
-        if (typeof response !== 'object')
-            response = JSON.parse(error.response || "{}");
+        if (typeof response !== 'object') {
+            try {
+                response = JSON.parse(error.response || "{}");
+            } catch (err) {
+                console.error("Error parsing error response code", err);
+                bot.createMessage('197529405659021322', "Error parsing error response code\n" + err.stack);
+            }
+        }
         if (!bu.send.catch.hasOwnProperty(response.code))
             return console.error(error.response, error.stack);
 
