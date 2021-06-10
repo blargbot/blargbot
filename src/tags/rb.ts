@@ -16,8 +16,8 @@ export class RbSubtag extends BaseSubtag {
             definition: [
                 {
                     args: [],
-                    description: 'Returns `]`',
-                    execute: () => ']'
+                    description: 'Returns `}`',
+                    execute: () => '}'
                 }
             ]
         });
