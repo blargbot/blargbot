@@ -413,6 +413,7 @@ bu.send = async function (context, payload, files) {
             } catch (err) {
                 console.error("Error parsing error response code", err);
                 bot.createMessage('197529405659021322', "Error parsing error response code\n" + err.stack);
+                return;
             }
         }
         if (!bu.send.catch.hasOwnProperty(response.code))
