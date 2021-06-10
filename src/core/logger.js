@@ -60,6 +60,10 @@ const loggr = new CatLoggr({
 
 loggr.addPreHook(({ level, error, args, shard, context }) => {
     if (config.sentryURL && error) {
+        if (args[0].test(/Creating a pool connected to|Invalid session, reidentifying/i)) {
+            return;
+        }
+
         const transaction = Sentry.startTransaction({
             op: 'transaction',
             name: level
