@@ -28,6 +28,21 @@ if (config.sentryURL) {
     Sentry.setTag('cluster', process.env.CLUSTER_ID || 'master');
 }
 
+function getSentryLevel(level) {
+    switch (level) {
+        case 'fatal':
+            return Sentry.Severity.Critical;
+        case 'error':
+            return Sentry.Severity.Error;
+        case 'warn':
+            return Sentry.Severity.Warning;
+        case 'debug':
+            return Sentry.Severity.Debug;
+        case 'info':
+            return Sentry.Severity.Info;
+    }
+}
+
 const loggr = new CatLoggr({
     shardId: process.env.CLUSTER_ID || 'MS',
     level: config.general.isbeta ? 'debug' : 'info',
@@ -76,7 +91,7 @@ loggr.addPreHook(({ level, error, args, shard, context }) => {
         }
 
         Sentry.withScope(scope => {
-            scope.setLevel(level);
+            scope.setLevel(getSentryLevel(level));
             if (error) {
                 Sentry.captureException(error, {
                     ...logContext,
