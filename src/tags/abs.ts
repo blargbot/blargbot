@@ -1,3 +1,10 @@
+/*
+ * @Author: danny-may
+ * @Date: 2021-06-10 13:17:57
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-10 13:18:42
+ */
+
 import { Cluster } from '../cluster';
 import { BaseSubtag, RuntimeContext, SubtagCall } from '../core/bbtag';
 import { bbtagUtil, parse, SubtagType } from '../utils';
@@ -12,6 +19,7 @@ export class AbsSubtag extends BaseSubtag {
             aliases: ['absolute'],
             acceptsArrays: true,
             desc: 'Gets the absolute value of `number`. If multiple are supplied, then an array will be returned',
+            usage: '{abs;<number...>}',
             exampleCode: '{abs;-535}',
             exampleOut: '535',
             definition: {
