@@ -6,7 +6,6 @@ userdata/*
 package.json
 cache/*
 cache*
-.vscode/*
 img/generated/*
 chocobot/*
 config.json
@@ -48,3 +47,4 @@ jsondiff.js
 **/*.disabled
 !*cache.ts
 *.cpuprofile
+!.vscode/**/*.json
