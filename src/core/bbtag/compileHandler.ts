@@ -120,7 +120,7 @@ function createBindings(signature: SubtagHandlerCallSignature): ArgumentBindings
         byNumber: argPatterns.reduce((g, args) => {
             if (args.length in g)
                 throw new Error(`arglength ${args.length} has more than 1 matching pattern!`);
-            g[args.length] = createBinding(args);
+            g[args.length] = createBinding(args.reverse());
             return g;
         }, <ArgumentBindings['byNumber']>{}),
         byTest: [] // TODO Need to work out the tests for greedy arguments
