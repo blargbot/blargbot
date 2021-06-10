@@ -84,7 +84,7 @@ function computeArgCounts(condition: string): [test: (argCount: number) => boole
             case '':
             case '=':
             case '==':
-            case '===': return [c => c === value, 0, Number.MAX_VALUE];
+            case '===': return [c => c === value, value, value];
             default: throw new Error('Regex matched an operator, but wasnt handled by the switch');
         }
     }
