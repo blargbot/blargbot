@@ -64,11 +64,6 @@ loggr.addPreHook(({ level, error, args, shard, context }) => {
             return;
         }
 
-        const transaction = Sentry.startTransaction({
-            op: 'transaction',
-            name: level
-        });
-
         const logContext = {
             shard,
             ...context
@@ -92,7 +87,6 @@ loggr.addPreHook(({ level, error, args, shard, context }) => {
                 args: args.slice(1)
             });
         }
-        transaction.finish();
     }
 });
 
