@@ -59,7 +59,7 @@ function addArg(result: ArgumentResolverOrder, arg: SubtagHandlerArgument): void
         }
         const repeatedArgs = arg.nestedArgs.length == 0 ? [arg] : [...flattenGreedyArgs(arg.nestedArgs)];
         result.params.push(...repeatedArgs);
-        if (arg.required) {
+        for (let i = 0; i < arg.greedy; i++) {
             for (const signature of result.singles) {
                 signature.beforeParams.push(...repeatedArgs);
             }

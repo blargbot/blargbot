@@ -188,7 +188,7 @@ export interface SubtagHandler {
 export interface SubtagHandlerArgument {
     readonly name?: string;
     readonly required: boolean;
-    readonly greedy: boolean;
+    readonly greedy: number | null;
     readonly autoResolve: boolean;
     readonly nestedArgs: readonly SubtagHandlerArgument[];
 }
@@ -207,7 +207,7 @@ export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string |
 
 export interface SubtagHandlerDefinitionArgumentGroup {
     readonly name?: string;
-    readonly type?: 'optional' | 'required' | 'oneOrMore' | 'zeroOrMore';
+    readonly type?: 'optional' | 'required' | `${number}OrMore`;
     readonly args: ReadonlyArray<string | SubtagHandlerDefinitionArgumentGroup>;
 }
 

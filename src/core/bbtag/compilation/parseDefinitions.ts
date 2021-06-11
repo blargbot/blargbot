@@ -1,7 +1,6 @@
 import { SubtagHandlerArgument, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagHandlerDefinitionArgumentGroup } from '../types';
 
-const argumentGreedy = ['oneOrMore', 'zeroOrMore'] as ReadonlyArray<string | undefined>;
-const argumentRequired = [undefined, 'required', 'oneOrMore'] as ReadonlyArray<string | undefined>;
+const argumentRequired = [undefined, '!', '+'] as ReadonlyArray<string | undefined>;
 
 export function parseDefinitions(definitions: readonly SubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
     return definitions.map(parseDefinition);
@@ -20,7 +19,7 @@ function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup):
         return {
             name: argument.name,
             autoResolve: false,
-            greedy: argumentGreedy.includes(argument.type),
+            greedy: argument.type?.endsWith('OrMore') ? parseInt(argument.type) : null,
             required: argumentRequired.includes(argument.type),
             nestedArgs: argument.args.map(parseArgument)
         };
@@ -33,13 +32,20 @@ function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup):
     }
 
     let required = true;
-    let many = false;
+    let greedy: number | null = null;
     switch (argument[argument.length - 1]) {
         case '?': required = false; break;
-        case '*': required = false; many = true; break;
-        case '+': many = true; break;
+        case '*': required = false; greedy = 0; break;
+        case '+': greedy = 1; break;
         case '!': break;
-        default: argument += '!';
+        default:
+            const match = /^(.*?)+(\d)$/.exec(argument);
+            if (match !== null) {
+                greedy = parseInt(match[2]);
+                required = greedy > 0;
+                argument = match[1];
+            }
+            argument += '!';
     }
     argument = argument.slice(0, argument.length - 1);
 
@@ -47,7 +53,7 @@ function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup):
         name: argument,
         autoResolve,
         required,
-        greedy: many,
+        greedy: greedy,
         nestedArgs: []
     };
 }
