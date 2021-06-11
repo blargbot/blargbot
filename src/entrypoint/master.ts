@@ -4,7 +4,7 @@ import holidays from '../../holidays.json';
 import { createLogger } from '../core/Logger';
 import { Master } from '../master/Master';
 
-const logger = createLogger(config, 'MS');
+const logger = createLogger(config, `MS (${process.pid})`);
 logger.setGlobal();
 
 process.on('unhandledRejection', (err) =>

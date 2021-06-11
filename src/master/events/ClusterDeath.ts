@@ -28,9 +28,9 @@ export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
             logs.splice(0, logs.length);
         }
         const diedAt = moment();
-        this.master.logger.worker(`Cluster ${worker.id} has died, respawning...`);
+        this.master.logger.cluster(`Cluster ${worker.id} has died, respawning...`);
         await this.master.clusters.spawn(worker.id);
-        this.master.logger.worker(`Cluster ${worker.id} is back after ${moment.duration(moment().diff(diedAt)).asSeconds()} seconds`);
+        this.master.logger.cluster(`Cluster ${worker.id} is back after ${moment.duration(moment().diff(diedAt)).asSeconds()} seconds`);
     }
 }
 

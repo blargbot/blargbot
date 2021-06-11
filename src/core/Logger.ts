@@ -5,7 +5,7 @@ export function createLogger(config: Configuration, workerId: string): CatLogger
     const logger = new CatLoggr({
         shardId: workerId,
         level: config.general.loglevel ?? 'info',
-        shardLength: 6,
+        shardLength: 12,
         levels: [
             logLevel('fatal', CatLoggr._chalk.red.bgBlack, { err: true }),
             logLevel('error', CatLoggr._chalk.black.bgRed, { err: true }),

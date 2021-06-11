@@ -67,7 +67,7 @@ export abstract class WorkerConnection extends IPCEvents {
         super.attach(this.#process);
 
         const relay = (code: string, data?: unknown): void => {
-            this.logger.worker(`${this.worker} worker (ID: ${this.id}) sent ${code}`);
+            this.logger.worker(`${this.worker} worker (ID: ${this.id} PID: ${this.#process?.pid}) sent ${code}`);
             this.emit(code, data, snowflake.create());
         };
         this.#process.on('exit', (code, signal) => relay('exit', { code, signal }));
@@ -83,12 +83,12 @@ export abstract class WorkerConnection extends IPCEvents {
                 setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMS);
             });
             timer.end();
-            this.logger.worker(`${this.worker} worker (ID: ${this.id}) is ready after ${timer.elapsed}ms and said ${JSON.stringify(result)}`);
+            this.logger.worker(`${this.worker} worker (ID: ${this.id} PID: ${this.#process?.pid}) is ready after ${timer.elapsed}ms and said ${JSON.stringify(result)}`);
             return result;
         } catch (err) {
             Error.captureStackTrace(err);
             this.#process.kill();
-            this.logger.error(`${this.worker} worker (ID: ${this.id}) failed to start: ${err.stack}`);
+            this.logger.error(`${this.worker} worker (ID: ${this.id} PID: ${this.#process?.pid}) failed to start: ${err.stack}`);
             throw err;
         }
     }
@@ -97,7 +97,7 @@ export abstract class WorkerConnection extends IPCEvents {
         if (this.#process === undefined || !this.#process.connected)
             throw new Error('The child process is not connected');
 
-        this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id})`);
+        this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id} PID: ${this.#process?.pid})`);
         this.#process.kill(code);
         this.#killed = true;
     }

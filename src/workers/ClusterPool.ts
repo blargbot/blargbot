@@ -1,4 +1,5 @@
 import { ClusterConnection } from './ClusterConnection';
+import { ProcessMessageHandler } from './core/IPCEvents';
 import { WorkerPool } from './core/WorkerPool';
 
 export interface ClusterPoolOptions {
@@ -23,6 +24,21 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
             this.config.max,
             this.logger
         );
+
+        const currentCluster = this.tryGet(id);
+        if (currentCluster !== undefined) {
+            const shardReady: ProcessMessageHandler = (shardId: number) => {
+                try {
+                    currentCluster.send('killshard', shardId);
+                } catch (err) {
+                    this.logger.error('Wasn\'t able to send killShard message to shard', id, err);
+                }
+            };
+
+            cluster.on('shardReady', shardReady);
+            cluster.once('ready', () => cluster.off('shardReady', shardReady));
+        }
+
         return cluster;
     }
 

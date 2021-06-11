@@ -42,6 +42,7 @@ export class BaseClient {
     public async start(): Promise<void> {
         await Promise.all([
             this.database.connect().then(() => this.logger.init('database connected')),
+            new Promise(resolve => this.discord.once('ready', resolve)),
             this.discord.connect().then(() => this.logger.init('discord connected'))
         ]);
     }

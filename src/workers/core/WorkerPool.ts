@@ -42,32 +42,36 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
     }
 
     public get(id: number): TWorker {
-        if (id >= this.workerCount)
-            throw new Error(`${this.type} ${id} doesnt exist`);
-
-        const worker = this.#workers.get(id);
+        const worker = this.tryGet(id);
         if (!worker)
             throw new Error(`${this.type} ${id} has not yet been spawned`);
 
         return worker;
     }
 
+    public tryGet(id: number): TWorker | undefined {
+        if (id >= this.workerCount)
+            throw new Error(`${this.type} ${id} doesnt exist`);
+
+        return this.#workers.get(id);
+    }
+
     public async spawn(id: number, timeoutMS = this.defaultTimeout): Promise<TWorker> {
         if (id >= this.workerCount)
             throw new Error(`${this.type} ${id} doesnt exist`);
 
+        const worker = this.createWorker(id);
         const oldWorker = this.#workers.get(id);
         this.#workers.delete(id);
-        if (oldWorker)
-            this.#events.emit('killingworker', oldWorker);
-        const worker = this.createWorker(id);
         this.#events.emit('spawningworker', worker);
         await worker.connect(timeoutMS);
         this.#workers.set(id, worker);
-        if (oldWorker?.state === WorkerState.RUNNING)
-            oldWorker.kill();
-        if (oldWorker)
+        if (oldWorker !== undefined) {
+            this.#events.emit('killingworker', oldWorker);
+            if (oldWorker.state === WorkerState.RUNNING)
+                oldWorker.kill();
             this.#events.emit('killedworker', worker);
+        }
         this.#events.emit('spawnedworker', worker);
         return worker;
     }

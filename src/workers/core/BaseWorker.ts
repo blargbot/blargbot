@@ -28,6 +28,6 @@ export abstract class BaseWorker extends IPCEvents {
     }
 
     public start(): void {
-        this.send('ready', 'Hello!');
+        this.send('ready', `Hello from process ${this.id}!`);
     }
 }
