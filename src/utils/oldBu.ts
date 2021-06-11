@@ -3,7 +3,7 @@ import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
 import { Client as DiscordClient, GuildTextableChannel, Message, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
-import { fafo, getRange, humanize, randInt, SubtagVariableType } from '.';
+import { fafo, getRange, humanize, randInt } from '.';
 import isSafeRegex from 'safe-regex';
 import request from 'request';
 import { parse } from './parse';
@@ -14,7 +14,7 @@ import { Engine as BBEngine, limits, BBTagContext as BBContext, SubtagCall } fro
 import { ClusterUtilities } from '../cluster';
 import { StoredGuild, StoredTag } from '../core/database';
 import { defaultStaff, modlogColour } from './constants';
-
+import { deserialize as deserializeTagArray, BBArray } from './bbtag/tagArray';
 const TagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
     [key: string]: TagLocks
@@ -47,87 +47,6 @@ export const oldBu = {
     startTime: moment(),
     emitter: new EventEmitter(),
     events: new EventEmitter(),
-    tagVariableScopes: [
-        {
-            name: 'Server',
-            prefix: '_',
-            description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
-                'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
-                'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.',
-            tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
-                return context.tagVars
-                    ? [SubtagVariableType.TAGGUILD, context.guild.id]
-                    : [SubtagVariableType.GUILD, context.guild.id];
-            },
-            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, string | undefined>): Promise<void> {
-                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
-            },
-            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<string | undefined> {
-                return await context.database.tagVariables.get(name, ...this.tagScope(context));
-            },
-            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
-        },
-        {
-            name: 'Author',
-            prefix: '@',
-            description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
-                'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
-            tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
-                return [SubtagVariableType.AUTHOR, context.author];
-            },
-            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, string | undefined>): Promise<void> {
-                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
-            },
-            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<string | undefined> {
-                return await context.database.tagVariables.get(name, ...this.tagScope(context));
-            },
-            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['AUTHOR', context.author, key])
-        },
-        {
-            name: 'Global',
-            prefix: '*',
-            description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
-                'These are very useful if you like pain.',
-            tagScope(_context: BBContext): [type: SubtagVariableType, scope: string] {
-                return [SubtagVariableType.GLOBAL, ''];
-            },
-            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, string | undefined>): Promise<void> {
-                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
-            },
-            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<string | undefined> {
-                return await context.database.tagVariables.get(name, ...this.tagScope(context));
-            },
-            getLock: (_context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['GLOBAL', key])
-        },
-        {
-            name: 'Temporary',
-            prefix: '~',
-            description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
-                'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
-            setter: (_context: BBContext, _subtag: SubtagCall | undefined, _values: Record<string, string | undefined>): Promise<void> => Promise.resolve(), //Temporary is never persisted to the database
-            getter: (_context: BBContext, _subtag: SubtagCall | undefined, _name: string): Promise<string | undefined> => Promise.resolve(''), //Temporary is never persisted to the database
-            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => context.getLock(key)
-        },
-        {
-            name: 'Local',
-            prefix: '',
-            description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
-                'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
-                'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag',
-            tagScope(context: BBContext): [type: SubtagVariableType, scope: string] {
-                return context.tagVars
-                    ? [SubtagVariableType.LOCAL, context.tagName]
-                    : [SubtagVariableType.GUILDLOCAL, `${context.guild.id}_${context.tagName}`];
-            },
-            async setter(context: BBContext, _subtag: SubtagCall | undefined, values: Record<string, string | undefined>): Promise<void> {
-                return await context.database.tagVariables.upsert(values, ...this.tagScope(context));
-            },
-            async getter(context: BBContext, _subtag: SubtagCall | undefined, name: string): Promise<string | undefined> {
-                return await context.database.tagVariables.get(name, ...this.tagScope(context));
-            },
-            getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
-        }
-    ],
     async handleCensor(msg: Message<GuildTextableChannel>, storedGuild: StoredGuild): Promise<void> {
         const censor = storedGuild.censor;
         if (censor?.list.length) {
@@ -719,14 +638,6 @@ export const oldBu = {
         }
         return tempContent.join('\n');
     },
-    between(value: number, lower: number, upper: number, inclusive: boolean): boolean {
-        if (lower > upper)
-            lower = [upper, upper = lower][0];
-
-        if (inclusive)
-            return value >= lower && value <= upper;
-        return value > lower && value < upper;
-    },
     isBoolean(value: unknown): value is boolean {
         return typeof value == 'boolean';
     },
@@ -754,52 +665,6 @@ export const oldBu = {
             .filter((i): i is T[] & { key: K } => i !== undefined);
     },
 
-    compare(left: string, right: string): number {
-        const a = oldBu.toBlocks('' + left);
-        const b = oldBu.toBlocks('' + right);
-
-        const pairs = [];
-        const max = Math.max(a.length, b.length);
-        for (let i = 0; i < max; i++)
-            pairs.push([a[i], b[i]]);
-
-        let result = 0;
-
-        for (const pair of pairs) {
-            //If they are already identical, no need to keep checking.
-            if (pair[0] == pair[1]) continue;
-            if (typeof pair[0] == 'number') result -= 1;
-            if (typeof pair[1] == 'number') result += 1;
-            if (result) return result; //Only one of them is a number
-
-            if (pair[0] > pair[1]) return 1;
-            if (pair[0] < pair[1]) return -1;
-
-            //They are not equal, they are not bigger or smaller than eachother.
-            //They are strings or numbers. Only NaN satisfies this condition
-            if (isNaN(<number>pair[0])) result -= 1;
-            if (isNaN(<number>pair[1])) result += 1;
-            if (result) return result;
-
-            //They are both NaN, so continue checking
-        }
-
-        //All pairs are identical
-        return 0;
-    },
-    toBlocks(text: string): Array<string | number> {
-        const regex = /[-+]?\d+(?:\.\d*)?(?:e\+?\d+)?/g;
-        const numbers = text.match(regex) || [];
-        const words = text.split(regex);
-
-        const result = [];
-        const max = Math.max(numbers.length, words.length);
-        for (let i = 0; i < max; i++) {
-            if (words[i] !== undefined) result.push(words[i]);
-            if (numbers[i] !== undefined) result.push(parseFloat(numbers[i]));
-        }
-        return result;
-    },
     // eslint-disable-next-line @typescript-eslint/ban-types
     async blargbotApi(endpoint: string, args: string | Buffer | object = {}): Promise<Buffer | string | object | null> {
         try {
@@ -888,8 +753,8 @@ export const oldBu = {
         }
         return null;
     },
-    async getArray(context: BBContext, subtag: SubtagCall, arrName: string): Promise<{ v: JArray, n: string } | undefined> {
-        const obj = oldBu.deserializeTagArray(arrName);
+    async getArray(context: BBContext, subtag: SubtagCall, arrName: string): Promise<BBArray | undefined> {
+        const obj = deserializeTagArray(arrName);
         if (obj != null)
             return obj;
         try {
@@ -900,14 +765,6 @@ export const oldBu = {
         return undefined;
     },
 
-    getLock(...path: string[]): ReadWriteLock {
-        let node = oldBu.tagLocks || (oldBu.tagLocks = {});
-
-        for (const entry of path)
-            node = node[entry] || (node[entry] = {});
-
-        return node[TagLock] || (node[TagLock] = new ReadWriteLock());
-    }
 };
 
 class TimeoutError extends Error {
