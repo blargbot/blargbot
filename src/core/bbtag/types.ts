@@ -24,6 +24,7 @@ export interface SubtagCall {
     args: Statement[];
     start: SourceMarker;
     end: SourceMarker;
+    source: string;
 }
 
 export const enum SourceTokenType {

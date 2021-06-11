@@ -49,7 +49,10 @@ export class ApplySubtag extends BaseSubtag {
             name: [subtagClass.name],
             args: flattenedArgs,
             start: subtag.start,
-            end: subtag.end
+            end: subtag.end,
+            get source(): string {
+                return `{${args.join(';')}}`;
+            }
         };
 
         return await context.engine.eval(subtagCall, context);

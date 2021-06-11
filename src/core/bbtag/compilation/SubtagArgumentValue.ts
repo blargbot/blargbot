@@ -9,7 +9,7 @@ export class SubtagArgumentValue implements ISubtagArgumentValue {
 
     public readonly code: Statement;
     public get isCached(): boolean { return this.#value !== undefined; }
-    public get raw(): string { throw new Error('Not implemented yet'); }
+    public get raw(): string { return this.code.map(c => typeof c === 'string' ? c : c.source).join(); }
     public get value(): string {
         if (this.#value === undefined)
             throw new Error('The value is not available yet. Please await the wait() method before attempting to access the value');
@@ -19,10 +19,9 @@ export class SubtagArgumentValue implements ISubtagArgumentValue {
     public constructor(private readonly context: BBTagContext, code: Statement) {
         this.code = code;
     }
-    public async execute(): Promise<string> {
-        const result = await this.context.eval(this.code);
-        this.#value = result;
-        return result;
+    public execute(): Promise<string> {
+        return this.#promise = this.context.eval(this.code)
+            .then(v => this.#value = v);
     }
 
     public wait(): Promise<string> {
