@@ -64,6 +64,7 @@ bu.CommandType = {
     MUSIC: 5,
     ADMIN: 6,
     SOCIAL: 7,
+    DEVELOPER: 8,
     properties: {
         1: {
             name: 'General',
@@ -73,7 +74,14 @@ bu.CommandType = {
         2: {
             name: 'CATZ MEOW MEOW',
             requirement: msg => msg.author.id == bu.CAT_ID,
-            description: 'MREOW MEOWWWOW! **purr**'
+            description: 'MREOW MEOWWWOW! **purr**',
+            hidden: true
+        },
+        8: {
+            name: 'Developer',
+            requirement: msg => bu.isDeveloper(msg.author.id),
+            description: 'Commands that can only be executed by blargbot developers.',
+            hidden: true
         },
         3: {
             name: 'NSFW',
@@ -87,7 +95,8 @@ bu.CommandType = {
         },
         5: {
             name: 'Music',
-            requirement: () => false
+            requirement: () => false,
+            hidden: true
         },
         6: {
             name: 'Admin',

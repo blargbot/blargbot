@@ -77,8 +77,8 @@ module.exports = class ApiRoute {
         this.commands = {};
         for (const key in co) {
             let command = co[key];
-            if (command.category === bu.CommandType.CAT) continue;
             let category = bu.CommandType.properties[command.category];
+            if (category.hidden) continue;
             if (!this.commands[category.name]) this.commands[category.name] = {
                 name: category.name,
                 desc: category.description,
@@ -91,4 +91,4 @@ module.exports = class ApiRoute {
             value.el.sort((a, b) => a.key > b.key ? 1 : a.key < b.key ? -1 : 0);
         }
     }
-}
+};

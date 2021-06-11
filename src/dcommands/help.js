@@ -15,6 +15,7 @@ class HelpCommand extends BaseCommand {
     getColor(category) {
         switch (category) {
             case bu.CommandType.CAT:
+            case bu.CommandType.DEVELOPER:
             case bu.CommandType.ADMIN: return 0xff0000;
             case bu.CommandType.NSFW: return 0x010101;
             case bu.CommandType.IMAGE:
@@ -139,11 +140,11 @@ class HelpCommand extends BaseCommand {
                 }
 
                 let prefix = '';
-                let finalText = ''
+                let finalText = '';
                 if (!msg.channel.guild)
                     finalText += 'Not all of these commands will work in DM\'s\n';
                 else {
-                    let prefixes = await bu.guildSettings.get(msg.channel.guild.id, 'prefix')
+                    let prefixes = await bu.guildSettings.get(msg.channel.guild.id, 'prefix');
                     prefix = prefixes ? prefixes[0] : config.discord.defaultPrefix;
                 }
                 finalText += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>.\nWant to support the bot? Consider donating to <https://patreon.com/blargbot> - all donations go directly towards recouping hosting costs.';
