@@ -15,11 +15,11 @@ class TimezoneCommand extends BaseCommand {
         let message;
         if (words.length > 1) {
             let code = words.slice(1).join(' ').toUpperCase();
-            let tz = moment().tz(code);
-            if (tz.zoneAbbr() === '') {
+            let tz = moment.tz.zone(code);
+            if (!tz) {
                 message = 'Invalid parameters! See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
             } else {
-                message = `Ok, your timezone code is now set to \`${code}\`, which is equivalent to ${tz.format('z (Z)')}.`;
+                message = `Ok, your timezone code is now set to \`${code}\`, which is equivalent to ${moment.tz(code).format('z (Z)')}.`;
                 await r.table('user').get(msg.author.id).update({ timezone: code });
             }
         } else {
