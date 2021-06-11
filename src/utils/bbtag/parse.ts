@@ -17,7 +17,7 @@ export function parse(source: string): Statement {
                     args: [],
                     start: token.start,
                     end: token.end,
-                    get source(): string { return source.slice(token.start.index, token.end.index); }
+                    get source(): string { return source.slice(this.start.index, this.end.index); }
                 });
                 builder = subtag.name;
                 break;
