@@ -13,7 +13,7 @@ const config = require('../../config.json');
 if (config.sentryURL) {
     Sentry.init({
         dsn: config.sentryURL,
-        environment: config.isbeta ? 'development' : 'production',
+        environment: config.general.isbeta ? 'development' : 'production',
         integrations: [
             // enable HTTP calls tracing
             new Sentry.Integrations.Http({ tracing: true })
