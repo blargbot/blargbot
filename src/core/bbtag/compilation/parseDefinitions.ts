@@ -39,7 +39,7 @@ function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup):
         case '+': greedy = 1; break;
         case '!': break;
         default:
-            const match = /^(.*?)+(\d)$/.exec(argument);
+            const match = /^(.*?)\+(\d)$/.exec(argument);
             if (match !== null) {
                 greedy = parseInt(match[2]);
                 required = greedy > 0;
