@@ -11,14 +11,12 @@ export class SleepTag extends BaseSubtag {
         super(cluster, {
             name: 'sleep',
             category: Type.COMPLEX,
-            desc: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
-            usage: '{sleep;<duration>}',
-            exampleCode: '{sleep;10s}{send;{channelid};Hi!}',
-            exampleOut: '(After 10s) Hi!',
             definition: [
                 {
                     args: ['duration'],
                     description: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
+                    exampleCode: '{sleep;10s}{send;{channelid};Hi!}',
+                    exampleOut: '(After 10s) Hi!',
                     execute: (ctx, [duration], subtag) => this.sleep(ctx, duration.value, subtag)
                 }
             ]

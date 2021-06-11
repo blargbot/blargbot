@@ -9,14 +9,12 @@ export class SemiSubtag extends BaseSubtag {
         super(cluster, {
             name: 'semi',
             category: SubtagType.SIMPLE,
-            desc: 'Will be replaced by `;` on execution.',
-            usage: '{semi}',
-            exampleCode: 'This is a semicolon! {semi}',
-            exampleOut: 'This is a semicolon! ;',
             definition: [
                 {
                     args: [],
                     description: 'Returns `;`',
+                    exampleCode: 'This is a semicolon! {semi}',
+                    exampleOut: 'This is a semicolon! ;',
                     execute: () => ';'
                 }
             ]

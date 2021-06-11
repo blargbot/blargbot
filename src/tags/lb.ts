@@ -10,13 +10,12 @@ export class LbSubtag extends BaseSubtag {
             name: 'lb',
             category: SubtagType.SIMPLE,
             desc: 'Will be replaced by `{` on execution.',
-            usage: '{lb}',
-            exampleCode: 'This is a bracket! {lb}',
-            exampleOut: 'This is a bracket! {',
             definition: [
                 {
                     args: [],
                     description: 'Returns `{`',
+                    exampleCode: 'This is a bracket! {lb}',
+                    exampleOut: 'This is a bracket! {',
                     execute: () => '{'
                 }
             ]

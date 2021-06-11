@@ -7,15 +7,12 @@ export class CleanSubtag extends BaseSubtag {
         super(cluster, {
             name: 'clean',
             category: SubtagType.COMPLEX,
-            desc:
-                'Removes all duplicated whitespace from `text`, meaning a cleaner output.',
-            usage: '{clean;<text>}',
-            exampleCode: '{clean;Hello!  \n\n  Im     here    to help}',
-            exampleOut: 'Hello!\nIm here to help',
             definition: [
                 {
                     args: ['text'],
                     description: 'Removes all duplicated whitespace from `text`, meaning a cleaner output.',
+                    exampleCode: '{clean;Hello!  \n\n  Im     here    to help}',
+                    exampleOut: 'Hello!\nIm here to help',
                     execute: (_, [text]) => this.clean(text.value)
                 }
             ]

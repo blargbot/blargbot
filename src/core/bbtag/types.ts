@@ -177,9 +177,7 @@ export interface SubtagArgumentValue {
     execute(): Promise<string>;
 }
 
-export interface SubtagHandlerCallSignature {
-    readonly description: string;
-    readonly args: readonly SubtagHandlerArgument[];
+export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
     readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
@@ -195,9 +193,15 @@ export interface SubtagHandlerArgument {
     readonly nestedArgs: readonly SubtagHandlerArgument[];
 }
 
-export interface SubtagHandlerDefinition {
-    readonly args: ReadonlyArray<string | SubtagHandlerDefinitionArgumentGroup>;
+export interface SubtagSignatureDetails<TArgs = SubtagHandlerArgument> {
+    readonly args: readonly TArgs[];
     readonly description: string;
+    readonly exampleCode?: string;
+    readonly exampleIn?: string;
+    readonly exampleOut?: string;
+}
+
+export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string | SubtagHandlerDefinitionArgumentGroup> {
     readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 

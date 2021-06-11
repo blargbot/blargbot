@@ -10,20 +10,19 @@ export class AbsSubtag extends BaseSubtag {
             name: 'abs',
             category: SubtagType.COMPLEX,
             aliases: ['absolute'],
-            acceptsArrays: true,
-            desc: 'Gets the absolute value of `number`. If multiple are supplied, then an array will be returned',
-            usage: '{abs;<number...>}',
-            exampleCode: '{abs;-535}',
-            exampleOut: '535',
             definition: [
                 {
                     args: ['number'],
                     description: 'Gets the absolute value of `number`',
+                    exampleCode: '{abs;-535}',
+                    exampleOut: '535',
                     execute: (ctx, [value], subtag) => this.abs(ctx, value.value, subtag)
                 },
                 {
                     args: ['number', 'otherNumbers+'],
                     description: 'Gets the absolute value of each `number` and returns an array containing the results',
+                    exampleCode: '{abs;-535;123;-42}',
+                    exampleOut: '[535, 123, 42]',
                     execute: (ctx, args, subtag) => this.absAll(ctx, args.map(arg => arg.value), subtag)
                 }
             ]

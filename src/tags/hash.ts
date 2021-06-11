@@ -7,18 +7,14 @@ export class HashSubtag extends BaseSubtag {
         super(cluster, {
             name: 'hash',
             category: SubtagType.COMPLEX,
-            desc:
-                'Returns the numeric hash of `text`, based on the unicode value of each individual character. ' +
-                'This results in seemingly randomly generated numbers that are constant for each specific query.',
-            usage: '{hash;<text>}',
-            exampleCode: 'The hash of brown is {hash;brown}.',
-            exampleOut: 'The hash of brown is 94011702.',
             definition: [
                 {
                     args: ['text'],
                     description:
                         'Returns the numeric hash of `text`, based on the unicode value of each individual character. ' +
                         'This results in seemingly randomly generated numbers that are constant for each specific query.',
+                    exampleCode: 'The hash of brown is {hash;brown}.',
+                    exampleOut: 'The hash of brown is 94011702.',
                     execute: (_, [text]) => this.computeHash(text.value)
                 }
             ]

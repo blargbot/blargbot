@@ -7,18 +7,14 @@ export class ApplySubtag extends BaseSubtag {
         super(cluster, {
             name: 'apply',
             category: SubtagType.ARRAY,
-            desc:
-                'Executes `subtag`, using the `args` as parameters. ' +
-                'If `args` is an array, it will get deconstructed to it\'s individual elements.',
-            usage: '{apply;<subtag>;[args...]',
-            exampleCode: '{apply;randint;[1,4]}',
-            exampleOut: '3',
             definition: [
                 {
                     args: ['subtag', 'args*'],
                     description:
                         'Executes `subtag`, using the `args` as parameters. ' +
                         'If `args` is an array, it will get deconstructed to it\'s individual elements.',
+                    exampleCode: '{apply;randint;[1,4]}',
+                    exampleOut: '3',
                     execute: (ctx, args, subtag) => this.defaultApply(ctx, args.map(a => a.value), subtag)
                 }
             ]

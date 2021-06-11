@@ -7,28 +7,29 @@ export class ArgsSubtag extends BaseSubtag {
         super(cluster, {
             name: 'args',
             category: SubtagType.COMPLEX,
-            desc:
-                'Gets user input. Specifying `index` will only get the word at that location, specifying' +
-                '`range` will get all the words between `index` and `range`. Specify `range` as `n` to get all' +
-                'the words from `index` to the end',
-            usage: '{args;[index];[range]}',
-            exampleCode: 'Your second word was {args;1}',
-            exampleIn: 'Hello world!',
-            exampleOut: 'Your second word was world!',
             definition: [
                 {
                     args: [],
                     description: 'Gets the whole user input',
+                    exampleCode: 'You said {args}',
+                    exampleIn: 'Hello world! BBtag is so cool',
+                    exampleOut: 'You said Hello world! BBtag is so cool',
                     execute: (ctx) => this.getAllArgs(ctx)
                 },
                 {
                     args: ['index'],
                     description: 'Gets a word from the user input at the `index` position',
+                    exampleCode: '{args;1}',
+                    exampleIn: 'Hello world! BBtag is so cool',
+                    exampleOut: 'world!',
                     execute: (ctx, [index], subtag) => this.getArg(ctx, index.value, subtag)
                 },
                 {
                     args: ['start', 'end'],
-                    description: 'Gets all the words in the user input from `start` to `end`. If `end` is `n` then all words after `start` will be returned',
+                    description: 'Gets all the words in the user input from `start` up to `end`. If `end` is `n` then all words after `start` will be returned',
+                    exampleCode: '{args;2;4}',
+                    exampleIn: 'Hello world! BBtag is so cool',
+                    exampleOut: 'BBtag is',
                     execute: (ctx, [start, end], subtag) => this.getArgs(ctx, start.value, end.value, subtag)
                 }
             ]

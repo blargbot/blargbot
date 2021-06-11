@@ -9,8 +9,8 @@ export function parseDefinitions(definitions: readonly SubtagHandlerDefinition[]
 
 function parseDefinition(definition: SubtagHandlerDefinition): SubtagHandlerCallSignature {
     return {
+        ...definition,
         args: definition.args.map(parseArgument),
-        description: definition.description,
         execute: definition.execute
     };
 }

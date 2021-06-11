@@ -8,14 +8,12 @@ export class Base64decodeSubtag extends BaseSubtag {
             name: 'base64decode',
             aliases: ['atob'],
             category: SubtagType.COMPLEX,
-            desc: 'Converts the provided base64 to a UTF-8 string.',
-            usage: '{base64decode;<base64>}',
-            exampleCode: '{base64decode;RmFuY3kh}',
-            exampleOut: 'Fancy!',
             definition: [
                 {
                     args: ['text+'],
                     description: 'Converts the provided base64 to a UTF-8 string.',
+                    exampleCode: '{base64decode;RmFuY3kh}',
+                    exampleOut: 'Fancy!',
                     execute: (_, args) => this.decode(args.map(arg => arg.value))
                 }
             ]

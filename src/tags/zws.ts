@@ -9,14 +9,12 @@ export class ZwsSubtag extends BaseSubtag {
         super(cluster, {
             name: 'zws',
             category: SubtagType.SIMPLE,
-            desc: 'Will be replaced by a single zero width space (unicode 200B)',
-            usage: '{zws}',
-            exampleCode: '{zws}',
-            exampleOut: '\u200B',
             definition: [
                 {
                     args: [],
-                    description: 'returns a single zero width space (unicode 200B)',
+                    description: 'Returns a single zero width space (unicode 200B)',
+                    exampleCode: '{zws}',
+                    exampleOut: '\u200B',
                     execute: () => '\u200B'
                 }
             ]

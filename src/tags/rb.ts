@@ -9,14 +9,12 @@ export class RbSubtag extends BaseSubtag {
         super(cluster, {
             name: 'rb',
             category: SubtagType.SIMPLE,
-            desc: 'Will be replaced by `}` on execution.',
-            usage: '{rb}',
-            exampleCode: 'This is a bracket! {rb}',
-            exampleOut: 'This is a bracket! }',
             definition: [
                 {
                     args: [],
                     description: 'Returns `}`',
+                    exampleCode: 'This is a bracket! {rb}',
+                    exampleOut: 'This is a bracket! }',
                     execute: () => '}'
                 }
             ]

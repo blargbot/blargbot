@@ -1,7 +1,7 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster } from '../../cluster';
 import { SubtagType } from '../../utils';
-import { SubtagCall, SubtagHandler, SubtagHandlerDefinition, SubtagResult } from './types';
+import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagResult } from './types';
 import { BBTagContext } from './BBTagContext';
 import { compileSignatures } from './compilation/compileSignatures';
 import { parseDefinitions } from './compilation/parseDefinitions';
@@ -12,15 +12,9 @@ export interface SubtagOptions {
     name: string;
     aliases?: readonly string[];
     category: SubtagType;
-    desc?: string;
-    usage: string;
-    exampleCode?: string | null;
-    exampleIn?: string | null;
-    exampleOut?: string | null;
+    desc?: string | null;
     deprecated?: string | false;
     staff?: boolean;
-    acceptsArrays?: boolean;
-    definition: readonly SubtagHandlerDefinition[];
 }
 
 export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandler {
@@ -28,15 +22,10 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;
     public readonly isTag: true;
-    public readonly desc: string;
-    public readonly usage: string;
-    public readonly exampleCode: string | null;
-    public readonly exampleIn: string | null;
-    public readonly exampleOut: string | null;
+    public readonly desc: string | null;
     public readonly deprecated: string | false;
     public readonly staff: boolean;
-    public readonly acceptsArrays: boolean;
-    public readonly definition: readonly SubtagHandlerDefinition[];
+    public readonly signatures: readonly SubtagHandlerCallSignature[];
     public readonly handler: SubtagHandler;
 
     public get logger(): CatLogger { return this.cluster.logger; }
@@ -44,27 +33,17 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
 
     protected constructor(
         public readonly cluster: Cluster,
-        options: SubtagOptions
+        options: SubtagOptions & { definition: readonly SubtagHandlerDefinition[] }
     ) {
-        if (options.definition.length === 0)
-            throw new Error('Cannot have no handler definitions!');
-
         this.name = options.name;
-        this.definition = options.definition;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
         this.isTag = true;
         this.desc = options.desc ?? '';
-        this.usage = options.usage;
-        this.exampleCode = options.exampleCode ?? null;
-        this.exampleIn = options.exampleIn ?? null;
-        this.exampleOut = options.exampleOut ?? null;
         this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
-        this.acceptsArrays = options.acceptsArrays ?? false;
-
-        const signatures = parseDefinitions(this.definition);
-        this.handler = compileSignatures(signatures);
+        this.signatures = parseDefinitions(options.definition);
+        this.handler = compileSignatures(this.signatures);
     }
 
     public async execute(context: BBTagContext, subtag: SubtagCall): Promise<SubtagResult> {

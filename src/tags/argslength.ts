@@ -7,15 +7,13 @@ export class Argslength extends BaseSubtag {
         super(cluster, {
             name: 'argslength',
             category: SubtagType.SIMPLE,
-            desc: 'Return the number of arguments the user provided.',
-            usage: '{argslength}',
-            exampleCode: 'You said {argslength} words.',
-            exampleIn: 'I am saying things.',
-            exampleOut: 'You said 4 words.',
             definition: [
                 {
                     args: [],
                     description: 'Return the number of arguments the user provided.',
+                    exampleCode: 'You said {argslength} words.',
+                    exampleIn: 'I am saying things.',
+                    exampleOut: 'You said 4 words.',
                     execute: (ctx) => ctx.input.length.toString()
                 }
             ]

@@ -8,14 +8,12 @@ export class Base64encodeSubtag extends BaseSubtag {
             name: 'base64encode',
             aliases: ['btoa'],
             category: SubtagType.COMPLEX,
-            desc: 'Converts the provided text to base64.',
-            usage: '{base64decode;<text>}',
-            exampleCode: '{base64decode;Fancy!}',
-            exampleOut: 'RmFuY3kh!',
             definition: [
                 {
                     args: ['text+'],
                     description: 'Converts the provided text to base64.',
+                    exampleCode: '{base64decode;Fancy!}',
+                    exampleOut: 'RmFuY3kh!',
                     execute: (_, args) => this.encode(args.map(arg => arg.value))
                 }
             ]

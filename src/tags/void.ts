@@ -9,14 +9,12 @@ export class VoidSubtag extends BaseSubtag {
         super(cluster, {
             name: 'void',
             category: SubtagType.COMPLEX,
-            desc: 'Executes `code` but does not return the output from it. Useful for silent functionality',
-            usage: '{void;[code]}',
-            exampleCode: '{void;This won\'t be output!}',
-            exampleOut: '',
             definition: [
                 {
                     args: ['code?'],
-                    description: 'Silently executes `code`',
+                    description: 'Executes `code` but does not return the output from it. Useful for silent functionality',
+                    exampleCode: '{void;This won\'t be output!}',
+                    exampleOut: '',
                     execute: () => ''
                 }
             ]
