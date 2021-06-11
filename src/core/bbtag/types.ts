@@ -161,7 +161,7 @@ export interface ExecutionResult {
     };
     database: {
         committed: number;
-        values: Record<string, string | undefined>;
+        values: Record<string, JToken>;
     };
 }
 export type SubtagResult =

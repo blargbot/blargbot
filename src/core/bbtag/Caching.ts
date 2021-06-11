@@ -1,19 +1,18 @@
 import { Timer } from '../../structures/Timer';
-import { oldBu } from '../../utils';
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './types';
-
+import { tagVariableScopes } from '.';
 export class CacheEntry {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #original: string | undefined;
-    public value: string | undefined;
+    #original: JToken;
+    public value: JToken;
 
     public get changed(): boolean { return this.#original !== this.value; }
 
     public constructor(
         public readonly context: BBTagContext,
         public readonly key: string,
-        original: string | undefined
+        original: JToken
     ) {
         this.#original = original;
         this.value = original;
@@ -47,7 +46,7 @@ export class VariableCache {
         if (!forced && entry !== undefined)
             return entry;
 
-        const scope = oldBu.tagVariableScopes.find(s => variable.startsWith(s.prefix));
+        const scope = tagVariableScopes.find(s => variable.startsWith(s.prefix));
         if (scope == null)
             throw new Error('Missing default variable scope!');
         try {
@@ -64,7 +63,7 @@ export class VariableCache {
         return entry.value;
     }
 
-    public async set(variable: string, value: string | undefined | CacheEntry, subtag?: SubtagCall): Promise<void> {
+    public async set(variable: string, value: JToken | CacheEntry, subtag?: SubtagCall): Promise<void> {
         if (value instanceof CacheEntry) {
             this.#cache[variable] = value;
             return;
@@ -91,10 +90,10 @@ export class VariableCache {
         const vars = (variables || Object.keys(this.#cache))
             .map(key => this.#cache[key])
             .filter((c): c is CacheEntry => c !== undefined);
-        const pools: Record<string, Record<string, string | undefined>> = {};
+        const pools: Record<string, Record<string, JToken>> = {};
         for (const v of vars) {
             if (v.changed) {
-                const scope = oldBu.tagVariableScopes.find(s => v.key.startsWith(s.prefix));
+                const scope = tagVariableScopes.find(s => v.key.startsWith(s.prefix));
                 if (scope == null) throw new Error('Missing default variable scope!');
                 const pool = pools[scope.prefix] ??= {};
                 pool[v.key.substring(scope.prefix.length)] = v.value === '' ? undefined : v.value;
@@ -103,7 +102,7 @@ export class VariableCache {
         }
         for (const key in pools) {
             const timer = new Timer().start();
-            const scope = oldBu.tagVariableScopes.find(s => key === s.prefix);
+            const scope = tagVariableScopes.find(s => key === s.prefix);
             if (scope == null)
                 throw new Error('Missing default variable scope!');
             const objectCount = Object.keys(pools[key]).length;

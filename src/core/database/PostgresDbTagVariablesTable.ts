@@ -9,7 +9,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
     ) {
     }
 
-    public async upsert(values: Record<string, string | undefined>, type: SubtagVariableType, scope: string): Promise<void> {
+    public async upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void> {
         const model = this.postgres.models.BBTagVariableModel;
         if (model === undefined)
             throw new Error('The postgres models havent been configured!');
@@ -39,7 +39,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
         return await trans.commit();
     }
 
-    public async get(name: string, type: SubtagVariableType, scope: string): Promise<string | undefined> {
+    public async get(name: string, type: SubtagVariableType, scope: string): Promise<JToken> {
         const record = await this.postgres.models.BBTagVariableModel?.findOne({
             where: {
                 name: name.substring(0, 255),
@@ -49,17 +49,9 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
         });
         if (!record)
             return undefined;
-
+        console.log(record);
         try {
-            const result = JSON.parse(record.content);
-            switch (typeof result) {
-                case 'string': return result;
-                case 'undefined': return undefined;
-                case 'object':
-                    if (result === null)
-                        return undefined;
-                default: return record.content;
-            }
+            return JSON.parse(record.content);
         } catch {
             return record.content;
         }

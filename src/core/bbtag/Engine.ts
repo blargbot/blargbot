@@ -49,7 +49,7 @@ export class Engine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: context.variables.list.reduce((v, c) => (v[c.key] = c.value, v), <Record<string, string | undefined>>{})
+                values: context.variables.list.reduce((v, c) => (v[c.key] = c.value, v), <Record<string, JToken>>{})
             }
         };
     }

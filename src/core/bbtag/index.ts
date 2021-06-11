@@ -3,7 +3,10 @@ export * from './Engine';
 export * from './BBTagContext';
 export * from './types';
 export * from './BaseSubtag';
+export * from './tagVariables';
+import {get as getLock} from './lock';
 
 export {
-    limits
+    limits,
+    getLock
 };
