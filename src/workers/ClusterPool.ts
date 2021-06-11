@@ -12,7 +12,7 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
     ) {
         super('Cluster',
             Math.ceil(config.max / config.perCluster),
-            config.spawnTime,
+            /*config.spawnTime*/999999999,
             logger);
     }
 

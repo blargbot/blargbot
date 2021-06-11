@@ -190,7 +190,7 @@ export interface SubtagHandler {
 export interface SubtagHandlerArgument {
     readonly name?: string;
     readonly required: boolean;
-    readonly many: boolean;
+    readonly greedy: boolean;
     readonly autoResolve: boolean;
     readonly nestedArgs: readonly SubtagHandlerArgument[];
 }

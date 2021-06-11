@@ -3,7 +3,8 @@ import { Cluster } from '../../cluster';
 import { SubtagType } from '../../utils';
 import { SubtagCall, SubtagHandler, SubtagHandlerDefinition, SubtagResult } from './types';
 import { BBTagContext } from './BBTagContext';
-import { compileSignatures, parseDefinitions } from './compileHandler';
+import { compileSignatures } from './compilation/compileSignatures';
+import { parseDefinitions } from './compilation/parseDefinitions';
 import { Timer } from '../../structures/Timer';
 import { metrics } from '../Metrics';
 

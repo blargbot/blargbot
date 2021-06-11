@@ -22,7 +22,7 @@ export class AbsSubtag extends BaseSubtag {
                     execute: (ctx, [value], subtag) => this.abs(ctx, value.value, subtag)
                 },
                 {
-                    args: ['number+'],
+                    args: ['number', 'otherNumbers+'],
                     description: 'Gets the absolute value of each `number` and returns an array containing the results',
                     execute: (ctx, args, subtag) => this.absAll(ctx, args.map(arg => arg.value), subtag)
                 }
