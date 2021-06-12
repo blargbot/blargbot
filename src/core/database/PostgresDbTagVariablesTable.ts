@@ -49,7 +49,6 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
         });
         if (!record)
             return undefined;
-        console.log(record);
         try {
             return JSON.parse(record.content);
         } catch {

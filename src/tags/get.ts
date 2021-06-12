@@ -32,23 +32,35 @@ export class GetSubtag extends BaseSubtag {
         })
     }
 
-    public async get(context: BBTagContext, variableName: string) {
-        const result = await context.variables.get(variableName)
-        console.log('GET' + result);
-        if (typeof result === 'object')
-            return JSON.stringify(result);
-        return result?.toString();
+    public async get(context: BBTagContext, variableName: string): Promise<string> {
+        const result = await context.variables.get(variableName);
+        switch (typeof result) {
+            case 'object':
+                return JSON.stringify(result);
+            case 'number':
+            case 'string':
+            case 'boolean':
+                return result.toString();
+            case 'undefined':
+                return '';
+        }
     }
 
-    public async getArray(context: BBTagContext, variableName: string, index: string | number, subtag: SubtagCall) {
+    public async getArray(context: BBTagContext, variableName: string, index: string | number, subtag: SubtagCall): Promise<string> {
         const result = await context.variables.get(variableName);
-        console.log(index);
-        console.log(result);
-        console.log(typeof result);
-        if (!Array.isArray(result))
-            return typeof result === 'object' ? JSON.stringify(result) : result?.toString();
-        console.log(index);
-        console.log(result);
+        if (!Array.isArray(result)) {
+            switch (typeof result) {
+                case 'object':
+                    return JSON.stringify(result);
+                case 'number':
+                case 'string':
+                case 'boolean':
+                    return result.toString();
+                case 'undefined':
+                    return '';
+            }
+        }
+
         if (index === '')
             return serialize(result);
 
@@ -60,7 +72,15 @@ export class GetSubtag extends BaseSubtag {
             return this.customError( 'Index out of range', context, subtag);
 
         const itemAtIndex =  result[index];
-        return typeof itemAtIndex === 'object' ? JSON.stringify(itemAtIndex) : itemAtIndex?.toString();
-
+        switch (typeof itemAtIndex) {
+            case 'object':
+                return JSON.stringify(itemAtIndex);
+            case 'number':
+            case 'string':
+            case 'boolean':
+                return itemAtIndex.toString();
+            case 'undefined':
+                return '';
+        }
     }
 }

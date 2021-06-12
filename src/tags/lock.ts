@@ -71,25 +71,25 @@ export class LockSubtag extends BaseSubtag {
         if (!key)
             return this.customError('Key cannot be empty', context, subtag);
 
-        let scope = tagVariableScopes.find((s) => key.startsWith(s.prefix));
+        const scope = tagVariableScopes.find((s) => key.startsWith(s.prefix));
         if (scope == null) throw new Error('Missing default variable scope!');
 
-        let lock = scope.getLock(
+        const lock = scope.getLock(
             context,
             subtag,
             key.substring(scope.prefix.length)
         );
-        //TODO fix this type error
+        //TODO fix this can't be indexed type error
         //@ts-ignore
-        let lockFunc = lock[mode + 'Lock'].bind(this);
-        let lockOverride = context.override('lock', {
+        const lockFunc = lock[mode + 'Lock'];
+        const lockOverride = context.override('lock', {
             execute: (context, subtag) =>
                 this.customError('Lock cannot be nested', context, subtag)
         });
 
         try {
-            return await new Promise(async (resolve, reject) => {
-                //TODO and this type error
+            return await new Promise((resolve, reject) => {
+                //TODO and this any type error
                 //@ts-ignore
                 lockFunc(async (release) => {
                     try {
