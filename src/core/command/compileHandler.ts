@@ -16,7 +16,7 @@ interface VariableCommandTree {
     readonly node: ChildCommandTree;
 }
 
-export function compileHandler(definition: CommandDefinition, flagDefinitions: DeepReadOnly<FlagDefinition[]>): CommandHandler {
+export function compileHandler(definition: CommandDefinition, flagDefinitions: readonly FlagDefinition[]): CommandHandler {
     const tree = buildTree(definition, flagDefinitions);
     return {
         signatures: [...buildUsage(tree)],
@@ -54,7 +54,7 @@ export function compileHandler(definition: CommandDefinition, flagDefinitions: D
 
 function buildTree(
     definition: CommandDefinition,
-    flagDefinitions: DeepReadOnly<FlagDefinition[]>
+    flagDefinitions: readonly FlagDefinition[]
 ): CommandTree {
     const tree: CommandTree = { switch: {}, tests: [] };
     populateTree(definition, flagDefinitions, tree, []);
@@ -63,7 +63,7 @@ function buildTree(
 
 function populateTree(
     definition: CommandDefinition,
-    flagDefinitions: DeepReadOnly<FlagDefinition[]>,
+    flagDefinitions: readonly FlagDefinition[],
     tree: CommandTree,
     path: CommandParameter[]
 ): void {
@@ -118,12 +118,12 @@ function populateTree(
 
         const strictFlags = definition.strictFlags ?? false;
         const binder = definition.dontBind ?? false
-            ? (args: string[]) => args
+            ? (args: readonly string[]) => args
             : compileArgBinder(path, parameters, definition.allowOverflow ?? false);
 
         const getArgs = (definition.useFlags ?? flagDefinitions.length > 0)
-            ? (_args: string[], flags: FlagResult) => flags.undefined
-            : (args: string[], _flags: FlagResult) => args;
+            ? (_args: readonly string[], flags: FlagResult) => flags.undefined
+            : (args: readonly string[], _flags: FlagResult) => args;
 
         tree.handler = {
             description: definition.description,
@@ -169,7 +169,7 @@ function* buildUsageInner(tree: CommandTree): IterableIterator<CommandParameter[
             yield* buildUsage(test.node);
 }
 
-function compileArgBinder(prefixes: CommandParameter[], params: CommandParameter[], allowOverflow: boolean): (args: string[]) => unknown[] | string {
+function compileArgBinder(prefixes: readonly CommandParameter[], params: readonly CommandParameter[], allowOverflow: boolean): (args: readonly string[]) => readonly unknown[] | string {
     const v_args = 'args';
     const v_params = 'params';
     const v_parsed = 'parsed';
@@ -270,7 +270,7 @@ function compileArgBinder(prefixes: CommandParameter[], params: CommandParameter
     return eval(src.join('\n'))(allParams);
 }
 
-function* compileParameters(raw: string): IterableIterator<CommandParameter> {
+function* compileParameters(raw: string): Generator<CommandParameter> {
     const regex = /(?<= |^)(?:(?<lname>[\w|]+)(?<lmod>[\?])?|\{(?<vname>\w+)(?<vmod>[\?\+\*])?(?:\:(?<vtype>\w+))?\})(?= |$)/g;
     const rest = ['+', '*'];
     const required = ['+', undefined];

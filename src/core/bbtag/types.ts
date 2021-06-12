@@ -132,22 +132,22 @@ export const enum RuntimeReturnState {
 }
 
 export interface BBTagContextOptions {
-    message: BBTagContextMessage | GuildMessage;
-    input: readonly string[];
-    flags?: DeepReadOnly<FlagDefinition[]>;
-    isCC: boolean;
-    tagVars?: boolean;
-    author?: string;
-    authorizer?: string;
-    tagName: string;
-    cooldown?: number;
-    cooldowns?: TagCooldownManager;
-    locks?: Record<string, ReadWriteLock | undefined>;
-    limit: RuntimeLimit | (new () => RuntimeLimit);
-    silent?: boolean;
-    state?: Partial<BBTagContextState>;
-    scopes?: ScopeCollection;
-    variables?: VariableCache;
+    readonly message: BBTagContextMessage | GuildMessage;
+    readonly input: readonly string[];
+    readonly flags?: readonly FlagDefinition[];
+    readonly isCC: boolean;
+    readonly tagVars?: boolean;
+    readonly author?: string;
+    readonly authorizer?: string;
+    readonly tagName: string;
+    readonly cooldown?: number;
+    readonly cooldowns?: TagCooldownManager;
+    readonly locks?: Record<string, ReadWriteLock | undefined>;
+    readonly limit: RuntimeLimit | (new () => RuntimeLimit);
+    readonly silent?: boolean;
+    readonly state?: Partial<BBTagContextState>;
+    readonly scopes?: ScopeCollection;
+    readonly variables?: VariableCache;
 }
 
 export interface ExecutionResult {

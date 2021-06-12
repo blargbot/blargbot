@@ -30,7 +30,7 @@ export class HelpCommand extends BaseCommand {
             Promise.resolve([commandTypes.properties[command.category].name]);
 
         let prefix = this.config.discord.defaultPrefix;
-        const customCommands = new Map<string, DeepReadOnly<StoredGuildCommand> | undefined>();
+        const customCommands = new Map<string, StoredGuildCommand | undefined>();
         if (guard.isGuildCommandContext(context)) {
             for (const command of await this.database.guilds.listCommands(context.channel.guild.id)) {
                 if (!await this.util.canExecuteCustomCommand(context, command, true))
@@ -117,7 +117,7 @@ export class HelpCommand extends BaseCommand {
         return { content: `❌ The command \`${commandName}\` could not be found` };
     }
 
-    public async viewCustomCommand(context: CommandContext<GuildChannel>, commandName: string, command: DeepReadOnly<StoredGuildCommand>): Promise<SendPayload> {
+    public async viewCustomCommand(context: CommandContext<GuildChannel>, commandName: string, command: StoredGuildCommand): Promise<SendPayload> {
         if (!await this.util.canExecuteCustomCommand(context, command, true))
             return { content: `❌ You dont have permission to run the \`${commandName}\` command` };
 

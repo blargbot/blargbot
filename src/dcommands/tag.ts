@@ -541,7 +541,7 @@ export class TagCommand extends BaseCommand {
         return `✅ Lang for tag \`${match.name}\` set.`;
     }
 
-    private async saveTag(context: CommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: DeepReadOnly<StoredTag>): Promise<string | undefined> {
+    private async saveTag(context: CommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<string | undefined> {
         content = await this.requestTagContent(context, content);
         if (content === undefined)
             return;
@@ -603,7 +603,7 @@ export class TagCommand extends BaseCommand {
         context: CommandContext,
         tagName: string | undefined,
         allowQuery = true
-    ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
+    ): Promise<{ name: string, tag?: StoredTag } | string | undefined> {
         const match = await this.requestTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -621,7 +621,7 @@ export class TagCommand extends BaseCommand {
         context: CommandContext,
         tagName: string | undefined,
         allowQuery = true
-    ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
+    ): Promise<StoredTag | string | undefined> {
         const match = await this.requestSettableTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -636,7 +636,7 @@ export class TagCommand extends BaseCommand {
         context: CommandContext,
         tagName: string | undefined,
         allowQuery = true
-    ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
+    ): Promise<StoredTag | string | undefined> {
         const match = await this.requestTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -666,7 +666,7 @@ export class TagCommand extends BaseCommand {
         context: CommandContext,
         tagName: string | undefined,
         allowQuery: boolean
-    ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
+    ): Promise<{ name: string, tag?: StoredTag } | string | undefined> {
         tagName = await this.requestTagName(context, tagName, allowQuery ? undefined : '');
         if (tagName === undefined)
             return;

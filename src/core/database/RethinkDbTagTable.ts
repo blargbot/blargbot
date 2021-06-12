@@ -55,13 +55,13 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
                 .count());
     }
 
-    public async top(count: number): Promise<DeepReadOnly<StoredTag[]>> {
+    public async top(count: number): Promise<StoredTag[]> {
         return await this.rqueryAll((t, r) =>
             t.orderBy(r.desc('uses'))
                 .limit(count));
     }
 
-    public async get(tagName: string): Promise<DeepReadOnly<StoredTag> | undefined> {
+    public async get(tagName: string): Promise<StoredTag | undefined> {
         return await this.rget(tagName);
     }
 

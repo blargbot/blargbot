@@ -1,11 +1,11 @@
-import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors } from './types';
+import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, MutableStoredGuild } from './types';
 import { GuildTable } from './types';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { RethinkDb } from './core/RethinkDb';
 import { UpdateRequest } from './core/RethinkDbTable';
 import { guard } from '../../utils';
 
-export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'> implements GuildTable {
+export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid', MutableStoredGuild> implements GuildTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: CatLogger
@@ -13,33 +13,33 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         super('guild', 'guildid', rethinkDb, logger);
     }
 
-    public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildAutoresponses>> {
+    public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.autoresponse ?? {};
 
     }
 
-    public async getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<ChannelSettings>[K] | undefined> {
+    public async getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.channels?.[channelId]?.[key];
     }
 
-    public async getRolemes(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildRolemeEntry[]>> {
+    public async getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.roleme ?? [];
     }
 
-    public async getCensors(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildCensors> | undefined> {
+    public async getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.censor;
     }
 
-    public async getCommandPerms(guildId: string, commandName: string, skipCache = false): Promise<DeepReadOnly<CommandPermissions> | undefined> {
+    public async getCommandPerms(guildId: string, commandName: string, skipCache = false): Promise<CommandPermissions | undefined> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.commandperms?.[commandName];
     }
 
-    public async listCommands(guildId: string, skipCache = false): Promise<DeepReadOnly<NamedStoredGuildCommand[]>> {
+    public async listCommands(guildId: string, skipCache = false): Promise<readonly NamedStoredGuildCommand[]> {
         const guild = await this.rget(guildId, skipCache);
         if (!(guild?.ccommands))
             return [];
@@ -49,7 +49,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             .map(v => ({ ...v[1], name: v[0] }));
     }
 
-    public async get(guildId: string, skipCache = false): Promise<DeepReadOnly<StoredGuild> | undefined> {
+    public async get(guildId: string, skipCache = false): Promise<StoredGuild | undefined> {
         return await this.rget(guildId, skipCache);
     }
 
@@ -61,7 +61,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rqueryAll(t => t.getField('guildid'));
     }
 
-    public async getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache = false): Promise<DeepReadOnly<StoredGuildSettings>[K] | undefined> {
+    public async getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache = false): Promise<StoredGuildSettings[K] | undefined> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.settings[key];
     }
@@ -84,12 +84,12 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         }));
     }
 
-    public async getCommand(guildId: string, commandName: string, skipCache = false): Promise<DeepReadOnly<StoredGuildCommand> | undefined> {
+    public async getCommand(guildId: string, commandName: string, skipCache = false): Promise<StoredGuildCommand | undefined> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.ccommands[commandName.toLowerCase()];
     }
 
-    public async withIntervalCommand(): Promise<DeepReadOnly<StoredGuild[]> | undefined> {
+    public async withIntervalCommand(): Promise<readonly StoredGuild[] | undefined> {
         return await this.rqueryAll(t => t.getAll('interval'));
     }
 

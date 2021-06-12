@@ -41,7 +41,7 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
         if (messages.rows.length === 0)
             return undefined;
         const r = messages.rows[0];
-        const message: Chatlog = {
+        const message = {
             id: r.id,
             content: r.content,
             attachment: r.attachment,

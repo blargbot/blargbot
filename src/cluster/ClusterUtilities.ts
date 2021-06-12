@@ -11,9 +11,9 @@ import { StoredGuildSettings, StoredGuild, StoredGuildCommand } from '../core/da
 import { BaseCommand, CommandContext } from '../core/command';
 
 interface CanExecuteDefaultCommandOptions {
-    storedGuild?: DeepReadOnly<StoredGuild>,
-    permOverride?: StoredGuildSettings['permoverride'],
-    staffPerms?: StoredGuildSettings['staffperms']
+    readonly storedGuild?: StoredGuild,
+    readonly permOverride?: StoredGuildSettings['permoverride'],
+    readonly staffPerms?: StoredGuildSettings['staffperms']
 }
 
 export interface FindEntityOptions {
@@ -481,7 +481,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async canExecuteCustomCommand(context: CommandContext<GuildChannel>, command: DeepReadOnly<StoredGuildCommand>, quiet: boolean): Promise<boolean> {
+    public async canExecuteCustomCommand(context: CommandContext<GuildChannel>, command: StoredGuildCommand, quiet: boolean): Promise<boolean> {
         return command !== null
             && !command.hidden
             && (!command.roles?.length || await this.hasPerm(context.message, command.roles, quiet));

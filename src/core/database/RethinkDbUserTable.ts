@@ -1,9 +1,9 @@
 import { RethinkDb } from './core/RethinkDb';
 import { User } from 'eris';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
-import { StoredUser, StoredUserSettings, UserTable } from './types';
+import { MutableStoredUser, StoredUser, StoredUserSettings, UserTable } from './types';
 
-export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> implements UserTable {
+export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', MutableStoredUser> implements UserTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: CatLogger
@@ -11,12 +11,12 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         super('user', 'userid', rethinkDb, logger);
     }
 
-    public async getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<StoredUserSettings>[K] | undefined> {
+    public async getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<StoredUserSettings[K] | undefined> {
         const user = await this.rget(userId, skipCache);
         return user?.[key];
     }
 
-    public async get(userId: string, skipCache = false): Promise<DeepReadOnly<StoredUser> | undefined> {
+    public async get(userId: string, skipCache = false): Promise<StoredUser | undefined> {
         return await this.rget(userId, skipCache);
     }
 
@@ -43,7 +43,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
                 todo: []
             });
         } else {
-            const update: Partial<StoredUser> = {};
+            const update: Partial<MutableStoredUser> = {};
             if (currentUser.username != user.username) {
                 currentUser.username = update.username = user.username;
                 update.usernames = currentUser.usernames;
@@ -58,7 +58,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
             if (currentUser.avatarURL != user.avatarURL) {
                 currentUser.avatarURL = update.avatarURL = user.avatarURL;
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+
             for (const _ in update)
                 return await this.rupdate(user.id, update);
         }

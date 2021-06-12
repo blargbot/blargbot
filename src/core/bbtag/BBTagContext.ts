@@ -22,7 +22,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public readonly message: BBTagContextMessage;
     public readonly input: readonly string[];
-    public readonly flags: DeepReadOnly<FlagDefinition[]>;
+    public readonly flags: readonly FlagDefinition[];
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
     public readonly author: string;

@@ -10,8 +10,8 @@ export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTa
         super('vars', rethinkDb, logger);
     }
 
-    public async get<K extends KnownStoredVars['varname']>(key: K): Promise<DeepReadOnly<GetStoredVar<K>> | undefined> {
-        return <DeepReadOnly<GetStoredVar<K>> | undefined>await this.rget(key);
+    public async get<K extends KnownStoredVars['varname']>(key: K): Promise<GetStoredVar<K> | undefined> {
+        return <GetStoredVar<K> | undefined>await this.rget(key);
     }
 
     public async set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean> {

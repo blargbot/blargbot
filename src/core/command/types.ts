@@ -20,7 +20,7 @@ export type CommandResult =
     | SendPayload
     | MessageFile
     | MessageFile[]
-    | { content: SendPayload, files: MessageFile | MessageFile[] }
+    | { readonly content: SendPayload, readonly files: MessageFile | MessageFile[] }
     | string
     | void;
 
@@ -38,7 +38,7 @@ export interface CommandHandlerDefinition {
     readonly description: string;
     readonly parameters?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly execute: (context: CommandContext, args: any[], flags: FlagResult) => Promise<CommandResult> | CommandResult
+    readonly execute: (context: CommandContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult
     readonly allowOverflow?: boolean;
     readonly dontBind?: boolean;
     readonly useFlags?: boolean;
@@ -76,5 +76,5 @@ export interface CommandHandler {
 export interface CommandSignatureHandler {
     readonly description: string;
     readonly parameters: readonly CommandParameter[];
-    readonly execute: (context: CommandContext, args: string[]) => Promise<CommandResult> | CommandResult;
+    readonly execute: (context: CommandContext, args: readonly string[]) => Promise<CommandResult> | CommandResult;
 }

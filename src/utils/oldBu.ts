@@ -338,7 +338,7 @@ export const oldBu = {
     },
     hasRole(
         msg: GuildMessage | Member,
-        roles: string | string[],
+        roles: string | readonly string[],
         override = true
     ): boolean {
         const member = msg instanceof Member ? msg : msg.member;
@@ -350,7 +350,8 @@ export const oldBu = {
             member.permissions.json.administrator)) {
             return true;
         }
-        if (!Array.isArray(roles)) roles = [roles];
+        if (typeof roles === 'string')
+            roles = [roles];
         for (let i = 0; i < roles.length; i++) {
             if (member.roles.indexOf(roles[i]) > -1) {
                 return true;

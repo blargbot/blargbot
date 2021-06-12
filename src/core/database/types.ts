@@ -12,61 +12,61 @@ export type RethinkTableMap = {
 }
 
 export interface StoredVar<T extends string> {
-    varname: T;
+    readonly varname: T;
 }
 
 export interface RestartStoredVar extends StoredVar<'restart'> {
-    varvalue: {
-        channel: string;
-        time: number;
+    readonly varvalue: {
+        readonly channel: string;
+        readonly time: number;
     };
 }
 
 export interface TagVarsStoredVar extends StoredVar<'tagVars'> {
-    values: Record<string, unknown> | null;
+    readonly values: { readonly [key: string]: unknown } | null;
 }
 
 export interface ARWhitelistStoredVar extends StoredVar<'arwhitelist'> {
-    values: string[];
+    readonly values: readonly string[];
 }
 
 export interface GuildBlacklistStoredVar extends StoredVar<'guildBlacklist'> {
-    values: { [guildid: string]: boolean | undefined };
+    readonly values: { readonly [guildid: string]: boolean | undefined };
 }
 
 export interface BlacklistStoredVar extends StoredVar<'blacklist'> {
-    users: string[];
-    guilds: string[];
+    readonly users: readonly string[];
+    readonly guilds: readonly string[];
 }
 
 export interface WhitelistedDomainsStoredVar extends StoredVar<'whitelistedDomains'> {
-    values: { [domain: string]: boolean };
+    readonly values: { readonly [domain: string]: boolean };
 }
 
 export interface ChangelogStoredVar extends StoredVar<'changelog'> {
-    guilds: { [guildid: string]: string };
+    readonly guilds: { readonly [guildid: string]: string };
 }
 
 export interface PGStoredVar extends StoredVar<'pg'> {
-    value: number;
+    readonly value: number;
 }
 
 export interface PoliceStoredVar extends StoredVar<'police'> {
-    value: string[];
+    readonly value: readonly string[];
 }
 
 export interface SupportStoredVar extends StoredVar<'support'> {
-    value: string[];
+    readonly value: readonly string[];
 }
 
 export interface CleverStatsStoredVar extends StoredVar<'cleverstats'> {
-    stats: { [date: string]: { uses: number } };
+    readonly stats: { readonly [date: string]: { readonly uses: number } };
 }
 
 export interface VersionStoredVar extends StoredVar<'version'> {
-    major: number;
-    minor: number;
-    patch: number;
+    readonly major: number;
+    readonly minor: number;
+    readonly patch: number;
 }
 
 export type KnownStoredVars =
@@ -83,205 +83,237 @@ export type KnownStoredVars =
     | VersionStoredVar
     | CleverStatsStoredVar
 
+export type MutableKnownStoredVars =
+    | RestartStoredVar
+    | TagVarsStoredVar
+    | ARWhitelistStoredVar
+    | GuildBlacklistStoredVar
+    | BlacklistStoredVar
+    | WhitelistedDomainsStoredVar
+    | ChangelogStoredVar
+    | PGStoredVar
+    | PoliceStoredVar
+    | SupportStoredVar
+    | VersionStoredVar
+    | CleverStatsStoredVar
+
 export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownStoredVars, { varname: T }>;
 
 export interface StoredEvent {
-    id: string;
-    type: string;
-    endtime: Date;
-    source?: string;
-    channel?: string;
-    guild?: string;
-    user?: string;
+    readonly id: string;
+    readonly type: string;
+    readonly endtime: Date;
+    readonly source?: string;
+    readonly channel?: string;
+    readonly guild?: string;
+    readonly user?: string;
 }
 
 export interface StoredGuild {
-    guildid: string;
-    active: boolean;
-    name: string;
-    settings: StoredGuildSettings;
-    channels: { [channelId: string]: ChannelSettings | undefined };
+    readonly guildid: string;
+    readonly active: boolean;
+    readonly name: string;
+    readonly settings: StoredGuildSettings;
+    readonly channels: { readonly [channelId: string]: ChannelSettings | undefined };
+    readonly ccommands: { readonly [key: string]: StoredGuildCommand | undefined };
+    readonly commandperms?: { readonly [key: string]: CommandPermissions | undefined };
+    readonly censor?: GuildCensors;
+    readonly warnings?: GuildWarnings;
+    readonly modlog?: readonly GuildModlogEntry[];
+    readonly roleme?: readonly GuildRolemeEntry[];
+    readonly autoresponse?: GuildAutoresponses;
+    readonly log?: { readonly [key: string]: string };
+    readonly logIgnore?: readonly string[];
+}
+
+export interface MutableStoredGuild extends StoredGuild {
     ccommands: { [key: string]: StoredGuildCommand | undefined };
-    commandperms?: { [key: string]: CommandPermissions | undefined };
-    censor?: GuildCensors;
-    warnings?: GuildWarnings;
+    warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
-    roleme?: GuildRolemeEntry[];
-    autoresponse?: GuildAutoresponses;
-    log?: Record<string, string>;
-    logIgnore?: string[];
+    log?: { [key: string]: string };
 }
 
 export interface GuildAutoresponses {
-    everything?: GuildAutoresponse;
-    list?: GuildFilteredAutoresponse[];
+    readonly everything?: GuildAutoresponse;
+    readonly list?: readonly GuildFilteredAutoresponse[];
 }
 
 export interface GuildAutoresponse {
-    executes: string;
+    readonly executes: string;
 }
 
 export interface GuildFilteredAutoresponse extends GuildAutoresponse {
-    regex: boolean;
-    term: string;
+    readonly regex: boolean;
+    readonly term: string;
 }
 
 export interface GuildRolemeEntry {
-    channels: string[];
-    casesensitive: boolean;
-    message: string;
-    add?: string[];
-    remove?: string[];
-    output?: string;
+    readonly channels: readonly string[];
+    readonly casesensitive: boolean;
+    readonly message: string;
+    readonly add?: readonly string[];
+    readonly remove?: readonly string[];
+    readonly output?: string;
 }
 
 export interface GuildWarnings {
+    readonly users?: { readonly [userId: string]: number | undefined };
+}
+export interface MutableGuildWarnings {
     users?: { [userId: string]: number | undefined };
 }
 
 export interface GuildCensors {
-    list: GuildCensor[]
-    exception: GuildCensorExceptions;
-    rule: GuildCensorRule;
+    readonly list: readonly GuildCensor[]
+    readonly exception: GuildCensorExceptions;
+    readonly rule: GuildCensorRule;
 }
 
 export interface GuildCensorRule {
-    deleteMessage?: string;
-    banMessage?: string;
-    kickMessage?: string;
+    readonly deleteMessage?: string;
+    readonly banMessage?: string;
+    readonly kickMessage?: string;
 }
 
 export interface GuildCensor extends GuildCensorRule {
-    term: string;
-    regex: boolean;
-    weight: number;
-    reason?: string;
+    readonly term: string;
+    readonly regex: boolean;
+    readonly weight: number;
+    readonly reason?: string;
 }
 
 export interface GuildCensorExceptions {
-    channel: string | string[];
-    user: string | string[];
-    role: string | string[];
+    readonly channel: string | readonly string[];
+    readonly user: string | readonly string[];
+    readonly role: string | readonly string[];
 }
 
 export interface NamedStoredGuildCommand extends StoredGuildCommand {
-    name: string;
+    readonly name: string;
 }
 
 export interface StoredGuildCommand {
-    help?: string;
-    lang?: string;
-    alias?: string;
-    authorizer?: string;
-    content: string;
-    author?: string;
-    hidden?: boolean;
-    roles?: string[];
-    uses?: number;
-    flags?: FlagDefinition[];
-    cooldown?: number;
+    readonly help?: string;
+    readonly lang?: string;
+    readonly alias?: string;
+    readonly authorizer?: string;
+    readonly content: string;
+    readonly author?: string;
+    readonly hidden?: boolean;
+    readonly roles?: readonly string[];
+    readonly uses?: number;
+    readonly flags?: readonly FlagDefinition[];
+    readonly cooldown?: number;
 }
 
 export interface CommandPermissions {
-    disabled?: boolean;
-    permission?: number;
-    rolename?: string | string[];
+    readonly disabled?: boolean;
+    readonly permission?: number;
+    readonly rolename?: string | readonly string[];
 }
 
 export interface StoredTag {
-    name: string;
-    content: string;
-    author: string;
-    authorizer?: string;
-    uses: number;
-    flags?: FlagDefinition[]
-    cooldown?: number;
-    lastuse?: Date;
-    lastmodified: Date;
-    deleted?: boolean;
-    lang?: string;
-    deleter?: string;
-    reason?: string;
-    favourites?: Record<string, boolean | undefined>;
-    reports?: number;
+    readonly name: string;
+    readonly content: string;
+    readonly author: string;
+    readonly authorizer?: string;
+    readonly uses: number;
+    readonly flags?: readonly FlagDefinition[]
+    readonly cooldown?: number;
+    readonly lastuse?: Date;
+    readonly lastmodified: Date;
+    readonly deleted?: boolean;
+    readonly lang?: string;
+    readonly deleter?: string;
+    readonly reason?: string;
+    readonly favourites?: { readonly [key: string]: boolean | undefined };
+    readonly reports?: number;
 }
 
 export interface StoredGuildSettings {
-    permoverride?: boolean;
-    staffperms?: number | string;
-    social?: boolean;
-    makelogs?: boolean;
-    prefix?: string[] | string;
-    nocleverbot?: boolean;
-    tableflip?: boolean;
-    disablenoperms?: boolean;
-    adminrole?: string;
-    antimention?: number;
-    banat?: number;
-    kickat?: number;
-    modlog?: string;
-    deletenotif?: boolean;
-    disableeveryone?: boolean;
-    greeting?: string;
-    greetChan?: string;
-    farewell?: string;
-    farewellchan?: string;
-    mutedrole?: string;
-    dmhelp?: boolean;
-    kickoverride?: number;
-    banoverride?: number;
+    readonly permoverride?: boolean;
+    readonly staffperms?: number | string;
+    readonly social?: boolean;
+    readonly makelogs?: boolean;
+    readonly prefix?: readonly string[] | string;
+    readonly nocleverbot?: boolean;
+    readonly tableflip?: boolean;
+    readonly disablenoperms?: boolean;
+    readonly adminrole?: string;
+    readonly antimention?: number;
+    readonly banat?: number;
+    readonly kickat?: number;
+    readonly modlog?: string;
+    readonly deletenotif?: boolean;
+    readonly disableeveryone?: boolean;
+    readonly greeting?: string;
+    readonly greetChan?: string;
+    readonly farewell?: string;
+    readonly farewellchan?: string;
+    readonly mutedrole?: string;
+    readonly dmhelp?: boolean;
+    readonly kickoverride?: number;
+    readonly banoverride?: number;
 }
 
 export interface GuildModlogEntry {
-    caseid?: number;
-    modid?: string;
-    msgid?: string;
-    reason?: string;
-    type?: string;
-    userid?: string;
+    readonly caseid?: number;
+    readonly modid?: string;
+    readonly msgid?: string;
+    readonly reason?: string;
+    readonly type?: string;
+    readonly userid?: string;
 }
 
 export interface ChannelSettings {
-    blacklisted?: boolean;
-    nsfw?: boolean;
+    readonly blacklisted?: boolean;
+    readonly nsfw?: boolean;
 }
 
 export interface StoredUsername {
-    name: string,
-    date: Date
+    readonly name: string,
+    readonly date: Date
 }
 
 export interface StoredUser extends StoredUserSettings {
-    userid: string;
-    username?: string;
+    readonly userid: string;
+    readonly username?: string;
+    readonly usernames: readonly StoredUsername[];
+    readonly discriminator?: string;
+    readonly avatarURL?: string;
+    readonly isbot: boolean;
+    readonly lastspoke: Date;
+    readonly lastcommand?: string;
+    readonly lastcommanddate?: Date;
+    readonly todo: readonly UserTodo[];
+    readonly reportblock?: string;
+    readonly reports?: { readonly [key: string]: string };
+}
+
+export interface MutableStoredUser extends StoredUser {
     usernames: StoredUsername[];
+    username?: string;
     discriminator?: string;
     avatarURL?: string;
-    isbot: boolean;
-    lastspoke: Date;
-    lastcommand?: string;
-    lastcommanddate?: Date;
-    todo: UserTodo[];
-    reportblock?: string;
-    reports?: Record<string, string>;
+    reports?: { [key: string]: string };
 }
 
 export interface StoredUserSettings {
-    dontdmerrors?: boolean;
-    prefixes?: string[];
-    blacklisted?: boolean;
+    readonly dontdmerrors?: boolean;
+    readonly prefixes?: readonly string[];
+    readonly blacklisted?: boolean;
 }
 
 export interface UserTodo {
-    active: 1 | false;
-    content: string;
+    readonly active: 1 | false;
+    readonly content: string;
 }
 
 export interface Dump {
-    id: string;
-    content?: string;
-    embeds?: string;
-    channelid?: string;
+    readonly id: string;
+    readonly content?: string;
+    readonly embeds?: string;
+    readonly channelid?: string;
 }
 
 export const enum ChatlogType {
@@ -291,92 +323,92 @@ export const enum ChatlogType {
 }
 
 export interface Chatlog {
-    id: Snowflake;
-    content: string;
-    attachment?: string;
-    userid: string;
-    msgid: string;
-    channelid: string;
-    guildid: string;
-    msgtime: number | Date;
-    type: ChatlogType;
-    embeds: string | JObject;
+    readonly id: Snowflake;
+    readonly content: string;
+    readonly attachment?: string;
+    readonly userid: string;
+    readonly msgid: string;
+    readonly channelid: string;
+    readonly guildid: string;
+    readonly msgtime: number | Date;
+    readonly type: ChatlogType;
+    readonly embeds: string | JObject;
 }
 
 export interface BBTagVariableReference {
-    name: string;
-    type: SubtagVariableType;
-    scope: string;
+    readonly name: string;
+    readonly type: SubtagVariableType;
+    readonly scope: string;
 
 }
 
 export interface BBTagVariable extends BBTagVariableReference {
-    value: JToken;
+    readonly value: JToken;
 }
 
 export interface DatabaseOptions {
-    logger: CatLogger;
-    discord: ErisClient;
-    rethinkDb: RethinkDbOptions;
-    cassandra: CassandraDbOptions;
-    postgres: PostgresDbOptions;
+    readonly logger: CatLogger;
+    readonly discord: ErisClient;
+    readonly rethinkDb: RethinkDbOptions;
+    readonly cassandra: CassandraDbOptions;
+    readonly postgres: PostgresDbOptions;
 }
 
 export interface RethinkDbOptions {
-    database: string;
-    user: string;
-    password: string;
-    host: string;
-    port: number;
+    readonly database: string;
+    readonly user: string;
+    readonly password: string;
+    readonly host: string;
+    readonly port: number;
 }
 
 export interface CassandraDbOptions {
-    username: string;
-    password: string;
-    keyspace: string;
-    contactPoints: string[];
+    readonly username: string;
+    readonly password: string;
+    readonly keyspace: string;
+    readonly contactPoints: readonly string[];
 }
 
 export interface PostgresDbOptions {
-    database: string;
-    user: string;
-    pass: string;
-    host: string;
-    sequelize: SequelizeOptions;
+    readonly database: string;
+    readonly user: string;
+    readonly pass: string;
+    readonly host: string;
+    readonly sequelize: SequelizeOptions;
 }
 
 export interface GuildTable {
-    getAutoresponses(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildAutoresponses>>;
-    getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<ChannelSettings>[K] | undefined>;
-    getRolemes(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildRolemeEntry[]>>;
-    getCensors(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildCensors> | undefined>;
-    listCommands(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<NamedStoredGuildCommand[]>>;
-    get(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuild> | undefined>;
+    getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses>;
+    getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined>;
+    getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]>;
+    getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
+    listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedStoredGuildCommand[]>;
+    get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
     add(guild: StoredGuild): Promise<boolean>;
-    getIds(skipCache?: boolean): Promise<string[]>;
-    getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<StoredGuildSettings>[K] | undefined>;
+    getIds(skipCache?: boolean): Promise<readonly string[]>;
+    getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<StoredGuildSettings[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
-    getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuildCommand> | undefined>;
-    withIntervalCommand(skipCache?: boolean): Promise<DeepReadOnly<StoredGuild[]> | undefined>;
+    getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<StoredGuildCommand | undefined>;
+    withIntervalCommand(skipCache?: boolean): Promise<readonly StoredGuild[] | undefined>;
     updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;
     setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean>;
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
     setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean>;
     setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
-    getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<DeepReadOnly<CommandPermissions> | undefined>;
+    getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<CommandPermissions | undefined>;
 }
 
 export interface UserTable {
-    getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<StoredUserSettings>[K] | undefined>;
-    get(userId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredUser> | undefined>;
+    getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<StoredUserSettings[K] | undefined>;
+    get(userId: string, skipCache?: boolean): Promise<StoredUser | undefined>;
     add(user: StoredUser): Promise<boolean>;
     upsert(user: User): Promise<boolean>
     setTagReport(userId: string, tagName: string, reason: string | undefined): Promise<boolean>;
 }
 
 export interface VarsTable {
-    get<K extends KnownStoredVars['varname']>(key: K): Promise<DeepReadOnly<GetStoredVar<K>> | undefined>;
+    get<K extends KnownStoredVars['varname']>(key: K): Promise<GetStoredVar<K> | undefined>;
     set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean>;
     delete<K extends KnownStoredVars['varname']>(key: K): Promise<boolean>;
 }
@@ -398,13 +430,11 @@ export interface TagsTable {
     searchCount(partialName: string): Promise<number>;
     delete(name: string): Promise<boolean>;
     disable(tagName: string, userId: string, reason: string): Promise<boolean>;
-    top(count: number): Promise<DeepReadOnly<StoredTag[]>>;
-    get(tagName: string): Promise<DeepReadOnly<StoredTag> | undefined>;
+    top(count: number): Promise<readonly StoredTag[]>;
+    get(tagName: string): Promise<StoredTag | undefined>;
     set(tag: StoredTag): Promise<boolean>;
-    set(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
     add(tag: StoredTag): Promise<boolean>;
-    add(tag: DeepReadOnly<StoredTag>): Promise<boolean>;
-    setFlags(tagName: string, flags: FlagDefinition[]): Promise<boolean>;
+    setFlags(tagName: string, flags: readonly FlagDefinition[]): Promise<boolean>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;
     incrementReports(tagName: string, count?: number): Promise<boolean>;
     setCooldown(tagName: string, cooldown: number | undefined): Promise<boolean>;
