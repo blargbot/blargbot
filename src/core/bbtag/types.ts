@@ -178,12 +178,16 @@ export interface SubtagArgumentValue {
     execute(): Promise<string>;
 }
 
+export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentValue> {
+    readonly subtagName: string;
+}
+
 export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
-    readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
 export interface SubtagHandler {
-    readonly execute: (this: unknown, context: BBTagContext, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
 export interface SubtagHandlerArgument {
@@ -203,7 +207,7 @@ export interface SubtagSignatureDetails<TArgs = SubtagHandlerArgument> {
 }
 
 export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string | SubtagHandlerDefinitionArgumentGroup> {
-    readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
 export interface SubtagHandlerDefinitionArgumentGroup {

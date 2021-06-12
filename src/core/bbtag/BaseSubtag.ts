@@ -46,10 +46,10 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
         this.handler = compileSignatures(this.signatures);
     }
 
-    public async execute(context: BBTagContext, subtag: SubtagCall): Promise<SubtagResult> {
+    public async execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): Promise<SubtagResult> {
         const timer = new Timer().start();
         try {
-            return await this.handler.execute(context, subtag);
+            return await this.handler.execute(context, subtagName, subtag);
         } finally {
             timer.end();
             metrics.subtagLatency.labels(this.name).observe(timer.elapsed);
