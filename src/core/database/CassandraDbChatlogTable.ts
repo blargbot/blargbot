@@ -2,8 +2,8 @@ import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
 import { Chatlog, ChatlogsTable, ChatlogType } from './types';
 import { metrics } from '../Metrics';
-import { Message } from 'eris';
-import { snowflake } from '../../utils';
+import { AnyMessage } from 'eris';
+import { guard, snowflake } from '../../utils';
 
 function stringifyType(type: ChatlogType): string {
     switch (type) {
@@ -64,7 +64,7 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
         return message;
     }
 
-    public async add(message: Message, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {
+    public async add(message: AnyMessage, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {
         metrics.chatlogCounter.labels(stringifyType(type)).inc();
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
         const chatlog: Chatlog = {
@@ -74,7 +74,7 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
             userid: message.author.id,
             msgid: message.id,
             channelid: message.channel.id,
-            guildid: 'guild' in message.channel ? message.channel.guild.id : 'DM',
+            guildid: guard.isGuildMessage(message) ? message.channel.guild.id : 'DM',
             msgtime: Date.now(),
             type: type,
             embeds: JSON.stringify(message.embeds)

@@ -1,4 +1,4 @@
-import { Client as ErisClient, Message, User } from 'eris';
+import { AnyMessage, Client as ErisClient, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import { FlagDefinition, SubtagVariableType } from '../../utils';
 import { Options as SequelizeOptions } from 'sequelize';
@@ -405,7 +405,7 @@ export interface TagsTable {
 }
 
 export interface ChatlogsTable {
-    add(message: Message, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
+    add(message: AnyMessage, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
     get(messageId: string): Promise<Chatlog | undefined>;
 }
 

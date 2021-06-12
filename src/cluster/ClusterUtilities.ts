@@ -1,7 +1,7 @@
 import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
-import { AnyChannel, Channel, ChannelMessage, Guild, GuildChannel, Member, Message, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
+import { AnyChannel, Channel, AnyMessage, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
 import { codeBlock, commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
@@ -29,8 +29,8 @@ interface LookupMatch<T> {
 }
 
 interface MessagePrompt {
-    prompt: Message | null;
-    response: Promise<Message | null>;
+    prompt: AnyMessage | null;
+    response: Promise<AnyMessage | null>;
 }
 
 export class ClusterUtilities extends BaseUtilities {
@@ -305,10 +305,10 @@ export class ClusterUtilities extends BaseUtilities {
         channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS?: number,
         label?: string
-    ): Promise<ChannelMessage | null> {
+    ): Promise<AnyMessage | null> {
         const query = await this.createQuery(channel, user, content, check, timeoutMS, label);
         return await query.response;
     }
@@ -317,7 +317,7 @@ export class ClusterUtilities extends BaseUtilities {
         channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS = 300000,
         label?: string
     ): Promise<MessagePrompt> {
@@ -329,10 +329,10 @@ export class ClusterUtilities extends BaseUtilities {
         channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS?: number,
         timeoutMessage?: SendPayload
-    ): Promise<ChannelMessage | null> {
+    ): Promise<AnyMessage | null> {
         const prompt = await this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
         return await prompt.response;
     }
@@ -341,7 +341,7 @@ export class ClusterUtilities extends BaseUtilities {
         channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS = 300000,
         timeoutMessage?: SendPayload
     ): Promise<MessagePrompt> {
@@ -487,7 +487,7 @@ export class ClusterUtilities extends BaseUtilities {
             && (!command.roles?.length || await this.hasPerm(context.message, command.roles, quiet));
     }
 
-    public hasRole(msg: Member | Message, roles: string | readonly string[], override = true): boolean {
+    public hasRole(msg: Member | AnyMessage, roles: string | readonly string[], override = true): boolean {
         let member: Member;
         if (msg instanceof Member) {
             member = msg;
@@ -609,7 +609,7 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public async hasPerm(msg: Member | ChannelMessage, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
+    public async hasPerm(msg: Member | AnyMessage, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
         let member: Member;
         let channel: (Textable & Channel) | undefined;
         if (msg instanceof Member) {

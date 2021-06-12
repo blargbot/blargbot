@@ -2,7 +2,7 @@ import moment from 'moment';
 import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
-import { Client as DiscordClient, Message, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel, GuildMessage } from 'eris';
+import { Client as ErisClient, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel, GuildMessage, AnyMessage } from 'eris';
 import { fafo, getRange, humanize, randInt, SubtagVariableType } from '.';
 import isSafeRegex from 'safe-regex';
 import request from 'request';
@@ -22,7 +22,7 @@ interface TagLocks {
 }
 
 const console: CatLogger = <CatLogger><unknown>undefined;
-const bot = <DiscordClient><unknown>undefined;
+const bot = <ErisClient><unknown>undefined;
 const bbEngine: BBEngine = <BBEngine><unknown>undefined;
 const cluster = <NodeJS.Process & Required<Pick<NodeJS.Process, 'send'>>><unknown>process;
 const util = <ClusterUtilities><unknown>undefined;
@@ -406,7 +406,7 @@ export const oldBu = {
         }
         return null;
     },
-    async getMessage(channelId: string, messageId: string): Promise<Message | null> {
+    async getMessage(channelId: string, messageId: string): Promise<AnyMessage | null> {
         if (/^\d{ 17, 23 } $ /.test(messageId)) {
             const channel = bot.getChannel(channelId);
             if ('messages' in channel) {
@@ -824,7 +824,7 @@ export const oldBu = {
         return text;
     },
 
-    async findMessages(channelId: string, count: number, filter: (m: Message) => boolean, before?: string, after?: string): Promise<Message[]> {
+    async findMessages(channelId: string, count: number, filter: (m: AnyMessage) => boolean, before?: string, after?: string): Promise<AnyMessage[]> {
         const result = [];
         filter = filter || (() => true);
 

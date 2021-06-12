@@ -1,4 +1,4 @@
-import { Channel, ChannelMessage, Textable, User } from 'eris';
+import { Channel, Textable, User, Message } from 'eris';
 import { humanize } from '../../utils';
 
 export class CommandContext<TChannel extends Channel = Channel> {
@@ -15,7 +15,7 @@ export class CommandContext<TChannel extends Channel = Channel> {
     public get timestamp(): number { return this.message.timestamp; }
 
     public constructor(
-        public readonly message: ChannelMessage<TChannel>,
+        public readonly message: Message<TChannel & Textable>,
         public readonly prefix: string
     ) {
         this.commandText = message.content.slice(prefix.length);

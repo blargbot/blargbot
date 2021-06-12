@@ -1,4 +1,4 @@
-import { ChannelMessage, GuildMessage, Member, Message, TextChannel } from 'eris';
+import { AnyMessage, GuildMessage, Member, TextChannel } from 'eris';
 import { Timer } from '../../structures/Timer';
 import request from 'request';
 import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep, humanize } from '../../utils';
@@ -36,7 +36,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async execute(message: Message): Promise<void> {
+    public async execute(message: AnyMessage): Promise<void> {
         const { channel, author } = message;
         if (channel instanceof TextChannel && channel.guild.shard.ready) {
             metrics.messageCounter.inc();
@@ -52,7 +52,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleUserMessage(msg: ChannelMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<void> {
+    public async handleUserMessage(msg: AnyMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<void> {
         let prefix: string | undefined;
         const prefixes: string[] = [];
         const storedUser = await this.cluster.database.users.get(msg.author.id);
@@ -227,11 +227,11 @@ export class MessageCreateEventHandler extends DiscordEventService {
 
 
 
-    public handleOurMessage(msg: Message): void {
+    public handleOurMessage(msg: AnyMessage): void {
         const log = (
-            guard.isGuildChannel(msg.channel)
-                ? `${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name}`
-                : `PM> ${msg.channel.recipient.username} (${msg.channel.id})>`
+            guard.isGuildMessage(msg) ? `${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name}`
+                : guard.isPrivateMessage(msg) ? `PM> ${msg.channel.recipient.username} (${msg.channel.recipient.id})>`
+                    : ''
         ) + ` (${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`;
 
         this.logger.output(log);
@@ -436,7 +436,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleBlacklist(msg: ChannelMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<boolean> {
+    public async handleBlacklist(msg: AnyMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<boolean> {
         if (!(guard.isGuildMessage(msg) && storedGuild?.channels?.[msg.channel.id]))
             return false;
 
@@ -464,7 +464,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         });
     }
 
-    public async handleCleverbot(msg: ChannelMessage): Promise<void> {
+    public async handleCleverbot(msg: AnyMessage): Promise<void> {
         await this.cluster.discord.sendChannelTyping(msg.channel.id);
         let username = this.cluster.discord.user.username;
         if (guard.isGuildMessage(msg)) {

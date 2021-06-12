@@ -1,4 +1,4 @@
-import { AdvancedMessageContent, AnyChannel, Channel, ChannelInteraction, Client as ErisClient, EmbedOptions, ExtendedUser, Member, Message, MessageFile, Textable, User, UserChannelInteraction } from 'eris';
+import { AdvancedMessageContent, AnyChannel, Channel, ChannelInteraction, AnyMessage, Client as ErisClient, EmbedOptions, ExtendedUser, Member, MessageFile, Textable, User, UserChannelInteraction } from 'eris';
 import { BaseClient } from './BaseClient';
 import { guard, snowflake, stringify } from '../utils';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
@@ -63,7 +63,7 @@ export class BaseUtilities {
         return `${scheme}://${host}/${path}`;
     }
 
-    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<Message | null> {
+    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<AnyMessage | null> {
         metrics.sendCounter.inc();
 
         let channel = await this.getSendChannel(context);
@@ -163,7 +163,7 @@ export class BaseUtilities {
         }
     }
 
-    public async sendFile(context: SendContext, payload: SendPayload, fileUrl: string): Promise<Message | null> {
+    public async sendFile(context: SendContext, payload: SendPayload, fileUrl: string): Promise<AnyMessage | null> {
         const i = fileUrl.lastIndexOf('/');
         if (i === -1)
             return null;
@@ -181,7 +181,7 @@ export class BaseUtilities {
         }
     }
 
-    public async sendDM(context: Message | User | Member | string, message: SendPayload, files?: SendFiles): Promise<Message | null> {
+    public async sendDM(context: AnyMessage | User | Member | string, message: SendPayload, files?: SendFiles): Promise<AnyMessage | null> {
         let userid: string;
         switch (typeof context) {
             case 'string': userid = context; break;
