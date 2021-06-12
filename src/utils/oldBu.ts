@@ -47,7 +47,7 @@ export const oldBu = {
     startTime: moment(),
     emitter: new EventEmitter(),
     events: new EventEmitter(),
-    async handleCensor(msg: Message<GuildTextableChannel>, storedGuild: StoredGuild): Promise<void> {
+    async handleCensor(msg: GuildMessage, storedGuild: StoredGuild): Promise<void> {
         const censor = storedGuild.censor;
         if (censor?.list.length) {
             //First, let's check exceptions
