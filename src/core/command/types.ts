@@ -1,6 +1,7 @@
-import { Message, MessageFile } from 'eris';
+import { MessageFile } from 'eris';
 import { CommandType, FlagDefinition, FlagResult } from '../../utils';
 import { SendPayload } from '../BaseUtilities';
+import { CommandContext } from './CommandContext';
 
 export interface CommandOptions {
     readonly name: string;
@@ -19,7 +20,7 @@ export type CommandResult =
     | SendPayload
     | MessageFile
     | MessageFile[]
-    | { content: SendPayload, files: MessageFile | MessageFile[] }
+    | { readonly content: SendPayload, readonly files: MessageFile | MessageFile[] }
     | string
     | void;
 
@@ -37,7 +38,7 @@ export interface CommandHandlerDefinition {
     readonly description: string;
     readonly parameters?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly execute: (message: Message, args: any[], flags: FlagResult, raw: string) => Promise<CommandResult> | CommandResult
+    readonly execute: (context: CommandContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult
     readonly allowOverflow?: boolean;
     readonly dontBind?: boolean;
     readonly useFlags?: boolean;
@@ -69,11 +70,11 @@ export interface CommandLiteralParameter {
 
 export interface CommandHandler {
     readonly signatures: ReadonlyArray<readonly CommandParameter[]>;
-    readonly execute: (message: Message, args: string[], raw: string) => Promise<CommandResult> | CommandResult;
+    readonly execute: (context: CommandContext) => Promise<CommandResult> | CommandResult;
 }
 
 export interface CommandSignatureHandler {
     readonly description: string;
     readonly parameters: readonly CommandParameter[];
-    readonly execute: (message: Message, args: string[], raw: string) => Promise<CommandResult> | CommandResult;
+    readonly execute: (context: CommandContext, args: readonly string[]) => Promise<CommandResult> | CommandResult;
 }

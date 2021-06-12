@@ -22,7 +22,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public readonly message: BBTagContextMessage;
     public readonly input: readonly string[];
-    public readonly flags: DeepReadOnly<FlagDefinition[]>;
+    public readonly flags: readonly FlagDefinition[];
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
     public readonly author: string;
@@ -127,13 +127,13 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         });
     }
 
-    public addError(error: string | Error, subtag?: SubtagCall): string {
-        if (typeof error === 'string')
-            error = `\`${error}\``;
-        else
-            error = `\`${error.message}\``;
-
-        this.errors.push({ subtag: subtag ?? null, error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}` });
+    public addError(error: string, subtag?: SubtagCall, debugMessage?: string): string {
+        error = `\`${error}\``;
+        this.errors.push({
+            subtag: subtag ?? null,
+            error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}`,
+            debugMessage: debugMessage ?? null
+        });
         return this.scope.fallback ?? error;
     }
 

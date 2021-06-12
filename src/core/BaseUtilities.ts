@@ -1,4 +1,4 @@
-import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, EmbedOptions, ExtendedUser, Member, Message, MessageFile, TextableChannel, User } from 'eris';
+import { AdvancedMessageContent, AnyChannel, Channel, ChannelInteraction, AnyMessage, Client as ErisClient, EmbedOptions, ExtendedUser, Member, MessageFile, Textable, User, UserChannelInteraction } from 'eris';
 import { BaseClient } from './BaseClient';
 import { guard, snowflake, stringify } from '../utils';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
@@ -6,7 +6,8 @@ import request from 'request';
 import { metrics } from './Metrics';
 import { Database } from './database';
 
-export type SendContext = Pick<Message, 'channel' | 'content' | 'author'> | TextableChannel | string
+
+export type SendContext = UserChannelInteraction | ChannelInteraction | (Textable & Channel) | string
 export type SendEmbed = EmbedOptions & { asString?: string }
 export type SendFiles = MessageFile | Array<MessageFile>
 export type SendPayload = {
@@ -30,7 +31,7 @@ export class BaseUtilities {
         this.messageAwaiter = new MessageAwaiter(this.logger);
     }
 
-    private async getSendChannel(context: SendContext): Promise<TextableChannel> {
+    private async getSendChannel(context: SendContext): Promise<Textable & Channel> {
         // Process context into a channel and maybe a message
         switch (typeof context) {
             // Id provided, get channel object
@@ -62,11 +63,11 @@ export class BaseUtilities {
         return `${scheme}://${host}/${path}`;
     }
 
-    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<Message | null> {
+    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<AnyMessage | null> {
         metrics.sendCounter.inc();
 
         let channel = await this.getSendChannel(context);
-        const message = context instanceof Message ? context : undefined;
+        const author = typeof context === 'object' && 'author' in context ? context.author : undefined;
 
         switch (typeof payload) {
             case 'string':
@@ -93,10 +94,10 @@ export class BaseUtilities {
         if (payload.isHelp
             && guard.isGuildChannel(channel)
             && await this.database.guilds.getSetting(channel.guild.id, 'dmhelp')
-            && message !== undefined) {
+            && author !== undefined) {
             await this.send(channel, '📧 DMing you the help 📧');
             payload.content = `Here is the help you requested in ${channel.mention}:\n${payload.content ?? ''}`;
-            channel = await message.author.getDMChannel();
+            channel = await author.getDMChannel();
         }
 
         // Stringifies embeds if we lack permissions to send embeds
@@ -115,7 +116,7 @@ export class BaseUtilities {
             payload.content = '';
         else
             payload.content = payload.content.trim();
-        if (payload.nsfw && !('nsfw' in channel && channel.nsfw)) {
+        if (payload.nsfw && guard.isGuildChannel(channel) && channel.nsfw) {
             payload.content = payload.nsfw;
             payload.embed = files = undefined;
         }
@@ -148,28 +149,21 @@ export class BaseUtilities {
             }
 
             let result = await sendErrors[response.code](this, channel, payload, files);
-            if (typeof result === 'string' && message && await this.canDmErrors(message.author.id)) {
-                if ('channel' in message) {
-                    if ('guild' in message.channel)
-                        result += `\nGuild: ${message.channel.guild.name} (${message.channel.guild.id})`;
+            if (typeof result === 'string' && author && await this.canDmErrors(author.id)) {
+                if (guard.isGuildChannel(channel))
+                    result += `\nGuild: ${channel.guild.name} (${channel.guild.id})`;
 
-                    const name = 'name' in channel ? channel.name : 'PRIVATE CHANNEL';
-                    result += `\nChannel: ${name} (${message.channel.id})`;
-                }
-                if (message.content && message.content.length > 100)
-                    result += `\nCommand: ${message.content.substring(0, 100)}...`;
-                else
-                    result += `\nCommand: ${message.content}`;
-
+                const name = guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL';
+                result += `\nChannel: ${name} (${channel.id})`;
                 result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
-                await this.sendDM(message.author.id, result);
+                await this.sendDM(author.id, result);
             }
             return null;
         }
     }
 
-    public async sendFile(context: SendContext, payload: SendPayload, fileUrl: string): Promise<Message | null> {
+    public async sendFile(context: SendContext, payload: SendPayload, fileUrl: string): Promise<AnyMessage | null> {
         const i = fileUrl.lastIndexOf('/');
         if (i === -1)
             return null;
@@ -187,7 +181,7 @@ export class BaseUtilities {
         }
     }
 
-    public async sendDM(context: Message | User | Member | string, message: SendPayload, files?: SendFiles): Promise<Message | null> {
+    public async sendDM(context: AnyMessage | User | Member | string, message: SendPayload, files?: SendFiles): Promise<AnyMessage | null> {
         let userid: string;
         switch (typeof context) {
             case 'string': userid = context; break;

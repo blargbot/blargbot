@@ -1,19 +1,19 @@
 import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
-import { AnyChannel, Guild, GuildTextableChannel, Member, Message, Permission, Role, TextableChannel, User } from 'eris';
+import { AnyChannel, Channel, AnyMessage, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
 import { codeBlock, commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
 import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
 import { StoredGuildSettings, StoredGuild, StoredGuildCommand } from '../core/database';
-import { BaseCommand } from '../core/command';
+import { BaseCommand, CommandContext } from '../core/command';
 
 interface CanExecuteDefaultCommandOptions {
-    storedGuild?: DeepReadOnly<StoredGuild>,
-    permOverride?: StoredGuildSettings['permoverride'],
-    staffPerms?: StoredGuildSettings['staffperms']
+    readonly storedGuild?: StoredGuild,
+    readonly permOverride?: StoredGuildSettings['permoverride'],
+    readonly staffPerms?: StoredGuildSettings['staffperms']
 }
 
 export interface FindEntityOptions {
@@ -29,8 +29,8 @@ interface LookupMatch<T> {
 }
 
 interface MessagePrompt {
-    prompt: Message | null;
-    response: Promise<Message | null>;
+    prompt: AnyMessage | null;
+    response: Promise<AnyMessage | null>;
 }
 
 export class ClusterUtilities extends BaseUtilities {
@@ -47,7 +47,7 @@ export class ClusterUtilities extends BaseUtilities {
         this.commandMessages = new MessageIdQueue(100);
     }
 
-    public async getUser(msg: Pick<Message, 'channel' | 'content' | 'author'>, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
+    public async getUser(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
         if (!name)
             return null;
 
@@ -70,7 +70,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (user)
             return user;
 
-        if (!guard.isGuildMessage(msg)) {
+        if (!guard.isGuildRelated(msg)) {
             return matchScore({
                 name: msg.author.username,
                 nick: msg.author.username,
@@ -117,7 +117,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getRole(msg: Pick<Message<GuildTextableChannel>, 'channel' | 'author' | 'content'>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | null> {
+    public async getRole(msg: UserChannelInteraction<GuildChannel>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | null> {
         if (!name)
             return null;
 
@@ -167,7 +167,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getChannel(msg: Pick<Message, 'channel' | 'author' | 'content'>, name: string, args: boolean | FindEntityOptions = {}): Promise<AnyChannel | null> {
+    public async getChannel(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<AnyChannel | null> {
         if (!name)
             return null;
 
@@ -184,7 +184,7 @@ export class ClusterUtilities extends BaseUtilities {
             args = { quiet: args };
 
         const channel = await this.getChannelById(name);
-        if (guard.isGuildMessage(msg)) {
+        if (guard.isGuildChannel(msg.channel)) {
             if (channel)
                 return channel;
         } else {
@@ -222,7 +222,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async displayPaged(
-        channel: TextableChannel,
+        channel: Textable & Channel,
         user: User,
         filterText: string,
         getItems: (skip: number, take: number) => Promise<readonly string[]>,
@@ -260,7 +260,7 @@ export class ClusterUtilities extends BaseUtilities {
         return true;
     }
 
-    public async createLookup<T>(msg: Pick<Message, 'author' | 'channel' | 'content'>, type: string, matches: LookupMatch<T>[], args: FindEntityOptions = {}): Promise<T | null> {
+    public async createLookup<T>(msg: UserChannelInteraction, type: string, matches: LookupMatch<T>[], args: FindEntityOptions = {}): Promise<T | null> {
         const lookupList = matches.slice(0, 20);
         let outputString = '';
         for (let i = 0; i < lookupList.length; i++) {
@@ -302,22 +302,22 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async awaitQuery(
-        channel: TextableChannel,
+        channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS?: number,
         label?: string
-    ): Promise<Message<TextableChannel> | null> {
+    ): Promise<AnyMessage | null> {
         const query = await this.createQuery(channel, user, content, check, timeoutMS, label);
         return await query.response;
     }
 
     public async createQuery(
-        channel: TextableChannel,
+        channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS = 300000,
         label?: string
     ): Promise<MessagePrompt> {
@@ -326,22 +326,22 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async awaitPrompt(
-        channel: TextableChannel,
+        channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS?: number,
         timeoutMessage?: SendPayload
-    ): Promise<Message<TextableChannel> | null> {
+    ): Promise<AnyMessage | null> {
         const prompt = await this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
         return await prompt.response;
     }
 
     public async createPrompt(
-        channel: TextableChannel,
+        channel: Textable & Channel,
         user: User,
         content: SendPayload,
-        check?: ((message: Message) => boolean),
+        check?: ((message: AnyMessage) => boolean),
         timeoutMS = 300000,
         timeoutMessage?: SendPayload
     ): Promise<MessagePrompt> {
@@ -481,13 +481,13 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async canExecuteCustomCommand(msg: Message<GuildTextableChannel>, command: DeepReadOnly<StoredGuildCommand>, quiet: boolean): Promise<boolean> {
+    public async canExecuteCustomCommand(context: CommandContext<GuildChannel>, command: StoredGuildCommand, quiet: boolean): Promise<boolean> {
         return command !== null
             && !command.hidden
-            && (!command.roles?.length || await this.hasPerm(msg, command.roles, quiet));
+            && (!command.roles?.length || await this.hasPerm(context.message, command.roles, quiet));
     }
 
-    public hasRole(msg: Member | Message, roles: string | readonly string[], override = true): boolean {
+    public hasRole(msg: Member | AnyMessage, roles: string | readonly string[], override = true): boolean {
         let member: Member;
         if (msg instanceof Member) {
             member = msg;
@@ -528,46 +528,46 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async canExecuteDefaultCommand(
-        msg: Message<TextableChannel>,
+        context: CommandContext<Channel>,
         command: BaseCommand,
         quiet = false,
         options: CanExecuteDefaultCommandOptions = {}
     ): Promise<boolean> {
-        if (msg.author.id == this.cluster.config.discord.users.owner)
+        if (context.author.id == this.cluster.config.discord.users.owner)
             return true;
 
         const category = commandTypes.properties[command.category];
-        if (!guard.isGuildMessage(msg))
+        if (!guard.isGuildCommandContext(context))
             return category.perm === undefined;
 
-        if (!await category.requirement(this.cluster, msg))
+        if (!await category.requirement(this.cluster, context))
             return false;
 
-        const commandPerms = await this.database.guilds.getCommandPerms(msg.channel.guild.id, command.name);
+        const commandPerms = await this.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
         if (commandPerms?.disabled && !command.cannotDisable)
             return false;
 
-        const permOverride = options.permOverride ?? await this.database.guilds.getSetting(msg.channel.guild.id, 'permoverride');
+        const permOverride = options.permOverride ?? await this.database.guilds.getSetting(context.channel.guild.id, 'permoverride');
         if (permOverride) {
-            const staffPerms = options.staffPerms ?? await this.database.guilds.getSetting(msg.channel.guild.id, 'staffperms') ?? defaultStaff;
+            const staffPerms = options.staffPerms ?? await this.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
             const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
-            if (!isNaN(allow) && msg.member && this.comparePerms(msg.member, allow))
+            if (!isNaN(allow) && context.message.member && this.comparePerms(context.message.member, allow))
                 return true;
         }
 
         if (commandPerms) {
-            if (commandPerms.permission && msg.member && this.comparePerms(msg.member, commandPerms.permission))
+            if (commandPerms.permission && context.message.member && this.comparePerms(context.message.member, commandPerms.permission))
                 return true;
 
             switch (typeof commandPerms.rolename) {
                 case 'undefined': break;
-                case 'string': return await this.hasPerm(msg, [commandPerms.rolename], quiet);
-                case 'object': return await this.hasPerm(msg, commandPerms.rolename, quiet);
+                case 'string': return await this.hasPerm(context.message, [commandPerms.rolename], quiet);
+                case 'object': return await this.hasPerm(context.message, commandPerms.rolename, quiet);
             }
         }
 
-        const adminrole = await this.database.guilds.getSetting(msg.channel.guild.id, 'adminrole');
-        if (category.perm && !await this.hasPerm(msg, [adminrole || category.perm], quiet))
+        const adminrole = await this.database.guilds.getSetting(context.channel.guild.id, 'adminrole');
+        if (category.perm && !await this.hasPerm(context.message, [adminrole || category.perm], quiet))
             return false;
 
         return true;
@@ -609,13 +609,13 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public async hasPerm(msg: Member | Message, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
+    public async hasPerm(msg: Member | AnyMessage, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
         let member: Member;
-        let channel: TextableChannel | undefined;
+        let channel: (Textable & Channel) | undefined;
         if (msg instanceof Member) {
             member = msg;
         } else {
-            if (!('guild' in msg.channel))
+            if (!guard.isGuildMessage(msg))
                 return true;
             if (!msg.member)
                 return false;

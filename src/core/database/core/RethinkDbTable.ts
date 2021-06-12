@@ -35,9 +35,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         return this.#rethinkDb.stream(r => query(r.table(this.table), r));
     }
 
-    protected async rget(
-        key: string
-    ): Promise<RethinkTableMap[T] | undefined> {
+    protected async rget(key: string): Promise<RethinkTableMap[T] | undefined> {
         return await this.rquery(t => t.get<RethinkTableMap[T]>(key)) ?? undefined;
     }
 
@@ -57,10 +55,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         return result.inserted + result.replaced > 0;
     }
 
-    protected async rupdate(
-        key: string,
-        value: UpdateRequest<RethinkTableMap[T]> | ((r: r) => UpdateRequest<RethinkTableMap[T]>)
-    ): Promise<boolean> {
+    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[T]> | ((r: r) => UpdateRequest<RethinkTableMap[T]>)): Promise<boolean> {
         const getter = typeof value === 'function' ? value : () => value;
         const result = await this.rquery((t, r) => t.get(key).update(getter(r)));
         throwIfErrored(result);

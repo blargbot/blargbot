@@ -9,9 +9,6 @@ export class ShardDisconnectEventHandler extends DiscordEventService {
     public execute(error: Error | undefined, shardId: number): void {
         this.logger.cluster('shard', shardId, 'has disconnected', error);
 
-        if (error === undefined)
-            return;
-
         setTimeout(() => {
             const shard = this.discord.shards.get(shardId);
             if (shard === undefined)

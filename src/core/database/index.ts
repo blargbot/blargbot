@@ -55,7 +55,7 @@ export class Database {
         this.#rethinkDb = new RethinkDb(options.rethinkDb);
         this.#postgres = new PostgresDb(options.logger, options.postgres);
         this.#cassandra = new Cassandra({
-            contactPoints: options.cassandra.contactPoints,
+            contactPoints: [...options.cassandra.contactPoints],
             keyspace: options.cassandra.keyspace,
             authProvider: new CassandraAuth.PlainTextAuthProvider(
                 options.cassandra.username,

@@ -1,4 +1,4 @@
-import { Message } from 'eris';
+import { AnyMessage } from 'eris';
 import { EventEmitter } from 'eventemitter3';
 
 export class MessageAwaiter {
@@ -11,14 +11,14 @@ export class MessageAwaiter {
         this.#events = new EventEmitter();
     }
 
-    public emit(message: Message): boolean {
+    public emit(message: AnyMessage): boolean {
         return this.#events.emit(message.channel.id, message);
     }
 
-    public async wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: Message) => boolean): Promise<Message | null> {
+    public async wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: AnyMessage) => boolean): Promise<AnyMessage | null> {
         this.logger.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeoutMS}`);
 
-        return await new Promise<Message | null>(resolve => {
+        return await new Promise<AnyMessage | null>(resolve => {
             const timeout = setTimeout(() => {
                 resolve(null);
                 for (const channel of channels)
@@ -26,7 +26,7 @@ export class MessageAwaiter {
             }, timeoutMS);
 
             const _filter = buildFilter(users, filter);
-            const handler = (message: Message): void => {
+            const handler = (message: AnyMessage): void => {
                 if (!_filter(message))
                     return;
 
@@ -42,7 +42,7 @@ export class MessageAwaiter {
     }
 }
 
-function buildFilter(users: string[] | null, filter?: (message: Message) => boolean): (message: Message) => boolean {
+function buildFilter(users: string[] | null, filter?: (message: AnyMessage) => boolean): (message: AnyMessage) => boolean {
     if (users === null || users.length === 0)
         return filter ?? (() => true);
 

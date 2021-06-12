@@ -1,7 +1,7 @@
-import { Message, MessageFile } from 'eris';
+import { MessageFile } from 'eris';
 import { Cluster } from '../cluster';
 import { commandTypes, FlagResult } from '../utils';
-import { BaseCommand } from '../core/command';
+import { BaseCommand, CommandContext } from '../core/command';
 
 export class ArtCommand extends BaseCommand {
     public constructor(cluster: Cluster) {
@@ -14,7 +14,7 @@ export class ArtCommand extends BaseCommand {
             definition: {
                 parameters: '{user?}',
                 dontBind: true,
-                execute: (msg, args, flags) => this.art(msg, args.join(' '), flags),
+                execute: (ctx, args, flags) => this.art(ctx, args.join(' '), flags),
                 description: 'Shows everyone a work of art.'
             }
         });
@@ -22,22 +22,22 @@ export class ArtCommand extends BaseCommand {
         this.ratelimit.push(m => m.channel.id);
     }
 
-    private async art(message: Message, user: string | undefined, flags: FlagResult): Promise<void | string | MessageFile> {
+    private async art(context: CommandContext, user: string | undefined, flags: FlagResult): Promise<void | string | MessageFile> {
         let url;
-        if (message.attachments.length > 0) {
-            url = message.attachments[0].url;
+        if (context.message.attachments.length > 0) {
+            url = context.message.attachments[0].url;
         } else if (flags.I) {
             url = flags.I.join(' ');
         } else if (user) {
-            const u = await this.util.getUser(message, user);
+            const u = await this.util.getUser(context, user);
             if (!u)
                 return;
             url = u.avatarURL;
         } else {
-            url = message.author.avatarURL;
+            url = context.author.avatarURL;
         }
 
-        void this.discord.sendChannelTyping(message.channel.id);
+        void this.discord.sendChannelTyping(context.channel.id);
 
         const buffer = await this.cluster.images.render('art', { avatar: url });
         if (!buffer || buffer.length === 0) {

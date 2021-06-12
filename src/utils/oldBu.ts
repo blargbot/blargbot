@@ -2,7 +2,7 @@ import moment from 'moment';
 import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
-import { Client as DiscordClient, GuildTextableChannel, Message, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
+import { Client as ErisClient, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel, GuildMessage, AnyMessage } from 'eris';
 import { fafo, getRange, humanize, randInt } from '.';
 import isSafeRegex from 'safe-regex';
 import request from 'request';
@@ -22,7 +22,7 @@ interface TagLocks {
 }
 
 const console: CatLogger = <CatLogger><unknown>undefined;
-const bot = <DiscordClient><unknown>undefined;
+const bot = <ErisClient><unknown>undefined;
 const bbEngine: BBEngine = <BBEngine><unknown>undefined;
 const cluster = <NodeJS.Process & Required<Pick<NodeJS.Process, 'send'>>><unknown>process;
 const util = <ClusterUtilities><unknown>undefined;
@@ -135,9 +135,9 @@ export const oldBu = {
         messages: string | string[],
         users: string | string[],
         reactions?: string[],
-        check?: (message: Message<GuildTextableChannel>, user: User, reaction: string) => Promise<boolean> | boolean,
+        check?: (message: GuildMessage, user: User, reaction: string) => Promise<boolean> | boolean,
         timeout?: number
-    ): Promise<{ message: Message<GuildTextableChannel>, channel: GuildTextableChannel, user: User, emoji: string }> {
+    ): Promise<{ message: GuildMessage, user: User, emoji: string }> {
         if (!Array.isArray(messages))
             messages = [messages];
         if (!Array.isArray(users))
@@ -173,10 +173,10 @@ export const oldBu = {
             else return r;
         }) : null;
 
-        return await new Promise<{ message: Message<GuildTextableChannel>, channel: GuildTextableChannel, user: User, emoji: string }>((resolve, reject) => {
+        return await new Promise<{ message: GuildMessage, user: User, emoji: string }>((resolve, reject) => {
             const timeoutId = setTimeout(() => reject(new TimeoutError(_timeout)), _timeout);
 
-            oldBu.emitter.on(eventName, fafo(async (message: Message<GuildTextableChannel>, emoji: string, user: User) => {
+            oldBu.emitter.on(eventName, fafo(async (message: GuildMessage, emoji: string, user: User) => {
                 let sanitized = emoji;
                 const match = SANITIZED.exec(sanitized);
                 if (match)
@@ -188,7 +188,7 @@ export const oldBu = {
                         return;
                     if (await _check(message, user, emoji)) {
                         clearTimeout(timeoutId);
-                        resolve({ message, channel: message.channel, user, emoji });
+                        resolve({ message, user, emoji });
                     }
                 } catch (err) {
                     clearTimeout(timeoutId);
@@ -206,7 +206,7 @@ export const oldBu = {
         });
     },
     async hasPerm(
-        msg: Message<GuildTextableChannel> | Member,
+        msg: GuildMessage | Member,
         perm: string | string[],
         quiet = false,
         override = true
@@ -256,8 +256,8 @@ export const oldBu = {
         return false;
     },
     hasRole(
-        msg: Message<GuildTextableChannel> | Member,
-        roles: string | string[],
+        msg: GuildMessage | Member,
+        roles: string | readonly string[],
         override = true
     ): boolean {
         const member = msg instanceof Member ? msg : msg.member;
@@ -269,7 +269,8 @@ export const oldBu = {
             member.permissions.json.administrator)) {
             return true;
         }
-        if (!Array.isArray(roles)) roles = [roles];
+        if (typeof roles === 'string')
+            roles = [roles];
         for (let i = 0; i < roles.length; i++) {
             if (member.roles.indexOf(roles[i]) > -1) {
                 return true;
@@ -325,7 +326,7 @@ export const oldBu = {
         }
         return null;
     },
-    async getMessage(channelId: string, messageId: string): Promise<Message | null> {
+    async getMessage(channelId: string, messageId: string): Promise<AnyMessage | null> {
         if (/^\d{ 17, 23 } $ /.test(messageId)) {
             const channel = bot.getChannel(channelId);
             if ('messages' in channel) {
@@ -689,7 +690,7 @@ export const oldBu = {
         return text;
     },
 
-    async findMessages(channelId: string, count: number, filter: (m: Message) => boolean, before?: string, after?: string): Promise<Message[]> {
+    async findMessages(channelId: string, count: number, filter: (m: AnyMessage) => boolean, before?: string, after?: string): Promise<AnyMessage[]> {
         const result = [];
         filter = filter || (() => true);
 

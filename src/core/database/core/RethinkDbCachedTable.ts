@@ -5,8 +5,8 @@ import { sleep } from '../../../utils';
 import { WriteChange } from 'rethinkdb';
 import { Cache } from '../../../structures/Cache';
 
-export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K extends string & keyof RethinkTableMap[T]> extends RethinkDbTable<T> {
-    protected readonly cache: Cache<string, RethinkTableMap[T]>;
+export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K extends string & keyof RethinkTableMap[T], M extends RethinkTableMap[T]> extends RethinkDbTable<T> {
+    protected readonly cache: Cache<string, M>;
 
     protected constructor(
         table: T,
@@ -21,11 +21,11 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
     protected async rget(
         key: string,
         skipCache = false
-    ): Promise<RethinkTableMap[T] | undefined> {
+    ): Promise<M | undefined> {
         if (skipCache || !this.cache.has(key)) {
             const result = await super.rget(key);
             if (result !== undefined)
-                this.cache.set(key, result);
+                this.cache.set(key, <M>result);
         }
         return this.cache.get(key, true);
     }

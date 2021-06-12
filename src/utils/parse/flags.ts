@@ -1,13 +1,18 @@
 import { smartSplit } from '../humanize/smartSplit';
 
 export type FlagDefinition = {
-    flag: string
-    word: string,
-    desc: string
+    readonly flag: string
+    readonly word: string,
+    readonly desc: string
 };
 
-export type FlagResult = {
-    undefined: string[];
+export interface FlagResult {
+    readonly undefined: readonly string[];
+    readonly [flag: string]: readonly string[] | undefined;
+}
+
+export interface MutableFlagResult extends FlagResult {
+    readonly undefined: string[];
     [flag: string]: string[] | undefined;
 }
 
@@ -22,7 +27,7 @@ export function flags(definitions: Iterable<FlagDefinition>, text: string | read
         flagmap.set(definition.word, definition.flag);
     }
 
-    const output: FlagResult = { undefined: [] };
+    const output: MutableFlagResult = { undefined: [] };
 
     let currentFlag = '';
     for (let i = 0; i < words.length; i++) {

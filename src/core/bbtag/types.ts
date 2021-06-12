@@ -1,4 +1,4 @@
-import { Attachment, Embed, GuildTextableChannel, Member, User, EmbedOptions, Message, MessageFile } from 'eris';
+import { Attachment, Embed, GuildTextableChannel, Member, User, EmbedOptions, MessageFile, GuildMessage } from 'eris';
 import ReadWriteLock from 'rwlock';
 import { FlagResult, FlagDefinition } from '../../utils';
 import { StoredGuildCommand, StoredTag } from '../database';
@@ -110,8 +110,9 @@ export interface BBTagContextState {
 }
 
 export interface RuntimeError {
-    subtag: SubtagCall | null;
-    error: string | RuntimeError[]
+    readonly subtag: SubtagCall | null;
+    readonly error: string | readonly RuntimeError[],
+    readonly debugMessage: string | null
 }
 
 export interface RuntimeDebugEntry {
@@ -131,22 +132,22 @@ export const enum RuntimeReturnState {
 }
 
 export interface BBTagContextOptions {
-    message: BBTagContextMessage | Message<GuildTextableChannel>;
-    input: readonly string[];
-    flags?: DeepReadOnly<FlagDefinition[]>;
-    isCC: boolean;
-    tagVars?: boolean;
-    author?: string;
-    authorizer?: string;
-    tagName: string;
-    cooldown?: number;
-    cooldowns?: TagCooldownManager;
-    locks?: Record<string, ReadWriteLock | undefined>;
-    limit: RuntimeLimit | (new () => RuntimeLimit);
-    silent?: boolean;
-    state?: Partial<BBTagContextState>;
-    scopes?: ScopeCollection;
-    variables?: VariableCache;
+    readonly message: BBTagContextMessage | GuildMessage;
+    readonly input: readonly string[];
+    readonly flags?: readonly FlagDefinition[];
+    readonly isCC: boolean;
+    readonly tagVars?: boolean;
+    readonly author?: string;
+    readonly authorizer?: string;
+    readonly tagName: string;
+    readonly cooldown?: number;
+    readonly cooldowns?: TagCooldownManager;
+    readonly locks?: Record<string, ReadWriteLock | undefined>;
+    readonly limit: RuntimeLimit | (new () => RuntimeLimit);
+    readonly silent?: boolean;
+    readonly state?: Partial<BBTagContextState>;
+    readonly scopes?: ScopeCollection;
+    readonly variables?: VariableCache;
 }
 
 export interface ExecutionResult {
@@ -178,12 +179,16 @@ export interface SubtagArgumentValue {
     execute(): Promise<string>;
 }
 
+export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentValue> {
+    readonly subtagName: string;
+}
+
 export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
-    readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
 export interface SubtagHandler {
-    readonly execute: (this: unknown, context: BBTagContext, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
 export interface SubtagHandlerArgument {
@@ -203,7 +208,7 @@ export interface SubtagSignatureDetails<TArgs = SubtagHandlerArgument> {
 }
 
 export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string | SubtagHandlerDefinitionArgumentGroup> {
-    readonly execute: (this: unknown, context: BBTagContext, args: readonly SubtagArgumentValue[], subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
 export interface SubtagHandlerDefinitionArgumentGroup {

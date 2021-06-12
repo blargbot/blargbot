@@ -3,7 +3,7 @@ import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagResult } f
 import { ArgumentResolver, createArgumentResolver } from './createResolvers';
 import { SubtagArgumentValue } from './SubtagArgumentValue';
 
-type SubHandler = (context: BBTagContext, call: SubtagCall) => Promise<SubtagResult>;
+type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
 
 interface SubHandlerCollection {
     byNumber: { [argLength: number]: SubHandler };
@@ -33,17 +33,17 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
     }
 
     return {
-        async execute(context, call) {
+        async execute(context, subtagName, call) {
             const execute = binding.byNumber[call.args.length]
                 ?? binding.byTest.find(({ test }) => test(call.args.length))?.execute;
 
             if (execute !== undefined)
-                return await execute(context, call);
+                return await execute(context, subtagName, call);
 
             if (call.args.length < minArgs)
-                return context.addError('Not enough arguments', call);
+                return context.addError('Not enough arguments', call, `Expected at least ${minArgs} arguments but got ${call.args.length}`);
             else if (call.args.length > maxArgs)
-                return context.addError('Too many arguments', call);
+                return context.addError('Too many arguments', call, `Expected ${maxArgs} arguments or fewer but got ${call.args.length}`);
 
             else
                 throw new Error(`Missing handler for ${call.args.length} arguments!`);
@@ -52,13 +52,9 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
 }
 
 function createSubHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): SubHandler {
-    return async (context, call) => {
-        const args = call.args.map(arg => new SubtagArgumentValue(context, arg));
+    return async (context, subtagName, call) => {
+        const args = Object.assign(call.args.map(arg => new SubtagArgumentValue(context, arg)), { subtagName });
         await resolver(args);
         return await signature.execute(context, args, call);
     };
 }
-
-
-
-

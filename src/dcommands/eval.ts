@@ -9,7 +9,7 @@ export class EvalCommand extends BaseCommand {
             category: commandTypes.CAT,
             definition: {
                 parameters: '{code+}',
-                execute: (msg, _, __, code) => this.eval(msg.author.id, code),
+                execute: (ctx) => this.eval(ctx.author.id, ctx.argsString),
                 description: 'Runs the code you enter on the current cluster'
             }
         });

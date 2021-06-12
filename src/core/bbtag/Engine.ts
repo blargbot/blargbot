@@ -92,7 +92,7 @@ export class Engine {
             // sleep for 100ms every 1000 subtag calls
             if (++context.state.subtagCount % 1000 === 0)
                 await sleep(100);
-            const result = await handler.execute(context, bbtag);
+            const result = await handler.execute(context, name, bbtag);
             return typeof result === 'string' ? result : '';
         } catch (err) {
             this.logger.error(err);
@@ -112,7 +112,7 @@ export class Engine {
                     ]
                 }
             });
-            return context.addError('An internal server error has occurred', bbtag);
+            return context.addError('An internal server error has occurred', bbtag, err.message);
         }
     }
 

@@ -1,6 +1,5 @@
-import { BaseCommand } from '../core/command';
+import { BaseCommand, CommandContext } from '../core/command';
 import { randInt, commandTypes } from '../utils';
-import { Message } from 'eris';
 import { Cluster } from '../cluster';
 
 const messages = [
@@ -24,16 +23,16 @@ export class PingCommand extends BaseCommand {
             info: 'Pong!\nFind the command latency.',
             definition: {
                 parameters: '',
-                execute: message => this.ping(message),
+                execute: ctx => this.ping(ctx),
                 description: 'Gets the current latency.'
             }
         });
     }
 
-    private async ping(msg: Message): Promise<void> {
+    private async ping(context: CommandContext): Promise<void> {
         const message = messages[randInt(0, messages.length - 1)];
-        const msg2 = await this.util.send(msg, message);
+        const msg2 = await this.util.send(context, message);
         if (msg2)
-            await msg2.edit(`Pong! (${msg2.timestamp - msg.timestamp}ms)`);
+            await msg2.edit(`Pong! (${msg2.timestamp - context.timestamp}ms)`);
     }
 }

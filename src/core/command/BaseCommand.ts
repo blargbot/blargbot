@@ -1,4 +1,4 @@
-import { Message, MessageFile } from 'eris';
+import { MessageFile } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
 import { CommandType, FlagDefinition } from '../../utils';
 import { Database } from '../database';
@@ -6,6 +6,7 @@ import { CommandDefinition, CommandOptions, CommandResult, CommandHandler } from
 import { Client as ErisClient } from 'eris';
 import { compileHandler } from './compileHandler';
 import { SendPayload } from '../BaseUtilities';
+import { CommandContext } from './CommandContext';
 
 export const handlerDefaults = Object.seal<CommandDefinition>({
     subcommands: {
@@ -19,7 +20,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cooldowns: Record<string, { lasttime: number; times: number; }>;
 
-    protected readonly ratelimit: Array<(message: Message) => string>;
+    protected readonly ratelimit: Array<(context: CommandContext) => string>;
     public readonly definition: CommandDefinition;
     public readonly handler: CommandHandler;
     public readonly name: string;
@@ -62,23 +63,23 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         this.usage = this.handler.signatures.map(u => u.map(p => p.display).join(' ')).join('\n');
     }
 
-    public async execute(message: Message, args: string[], raw: string): Promise<void> {
+    public async execute(context: CommandContext): Promise<void> {
         try {
-            let result = await this.preExecute(message, args, raw);
+            let result = await this.preExecute(context);
             if (result === undefined)
-                result = await this.handler.execute(message, args, raw);
+                result = await this.handler.execute(context);
             const [payload, files] = splitResult(result);
             if (payload !== undefined || files !== undefined)
-                await this.util.send(message, payload, files);
+                await this.util.send(context, payload, files);
         }
         finally {
-            await this.postExecute(message, args, raw);
+            await this.postExecute(context);
         }
     }
 
-    protected preExecute(message: Message, _args: string[], _raw: string): Promise<CommandResult | null> | CommandResult | null {
+    protected preExecute(context: CommandContext): Promise<CommandResult | null> | CommandResult | null {
         for (const getKey of this.ratelimit) {
-            const lock = this.#locks[getKey(message)] ??= { times: 0 };
+            const lock = this.#locks[getKey(context)] ??= { times: 0 };
             lock.times++;
             if (lock.times === 2)
                 return '❌ Sorry, this command is already running! Please wait and try again.';
@@ -87,7 +88,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         }
 
         if (this.cooldown > 0) {
-            const cd = this.#cooldowns[message.author.id] ??= { lasttime: 0, times: 0 };
+            const cd = this.#cooldowns[context.author.id] ??= { lasttime: 0, times: 0 };
             cd.times++;
             const remaining = cd.lasttime + this.cooldown - Date.now();
             if (remaining > 0) {
@@ -99,16 +100,16 @@ export abstract class BaseCommand implements Required<CommandOptions> {
         }
     }
 
-    protected postExecute(message: Message, _args: string[], _raw: string): Promise<void> | void {
+    protected postExecute(context: CommandContext): Promise<void> | void {
         for (const getKey of this.ratelimit)
-            delete this.#locks[getKey(message)];
+            delete this.#locks[getKey(context)];
 
         if (this.cooldown > 0) {
-            const cd = this.#cooldowns[message.author.id] ??= { lasttime: 0, times: 1 };
+            const cd = this.#cooldowns[context.author.id] ??= { lasttime: 0, times: 1 };
             const now = cd.lasttime = Date.now();
             setTimeout(() => {
-                if (this.#cooldowns[message.author.id]?.lasttime === now)
-                    delete this.#cooldowns[message.author.id];
+                if (this.#cooldowns[context.author.id]?.lasttime === now)
+                    delete this.#cooldowns[context.author.id];
             }, this.cooldown);
         }
     }
