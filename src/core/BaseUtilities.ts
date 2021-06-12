@@ -1,4 +1,4 @@
-import { AdvancedMessageContent, AnyChannel, Channel, Client as ErisClient, EmbedOptions, ExtendedUser, Member, Message, MessageFile, Textable, User } from 'eris';
+import { AdvancedMessageContent, AnyChannel, Channel, ChannelInteraction, Client as ErisClient, EmbedOptions, ExtendedUser, Member, Message, MessageFile, Textable, User, UserChannelInteraction } from 'eris';
 import { BaseClient } from './BaseClient';
 import { guard, snowflake, stringify } from '../utils';
 import { MessageAwaiter } from '../structures/MessageAwaiter';
@@ -7,7 +7,7 @@ import { metrics } from './Metrics';
 import { Database } from './database';
 
 
-export type SendContext = { channel: Textable & Channel, author?: User } | (Textable & Channel) | string
+export type SendContext = UserChannelInteraction | ChannelInteraction | (Textable & Channel) | string
 export type SendEmbed = EmbedOptions & { asString?: string }
 export type SendFiles = MessageFile | Array<MessageFile>
 export type SendPayload = {
@@ -67,7 +67,7 @@ export class BaseUtilities {
         metrics.sendCounter.inc();
 
         let channel = await this.getSendChannel(context);
-        const message = typeof context === 'object' && 'channel' in context ? context : undefined;
+        const author = typeof context === 'object' && 'author' in context ? context.author : undefined;
 
         switch (typeof payload) {
             case 'string':
@@ -94,10 +94,10 @@ export class BaseUtilities {
         if (payload.isHelp
             && guard.isGuildChannel(channel)
             && await this.database.guilds.getSetting(channel.guild.id, 'dmhelp')
-            && message?.author !== undefined) {
+            && author !== undefined) {
             await this.send(channel, '📧 DMing you the help 📧');
             payload.content = `Here is the help you requested in ${channel.mention}:\n${payload.content ?? ''}`;
-            channel = await message.author.getDMChannel();
+            channel = await author.getDMChannel();
         }
 
         // Stringifies embeds if we lack permissions to send embeds
@@ -149,15 +149,15 @@ export class BaseUtilities {
             }
 
             let result = await sendErrors[response.code](this, channel, payload, files);
-            if (typeof result === 'string' && message?.author && await this.canDmErrors(message.author.id)) {
+            if (typeof result === 'string' && author && await this.canDmErrors(author.id)) {
                 if (guard.isGuildChannel(channel))
                     result += `\nGuild: ${channel.guild.name} (${channel.guild.id})`;
 
                 const name = guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL';
-                result += `\nChannel: ${name} (${message.channel.id})`;
+                result += `\nChannel: ${name} (${channel.id})`;
                 result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
-                await this.sendDM(message.author.id, result);
+                await this.sendDM(author.id, result);
             }
             return null;
         }

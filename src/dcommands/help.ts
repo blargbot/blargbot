@@ -1,4 +1,4 @@
-import { EmbedField, GuildChannel, Textable } from 'eris';
+import { EmbedField, GuildChannel } from 'eris';
 import { Cluster } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
 import { BaseCommand, CommandContext } from '../core/command';
@@ -117,7 +117,7 @@ export class HelpCommand extends BaseCommand {
         return { content: `❌ The command \`${commandName}\` could not be found` };
     }
 
-    public async viewCustomCommand(context: CommandContext<Textable & GuildChannel>, commandName: string, command: DeepReadOnly<StoredGuildCommand>): Promise<SendPayload> {
+    public async viewCustomCommand(context: CommandContext<GuildChannel>, commandName: string, command: DeepReadOnly<StoredGuildCommand>): Promise<SendPayload> {
         if (!await this.util.canExecuteCustomCommand(context, command, true))
             return { content: `❌ You dont have permission to run the \`${commandName}\` command` };
 

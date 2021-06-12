@@ -1,7 +1,7 @@
-import { Channel, GuildChannel, Message, Textable } from 'eris';
+import { Channel, ChannelMessage, GuildChannel, GuildMessage } from 'eris';
 import { isGuildChannel } from './isGuildChannel';
 
-export function isGuildMessage<T extends Textable & Channel>(message: Message<T>): message is Message<T & GuildChannel> {
+export function isGuildMessage<T extends Channel>(message: ChannelMessage<T>): message is GuildMessage<T & GuildChannel> {
     return isGuildChannel(message.channel);
 }
 

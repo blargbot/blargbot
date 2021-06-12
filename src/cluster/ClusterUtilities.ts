@@ -1,7 +1,7 @@
 import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
-import { AnyChannel, Channel, Guild, GuildChannel, Member, Message, Permission, Role, Textable, User } from 'eris';
+import { AnyChannel, Channel, ChannelMessage, Guild, GuildChannel, Member, Message, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
 import { codeBlock, commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
 import { BanStore } from '../structures/BanStore';
 import { ModerationUtils } from '../core/ModerationUtils';
@@ -47,7 +47,7 @@ export class ClusterUtilities extends BaseUtilities {
         this.commandMessages = new MessageIdQueue(100);
     }
 
-    public async getUser(msg: Pick<Message<Textable & Channel>, 'channel' | 'author'>, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
+    public async getUser(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<User | null> {
         if (!name)
             return null;
 
@@ -117,7 +117,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getRole(msg: Pick<Message<Textable & GuildChannel>, 'channel' | 'author'>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | null> {
+    public async getRole(msg: UserChannelInteraction<GuildChannel>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | null> {
         if (!name)
             return null;
 
@@ -167,7 +167,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getChannel(msg: Pick<Message<Textable & Channel>, 'channel' | 'author'>, name: string, args: boolean | FindEntityOptions = {}): Promise<AnyChannel | null> {
+    public async getChannel(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<AnyChannel | null> {
         if (!name)
             return null;
 
@@ -260,7 +260,7 @@ export class ClusterUtilities extends BaseUtilities {
         return true;
     }
 
-    public async createLookup<T>(msg: Pick<Message<Textable & Channel>, 'author' | 'channel'>, type: string, matches: LookupMatch<T>[], args: FindEntityOptions = {}): Promise<T | null> {
+    public async createLookup<T>(msg: UserChannelInteraction, type: string, matches: LookupMatch<T>[], args: FindEntityOptions = {}): Promise<T | null> {
         const lookupList = matches.slice(0, 20);
         let outputString = '';
         for (let i = 0; i < lookupList.length; i++) {
@@ -308,7 +308,7 @@ export class ClusterUtilities extends BaseUtilities {
         check?: ((message: Message) => boolean),
         timeoutMS?: number,
         label?: string
-    ): Promise<Message<Textable & Channel> | null> {
+    ): Promise<ChannelMessage | null> {
         const query = await this.createQuery(channel, user, content, check, timeoutMS, label);
         return await query.response;
     }
@@ -332,7 +332,7 @@ export class ClusterUtilities extends BaseUtilities {
         check?: ((message: Message) => boolean),
         timeoutMS?: number,
         timeoutMessage?: SendPayload
-    ): Promise<Message<Textable & Channel> | null> {
+    ): Promise<ChannelMessage | null> {
         const prompt = await this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
         return await prompt.response;
     }
@@ -481,7 +481,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async canExecuteCustomCommand(context: CommandContext<Textable & GuildChannel>, command: DeepReadOnly<StoredGuildCommand>, quiet: boolean): Promise<boolean> {
+    public async canExecuteCustomCommand(context: CommandContext<GuildChannel>, command: DeepReadOnly<StoredGuildCommand>, quiet: boolean): Promise<boolean> {
         return command !== null
             && !command.hidden
             && (!command.roles?.length || await this.hasPerm(context.message, command.roles, quiet));
@@ -528,7 +528,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async canExecuteDefaultCommand(
-        context: CommandContext<Textable & Channel>,
+        context: CommandContext<Channel>,
         command: BaseCommand,
         quiet = false,
         options: CanExecuteDefaultCommandOptions = {}
@@ -609,7 +609,7 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public async hasPerm(msg: Member | Message<Textable & Channel>, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
+    public async hasPerm(msg: Member | ChannelMessage, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
         let member: Member;
         let channel: (Textable & Channel) | undefined;
         if (msg instanceof Member) {

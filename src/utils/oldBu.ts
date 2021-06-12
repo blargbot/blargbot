@@ -2,7 +2,7 @@ import moment from 'moment';
 import config from '../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
-import { Client as DiscordClient, GuildTextableChannel, Message, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel } from 'eris';
+import { Client as DiscordClient, Message, User, Member, DiscordRESTError, DiscordHTTPError, Guild, EmbedField, EmbedOptions, Permission, GuildAuditLogEntry, EmbedAuthorOptions, AnyChannel, GuildMessage } from 'eris';
 import { fafo, getRange, humanize, randInt, SubtagVariableType } from '.';
 import isSafeRegex from 'safe-regex';
 import request from 'request';
@@ -128,7 +128,7 @@ export const oldBu = {
             getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => oldBu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
         }
     ],
-    async handleCensor(msg: Message<GuildTextableChannel>, storedGuild: StoredGuild): Promise<void> {
+    async handleCensor(msg: GuildMessage, storedGuild: StoredGuild): Promise<void> {
         const censor = storedGuild.censor;
         if (censor?.list.length) {
             //First, let's check exceptions
@@ -216,9 +216,9 @@ export const oldBu = {
         messages: string | string[],
         users: string | string[],
         reactions?: string[],
-        check?: (message: Message<GuildTextableChannel>, user: User, reaction: string) => Promise<boolean> | boolean,
+        check?: (message: GuildMessage, user: User, reaction: string) => Promise<boolean> | boolean,
         timeout?: number
-    ): Promise<{ message: Message<GuildTextableChannel>, channel: GuildTextableChannel, user: User, emoji: string }> {
+    ): Promise<{ message: GuildMessage, user: User, emoji: string }> {
         if (!Array.isArray(messages))
             messages = [messages];
         if (!Array.isArray(users))
@@ -254,10 +254,10 @@ export const oldBu = {
             else return r;
         }) : null;
 
-        return await new Promise<{ message: Message<GuildTextableChannel>, channel: GuildTextableChannel, user: User, emoji: string }>((resolve, reject) => {
+        return await new Promise<{ message: GuildMessage, user: User, emoji: string }>((resolve, reject) => {
             const timeoutId = setTimeout(() => reject(new TimeoutError(_timeout)), _timeout);
 
-            oldBu.emitter.on(eventName, fafo(async (message: Message<GuildTextableChannel>, emoji: string, user: User) => {
+            oldBu.emitter.on(eventName, fafo(async (message: GuildMessage, emoji: string, user: User) => {
                 let sanitized = emoji;
                 const match = SANITIZED.exec(sanitized);
                 if (match)
@@ -269,7 +269,7 @@ export const oldBu = {
                         return;
                     if (await _check(message, user, emoji)) {
                         clearTimeout(timeoutId);
-                        resolve({ message, channel: message.channel, user, emoji });
+                        resolve({ message, user, emoji });
                     }
                 } catch (err) {
                     clearTimeout(timeoutId);
@@ -287,7 +287,7 @@ export const oldBu = {
         });
     },
     async hasPerm(
-        msg: Message<GuildTextableChannel> | Member,
+        msg: GuildMessage | Member,
         perm: string | string[],
         quiet = false,
         override = true
@@ -337,7 +337,7 @@ export const oldBu = {
         return false;
     },
     hasRole(
-        msg: Message<GuildTextableChannel> | Member,
+        msg: GuildMessage | Member,
         roles: string | string[],
         override = true
     ): boolean {

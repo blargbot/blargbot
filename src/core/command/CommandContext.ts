@@ -1,7 +1,7 @@
-import { Channel, Message, Textable, User } from 'eris';
+import { Channel, ChannelMessage, Textable, User } from 'eris';
 import { humanize } from '../../utils';
 
-export class CommandContext<TChannel extends Textable = Textable & Channel> {
+export class CommandContext<TChannel extends Channel = Channel> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #argRanges: Array<{ start: number; end: number; }>;
     public readonly commandText: string;
@@ -9,13 +9,13 @@ export class CommandContext<TChannel extends Textable = Textable & Channel> {
     public readonly argsString: string;
     public readonly args: string[];
 
-    public get channel(): TChannel { return this.message.channel; }
+    public get channel(): TChannel & Textable { return this.message.channel; }
     public get author(): User { return this.message.author; }
     public get id(): string { return this.message.id; }
     public get timestamp(): number { return this.message.timestamp; }
 
     public constructor(
-        public readonly message: Message<TChannel>,
+        public readonly message: ChannelMessage<TChannel>,
         public readonly prefix: string
     ) {
         this.commandText = message.content.slice(prefix.length);

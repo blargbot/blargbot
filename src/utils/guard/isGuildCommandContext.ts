@@ -1,8 +1,8 @@
-import { Channel, GuildTextableChannel, Textable } from 'eris';
+import { Channel, GuildChannel } from 'eris';
 import { CommandContext } from '../../core/command';
 import { isGuildChannel } from './isGuildChannel';
 
 
-export function isGuildCommandContext<T extends Textable & Channel>(context: CommandContext<T>): context is CommandContext<T & GuildTextableChannel> {
+export function isGuildCommandContext<T extends Channel>(context: CommandContext<T>): context is CommandContext<T & GuildChannel> {
     return isGuildChannel(context.channel);
 }

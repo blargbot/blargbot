@@ -1,4 +1,4 @@
-import { Channel, Message, Textable } from 'eris';
+import { UserChannelInteraction } from 'eris';
 import { ClusterUtilities } from '../../cluster';
 import { StoredGuildSettings } from '../../core/database';
 import { guildSettings } from '../constants';
@@ -7,7 +7,7 @@ import { boolean } from './boolean';
 import { int } from './int';
 
 export async function guildSetting<T extends keyof StoredGuildSettings>(
-    msg: Pick<Message<Textable & Channel>, 'channel' | 'author'>,
+    msg: UserChannelInteraction,
     util: ClusterUtilities,
     key: T,
     raw: string

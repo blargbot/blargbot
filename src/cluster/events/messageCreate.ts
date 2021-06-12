@@ -1,4 +1,4 @@
-import { Channel, GuildChannel, Member, Message, Textable, TextChannel } from 'eris';
+import { ChannelMessage, GuildMessage, Member, Message, TextChannel } from 'eris';
 import { Timer } from '../../structures/Timer';
 import request from 'request';
 import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep, humanize } from '../../utils';
@@ -52,7 +52,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleUserMessage(msg: Message<Textable & Channel>, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<void> {
+    public async handleUserMessage(msg: ChannelMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<void> {
         let prefix: string | undefined;
         const prefixes: string[] = [];
         const storedUser = await this.cluster.database.users.get(msg.author.id);
@@ -127,7 +127,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async flipTables(msg: Message<Textable & GuildChannel>, unflip: boolean): Promise<void> {
+    public async flipTables(msg: GuildMessage, unflip: boolean): Promise<void> {
         const tableflip = await this.cluster.database.guilds.getSetting(msg.channel.guild.id, 'tableflip');
         if (tableflip) {
             const seed = randInt(0, 3);
@@ -237,7 +237,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         this.logger.output(log);
     }
 
-    public async handleAntiMention(msg: Message<Textable & GuildChannel>, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
+    public async handleAntiMention(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
         const antimention = storedGuild.settings?.antimention;
         if (antimention === undefined)
             return;
@@ -260,7 +260,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleCensor(msg: Message<Textable & GuildChannel>, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
+    public async handleCensor(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
         const censor = storedGuild.censor;
         if (!censor?.list?.length)
             return;
@@ -328,7 +328,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleRoleme(msg: Message<Textable & GuildChannel>, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
+    public async handleRoleme(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
         if (!storedGuild?.roleme?.length || !msg.member)
             return;
 
@@ -371,7 +371,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         this.#arWhitelist = new Set(whitelist?.values);
     }
 
-    public defaultMember(msg: Message<Textable & GuildChannel>, tag: StoredGuildCommand): Member | null {
+    public defaultMember(msg: GuildMessage, tag: StoredGuildCommand): Member | null {
         if (msg.member)
             return msg.member;
 
@@ -382,7 +382,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         return msg.channel.guild.members.get(id) ?? null;
     }
 
-    public async handleAutoresponse(msg: Message<Textable & GuildChannel>, storedGuild: DeepReadOnly<StoredGuild>, everything = false): Promise<void> {
+    public async handleAutoresponse(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>, everything = false): Promise<void> {
         if (!this.#arWhitelist.has(msg.channel.guild.id) || msg.author.discriminator === '0000')
             return;
 
@@ -436,7 +436,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleBlacklist(msg: Message<Textable & Channel>, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<boolean> {
+    public async handleBlacklist(msg: ChannelMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<boolean> {
         if (!(guard.isGuildMessage(msg) && storedGuild?.channels?.[msg.channel.id]))
             return false;
 
@@ -444,7 +444,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
             && !await this.cluster.util.isUserStaff(msg.author.id, msg.channel.guild.id);
     }
 
-    public handleDeleteNotif(msg: Message<Textable & GuildChannel>, storedGuild: DeepReadOnly<StoredGuild>): void {
+    public handleDeleteNotif(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): void {
         if (parse.boolean(storedGuild.settings?.deletenotif, false, true))
             this.cluster.util.commandMessages.push(msg.channel.guild.id, msg.id);
     }
@@ -464,7 +464,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         });
     }
 
-    public async handleCleverbot(msg: Message<Textable & Channel>): Promise<void> {
+    public async handleCleverbot(msg: ChannelMessage): Promise<void> {
         await this.cluster.discord.sendChannelTyping(msg.channel.id);
         let username = this.cluster.discord.user.username;
         if (guard.isGuildMessage(msg)) {
@@ -485,7 +485,7 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleTableflip(msg: Message<Textable & GuildChannel>): Promise<void> {
+    public async handleTableflip(msg: GuildMessage): Promise<void> {
         if (msg.content.indexOf('(╯°□°）╯︵ ┻━┻') > -1 && !msg.author.bot) {
             await this.flipTables(msg, false);
         }

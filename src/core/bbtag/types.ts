@@ -1,4 +1,4 @@
-import { Attachment, Embed, GuildTextableChannel, Member, User, EmbedOptions, Message, MessageFile, Textable, GuildChannel } from 'eris';
+import { Attachment, Embed, GuildTextableChannel, Member, User, EmbedOptions, MessageFile, GuildMessage } from 'eris';
 import ReadWriteLock from 'rwlock';
 import { FlagResult, FlagDefinition } from '../../utils';
 import { StoredGuildCommand, StoredTag } from '../database';
@@ -132,7 +132,7 @@ export const enum RuntimeReturnState {
 }
 
 export interface BBTagContextOptions {
-    message: BBTagContextMessage | Message<Textable & GuildChannel>;
+    message: BBTagContextMessage | GuildMessage;
     input: readonly string[];
     flags?: DeepReadOnly<FlagDefinition[]>;
     isCC: boolean;
