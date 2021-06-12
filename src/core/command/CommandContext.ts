@@ -42,7 +42,7 @@ export class CommandContext<TChannel extends Channel = Channel> {
         if (raw) {
             const istart = this.#argRanges[start].start;
             const iend = this.#argRanges[end].end;
-            return this.argsString.slice(istart, iend);
+            return this.argsString.slice(istart, iend + 1);
         }
 
         return this.args.slice(start, end);
