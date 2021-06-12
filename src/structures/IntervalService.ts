@@ -4,12 +4,22 @@ import { BaseService } from './BaseService';
 export abstract class IntervalService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #interval?: NodeJS.Timeout;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #execute: () => Promise<void>;
 
     protected constructor(
         public readonly period: number,
         public readonly logger: CatLogger
     ) {
         super();
+
+        this.#execute = async () => {
+            try {
+                await this.execute();
+            } catch (err) {
+                this.logger.error(`Interval ${this.name} threw an error: ${inspect(err)}`);
+            }
+        };
     }
 
     protected abstract execute(): Promise<void> | void;
@@ -18,7 +28,7 @@ export abstract class IntervalService extends BaseService {
         if (this.#interval !== undefined)
             throw new Error(`Interval ${this.name} is already running`);
 
-        this.#interval = setInterval(() => void this._execute(), this.period);
+        this.#interval = setInterval(() => void this.#execute(), this.period);
     }
 
     public stop(): void {
@@ -27,14 +37,5 @@ export abstract class IntervalService extends BaseService {
 
         clearInterval(this.#interval);
         this.#interval = undefined;
-    }
-
-    private async _execute(): Promise<void> {
-        try {
-            await this.execute();
-        } catch (err) {
-            this.logger.error(`Interval ${this.name} threw an error: ${inspect(err)}`);
-            this.stop();
-        }
     }
 }

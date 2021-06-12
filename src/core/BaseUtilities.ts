@@ -219,6 +219,11 @@ export class BaseUtilities {
         const storedUser = await this.database.users.get(userId);
         return !storedUser?.dontdmerrors;
     }
+
+    public isDeveloper(userId: string): boolean {
+        return this.config.discord.users.owner === userId
+            || this.config.discord.users.developers.includes(userId);
+    }
 }
 
 

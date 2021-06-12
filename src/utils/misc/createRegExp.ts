@@ -16,3 +16,12 @@ export function createRegExp(term: string): RegExp {
 
     return result;
 }
+
+export function testRegexSafe(term: string, text: string): boolean {
+    try {
+        const regex = createRegExp(term);
+        return regex.test(text);
+    } catch (err) {
+        return false;
+    }
+}

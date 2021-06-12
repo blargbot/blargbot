@@ -14,7 +14,14 @@ export abstract class ClusterEventService extends BaseService {
     ) {
         super();
         this.type = `ClusterEvent:${this.event}`;
-        this.#execute = (data, id, reply) => void this._execute(data, id, reply);
+        const execute = async (...args: Parameters<ProcessMessageHandler>): Promise<void> => {
+            try {
+                await this.execute(...args);
+            } catch (err) {
+                this.cluster.logger.error(`Discord event handler ${this.name} threw an error: ${inspect(err)}`);
+            }
+        };
+        this.#execute = (data, id, reply) => void execute(data, id, reply);
     }
 
     protected abstract execute(...args: Parameters<ProcessMessageHandler>): Promise<void> | void;
@@ -25,14 +32,5 @@ export abstract class ClusterEventService extends BaseService {
 
     public stop(): void {
         this.cluster.worker.off(this.event, this.#execute);
-    }
-
-    private async _execute(...args: Parameters<ProcessMessageHandler>): Promise<void> {
-        try {
-            await this.execute(...args);
-        } catch (err) {
-            this.cluster.logger.error(`Discord event handler ${this.name} threw an error: ${inspect(err)}`);
-            this.stop();
-        }
     }
 }

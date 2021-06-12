@@ -21,7 +21,8 @@ export enum Type {
     IMAGE,
     MUSIC,
     ADMIN,
-    SOCIAL
+    SOCIAL,
+    DEVELOPER
 }
 
 export const properties: CommandPropertiesSet = {
@@ -64,12 +65,20 @@ export const properties: CommandPropertiesSet = {
     },
     [Type.SOCIAL]: {
         name: 'Social',
-        requirement: async (client: Cluster, context: CommandContext): Promise<boolean> => {
+        async requirement(cluster: Cluster, context: CommandContext): Promise<boolean> {
             if (!guard.isGuildCommandContext(context))
                 return false;
-            return await client.database.guilds.getSetting(context.channel.guild.id, 'social') ?? false;
+            return await cluster.database.guilds.getSetting(context.channel.guild.id, 'social') ?? false;
         },
         description: 'Social commands for interacting with other people',
         color: 0xefff00
+    },
+    [Type.DEVELOPER]: {
+        name: 'Developer',
+        requirement(cluster: Cluster, context: CommandContext): boolean {
+            return cluster.util.isDeveloper(context.author.id);
+        },
+        description: 'Commands that can only be executed by blargbot developers.',
+        color: 0xff0000
     }
 };

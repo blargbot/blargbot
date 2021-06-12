@@ -13,7 +13,7 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
     ) {
         super('Cluster',
             Math.ceil(config.max / config.perCluster),
-            /*config.spawnTime*/999999999,
+            config.spawnTime,
             logger);
     }
 
@@ -31,7 +31,7 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
                 try {
                     currentCluster.send('killshard', shardId);
                 } catch (err) {
-                    this.logger.error('Wasn\'t able to send killShard message to shard', id, err);
+                    this.logger.error(`Wasn't able to send \`killShard ${shardId}\` message to cluster`, id, err);
                 }
             };
 
