@@ -1,3 +1,4 @@
+import { guard } from '../utils';
 import { BaseModuleLoader, ModuleResult } from './BaseModuleLoader';
 
 export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
@@ -25,15 +26,11 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
             return { module: <TModule>rawModule, names: this.#getNames(<TModule>rawModule) };
         }
 
-        if (isConstructor(rawModule, this.type)) {
+        if (guard.isClass(rawModule, this.type)) {
             const instance = new rawModule(...this.constructorArguments);
             return { module: instance, names: this.#getNames(instance) };
         }
 
         return null;
     }
-}
-
-function isConstructor<TModule>(value: unknown, type: ClassOf<TModule>): value is new (...args: unknown[]) => TModule {
-    return typeof value === 'function' && value.prototype instanceof type;
 }

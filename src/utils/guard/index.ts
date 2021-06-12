@@ -11,6 +11,7 @@ import { notNull } from './notNull';
 import { hasValue } from './hasValue';
 import { isGuildSetting } from './isGuildSetting';
 import { checkEmbedSize } from './checkEmbedSize';
+import { isClass } from './isClass';
 
 export const guard = {
     isGuildChannel,
@@ -25,6 +26,6 @@ export const guard = {
     notNull,
     hasValue,
     isGuildSetting,
-    checkEmbedSize
+    checkEmbedSize,
+    isClass
 };
-
