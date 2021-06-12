@@ -110,8 +110,9 @@ export interface BBTagContextState {
 }
 
 export interface RuntimeError {
-    subtag: SubtagCall | null;
-    error: string | RuntimeError[]
+    readonly subtag: SubtagCall | null;
+    readonly error: string | readonly RuntimeError[],
+    readonly debugMessage: string | null
 }
 
 export interface RuntimeDebugEntry {

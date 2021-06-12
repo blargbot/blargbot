@@ -112,7 +112,7 @@ export class Engine {
                     ]
                 }
             });
-            return context.addError('An internal server error has occurred', bbtag);
+            return context.addError('An internal server error has occurred', bbtag, err.message);
         }
     }
 
