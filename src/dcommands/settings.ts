@@ -1,6 +1,6 @@
-import { EmbedOptions, Guild, Message } from 'eris';
+import { EmbedOptions, Guild } from 'eris';
 import { Cluster } from '../cluster';
-import { BaseCommand } from '../core/command';
+import { BaseCommand, CommandContext } from '../core/command';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '../utils';
 
 export class SettingsCommand extends BaseCommand {
@@ -13,7 +13,7 @@ export class SettingsCommand extends BaseCommand {
                 subcommands: {
                     'list': {
                         parameters: '',
-                        execute: message => this.list(message),
+                        execute: ctx => this.list(ctx),
                         description: 'Gets the current settings for this guild'
                     },
                     'keys': {
@@ -24,23 +24,23 @@ export class SettingsCommand extends BaseCommand {
                     'set': {
                         parameters: '{key} {value*}',
                         description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
-                        execute: (message, [setting, value]) => this.set(message, setting, value.join(' '))
+                        execute: (ctx, [setting, value]) => this.set(ctx, setting, value.join(' '))
                     }
                 }
             }
         });
     }
 
-    private async list(message: Message): Promise<string | { embed: EmbedOptions }> {
-        if (!guard.isGuildMessage(message))
+    private async list(context: CommandContext): Promise<string | { embed: EmbedOptions }> {
+        if (!guard.isGuildCommandContext(context))
             return '❌ Settings are only available in a guild';
 
-        const storedGuild = await this.database.guilds.get(message.channel.guild.id);
+        const storedGuild = await this.database.guilds.get(context.channel.guild.id);
         if (!storedGuild)
             return '❌ Your guild is not correctly configured yet! Please try again later';
 
         const settings = storedGuild.settings;
-        const guild = message.channel.guild;
+        const guild = context.channel.guild;
 
         return {
             embed: {
@@ -103,19 +103,19 @@ export class SettingsCommand extends BaseCommand {
         };
     }
 
-    private async set(message: Message, setting: string, value: string): Promise<string> {
-        if (!guard.isGuildMessage(message))
+    private async set(context: CommandContext, setting: string, value: string): Promise<string> {
+        if (!guard.isGuildCommandContext(context))
             return '❌ Settings are only available in a guild';
 
         const key = setting.toLowerCase();
         if (!guard.isGuildSetting(key))
             return '❌ Invalid key!';
 
-        const parsed = await parse.guildSetting(message, this.util, key, value);
+        const parsed = await parse.guildSetting(context, this.util, key, value);
         if (!parsed.success)
             return `❌ '${value}' is not a ${guildSettings[key]?.type}`;
 
-        if (!await this.database.guilds.setSetting(message.channel.guild.id, key, parsed.value))
+        if (!await this.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
             return '❌ Failed to set';
 
         return `✅ ${guildSettings[key]?.name} is set to ${parsed.display}`;

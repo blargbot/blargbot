@@ -1,10 +1,10 @@
-import { EmbedField, EmbedOptions, Message, MessageFile, User } from 'eris';
+import { EmbedField, EmbedOptions, MessageFile, User } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster, ClusterUtilities } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
 import { ExecutionResult, limits } from '../core/bbtag';
-import { BaseCommand } from '../core/command';
+import { BaseCommand, CommandContext } from '../core/command';
 import { StoredTag } from '../core/database';
 import { bbtagUtil, codeBlock, commandTypes, guard, humanize, parse } from '../utils';
 
@@ -19,76 +19,76 @@ export class TagCommand extends BaseCommand {
                 + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
             definition: {
                 parameters: '{tagName} {args*}',
-                execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 1) ?? '', false),
+                execute: (ctx, [tagName]) => this.runTag(ctx, tagName, ctx.argRange(1, true), false),
                 subcommands: {
                     'test|eval|exec|vtest': {
                         parameters: 'debug? {code+}',
-                        execute: (msg, [debug], _, raw) => this.runRaw(msg, humanize.smartSplitSkip(raw, debug === undefined ? 1 : 2) ?? '', '', debug !== undefined),
+                        execute: (ctx, [debug]) => this.runRaw(ctx, ctx.argRange(debug === undefined ? 1 : 2, true), '', debug !== undefined),
                         description: ''
                     },
                     'debug': {
                         parameters: '{tagName} {args*}',
-                        execute: (msg, [tagName], _, raw) => this.runTag(msg, tagName, humanize.smartSplitSkip(raw, 2) ?? '', true),
+                        execute: (ctx, [tagName]) => this.runTag(ctx, tagName, ctx.argRange(2, true), true),
                         description: ''
                     },
                     'create|add': {
                         parameters: '{tagName?} {content*}',
-                        execute: (msg, [tagName], _, raw) => this.createTag(msg, tagName, humanize.smartSplitSkip(raw, 2)),
+                        execute: (ctx, [tagName]) => this.createTag(ctx, tagName, ctx.argRange(2, true)),
                         description: 'Creates a new tag with the content you give'
                     },
                     'edit': {
                         parameters: '{tagName?} {content*}',
-                        execute: (msg, [tagName], _, raw) => this.editTag(msg, tagName, humanize.smartSplitSkip(raw, 2)),
+                        execute: (ctx, [tagName]) => this.editTag(ctx, tagName, ctx.argRange(2, true)),
                         description: 'Edits an existing tag to have the content you specify'
                     },
                     'set': {
                         parameters: '{tagName?} {content*}',
-                        execute: (msg, [tagName], _, raw) => this.setTag(msg, tagName, humanize.smartSplitSkip(raw, 2)),
+                        execute: (ctx, [tagName]) => this.setTag(ctx, tagName, ctx.argRange(2, true)),
                         description: 'Sets the tag to have the content you specify. If the tag doesnt exist it will be created.'
                     },
                     'delete|remove': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => this.deleteTag(msg, tagName),
+                        execute: (ctx, [tagName]) => this.deleteTag(ctx, tagName),
                         description: 'Deletes an existing tag'
                     },
                     'rename': {
                         parameters: '{oldName?} {newName?}',
-                        execute: (msg, [oldName, newName]) => this.renameTag(msg, oldName, newName),
+                        execute: (ctx, [oldName, newName]) => this.renameTag(ctx, oldName, newName),
                         description: 'Renames the tag'
                     },
                     'raw': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => this.getRawTag(msg, tagName),
+                        execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName),
                         description: ''
                     },
                     'list': {
                         parameters: '{author*}',
-                        execute: (msg, [author]) => this.listTags(msg, author.join('')),
+                        execute: (ctx, [author]) => this.listTags(ctx, author.join('')),
                         description: ''
                     },
                     'search': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => this.searchTags(msg, tagName),
+                        execute: (ctx, [tagName]) => this.searchTags(ctx, tagName),
                         description: ''
                     },
                     'permdelete': {
                         parameters: '{tagName} {reason+}',
-                        execute: (msg, [tagName, reason]) => this.disableTag(msg, tagName, reason.join(' ')),
+                        execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName, reason.join(' ')),
                         description: ''
                     },
                     'cooldown': {
                         parameters: '{tagName} {duration?:duration}',
-                        execute: (msg, [tagName, duration]) => this.setTagCooldown(msg, tagName, duration),
+                        execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName, duration),
                         description: ''
                     },
                     'author': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => this.getTagAuthor(msg, tagName),
+                        execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName),
                         description: ''
                     },
                     'info': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => this.getTagInfo(msg, tagName),
+                        execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName),
                         description: ''
                     },
                     'top': {
@@ -98,30 +98,30 @@ export class TagCommand extends BaseCommand {
                     },
                     'favourite|favorite|favourites|favorites': {
                         parameters: '{tagName?}',
-                        execute: (msg, [tagName]) => typeof tagName === 'string'
-                            ? this.toggleFavouriteTag(msg, tagName)
-                            : this.listFavouriteTags(msg),
+                        execute: (ctx, [tagName]) => typeof tagName === 'string'
+                            ? this.toggleFavouriteTag(ctx, tagName)
+                            : this.listFavouriteTags(ctx),
                         description: ''
                     },
                     'report': {
                         parameters: '{tagName} {reason*}',
-                        execute: (msg, [tagName, reason]) => this.reportTag(msg, tagName, reason.join(' ')),
+                        execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName, reason.join(' ')),
                         description: ''
                     },
                     'flag|flags': {
                         parameters: '{tagName}',
-                        execute: (msg, [tagName]) => this.getTagFlags(msg, tagName),
+                        execute: (ctx, [tagName]) => this.getTagFlags(ctx, tagName),
                         description: 'Lists the flags the tag accepts',
                         subcommands: {
                             'create|add': {
                                 parameters: '{tagName} {flags+}',
-                                execute: (msg, [tagName, flags]) => this.addTagFlags(msg, tagName, flags),
+                                execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName, flags),
                                 description: 'Adds multiple flags to your tag. Flags should be of the form `-<f> <flag> [flag description]`\n' +
                                     'e.g. `b!t flags add mytag -c category The category you want to use -n name Your name`'
                             },
                             'delete|remove': {
                                 parameters: '{tagName} {flags+}',
-                                execute: (msg, [tagName, flags]) => this.removeTagFlags(msg, tagName, flags),
+                                execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName, flags),
                                 description: 'Removes multiple flags from your tag. Flags should be of the form `-<f>`\n' +
                                     'e.g. `b!t flags remove mytag -c -n`'
                             }
@@ -129,7 +129,7 @@ export class TagCommand extends BaseCommand {
                     },
                     'setlang': {
                         parameters: '{tagName} {language}',
-                        execute: (msg, [tagName, language]) => this.setTagLanguage(msg, tagName, language),
+                        execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName, language),
                         description: ''
                     }
                 }
@@ -139,26 +139,26 @@ export class TagCommand extends BaseCommand {
     }
 
     public async runTag(
-        message: Message,
+        context: CommandContext,
         tagName: string,
         input: string,
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
-        if (!guard.isGuildMessage(message))
+        if (!guard.isGuildCommandContext(context))
             return '❌ Tags can only be run on guilds.';
 
-        const match = await this.requestReadableTag(message, tagName, false);
+        const match = await this.requestReadableTag(context, tagName, false);
         if (typeof match !== 'object')
             return match;
 
-        if (debug && match.author !== message.author.id)
+        if (debug && match.author !== context.author.id)
             return '❌ You cannot debug someone elses tag.';
 
         await this.database.tags.incrementUses(match.name, 1);
 
         const args = humanize.smartSplit(input);
         const result = await this.cluster.bbtag.execute(match.content, {
-            message: message,
+            message: context.message,
             input: args,
             isCC: false,
             limit: new limits.TagLimit(),
@@ -173,50 +173,50 @@ export class TagCommand extends BaseCommand {
     }
 
     public async runRaw(
-        message: Message,
+        context: CommandContext,
         content: string,
         input: string,
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
-        if (!guard.isGuildMessage(message))
+        if (!guard.isGuildCommandContext(context))
             return '❌ Tags can only be run on guilds.';
 
         const args = humanize.smartSplit(input);
         const result = await this.cluster.bbtag.execute(content, {
-            message: message,
+            message: context.message,
             input: args,
             isCC: false,
             limit: new limits.TagLimit(),
             tagName: 'test',
-            author: message.author.id
+            author: context.author.id
         });
 
         return debug ? createDebugOutput('test', content, args, result) : undefined;
     }
 
-    public async createTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestCreatableTag(message, tagName);
+    public async createTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+        const match = await this.requestCreatableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
-        return await this.saveTag(message, 'set', match.name, content, undefined);
+        return await this.saveTag(context, 'set', match.name, content, undefined);
     }
 
-    public async editTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestEditableTag(message, tagName);
+    public async editTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+        const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
-        return await this.saveTag(message, 'set', match.name, content, match);
+        return await this.saveTag(context, 'set', match.name, content, match);
     }
 
-    public async deleteTag(message: Message, tagName: string | undefined): Promise<string | undefined> {
-        const match = await this.requestEditableTag(message, tagName);
+    public async deleteTag(context: CommandContext, tagName: string | undefined): Promise<string | undefined> {
+        const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
         await this.database.tags.delete(match.name);
-        void this.logChange(TagChangeAction.DELETE, message.author, message.id, {
+        void this.logChange(TagChangeAction.DELETE, context.author, context.id, {
             author: `${(await this.database.users.get(match.author))?.username} (${match.author})`,
             tag: match.name,
             content: match.content
@@ -224,20 +224,20 @@ export class TagCommand extends BaseCommand {
         return `✅ The \`${match.name}\` tag is gone forever!`;
     }
 
-    public async setTag(message: Message, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        const match = await this.requestSettableTag(message, tagName);
+    public async setTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+        const match = await this.requestSettableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
-        return await this.saveTag(message, 'set', match.name, content, match.tag);
+        return await this.saveTag(context, 'set', match.name, content, match.tag);
     }
 
-    public async renameTag(message: Message, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
-        const from = await this.requestEditableTag(message, oldName);
+    public async renameTag(context: CommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
+        const from = await this.requestEditableTag(context, oldName);
         if (typeof from !== 'object')
             return from;
 
-        const to = await this.requestCreatableTag(message, newName);
+        const to = await this.requestCreatableTag(context, newName);
         if (typeof to !== 'object')
             return to;
 
@@ -247,15 +247,15 @@ export class TagCommand extends BaseCommand {
             name: to.name
         });
 
-        void this.logChange(TagChangeAction.RENAME, message.author, message.id, {
+        void this.logChange(TagChangeAction.RENAME, context.author, context.id, {
             oldName: from.name,
             newName: to.name
         });
         return `✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`;
     }
 
-    public async getRawTag(message: Message, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
-        const match = await this.requestReadableTag(message, tagName);
+    public async getRawTag(context: CommandContext, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
+        const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -271,10 +271,10 @@ export class TagCommand extends BaseCommand {
             };
     }
 
-    public async listTags(message: Message, author?: string): Promise<string | undefined> {
+    public async listTags(context: CommandContext, author?: string): Promise<string | undefined> {
         const args: Parameters<ClusterUtilities['displayPaged']> = [
-            message.channel,
-            message.author,
+            context.channel,
+            context.author,
             ' tags',
             async (skip, take) => await this.database.tags.list(skip, take),
             async () => await this.database.tags.count(),
@@ -283,7 +283,7 @@ export class TagCommand extends BaseCommand {
         ];
 
         if (author) {
-            const user = await this.util.getUser(message, author);
+            const user = await this.util.getUser(context, author);
             if (!user)
                 return;
 
@@ -299,16 +299,16 @@ export class TagCommand extends BaseCommand {
         }
     }
 
-    public async searchTags(message: Message, query?: string): Promise<string | undefined> {
+    public async searchTags(context: CommandContext, query?: string): Promise<string | undefined> {
         if (query === undefined || query?.length === 0)
-            query = (await this.util.awaitQuery(message.channel, message.author, 'What would you like to search for?'))?.content;
+            query = (await this.util.awaitQuery(context.channel, context.author, 'What would you like to search for?'))?.content;
         if (query === undefined || query?.length === 0)
             return;
 
         const _query = query;
         const result = await this.util.displayPaged(
-            message.channel,
-            message.author,
+            context.channel,
+            context.author,
             ` tags matching \`${query}\``,
             (skip, take) => this.database.tags.search(_query, skip, take),
             () => this.database.tags.searchCount(_query),
@@ -322,18 +322,18 @@ export class TagCommand extends BaseCommand {
         }
     }
 
-    public async disableTag(message: Message, tagName: string, reason: string): Promise<string | undefined> {
+    public async disableTag(context: CommandContext, tagName: string, reason: string): Promise<string | undefined> {
         tagName = normalizeName(tagName);
-        if (!await this.database.tags.disable(tagName, message.author.id, reason))
+        if (!await this.database.tags.disable(tagName, context.author.id, reason))
             return `❌ The \`${tagName}\` tag doesn\'t exist!`;
         return `✅ The \`${tagName}\` tag has been deleted`;
     }
 
-    public async setTagCooldown(message: Message, tagName: string, cooldown?: Duration): Promise<string | undefined> {
+    public async setTagCooldown(context: CommandContext, tagName: string, cooldown?: Duration): Promise<string | undefined> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return '❌ The cooldown must be greater than 0ms';
 
-        const match = await this.requestEditableTag(message, tagName);
+        const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -342,8 +342,8 @@ export class TagCommand extends BaseCommand {
         return `✅ The \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
 
-    public async getTagAuthor(message: Message, tagName: string | undefined): Promise<string | undefined> {
-        const match = await this.requestReadableTag(message, tagName);
+    public async getTagAuthor(context: CommandContext, tagName: string | undefined): Promise<string | undefined> {
+        const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -358,8 +358,8 @@ export class TagCommand extends BaseCommand {
         return response.join(' ');
     }
 
-    public async getTagInfo(message: Message, tagName: string | undefined): Promise<string | SendPayload | undefined> {
-        const match = await this.requestReadableTag(message, tagName);
+    public async getTagInfo(context: CommandContext, tagName: string | undefined): Promise<string | SendPayload | undefined> {
+        const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -370,8 +370,8 @@ export class TagCommand extends BaseCommand {
             color: 978212,
             timestamp: new Date(),
             footer: {
-                text: humanize.fullName(message.author),
-                icon_url: message.author.avatarURL
+                text: humanize.fullName(context.author),
+                icon_url: context.author.avatarURL
             }
         };
 
@@ -425,13 +425,13 @@ export class TagCommand extends BaseCommand {
         return result.join('\n');
     }
 
-    public async toggleFavouriteTag(message: Message, tagName: string): Promise<string | undefined> {
-        const match = await this.requestReadableTag(message, tagName);
+    public async toggleFavouriteTag(context: CommandContext, tagName: string): Promise<string | undefined> {
+        const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
-        const isFavourited = !match.favourites?.[message.author.id];
-        await this.database.tags.setFavourite(match.name, message.author.id, isFavourited);
+        const isFavourited = !match.favourites?.[context.author.id];
+        await this.database.tags.setFavourite(match.name, context.author.id, isFavourited);
         return isFavourited
             ? `✅ The \`${match.name}\` tag is now on your favourites list!\n\n` +
             'Note: there is no way for a tag to tell if you\'ve favourited it, and thus it\'s impossible to give rewards for favouriting.\n' +
@@ -439,19 +439,19 @@ export class TagCommand extends BaseCommand {
             : `✅ The \`${match.name}\` tag is no longer on your favourites list!`;
     }
 
-    public async listFavouriteTags(message: Message): Promise<string> {
-        const tags = await this.database.tags.getFavourites(message.author.id);
+    public async listFavouriteTags(context: CommandContext): Promise<string> {
+        const tags = await this.database.tags.getFavourites(context.author.id);
         if (tags.length === 0)
             return 'You have no favourite tags!';
         return `You have ${tags.length} favourite tag${tags.length === 1 ? '' : 's'}. ${codeBlock(tags.join(', '), 'fix')}`;
     }
 
-    public async reportTag(message: Message, tagName: string, reason: string | undefined): Promise<string | undefined> {
-        const match = await this.requestReadableTag(message, tagName);
+    public async reportTag(context: CommandContext, tagName: string, reason: string | undefined): Promise<string | undefined> {
+        const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
-        const user = await this.database.users.get(message.author.id);
+        const user = await this.database.users.get(context.author.id);
         if (user === undefined)
             return '❌ Sorry, you cannot report tags at this time. Please try again later!';
 
@@ -462,24 +462,24 @@ export class TagCommand extends BaseCommand {
         if (reason === undefined) {
             if (user.reports?.[match.name] !== undefined) {
                 await this.database.tags.incrementReports(match.name, -1);
-                await this.database.users.setTagReport(message.author.id, match.name, undefined);
+                await this.database.users.setTagReport(context.author.id, match.name, undefined);
                 return `✅ The \`${match.name}\` tag is no longer being reported by you.`;
             }
-            reason = (await this.util.awaitQuery(message.channel, message.author, 'Please provide a reason for your report or type `c` to cancel:'))?.content;
+            reason = (await this.util.awaitQuery(context.channel, context.author, 'Please provide a reason for your report or type `c` to cancel:'))?.content;
             if (reason === undefined || reason === 'c')
                 return;
         }
 
         if (user.reports?.[match.name] !== undefined)
             await this.database.tags.incrementReports(match.name, 1);
-        await this.database.users.setTagReport(message.author.id, match.name, reason);
+        await this.database.users.setTagReport(context.author.id, match.name, reason);
         await this.util.send(this.config.discord.channels.tagreports,
-            `**${humanize.fullName(message.author)}** has reported the tag: ${match.name}\n\n${reason}`);
+            `**${humanize.fullName(context.author)}** has reported the tag: ${match.name}\n\n${reason}`);
         return `✅ The \`${match.name}\` tag has been reported.`;
     }
 
-    public async getTagFlags(message: Message, tagName: string): Promise<string | undefined> {
-        const match = await this.requestReadableTag(message, tagName);
+    public async getTagFlags(context: CommandContext, tagName: string): Promise<string | undefined> {
+        const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -490,8 +490,8 @@ export class TagCommand extends BaseCommand {
         return `The \`${match.name}\` tag has the following flags:\n\n${flags.join('\n')}`;
     }
 
-    public async addTagFlags(message: Message, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
-        const match = await this.requestEditableTag(message, tagName);
+    public async addTagFlags(context: CommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+        const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -518,8 +518,8 @@ export class TagCommand extends BaseCommand {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async removeTagFlags(message: Message, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
-        const match = await this.requestEditableTag(message, tagName);
+    public async removeTagFlags(context: CommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+        const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -532,8 +532,8 @@ export class TagCommand extends BaseCommand {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async setTagLanguage(message: Message, tagName: string, language: string): Promise<string | undefined> {
-        const match = await this.requestEditableTag(message, tagName);
+    public async setTagLanguage(context: CommandContext, tagName: string, language: string): Promise<string | undefined> {
+        const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
@@ -541,8 +541,8 @@ export class TagCommand extends BaseCommand {
         return `✅ Lang for tag \`${match.name}\` set.`;
     }
 
-    private async saveTag(message: Message, operation: string, tagName: string, content: string | undefined, oldTag?: DeepReadOnly<StoredTag>): Promise<string | undefined> {
-        content = await this.requestTagContent(message, content);
+    private async saveTag(context: CommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: DeepReadOnly<StoredTag>): Promise<string | undefined> {
+        content = await this.requestTagContent(context, content);
         if (content === undefined)
             return;
 
@@ -553,8 +553,8 @@ export class TagCommand extends BaseCommand {
 
         await this.database.tags.set({
             name: tagName,
-            author: message.author.id,
-            authorizer: oldTag?.authorizer ?? message.author.id,
+            author: context.author.id,
+            authorizer: oldTag?.authorizer ?? context.author.id,
             content,
             lastmodified: new Date(),
             uses: oldTag?.uses ?? 0,
@@ -562,7 +562,7 @@ export class TagCommand extends BaseCommand {
             lang: oldTag?.lang ?? ''
         });
 
-        void this.logChange(oldTag ? TagChangeAction.EDIT : TagChangeAction.CREATE, message.author, message.id, {
+        void this.logChange(oldTag ? TagChangeAction.EDIT : TagChangeAction.CREATE, context.author, context.id, {
             tag: tagName,
             content
         });
@@ -570,7 +570,7 @@ export class TagCommand extends BaseCommand {
         return `✅ Tag \`${tagName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`;
     }
 
-    private async requestTagName(message: Message, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {
+    private async requestTagName(context: CommandContext, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {
         if (name !== undefined) {
             name = normalizeName(name);
             if (name.length > 0)
@@ -580,7 +580,7 @@ export class TagCommand extends BaseCommand {
         if (query.length === 0)
             return undefined;
 
-        name = (await this.util.awaitQuery(message.channel, message.author, query))?.content;
+        name = (await this.util.awaitQuery(context.channel, context.author, query))?.content;
         if (name === undefined || name === 'c')
             return undefined;
 
@@ -588,11 +588,11 @@ export class TagCommand extends BaseCommand {
         return name.length > 0 ? name : undefined;
     }
 
-    private async requestTagContent(message: Message, content: string | undefined): Promise<string | undefined> {
+    private async requestTagContent(context: CommandContext, content: string | undefined): Promise<string | undefined> {
         if (content !== undefined && content.length > 0)
             return content;
 
-        content = (await this.util.awaitQuery(message.channel, message.author, 'Enter the tag\'s contents or type `c` to cancel:'))?.content;
+        content = (await this.util.awaitQuery(context.channel, context.author, 'Enter the tag\'s contents or type `c` to cancel:'))?.content;
         if (content === undefined || content === 'c')
             return undefined;
 
@@ -600,17 +600,17 @@ export class TagCommand extends BaseCommand {
     }
 
     private async requestSettableTag(
-        message: Message,
+        context: CommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
-        const match = await this.requestTag(message, tagName, allowQuery);
+        const match = await this.requestTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
-        if (message.author.id !== this.config.discord.users.owner
+        if (context.author.id !== this.config.discord.users.owner
             && match.tag !== undefined
-            && match.tag.author !== message.author.id) {
+            && match.tag.author !== context.author.id) {
             return `❌ You don\'t own the \`${match.name}\` tag!`;
         }
 
@@ -618,11 +618,11 @@ export class TagCommand extends BaseCommand {
     }
 
     private async requestEditableTag(
-        message: Message,
+        context: CommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
-        const match = await this.requestSettableTag(message, tagName, allowQuery);
+        const match = await this.requestSettableTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -633,11 +633,11 @@ export class TagCommand extends BaseCommand {
     }
 
     private async requestReadableTag(
-        message: Message,
+        context: CommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<DeepReadOnly<StoredTag> | string | undefined> {
-        const match = await this.requestTag(message, tagName, allowQuery);
+        const match = await this.requestTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -648,11 +648,11 @@ export class TagCommand extends BaseCommand {
     }
 
     private async requestCreatableTag(
-        message: Message,
+        context: CommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string } | string | undefined> {
-        const match = await this.requestTag(message, tagName, allowQuery);
+        const match = await this.requestTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
@@ -663,11 +663,11 @@ export class TagCommand extends BaseCommand {
     }
 
     private async requestTag(
-        message: Message,
+        context: CommandContext,
         tagName: string | undefined,
         allowQuery: boolean
     ): Promise<{ name: string, tag?: DeepReadOnly<StoredTag> } | string | undefined> {
-        tagName = await this.requestTagName(message, tagName, allowQuery ? undefined : '');
+        tagName = await this.requestTagName(context, tagName, allowQuery ? undefined : '');
         if (tagName === undefined)
             return;
 

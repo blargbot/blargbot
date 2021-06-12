@@ -1,4 +1,4 @@
-import { Message } from 'eris';
+import { Channel, Message, Textable } from 'eris';
 import { ClusterUtilities } from '../../cluster';
 import { StoredGuildSettings } from '../../core/database';
 import { guildSettings } from '../constants';
@@ -7,7 +7,7 @@ import { boolean } from './boolean';
 import { int } from './int';
 
 export async function guildSetting<T extends keyof StoredGuildSettings>(
-    msg: Message,
+    msg: Pick<Message<Textable & Channel>, 'channel' | 'author'>,
     util: ClusterUtilities,
     key: T,
     raw: string
@@ -50,7 +50,7 @@ export async function guildSetting<T extends keyof StoredGuildSettings>(
             };
         }
         case 'role': {
-            if (!guard.isGuildMessage(msg))
+            if (!guard.isGuildRelated(msg))
                 return { success: false };
             const role = await util.getRole(msg, raw);
             return {

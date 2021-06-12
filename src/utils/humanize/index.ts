@@ -2,7 +2,7 @@ import { duration } from './duration';
 import { fullName } from './fullName';
 import { channelName } from './channelName';
 import { smartJoin } from './smartJoin';
-import { smartSplit, smartSplitSkip } from './smartSplit';
+import { smartSplit, smartSplitRanges } from './smartSplit';
 import { truncate } from './truncate';
 import { flags } from './flags';
 
@@ -12,7 +12,7 @@ export const humanize = {
     channelName,
     smartJoin,
     smartSplit,
-    smartSplitSkip,
+    smartSplitRanges,
     truncate,
     flags
 };

@@ -1,4 +1,4 @@
-import { Message } from 'eris';
+import { Channel, Message, Textable } from 'eris';
 import { EventEmitter } from 'eventemitter3';
 
 export class MessageAwaiter {
@@ -11,7 +11,7 @@ export class MessageAwaiter {
         this.#events = new EventEmitter();
     }
 
-    public emit(message: Message): boolean {
+    public emit(message: Message<Textable & Channel>): boolean {
         return this.#events.emit(message.channel.id, message);
     }
 

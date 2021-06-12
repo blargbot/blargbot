@@ -14,7 +14,7 @@ export class ClusterMonitor extends IntervalService {
         super(10000, master.logger);
     }
 
-    public async execute(cluster?: ClusterConnection): Promise<void> {
+    public execute(cluster?: ClusterConnection): void {
         if (cluster === undefined) {
             return this.master.clusters.forEach((_, cluster) =>
                 cluster ? this.execute(cluster) : undefined);
@@ -45,7 +45,7 @@ export class ClusterMonitor extends IntervalService {
             return;
 
         statsTracker?.clear(cluster.id);
-        await this.master.discord.createMessage(this.master.config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n${alerts.join('\n')}`);
-        await this.master.clusters.spawn(cluster.id);
+        void this.master.discord.createMessage(this.master.config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n${alerts.join('\n')}`);
+        void this.master.clusters.spawn(cluster.id);
     }
 }

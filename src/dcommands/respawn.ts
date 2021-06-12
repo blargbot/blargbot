@@ -1,7 +1,6 @@
-import { Message } from 'eris';
 import { Cluster } from '../cluster';
 import { commandTypes, humanize } from '../utils';
-import { BaseCommand } from '../core/command';
+import { BaseCommand, CommandContext } from '../core/command';
 import { ClusterRespawnRequest } from '../workers/ClusterTypes';
 
 export class RespawnCommand extends BaseCommand {
@@ -15,19 +14,19 @@ export class RespawnCommand extends BaseCommand {
             info: 'Cluster respawning only for staff.',
             definition: {
                 parameters: '{clusterId:integer}',
-                execute: (msg, [clusterId]) => this.respawn(msg, clusterId),
+                execute: (ctx, [clusterId]) => this.respawn(ctx, clusterId),
                 description: 'Respawns the cluster specified'
             }
         });
     }
 
-    public async respawn(msg: Message, clusterId?: number): Promise<void> {
+    public async respawn(context: CommandContext, clusterId?: number): Promise<void> {
         const police = await this.cluster.database.vars.get('police');
-        if (police?.value.includes(msg.author.id) !== true)
+        if (police?.value.includes(context.author.id) !== true)
             return;
 
-        await this.util.send(this.config.discord.channels.shardlog, `**${humanize.fullName(msg.author)}** has called for a respawn of cluster ${clusterId}.`);
-        this.cluster.worker.send('respawn', <ClusterRespawnRequest>{ id: clusterId, channel: msg.channel.id });
-        await this.util.send(msg, `ok cluster ${clusterId} is being respawned and stuff now`);
+        await this.util.send(this.config.discord.channels.shardlog, `**${humanize.fullName(context.author)}** has called for a respawn of cluster ${clusterId}.`);
+        this.cluster.worker.send('respawn', <ClusterRespawnRequest>{ id: clusterId, channel: context.channel.id });
+        await this.util.send(context, `ok cluster ${clusterId} is being respawned and stuff now`);
     }
 }

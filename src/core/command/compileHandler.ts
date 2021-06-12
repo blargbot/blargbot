@@ -20,9 +20,9 @@ export function compileHandler(definition: CommandDefinition, flagDefinitions: D
     const tree = buildTree(definition, flagDefinitions);
     return {
         signatures: [...buildUsage(tree)],
-        execute: (message, args, raw) => {
+        execute: (context) => {
             let node = tree;
-            args: for (const arg of args) {
+            args: for (const arg of context.args) {
                 // TODO improve traversal here
                 const switched = node.switch[arg.toLowerCase()];
                 if (switched) {
@@ -36,7 +36,7 @@ export function compileHandler(definition: CommandDefinition, flagDefinitions: D
                     }
                 }
                 if (node.handler)
-                    return node.handler.execute(message, args, raw);
+                    return node.handler.execute(context, context.args);
 
                 const expected = [...buildUsage(node)].map(u => `\`${u[0].display}\``);
                 return `❌ Invalid arguments! Expected ${humanize.smartJoin(expected, ', ', ' or ')} but got \`${arg}\``;
@@ -44,7 +44,7 @@ export function compileHandler(definition: CommandDefinition, flagDefinitions: D
             }
 
             if (node.handler)
-                return node.handler.execute(message, args, raw);
+                return node.handler.execute(context, context.args);
 
             const expected = [...buildUsage(node)].map(u => `\`${u[0].display}\``);
             return `❌ Not enough arguments! Expected ${humanize.smartJoin(expected, ', ', ' or ')}`;
@@ -128,12 +128,12 @@ function populateTree(
         tree.handler = {
             description: definition.description,
             parameters,
-            execute: (message, args, raw) => {
+            execute: (context, args) => {
                 const flags = parse.flags(flagDefinitions, args, strictFlags);
                 const boundArgs = binder(getArgs(args, flags));
                 return typeof boundArgs === 'string'
                     ? boundArgs
-                    : definition.execute(message, boundArgs, flags, raw);
+                    : definition.execute(context, boundArgs, flags);
             }
         };
     }

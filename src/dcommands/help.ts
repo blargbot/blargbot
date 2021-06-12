@@ -1,7 +1,7 @@
-import { EmbedField, GuildTextableChannel, Message } from 'eris';
+import { EmbedField, GuildChannel, Textable } from 'eris';
 import { Cluster } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
-import { BaseCommand } from '../core/command';
+import { BaseCommand, CommandContext } from '../core/command';
 import { StoredGuildCommand } from '../core/database';
 import { codeBlock, CommandType, commandTypes, guard, humanize } from '../utils';
 
@@ -12,7 +12,7 @@ export class HelpCommand extends BaseCommand {
             category: CommandType.GENERAL,
             definition: {
                 description: 'Shows a list of all the available commands',
-                execute: (msg) => this.listCommands(msg),
+                execute: (ctx) => this.listCommands(ctx),
                 subcommands: {
                     '{commandName}': {
                         description: 'Shows the help text for the given command',
@@ -23,7 +23,7 @@ export class HelpCommand extends BaseCommand {
         });
     }
 
-    public async listCommands(message: Message): Promise<SendPayload> {
+    public async listCommands(context: CommandContext): Promise<SendPayload> {
         const fields: EmbedField[] = [];
 
         let getCommandGroups = (command: BaseCommand): Promise<readonly string[]> =>
@@ -31,21 +31,21 @@ export class HelpCommand extends BaseCommand {
 
         let prefix = this.config.discord.defaultPrefix;
         const customCommands = new Map<string, DeepReadOnly<StoredGuildCommand> | undefined>();
-        if (guard.isGuildMessage(message)) {
-            for (const command of await this.database.guilds.listCommands(message.channel.guild.id)) {
-                if (!await this.util.canExecuteCustomCommand(message, command, true))
+        if (guard.isGuildCommandContext(context)) {
+            for (const command of await this.database.guilds.listCommands(context.channel.guild.id)) {
+                if (!await this.util.canExecuteCustomCommand(context, command, true))
                     customCommands.set(command.name, undefined);
                 else
                     customCommands.set(command.name, command);
             }
-            let prefixes = await this.database.guilds.getSetting(message.channel.guild.id, 'prefix');
+            let prefixes = await this.database.guilds.getSetting(context.channel.guild.id, 'prefix');
             if (typeof prefixes === 'string')
                 prefixes = [prefixes];
             if (prefixes !== undefined)
                 prefix = prefixes[0];
 
             getCommandGroups = async (command) => {
-                const perms = await this.database.guilds.getCommandPerms(message.channel.guild.id, command.name);
+                const perms = await this.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
                 const roles = perms?.rolename;
                 switch (typeof roles) {
                     case 'string': return [roles];
@@ -57,7 +57,7 @@ export class HelpCommand extends BaseCommand {
 
         const commandGroups = new Map<string, Set<string>>();
         for (const command of this.cluster.commands.list()) {
-            if (!await this.util.canExecuteDefaultCommand(message, command, true))
+            if (!await this.util.canExecuteDefaultCommand(context, command, true))
                 continue;
 
             const commandName = command.names.find(n => !customCommands.has(n));
@@ -102,23 +102,23 @@ export class HelpCommand extends BaseCommand {
         };
     }
 
-    public async viewCommand(message: Message, commandName: string): Promise<SendPayload> {
+    public async viewCommand(context: CommandContext, commandName: string): Promise<SendPayload> {
 
-        if (guard.isGuildMessage(message)) {
-            const command = await this.database.guilds.getCommand(message.channel.guild.id, commandName);
+        if (guard.isGuildCommandContext(context)) {
+            const command = await this.database.guilds.getCommand(context.channel.guild.id, commandName);
             if (command !== undefined)
-                return this.viewCustomCommand(message, commandName, command);
+                return this.viewCustomCommand(context, commandName, command);
         }
 
         const command = this.cluster.commands.get(commandName);
         if (command !== undefined)
-            return this.viewDefaultCommand(message, command);
+            return this.viewDefaultCommand(context, command);
 
         return { content: `❌ The command \`${commandName}\` could not be found` };
     }
 
-    public async viewCustomCommand(message: Message<GuildTextableChannel>, commandName: string, command: DeepReadOnly<StoredGuildCommand>): Promise<SendPayload> {
-        if (!await this.util.canExecuteCustomCommand(message, command, true))
+    public async viewCustomCommand(context: CommandContext<Textable & GuildChannel>, commandName: string, command: DeepReadOnly<StoredGuildCommand>): Promise<SendPayload> {
+        if (!await this.util.canExecuteCustomCommand(context, command, true))
             return { content: `❌ You dont have permission to run the \`${commandName}\` command` };
 
         return {
@@ -131,8 +131,8 @@ export class HelpCommand extends BaseCommand {
         };
     }
 
-    public async viewDefaultCommand(message: Message, command: BaseCommand): Promise<SendPayload> {
-        if (!await this.util.canExecuteDefaultCommand(message, command, true))
+    public async viewDefaultCommand(context: CommandContext, command: BaseCommand): Promise<SendPayload> {
+        if (!await this.util.canExecuteDefaultCommand(context, command, true))
             return { content: `❌ You dont have permission to run the \`${command.name}\` command` };
 
         const fields: EmbedField[] = [];
@@ -362,5 +362,3 @@ export class HelpCommand extends BaseCommand {
     // };
 
 }
-
-module.exports = HelpCommand;

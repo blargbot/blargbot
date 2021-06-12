@@ -1,6 +1,6 @@
-import { Message } from 'eris';
+import { guard } from '../guard';
 import { Cluster } from '../../cluster';
-import { isGuildMessage } from '../guard/isGuildMessage';
+import { CommandContext } from '../../core/command';
 
 type CommandPropertiesSet = {
     [key in Type]: CommandProperties;
@@ -10,7 +10,7 @@ export interface CommandProperties {
     readonly name: string;
     readonly description: string;
     readonly perm?: string;
-    readonly requirement: (client: Cluster, message: Message) => boolean | Promise<boolean>;
+    readonly requirement: (client: Cluster, context: CommandContext) => boolean | Promise<boolean>;
     readonly color: number;
 }
 
@@ -64,10 +64,10 @@ export const properties: CommandPropertiesSet = {
     },
     [Type.SOCIAL]: {
         name: 'Social',
-        requirement: async (client: Cluster, msg: Message): Promise<boolean> => {
-            if (!isGuildMessage(msg))
+        requirement: async (client: Cluster, context: CommandContext): Promise<boolean> => {
+            if (!guard.isGuildCommandContext(context))
                 return false;
-            return await client.database.guilds.getSetting(msg.channel.guild.id, 'social') ?? false;
+            return await client.database.guilds.getSetting(context.channel.guild.id, 'social') ?? false;
         },
         description: 'Social commands for interacting with other people',
         color: 0xefff00
