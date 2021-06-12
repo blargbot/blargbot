@@ -137,7 +137,7 @@ bu.ccommand = {
         key = key.toLowerCase();
         if (!storedGuild || !storedGuild.ccommands[key]) return false;
         
-        storedGuild.ccomands[key].authorizer = authorizer;
+        storedGuild.ccommands[key].authorizer = authorizer;
         r.table('guild').get(guildid).replace(storedGuild).run();
         return true;
     },
