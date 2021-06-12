@@ -1,7 +1,7 @@
 import { RethinkDb } from './core/RethinkDb';
 import { User } from 'eris';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
-import { StoredUser, UserTable } from './types';
+import { StoredUser, StoredUserSettings, UserTable } from './types';
 
 export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> implements UserTable {
     public constructor(
@@ -9,6 +9,11 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         logger: CatLogger
     ) {
         super('user', 'userid', rethinkDb, logger);
+    }
+
+    public async getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<StoredUserSettings>[K] | undefined> {
+        const user = await this.rget(userId, skipCache);
+        return user?.[key];
     }
 
     public async get(userId: string, skipCache = false): Promise<DeepReadOnly<StoredUser> | undefined> {

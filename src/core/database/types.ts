@@ -251,15 +251,12 @@ export interface StoredUsername {
     date: Date
 }
 
-export interface StoredUser {
+export interface StoredUser extends StoredUserSettings {
     userid: string;
-    dontdmerrors?: boolean;
-    prefixes?: string[];
     username?: string;
     usernames: StoredUsername[];
     discriminator?: string;
     avatarURL?: string;
-    blacklisted?: boolean;
     isbot: boolean;
     lastspoke: Date;
     lastcommand?: string;
@@ -267,6 +264,12 @@ export interface StoredUser {
     todo: UserTodo[];
     reportblock?: string;
     reports?: Record<string, string>;
+}
+
+export interface StoredUserSettings {
+    dontdmerrors?: boolean;
+    prefixes?: string[];
+    blacklisted?: boolean;
 }
 
 export interface UserTodo {
@@ -343,6 +346,10 @@ export interface PostgresDbOptions {
 }
 
 export interface GuildTable {
+    getAutoresponses(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildAutoresponses>>;
+    getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<ChannelSettings>[K] | undefined>;
+    getRolemes(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildRolemeEntry[]>>;
+    getCensors(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildCensors> | undefined>;
     listCommands(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<NamedStoredGuildCommand[]>>;
     get(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredGuild> | undefined>;
     add(guild: StoredGuild): Promise<boolean>;
@@ -361,6 +368,7 @@ export interface GuildTable {
 }
 
 export interface UserTable {
+    getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<StoredUserSettings>[K] | undefined>;
     get(userId: string, skipCache?: boolean): Promise<DeepReadOnly<StoredUser> | undefined>;
     add(user: StoredUser): Promise<boolean>;
     upsert(user: User): Promise<boolean>

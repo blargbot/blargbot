@@ -1,4 +1,4 @@
-import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions } from './types';
+import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors } from './types';
 import { GuildTable } from './types';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { RethinkDb } from './core/RethinkDb';
@@ -11,6 +11,27 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         logger: CatLogger
     ) {
         super('guild', 'guildid', rethinkDb, logger);
+    }
+
+    public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildAutoresponses>> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.autoresponse ?? {};
+
+    }
+
+    public async getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<DeepReadOnly<ChannelSettings>[K] | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.channels?.[channelId]?.[key];
+    }
+
+    public async getRolemes(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildRolemeEntry[]>> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.roleme ?? [];
+    }
+
+    public async getCensors(guildId: string, skipCache?: boolean): Promise<DeepReadOnly<GuildCensors> | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.censor;
     }
 
     public async getCommandPerms(guildId: string, commandName: string, skipCache = false): Promise<DeepReadOnly<CommandPermissions> | undefined> {

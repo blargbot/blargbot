@@ -1,11 +1,11 @@
-import { AnyMessage, GuildMessage, Member, TextChannel } from 'eris';
+import { AnyMessage, GuildChannel, GuildMessage, Member, User } from 'eris';
 import { Timer } from '../../structures/Timer';
 import request from 'request';
 import { commandTypes, createRegExp, guard, ModerationType, modlogColour, parse, randInt, sleep, humanize } from '../../utils';
 import { Cluster } from '..';
 import { DiscordEventService } from '../../structures/DiscordEventService';
-import { limits } from '../../core/bbtag';
-import { ChatlogType, StoredGuild, StoredGuildCommand } from '../../core/database';
+import { limits, RuntimeLimit } from '../../core/bbtag';
+import { ChatlogType, StoredGuildCommand } from '../../core/database';
 import { metrics } from '../../core/Metrics';
 import { BaseCommand, CommandContext } from '../../core/command';
 
@@ -37,44 +37,41 @@ export class MessageCreateEventHandler extends DiscordEventService {
     }
 
     public async execute(message: AnyMessage): Promise<void> {
-        const { channel, author } = message;
-        if (channel instanceof TextChannel && channel.guild.shard.ready) {
-            metrics.messageCounter.inc();
-            void this.cluster.database.users.upsert(author);
-            const storedGuild = await this.cluster.database.guilds.get(channel.guild.id);
-            if (storedGuild?.settings?.makelogs)
-                void this.cluster.database.chatlogs.add(message, ChatlogType.CREATE);
+        void this.cluster.database.users.upsert(message.author);
+        metrics.messageCounter.inc();
 
-            if (author.id == this.cluster.discord.user.id)
-                this.handleOurMessage(message);
-            else
-                void this.handleUserMessage(message, storedGuild);
-        }
+        if (guard.isGuildMessage(message) && await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs'))
+            void this.cluster.database.chatlogs.add(message, ChatlogType.CREATE);
+
+        if (message.author.id === this.cluster.discord.user.id)
+            this.handleOurMessage(message);
+        else
+            void this.handleUserMessage(message);
     }
 
-    public async handleUserMessage(msg: AnyMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<void> {
+    public async handleUserMessage(msg: AnyMessage): Promise<void> {
         let prefix: string | undefined;
         const prefixes: string[] = [];
-        const storedUser = await this.cluster.database.users.get(msg.author.id);
-        if (storedUser && storedUser.prefixes)
-            prefixes.push(...storedUser.prefixes);
 
-        if (guard.isGuildMessage(msg) && storedGuild !== undefined) {
-            void this.handleAntiMention(msg, storedGuild);
-            void this.handleCensor(msg, storedGuild);
-            void this.handleRoleme(msg, storedGuild);
-            void this.handleAutoresponse(msg, storedGuild, true);
+        if (guard.isGuildMessage(msg)) {
+            void this.handleAntiMention(msg);
+            void this.handleCensor(msg);
+            void this.handleRoleme(msg);
+            void this.handleAutoresponse(msg, true);
             void this.handleTableflip(msg);
-            if (storedGuild.settings) {
-                if (typeof storedGuild.settings.prefix === 'string')
-                    prefixes.push(storedGuild.settings.prefix);
-                else if (storedGuild.settings.prefix !== undefined)
-                    prefixes.push(...storedGuild.settings.prefix);
-            }
+            const prefix = await this.cluster.database.guilds.getSetting(msg.channel.guild.id, 'prefix');
+            if (typeof prefix === 'string')
+                prefixes.push(prefix);
+            else if (prefix !== undefined)
+                prefixes.push(...prefix);
+
+            if (await this.isBlacklisted(msg.channel, msg.author))
+                return;
         }
 
-        if (await this.handleBlacklist(msg, storedGuild))
-            return;
+        const userPrefixes = await this.cluster.database.users.getSetting(msg.author.id, 'prefixes');
+        if (userPrefixes)
+            prefixes.push(...userPrefixes);
 
         prefixes.push(this.cluster.config.discord.defaultPrefix, this.cluster.discord.user.username);
         prefixes.sort((a, b) => b.length - a.length); //sort descending
@@ -96,32 +93,33 @@ export class MessageCreateEventHandler extends DiscordEventService {
 
         if (prefix === undefined) {
             this.cluster.util.messageAwaiter.emit(msg);
-            if (guard.isGuildMessage(msg) && storedGuild)
-                void this.handleAutoresponse(msg, storedGuild, false);
+            if (guard.isGuildMessage(msg))
+                void this.handleAutoresponse(msg, false);
             return;
         }
 
-        if (storedUser?.blacklisted) {
-            await this.cluster.util.send(msg, `You have been blacklisted from the bot for the following reason: ${storedUser.blacklisted}`);
+        const blacklistReason = await this.cluster.database.users.getSetting(msg.author.id, 'blacklisted');
+        if (blacklistReason) {
+            await this.cluster.util.send(msg, `You have been blacklisted from the bot for the following reason: ${blacklistReason}`);
             return;
         }
 
         try {
             const context = new CommandContext(msg, prefix);
             if (await this.tryHandleCustomCommand(context) || await this.tryHandleDefaultCommand(context)) {
-                if (guard.isGuildMessage(msg) && storedGuild)
-                    this.handleDeleteNotif(msg, storedGuild);
+                if (guard.isGuildMessage(msg))
+                    void this.handleDeleteNotif(msg);
                 return;
             }
 
-            if (doCleverbot && !msg.author.bot && !storedGuild?.settings?.nocleverbot) {
+            if (doCleverbot && !msg.author.bot && guard.isGuildMessage(msg) && !await this.cluster.database.guilds.getSetting(msg.channel.guild.id, 'nocleverbot')) {
                 void this.handleCleverbot(msg);
             } else {
                 this.cluster.util.messageAwaiter.emit(msg);
             }
 
-            if (guard.isGuildMessage(msg) && storedGuild)
-                void this.handleAutoresponse(msg, storedGuild, false);
+            if (guard.isGuildMessage(msg))
+                void this.handleAutoresponse(msg, false);
         } catch (err) {
             this.logger.error(err?.stack);
         }
@@ -228,17 +226,20 @@ export class MessageCreateEventHandler extends DiscordEventService {
 
 
     public handleOurMessage(msg: AnyMessage): void {
-        const log = (
-            guard.isGuildMessage(msg) ? `${msg.channel.guild.name} (${msg.channel.guild.id})> ${msg.channel.name}`
-                : guard.isPrivateMessage(msg) ? `PM> ${msg.channel.recipient.username} (${msg.channel.recipient.id})>`
-                    : ''
-        ) + ` (${msg.channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`;
-
-        this.logger.output(log);
+        const channel = msg.channel;
+        if (guard.isGuildChannel(channel)) {
+            const guild = channel.guild;
+            this.logger.output(`${guild.name} (${guild.id})> ${channel.name} (${channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
+        } else if (guard.isPrivateChannel(channel)) {
+            const recipient = channel.recipient;
+            this.logger.output(`PM> ${recipient.username} (${recipient.id})> (${channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
+        } else {
+            this.logger.output(`??> (${channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
+        }
     }
 
-    public async handleAntiMention(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
-        const antimention = storedGuild.settings?.antimention;
+    public async handleAntiMention(msg: GuildMessage): Promise<void> {
+        const antimention = await this.cluster.database.guilds.getSetting(msg.channel.guild.id, 'antimention');
         if (antimention === undefined)
             return;
 
@@ -260,8 +261,8 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleCensor(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
-        const censor = storedGuild.censor;
+    public async handleCensor(msg: GuildMessage): Promise<void> {
+        const censor = await this.cluster.database.guilds.getCensors(msg.channel.guild.id);
         if (!censor?.list?.length)
             return;
 
@@ -328,11 +329,12 @@ export class MessageCreateEventHandler extends DiscordEventService {
         }
     }
 
-    public async handleRoleme(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): Promise<void> {
-        if (!storedGuild?.roleme?.length || !msg.member)
+    public async handleRoleme(msg: GuildMessage): Promise<void> {
+        const roleme = await this.cluster.database.guilds.getRolemes(msg.channel.guild.id);
+        if (!roleme?.length || !msg.member)
             return;
 
-        const rolemes = storedGuild.roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1 || m.channels.length == 0);
+        const rolemes = roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1 || m.channels.length == 0);
         if (rolemes.length == 0)
             return;
 
@@ -382,70 +384,62 @@ export class MessageCreateEventHandler extends DiscordEventService {
         return msg.channel.guild.members.get(id) ?? null;
     }
 
-    public async handleAutoresponse(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>, everything = false): Promise<void> {
-        if (!this.#arWhitelist.has(msg.channel.guild.id) || msg.author.discriminator === '0000')
+    private async * findAutoresponses(msg: GuildMessage, everything: boolean): AsyncGenerator<{ commandName: string, limit: RuntimeLimit, silent?: boolean }> {
+        const ars = await this.cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
+        if (everything) {
+            if (ars.everything)
+                yield { commandName: ars.everything.executes, limit: new limits.EverythingAutoResponseLimit(), silent: true };
+            return;
+        }
+
+        if (ars.list === undefined)
             return;
 
-        if (storedGuild && storedGuild.autoresponse && storedGuild.ccommands) {
-            const ars = storedGuild.autoresponse;
-            if (everything) {
-                if (ars.everything && storedGuild.ccommands[ars.everything.executes]) {
-                    const tag = storedGuild.ccommands[ars.everything.executes];
-                    if (tag) {
-                        await this.cluster.bbtag.execute(tag.content, {
-                            message: msg,
-                            limit: limits.EverythingAutoResponseLimit,
-                            author: tag.author,
-                            input: humanize.smartSplit(msg.content),
-                            isCC: true,
-                            tagName: ars.everything.executes,
-                            silent: true
-                        });
-                    }
+        for (const ar of ars.list) {
+            if (ar.regex) {
+                try {
+                    const exp = createRegExp(ar.term);
+                    if (exp.exec(msg.content))
+                        yield { commandName: ar.executes, limit: new limits.GeneralAutoResponseLimit() };
+                } catch (err) {
+                    this.logger.log(err);
+                    await this.cluster.util.send(msg, 'Unsafe or invalid regex! Terminating.');
+                    return;
                 }
-            } else if (ars.list?.length) {
-                for (const ar of ars.list) {
-                    if (ar.regex) {
-                        try {
-                            const exp = createRegExp(ar.term);
-                            if (exp.exec(msg.content) === null)
-                                continue;
-                        } catch (err) {
-                            this.logger.log(err);
-                            await this.cluster.util.send(msg, 'Unsafe or invalid regex! Terminating.');
-                            return;
-                        }
-                    } else if (!msg.content.includes(ar.term))
-                        continue;
-
-                    if (storedGuild.ccommands[ar.executes]) {
-                        const tag = storedGuild.ccommands[ar.executes];
-                        if (tag) {
-                            await this.cluster.bbtag.execute(tag.content, {
-                                message: msg,
-                                limit: limits.GeneralAutoResponseLimit,
-                                author: tag.author,
-                                input: humanize.smartSplit(msg.content),
-                                isCC: true,
-                                tagName: ar.executes
-                            });
-                        }
-                    }
-                }
+            } else if (msg.content.includes(ar.term)) {
+                yield { commandName: ar.executes, limit: new limits.GeneralAutoResponseLimit() };
             }
         }
     }
 
-    public async handleBlacklist(msg: AnyMessage, storedGuild: DeepReadOnly<StoredGuild> | undefined): Promise<boolean> {
-        if (!(guard.isGuildMessage(msg) && storedGuild?.channels?.[msg.channel.id]))
-            return false;
+    public async handleAutoresponse(msg: GuildMessage, everything: boolean): Promise<void> {
+        if (!this.#arWhitelist.has(msg.channel.guild.id) || msg.author.discriminator === '0000')
+            return;
 
-        return !!storedGuild.channels[msg.channel.id]?.blacklisted
-            && !await this.cluster.util.isUserStaff(msg.author.id, msg.channel.guild.id);
+        for await (const { commandName, limit, silent = false } of this.findAutoresponses(msg, everything)) {
+            const tag = await this.cluster.database.guilds.getCommand(msg.channel.id, commandName);
+            if (tag !== undefined) {
+                await this.cluster.bbtag.execute(tag.content, {
+                    message: msg,
+                    limit,
+                    author: tag.author,
+                    input: humanize.smartSplit(msg.content),
+                    isCC: true,
+                    tagName: commandName,
+                    silent
+                });
+            }
+        }
     }
 
-    public handleDeleteNotif(msg: GuildMessage, storedGuild: DeepReadOnly<StoredGuild>): void {
-        if (parse.boolean(storedGuild.settings?.deletenotif, false, true))
+    public async isBlacklisted(channel: GuildChannel, user: User): Promise<boolean> {
+        return (await this.cluster.database.guilds.getChannelSetting(channel.guild.id, channel.id, 'blacklisted') ?? false)
+            && !await this.cluster.util.isUserStaff(user.id, channel.guild.id);
+    }
+
+    public async handleDeleteNotif(msg: GuildMessage): Promise<void> {
+        const deleteNotif = await this.cluster.database.guilds.getSetting(msg.channel.guild.id, 'deletenotif');
+        if (parse.boolean(deleteNotif, false, true))
             this.cluster.util.commandMessages.push(msg.channel.guild.id, msg.id);
     }
 

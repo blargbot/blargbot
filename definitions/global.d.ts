@@ -25,8 +25,6 @@ declare global {
 
     export type ClassOf<T> = Function & { prototype: T };
 
-    type x = DeepReadOnly<Date>;
-
     type ValueType =
         | ((...args: any) => any)
         | Date
