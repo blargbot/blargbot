@@ -201,7 +201,7 @@ export interface SubtagHandlerArgument {
 
 export interface SubtagSignatureDetails<TArgs = SubtagHandlerArgument> {
     readonly args: readonly TArgs[];
-    readonly description: string;
+    readonly description?: string;
     readonly exampleCode?: string;
     readonly exampleIn?: string;
     readonly exampleOut?: string;
