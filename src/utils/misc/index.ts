@@ -6,5 +6,7 @@ export { sleep } from './sleep';
 export { cpuLoad } from './cpuLoad';
 export { fafo } from './fafo';
 export { codeBlock } from './codeBlock';
-export { quote } from './quote';
 export { between } from './between';
+export { compare } from './compare';
+export { toBlocks } from './toBlocks';
+export { quote } from './quote';

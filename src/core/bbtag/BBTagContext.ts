@@ -128,13 +128,12 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     }
 
     public addError(error: string, subtag?: SubtagCall, debugMessage?: string): string {
-        error = `\`${error}\``;
         this.errors.push({
             subtag: subtag ?? null,
             error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}`,
             debugMessage: debugMessage ?? null
         });
-        return this.scope.fallback ?? error;
+        return this.scope.fallback ?? `\`${error}\``;
     }
 
     public async getUser(name: string, args: FindEntityOptions = {}): Promise<User | null> {

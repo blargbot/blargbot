@@ -44,3 +44,20 @@ export function deserialize(value: string): BBArray | null {
     }
     return null;
 }
+
+export function flattenArray(array: JArray): JArray {
+    const result = [];
+    for (const arg of array) {
+        const arr = typeof arg === 'string' ? deserialize(arg) : {v: arg};
+        if (arr != null && Array.isArray(arr.v))
+            result.push(
+                ...arr.v.map((i) =>
+                    typeof i === 'object' || i === null || i === undefined
+                        ? [JSON.stringify(i)]
+                        : [i.toString()]
+                )
+            );
+        else result.push(arg);
+    }
+    return result;
+}
