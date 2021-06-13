@@ -188,7 +188,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             if (limitField.value)
                 fields.push(limitField);
 
-            return {
+            return subtag.enrichDocs({
                 title: ` - {${subtag.name}}`,
                 url: `/#${encodeURIComponent(subtag.name)}`,
                 description: description.length === 0 ? undefined : description.join('\n') + '\u200b',
@@ -197,7 +197,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 footer: {
                     text: `For detailed info about the argument syntax, use: ${context.prefix}${context.commandName} docs arguments`
                 }
-            };
+            });
         }
     }
 }

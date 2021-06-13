@@ -1,4 +1,4 @@
-import { Client as ErisClient } from 'eris';
+import { Client as ErisClient, EmbedOptions } from 'eris';
 import { Cluster } from '../../cluster';
 import { SubtagType } from '../../utils';
 import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagResult } from './types';
@@ -56,6 +56,10 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
             const debugPerf = context.state.subtags[this.name] ??= [];
             debugPerf.push(timer.elapsed);
         }
+    }
+
+    public enrichDocs(docs: EmbedOptions): EmbedOptions {
+        return docs;
     }
 
     public notANumber(context: BBTagContext, subtag?: SubtagCall): string {
