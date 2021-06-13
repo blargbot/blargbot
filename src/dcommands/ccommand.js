@@ -13,6 +13,11 @@ const subcommands = [
         desc: 'Displays the name of the custom command\'s author'
     },
     {
+        name: 'setauthorizer',
+        args: '<name>',
+        desc: 'Set the executing user as the custom command\'s authorizer'
+    },
+    {
         name: 'cooldown',
         args: '<name> [time]',
         desc: 'Sets the cooldown of a ccommand, in milliseconds. Cooldowns must be greater than 500ms'
@@ -723,6 +728,22 @@ class CcommandCommand extends BaseCommand {
                     } else {
                         bu.send(msg, this.info);
                     }
+                    break;
+                case 'setauthorizer':
+                    if (words.length > 2) {
+                        title = filterTitle(words[2]);
+                        tag = await bu.ccommand.get(msg.channel.guild.id, title);
+                        if (!tag) {
+                            bu.send(msg, 'That ccommand doesn\'t exist!');
+                            break;
+                        }
+                        let author = await r.table('user').get(tag.author).run();
+                        
+                        await bu.ccommand.setauthorizer(msg.channel.guild.id, title, msg.author.id);
+                        bu.send(msg, `✅ You are now the authorizer of the ccommand \`${title}\` owned ` +
+                                `by **${author.username}#${author.discriminator}** ✅`);
+                    } else
+                        bu.send(msg, `Not enough arguments! Usage is: \`ccommand setauthorizer <name> [user]\`.`);
                     break;
                 case 'author':
                 case 'owner':
