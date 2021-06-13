@@ -28,7 +28,7 @@ module.exports =
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
     .whenArgs('1-5', async function (subtag, context, args) {
-      let channel = Builder.util.parseChannel(context, args[0]);
+      let channel = await Builder.util.parseChannel(context, args[0]);
 
       if (!channel)
         return Builder.errors.noChannelFound(subtag, context);
