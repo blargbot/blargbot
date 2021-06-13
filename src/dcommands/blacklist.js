@@ -17,21 +17,20 @@ class BlacklistCommand extends BaseCommand {
 
         let storedGuild = await bu.getGuild(msg.guild.id);
         for (let channelId of channelIds) {
-            let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(channelId) ?
-                storedGuild.channels[channelId] : {
-                    nsfw: false
-                };
+            let guildChannel = storedGuild.channels && storedGuild.channels.hasOwnProperty(channelId)
+                ? storedGuild.channels[channelId]
+                : { nsfw: false };
 
-            const channelName = await bu.getChannel(msg, channelId, { quiet: true });
-            if (channel.blacklisted) {
-                channel.blacklisted = false;
-                bu.send(msg, `**${channelName}** is no longer blacklisted.`);
+            const channel = await bu.getChannel(msg, channelId, { quiet: true });
+            if (guildChannel.blacklisted) {
+                guildChannel.blacklisted = false;
+                bu.send(msg, `**${channel.name}** is no longer blacklisted.`);
             } else {
-                channel.blacklisted = true;
-                bu.send(msg, `**${channelName}** is now blacklisted.`);
+                guildChannel.blacklisted = true;
+                bu.send(msg, `**${channel.name}** is now blacklisted.`);
             }
 
-            storedGuild.channels[channelId] = channel;
+            storedGuild.channels[channelId] = guildChannel;
         }
 
         r.table('guild').get(msg.guild.id).update({
