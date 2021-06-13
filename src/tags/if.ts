@@ -2,18 +2,8 @@ import { SubtagArgumentValue } from './../core/bbtag/types';
 import { Cluster } from '../cluster';
 import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType, parse } from '../utils';
-
-const operators = [
-    '==',
-    '!=',
-    '>=',
-    '>',
-    '<=',
-    'startswith',
-    'endswith',
-    'includes',
-    'contains'
-];
+import { operatorTypes }  from '../utils/bbtag/operators';
+const operators = operatorTypes.compare;
 
 export class IfSubtag extends BaseSubtag {
     public constructor(cluster: Cluster) {
@@ -24,81 +14,31 @@ export class IfSubtag extends BaseSubtag {
                 'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
                 'If they are not provided, `value1` is read as `true` or `false`. ' +
                 'If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\n' +
-                'Valid evaluators are `' +
-                operators.join('`, `') +
-                '`.',
+                'Valid evaluators are `' +  Object.keys(operators).join('`, `') + '`.',
             definition: [
                 {
                     args: ['boolean', '~then'],
                     description:
                         'If `boolean` is `true`, return `then`, else do nothing.',
-                    execute: (ctx, [{ value: bool }, thenCode], subtag) =>
-                        this.simpleBooleanCheck(ctx, subtag, bool, thenCode)
+                    execute: (ctx, [{ value: bool }, thenCode], subtag) => this.simpleBooleanCheck(ctx, subtag, bool, thenCode)
                 },
                 {
                     args: ['boolean', '~then', '~else'],
                     description:
                         'If `boolean` is `true`, return `then`, else execute `else`',
-                    execute: (
-                        ctx,
-                        [{ value: bool }, thenCode, elseCode],
-                        subtag
-                    ) =>
-                        this.simpleBooleanCheck(
-                            ctx,
-                            subtag,
-                            bool,
-                            thenCode,
-                            elseCode
-                        )
+                    execute: (ctx, [{ value: bool }, thenCode, elseCode], subtag) => this.simpleBooleanCheck(ctx, subtag, bool, thenCode, elseCode)
                 },
                 {
                     args: ['value1', 'evaluator', 'value2', '~then'],
                     description:
                         '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`.',
-                    execute: (
-                        ctx,
-                        [
-                            { value: value1 },
-                            { value: evaluator },
-                            { value: value2 },
-                            thenCode
-                        ],
-                        subtag
-                    ) =>
-                        this.evaluatorCheck(
-                            ctx,
-                            subtag,
-                            value1,
-                            evaluator,
-                            value2,
-                            thenCode
-                        )
+                    execute: (ctx, [{ value: value1 }, { value: evaluator },{ value: value2 }, thenCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode)
                 },
                 {
                     args: ['value1', 'evaluator', 'value2', '~then', '~else'],
                     description:
                         '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
-                    execute: (
-                        ctx,
-                        [
-                            { value: value1 },
-                            { value: evaluator },
-                            { value: value2 },
-                            thenCode,
-                            elseCode
-                        ],
-                        subtag
-                    ) =>
-                        this.evaluatorCheck(
-                            ctx,
-                            subtag,
-                            value1,
-                            evaluator,
-                            value2,
-                            thenCode,
-                            elseCode
-                        )
+                    execute: (ctx, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode, elseCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode, elseCode)
                 }
             ]
         });
@@ -133,16 +73,21 @@ export class IfSubtag extends BaseSubtag {
         thenCode: SubtagArgumentValue,
         elseCode?: SubtagArgumentValue
     ): Promise<string> {
-        const boolSubtag = this.cluster.subtags.get('bool');
-        //TODO Should we continue relying on other subtags?
-        //@ts-ignore
-        const result: string = await boolSubtag!.runCondition(
-            context,
-            subtag,
-            value1,
-            evaluator,
-            value2
-        );
+        if (operators[evaluator]) {
+            //
+        } else if (operators[value1]) {
+            [value1, evaluator, value2] = [evaluator, value1, value2];
+        } else if (operators[value2]) {
+            [value1, evaluator, value2] = [value1, value2, evaluator];
+        } else {
+            return this.customError('Invalid operator', context, subtag);
+        }
+        const leftBool = parse.boolean(value1, undefined, false);
+        if (leftBool !== undefined) value1 = leftBool.toString();
+        const rightBool = parse.boolean(value2, undefined, false);
+        if (rightBool !== undefined) value2 = rightBool.toString();
+
+        const result = operators[evaluator](value1, value2).toString();
         if (result !== 'false' && result !== 'true') return result;
 
         if (parse.boolean(result)) {

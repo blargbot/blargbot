@@ -170,7 +170,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             else if (subtag.deprecated)
                 description.push('**This subtag is deprecated**');
             if (subtag.aliases.length > 0)
-                description.push('**Aliases:**', codeBlock(subtag.aliases.join(',')));
+                description.push('**Aliases:**', codeBlock(subtag.aliases.join(', ')));
             if (subtag.desc)
                 description.push(subtag.desc);
 

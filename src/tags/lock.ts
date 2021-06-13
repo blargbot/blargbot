@@ -1,7 +1,6 @@
 import { SubtagArgumentValue } from './../core/bbtag/types';
-import { BBTagContext } from './../core/bbtag/BBTagContext';
 import { Cluster } from '../cluster';
-import { BaseSubtag, SubtagCall, tagVariableScopes } from '../core/bbtag';
+import { BaseSubtag, SubtagCall, tagVariableScopes, BBTagContext } from '../core/bbtag';
 import { SubtagType } from '../utils';
 
 export class LockSubtag extends BaseSubtag {
@@ -83,7 +82,7 @@ export class LockSubtag extends BaseSubtag {
         //@ts-ignore
         const lockFunc = lock[mode + 'Lock'];
         const lockOverride = context.override('lock', {
-            execute: (context, subtag) =>
+            execute: (context, _, subtag) =>
                 this.customError('Lock cannot be nested', context, subtag)
         });
 
