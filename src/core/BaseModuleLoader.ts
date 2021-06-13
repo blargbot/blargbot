@@ -28,9 +28,15 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
         this.#modules.on('link', (...args: unknown[]) => this.emit('link', ...args));
         this.#modules.on('unlink', (...args: unknown[]) => this.emit('unlink', ...args));
     }
-
-    public list(): IterableIterator<TModule> {
-        return this.#modules.values();
+    public list(): Generator<TModule>;
+    public list(filter: (module: TModule) => boolean): Generator<TModule>
+    public * list(filter?: (module: TModule) => boolean): Generator<TModule> {
+        filter ??= () => true;
+        for (const module of this.#modules.values()) {
+            if (filter(module)) {
+                yield module;
+            }
+        }
     }
 
     public get(name: string): TModule | undefined;

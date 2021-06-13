@@ -1,5 +1,3 @@
-import moment from 'moment-timezone';
-import { humanize } from '../../utils';
 import { Cluster } from '..';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { metrics } from '../../core/Metrics';
@@ -26,16 +24,6 @@ export class ReadyEventHandler extends DiscordEventService {
 
             const support = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.support)).map(m => m.id);
             await this.cluster.database.vars.set({ varname: 'support', value: support });
-        }
-
-        // TODO this should be something the master process does
-        if (this.cluster.id === 0) {
-            const restart = await this.cluster.database.vars.get('restart');
-
-            if (restart?.varvalue) {
-                void this.cluster.util.send(restart.varvalue.channel, 'Ok I\'m back. It took me ' + humanize.duration(moment(), moment(restart.varvalue.time)) + '.');
-                void this.cluster.database.vars.delete('restart');
-            }
         }
 
         metrics.guildGauge.set(this.cluster.discord.guilds.size);

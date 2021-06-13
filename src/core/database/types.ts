@@ -1,6 +1,6 @@
 import { AnyMessage, Client as ErisClient, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
-import { FlagDefinition, SubtagVariableType } from '../../utils';
+import { FlagDefinition, MessageFilter, SubtagVariableType } from '../../utils';
 import { Options as SequelizeOptions } from 'sequelize';
 
 export type RethinkTableMap = {
@@ -142,9 +142,7 @@ export interface GuildAutoresponse {
     readonly executes: string;
 }
 
-export interface GuildFilteredAutoresponse extends GuildAutoresponse {
-    readonly regex: boolean;
-    readonly term: string;
+export interface GuildFilteredAutoresponse extends GuildAutoresponse, MessageFilter {
 }
 
 export interface GuildRolemeEntry {
@@ -175,9 +173,7 @@ export interface GuildCensorRule {
     readonly kickMessage?: string;
 }
 
-export interface GuildCensor extends GuildCensorRule {
-    readonly term: string;
-    readonly regex: boolean;
+export interface GuildCensor extends GuildCensorRule, MessageFilter {
     readonly weight: number;
     readonly reason?: string;
 }

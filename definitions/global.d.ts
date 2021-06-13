@@ -29,6 +29,10 @@ declare global {
 
     export var console: never | Console;
 
+    interface ObjectConstructor {
+        keys<T>(value: T): Array<string & keyof T>
+    }
+
     namespace NodeJS {
         type WorkerProcess = Process & Required<Pick<Process, 'send'>>;
 

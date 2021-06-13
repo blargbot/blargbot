@@ -3,7 +3,7 @@ import { BaseService } from './BaseService';
 
 export abstract class DiscordEventService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #execute: (...args: unknown[]) => unknown;
+    readonly #execute: (...args: unknown[]) => void;
     public readonly type: string;
 
     protected constructor(
@@ -13,7 +13,15 @@ export abstract class DiscordEventService extends BaseService {
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;
-        this.#execute = (...args: unknown[]) => void this._execute(...args);
+        const execute = async (...args: unknown[]): Promise<void> => {
+            try {
+                await this.execute(...args);
+            } catch (err) {
+                this.logger.error(`Discord event handler ${this.name} threw an error:`, err);
+            }
+        };
+
+        this.#execute = (...args: unknown[]) => void execute(...args);
     }
 
     protected abstract execute(...args: unknown[]): Promise<void> | void;
@@ -24,14 +32,5 @@ export abstract class DiscordEventService extends BaseService {
 
     public stop(): void {
         this.discord.off(this.event, this.#execute);
-    }
-
-    private async _execute(...args: unknown[]): Promise<void> {
-        try {
-            await this.execute(...args);
-        } catch (err) {
-            this.logger.error(`Discord event handler ${this.name} threw an error:`, err);
-            this.stop();
-        }
     }
 }

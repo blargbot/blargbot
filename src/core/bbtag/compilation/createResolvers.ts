@@ -53,7 +53,7 @@ function createResolverOrder(args: readonly SubtagHandlerArgument[]): ArgumentRe
 }
 
 function addArg(result: ArgumentResolverOrder, arg: SubtagHandlerArgument): void {
-    if (arg.greedy) {
+    if (arg.greedy !== null) {
         if (result.params.length > 0) {
             throw new Error('Cannot have multiple greedy parameters!');
         }

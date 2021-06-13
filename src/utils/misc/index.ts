@@ -9,3 +9,4 @@ export { codeBlock } from './codeBlock';
 export { between } from './between';
 export { compare } from './compare';
 export { toBlocks } from './toBlocks';
+export { quote } from './quote';

@@ -167,5 +167,5 @@ function settingGroup(values: Array<[key: string & keyof typeof guildSettings, v
     const keyLength = Math.max(...mapped.map(([key]) => key.length));
     const content = mapped.map(v => `${v[0].padStart(keyLength, ' ')} : ${v[1]}`)
         .join('\n');
-    return codeBlock(content, '');
+    return codeBlock(content);
 }

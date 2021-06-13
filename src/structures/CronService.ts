@@ -5,15 +5,24 @@ import { BaseService } from './BaseService';
 export abstract class CronService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cronJob: CronJob;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #execute: () => Promise<void>;
 
     protected constructor(
         options: Omit<CronJobParameters, 'onTick' | 'onComplete'>,
         public readonly logger: CatLogger
     ) {
         super();
+        this.#execute = async () => {
+            try {
+                await this.execute();
+            } catch (err) {
+                this.logger.error(`CronJob ${this.name} threw an error: ${inspect(err)}`);
+            }
+        };
         this.#cronJob = new CronJob({
             ...options,
-            onTick: () => void this._execute()
+            onTick: () => void this.#execute()
         });
     }
 
@@ -25,14 +34,5 @@ export abstract class CronService extends BaseService {
 
     public stop(): void {
         this.#cronJob.stop();
-    }
-
-    private async _execute(): Promise<void> {
-        try {
-            await this.execute();
-        } catch (err) {
-            this.logger.error(`CronJob ${this.name} threw an error: ${inspect(err)}`);
-            this.stop();
-        }
     }
 }

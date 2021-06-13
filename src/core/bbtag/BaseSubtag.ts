@@ -1,4 +1,4 @@
-import { Client as ErisClient } from 'eris';
+import { Client as ErisClient, EmbedOptions } from 'eris';
 import { Cluster } from '../../cluster';
 import { SubtagType } from '../../utils';
 import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagResult } from './types';
@@ -60,6 +60,9 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
 
     public notANumber(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not a number', subtag, debugMessage);
+    }
+    public enrichDocs(docs: EmbedOptions): EmbedOptions {
+        return docs;
     }
 
     public notABoolean(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
