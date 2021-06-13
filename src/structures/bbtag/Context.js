@@ -143,6 +143,7 @@ class Context {
         else
             args.onSendCallback = () => didSend = true;
 
+        if (!this.state.query.channel) this.state.query.channel = {};
         if (name in this.state.query.channel) {
             let channel = bot.guilds.get(this.guild.id).channels.get(this.state.query.channel[name]);
             if (channel) return channel;
@@ -168,6 +169,7 @@ class Context {
         else
             args.onSendCallback = () => didSend = true;
 
+        if (!this.state.query.user) this.state.query.user = {};
         if (name in this.state.query.user) {
             let user = bot.users.get(this.state.query.user[name]);
             if (user) return user;
@@ -193,6 +195,7 @@ class Context {
         else
             args.onSendCallback = () => didSend = true;
 
+        if (!this.state.query.role) this.state.query.role = {};
         if (name in this.state.query.role) {
             let role = bot.guilds.get(this.guild.id).roles.get(this.state.query.role[name]);
             if (role) return role;
@@ -230,51 +233,46 @@ class Context {
     }
 
     async sendOutput(text, files) {
-        if (this.silent) return this.state.outputMessage;
-        if (!this.state.outputMessage) {
-            this.state.outputMessage = new Promise(async function (resolve, reject) {
-                try {
-                    let disableEveryone = true;
-                    if (this.isCC) {
-                        let s = await r.table('guild').get(this.msg.guild.id);
-                        disableEveryone = s.settings.disableeveryone === true || !this.state.allowedMentions.everybody;
+        if (this.silent)
+            return this.state.outputMessage;
 
-                        console.log('Allowed mentions:', this.state.allowedMentions, disableEveryone);
-                    }
-                    let response = await bu.send(this.msg,
-                        {
-                            content: this.outputModify(this, text),
-                            embed: this.state.embed,
-                            nsfw: this.state.nsfw,
-                            allowedMentions: {
-                                everyone: !disableEveryone,
-                                roles: !!this.isCC ? this.state.allowedMentions.roles : false,
-                                users: !!this.isCC ? this.state.allowedMentions.users : false
-                            }
-                        }, files || this.state.file);
+        if (!this.state.outputMessage)
+            return await (this.state.outputMessage = this.sendOutputForced(text, files));
 
-                    if (response && response.channel) {
-                        await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
-                        this.state.ownedMsgs.push(response.id);
-                        resolve(response.id);
-                        this.state.outputMessage = response.id;
-                    } else {
-                        if (response instanceof Error) {
-                            if (response.message !== 'No content') {
-                                reject(response);
-                            } else {
-                                resolve();
-                            }
-                        } else {
-                            reject(new Error('Failed to send: ' + text + ' ' + response));
-                        }
-                    }
-                } catch (err) {
-                    reject(err);
-                }
-            }.bind(this));
-        };
         return await this.state.outputMessage;
+    }
+
+    async sendOutputForced(text, files) {
+        let disableEveryone = true;
+        if (this.isCC) {
+            let s = await r.table('guild').get(this.msg.guild.id);
+            disableEveryone = s.settings.disableeveryone === true || !this.state.allowedMentions.everybody;
+
+            console.log('Allowed mentions:', this.state.allowedMentions, disableEveryone);
+        }
+        let response = await bu.send(this.msg,
+            {
+                content: this.outputModify(this, text),
+                embed: this.state.embed,
+                nsfw: this.state.nsfw,
+                allowedMentions: {
+                    everyone: !disableEveryone,
+                    roles: !!this.isCC ? this.state.allowedMentions.roles : false,
+                    users: !!this.isCC ? this.state.allowedMentions.users : false
+                }
+            }, files || this.state.file);
+
+        if (response && response.channel) {
+            await bu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
+            this.state.ownedMsgs.push(response.id);
+            this.state.outputMessage = response.id;
+            return response.id;
+        }
+
+        if (!(response instanceof Error))
+            throw new Error('Failed to send: ' + text + ' ' + response);
+        else if (response.message !== 'No content')
+            throw response;
     }
 
     getCached(key, getIfNotSet) {
