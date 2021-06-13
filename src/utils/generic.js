@@ -546,7 +546,7 @@ bu.getChannel = async function (msg, name, args = {}) {
         return channel;
     }
 
-    let channelList = msg.channel.guild.channels.filter(m => (m.name && m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
+    let channelList = name ? msg.channel.guild.channels.filter(m => (m.name && m.name.toLowerCase().indexOf(name.toLowerCase()) > -1)) : [];
 
     channelList.sort(function (a, b) {
         let thingy = 0;
