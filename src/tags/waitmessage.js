@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:21:36
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:18:07
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:41:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -69,9 +69,9 @@ module.exports =
             if (args[0]) {
                 channels = Builder.util.flattenArgArrays([args[0]]);
                 channels = await Promise.all(channels.map(async input => await Builder.util.parseChannel(context, input, { quiet: true, suppress: context.scope.suppressLookup })));
-                if (failure = channels.find(channel => typeof channel == "function"))
-                    return failure(subtag, context);
-                channels = channels.map(channel => channel);
+                if (channels.filter(channel => !channel).length)
+                    return Builder.errors.noChannelFound(subtag, context);
+                channels = channels.map(channel => channel);//! ??
             }
             else {
                 channels = [context.channel];
