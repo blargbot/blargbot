@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:33
  * @Last Modified by: RagingLink
- * @Last Modified time: 2020-06-11 16:58:11
+ * @Last Modified time: 2020-06-16 00:00:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -17,6 +17,10 @@ const twemoji = require('twemoji');
 const request = require('request');
 const isSafeRegex = require('safe-regex');
 const { emojify } = require('node-emoji');
+
+bu.isDeveloper = (id) => {
+    return bu.DEVELOPERS.includes(id);
+};
 
 bu.compareStats = (a, b) => {
     if (a.uses < b.uses)
@@ -217,7 +221,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
     }
     if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
         member.guild.ownerID == member.id ||
-        member.permission.json.administrator)) {
+        member.permissions.json.administrator)) {
         return true;
     }
 
@@ -240,7 +244,7 @@ bu.hasPerm = async (msg, perm, quiet, override = true) => {
                 role = getId(perm);
                 if (role === null) return false;
             };
-            Array.isArray(role) ?
+            return Array.isArray(role) ?
                 role.indexOf(m.id) > -1 :
                 m.id == role;
         }
@@ -273,7 +277,7 @@ bu.hasRole = (msg, roles, override = true) => {
 
     if (override && ((member.id === bu.CAT_ID && bu.catOverrides) ||
         member.guild.ownerID == msg.member.id ||
-        member.permission.json.administrator)) {
+        member.permissions.json.administrator)) {
         return true;
     }
     if (!Array.isArray(roles)) roles = [roles];
@@ -407,8 +411,15 @@ bu.send = async function (context, payload, files) {
     let sendPromise = bot.createMessage(channel.id, payload, files);
     return await sendPromise.catch(async function (error) {
         let response = error.response;
-        if (typeof response !== 'object')
-            response = JSON.parse(error.response || "{}");
+        if (typeof response !== 'object') {
+            try {
+                response = JSON.parse(error.response || "{}");
+            } catch (err) {
+                console.error("Error parsing error response code", err);
+                bot.createMessage('197529405659021322', "Error parsing error response code\n" + err.stack + '\n\n' + error.response);
+                return;
+            }
+        }
         if (!bu.send.catch.hasOwnProperty(response.code))
             return console.error(error.response, error.stack);
 
@@ -695,7 +706,7 @@ bu.getUser = async function (msg, name, args = {}) {
         return null;
     } else {
         if (!args.quiet) {
-            let matches = userList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user } })
+            let matches = userList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user }; });
             let lookupResponse = await bu.createLookup(msg, 'user', matches, args);
             return lookupResponse;
         } else {
@@ -761,7 +772,7 @@ bu.getRole = async function (msg, name, args = {}) {
         return null;
     } else {
         if (!args.quiet) {
-            let matches = roleList.map(r => { return { content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r } });
+            let matches = roleList.map(r => { return { content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r }; });
             let lookupResponse = await bu.createLookup(msg, 'role', matches, args);
             return lookupResponse;
         } else {
@@ -858,7 +869,7 @@ bu.logAction = async function (guild, user, mod, type, reason, color = 0x17c484,
     let isArray = Array.isArray(user);
     if (Array.isArray(reason)) reason = reason.join(' ');
     let val = await bu.guildSettings.get(guild.id, 'modlog');
-    if (val) {
+    if (val && val !== 'false') {
         let storedGuild = await bu.getGuild(guild.id);
         let caseid = 0;
         if (storedGuild.modlog.length > 0) {
@@ -997,7 +1008,7 @@ bu.comparePerms = (m, allow) => {
     if (!allow) allow = bu.defaultStaff;
     let newPerm = new Permission(allow);
     for (let key in newPerm.json) {
-        if (m.permission.has(key)) {
+        if (m.permissions.has(key)) {
             return true;
         }
     }
@@ -1246,7 +1257,7 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
         } catch (err) {
             storedGuild.log[event] = undefined;
             await r.table('guild').get(guildid).replace(storedGuild);
-            await bu.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
+            await bu.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.\n\`\`\`${err.message}\`\`\``);
         }
     }
 };
@@ -1441,7 +1452,7 @@ bu.isUserStaff = async function (userId, guildId) {
     if (!member) return false;
 
     if (guild.ownerID == userId) return true;
-    if (member.permission.has('administrator')) return true;
+    if (member.permissions.has('administrator')) return true;
 
     let storedGuild = await bu.getGuild(guildId);
     if (storedGuild && storedGuild.settings && storedGuild.settings.permoverride) {
@@ -1742,8 +1753,8 @@ const prettyTimeMagnitudes = {
     mins: 'minutes', min: 'minute'
 };
 
-bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
-    let now = moment.tz(timezone);
+bu.parseTime = function (text, format = undefined, fromTimezone = 'Etc/UTC', toTimezone = 'Etc/UTC') {
+    let now = moment.tz(fromTimezone).tz(toTimezone);
     if (!text) return now;
     switch (text.toLowerCase()) {
         case 'now': return now;
@@ -1762,7 +1773,7 @@ bu.parseTime = function (text, format = undefined, timezone = 'Etc/UTC') {
         return now.add(magnitude, quantity);
     }
 
-    return moment.tz(text, format, timezone).utcOffset(0);
+    return moment.tz(text, format, fromTimezone).tz(toTimezone);
 };
 
 bu.parseInt = function (s, radix = 10) {
@@ -1957,7 +1968,7 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
             `\nC.cancel query\`\`\`` +
             `\n**${bu.getFullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`
             ,(msg2) => {
-                return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1)
+                return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1);
             }, undefined, args.label, args.suppress);
         let response = await query.response;
         if (response.content.toLowerCase() === 'c') {
@@ -1974,4 +1985,4 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
     } catch (err) {
         return null;
     }
-}
+};

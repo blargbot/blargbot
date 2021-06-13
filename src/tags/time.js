@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:26
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-09-27 23:01:16
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2020-05-26 11:48:20
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -15,7 +15,8 @@ module.exports =
             a.optional('format'),
             a.optional('time'),
             a.optional('parseformat'),
-            a.optional('timezone')
+            a.optional('fromTimezone'),
+            a.optional('toTimezone')
         ])
         .withDesc('Returns `time` formatted using `format`. `format` defaults to `YYYY-MM-DDTHH:mm:ssZ`. `time` defaults to the current time. ' +
             'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.\n' +
@@ -26,12 +27,13 @@ module.exports =
             'It\'s currently {time;YYYY/MM/DD HH:mm:ss}',
             'It\'s currently 2016/01/01 01:00:00'
         )
-        .whenArgs('0-4', async function (subtag, context, args) {
+        .whenArgs('0-5', async function (subtag, context, args) {
             let format = args[0],
                 time = args[1],
                 parse = args[2],
-                timezone = args[3],
-                date = bu.parseTime(time, parse, timezone);
+                fromTimezone = args[3],
+                toTimezone = args[4],
+                date = bu.parseTime(time, parse, fromTimezone, toTimezone);
 
             if (!date.isValid()) return Builder.util.error(subtag, context, 'Invalid date');
 

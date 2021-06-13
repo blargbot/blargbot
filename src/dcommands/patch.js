@@ -9,7 +9,7 @@ class PatchCommand extends BaseCommand {
     constructor() {
         super({
             name: 'patch',
-            category: bu.CommandType.CAT,
+            category: bu.CommandType.DEVELOPER,
             usage: 'patch [features] [flags]',
             info: 'Makes a patch note',
             flags: [{ flag: 'f', word: 'fixes', desc: 'The bug fixes of the patch.' },
@@ -18,9 +18,6 @@ class PatchCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (msg.author.id != bu.CAT_ID) {
-            return;
-        }
         let input = bu.parseInput(this.flags, words, true);
         let channel = await bu.getChannel(msg, changeChannel, { quiet: true });
         let role = channel.guild.roles.get(config.general.isbeta ? betaRoleId : roleId);

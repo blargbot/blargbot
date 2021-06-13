@@ -8,6 +8,7 @@ class Shard extends Sender {
         this.manager = manager;
         this.file = file || this.manager.file;
         this.respawn = true;
+        this.ready = false;
 
         let firstShard = Math.min(this.manager.max - 1, this.manager.shardsPerCluster * this.id);
         let lastShard = Math.min(this.manager.max - 1,
@@ -25,6 +26,7 @@ class Shard extends Sender {
             return !/debug-brk/.test(a);
         });
         execArgv.push('--max-old-space-size=4096'); // 4GB max ram
+        // execArgv.push('--prof'); // node-tick profiling
 
         this.process = childProcess.fork(this.file, process.argv, {
             env: this.env,

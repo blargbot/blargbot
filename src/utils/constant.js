@@ -10,6 +10,10 @@
 const { Constants } = require('eris');
 
 bu.CAT_ID = config.ownerId;
+bu.DEVELOPERS = [
+    config.ownerId,
+    ...(config.coDevelopers || [])
+];
 
 bu.avatarColours = [
     0x2df952, 0x2df9eb, 0x2d6ef9, 0x852df9, 0xf92dd3, 0xf92d3b, 0xf9b82d, 0xa0f92d
@@ -60,6 +64,7 @@ bu.CommandType = {
     MUSIC: 5,
     ADMIN: 6,
     SOCIAL: 7,
+    DEVELOPER: 8,
     properties: {
         1: {
             name: 'General',
@@ -69,7 +74,14 @@ bu.CommandType = {
         2: {
             name: 'CATZ MEOW MEOW',
             requirement: msg => msg.author.id == bu.CAT_ID,
-            description: 'MREOW MEOWWWOW! **purr**'
+            description: 'MREOW MEOWWWOW! **purr**',
+            hidden: true
+        },
+        8: {
+            name: 'Developer',
+            requirement: msg => bu.isDeveloper(msg.author.id),
+            description: 'Commands that can only be executed by blargbot developers.',
+            hidden: true
         },
         3: {
             name: 'NSFW',
@@ -83,7 +95,8 @@ bu.CommandType = {
         },
         5: {
             name: 'Music',
-            requirement: () => false
+            requirement: () => false,
+            hidden: true
         },
         6: {
             name: 'Admin',

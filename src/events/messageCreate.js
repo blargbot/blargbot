@@ -13,16 +13,6 @@ const bbtag = require('../core/bbtag');
 const Timer = require('../structures/Timer');
 const util = require('util');
 const request = require('request');
-const cleverbotIo = require('better-cleverbot-io');
-const cleverbot = new cleverbotIo({
-    user: config.cleverbot.ioid,
-    key: config.cleverbot.iokey,
-    nick: 'blargbot' + bu.makeSnowflake()
-});
-
-cleverbot.create().then(function (session) {
-    console.init('Cleverbot.io initialized with session', session);
-});
 
 bot.on('messageCreate', async function (msg) {
     if (!msg.guild || (msg.guild && !msg.guild.shard.ready)) return;
@@ -60,7 +50,7 @@ async function handleUserMessage(msg, storedGuild) {
     };
     prefixes.push(config.discord.defaultPrefix, 'blargbot');
     prefixes.sort((a, b) => {
-        return a.length < b.length;
+        return b.length - a.length; //Sort descending
     });
     if (await handleBlacklist(msg, storedGuild)) return;
 
@@ -152,6 +142,57 @@ var flipTables = async function (msg, unflip) {
     }
 };
 
+let lastUpdated;
+let maxTime;
+let timeoutDuration;
+let maxExecutions;
+let penalty;
+const commandUsage = {};
+const timedOut = {};
+async function exceededRatelimit(msg) {
+    if (!lastUpdated || lastUpdated <= Date.now() + (10 * 60 * 1000)) {
+        let globalRatelimit = await r.table('vars').get('globalRatelimit');
+        if (!globalRatelimit) {
+            globalRatelimit = {
+                maxTime: 30 * 1000,
+                timeoutDuration: 60000 * 10,
+                maxExecutions: 15,
+                penalty: 5000,
+                varname: 'globalRatelimit'
+            };
+            await r.table('vars').insert(globalRatelimit);
+        }
+
+        maxTime = globalRatelimit.maxTime;
+        timeoutDuration = globalRatelimit.timeoutDuration;
+        maxExecutions = globalRatelimit.maxExecutions;
+        penalty = globalRatelimit.penalty;
+        lastUpdated = Date.now();
+    }
+    if (timedOut[msg.author.id]) {
+        if (Date.now() < timedOut[msg.author.id]) {
+            timedOut[msg.author.id] += 5000;
+            return true;
+        } else {
+            delete timedOut[msg.author.id];
+        }
+    }
+
+    if (!commandUsage[msg.author.id]) {
+        commandUsage[msg.author.id] = [];
+    }
+    commandUsage[msg.author.id] = commandUsage[msg.author.id].filter(d => d >= Date.now() - maxTime);
+    commandUsage[msg.author.id].push(Date.now());
+
+    if (commandUsage[msg.author.id].length >= maxExecutions) {
+        timedOut[msg.author.id] = Date.now() + timeoutDuration;
+        await bu.send(msg, 'Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out.\n\nContinuing to spam commands will lengthen your timeout!');
+        return true;
+    }
+
+    return false;
+}
+
 var handleDiscordCommand = async function (channel, user, text, msg) {
     let words = bu.splitInput(text);
     if (words.length === 0) return;
@@ -188,6 +229,10 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
         }
 
         if (await bu.canExecuteCcommand(msg, ccommandName, true)) {
+            if (await exceededRatelimit(msg)) {
+                console.command(outputLog, `[IGNORED ${Math.floor((timedOut[msg.author.id] - Date.now()) / 10) / 100}s]`);
+                return;
+            }
             console.command(outputLog);
             let command = text.replace(words[0], '').trim();
             command = bu.fixContent(command);
@@ -221,6 +266,10 @@ var handleDiscordCommand = async function (channel, user, text, msg) {
             let _built = CommandManager.built[commandName];
             let { executable } = await bu.canExecuteCommand(msg, commandName);
             if (executable) {
+                if (await exceededRatelimit(msg)) {
+                    console.command(outputLog, `[IGNORED ${Math.floor((timedOut[msg.author.id] - Date.now()) / 10) / 100}s]`);
+                    return;
+                }
                 try {
                     console.command(outputLog);
                     let timer = new Timer().start();
@@ -571,7 +620,7 @@ function query(input) {
             else {
                 let content = bod.match(/<font size="2" face="Verdana" color=darkred>(.+)<\/font>/);
                 if (content)
-                    res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2'));
+                    res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2').replace(/<br>/gm, '\n'));
                 else res('Hi, I\'m blargbot! It\'s nice to meet you.');
             }
         });
@@ -583,7 +632,7 @@ async function handleCleverbot(msg) {
     var username = msg.channel.guild.members.get(bot.user.id).nick ?
         msg.channel.guild.members.get(bot.user.id).nick :
         bot.user.username;
-    var msgToSend = msg.cleanContent.replace(new RegExp('@' + username + ',?'), '').trim();
+    var msgToSend = msg.cleanContent.replace(new RegExp('@' + '\u200b' + username + ',?'), '').trim();
     bu.cleverbotStats++;
     updateStats();
     try {
@@ -591,16 +640,7 @@ async function handleCleverbot(msg) {
         await bu.sleep(1500);
         await bu.send(msg, response);
     } catch (err) {
-        try {
-            //cleverbot.setNick('blargbot' + msg.channel.id);
-            let response = await cleverbot.ask(msgToSend);
-            await bu.sleep(1500);
-            await bu.send(msg, response);
-        } catch (err) {
-            console.error(err);
-            await bu.sleep(1500);
-            await bu.send(msg, `Failed to contact the API. Blame cleverbot.io`);
-        }
+        // NO-OP
     }
 }
 

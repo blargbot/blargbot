@@ -19,7 +19,7 @@ class TimersCommand extends BaseCommand {
                 let response = await bu.awaitPrompt(msg, 'Are you sure you want to cancel all timers? Type `yes` to confirm, or anything else to cancel.',
                     m => true, 60000, 'Query timed out. Cancelling clear');
                 if (response && response.content.toLowerCase() == 'yes') {
-                    await r.table('events').filter({ source }).delete().run();
+                    await bu.events.deleteFilter({ source });
                     bu.send(msg, 'All timers cancelled.');
                 } else {
                     bu.send(msg, 'Failed to clear timers');
@@ -34,7 +34,7 @@ class TimersCommand extends BaseCommand {
                     for (const id of ids) {
                         let timer = timers.find(t => t.id.startsWith(id));
                         if (timer && timer.source == source) {
-                            r.table('events').get(timer.id).delete().run();
+                            bu.events.delete(timer.id);
                             success.push(id);
                         } else {
                             failed.push(id);

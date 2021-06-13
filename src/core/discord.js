@@ -10,54 +10,17 @@ require('./httpsInterceptor');
 
 global.Promise = require('bluebird');
 global.config = require('../../config.json');
-const CatLoggr = require('cat-loggr');
+const loggr = require('./logger');
 const moment = require('moment-timezone');
+moment.suppressDeprecationWarnings = true;
 const path = require('path');
 const fs = require('fs');
 const { Client } = require('eris');
 const Database = require('./Database');
-const seqErrors = require('sequelize/lib/errors');
 const { CronJob } = require('cron');
 const bbEngine = require('../structures/bbtag/Engine');
 const gameSwitcher = require('./gameSwitcher');
-
-const loggr = new CatLoggr({
-    shardId: process.env.CLUSTER_ID,
-    level: config.general.isbeta ? 'debug' : 'info',
-    shardLength: 4,
-    levels: [
-        { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, err: true },
-        { name: 'error', color: CatLoggr._chalk.black.bgRed, err: true },
-        { name: 'warn', color: CatLoggr._chalk.black.bgYellow, err: true },
-        { name: 'trace', color: CatLoggr._chalk.green.bgBlack, trace: true },
-        { name: 'website', color: CatLoggr._chalk.black.bgCyan },
-        { name: 'ws', color: CatLoggr._chalk.yellow.bgBlack },
-        { name: 'cluster', color: CatLoggr._chalk.black.bgMagenta },
-        { name: 'worker', color: CatLoggr._chalk.black.bgMagenta },
-        { name: 'command', color: CatLoggr._chalk.black.bgBlue },
-        { name: 'irc', color: CatLoggr._chalk.yellow.bgBlack },
-        { name: 'shardi', color: CatLoggr._chalk.blue.bgYellow },
-        { name: 'init', color: CatLoggr._chalk.black.bgBlue },
-        { name: 'info', color: CatLoggr._chalk.black.bgGreen },
-        { name: 'output', color: CatLoggr._chalk.black.bgMagenta },
-        { name: 'bbtag', color: CatLoggr._chalk.black.bgGreen },
-        { name: 'verbose', color: CatLoggr._chalk.black.bgCyan },
-        { name: 'adebug', color: CatLoggr._chalk.cyan.bgBlack },
-        { name: 'debug', color: CatLoggr._chalk.magenta.bgBlack, aliases: ['log', 'dir'] },
-        { name: 'database', color: CatLoggr._chalk.black.bgBlue },
-        { name: 'module', color: CatLoggr._chalk.black.bgBlue }
-    ]
-}).setGlobal();
-
-loggr.addArgHook(({ arg }) => {
-    if (arg instanceof seqErrors.BaseError && Array.isArray(arg.errors)) {
-        let text = [arg.stack];
-        for (const err of arg.errors) {
-            text.push(`\n - ${err.message}\n   - ${err.path} ${err.validatorKey} ${err.value}`);
-        }
-        return text;
-    } else return null;
-});
+const os = require('os');
 
 const https = require('https');
 global.bbtag = require('./bbtag.js');
@@ -65,6 +28,14 @@ const Sender = require('../structures/Sender');
 
 process.on('unhandledRejection', (err, p) => {
     console.error('Unhandled Promise Rejection: Promise', err);
+});
+
+process.on('exit', code => {
+    loggr.info('Cluster is exiting with code:', code);
+});
+
+process.on('disconnect', () => {
+    loggr.info('Cluster has disconnected from IPC.');
 });
 
 /** CONFIG STUFF **/
@@ -150,10 +121,18 @@ class DiscordClient extends Client {
             this.avatarTask = new CronJob('*/15 * * * *', this.avatarInterval.bind(this));
             this.avatarTask.start();
         }
+        this.gameTask = new CronJob('*/15 * * * *', this.gameInterval.bind(this));
+        this.gameTask.start();
         this.intervalTask = new CronJob('*/15 * * * *', this.autoresponseInterval.bind(this));
         this.nonce = (Math.floor(Math.random() * 0xffffffff)).toString('16').padStart(8, '0').toUpperCase();
 
         this.intervalTask.start();
+
+        this.gameInterval();
+    }
+
+    async gameInterval() {
+        await gameSwitcher();
     }
 
     async avatarInterval() {
@@ -169,7 +148,6 @@ class DiscordClient extends Client {
             avatar: bu.avatars[id]
         });
 
-        await gameSwitcher();
         // await this.editGuild('194232473931087872', {
         //     icon: bu.avatars[id]
         // });
@@ -408,26 +386,57 @@ process.on('message', async msg => {
             });
             break;
         case 'killShard':
-            let { id } = data;
-            console.shardi('Killing shard', id, 'without a reconnect.');
+            let { id, reconnect } = data;
+            console.shardi('Killing shard', id, (reconnect ? 'with' : 'without'), 'a reconnect.');
             let shard = bot.shards.find(s => s.id === id);
             if (shard)
                 shard.disconnect({
-                    reconnect: false
+                    reconnect: !!reconnect
                 });
     }
 });
 
-const usage = require('usage');
-function getCPU() {
-    return new Promise((res, rej) => {
-        let pid = process.pid;
-        usage.lookup(pid, { keepHistory: true }, function (err, result) {
-            if (err) res('NaN');
-            else res(result.cpu);
-        });
-    });
+let lastTotalCpuTime;
+let lastUserCpuTime;
+let lastSystemCpuTime;
+function getTotalCpuTime() {
+  const cpus = os.cpus();
+  return cpus.reduce((acc, cur) => acc + (cur.times.user + cur.times.nice + cur.times.sys + cur.times.idle + cur.times.irq), 0) / cpus.length;
 }
+
+function getCPU() {
+    const totalCpuTime = getTotalCpuTime();
+    const cpuUsage = process.cpuUsage();
+    const userTime = cpuUsage.user / 1000;
+    const systemTime = cpuUsage.system / 1000;
+
+    const totalDiff = totalCpuTime - (lastTotalCpuTime || 0);
+    const userDiff = userTime - (lastUserCpuTime || 0);
+    const systemDiff = systemTime - (lastSystemCpuTime || 0);
+    lastTotalCpuTime = totalCpuTime;
+    lastUserCpuTime = userTime;
+    lastSystemCpuTime = systemTime;
+
+    return {
+        userCpu: userDiff / totalDiff * 100,
+        systemCpu: systemDiff / totalDiff * 100
+    };
+}
+
+/** @type {{[key: string]: number | undefined}} */
+var lastReady = {};
+
+/**
+ * @returns {number | undefined}
+ * @param {string} shard
+ */
+function getLastReady(shard) {
+    if (shard.status == 'ready')
+        return lastReady[shard.id] = Date.now();
+
+    return lastReady[shard.id];
+}
+
 // shard status posting
 let shardStatusInterval = setInterval(async () => {
     let mem = process.memoryUsage();
@@ -435,10 +444,10 @@ let shardStatusInterval = setInterval(async () => {
     bot.sender.send('shardStats', {
         id: clusterId,
         time: Date.now(),
-        readyTime: bot.startTime,
+        readyTime: bu.startTime.valueOf(),
         guilds: bot.guilds.size,
         rss: mem.rss,
-        cpu: await getCPU(),
+        ...getCPU(),
         shardCount: parseInt(process.env.SHARDS_COUNT),
         shards: bot.shards.map(s => ({
             id: s.id,
@@ -446,7 +455,7 @@ let shardStatusInterval = setInterval(async () => {
             latency: s.latency,
             guilds: bot.guilds.filter(g => g.shard.id === s.id).length,
             cluster: clusterId,
-            time: Date.now()
+            time: getLastReady(s)
         }))
     });
 }, 10000);

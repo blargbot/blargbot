@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:21:36
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:18:07
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2020-05-26 17:28:30
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -74,7 +74,8 @@ module.exports =
             }
 
             // parse check code
-            if (args[3]) {
+            if (args[3] && args[3].content != '') {
+
                 checkBBTag = args[3];
             } else {
                 checkBBTag = bbengine.parse("true").bbtag;

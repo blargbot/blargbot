@@ -50,13 +50,6 @@ bot.on('ready', async function () {
     bot.guilds.forEach(async function (g) {
         if (guilds.indexOf(g.id) == -1) {
             let guild = bot.guilds.get(g.id);
-            let members = guild.memberCount;
-            let users = guild.members.filter(m => !m.user.bot).length;
-            let bots = guild.members.filter(m => m.user.bot).length;
-            let percent = Math.floor(bots / members * 10000) / 100;
-            var message = `:ballot_box_with_check: Guild: \`${guild.name}\`` +
-                ` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n   Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
-            bu.send(`205153826162868225`, message);
 
             console.log('Inserting a missing guild ' + g.id);
             await r.table('guild').insert({
@@ -80,9 +73,7 @@ bot.on('ready', async function () {
     //     bu.avatarId = 0;
     // switchGame();
     bu.postStats();
-    if (eventTimer == undefined) {
-        initEvents();
-    }
+    initEvents();
 
     let blacklist = await r.table('vars').get('guildBlacklist');
 
@@ -100,23 +91,21 @@ bot.on('ready', async function () {
     }
 });
 
-var eventTimer;
+let obtainEventTimer;
+let processEventTimer;
 
-function initEvents() {
+async function initEvents() {
     console.init('Starting event interval!');
-    if (eventTimer) clearInterval(eventTimer);
-    eventTimer = setInterval(async function () {
-        let events = await r.table('events').between(r.epochTime(0), r.now(), {
-            index: 'endtime'
-        });
-        for (let event of events) {
-            if (event.channel && !bot.getChannel(event.channel)) continue;
-            else if (event.guild && !bot.guilds.get(event.guild)) continue;
-            else if (!event.channel && !event.guild && event.user && process.env.CLUSTER_ID != 0) continue;
-            else if (event.type === 'purgelogs' && process.env.CLUSTER_ID != 0) continue;
-            let type = event.type;
-            CommandManager.built[type].event(event);
-            r.table('events').get(event.id).delete().run();
-        }
-    }, 10000);
+    if (obtainEventTimer) clearInterval(obtainEventTimer);
+    obtainEventTimer = setInterval(function () {
+        bu.events.obtain();
+    }, 5 * 60 * 1000);
+
+    if (processEventTimer) clearInterval(processEventTimer);
+    processEventTimer = setInterval(function () {
+        bu.events.process();
+    }, 10 * 1000);
+
+    await bu.events.obtain();
+    await bu.events.process();
 }

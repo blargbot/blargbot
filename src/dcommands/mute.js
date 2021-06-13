@@ -21,7 +21,7 @@ class MuteCommand extends BaseCommand {
         let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
         if (!mutedrole) {
-            if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
+            if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageRoles) {
                 let role = await bot.createRole(msg.channel.guild.id, {
                     color: 16711680,
                     name: 'Muted',
@@ -29,7 +29,7 @@ class MuteCommand extends BaseCommand {
                     reason: 'Automatic muted role generation'
                 });
                 await bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id);
-                if (msg.channel.guild.members.get(bot.user.id).permission.json.manageChannels) {
+                if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageChannels) {
                     var channels = msg.channel.guild.channels.map(m => m);
                     console.debug(channels.length);
                     for (var i = 0; i < channels.length; i++) {
@@ -52,9 +52,9 @@ class MuteCommand extends BaseCommand {
             }
         }
         if (words.length > 1) {
-            if (msg.channel.guild.members.get(bot.user.id).permission.json.manageRoles) {
+            if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageRoles) {
                 let role = msg.guild.roles.get(mutedrole);
-                //        if (msg.member.permission.json.manageRoles) {
+                //        if (msg.member.permissions.json.manageRoles) {
                 if (words[1]) {
                     var user = await bu.getUser(msg, words[1]);
                     if (!user) {
@@ -72,7 +72,7 @@ class MuteCommand extends BaseCommand {
                         await bu.send(msg, `I can't assign the muted role! (it's higher than or equal to my top role)`);
                         return;
                     }
-                    let voiceMute = msg.guild.members.get(bot.user.id).permission.json.voiceMuteMembers;
+                    let voiceMute = msg.guild.members.get(bot.user.id).permissions.json.voiceMuteMembers;
                     /*
                     var userPos = bu.getPosition(msg.member);
                     var targetPos = role.position;
@@ -113,7 +113,7 @@ class MuteCommand extends BaseCommand {
                             if (input.t) {
                                 let duration = bu.parseDuration(input.t.join(' '));
                                 if (duration.asMilliseconds() > 0) {
-                                    await r.table('events').insert({
+                                    await bu.events.insert({
                                         type: 'unmute',
                                         source: msg.guild.id,
                                         user: user.id,

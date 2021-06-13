@@ -284,7 +284,7 @@ TagBuilder.util = {
     },
     getPerms(context) {
         return (context.guild.members.get(context.authorizer) ||
-            { permission: new Permission(0, 0) }).permission;
+            { permissions: new Permission(0, 0) }).permissions;
     }
 };
 

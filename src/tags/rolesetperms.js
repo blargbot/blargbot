@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
- * @Last Modified by: stupid cat
- * @Last Modified time: 2019-09-26 09:27:55
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-05-20 23:52:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -35,7 +35,7 @@ module.exports =
                 perms = bu.parseInt(args[1]) || 0;
 
             const allowedPerms = Builder.util.getPerms(context).allow;
-            const mappedPerms = perms & allowedPerms;
+            const mappedPerms = BigInt(perms) & allowedPerms;
 
             if (role != null) {
                 if (role.position >= topRole)

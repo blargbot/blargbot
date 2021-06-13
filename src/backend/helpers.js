@@ -38,13 +38,17 @@ const commandType = {
     4: "Image Commands",
     5: "MUSIC ERROR",
     6: "Admin Commands",
+    7: "Social Commands",
+    8: "DEVELOPER ERROR",
     perms: {
         1: 'None',
         2: 'None',
         3: 'None',
         4: 'None',
         5: 'None',
-        6: 'Admin'
+        6: 'Admin',
+        7: 'None',
+        8: 'None'
     }
 };
 
@@ -116,7 +120,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC && !commands[keys[i]].onlyOn) {
+            if (!bu.CommandType.properties[commands[keys[i]].category].hidden && !commands[keys[i]].onlyOn) {
                 if (commands[keys[i]].category != lastType) {
                     sidebar += `<li class=\"sidebar-header blue-grey darken-3\"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/commands/#${commands[keys[i]].category}'>${commandType[commands[keys[i]].category]}</a></li>`;
                     lastType = commands[keys[i]].category;
@@ -272,7 +276,7 @@ e.init = () => {
             return ((commands[a].category - commands[b].category) * 1000) + (a > b ? 1 : -1);
         });
         for (let i = 0; i < keys.length; i++) {
-            if (commands[keys[i]].category != bu.CommandType.CAT && commands[keys[i]].category != bu.CommandType.MUSIC && !commands[keys[i]].onlyOn) {
+            if (!bu.CommandType.properties[commands[keys[i]].category].hidden && !commands[keys[i]].onlyOn) {
                 if (commands[keys[i]].category != lastType) {
                     toReturn += `<div class='centre white-text'><h2 id='${commands[keys[i]].category}' class='white-text'>${commandType[commands[keys[i]].category]}</h2></div>`;
                     lastType = commands[keys[i]].category;

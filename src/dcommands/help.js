@@ -15,6 +15,7 @@ class HelpCommand extends BaseCommand {
     getColor(category) {
         switch (category) {
             case bu.CommandType.CAT:
+            case bu.CommandType.DEVELOPER:
             case bu.CommandType.ADMIN: return 0xff0000;
             case bu.CommandType.NSFW: return 0x010101;
             case bu.CommandType.IMAGE:
@@ -31,30 +32,33 @@ class HelpCommand extends BaseCommand {
                     return stringify(this);
                 }
             };
-            if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
-                && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
-                let instance = CommandManager.built[CommandManager.commandList[words[1]].name];
-                let definition = CommandManager.commandList[words[1]];
-                embed.title = `Help for ${definition.name}`;
-                embed.url = `https://blargbot.xyz/commands#${definition.name}`;
-                embed.description = `**__Usage__**:\`${definition.usage}\`\n${definition.info}`;
-                embed.color = this.getColor(instance.category);
-                if (instance.aliases && instance.aliases.length > 0)
-                    embed.fields.push({
-                        name: '**Aliases**',
-                        value: instance.aliases.join(', ')
-                    });
-                if (instance.flags && instance.flags.length > 0)
-                    embed.fields.push({
-                        name: '**Flags**',
-                        value: instance.flags.map(flag => `\`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}`).join('\n')
-                    });
-            } else {
-                let helpText = await bu.ccommand.gethelp(msg.guild.id, words[1]);
+            const customCommand = await bu.ccommand.get(msg.guild.id, words[1]);
+            if (customCommand) {
+                const helpText = customCommand.help;
                 if (helpText) {
                     embed.color = this.getColor('CUSTOM');
                     embed.title = `Help for ${words[1].toLowerCase()} (Custom Command)`;
                     embed.description = helpText;
+                }
+            } else {
+                if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
+                && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
+                    const instance = CommandManager.built[CommandManager.commandList[words[1]].name];
+                    const definition = CommandManager.commandList[words[1]];
+                    embed.title = `Help for ${definition.name}`;
+                    embed.url = `https://blargbot.xyz/commands#${definition.name}`;
+                    embed.description = `**__Usage__**:\`${definition.usage}\`\n${definition.info}`;
+                    embed.color = this.getColor(instance.category);
+                    if (instance.aliases && instance.aliases.length > 0)
+                        embed.fields.push({
+                            name: '**Aliases**',
+                            value: instance.aliases.join(', ')
+                        });
+                    if (instance.flags && instance.flags.length > 0)
+                        embed.fields.push({
+                            name: '**Flags**',
+                            value: instance.flags.map(flag => `\`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}`).join('\n')
+                        });
                 }
             }
             if (!embed.title)
@@ -136,11 +140,11 @@ class HelpCommand extends BaseCommand {
                 }
 
                 let prefix = '';
-                let finalText = ''
+                let finalText = '';
                 if (!msg.channel.guild)
                     finalText += 'Not all of these commands will work in DM\'s\n';
                 else {
-                    let prefixes = await bu.guildSettings.get(msg.channel.guild.id, 'prefix')
+                    let prefixes = await bu.guildSettings.get(msg.channel.guild.id, 'prefix');
                     prefix = prefixes ? prefixes[0] : config.discord.defaultPrefix;
                 }
                 finalText += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>.\nWant to support the bot? Consider donating to <https://patreon.com/blargbot> - all donations go directly towards recouping hosting costs.';

@@ -42,7 +42,7 @@ Example: ${example}`);
 
         let channel;
         if (input.c) channel = msg.channel.id;
-        await r.table('events').insert({
+        await bu.events.insert({
             type: 'remind',
             source: channel ? msg.guild.id : msg.author.id,
             user: msg.author.id,

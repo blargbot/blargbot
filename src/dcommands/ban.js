@@ -41,11 +41,11 @@ class BanCommand extends BaseCommand {
     }
 
     async ban(msg, user, deleteDays = 1, reason, duration, tag = false, noPerms = false) {
-        if (!msg.channel.guild.members.get(bot.user.id).permission.json.banMembers) {
+        if (!msg.channel.guild.members.get(bot.user.id).permissions.json.banMembers) {
             return [`I don't have permission to ban users!`, '`Bot has no permissions`'];
         }
         let banPerms = await bu.guildSettings.get(msg.guild.id, 'banoverride') || 0;
-        if (!noPerms && (!bu.comparePerms(msg.member, banPerms) && !msg.member.permission.json.banMembers)) {
+        if (!noPerms && (!bu.comparePerms(msg.member, banPerms) && !msg.member.permissions.json.banMembers)) {
             return [`You don't have permission to ban users!`, '`User has no permissions`'];
         }
 
@@ -76,7 +76,7 @@ class BanCommand extends BaseCommand {
             await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, encodeURIComponent(fullReason));
             let suffix = '';
             if (duration) {
-                await r.table('events').insert({
+                await bu.events.insert({
                     type: 'unban',
                     source: msg.guild.id,
                     user: user.id,

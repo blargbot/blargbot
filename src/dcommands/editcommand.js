@@ -58,8 +58,7 @@ class EditcommandCommand extends BaseCommand {
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
-                            if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
-                                CommandManager.built[commandName].category == bu.CommandType.MUSIC) {
+                            if (bu.CommandType.properties[CommandManager.built[commandName].category].hidden) {
                                 console.debug('no ur not allowed');
                             } else {
                                 if (words.length == 3) {
@@ -95,8 +94,7 @@ class EditcommandCommand extends BaseCommand {
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
-                            if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
-                                CommandManager.built[commandName].category == bu.CommandType.MUSIC ||
+                            if (bu.CommandType.properties[CommandManager.built[commandName].category].hidden ||
                                 CommandManager.built[commandName].cannotDisable === true) {
                                 console.debug('no ur not allowed');
                             } else {
@@ -137,8 +135,7 @@ class EditcommandCommand extends BaseCommand {
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
-                            if (CommandManager.built[commandName].category == bu.CommandType.CAT ||
-                                CommandManager.built[commandName].category == bu.CommandType.MUSIC) {
+                            if (bu.CommandType.properties[CommandManager.built[commandName].category].hidden) {
                                 console.debug('no ur not allowed');
                             } else {
                                 if (words.length == 3) {

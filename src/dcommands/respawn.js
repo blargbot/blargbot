@@ -13,7 +13,7 @@ class RespawnCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         let police = (await r.table('vars').get('police')).value;
-        if (police.includes(msg.author.id)) {
+        if (police.includes(msg.author.id) || bu.isDeveloper(msg.author.id)) {
             let id = parseInt(words[1]);
             if (isNaN(id))
                 return await bu.send(msg, 'that wasn\'t even a number pls');

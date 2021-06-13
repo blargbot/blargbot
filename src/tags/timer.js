@@ -25,7 +25,7 @@ module.exports =
 
             if (duration.asMilliseconds() <= 0) return Builder.util.error(subtag, context, 'Invalid duration');
 
-            await r.table('events').insert({
+            await bu.events.insert({
                 type: 'tag',
                 version: 3,
                 source: context.guild ? context.guild.id : context.user.id,

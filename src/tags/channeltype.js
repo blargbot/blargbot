@@ -9,7 +9,7 @@
 
 const Builder = require('../structures/TagBuilder');
 
-const types = ['text', 'dm', 'voice', 'group-dm', 'category'];
+const types = ['text', 'dm', 'voice', 'group-dm', 'category', 'news', 'store'];
 
 module.exports =
     Builder.APITag('channeltype')

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:37:16
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-11 11:34:03
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-05-11 18:50:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -45,13 +45,13 @@ module.exports =
                 case 1:
                     return await this.execTag(subtag, context, tag.content, '');
                 case 2:
-                    return await this.execTag(subtag, context, tag.content, args[1]);
+                    return await this.execTag(subtag, context, tag.content, args[1], tag.flags);
                 default:
                     let a = Builder.util.flattenArgArrays(args.slice(1));
-                    return await this.execTag(subtag, context, tag.content, '"' + a.join('" "') + '"');
+                    return await this.execTag(subtag, context, tag.content, '"' + a.join('" "') + '"', tag.flags);
             }
         })
-        .withProp('execTag', async function (subtag, context, tagContent, input) {
+        .withProp('execTag', async function (subtag, context, tagContent, input, flags) {
             if (context.state.stackSize >= 200) {
                 context.state.return = -1;
                 return Builder.util.error(subtag, context, 'Terminated recursive tag after ' + context.state.stackSize + ' execs.');
@@ -66,7 +66,7 @@ module.exports =
             }
 
             context.state.stackSize += 1;
-            let childContext = context.makeChild({ input });
+            let childContext = context.makeChild({ input, flags });
             if (tagContent != null)
                 result = await this.executeArg(subtag, tagContent, childContext);
             context.state.stackSize -= 1;

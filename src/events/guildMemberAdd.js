@@ -13,7 +13,11 @@ bot.on('guildMemberAdd', async function (guild, member) {
     await bu.processUser(member.user);
     let val = await bu.guildSettings.get(guild.id, 'greeting');
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
+    let channel;
     if (chan && val) {
+        channel = bot.getChannel(chan);
+    }
+    if (channel) {
         let ccommandContent;
         let author, authorizer;
         if (typeof val == "object") {
@@ -25,7 +29,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
         }
         await bbEngine.runTag({
             msg: {
-                channel: bot.getChannel(chan),
+                channel: channel,
                 author: member.user,
                 member: member,
                 guild: guild
