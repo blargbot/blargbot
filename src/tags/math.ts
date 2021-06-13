@@ -1,9 +1,8 @@
 import { Cluster } from '../cluster';
 import { SubtagType, parse, bbtagUtil } from '../utils';
 import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
-import { operatorTypes }  from '../utils/bbtag/operators';
-const operators = operatorTypes.numeric;
-const flattenArray = bbtagUtil.tagArray.flattenArray;
+
+const operators = bbtagUtil.operators.numeric;
 
 export class MathSubtag extends BaseSubtag {
     public constructor(
@@ -16,7 +15,7 @@ export class MathSubtag extends BaseSubtag {
                 {
                     args: ['numbers+'],
                     description: 'Accepts multiple `values` and returns the result of `operator` on them. ' +
-                    'Valid operators are `' + Object.keys(operators).join('`, `') + '`',
+                        'Valid operators are `' + Object.keys(operators).join('`, `') + '`',
                     execute: (ctx, args, subtag) => this.doMath(ctx, args[0].value, args.slice(1).map(arg => arg.value), subtag)
                 }
             ]
@@ -29,12 +28,12 @@ export class MathSubtag extends BaseSubtag {
         args: string[],
         subtag: SubtagCall
     ): string {
-        if (!operators.hasOwnProperty(operator))
+        if (!bbtagUtil.operators.isNumericOperator(operator))
             return this.customError('Invalid operator', context, subtag, operator + ' is not an operator');
 
-        const values = flattenArray(args);
+        const values = bbtagUtil.tagArray.flattenArray(args);
         const parsedValues = values.map(value => {
-            if(value) {
+            if (value) {
                 return parse.float(value.toString());
             } else {
                 return NaN;

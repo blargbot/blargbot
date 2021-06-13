@@ -1,6 +1,6 @@
 import { AnyMessage, Channel, User } from 'eris';
 import { guard } from '../../utils';
-import { Cluster } from '..';
+import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { metrics } from '../../core/Metrics';
 import { addChatlog, handleAntiMention, handleAutoresponse, handleCensor, handleRoleme, handleTableFlip, tryHandleCommand } from '../features';

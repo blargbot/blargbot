@@ -1,4 +1,4 @@
-import { Cluster } from '..';
+import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 
 export class ShardDisconnectHandler extends DiscordEventService {

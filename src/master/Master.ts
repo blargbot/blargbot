@@ -48,7 +48,7 @@ export class Master extends BaseClient {
         try {
             await snekfetch.post(`https://discordapp.com/api/channels/${this.config.discord.channels.botlog}/messages`)
                 .set('Authorization', this.config.discord.token)
-                .send({ content: 'My master process just initialized ' + moment().format('[on `]MMMM Do, YYYY[` at `]hh:mm:ss.SS[`]') + '.' });
+                .send({ content: `My master process just initialized on \`${moment().format('MMMM Do, YYYY[` at `]hh:mm:ss.SS')}\`.` });
         } catch (err) {
             this.logger.error('Could not post startup message', err);
         }

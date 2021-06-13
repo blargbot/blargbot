@@ -1,9 +1,9 @@
 import { SubtagArgumentValue } from './../core/bbtag/types';
 import { Cluster } from '../cluster';
 import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
-import { SubtagType, parse } from '../utils';
-import { operatorTypes }  from '../utils/bbtag/operators';
-const operators = operatorTypes.compare;
+import { SubtagType, parse, bbtagUtil } from '../utils';
+
+const operators = bbtagUtil.operators.compare;
 
 export class IfSubtag extends BaseSubtag {
     public constructor(cluster: Cluster) {
@@ -14,7 +14,7 @@ export class IfSubtag extends BaseSubtag {
                 'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
                 'If they are not provided, `value1` is read as `true` or `false`. ' +
                 'If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\n' +
-                'Valid evaluators are `' +  Object.keys(operators).join('`, `') + '`.',
+                'Valid evaluators are `' + Object.keys(operators).join('`, `') + '`.',
             definition: [
                 {
                     args: ['boolean', '~then'],
@@ -32,7 +32,7 @@ export class IfSubtag extends BaseSubtag {
                     args: ['value1', 'evaluator', 'value2', '~then'],
                     description:
                         '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`.',
-                    execute: (ctx, [{ value: value1 }, { value: evaluator },{ value: value2 }, thenCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode)
+                    execute: (ctx, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode)
                 },
                 {
                     args: ['value1', 'evaluator', 'value2', '~then', '~else'],
@@ -73,11 +73,14 @@ export class IfSubtag extends BaseSubtag {
         thenCode: SubtagArgumentValue,
         elseCode?: SubtagArgumentValue
     ): Promise<string> {
-        if (operators[evaluator]) {
-            //
-        } else if (operators[value1]) {
+        let operator;
+        if (bbtagUtil.operators.isCompareOperator(evaluator)) {
+            operator = evaluator;
+        } else if (bbtagUtil.operators.isCompareOperator(value1)) {
+            operator = value1;
             [value1, evaluator, value2] = [evaluator, value1, value2];
-        } else if (operators[value2]) {
+        } else if (bbtagUtil.operators.isCompareOperator(value2)) {
+            operator = value2;
             [value1, evaluator, value2] = [value1, value2, evaluator];
         } else {
             return this.customError('Invalid operator', context, subtag);
@@ -87,7 +90,7 @@ export class IfSubtag extends BaseSubtag {
         const rightBool = parse.boolean(value2, undefined, false);
         if (rightBool !== undefined) value2 = rightBool.toString();
 
-        const result = operators[evaluator](value1, value2).toString();
+        const result = operators[operator](value1, value2).toString();
         if (result !== 'false' && result !== 'true') return result;
 
         if (parse.boolean(result)) {

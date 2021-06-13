@@ -1,21 +1,15 @@
 import { EmbedOptions } from 'eris';
 import { Cluster } from '../cluster';
 import { SubtagType, parse, bbtagUtil } from '../utils';
-import {
-    BaseSubtag,
-    BBTagContext,
-    SubtagCall,
-    SubtagArgumentValueArray
-} from '../core/bbtag';
-import { default as operators, operatorTypes } from '../utils/bbtag/operators';
-const flattenArray = bbtagUtil.tagArray.flattenArray;
-const { compare, logic, numeric } = operatorTypes;
+import { BaseSubtag, BBTagContext, SubtagCall, SubtagArgumentValueArray } from '../core/bbtag';
+
+const { all: allOperators, logic, numeric, compare } = bbtagUtil.operators;
 
 export class OperatorSubtag extends BaseSubtag {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'operator',
-            aliases: Object.keys(operators),
+            aliases: Object.keys(allOperators),
             category: SubtagType.COMPLEX,
             definition: [
                 {
@@ -39,14 +33,14 @@ export class OperatorSubtag extends BaseSubtag {
 
         const operator = args.subtagName;
         const values = args.map((arg) => arg.value);
-        if (compare[operator]) {
+        if (bbtagUtil.operators.isCompareOperator(operator)) {
             return this.applyComparisonOperation(operator, values);
-        } else if (numeric[operator]) {
+        } else if (bbtagUtil.operators.isNumericOperator(operator)) {
             /**
              * * It's important that numeric comes before logic, as they both have ^ as an operator
              */
             return this.applyNumericOperation(context, operator, values, subtag);
-        } else if (logic[operator]) {
+        } else if (bbtagUtil.operators.isLogicOperator(operator)) {
             return this.applyLogicOperation(context, operator, values, subtag);
         } else {
             //! This should never happen
@@ -55,14 +49,10 @@ export class OperatorSubtag extends BaseSubtag {
     }
 
     public applyComparisonOperation(
-        operator: string,
+        operator: keyof typeof compare,
         values: string[]
     ): string {
-        if (
-            ['startswith', 'includes', 'contains', 'endswith'].includes(
-                operator
-            )
-        ) {
+        if (['startswith', 'includes', 'contains', 'endswith'].includes(operator)) {
             const firstValue = values[0];
             values = values.slice(1);
             const operatedValues = values.map((value) => {
@@ -70,28 +60,26 @@ export class OperatorSubtag extends BaseSubtag {
             });
 
             return logic['&&'](operatedValues).toString();
-        } else {
-            const flattenedValues = flattenArray(values).map((arg) => {
-                switch (typeof arg) {
-                    case 'string':
-                    case 'number':
-                    case 'boolean':
-                        const possibleBoolean = parse.boolean(arg, undefined, false);
-                        if (typeof possibleBoolean === 'boolean') arg = possibleBoolean;
-                        return arg.toString();
-                    case 'object':
-                        return JSON.stringify(arg);
-                    case 'undefined':
-                        return '';
-                }
-            });
-
-            const pairedValues = this.generatePairs(flattenedValues);
-            const operatedValues = pairedValues.map((pair) => {
-                return compare[operator](pair[0], pair[1]);
-            });
-            return logic['&&'](operatedValues).toString();
         }
+
+        const flattenedValues = bbtagUtil.tagArray.flattenArray(values).map((arg) => {
+            switch (typeof arg) {
+                case 'string':
+                case 'number':
+                case 'boolean':
+                    const possibleBoolean = parse.boolean(arg, undefined, false);
+                    if (typeof possibleBoolean === 'boolean') arg = possibleBoolean;
+                    return arg.toString();
+                case 'object':
+                    return JSON.stringify(arg);
+                case 'undefined':
+                    return '';
+            }
+        });
+
+        const pairedValues = this.generatePairs(flattenedValues);
+        const operatedValues = pairedValues.map((pair) => compare[operator](pair[0], pair[1]));
+        return logic['&&'](operatedValues).toString();
     }
 
     public generatePairs(array: string[]): string[][] {
@@ -104,11 +92,11 @@ export class OperatorSubtag extends BaseSubtag {
     }
     public applyNumericOperation(
         context: BBTagContext,
-        operator: string,
+        operator: keyof typeof numeric,
         values: string[],
         subtag: SubtagCall
     ): string {
-        const flattenedValues = flattenArray(values).map((arg) => {
+        const flattenedValues = bbtagUtil.tagArray.flattenArray(values).map((arg) => {
             if (arg) {
                 return parse.float(arg.toString());
             } else {
@@ -130,7 +118,7 @@ export class OperatorSubtag extends BaseSubtag {
 
     public applyLogicOperation(
         context: BBTagContext,
-        operator: string,
+        operator: keyof typeof logic,
         values: string[],
         subtag: SubtagCall
     ): string {
@@ -151,7 +139,7 @@ export class OperatorSubtag extends BaseSubtag {
                     (v) => typeof v != 'boolean'
                 )}`
             );
-        return operators[operator](parsedBools).toString();
+        return logic[operator](parsedBools).toString();
     }
 
     public enrichDocs(

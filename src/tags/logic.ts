@@ -1,8 +1,8 @@
 import { Cluster } from './../cluster/Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
-import { SubtagType, parse } from '../utils';
-import { operatorTypes } from '../utils/bbtag/operators';
-const operators = operatorTypes.logic;
+import { SubtagType, parse, bbtagUtil } from '../utils';
+
+const operators = bbtagUtil.operators.logic;
 
 export class LogicSubtag extends BaseSubtag {
     public constructor(
@@ -32,14 +32,16 @@ export class LogicSubtag extends BaseSubtag {
         let operator;
 
         for (let i = 0; i < args.length; i++) {
-            if (operators[args[i].toLowerCase()]) {
-                operator = args[i].toLowerCase();
+            const operatorName = args[i].toLowerCase();
+            if (bbtagUtil.operators.isLogicOperator(operatorName)) {
+                operator = operatorName;
                 args.splice(i, 1);
             }
         }
 
         if (!operator)
             return this.customError('Invalid operator', context, subtag);
+
         const values = args;
         if (operator === '!') {
             const value = parse.boolean(values[0]);

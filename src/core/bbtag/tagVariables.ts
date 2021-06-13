@@ -1,9 +1,10 @@
-import { BBTagContext as BBContext, SubtagCall } from '.';
+import { BBTagContext as BBContext } from './BBTagContext';
 import { SubtagVariableType } from '../../utils';
 import ReadWriteLock from 'rwlock';
 import { get as getLock } from './lock';
+import { SubtagCall } from './types';
 
-export const tagVariableScopes  = [
+export const tagVariableScopes = [
     {
         name: 'Server',
         prefix: '_',

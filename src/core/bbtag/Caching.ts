@@ -1,7 +1,7 @@
 import { Timer } from '../../structures/Timer';
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './types';
-import { tagVariableScopes } from '.';
+import { tagVariableScopes } from './tagVariables';
 export class CacheEntry {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #original: JToken;
