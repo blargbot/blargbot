@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster, ClusterUtilities } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
-import { ExecutionResult, limits } from '../core/bbtag';
+import { ExecutionResult, getDocsEmbed, limits } from '../core/bbtag';
 import { BaseCommand, CommandContext } from '../core/command';
 import { StoredTag } from '../core/database';
 import { bbtagUtil, codeBlock, commandTypes, guard, humanize, parse } from '../utils';
@@ -20,16 +20,22 @@ export class TagCommand extends BaseCommand {
             definition: {
                 parameters: '{tagName} {args*}',
                 execute: (ctx, [tagName]) => this.runTag(ctx, tagName, ctx.argRange(1, true), false),
+                description: 'Runs a user created tag with some arguments',
                 subcommands: {
                     'test|eval|exec|vtest': {
                         parameters: 'debug? {code+}',
                         execute: (ctx, [debug]) => this.runRaw(ctx, ctx.argRange(debug === undefined ? 1 : 2, true), '', debug !== undefined),
-                        description: ''
+                        description: 'Uses the BBTag engine to execute the content as it was a tag'
+                    },
+                    'docs': {
+                        parameters: '{topic*}',
+                        execute: (ctx, [topic]) => this.showDocs(ctx, topic),
+                        description: 'Returns helpful information about the specified topic.'
                     },
                     'debug': {
                         parameters: '{tagName} {args*}',
                         execute: (ctx, [tagName]) => this.runTag(ctx, tagName, ctx.argRange(2, true), true),
-                        description: ''
+                        description: 'Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.'
                     },
                     'create|add': {
                         parameters: '{tagName?} {content*}',
@@ -59,54 +65,54 @@ export class TagCommand extends BaseCommand {
                     'raw': {
                         parameters: '{tagName?}',
                         execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName),
-                        description: ''
+                        description: 'Uses the BBTag engine to execute the content as it was a tag'
                     },
                     'list': {
                         parameters: '{author*}',
                         execute: (ctx, [author]) => this.listTags(ctx, author.join('')),
-                        description: ''
+                        description: 'Lists all tags, or tags made by a specific author'
                     },
                     'search': {
                         parameters: '{tagName?}',
                         execute: (ctx, [tagName]) => this.searchTags(ctx, tagName),
-                        description: ''
+                        description: 'Searches for a tag based on the provided name'
                     },
                     'permdelete': {
                         parameters: '{tagName} {reason+}',
                         execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName, reason.join(' ')),
-                        description: ''
+                        description: 'Marks the tag name as deleted forever, so no one can ever use it'
                     },
                     'cooldown': {
                         parameters: '{tagName} {duration?:duration}',
                         execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName, duration),
-                        description: ''
+                        description: 'Sets the cooldown of a tag, in milliseconds'
                     },
                     'author': {
                         parameters: '{tagName?}',
                         execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName),
-                        description: ''
+                        description: 'Displays the name of the tag\'s author'
                     },
                     'info': {
                         parameters: '{tagName?}',
                         execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName),
-                        description: ''
+                        description: 'Displays information about a tag'
                     },
                     'top': {
                         parameters: '',
                         execute: () => this.getTopTags(),
-                        description: ''
+                        description: 'Displays the top 5 tags'
                     },
                     'favourite|favorite|favourites|favorites': {
                         parameters: '{tagName?}',
                         execute: (ctx, [tagName]) => typeof tagName === 'string'
                             ? this.toggleFavouriteTag(ctx, tagName)
                             : this.listFavouriteTags(ctx),
-                        description: ''
+                        description: 'Adds a tag to your favourite list, or displays your favourite tags'
                     },
                     'report': {
                         parameters: '{tagName} {reason*}',
                         execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName, reason.join(' ')),
-                        description: ''
+                        description: 'Reports a tag as violating the ToS'
                     },
                     'flag|flags': {
                         parameters: '{tagName}',
@@ -130,7 +136,7 @@ export class TagCommand extends BaseCommand {
                     'setlang': {
                         parameters: '{tagName} {language}',
                         execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName, language),
-                        description: ''
+                        description: 'Sets the language to use when returning the raw text of your tag'
                     }
                 }
             }
@@ -687,6 +693,14 @@ export class TagCommand extends BaseCommand {
         }
 
         return { name: tag.name, tag };
+    }
+
+    private showDocs(ctx: CommandContext, topic: readonly string[]): SendPayload | string {
+        const embed = getDocsEmbed(ctx, topic);
+        if (!embed)
+            return `Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`;
+
+        return { embed: embed, isHelp: true };
     }
 
     private async logChange(

@@ -19,7 +19,7 @@ export async function tryHandleCommand(cluster: Cluster, msg: AnyMessage): Promi
         return true;
     }
 
-    const context = new CommandContext(msg, prefix);
+    const context = new CommandContext(cluster, msg, prefix);
     if (await tryHandleCustomCommand(cluster, context) || await tryHandleDefaultCommand(cluster, context)) {
         if (guard.isGuildMessage(msg))
             void handleDeleteNotif(cluster, msg);
