@@ -53,4 +53,18 @@ export class Master extends BaseClient {
             this.logger.error('Could not post startup message', err);
         }
     }
+    public async eval(author: string, text: string): Promise<{ success: boolean, result: unknown }> {
+        if (author !== this.config.discord.users.owner)
+            throw new Error(`User ${author} does not have permission to run eval`);
+
+        try {
+            const func: () => Promise<unknown>
+                = eval(text.split('\n').length === 1
+                    ? `async () => ${text}`
+                    : `async () => { ${text} }`);
+            return { success: true, result: await func.call(this) };
+        } catch (err) {
+            return { success: false, result: err };
+        }
+    }
 }

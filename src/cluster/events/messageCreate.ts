@@ -5,7 +5,7 @@ import { DiscordEventService } from '../../structures/DiscordEventService';
 import { metrics } from '../../core/Metrics';
 import { addChatlog, handleAntiMention, handleAutoresponse, handleCensor, handleRoleme, handleTableFlip, tryHandleCommand } from '../features';
 
-export class MessageCreateEventHandler extends DiscordEventService {
+export class MessageCreateHandler extends DiscordEventService {
     public constructor(
         public readonly cluster: Cluster
     ) {

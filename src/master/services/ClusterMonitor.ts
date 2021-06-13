@@ -2,7 +2,7 @@ import moment from 'moment';
 import { IntervalService } from '../../structures/IntervalService';
 import { ClusterConnection } from '../../workers/ClusterConnection';
 import { WorkerState } from '../../workers/core/WorkerConnection';
-import { ClusterStatsTracker } from '../events/ClusterStatsTracker';
+import { ClusterStatsHandler } from '../events/clusterStats';
 import { Master } from '../Master';
 
 export class ClusterMonitor extends IntervalService {
@@ -23,7 +23,7 @@ export class ClusterMonitor extends IntervalService {
         if (cluster.state !== WorkerState.RUNNING)
             return;
 
-        const statsTracker = this.master.eventHandlers.get(ClusterStatsTracker.name, ClusterStatsTracker);
+        const statsTracker = this.master.eventHandlers.get(ClusterStatsHandler.name, ClusterStatsHandler);
         const stats = statsTracker?.get(cluster.id);
         const now = moment();
         const cutoff = moment().add(-1, 'minute');

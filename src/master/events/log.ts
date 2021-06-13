@@ -5,7 +5,7 @@ import { Master } from '../Master';
 import stripAnsi from 'strip-ansi';
 import { LogEntry } from '../../workers/core/BaseWorker';
 
-export class ClusterLogTracker extends WorkerPoolEventService<ClusterConnection> {
+export class LogHandler extends WorkerPoolEventService<ClusterConnection> {
     private readonly logs: { [workerId: number]: RollingArray<LogEntry> | undefined };
 
     public constructor(

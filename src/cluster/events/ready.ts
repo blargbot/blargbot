@@ -2,7 +2,7 @@ import { Cluster } from '..';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { metrics } from '../../core/Metrics';
 
-export class ReadyEventHandler extends DiscordEventService {
+export class ReadyHandler extends DiscordEventService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #obtainEventTimer?: NodeJS.Timeout;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

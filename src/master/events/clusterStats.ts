@@ -4,7 +4,7 @@ import { Master } from '../Master';
 import { ClusterStats } from '../../workers/ClusterTypes';
 
 
-export class ClusterStatsTracker extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterStatsHandler extends WorkerPoolEventService<ClusterConnection> {
     private readonly stats: { [clusterId: number]: ClusterStats | undefined; };
 
     public constructor(

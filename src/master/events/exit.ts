@@ -4,9 +4,9 @@ import { WorkerPoolEventService } from '../../structures/WorkerPoolEventService'
 import { ClusterConnection } from '../../workers/ClusterConnection';
 import { WorkerState } from '../../workers/core/WorkerConnection';
 import { Master } from '../Master';
-import { ClusterLogTracker } from './ClusterLogTracker';
+import { LogHandler } from './log';
 
-export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
+export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(
         public readonly master: Master
     ) {
@@ -16,7 +16,7 @@ export class ClusterDeath extends WorkerPoolEventService<ClusterConnection> {
     protected async execute(worker: ClusterConnection): Promise<void> {
         if (worker.state !== WorkerState.EXITED)
             return;
-        const logTracker = this.master.eventHandlers.get(ClusterLogTracker.name, ClusterLogTracker);
+        const logTracker = this.master.eventHandlers.get(LogHandler.name, LogHandler);
         if (logTracker) {
             const logs = logTracker.get(worker.id);
             const logString = logs.slice(Math.max(logs.length - 5, 0))

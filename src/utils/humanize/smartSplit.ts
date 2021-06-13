@@ -97,7 +97,7 @@ function createSplitItem(source: string, charIndexes: number[], start: number, e
 
     return {
         ranges: ranges,
-        content: ranges.map(r => r.content).join(),
+        content: ranges.map(r => r.content).join(''),
         end,
         start
     };

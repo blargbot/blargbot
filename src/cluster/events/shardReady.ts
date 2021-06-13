@@ -1,7 +1,7 @@
 import { Cluster } from '..';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 
-export class ShardReadyEventHandler extends DiscordEventService {
+export class ShardReadyHandler extends DiscordEventService {
     public constructor(private readonly cluster: Cluster) {
         super(cluster.discord, 'shardReady', cluster.logger);
     }

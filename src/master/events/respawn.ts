@@ -4,7 +4,7 @@ import { ClusterConnection } from '../../workers/ClusterConnection';
 import { ClusterRespawnRequest } from '../../workers/ClusterTypes';
 import { Master } from '../Master';
 
-export class ClusterRespawn extends WorkerPoolEventService<ClusterConnection> {
+export class RespawnHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(
         public readonly master: Master
     ) {

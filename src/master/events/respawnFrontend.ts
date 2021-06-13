@@ -2,7 +2,7 @@ import { WorkerPoolEventService } from '../../structures/WorkerPoolEventService'
 import { ClusterConnection } from '../../workers/ClusterConnection';
 import { Master } from '../Master';
 
-export class RespawnFrontend extends WorkerPoolEventService<ClusterConnection> {
+export class RespawnFrontendHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(private readonly master: Master) {
         super(master.clusters, 'respawnFrontend');
     }

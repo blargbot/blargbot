@@ -9,7 +9,7 @@ export class SubtagArgumentValue implements ISubtagArgumentValue {
 
     public readonly code: Statement;
     public get isCached(): boolean { return this.#value !== undefined; }
-    public get raw(): string { return this.code.map(c => typeof c === 'string' ? c : c.source).join(); }
+    public get raw(): string { return this.code.map(c => typeof c === 'string' ? c : c.source).join(''); }
     public get value(): string {
         if (this.#value === undefined)
             throw new Error('The value is not available yet. Please await the wait() method before attempting to access the value');
