@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:57:04
  * @Last Modified by: RagingLink
- * @Last Modified time: 2020-06-28 20:26:07
+ * @Last Modified time: 2021-06-13 15:03:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -33,8 +33,6 @@ module.exports =
 
             if (!channel)
                 return Builder.errors.noChannelFound(subtag, context);
-            if (channel.guild.id != context.guild.id)
-                return Builder.errors.channelNotInGuild(subtag, context);
 
             let file = args[3], filename = args[4];
             if (file && !filename) filename = 'file.txt';

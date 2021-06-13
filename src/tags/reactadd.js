@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:51:35
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:02:54
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -34,9 +34,6 @@ module.exports =
             channel = await Builder.util.parseChannel(context, emotes[0], { quiet: true, suppress: context.scope.suppressLookup });
             if (!channel) channel = context.channel;
             else emotes.shift();
-
-            if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
-                return Builder.errors.channelNotInGuild(subtag, context);
 
             // Check that the current first "emote" is a message id
             if (/^\d{17,23}$/.test(emotes[0])) {

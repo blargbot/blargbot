@@ -264,11 +264,6 @@ TagBuilder.util = {
                 channelId = channelId.match(/([0-9]{17,23})/)[0];
             }
             channel = await context.getChannel(channelId, args);
-
-            if (channel == null)
-                return TagBuilder.errors.noChannelFound;
-            if (channel.guild.id !== context.guild.id)
-                return TagBuilder.errors.channelNotInGuild;
         }
         return channel;
     },

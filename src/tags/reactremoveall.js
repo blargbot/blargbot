@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-22 17:09:03
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:03:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -29,13 +29,10 @@ module.exports =
             if (!channel) channel = context.channel;
             else args.shift();
 
-            if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
-                return Builder.errors.channelNotInGuild(subtag, context);
-
             // Check that the current first "emote" is a message id
             try {
                 message = await bot.getMessage(channel.id, args[0]);
-            } catch (e) { } 
+            } catch (e) { }
             finally {
                 if (!message) return Builder.errors.noMessageFound(subtag, context);
             }

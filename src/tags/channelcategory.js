@@ -1,8 +1,8 @@
 /*
  * @Author: zoomah
  * @Date: 2018-07-10 7:08:15
- * @Last Modified by: HunteRoi
- * @Last Modified time: 2020-06-06 01:00:00
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 14:59:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -23,8 +23,9 @@ module.exports =
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
             let channel = await Builder.util.parseChannel(context, args[0], { quiet });
 
-            if (typeof channel === 'function') 
-                return quiet ? '' : channel(subtag, context);
+            if (!channel)
+                return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
+
             return channel.parentID || '';
         })
         .whenDefault(Builder.errors.tooManyArguments)

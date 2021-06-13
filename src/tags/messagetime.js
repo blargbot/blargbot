@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:50:03
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:50:03
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:02:43
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -37,7 +37,7 @@ module.exports =
                 case 2:
                     channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
                     let i = 1;
-                    if (typeof channel == "function") {
+                    if (!channel) {
                         channel = context.channel;
                         format = args[(i = 0) + 1];
                     }
@@ -45,8 +45,8 @@ module.exports =
                     break;
                 case 3:
                     channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
-                    if (typeof channel == "function")
-                        return channel(subtag, context);
+                    if (!channel)
+                        return Builder.errors.noChannelFound(subtag, context);
                     message = await bu.getMessage(channel.id, args[1]);
                     format = args[2];
                     break;

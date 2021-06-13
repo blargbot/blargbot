@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-15 11:11:42
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:03:50
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -24,11 +24,8 @@ module.exports =
                 time = parseInt(args[0]);
                 channel = context.channel;
             }
-            if (channel.guild.id != context.guild.id)
-                return Builder.errors.channelNotInGuild(subtag, context);
             if (isNaN(time)) time = 0;
 
-            let endpoint = Endpoints.CHANNEL(channel.id);
             time = Math.min(time, 120);
 
             try {
