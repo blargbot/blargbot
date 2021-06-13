@@ -5,7 +5,7 @@ export class AutoResponseWhitelistInterval extends IntervalService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #whitelist: Set<string>;
 
-    public readonly type: string = 'AutoResponseWhitelist';
+    public readonly type: string = 'bbtag';
     public get guilds(): ReadonlySet<string> { return this.#whitelist; }
 
     public constructor(private readonly cluster: Cluster) {
