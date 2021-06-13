@@ -20,7 +20,7 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
             let ccommand = await context.getCached(`cc_${args[0].toLowerCase()}`,
-                async key => (await bu.getGuild(context.guild.id)).ccommands[key]);
+                async () => (await bu.getGuild(context.guild.id)).ccommands[args[0]]);
 
             if (ccommand == null)
                 return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
