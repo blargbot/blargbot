@@ -17,7 +17,8 @@ export function getDocsEmbed(context: CommandContext, topic: readonly string[]):
 }
 
 function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedOptions | undefined {
-    switch (topic[0].toLowerCase()) {
+    switch (topic[0] && topic[0].toLowerCase()) {
+        case undefined:
         case 'index': return {
             description: `Please use \`${context.prefix}${context.commandName} docs [topic]\` to view available information on a topic.\n\n` +
                 'Available Topics:\n' +
