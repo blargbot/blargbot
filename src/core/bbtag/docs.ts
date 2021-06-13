@@ -1,5 +1,5 @@
 import { EmbedField, EmbedOptions } from 'eris';
-import { bbtagUtil, codeBlock, SubtagType, tagTypes } from '../../utils';
+import { bbtagUtil, codeBlock, quote, SubtagType, tagTypes } from '../../utils';
 import { CommandContext } from '../command';
 import { BaseSubtag } from './BaseSubtag';
 import { SubtagHandlerCallSignature } from './types';
@@ -44,7 +44,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             const subtags = [...context.cluster.subtags.list(s => s.category == category)].map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
-                    codeBlock(subtags.join(','), '')
+                    codeBlock(subtags.join(','))
             };
         }
         case 'variables':
@@ -170,7 +170,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             else if (subtag.deprecated)
                 description.push('**This subtag is deprecated**');
             if (subtag.aliases.length > 0)
-                description.push('**Aliases:**', codeBlock(subtag.aliases.join(','), ''));
+                description.push('**Aliases:**', codeBlock(subtag.aliases.join(',')));
             if (subtag.desc)
                 description.push(subtag.desc);
 
@@ -181,7 +181,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 const limit = new limits[key]();
                 const text = limit.rulesFor(subtag.name).join('\n');
                 if (text) {
-                    limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text, '')}\n\n`;
+                    limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}\n\n`;
                 }
             }
 
@@ -191,7 +191,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             return {
                 title: ` - {${subtag.name}}`,
                 url: `/#${encodeURIComponent(subtag.name)}`,
-                description: description.join('\n') + '\u200b',
+                description: description.length === 0 ? undefined : description.join('\n') + '\u200b',
                 color: subtag.deprecated ? 0xff0000 : undefined,
                 fields,
                 footer: {
@@ -203,12 +203,17 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
 }
 
 function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature): EmbedField {
-    let description = signature.description + '\n\n';
+    let description = codeBlock(bbtagUtil.stringifyArguments(subtag.name, signature.args));
+    if (signature.description)
+        description += `${signature.description}\n`;
+    description += '\n';
     if (signature.exampleCode)
-        description += `**Example code:**${codeBlock(signature.exampleCode, '')}`;
+        description += `**Example code:**${quote(signature.exampleCode)}`;
     if (signature.exampleIn)
-        description += `**Example user input:**${codeBlock(signature.exampleIn, '')}`;
+        description += `**Example user input:**${quote(signature.exampleIn)}`;
     if (signature.exampleOut)
-        description += `**Example output:**${codeBlock(signature.exampleOut, '')}`;
-    return { name: `__Arguments: \`${bbtagUtil.stringifyArguments(subtag.name, signature.args)}\`__`, value: `${description.trim()}\u200b` };
+        description += `**Example output:**${quote(signature.exampleOut)}`;
+    return { name: '\u200b', value: description.trim() };
 }
+
+quote('');

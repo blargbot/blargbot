@@ -76,14 +76,14 @@ export class HelpCommand extends BaseCommand {
         for (const [name, commandNames] of groups) {
             fields.push({
                 name: `${name} commands`,
-                value: codeBlock([...commandNames].sort().join(', '), '')
+                value: codeBlock([...commandNames].sort().join(', '))
             });
         }
         if (customCommands.size > 0) {
             const commandNames = [...customCommands.entries()].filter(e => e[1] !== undefined).map(e => e[0]);
             fields.push({
                 name: 'Custom commands',
-                value: codeBlock(commandNames.sort().join(', '), '')
+                value: codeBlock(commandNames.sort().join(', '))
             });
         }
 

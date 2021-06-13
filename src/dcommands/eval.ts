@@ -20,7 +20,7 @@ export class EvalCommand extends BaseCommand {
 
         const { success, result } = await this.cluster.eval(userId, code);
         return success
-            ? `Input:${codeBlock(code, 'js')}Output:${codeBlock(result)}`
-            : `An error occured!${codeBlock(result)}`;
+            ? `Input:${codeBlock(code, 'js')}Output:${codeBlock(result, 'json')}`
+            : `An error occured!${codeBlock(result, 'json')}`;
     }
 }
