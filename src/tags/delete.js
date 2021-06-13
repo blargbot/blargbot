@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:31:02
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-29 17:29:16
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:01:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -28,10 +28,10 @@ module.exports =
                 return Builder.util.error(subtag, context, 'Author must be staff to delete unrelated messages');
 
             let msg = context.msg,
-                channel = Builder.util.parseChannel(context, channelId);
+                channel = await Builder.util.parseChannel(context, channelId, { quiet: true, suppress: context.scope.suppressLookup });
 
-            if (typeof channel === 'function') //One of the Builder.error values got returned
-                return channel(subtag, context);
+            if (!channel)
+                return Builder.errors.noChannelFound(subtag, context);
 
             if (msg.id !== messageId)
                 try {

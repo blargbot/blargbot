@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:33:45
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-03-20 09:38:15
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:02:02
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -34,8 +34,8 @@ module.exports =
             return await this.runEdit(subtag, context, context.channel, args[0], text, embed);
         })
         .whenArgs(3, async function (subtag, context, args) { //args = [(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
-            let channel = bu.parseChannel(args[0], true);
-            if (channel == null) { //args = [<messageId>,<text>,<embed>]
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
+            if (!channel) { //args = [<messageId>,<text>,<embed>]
                 let text = args[1] || undefined,
                     embed = bu.parseEmbed(args[2]);
                 if (!embed || embed.malformed) embed = args[2];
@@ -52,7 +52,7 @@ module.exports =
             return await this.runEdit(subtag, context, channel, args[1], text, embed);
         })
         .whenArgs(4, async function (subtag, context, args) { //args = [<channelId>,<messageId>,<text>,<embed>]
-            let channel = bu.parseChannel(args[0], true),
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup }),
                 messageId = args[1],
                 text = args[2] || undefined,
                 embed = bu.parseEmbed(args[3]) || args[3];
@@ -64,10 +64,8 @@ module.exports =
             if (!(await context.isStaff || context.ownsMessage(messageId)))
                 return Builder.util.error(subtag, context, 'Author must be staff to edit unrelated messages');
 
-            if (channel == null)
+            if (!channel)
                 return Builder.errors.noChannelFound(subtag, context);
-            if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
-                return Builder.errors.channelNotInGuild(subtag, context);
 
             let message;
             try {

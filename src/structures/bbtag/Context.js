@@ -81,7 +81,8 @@ class Context {
             query: {
                 count: 0,
                 user: {},
-                role: {}
+                role: {},
+                channel: {}
             },
             outputMessage: null,
             ownedMsgs: [],
@@ -131,6 +132,33 @@ class Context {
         return context;
     }
 
+    async getChannel(name, args) {
+        if (!name || name.trim() === '') return null;
+
+        let didSend = false;
+        if (this.state.query.count >= 5)
+            args.quiet = args.suppress = true;
+        if (args.onSendCallback)
+            args.onSendCallback = ((oldCallback) => () => (didSend = true, oldCallback()))(args.onSendCallback);
+        else
+            args.onSendCallback = () => didSend = true;
+
+        if (name in this.state.query.channel) {
+            let channel = bot.guilds.get(this.guild.id).channels.get(this.state.query.channel[name]);
+            if (channel) return channel;
+            name = this.state.query.channel[name];
+        }
+
+        let result;
+        try {
+            result = await bu.getChannel(this.msg, name, args);
+        } finally { }
+        if (didSend)
+            this.state.query.count++;
+        this.state.query.channel[name] = (result || { id: undefined }).id;
+        return result;
+    }
+
     async getUser(name, args) {
         let didSend = false;
         if (this.state.query.count >= 5)
@@ -165,8 +193,11 @@ class Context {
         else
             args.onSendCallback = () => didSend = true;
 
-        if (name in this.state.query.role)
-            return bot.guilds.get(this.guild.id).roles.get(this.state.query.role[name]);
+        if (name in this.state.query.role) {
+            let role = bot.guilds.get(this.guild.id).roles.get(this.state.query.role[name]);
+            if (role) return role;
+            name = this.state.query.role[name];
+        }
 
         let result;
         try {
@@ -257,7 +288,7 @@ class Context {
         try {
             msg = await bot.getMessage(obj.msg.channel.id, obj.msg.id);
         } catch (err) {
-            let channel = (await bot.getChannel(obj.msg.channel.id));
+            let channel = await bot.getChannel(obj.msg.channel.id);
             let member;
             if (channel == null) {
                 channel = JSON.parse(obj.msg.channel.serialized);

@@ -14,10 +14,10 @@ module.exports =
     )
     .whenArgs('0-1', Builder.errors.notEnoughArguments)
     .whenArgs(2, async function (subtag, context, args) {
-      let channel = Builder.util.parseChannel(context, args[0]);
+      let channel = await Builder.util.parseChannel(context, args[0]);
 
       if (!channel)
-        return Builder.util.error(subtag, context, 'Channel does not exist');
+        return Builder.errors.noChannelFound(subtag, context);
 
       const permission = channel.permissionsOf(context.authorizer);
 

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:51:35
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:02:54
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -31,34 +31,28 @@ module.exports =
                 message = null;
 
             // Check if the first "emote" is actually a valid channel
-            channel = bu.parseChannel(emotes[0], true);
-            if (channel == null)
-                channel = context.channel;
-            else
-                emotes.shift();
-
-            if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
-                return Builder.errors.channelNotInGuild(subtag, context);
+            channel = await Builder.util.parseChannel(context, emotes[0], { quiet: true, suppress: context.scope.suppressLookup });
+            if (!channel) channel = context.channel;
+            else emotes.shift();
 
             // Check that the current first "emote" is a message id
             if (/^\d{17,23}$/.test(emotes[0])) {
                 try {
                     message = await bot.getMessage(channel.id, emotes[0]);
                 } catch (e) { }
-                if (message == null)
-                    return Builder.errors.noMessageFound(subtag, context);
-                emotes.shift();
+                finally {
+                    if (!message) return Builder.errors.noMessageFound(subtag, context);
+                    emotes.shift();
+                }
             }
 
             // Find all actual emotes in remaining emotes
             let parsed = bu.findEmoji(emotes.join('|'), true);
-
             if (parsed.length == 0 && emotes.length > 0)
                 return Builder.util.error(subtag, context, 'Invalid Emojis');
 
             let messageid = message ? message.id : await context.state.outputMessage;
-
-            if (messageid != null) {
+            if (messageid) {
                 // Perform add of each reaction
                 var errors = await bu.addReactions(channel.id, messageid, parsed);
                 if (errors[50013])

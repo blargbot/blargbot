@@ -257,18 +257,13 @@ TagBuilder.util = {
     error(subtag, context, message) {
         return bbEngine.addError(subtag, context, message);
     },
-    parseChannel(context, channelId) {
+    async parseChannel(context, channelId, args = { quiet: true, supppress: false }) {
         let channel = context.channel;
         if (channel.id !== channelId) {
-            if (!/([0-9]{17,23})/.test(channelId))
-                return TagBuilder.errors.noChannelFound;
-            channelId = channelId.match(/([0-9]{17,23})/)[0];
-            channel = bot.getChannel(channelId);
-
-            if (channel == null)
-                return TagBuilder.errors.noChannelFound;
-            if (channel.guild.id !== context.guild.id)
-                return TagBuilder.errors.channelNotInGuild;
+            if (/([0-9]{17,23})/.test(channelId)) {
+                channelId = channelId.match(/([0-9]{17,23})/)[0];
+            }
+            channel = await context.getChannel(channelId, args);
         }
         return channel;
     },

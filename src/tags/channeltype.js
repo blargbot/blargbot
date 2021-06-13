@@ -1,8 +1,8 @@
 /*
  * @Author: zoomah
  * @Date: 2018-07-10 7:08:15
- * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-10 12:53:21
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:01:41
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -22,9 +22,11 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => types[context.channel.type])
         .whenArgs('1-2', async (subtag, context, args) => {
-            let channel = Builder.util.parseChannel(context, args[0]);
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
-            if (typeof channel === 'function') return quiet ? '' : channel(subtag, context);
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet, suppress: context.scope.suppressLookup });
+            if (!channel)
+                return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
+
             return types[channel.type];
         })
         .whenDefault(Builder.errors.tooManyArguments)
