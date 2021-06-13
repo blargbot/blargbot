@@ -42,9 +42,9 @@ export class OperatorSubtag extends BaseSubtag {
         if (compare[operator]) {
             return this.applyComparisonOperation(operator, values);
         } else if (numeric[operator]) {
-        /**
-         * * It's important that numeric comes before logic, as they both have ^ as an operator
-         */
+            /**
+             * * It's important that numeric comes before logic, as they both have ^ as an operator
+             */
             return this.applyNumericOperation(context, operator, values, subtag);
         } else if (logic[operator]) {
             return this.applyLogicOperation(context, operator, values, subtag);
@@ -134,14 +134,16 @@ export class OperatorSubtag extends BaseSubtag {
         values: string[],
         subtag: SubtagCall
     ): string {
-        if(operator === '!') {
+        if (operator === '!') {
             const value = parse.boolean(values[0]);
             if (typeof value !== 'boolean')
                 return this.notABoolean(context, subtag, values[0] + ' is not a boolean');
             return logic[operator]([value]).toString();
         }
+
         const parsedValues = values.map((value) => parse.boolean(value));
-        if (parsedValues.filter((v) => typeof v === 'undefined').length > 0)
+        const parsedBools = parsedValues.filter((v): v is boolean => typeof v === 'boolean');
+        if (parsedBools.length !== parsedValues.length)
             return this.notABoolean(
                 context,
                 subtag,
@@ -149,8 +151,7 @@ export class OperatorSubtag extends BaseSubtag {
                     (v) => typeof v != 'boolean'
                 )}`
             );
-        //@ts-ignore complains about parsedValues' type being (boolean | undefined)[] when the above filters that out
-        return logic[operator](parsedValues).toString();
+        return operators[operator](parsedBools).toString();
     }
 
     public enrichDocs(
@@ -159,7 +160,7 @@ export class OperatorSubtag extends BaseSubtag {
         const numericOperationDesc = `\`${Object.keys(numeric).join(', ')}\`\n` +
             'Numeric operators have the exact same behaviour as the operators in `{math}`. ' +
             'All `values` need to be `numbers`, if an argument is an array (of one level) it will be flattened.' +
-            '\n**Examples**:```\n'+
+            '\n**Examples**:```\n' +
             '{+;1;2;3} = 6\n{*;1;2;3;4} = 24\n{/;5} = 5 (5 / 1)\n- {^;2;6;2} = (2^6)^2 = 64^2 = 4096\n' +
             '{+;[1,2,3,4];5;[6,7,8]} = 36\n{+;[1,2,3];["hello", "world"]} = `Not a number`\n```';
 

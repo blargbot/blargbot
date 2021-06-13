@@ -1,7 +1,7 @@
 import { Cluster } from './../cluster/Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType, parse } from '../utils';
-import { operatorTypes }  from '../utils/bbtag/operators';
+import { operatorTypes } from '../utils/bbtag/operators';
 const operators = operatorTypes.logic;
 
 export class LogicSubtag extends BaseSubtag {
@@ -15,7 +15,7 @@ export class LogicSubtag extends BaseSubtag {
                 {
                     args: ['operator', 'values+'],
                     description: 'Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. ' +
-                    'Valid logic operators are `' + Object.keys(operators).join('`, `') + '`.',
+                        'Valid logic operators are `' + Object.keys(operators).join('`, `') + '`.',
                     exampleCode: '{logic;&&;true;false}',
                     exampleOut: 'false',
                     execute: (ctx, args, subtag) => this.applyLogicOperation(ctx, args.map(arg => arg.value), subtag)
@@ -41,14 +41,15 @@ export class LogicSubtag extends BaseSubtag {
         if (!operator)
             return this.customError('Invalid operator', context, subtag);
         const values = args;
-        if(operator === '!') {
+        if (operator === '!') {
             const value = parse.boolean(values[0]);
             if (typeof value !== 'boolean')
                 return this.notABoolean(context, subtag, values[0] + ' is not a boolean');
             return operators[operator]([value]).toString();
         }
         const parsedValues = values.map((value) => parse.boolean(value));
-        if (parsedValues.filter((v) => typeof v === 'undefined').length > 0)
+        const parsedBools = parsedValues.filter((v): v is boolean => typeof v === 'boolean');
+        if (parsedBools.length !== parsedValues.length)
             return this.notABoolean(
                 context,
                 subtag,
@@ -56,7 +57,6 @@ export class LogicSubtag extends BaseSubtag {
                     (v) => typeof v != 'boolean'
                 )}`
             );
-        //@ts-ignore complains about parsedValues' type being (boolean | undefined)[] when the above filters that out
-        return operators[operator](parsedValues).toString();
+        return operators[operator](parsedBools).toString();
     }
 }

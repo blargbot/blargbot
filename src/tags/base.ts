@@ -35,34 +35,31 @@ export class BaseNumberSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): string {
         let fallback;
-        if (context.scope.fallback)
+        if (context.scope.fallback) {
             fallback = parse.int(context.scope.fallback);
+            if (isNaN(fallback) || !between(fallback, 2, 36, true))
+                fallback = undefined;
+        }
 
         let origin = parse.int(originStr);
         let radix = parse.int(radixStr);
-        const radixFallback =
-            fallback !== undefined
-                ? !isNaN(fallback) && between(fallback, 2, 36, true)
-                : false;
-        // @ts-ignore Ignore Type 'number | undefined' is not assignable to type 'number' as fallback has to be a number
-        if (isNaN(origin) && radixFallback) origin = fallback;
-        // @ts-ignore idem dito
-        if (isNaN(radix) && radixFallback) radix = fallback;
+
+        if (isNaN(origin) && fallback !== undefined) origin = fallback;
+        if (isNaN(radix) && fallback !== undefined) radix = fallback;
 
         if (isNaN(origin) || isNaN(radix))
             return this.notANumber(context, subtag);
 
-        // @ts-ignore idem dito
-        if (!between(origin, 2, 36, true) && radixFallback) origin = fallback;
-        // @ts-ignore idem dito
-        if (!between(radix, 2, 36, true) && radixFallback) radix = fallback;
+        if (!between(origin, 2, 36, true) && fallback !== undefined) origin = fallback;
+        if (!between(radix, 2, 36, true) && fallback !== undefined) radix = fallback;
 
-        if (!between(origin, 2, 36, true) || !between(radix, 2, 36, true))
+        if (!between(origin, 2, 36, true) || !between(radix, 2, 36, true)) {
             return this.customError(
                 'Base must be between 2 and 36',
                 context,
                 subtag
             );
+        }
 
         let value = parse.int(valueStr, origin);
         if (isNaN(value)) {

@@ -2,6 +2,7 @@ import { SubtagArgumentValue } from './../core/bbtag/types';
 import { Cluster } from '../cluster';
 import { BaseSubtag, SubtagCall, tagVariableScopes, BBTagContext } from '../core/bbtag';
 import { SubtagType } from '../utils';
+import ReadWriteLock from 'rwlock';
 
 export class LockSubtag extends BaseSubtag {
     public constructor(cluster: Cluster) {
@@ -9,16 +10,16 @@ export class LockSubtag extends BaseSubtag {
             name: 'lock',
             category: SubtagType.COMPLEX,
             desc: 'Provides read/write locking functionality for bbtag. This is a very advanced feature, ' +
-            'so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_\\(computer_science\\)).' +
-            '\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish ' +
-            'what they are doing before "releasing the lock" and letting other commands use that lock. ' +
-            'This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.' +
-            '\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing ' +
-            'is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until ' +
-            'it can aquire a lock.' +
-            '\n\n`mode` must be either `read` or `write`.' +
-            '\n`key` can be anything. This follows the same scoping rules as variables do.' +
-            '\n`code` will be run once the lock is acquired',
+                'so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_\\(computer_science\\)).' +
+                '\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish ' +
+                'what they are doing before "releasing the lock" and letting other commands use that lock. ' +
+                'This can be used to secure against data being edited by 2 things at the same time, which can cause inconsistencies.' +
+                '\n\nThere can be multiple `read` locks held at once or a single `write` lock. This means that if all your command is doing ' +
+                'is reading some data then as long as nothing is writing to it, it will be allowed, otherwise the command will wait until ' +
+                'it can aquire a lock.' +
+                '\n\n`mode` must be either `read` or `write`.' +
+                '\n`key` can be anything. This follows the same scoping rules as variables do.' +
+                '\n`code` will be run once the lock is acquired',
             definition: [
                 {
                     args: ['mode', 'key', '~code'],
@@ -55,12 +56,13 @@ export class LockSubtag extends BaseSubtag {
     ): Promise<string> {
         mode = mode.toLowerCase();
 
-        if (!['read', 'write'].includes(mode))
+        if (!isValidLockMode(mode)) {
             return this.customError(
-                "Mode must be 'read' or 'write'",
+                'Mode must be \'read\' or \'write\'',
                 context,
                 subtag
             );
+        }
 
         if (!key)
             return this.customError('Key cannot be empty', context, subtag);
@@ -73,30 +75,26 @@ export class LockSubtag extends BaseSubtag {
             subtag,
             key.substring(scope.prefix.length)
         );
-        //TODO fix this can't be indexed type error
-        //@ts-ignore
-        const lockFunc = lock[mode + 'Lock'];
+
         const lockOverride = context.override('lock', {
             execute: (context, _, subtag) =>
                 this.customError('Lock cannot be nested', context, subtag)
         });
 
+        const release = await lockAsync(lock, mode === 'read' ? 'readLock' : 'writeLock');
         try {
-            return await new Promise((resolve, reject) => {
-                //TODO and this any type error
-                //@ts-ignore
-                lockFunc(async (release) => {
-                    try {
-                        resolve(await code.wait());
-                    } catch (err) {
-                        reject(err);
-                    } finally {
-                        release();
-                    }
-                });
-            });
+            return await code.wait();
         } finally {
             lockOverride.revert();
+            release();
         }
     }
+}
+
+function lockAsync(lock: ReadWriteLock, mode: 'readLock' | 'writeLock'): Promise<() => void> {
+    return new Promise(resolve => lock[mode](release => resolve(release)));
+}
+
+function isValidLockMode(mode: string): mode is 'read' | 'write' {
+    return ['read', 'write'].includes(mode);
 }
