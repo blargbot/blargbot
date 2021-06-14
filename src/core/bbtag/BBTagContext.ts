@@ -4,7 +4,7 @@ import { VariableCache, CacheEntry } from './Caching';
 import ReadWriteLock from 'rwlock';
 import { bbtagUtil, FlagDefinition, FlagResult, guard, oldBu, parse } from '../../utils';
 import { Duration } from 'moment-timezone';
-import { GuildTextableChannel, Member, User, Guild, Role } from 'eris';
+import { AnyGuildChannel, GuildTextableChannel, Member, User, Guild, Role } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
 import { SubtagCall, BBTagContextMessage, BBTagContextOptions, BBTagContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, SubtagHandler, Statement } from './types';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
@@ -86,7 +86,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             query: {
                 count: 0,
                 user: {},
-                role: {}
+                role: {},
+                channel: {}
             },
             outputMessage: null,
             ownedMsgs: [],
@@ -184,6 +185,30 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             this.state.query.count++;
         this.state.query.role[name] = (result || { id: undefined }).id;
         return result;
+    }
+
+    public async getChannel(name: string, args: FindEntityOptions = {}): Promise<AnyGuildChannel | null> {
+        let didSend = false;
+        if (this.state.query.count >= 5)
+            args.quiet = args.suppress = true;
+        if (args.onSendCallback)
+            args.onSendCallback = ((oldCallback) => () => (didSend = true, oldCallback()))(args.onSendCallback);
+        else
+            args.onSendCallback = () => didSend = true;
+
+        const cached = this.state.query.channel[name];
+        if (cached !== undefined)
+            return this.engine.discord.guilds.get(this.guild.id)?.channels.get(cached) ?? null;
+
+        let result;
+        try {
+            result = await this.engine.util.getChannel(this.message, name, args);
+            if (result?.type === 1 || result?.type === 3) result = null; //* DM channels, these are not used in BBtag
+        } finally { }
+        if (didSend)
+            this.state.query.count++;
+        this.state.query.channel[name] = (result || { id: undefined }).id;
+        return result as (AnyGuildChannel | null);
     }
 
     public override(subtag: string, handler: SubtagHandler): { previous: SubtagHandler | undefined, revert: () => void } {

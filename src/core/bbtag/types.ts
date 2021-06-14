@@ -84,7 +84,8 @@ export interface BBTagContextState {
     query: {
         count: 0,
         user: Record<string, string | undefined>,
-        role: Record<string, string | undefined>
+        role: Record<string, string | undefined>,
+        channel: Record<string, string | undefined>
     },
     outputMessage: Promise<string | null> | null,
     ownedMsgs: string[],
