@@ -61,6 +61,7 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public notANumber(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not a number', subtag, debugMessage);
     }
+
     public enrichDocs(docs: EmbedOptions): EmbedOptions {
         return docs;
     }
@@ -68,10 +69,14 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public notABoolean(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not a boolean', subtag, debugMessage);
     }
+
     public notEnoughArguments(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not enough arguments', subtag, debugMessage);
     }
 
+    public channelNotFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
+        return context.addError('No channel found', subtag, debugMessage);
+    }
     public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError(errorText, subtag, debugMessage);
     }
