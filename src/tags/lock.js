@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:49:31
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-06-26 14:53:13
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-15 13:11:46
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -57,7 +57,7 @@ module.exports =
             let scope = bu.tagVariableScopes.find(s => key.startsWith(s.prefix));
             if (scope == null) throw new Error('Missing default variable scope!');
 
-            let lock = scope.getLock(key.substring(scope.prefix.length));
+            let lock = scope.getLock(context, key.substring(scope.prefix.length));
             let lockFunc = lock[mode + 'Lock'];
 
             let lockOverride = context.override('lock', (subtag, context) => Builder.util.error(subtag, context, 'Lock cannot be nested'));

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:22:38
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-19 09:11:13
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-15 13:15:09
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -177,7 +177,7 @@ bu.tagVariableScopes = [
         getter: async (context, name) =>
             await bu.getVariable(context.guild.id, name,
                 context.isCC && !context.tagVars ? bu.TagVariableType.GUILD : bu.TagVariableType.TAGGUILD),
-        getLock: (context, key) => bu.getLock(...['SERVER', context.isCC ? 'CC' : 'Tag', key])
+        getLock: (context, key) => bu.getLock(...['SERVER', context.guild.id, context.isCC ? 'CC' : 'Tag', key])
     },
     {
         name: 'Author',
@@ -232,7 +232,7 @@ bu.tagVariableScopes = [
                 return await bu.getVariable(context.tagName, name, bu.TagVariableType.GUILDLOCAL, context.guild.id);
             return await bu.getVariable(context.tagName, name, bu.TagVariableType.LOCAL);
         },
-        getLock: (context, key) => bu.getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', context.tagName])
+        getLock: (context, key) => bu.getLock(...['LOCAL', context.guild.id, context.isCC ? 'CC' : 'TAG', context.tagName])
     }
 ];
 
