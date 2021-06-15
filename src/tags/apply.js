@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:58
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-09-18 14:01:30
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-15 19:23:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -30,7 +30,8 @@ module.exports =
             let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
             st._protected.children = [new BBTag(args[0])];
 
-            for (const arg of tagArgs) {
+            for (let arg of tagArgs) {
+                arg = typeof arg === 'object' ? JSON.stringify(arg) : arg.toString();
                 let a = new BBTag(arg);
                 a._protected.start = 0;
                 a._protected.end = arg.length;
