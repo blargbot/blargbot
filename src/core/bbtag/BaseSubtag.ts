@@ -13,7 +13,7 @@ export interface SubtagOptions {
     aliases?: readonly string[];
     category: SubtagType;
     desc?: string | null;
-    deprecated?: string | false;
+    deprecated?: string | boolean;
     staff?: boolean;
 }
 
@@ -23,7 +23,7 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public readonly category: SubtagType;
     public readonly isTag: true;
     public readonly desc: string | null;
-    public readonly deprecated: string | false;
+    public readonly deprecated: string | boolean;
     public readonly staff: boolean;
     public readonly signatures: readonly SubtagHandlerCallSignature[];
     public readonly handler: SubtagHandler;
