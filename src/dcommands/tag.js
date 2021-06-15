@@ -555,10 +555,10 @@ ${command[0].desc}`);
                         break;
                     }
                     author = await r.table('user').get(tag.author).run();
-                    let toSend = `The tag \`${title}\` was made by **${author.username}#${author.discriminator}**`;
-                    if (tag.authorizer && tag.authorizer != author.id) {
+                    let toSend = `The tag \`${title}\` was made by **${author ? author.username + '#' + author.discriminator : '`an unknown user`'}**`;
+                    if (tag.authorizer && author && tag.authorizer != author.id) {
                         authorizer = await r.table('user').get(tag.authorizer).run();
-                        toSend += ` and is authorized by **${authorizer.username}#${authorizer.discriminator}**`;
+                        toSend += ` and is authorized by **${authorizer ? authorizer.username + '#' + authorizer.discriminator : '`an unknown user`'}**`;
                     }
                     bu.send(msg, toSend);
                     break;
@@ -567,7 +567,7 @@ ${command[0].desc}`);
                     let returnMsg = '__Here are the top 10 tags:__\n';
                     for (let i = 0; i < topTags.length; i++) {
                         let author = await r.table('user').get(topTags[i].author);
-                        returnMsg += `**${i + 1}.** **${topTags[i].name}** (**${author.username}#${author.discriminator}**) - used **${topTags[i].uses} time${topTags[i].uses == 1 ? '' : 's'}**\n`;
+                        returnMsg += `**${i + 1}.** **${topTags[i].name}** (**${author ? author.username + '#' + author.discriminator : '`unknown user`'}**) - used **${topTags[i].uses} time${topTags[i].uses == 1 ? '' : 's'}**\n`;
                     }
                     bu.send(msg, returnMsg);
                     break;
@@ -589,8 +589,8 @@ ${command[0].desc}`);
                     // let count = await r.table('user').getAll(tag.name, { index: 'favourite_tag' }).count();
 
                     let output = `__**Tag | ${title}** __
-Author: **${author.username}#${author.discriminator}**
-Authorizer: **${authorizer.username}#${authorizer.discriminator}**
+Author: **${author ? author.username + '#' + author.discriminator : '`unknown user`'}**
+Authorizer: **${authorizer ? authorizer.username + '#' + authorizer.discriminator : '`unknown user`'}**
 Cooldown: ${tag.cooldown || 0}ms
 It was last modified **${moment(tag.lastmodified).format('LLLL')}**.
 It has been used a total of **${tag.uses} time${tag.uses == 1 ? '' : 's'}**!
@@ -723,7 +723,7 @@ It has been favourited **${count || 0} time${(count || 0) == 1 ? '' : 's'}**!`;
                         let user = await r.table('user').get(msg.author.id);
                         let tags = await r.table('tag').getAll(msg.author.id, { index: 'user_favourite' });
                         let output = `You have ${tags.length} favourite tags. \`\`\`fix
-${tags.map(t => t.name).join(', ')}              
+${tags.map(t => t.name).join(', ')}
 \`\`\` `;
                         await bu.send(msg, output);
                     }
@@ -775,7 +775,7 @@ ${user.reports[title]}`);
                         let user = await r.table('user').get(msg.author.id);
                         if (!user.favourites) user.favourites = {};
                         let output = `You have ${Object.keys(user.favourites).length} favourite tags. \`\`\`fix
-${Object.keys(user.favourites).join(', ')}              
+${Object.keys(user.favourites).join(', ')}
 \`\`\` `;
                         await bu.send(msg, output);
                     }
