@@ -83,8 +83,9 @@ const subcommands = [
     },
     {
         name: 'test',
-        args: '[debug] <code>',
-        desc: 'Executes code in a tag sandbox. If debug is included, the result will have a debug file attached'
+        args: '[debug] <content>',
+        desc: 'Uses the BBTag engine to execute the content as it was a tag',
+        aliases: ['eval', 'exec', 'vtest']
     },
     {
         name: 'debug',
@@ -110,12 +111,6 @@ const subcommands = [
         name: 'setlang',
         args: '<tag> <lang>',
         desc: 'Sets the language to use when returning the raw text of your tag'
-    },
-    {
-        name: 'test',
-        args: '<content>',
-        desc: 'Uses the BBTag engine to execute the content as it was a tag',
-        aliases: ['eval', 'exec', 'vtest']
     }
 ];
 const tagNameMsg = 'Enter the name of the tag:';
