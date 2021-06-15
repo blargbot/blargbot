@@ -175,7 +175,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             if (subtag.desc)
                 description.push(subtag.desc);
 
-            const fields = subtag.signatures.map(sig => toField(subtag, sig));
+            const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
             const limitField: EmbedField = { name: '__Usage limits__', value: '' };
 
             for (const key of Object.keys(limits)) {
@@ -203,7 +203,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
     }
 }
 
-function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature): EmbedField {
+function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, index: number): EmbedField {
     let description = codeBlock(bbtagUtil.stringifyArguments(subtag.name, signature.args));
     if (signature.description)
         description += `${signature.description}\n`;
@@ -214,7 +214,7 @@ function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature): Emb
         description += `**Example user input:**${quote(signature.exampleIn)}`;
     if (signature.exampleOut)
         description += `**Example output:**${quote(signature.exampleOut)}`;
-    return { name: '\u200b', value: description.trim() };
+    return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
 }
 
 quote('');
