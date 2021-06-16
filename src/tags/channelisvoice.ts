@@ -27,7 +27,7 @@ export class ChannelIsVoice extends BaseSubtag {
                     execute: (ctx, args, subtag) => this.isVoiceChannel(ctx, args.map(arg => arg.value), subtag)
                 }
             ]
-        })
+        });
     }
 
     public async isVoiceChannel(
