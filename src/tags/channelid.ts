@@ -34,7 +34,7 @@ export class ChannelIdSubtag extends BaseSubtag {
         context: BBTagContext,
         args: string[],
         subtag: SubtagCall
-    ) {
+    ): Promise<string> {
         const channel = await context.getChannel(args[0]);
         const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
         if (!channel)

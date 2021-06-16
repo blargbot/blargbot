@@ -26,14 +26,14 @@ export class ChannelIsText extends BaseSubtag {
                     execute: (ctx, args, subtag) => this.isTextChannel(ctx, args.map(arg => arg.value), subtag)
                 }
             ]
-        })
+        });
     }
 
     public async isTextChannel(
         context: BBTagContext,
         args: string[],
         subtag: SubtagCall
-    ) {
+    ): Promise<string> {
 
         const channel = await context.getChannel(args[0]);
         const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];

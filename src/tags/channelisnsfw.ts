@@ -26,14 +26,14 @@ export class ChannelIsNsfw extends BaseSubtag {
                     execute: (ctx, args, subtag) => this.isNsfwChannel(ctx, args.map(arg => arg.value), subtag)
                 }
             ]
-        })
+        });
     }
 
     public async isNsfwChannel(
         context: BBTagContext,
         args: string[],
         subtag: SubtagCall
-    ) {
+    ): Promise<string> {
 
         const channel = await context.getChannel(args[0]);
         const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];

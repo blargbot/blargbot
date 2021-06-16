@@ -67,5 +67,6 @@ export function flags(definitions: Iterable<FlagDefinition>, text: string | read
             }
         }
     }
+    output._ = output['undefined'];
     return output;
 }

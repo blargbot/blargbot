@@ -25,7 +25,7 @@ export interface TagResult {
     readonly category: SubtagType;
     readonly name: string;
     readonly signatures: readonly SubtagSignatureDetails[];
-    readonly deprecated: false | string;
+    readonly deprecated: boolean | string;
     readonly staff: boolean;
     readonly aliases: readonly string[];
 }
