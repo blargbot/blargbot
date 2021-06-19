@@ -12,26 +12,31 @@ export class IPCEvents {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #events: EventEmitter;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #process?: NodeJS.Process | ChildProcess;
+    #sender?: (message: ProcessMessage) => boolean;
 
-    public constructor() {
+    public constructor(process?: NodeJS.Process) {
         this.#events = new EventEmitter();
+        if (process !== undefined)
+            this.attach(process);
     }
 
     protected attach(process: NodeJS.Process | ChildProcess): void {
-        this.#process = process;
-        this.#process.on('message', ({ type, data, id }: ProcessMessage) =>
+        if (this.#sender !== undefined)
+            throw new Error('Already attached to a process!');
+
+        process.on('message', ({ type, data, id }: ProcessMessage) =>
             this.emit(type, data, id));
+
+        this.#sender = isWorkerProcess(process) ? message => process.send(message)
+            : process.env.IGNORE_SEND ? () => false
+                : () => { throw new Error('Process does not support sending messages'); };
     }
 
     public send(type: string, data?: unknown, id?: Snowflake): boolean {
-        if (this.#process === undefined)
+        if (this.#sender === undefined)
             throw new Error('No process has been attached to yet');
 
-        if (typeof this.#process.send !== 'function')
-            throw new Error('Process does not support sending messages');
-
-        return this.#process.send(<ProcessMessage>{ type, id: id ?? snowflake.create(), data });
+        return this.#sender({ type, id: id ?? snowflake.create(), data });
     }
 
     protected emit(type: string, data: unknown, id: Snowflake): boolean {

@@ -7,12 +7,12 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program (no build)",
+            "name": "Launch Master (no build)",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/index.ts",
+            "program": "${workspaceFolder}/src/entrypoint/master.ts",
             "args": [
                 "--async-stack-traces"
             ]
@@ -20,16 +20,59 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Program",
+            "name": "Launch Master",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/index.ts",
+            "program": "${workspaceFolder}/src/entrypoint/master.ts",
             "preLaunchTask": "yarn: build",
             "args": [
                 "--async-stack-traces"
             ]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Cluster (no build)",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}/src/entrypoint/cluster.ts",
+            "args": [
+                "--async-stack-traces",
+                "--max-old-space-size=4096"
+            ],
+            "env": {
+                "CLUSTER_ID": "0",
+                "SHARDS_MAX": "1",
+                "SHARDS_FIRST": "1",
+                "SHARDS_LAST": "1",
+                "IGNORE_SEND": "true"
+            }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch Cluster",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "autoAttachChildProcesses": true,
+            "program": "${workspaceFolder}/src/entrypoint/cluster.ts",
+            "preLaunchTask": "yarn: build",
+            "args": [
+                "--async-stack-traces",
+                "--max-old-space-size=4096"
+            ],
+            "env": {
+                "CLUSTER_ID": "0",
+                "SHARDS_MAX": "1",
+                "SHARDS_FIRST": "1",
+                "SHARDS_LAST": "1",
+                "IGNORE_SEND": "true"
+            }
         },
         {
             "name": "Debug current file",

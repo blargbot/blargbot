@@ -12,10 +12,9 @@ export abstract class BaseWorker extends IPCEvents {
     public constructor(
         public readonly logger: CatLogger
     ) {
-        super();
+        super(process);
 
         this.#process = process;
-        super.attach(this.#process);
         this.#process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise' + JSON.stringify(err)));
 
