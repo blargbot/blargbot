@@ -14,7 +14,7 @@ module.exports =
     )
     .whenArgs('0-1', Builder.errors.notEnoughArguments)
     .whenArgs(2, async function (subtag, context, args) {
-      let channel = await Builder.util.parseChannel(context, args[0]);
+      let channel = await Builder.util.parseChannel(context, args[0], { suppress: context.scope.suppressLookup });
 
       if (!channel)
         return Builder.errors.noChannelFound(subtag, context);

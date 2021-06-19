@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:30:19
  * @Last Modified by: RagingLink
- * @Last Modified time: 2021-06-13 15:01:14
+ * @Last Modified time: 2021-06-19 17:50:00
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -21,7 +21,7 @@ module.exports =
         .whenArgs(0, async (_, context) => context.channel.name)
         .whenArgs('1-2', async (subtag, context, args) => {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
-            let channel = await Builder.util.parseChannel(context, args[0], { quiet });
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet, suppress: context.scope.suppressLookup });
             if (!channel)
                 return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
 
