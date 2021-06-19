@@ -298,6 +298,7 @@ export interface StoredUserSettings {
     readonly dontdmerrors?: boolean;
     readonly prefixes?: readonly string[];
     readonly blacklisted?: boolean;
+    readonly timezone?: string;
 }
 
 export interface UserTodo {

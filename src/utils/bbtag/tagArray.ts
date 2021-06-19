@@ -50,13 +50,7 @@ export function flattenArray(array: JArray): JArray {
     for (const arg of array) {
         const arr = typeof arg === 'string' ? deserialize(arg) : {v: arg};
         if (arr != null && Array.isArray(arr.v))
-            result.push(
-                ...arr.v.map((i) =>
-                    typeof i === 'object' || i === null || i === undefined
-                        ? [JSON.stringify(i)]
-                        : [i.toString()]
-                )
-            );
+            result.push(...arr.v);
         else result.push(arg);
     }
     return result;

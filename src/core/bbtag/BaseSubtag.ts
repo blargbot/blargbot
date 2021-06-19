@@ -13,7 +13,7 @@ export interface SubtagOptions {
     aliases?: readonly string[];
     category: SubtagType;
     desc?: string | null;
-    deprecated?: string | false;
+    deprecated?: string | boolean;
     staff?: boolean;
 }
 
@@ -23,7 +23,7 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public readonly category: SubtagType;
     public readonly isTag: true;
     public readonly desc: string | null;
-    public readonly deprecated: string | false;
+    public readonly deprecated: string | boolean;
     public readonly staff: boolean;
     public readonly signatures: readonly SubtagHandlerCallSignature[];
     public readonly handler: SubtagHandler;
@@ -61,6 +61,7 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public notANumber(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not a number', subtag, debugMessage);
     }
+
     public enrichDocs(docs: EmbedOptions): EmbedOptions {
         return docs;
     }
@@ -68,10 +69,14 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public notABoolean(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not a boolean', subtag, debugMessage);
     }
+
     public notEnoughArguments(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not enough arguments', subtag, debugMessage);
     }
 
+    public channelNotFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
+        return context.addError('No channel found', subtag, debugMessage);
+    }
     public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError(errorText, subtag, debugMessage);
     }
