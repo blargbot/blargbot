@@ -63,7 +63,7 @@
         "strip-ansi": "^4.0.0",
         "svg2png": "^4.1.1",
         "table": "^4.0.3",
-        "twemoji": "^11.0.1",
+        "twemoji": "^13.1.0",
         "unorm": "^1.4.1",
         "usage": "^0.7.1",
         "vue-markdown": "^2.2.4",
