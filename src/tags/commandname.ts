@@ -12,7 +12,7 @@ export class CommandNameSubtag extends BaseSubtag {
             desc: 'Gets the name of the current tag or custom command. Will throw an error in other instances.',
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     exampleCode: 'This command is {commandname}',
                     exampleIn: 'b!cc test',
                     exampleOut: 'This command is test',

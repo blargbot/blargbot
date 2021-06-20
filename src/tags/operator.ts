@@ -13,7 +13,7 @@ export class OperatorSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['values+'],
+                    parameters: ['values+'],
                     //TODO DOCS DOCS DOCS DOCS
                     description: 'OVERWRITTEN',
                     execute: (ctx, args, subtag) =>

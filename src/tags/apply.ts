@@ -9,7 +9,7 @@ export class ApplySubtag extends BaseSubtag {
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    args: ['subtag', 'args*'],
+                    parameters: ['subtag', 'args*'],
                     description:
                         'Executes `subtag`, using the `args` as parameters. ' +
                         'If `args` is an array, it will get deconstructed to it\'s individual elements.',

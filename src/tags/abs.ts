@@ -12,14 +12,14 @@ export class AbsSubtag extends BaseSubtag {
             aliases: ['absolute'],
             definition: [
                 {
-                    args: ['number'],
+                    parameters: ['number'],
                     description: 'Gets the absolute value of `number`',
                     exampleCode: '{abs;-535}',
                     exampleOut: '535',
                     execute: (ctx, [value], subtag) => this.abs(ctx, value.value, subtag)
                 },
                 {
-                    args: ['numbers+2'],
+                    parameters: ['numbers+2'],
                     description: 'Gets the absolute value of each `numbers` and returns an array containing the results',
                     exampleCode: '{abs;-535;123;-42}',
                     exampleOut: '[535, 123, 42]',

@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtag, BBTagContext, SubtagCall} from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType } from '../utils';
 
 export class ChannelIsNsfw extends BaseSubtag {
@@ -12,14 +12,14 @@ export class ChannelIsNsfw extends BaseSubtag {
             aliases: ['isnsfw'],
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Checks if the current channel is a NSFW channel.',
                     exampleCode: '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
                     exampleOut: 'fluffy bunnies',
                     execute: (ctx) => ctx.channel.nsfw.toString()
                 },
                 {
-                    args: ['channel', 'quiet?'],
+                    parameters: ['channel', 'quiet?'],
                     description: 'Checks if `channel` is a NSFW channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{isnsfw;SFW Cat pics}',
                     exampleOut: 'true',

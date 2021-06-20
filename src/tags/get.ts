@@ -13,20 +13,20 @@ export class GetSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['name'],
+                    parameters: ['name'],
                     description: 'Returns the stored variable `varName`.\n' +
-                    'You can use a character prefix to determine the scope of your variable.\n' +
-                    'Valid scopes are: ' + tagVariableScopes.map(s => '`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +
-                    '. For more information, use `b!t docs variable` or `b!cc docs variable`',
+                        'You can use a character prefix to determine the scope of your variable.\n' +
+                        'Valid scopes are: ' + tagVariableScopes.map(s => '`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +
+                        '. For more information, use `b!t docs variable` or `b!cc docs variable`',
                     exampleCode: '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
                     exampleOut: 'This is local var1\nThis is temporary var2',
-                    execute: async (ctx, [{value: variableName}]) => await this.get(ctx, variableName)
+                    execute: async (ctx, [{ value: variableName }]) => await this.get(ctx, variableName)
                 },
                 {
-                    args: ['name', 'index'],
+                    parameters: ['name', 'index'],
                     description: 'When variable `name` is an array this will return the element at index `index`.' +
                         ' If `index` is empty the entire array will be returned. If variable is not an array it will return the whole variable.',
-                    execute: async (ctx, [{value: variableName},{value: index}], subtag) => await this.getArray(ctx, variableName, index, subtag)
+                    execute: async (ctx, [{ value: variableName }, { value: index }], subtag) => await this.getArray(ctx, variableName, index, subtag)
                 }
             ]
         })
@@ -69,9 +69,9 @@ export class GetSubtag extends BaseSubtag {
             return this.notANumber(context, subtag);
 
         if (result[index] === undefined)
-            return this.customError( 'Index out of range', context, subtag);
+            return this.customError('Index out of range', context, subtag);
 
-        const itemAtIndex =  result[index];
+        const itemAtIndex = result[index];
         switch (typeof itemAtIndex) {
             case 'object':
                 return JSON.stringify(itemAtIndex);

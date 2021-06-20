@@ -13,11 +13,11 @@ export class Md5Subtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['text'],
+                    parameters: ['text'],
                     description: 'Converts the provided text to md5.',
                     exampleCode: '{md5;Woosh whap phew!}',
                     exampleOut: '71d97a11f770a34d7f8cf1f1d8749d85',
-                    execute: (_, [{value: text}]) => md5(text)
+                    execute: (_, [{ value: text }]) => md5(text)
                 }
             ]
         });

@@ -9,7 +9,7 @@ export class ArgsSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Gets the whole user input',
                     exampleCode: 'You said {args}',
                     exampleIn: 'Hello world! BBtag is so cool',
@@ -17,7 +17,7 @@ export class ArgsSubtag extends BaseSubtag {
                     execute: (ctx) => this.getAllArgs(ctx)
                 },
                 {
-                    args: ['index'],
+                    parameters: ['index'],
                     description: 'Gets a word from the user input at the `index` position',
                     exampleCode: '{args;1}',
                     exampleIn: 'Hello world! BBtag is so cool',
@@ -25,7 +25,7 @@ export class ArgsSubtag extends BaseSubtag {
                     execute: (ctx, [index], subtag) => this.getArg(ctx, index.value, subtag)
                 },
                 {
-                    args: ['start', 'end'],
+                    parameters: ['start', 'end'],
                     description: 'Gets all the words in the user input from `start` up to `end`. If `end` is `n` then all words after `start` will be returned',
                     exampleCode: '{args;2;4}',
                     exampleIn: 'Hello world! BBtag is so cool',

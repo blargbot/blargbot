@@ -1,4 +1,4 @@
-import { SubtagHandlerArgument, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagHandlerDefinitionArgumentGroup } from '../types';
+import { SubtagHandlerParameter, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup } from '../types';
 
 const argumentRequired = [undefined, '!', '+'] as ReadonlyArray<string | undefined>;
 
@@ -9,57 +9,57 @@ export function parseDefinitions(definitions: readonly SubtagHandlerDefinition[]
 function parseDefinition(definition: SubtagHandlerDefinition): SubtagHandlerCallSignature {
     return {
         ...definition,
-        args: definition.args.map(parseArgument),
+        parameters: definition.parameters.map(parseArgument),
         execute: definition.execute
     };
 }
 
-function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup): SubtagHandlerArgument {
-    if (typeof argument === 'object') {
+function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup): SubtagHandlerParameter {
+    if (typeof parameter === 'object') {
         return {
-            name: argument.name,
+            name: parameter.name ?? null,
             autoResolve: false,
-            greedy: argument.type?.endsWith('OrMore') ? parseInt(argument.type) : null,
-            required: argumentRequired.includes(argument.type),
-            nestedArgs: argument.args.map(parseArgument),
+            greedy: parameter.type?.endsWith('OrMore') ? parseInt(parameter.type) : null,
+            required: argumentRequired.includes(parameter.type),
+            nested: parameter.parameters.map(parseArgument),
             defaultValue: null
         };
     }
 
     let autoResolve = true;
-    if (argument[0] === '~') {
+    if (parameter[0] === '~') {
         autoResolve = false;
-        argument = argument.slice(1);
+        parameter = parameter.slice(1);
     }
 
-    const split = argument.split(':', 2);
-    argument = split[0];
+    const split = parameter.split(':', 2);
+    parameter = split[0];
     const defaultValue = split.length === 2 ? split[1] : null;
 
     let required = true;
     let greedy: number | null = null;
-    switch (argument[argument.length - 1]) {
+    switch (parameter[parameter.length - 1]) {
         case '?': required = false; break;
         case '*': required = false; greedy = 0; break;
         case '+': greedy = 1; break;
         case '!': break;
         default:
-            const match = /^(.*?)\+(\d)$/.exec(argument);
+            const match = /^(.*?)\+(\d)$/.exec(parameter);
             if (match !== null) {
                 greedy = parseInt(match[2]);
                 required = greedy > 0;
-                argument = match[1];
+                parameter = match[1];
             }
-            argument += '!';
+            parameter += '!';
     }
-    argument = argument.slice(0, argument.length - 1);
+    parameter = parameter.slice(0, parameter.length - 1);
 
     return {
-        name: argument,
+        name: parameter,
         autoResolve,
         required,
         greedy: greedy,
         defaultValue,
-        nestedArgs: []
+        nested: []
     };
 }

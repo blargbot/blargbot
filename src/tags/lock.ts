@@ -22,7 +22,7 @@ export class LockSubtag extends BaseSubtag {
                 '\n`code` will be run once the lock is acquired',
             definition: [
                 {
-                    args: ['mode', 'key', '~code'],
+                    parameters: ['mode', 'key', '~code'],
                     exampleCode:
                         '\n{//;in 2 command run in quick succession}' +
                         '\n{lock;write;key;' +

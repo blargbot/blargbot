@@ -9,7 +9,7 @@ export class CleanSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['text'],
+                    parameters: ['text'],
                     description: 'Removes all duplicated whitespace from `text`, meaning a cleaner output.',
                     exampleCode: '{clean;Hello!  \n\n  Im     here    to help}',
                     exampleOut: 'Hello!\nIm here to help',

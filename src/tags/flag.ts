@@ -11,12 +11,12 @@ export class FlagSubtag extends BaseSubtag {
             category: SubtagType.BOT,
             definition: [
                 {
-                    args: ['code'],
+                    parameters: ['code'],
                     description: 'Returns the value of the specified case-sensitive flag code. Use `_` to get the values without a flag.',
                     exampleCode: '{flag;a} {flag;_}',
                     exampleIn: 'Hello, -a world!',
                     exampleOut: 'world! Hello,',
-                    execute: (ctx, [{value: flagName}]) => (ctx.flaggedInput[flagName] ?? '').toString()
+                    execute: (ctx, [{ value: flagName }]) => (ctx.flaggedInput[flagName] ?? '').toString()
                 }
             ]
         });

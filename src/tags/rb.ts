@@ -11,7 +11,7 @@ export class RbSubtag extends BaseSubtag {
             category: SubtagType.SIMPLE,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Returns `}`',
                     exampleCode: 'This is a bracket! {rb}',
                     exampleOut: 'This is a bracket! }',

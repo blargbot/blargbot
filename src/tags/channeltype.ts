@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtag, BBTagContext, SubtagCall} from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType } from '../utils';
 
 const channelTypes = ['text', 'dm', 'voice', 'group-dm', 'category', 'news', 'store'];
@@ -14,14 +14,14 @@ export class ChannelTypeSubtag extends BaseSubtag {
             desc: 'Possible results: ' + channelTypes.map(t => '`' + t + '`').join(', '),
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Returns the type the current channel.',
                     exampleCode: '{channeltype}',
                     exampleOut: 'text',
                     execute: (ctx) => channelTypes[ctx.channel.type]
                 },
                 {
-                    args: ['channel', 'quiet?'],
+                    parameters: ['channel', 'quiet?'],
                     description: 'Returns the type the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: '{channeltype;cool channel}\n{channeltype;some channel that doesn\'t exist;true}',
                     exampleOut: 'voice\n(nothing is returned here)',

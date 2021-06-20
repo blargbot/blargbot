@@ -173,9 +173,9 @@ export type SubtagResult =
 
 export interface SubtagArgumentValue {
     readonly isCached: boolean;
-    value: string;
-    code: Statement;
-    raw: string;
+    readonly value: string;
+    readonly code: Statement;
+    readonly raw: string;
     wait(): Promise<string>;
     execute(): Promise<string>;
 }
@@ -192,31 +192,31 @@ export interface SubtagHandler {
     readonly execute: (this: unknown, context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
-export interface SubtagHandlerArgument {
-    readonly name?: string;
+export interface SubtagHandlerParameter {
+    readonly name: string | null;
     readonly required: boolean;
     readonly greedy: number | null;
     readonly autoResolve: boolean;
     readonly defaultValue: string | null;
-    readonly nestedArgs: readonly SubtagHandlerArgument[];
+    readonly nested: readonly SubtagHandlerParameter[];
 }
 
-export interface SubtagSignatureDetails<TArgs = SubtagHandlerArgument> {
-    readonly args: readonly TArgs[];
+export interface SubtagSignatureDetails<TArgs = SubtagHandlerParameter> {
+    readonly parameters: readonly TArgs[];
     readonly description?: string;
     readonly exampleCode?: string;
     readonly exampleIn?: string;
     readonly exampleOut?: string;
 }
 
-export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string | SubtagHandlerDefinitionArgumentGroup> {
+export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup> {
     readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
-export interface SubtagHandlerDefinitionArgumentGroup {
+export interface SubtagHandlerDefinitionParameterGroup {
     readonly name?: string;
     readonly type?: 'optional' | 'required' | `${number}OrMore`;
-    readonly args: ReadonlyArray<string | SubtagHandlerDefinitionArgumentGroup>;
+    readonly parameters: ReadonlyArray<string | SubtagHandlerDefinitionParameterGroup>;
 }
 
 

@@ -4,7 +4,7 @@ import { stringify } from './stringify';
 import { stringifyAnalysis } from './stringifyAnalysis';
 import { stringifyLocation } from './stringifyLocation';
 import { stringifyRange } from './stringifyRange';
-import { stringifyArguments } from './stringifyArguments';
+import { stringifyParameters } from './stringifyParameters';
 import * as operators from './operators';
 
 export const bbtagUtil = {
@@ -14,6 +14,6 @@ export const bbtagUtil = {
     stringifyAnalysis,
     stringifyLocation,
     stringifyRange,
-    stringifyArguments,
+    stringifyParameters,
     operators
 };

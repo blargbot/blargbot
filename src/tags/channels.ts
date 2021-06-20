@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtag, BBTagContext, SubtagCall} from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType } from '../utils';
 
 export class ChannelsSubtag extends BaseSubtag {
@@ -11,14 +11,14 @@ export class ChannelsSubtag extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Returns an array of channel IDs in the current guild',
                     exampleCode: 'This guild has {length;{channels}} channels.',
                     exampleOut: 'This guild has {length;{channels}} channels.',
                     execute: (ctx) => JSON.stringify(ctx.guild.channels.map(c => c.id))
                 },
                 {
-                    args: ['category', 'quiet?'],
+                    parameters: ['category', 'quiet?'],
                     description: 'Returns an array of channel IDs in within the given `category`. If `category` is not a category, returns an empty array. If `category` cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: 'Category cat-channels has {length;{channels;cat-channels}} channels.',
                     exampleOut: 'Category cat-channels has 6 channels.',

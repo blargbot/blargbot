@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtag, BBTagContext, SubtagCall} from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType } from '../utils';
 
 export class ChannelIsVoice extends BaseSubtag {
@@ -12,7 +12,7 @@ export class ChannelIsVoice extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Checks if the current channel is a voice channel.',
                     exampleCode: '{if;{isvoice};Yeah you can write stuff here;How did you even call the command?}',
                     exampleOut: 'How did you even call the command?',
@@ -20,7 +20,7 @@ export class ChannelIsVoice extends BaseSubtag {
                     execute: (ctx) => (ctx.channel.type === 2).toString()
                 },
                 {
-                    args: ['channel', 'quiet?'],
+                    parameters: ['channel', 'quiet?'],
                     description: 'Checks if `channel` is a voice channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{isvoice;blarg podcats}',
                     exampleOut: 'true',

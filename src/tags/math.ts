@@ -13,7 +13,7 @@ export class MathSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['numbers+'],
+                    parameters: ['numbers+'],
                     description: 'Accepts multiple `values` and returns the result of `operator` on them. ' +
                         'Valid operators are `' + Object.keys(operators).join('`, `') + '`',
                     execute: (ctx, args, subtag) => this.doMath(ctx, args[0].value, args.slice(1).map(arg => arg.value), subtag)

@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtag, BBTagContext, SubtagCall} from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType } from '../utils';
 
 export class ChannelIsCategorySubtag extends BaseSubtag {
@@ -12,7 +12,7 @@ export class ChannelIsCategorySubtag extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    args: ['channel', 'quiet?'],
+                    parameters: ['channel', 'quiet?'],
                     description: 'Checks if `channel` is a category. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{channeliscategory;cool category}\n{channeliscategory;category that doesn\'t exist}',
                     exampleOut: 'true\n(nothing is returned here)',

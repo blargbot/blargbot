@@ -11,14 +11,14 @@ export class UserNameSubtag extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Returns the username of the executing user.',
                     exampleCode: 'Your username is {username}!',
                     exampleOut: 'Your username is Cool Dude 1337!',
                     execute: (ctx) => ctx.user.username.replace(/@/g, '@\u200b')
                 },
                 {
-                    args: ['user', 'quiet?'],
+                    parameters: ['user', 'quiet?'],
                     description: 'Returns `user`\'s username. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s username is {username;Stupid cat}!',
                     exampleOut: 'Stupid cat\'s username is Stupid cat!',

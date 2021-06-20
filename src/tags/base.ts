@@ -10,7 +10,7 @@ export class BaseNumberSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['integer', 'origin?:10', 'radix'],
+                    parameters: ['integer', 'origin?:10', 'radix'],
                     description: 'Converts `integer` from a base `origin` number into a base `radix` number. `radix` and `origin` must be between 2 and 36.',
                     exampleCode: '{base;FF;16;10}',
                     exampleOut: '255',

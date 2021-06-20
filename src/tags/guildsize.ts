@@ -13,7 +13,7 @@ export class GuildSizeSubtag extends BaseSubtag {
             desc: 'Returns the number of members on the current guild.',
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     exampleCode: 'This guild has {guildsize} members.',
                     exampleOut: 'This guild has 123 members.',
                     execute: (ctx) => ctx.guild.memberCount.toString()

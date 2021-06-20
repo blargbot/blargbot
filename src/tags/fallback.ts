@@ -11,7 +11,7 @@ export class FallBackSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['message?'],
+                    parameters: ['message?'],
                     description: 'Should any tag fail to parse, it will be replaced with `message` instead of an error.',
                     exampleCode: '{fallback;This tag failed} {randint}',
                     exampleOut: 'This tag failed',

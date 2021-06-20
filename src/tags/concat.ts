@@ -9,7 +9,7 @@ export class ConcatSubtag extends BaseSubtag {
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    args: ['arrays+'],
+                    parameters: ['arrays+'],
                     description:
                         'Takes `arrays` and joins them together to form a single array.',
                     exampleCode: '{concat;["this", "is"];["an", "array"]}',

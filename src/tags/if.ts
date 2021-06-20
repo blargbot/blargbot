@@ -17,25 +17,25 @@ export class IfSubtag extends BaseSubtag {
                 'Valid evaluators are `' + Object.keys(operators).join('`, `') + '`.',
             definition: [
                 {
-                    args: ['boolean', '~then'],
+                    parameters: ['boolean', '~then'],
                     description:
                         'If `boolean` is `true`, return `then`, else do nothing.',
                     execute: (ctx, [{ value: bool }, thenCode], subtag) => this.simpleBooleanCheck(ctx, subtag, bool, thenCode)
                 },
                 {
-                    args: ['boolean', '~then', '~else'],
+                    parameters: ['boolean', '~then', '~else'],
                     description:
                         'If `boolean` is `true`, return `then`, else execute `else`',
                     execute: (ctx, [{ value: bool }, thenCode, elseCode], subtag) => this.simpleBooleanCheck(ctx, subtag, bool, thenCode, elseCode)
                 },
                 {
-                    args: ['value1', 'evaluator', 'value2', '~then'],
+                    parameters: ['value1', 'evaluator', 'value2', '~then'],
                     description:
                         '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`.',
                     execute: (ctx, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode)
                 },
                 {
-                    args: ['value1', 'evaluator', 'value2', '~then', '~else'],
+                    parameters: ['value1', 'evaluator', 'value2', '~then', '~else'],
                     description:
                         '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
                     execute: (ctx, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode, elseCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode, elseCode)

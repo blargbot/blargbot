@@ -11,11 +11,11 @@ export class LowerSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['text'],
+                    parameters: ['text'],
                     description: 'Returns `text` as lowercase.',
                     exampleCode: '{lower;THIS WILL BECOME LOWERCASE}',
                     exampleOut: 'this will become lowercase',
-                    execute: (_, [{value: text}]) => text.toLowerCase()
+                    execute: (_, [{ value: text }]) => text.toLowerCase()
                 }
             ]
         });

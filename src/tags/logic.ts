@@ -13,7 +13,7 @@ export class LogicSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['operator', 'values+'],
+                    parameters: ['operator', 'values+'],
                     description: 'Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. ' +
                         'Valid logic operators are `' + Object.keys(operators).join('`, `') + '`.',
                     exampleCode: '{logic;&&;true;false}',

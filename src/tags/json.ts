@@ -11,7 +11,7 @@ export class JsonSubtag extends BaseSubtag {
             category: SubtagType.ARRAY,
             aliases: ['j'],
             definition: [{
-                args: ['~input'],
+                parameters: ['~input'],
                 description: 'Defines a raw JSON object. Usage of subtags is disabled in `input`, inside `input` all brackets are required to match.',
                 exampleCode: '{json;{\n  "key": "value"\n}}',
                 exampleOut: '{\n  "key": "value"\n}',

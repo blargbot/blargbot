@@ -13,7 +13,7 @@ export class HtmlDecodeSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['text+'],
+                    parameters: ['text+'],
                     description: 'Encodes `text` with escaped html entities.',
                     exampleCode: '{htmlencode;<hello, world>}',
                     exampleOut: '&lt;hello, world&gt;',

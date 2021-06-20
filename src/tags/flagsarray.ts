@@ -12,7 +12,7 @@ export class FlagsArraySubtag extends BaseSubtag {
             desc: 'Returns an array of all flags provided.',
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     exampleCode: '{flagsarray}',
                     exampleIn: 'Hello -dc world',
                     exampleOut: '["_","d","c"]',

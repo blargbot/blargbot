@@ -11,18 +11,18 @@ export class SetSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['name'],
+                    parameters: ['name'],
                     description: 'Sets the `name` variable to nothing.',
                     exampleCode: '{set;~var;something}\n{set;~var}\n{get;~var}',
                     exampleOut: '(returns nothing)',
                     execute: async (ctx, [{ value: variableName }]) => await ctx.variables.set(variableName, undefined)
                 },
                 {
-                    args: ['name', 'value'],
+                    parameters: ['name', 'value'],
                     description:
                         'Stores `value` under `name`. These variables are saved between sessions. ' +
                         'You can use a character prefix to determine the scope of your variable.\n' +
-                        'Valid scopes are: ' + tagVariableScopes.map((s) =>'`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +
+                        'Valid scopes are: ' + tagVariableScopes.map((s) => '`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +
                         '.\nFor performance reasons, variables are not immediately stored to the database. See `{commit}` and `{rollback}`' +
                         'for more information, or use `b!t docs variable` or `b!cc docs variable`',
                     exampleCode:
@@ -31,7 +31,7 @@ export class SetSubtag extends BaseSubtag {
                     execute: async (ctx, [{ value: variableName }, { value }]) => await this.set(ctx, variableName, value)
                 },
                 {
-                    args: ['name', 'values+2'],
+                    parameters: ['name', 'values+2'],
                     description:
                         'Stores an array under `name`.' +
                         '\nWhen getting the array, you\'ll notice it retrieved an object, ' +

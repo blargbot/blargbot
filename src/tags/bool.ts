@@ -11,7 +11,7 @@ export class BoolSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['arg1', 'evaluator', 'arg2'],
+                    parameters: ['arg1', 'evaluator', 'arg2'],
                     description:
                         'Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
                         'Valid evaluators are `' + Object.keys(operators).join('`, `') + '`\n' +

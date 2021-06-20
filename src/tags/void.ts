@@ -11,7 +11,7 @@ export class VoidSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['code?'],
+                    parameters: ['code?'],
                     description: 'Executes `code` but does not return the output from it. Useful for silent functionality',
                     exampleCode: '{void;This won\'t be output!}',
                     exampleOut: '',

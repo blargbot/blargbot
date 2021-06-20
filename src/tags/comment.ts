@@ -13,7 +13,7 @@ export class CommentSubtag extends BaseSubtag {
             desc: 'A subtag that just gets removed. Useful for documenting your code.',
             definition: [
                 {
-                    args: ['~anything*'],
+                    parameters: ['~anything*'],
                     exampleCode: 'This is a sentence. {//;This is a comment.}',
                     exampleOut: 'This is a sentence.',
                     execute: () => ''

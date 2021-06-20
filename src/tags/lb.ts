@@ -12,7 +12,7 @@ export class LbSubtag extends BaseSubtag {
             desc: 'Will be replaced by `{` on execution.',
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Returns `{`',
                     exampleCode: 'This is a bracket! {lb}',
                     exampleOut: 'This is a bracket! {',

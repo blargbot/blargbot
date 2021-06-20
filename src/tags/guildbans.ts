@@ -1,5 +1,5 @@
 import { Cluster } from '../cluster';
-import { BaseSubtag, BBTagContext, SubtagCall} from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 import { SubtagType } from '../utils';
 
 export class GuildBansSubtag extends BaseSubtag {
@@ -12,7 +12,7 @@ export class GuildBansSubtag extends BaseSubtag {
             desc: 'Returns an array of banned users in the current guild.',
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     exampleCode: 'This guild has {length;{guildbans}} banned users.',
                     exampleOut: 'This guild has 123 banned users.',
                     execute: (ctx, _, subtag) => this.getGuildBans(ctx, subtag)

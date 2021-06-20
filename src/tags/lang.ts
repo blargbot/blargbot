@@ -12,7 +12,7 @@ export class LangSubtag extends BaseSubtag {
             deprecated: true,
             definition: [
                 {
-                    args: ['language'],
+                    parameters: ['language'],
                     description: 'Specifies which `language` should be used when viewing the raw of this tag',
                     exampleCode: 'This will be displayed with js! {lang;js}.',
                     exampleOut: 'This will be displayed with js!.',

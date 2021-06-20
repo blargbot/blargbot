@@ -13,7 +13,7 @@ export class SleepTag extends BaseSubtag {
             category: Type.COMPLEX,
             definition: [
                 {
-                    args: ['duration'],
+                    parameters: ['duration'],
                     description: 'Pauses the current tag for the specified amount of time. Maximum is 5 minutes',
                     exampleCode: '{sleep;10s}{send;{channelid};Hi!}',
                     exampleOut: '(After 10s) Hi!',

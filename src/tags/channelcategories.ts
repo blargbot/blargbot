@@ -12,7 +12,7 @@ export class ChannelCategoriesSubtag extends BaseSubtag {
             desc: 'Returns an array of category IDs on the current guild.',
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     exampleCode: 'This guild has {length;{categories}} categories.',
                     exampleOut: 'This guild has 7 categories.',
                     execute: (ctx) => JSON.stringify(ctx.guild.channels.filter(c => c.type == 4).map(c => c.id))

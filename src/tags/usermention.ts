@@ -11,14 +11,14 @@ export class UserMentionSubtag extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Mentions the executing user.',
                     exampleCode: 'Hello, {usermention}!',
                     exampleOut: 'Hello, @user!',
                     execute: (ctx) => this.userMention(ctx, [ctx.user.id])
                 },
                 {
-                    args: ['user', 'quiet?'],
+                    parameters: ['user', 'quiet?'],
                     description: 'Mentions `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Hello, {usermention;Stupidcat}!',
                     exampleOut: 'Hello, @Stupid cat!',

@@ -9,7 +9,7 @@ export class Argslength extends BaseSubtag {
             category: SubtagType.SIMPLE,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Return the number of arguments the user provided.',
                     exampleCode: 'You said {argslength} words.',
                     exampleIn: 'I am saying things.',

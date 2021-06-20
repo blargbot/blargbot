@@ -9,7 +9,7 @@ export class HashSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['text'],
+                    parameters: ['text'],
                     description:
                         'Returns the numeric hash of `text`, based on the unicode value of each individual character. ' +
                         'This results in seemingly randomly generated numbers that are constant for each specific query.',

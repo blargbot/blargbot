@@ -11,14 +11,14 @@ export class UserNickSubtag extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Returns the nickname of the executing user.',
                     exampleCode: 'Your nick is {usernick}!',
                     exampleOut: 'Your nick is Cool Dude 1337!',
                     execute: (ctx) => (ctx.member.nick || ctx.user.username).replace(/@/g, '@\u200b')
                 },
                 {
-                    args: ['user', 'quiet?'],
+                    parameters: ['user', 'quiet?'],
                     description: 'Returns `user`\'s nickname. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s nickname is {usernick;Stupid cat}!',
                     exampleOut: 'Stupid cat\'s nickname is Secretly Awoken',

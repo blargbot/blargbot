@@ -12,7 +12,7 @@ export class ChooseSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['choice', '~options+'],
+                    parameters: ['choice', '~options+'],
                     description: 'Chooses from the given `options`, where `choice` is the index of the option to select.',
                     exampleCode: 'I feel like eating {choose;1;cake;pie;pudding} today.',
                     exampleOut: 'I feel like eating pie today.',

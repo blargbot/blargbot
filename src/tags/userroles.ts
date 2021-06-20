@@ -11,14 +11,14 @@ export class UserRolesSubtag extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     description: 'Returns the roles of the executing user.',
                     exampleCode: 'Your roles are {userroles}!',
                     exampleOut: 'Your roles are ["1111111111111111","2222222222222222"]!',
                     execute: (ctx) => JSON.stringify(ctx.member.roles)
                 },
                 {
-                    args: ['user', 'quiet?'],
+                    parameters: ['user', 'quiet?'],
                     description: 'Returns `user`\'s roles as an array. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s roles are {userroles;stupidcat}',
                     exampleOut: 'Stupid cat\'s roles are ["1111111111111111","2222222222222222", "3333333333333333"]',

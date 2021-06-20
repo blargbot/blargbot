@@ -12,7 +12,7 @@ export class GuildIcon extends BaseSubtag {
             desc: 'Returns the icon of the current guild. If it doesn\'t exist returns nothing.',
             definition: [
                 {
-                    args: [],
+                    parameters: [],
                     exampleCode: 'The guild\'s icon is {guildicon}',
                     exampleOut: 'The guild\'s icon is (icon url)',
                     execute: (ctx) => ctx.guild.iconURL || ''
