@@ -1,6 +1,7 @@
 import { SubtagArgumentValue as ISubtagArgument, SubtagHandlerArgument, SubtagHandlerCallSignature } from '../types';
+import { DefaultingSubtagArgumentValue } from './SubtagArgumentValue';
 
-export type ArgumentResolver = (args: ISubtagArgument[]) => Promise<void>;
+export type ArgumentResolver = (args: readonly ISubtagArgument[]) => AsyncGenerator<ISubtagArgument>;
 
 interface ArgumentResolvers {
     byNumber: { [argLength: number]: ArgumentResolver };
@@ -18,12 +19,23 @@ interface ArgumentResolverOrder {
 export function createArgumentResolver(signature: SubtagHandlerCallSignature): ArgumentResolvers {
     const bindingOrder = createResolverOrder(signature.args);
     const result: ArgumentResolvers = { byTest: [], byNumber: {} };
+    const defaultArgMap = signature.args.map(param => ({
+        param,
+        arg: Object.seal(<ISubtagArgument>{
+            code: [],
+            isCached: true,
+            raw: '',
+            value: param.defaultValue ?? '',
+            wait() { return Promise.resolve(this.value); },
+            execute() { return Promise.resolve(this.value); }
+        })
+    }));
 
     for (const { beforeParams, afterParams } of bindingOrder.singles) {
         const args = [...beforeParams, ...afterParams];
         if (args.length in result.byNumber)
             throw new Error(`Multiple argument patterns accept ${args.length} values`);
-        result.byNumber[args.length] = createResolver(args);
+        result.byNumber[args.length] = createResolver(defaultArgMap, beforeParams, [], afterParams);
     }
 
     if (bindingOrder.params.length > 0) {
@@ -32,7 +44,7 @@ export function createArgumentResolver(signature: SubtagHandlerCallSignature): A
             throw new Error('There must be fewer optional parameters than the number of repeated arguments!');
 
         for (const { beforeParams, afterParams } of bindingOrder.singles) {
-            result.byTest.push(createParamsResolver(beforeParams, bindingOrder.params, afterParams));
+            result.byTest.push(createParamsResolver(defaultArgMap, beforeParams, bindingOrder.params, afterParams));
         }
     }
 
@@ -66,7 +78,10 @@ function addArg(result: ArgumentResolverOrder, arg: SubtagHandlerArgument): void
         }
         return;
     }
-    const preserve = result.singles.map(x => ({ beforeParams: [...x.beforeParams], afterParams: [...x.afterParams] }));
+    const preserve = arg.required ? [] : result.singles.map(x => ({
+        beforeParams: [...x.beforeParams],
+        afterParams: [...x.afterParams]
+    }));
 
     if (arg.nestedArgs.length > 0) {
         for (const nestedArg of arg.nestedArgs) {
@@ -82,43 +97,59 @@ function addArg(result: ArgumentResolverOrder, arg: SubtagHandlerArgument): void
         }
     }
 
-    if (!arg.required) {
-        result.singles.push(...preserve);
-    }
+    result.singles.push(...preserve);
 }
 
-function createResolver(args: SubtagHandlerArgument[]): ArgumentResolver {
-    let i = 0;
-    const awaits = args.map(arg => ({ autoResolve: arg.autoResolve, index: i++ }))
-        .filter(x => x.autoResolve)
-        .map(x => `await args[${x.index}].wait();`);
+function createResolver(
+    defaultArgs: ReadonlyArray<{ arg: ISubtagArgument, param: SubtagHandlerArgument }>,
+    beforeParams: readonly SubtagHandlerArgument[],
+    params: readonly SubtagHandlerArgument[] = [],
+    afterParams: readonly SubtagHandlerArgument[] = [])
+    : ArgumentResolver {
+    return async function* resolve(args) {
+        let i = 0;
+        for (const { arg, param } of matchArgs(args, beforeParams, params, afterParams)) {
+            if (param.autoResolve)
+                await arg.wait();
 
-    return eval(`async args => {\n${awaits.join('\n')}\n}`);
+            while (defaultArgs[i++].param !== param)
+                yield defaultArgs[i - 1].arg;
+
+            yield param.defaultValue !== null
+                ? new DefaultingSubtagArgumentValue(arg, param.defaultValue)
+                : arg;
+        }
+    };
 }
 
 function createParamsResolver(
-    beforeParams: SubtagHandlerArgument[],
-    params: SubtagHandlerArgument[],
-    afterParams: SubtagHandlerArgument[])
+    defaultArgs: ReadonlyArray<{ arg: ISubtagArgument, param: SubtagHandlerArgument }>,
+    beforeParams: readonly SubtagHandlerArgument[],
+    params: readonly SubtagHandlerArgument[],
+    afterParams: readonly SubtagHandlerArgument[])
     : ArgumentResolvers['byTest'][number] {
     const minCount = beforeParams.length + afterParams.length;
     return {
         minArgCount: minCount,
         maxArgCount: Number.MAX_SAFE_INTEGER,
         test: argCount => argCount >= minCount && (argCount - minCount) % params.length === 0,
-        resolver: async (args) => {
-            let i = 0, j;
-            for (j = 0; i < beforeParams.length; i++, j++)
-                if (beforeParams[j].autoResolve)
-                    await args[i].wait();
-            for (j = 0; i < args.length - afterParams.length; i++, j++)
-                if (params[j % params.length].autoResolve)
-                    await args[i].wait();
-            for (j = 0; i < args.length; i++, j++)
-                if (afterParams[j].autoResolve)
-                    await args[i].wait();
-        }
+        resolver: createResolver(defaultArgs, beforeParams, params, afterParams)
     };
+}
+
+function* matchArgs(
+    args: readonly ISubtagArgument[],
+    beforeParams: readonly SubtagHandlerArgument[],
+    params: readonly SubtagHandlerArgument[],
+    afterParams: readonly SubtagHandlerArgument[])
+    : Generator<{ arg: ISubtagArgument, param: SubtagHandlerArgument }> {
+    let i, j;
+    for (i = 0; i < beforeParams.length; i++)
+        yield { arg: args[i], param: beforeParams[i] };
+    for (j = 0; i < args.length - afterParams.length; i++, j++)
+        yield { arg: args[i], param: params[j % params.length] };
+    for (j = 0; i < args.length; i++, j++)
+        yield { arg: args[i], param: afterParams[j] };
 }
 
 function* flattenGreedyArgs(args: readonly SubtagHandlerArgument[]): Generator<SubtagHandlerArgument> {

@@ -10,15 +10,8 @@ export class BaseNumberSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    args: ['integer', 'radix'],
-                    description: 'Converts a Base 10 `integer` into a base `radix` number. Default `origin` is 10. `radix` must be between 2 and 36.',
-                    exampleCode: '{base;255;16}',
-                    exampleOut: 'FF',
-                    execute: (ctx, [integer, radix], subtag) => this.toBase(ctx, integer.value, '10', radix.value, subtag)
-                },
-                {
-                    args: ['integer', 'origin', 'radix'],
-                    description: 'Converts a Base `origin` `integer` into a base `radix` number. Default `origin` is 10. `radix` must be between 2 and 36.',
+                    args: ['integer', 'origin?:10', 'radix'],
+                    description: 'Converts `integer` from a base `origin` number into a base `radix` number. `radix` and `origin` must be between 2 and 36.',
                     exampleCode: '{base;FF;16;10}',
                     exampleOut: '255',
                     execute: (ctx, [integer, origin, radix], subtag) => this.toBase(ctx, integer.value, origin.value, radix.value, subtag)

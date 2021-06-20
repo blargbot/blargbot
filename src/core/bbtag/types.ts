@@ -197,6 +197,7 @@ export interface SubtagHandlerArgument {
     readonly required: boolean;
     readonly greedy: number | null;
     readonly autoResolve: boolean;
+    readonly defaultValue: string | null;
     readonly nestedArgs: readonly SubtagHandlerArgument[];
 }
 

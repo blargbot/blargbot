@@ -21,7 +21,8 @@ function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup):
             autoResolve: false,
             greedy: argument.type?.endsWith('OrMore') ? parseInt(argument.type) : null,
             required: argumentRequired.includes(argument.type),
-            nestedArgs: argument.args.map(parseArgument)
+            nestedArgs: argument.args.map(parseArgument),
+            defaultValue: null
         };
     }
 
@@ -30,6 +31,10 @@ function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup):
         autoResolve = false;
         argument = argument.slice(1);
     }
+
+    const split = argument.split(':', 2);
+    argument = split[0];
+    const defaultValue = split.length === 2 ? split[1] : null;
 
     let required = true;
     let greedy: number | null = null;
@@ -54,6 +59,7 @@ function parseArgument(argument: string | SubtagHandlerDefinitionArgumentGroup):
         autoResolve,
         required,
         greedy: greedy,
+        defaultValue,
         nestedArgs: []
     };
 }

@@ -53,8 +53,11 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
 
 function createSubHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): SubHandler {
     return async (context, subtagName, call) => {
-        const args = Object.assign(call.args.map(arg => new SubtagArgumentValue(context, arg)), { subtagName });
-        await resolver(args);
-        return await signature.execute(context, args, call);
+        const rawArgs = call.args.map(arg => new SubtagArgumentValue(context, arg));
+        const args = [];
+        for await (const arg of resolver(rawArgs))
+            args.push(arg);
+
+        return await signature.execute(context, Object.assign(args, { subtagName }), call);
     };
 }
