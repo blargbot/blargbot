@@ -205,6 +205,13 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
 
 function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, index: number): EmbedField {
     let description = codeBlock(bbtagUtil.stringifyArguments(subtag.name, signature.args));
+    const defaultDesc = signature.args
+        .filter(param => param.defaultValue !== null)
+        .map(param => `\`${param.name}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
+        .join('\n');
+    if (defaultDesc.length > 0)
+        description += defaultDesc + '\n\n';
+
     if (signature.description)
         description += `${signature.description}\n`;
     description += '\n';
