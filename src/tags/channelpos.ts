@@ -35,8 +35,8 @@ export class ChannelPosSubtag extends BaseSubtag {
         args: string[],
         subtag: SubtagCall
     ): Promise<string> {
-        const channel = await context.getChannel(args[0]);
         const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
+        const channel = await context.getChannel(args[0], { quiet, suppress: context.scope.suppressLookup });
         if (!channel)
             return quiet ? '' : this.channelNotFound(context, subtag, `${args[0]} could not be found`);
         return channel.position.toString();
