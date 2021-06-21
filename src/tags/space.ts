@@ -20,7 +20,7 @@ export class SpaceSubtag extends BaseSubtag {
                         const fallback = parse.int(ctx.scope.fallback || '');
                         if (isNaN(count)) {
                             if (isNaN(fallback))
-                                return this.notANumber(ctx, subtag, 'Fallback and count are not numbers');
+                                return this.notANumber(ctx, subtag, 'Count and fallback are not numbers');
                             count = fallback;
                         }
                         if (count < 0) count = 0;
