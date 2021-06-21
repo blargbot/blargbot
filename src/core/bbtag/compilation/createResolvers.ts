@@ -119,6 +119,9 @@ function createResolver(
                 ? new DefaultingSubtagArgumentValue(arg, param.defaultValue)
                 : arg;
         }
+
+        while (defaultArgs[i++] !== undefined)
+            yield defaultArgs[i - 1].arg;
     };
 }
 
