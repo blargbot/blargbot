@@ -13,16 +13,15 @@ export class UserJoineDatSubtag extends BaseSubtag {
             desc: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
             definition: [
                 {
-                    parameters: ['format?'],
-                    description: 'Returns the date that the executing user joined the guild, using `format` for the output, in UTC+0.\n' +
-                        '`format` defaults to `YYYY-MM-DDTHH:mm:ssZ`',
+                    parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ'],
+                    description: 'Returns the date that the executing user joined the guild, using `format` for the output, in UTC+0.\n',
                     exampleCode: 'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'Your account joined this guild on 2016/01/01 01:00:00.',
                     execute: (ctx, args, subtag) => this.getUserJoinDate(ctx, [args.map(arg => arg.value)[0] || '', ctx.user.id], subtag)
                 },
                 {
-                    parameters: ['format', 'user', 'quiet?'],
-                    description: 'Returns the date that `user` joined the current guild using `format` for the output, in UTC+0. if `user` can\'t be found it will simply return nothing.' + '`format` defaults to `YYYY-MM-DDTHH:mm:ssZ`',
+                    parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
+                    description: 'Returns the date that `user` joined the current guild using `format` for the output, in UTC+0. if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:ss;Stupid cat}',
                     exampleOut: 'Stupid cat joined this guild on 2016/06/19 23:30:30',
                     execute: (ctx, args, subtag) => this.getUserJoinDate(ctx, args.map(arg => arg.value), subtag)

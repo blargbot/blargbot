@@ -32,9 +32,9 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         parameter = parameter.slice(1);
     }
 
-    const split = parameter.split(':', 2);
+    const split = parameter.split(':');
     parameter = split[0];
-    const defaultValue = split.length === 2 ? split[1] : null;
+    const defaultValue = split.length >= 2 ? split.slice(1).join(':') : null;
 
     let required = true;
     let greedy: number | null = null;

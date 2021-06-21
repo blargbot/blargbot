@@ -16,20 +16,20 @@ export class UserIsBotSubtag extends BaseSubtag {
                     description: 'Returns whether the executing user is a bot.',
                     exampleCode: 'Are you a bot? {userisbot}',
                     exampleOut: 'Are you a bot? false',
-                    execute: (ctx) => ctx.user.username.replace(/@/g, '@\u200b')
+                    execute: (ctx) => ctx.user.bot.toString()
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns whether a `user` is a bot. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Is Stupid cat a bot? {userisbot;Stupid cat}',
                     exampleOut: 'Stupid cat\'s username is Stupid cat!',
-                    execute: (ctx, args) => this.getUserName(ctx, args.map(arg => arg.value))
+                    execute: (ctx, args) => this.getUserIsBot(ctx, args.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public async getUserName(
+    public async getUserIsBot(
         context: BBTagContext,
         args: string[]
     ): Promise<string> {
@@ -40,7 +40,7 @@ export class UserIsBotSubtag extends BaseSubtag {
         });
 
         if (user) {
-            return user.username.replace(/@/g, '@\u200b');
+            return user.bot.toString();
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????
