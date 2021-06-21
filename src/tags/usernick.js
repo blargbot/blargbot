@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:20:48
- * @Last Modified by: stupid cat
- * @Last Modified time: 2019-02-26 13:42:36
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-21 11:49:51
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -19,7 +19,9 @@ module.exports =
             'Your nick is {usernick}!',
             'Your nick is Cool Dude 1337!'
         )
-        .whenArgs('0-2', async function (subtag, context, args) {
+        .whenArgs(0, (_, context) => (context.member.nick || context.user.username).replace(/@/g, '@\u200b'))
+
+        .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 user = context.user;
 

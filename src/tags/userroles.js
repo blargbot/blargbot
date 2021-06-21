@@ -8,8 +8,8 @@ module.exports =
         .withExample(
             'Your roles are {userroles}!',
             'Your roles are ["1111111111111111","2222222222222222"]!'
-        )
-        .whenArgs('0-2', async function (subtag, context, args) {
+        ).whenArgs(0, (_, context) => context.member.roles)
+        .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 user = context.user;
 

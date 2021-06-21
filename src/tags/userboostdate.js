@@ -13,8 +13,11 @@ module.exports =
         .withExample(
             'Your account started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss}',
             'Your account started boosting this guild on 2020/02/27 00:00:00'
-        )
-        .whenArgs('0-3', async function (subtag, context, args) {
+        ).whenArgs('0-1', (subtag, context, args) => {
+            if (!context.member.premiumSince) return Builder.errors.customError(subtag, context, 'User not boosting');
+            return moment(context.member.premiumSince).utcOffset(0).format(args[0] || '');
+        })
+        .whenArgs('2-3', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
                 user = context.user;
 
@@ -23,12 +26,12 @@ module.exports =
                     quiet, suppress: context.scope.suppressLookup,
                     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
                 });
-            
+
             if (user != null) {
                 let member = context.guild.members.get(user.id);
                 if (member != null) {
                   //Not sure if this needs the error to be in TagBuilder.errors as it's just used once.
-                  if(!member.premiumSince) return Builder.errors.customError(subtag, context, 'User not boosting');
+                  if (!member.premiumSince) return Builder.errors.customError(subtag, context, 'User not boosting');
                   return moment(member.premiumSince).utcOffset(0).format(args[0] || '');
                 }
                 return Builder.errors.userNotInGuild(subtag, context);

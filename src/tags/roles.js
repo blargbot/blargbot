@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-21 00:22:32
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:20:02
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-21 11:55:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -33,8 +33,16 @@ module.exports =
 
             if (user != null) {
                 let guildRoles = context.guild.roles.map(r => r).reduce((o, r) => (o[r.id] = r, o), {});
-                let roles = context.guild.members.get(user.id).roles.map(r => guildRoles[r]);
-                return JSON.stringify(roles.sort((a, b) => b.position - a.position).map(r => r.id));
+                let member;
+                if (user.id === context.member.id) {
+                    member = context.member;
+                } else {
+                    member = context.guild.members.get(user.id);
+                }
+                if (member) {
+                    let roles = context.guild.members.get(user.id).roles.map(r => guildRoles[r]);
+                    return JSON.stringify(roles.sort((a, b) => b.position - a.position).map(r => r.id));
+                }
             }
 
             if (quiet)

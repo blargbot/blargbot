@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:20:55
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:17:59
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-21 11:40:21
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -18,8 +18,8 @@ module.exports =
         .withExample(
             'You are currently {userstatus}',
             'You are currently online'
-        )
-        .whenArgs('0-2', async function (subtag, context, args) {
+        ).whenArgs(0, (_, context) => context.member.status)
+        .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
                 user = context.user;
 
