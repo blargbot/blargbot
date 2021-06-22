@@ -21,7 +21,7 @@ export class ConcatSubtag extends BaseSubtag {
     }
 
     public concatArrays(arrays: string[]): string {
-        const parsedArray = arrays.map((array) => JSON.parse(array));
+        const parsedArray = arrays.map((array) => array !== '' ? JSON.parse(array) : '');
         const flattenedArray = bbtagUtil.tagArray.flattenArray(parsedArray);
         return JSON.stringify(flattenedArray);
     }
