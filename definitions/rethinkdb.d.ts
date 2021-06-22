@@ -23,3 +23,4 @@ declare module 'rethinkdb' {
         <T>(name: string): Expression<T>;
     }
 }
+

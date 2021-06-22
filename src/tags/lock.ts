@@ -1,6 +1,5 @@
-import { SubtagArgumentValue } from './../core/bbtag/types';
 import { Cluster } from '../cluster';
-import { BaseSubtag, SubtagCall, tagVariableScopes, BBTagContext } from '../core/bbtag';
+import { BaseSubtag, SubtagCall, tagVariableScopes, BBTagContext, SubtagArgumentValue } from '../core/bbtag';
 import { SubtagType } from '../utils';
 import ReadWriteLock from 'rwlock';
 

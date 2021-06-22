@@ -1,14 +1,6 @@
-import { BBTagContext } from '../BBTagContext';
-import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagResult } from '../types';
-import { ArgumentResolver, createArgumentResolver } from './createResolvers';
-import { SubtagArgumentValue } from './SubtagArgumentValue';
-
-type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
-
-interface SubHandlerCollection {
-    byNumber: { [argLength: number]: SubHandler };
-    byTest: Array<{ execute: SubHandler, test: (argCount: number) => boolean }>;
-}
+import { SubtagHandler, SubtagHandlerCallSignature } from '../types';
+import { createArgumentResolvers } from './createResolvers';
+import { ArgumentResolver, SubHandler, SubHandlerCollection } from './types';
 
 export function compileSignatures(signatures: readonly SubtagHandlerCallSignature[]): SubtagHandler {
     const binding: SubHandlerCollection = { byNumber: {}, byTest: [] };
@@ -16,7 +8,7 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
     let maxArgs = 0;
 
     for (const signature of signatures) {
-        const { byTest, byNumber } = createArgumentResolver(signature);
+        const { byTest, byNumber } = createArgumentResolvers(signature);
         for (const entry of byTest) {
             minArgs = Math.min(minArgs, entry.minArgCount);
             maxArgs = Math.max(maxArgs, entry.maxArgCount);
@@ -53,9 +45,8 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
 
 function createSubHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): SubHandler {
     return async (context, subtagName, call) => {
-        const rawArgs = call.args.map(arg => new SubtagArgumentValue(context, arg));
         const args = [];
-        for await (const arg of resolver(rawArgs))
+        for await (const arg of resolver(context, call.args))
             args.push(arg);
 
         return await signature.execute(context, Object.assign(args, { subtagName }), call);

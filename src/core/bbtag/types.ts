@@ -6,6 +6,7 @@ import { VariableCache } from './Caching';
 import { BBTagContext } from './BBTagContext';
 import { BBRuntimeScope, ScopeCollection } from './ScopeCollection';
 import { TagCooldownManager } from './TagCooldownManager';
+import { SubtagArgumentValueArray } from './arguments';
 
 export type Statement = Array<string | SubtagCall>;
 
@@ -171,19 +172,6 @@ export type SubtagResult =
     | undefined
     | void;
 
-export interface SubtagArgumentValue {
-    readonly isCached: boolean;
-    readonly value: string;
-    readonly code: Statement;
-    readonly raw: string;
-    wait(): Promise<string>;
-    execute(): Promise<string>;
-}
-
-export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentValue> {
-    readonly subtagName: string;
-}
-
 export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
     readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
@@ -197,7 +185,7 @@ export interface SubtagHandlerParameter {
     readonly required: boolean;
     readonly greedy: number | null;
     readonly autoResolve: boolean;
-    readonly defaultValue: string | null;
+    readonly defaultValue: string;
     readonly nested: readonly SubtagHandlerParameter[];
 }
 

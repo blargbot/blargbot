@@ -22,7 +22,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
             greedy: parameter.type?.endsWith('OrMore') ? parseInt(parameter.type) : null,
             required: argumentRequired.includes(parameter.type),
             nested: parameter.parameters.map(parseArgument),
-            defaultValue: null
+            defaultValue: ''
         };
     }
 
@@ -34,7 +34,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
 
     const split = parameter.split(':');
     parameter = split[0];
-    const defaultValue = split.length >= 2 ? split.slice(1).join(':') : null;
+    const defaultValue = split.length >= 2 ? split.slice(1).join(':') : '';
 
     let required = true;
     let greedy: number | null = null;

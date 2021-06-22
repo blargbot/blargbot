@@ -1,6 +1,5 @@
-import { SubtagArgumentValue, SubtagCall } from './../core/bbtag/types';
 import { Cluster } from '../cluster';
-import { BaseSubtag, BBTagContext } from '../core/bbtag';
+import { BaseSubtag, BBTagContext, SubtagArgumentValue, SubtagCall } from '../core/bbtag';
 import { SubtagType, parse } from '../utils';
 
 export class ChooseSubtag extends BaseSubtag {

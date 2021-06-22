@@ -1,7 +1,7 @@
 import { Cluster } from '../cluster';
 import { BaseSubtag } from '../core/bbtag';
 import { SubtagType } from '../utils';
-import {default as Brainfuck} from 'brainfuck-node';//TODO types
+import { default as Brainfuck } from 'brainfuck-node';//TODO types
 const bfClient = new Brainfuck();
 
 export class BrainFuckSubtag extends BaseSubtag {
@@ -17,11 +17,10 @@ export class BrainFuckSubtag extends BaseSubtag {
                     description: 'Interprets `code` as brainfuck, using `input` as the text for `,`.',
                     exampleCode: '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
                     exampleOut: 'Hello World!',
-                    execute: async (ctx, args, subtag) => {
+                    execute: (ctx, [code, input], subtag) => {
                         try {
-                            const result = await bfClient.execute(...args.map(arg => arg.value));
-                            return result.output;
-                        } catch(e) {
+                            return bfClient.execute(code.value, input.value).output;
+                        } catch (e) {
                             return this.customError(e.message, ctx, subtag);
                         }
                     }
