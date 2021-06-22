@@ -2,6 +2,7 @@ export interface BBRuntimeScope {
     quiet?: boolean;
     fallback?: string;
     suppressLookup?: boolean;
+    reason?: string;
 }
 
 export class ScopeCollection {

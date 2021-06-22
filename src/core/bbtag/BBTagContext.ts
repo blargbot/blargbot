@@ -4,7 +4,7 @@ import { VariableCache, CacheEntry } from './Caching';
 import ReadWriteLock from 'rwlock';
 import { bbtagUtil, FlagDefinition, FlagResult, guard, oldBu, parse } from '../../utils';
 import { Duration } from 'moment-timezone';
-import { AnyGuildChannel, GuildTextableChannel, Member, User, Guild, Role } from 'eris';
+import { AnyGuildChannel, GuildTextableChannel, Member, User, Guild, Role, Permission } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
 import { SubtagCall, BBTagContextMessage, BBTagContextOptions, BBTagContextState, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, SubtagHandler, Statement } from './types';
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
@@ -53,7 +53,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
     public get database(): Database { return this.engine.database; }
     public get logger(): CatLogger { return this.engine.logger; }
-
+    public get permissions(): Permission { return (this.guild.members.get(this.authorizer) || { permissions: new Permission(0, 0) }).permissions; }
+    public get perms(): Permission { return this.permissions; }
     public constructor(
         public readonly engine: Engine,
         options: BBTagContextOptions
