@@ -9,11 +9,11 @@ export class ConcatSubtag extends BaseSubtag {
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['arrays+'],
+                    parameters: ['values+'],
                     description:
-                        'Takes `arrays` and joins them together to form a single array.',
-                    exampleCode: '{concat;["this", "is"];["an", "array"]}',
-                    exampleOut: '["this","is","an","array"]',
+                        'Takes `values` and joins them together to form a single array. If `values` is an array, it\'s flattened into the resulting array.',
+                    exampleCode: 'Two arrays: {concat;["this", "is"];["an", "array"]}\nStrings and an array: {concat;a;b;c;[1, 2, 3]}',
+                    exampleOut: 'Two arrays: ["this","is","an","array"]\nStrings and an array: ["a","b","c", 1, 2, 3]',
                     execute: (_, args) => this.concatArrays(args.map((arg) => arg.value))
                 }
             ]
