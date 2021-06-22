@@ -20,8 +20,13 @@ export class ConcatSubtag extends BaseSubtag {
         });
     }
 
-    public concatArrays(arrays: string[]): string {
-        const parsedArray = arrays.map((array) => array !== '' ? JSON.parse(array) : '');
+    public concatArrays(values: string[]): string {
+        const parsedArray = values.map((value) => {
+            try {
+                value = JSON.parse(value);
+            } catch(e) { }
+            return value;
+        });
         const flattenedArray = bbtagUtil.tagArray.flattenArray(parsedArray);
         return JSON.stringify(flattenedArray);
     }
