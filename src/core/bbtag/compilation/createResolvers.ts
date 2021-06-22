@@ -112,7 +112,7 @@ function createResolver(
             if (param.autoResolve)
                 await arg.wait();
 
-            while (defaultArgs[i++].param !== param)
+            while (defaultArgs[i] && defaultArgs[i++].param !== param)
                 yield defaultArgs[i - 1].arg;
 
             yield param.defaultValue !== null
