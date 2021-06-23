@@ -40,19 +40,25 @@ class Shard extends Sender {
             } else
                 this.manager.handleMessage(this, message.code, message.data);
         });
-        this.process.on('error', err => {
-            console.error(this.id, err);
+        this.process.on('error', (...args) => {
+            console.error(`Cluster ${this.id} errored`, ...args);
         });
         this.process.once('disconnect', () => {
             if (this.respawn) {
-                console.warn('The shard disconnected, respawning');
+                console.warn(`Cluster ${this.id} disconnected, respawning`);
                 this.manager.respawnShard(this.id, true);
             }
         });
 
-        this.process.once('kill', code => {
-            console.warn('The shard was killed');
+        this.process.once('kill', (code, ...args) => {
+            console.error(`Cluster ${this.id} was killed`, code, ...args);
             this.manager.handleDeath(this, code);
+        });
+        this.process.once('close', (...args) => {
+            console.error(`Cluster ${this.id} was closed`, ...args);
+        });
+        this.process.once('exit', (...args) => {
+            console.error(`Cluster ${this.id} exited`, ...args);
         });
     }
 
