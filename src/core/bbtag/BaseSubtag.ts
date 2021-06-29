@@ -77,6 +77,22 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public channelNotFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('No channel found', subtag, debugMessage);
     }
+
+    public noMessageFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
+        return context.addError('No message found', subtag, debugMessage);
+    }
+
+    public noUserFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
+        return context.addError('No user found', subtag, debugMessage);
+    }
+
+    public userNotInGuild(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
+        return context.addError('User not in guild', subtag, debugMessage);
+    }
+
+    public invalidEmbed(issue: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
+        return context.addError('Invalid embed: '+ issue, subtag, debugMessage);//TODO move issue to debug perhaps?
+    }
     public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError(errorText, subtag, debugMessage);
     }

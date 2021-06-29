@@ -1,4 +1,5 @@
 import { getRange } from '../misc/getRange';
+import { BBTagContext, SubtagCall } from '../../core/bbtag';
 
 export type BBArray = { n?: string, v: JArray };
 
@@ -54,4 +55,16 @@ export function flattenArray(array: JArray): JArray {
         else result.push(arg);
     }
     return result;
+}
+
+export async function getArray(context: BBTagContext, subtag: SubtagCall, arrName: string): Promise<BBArray | undefined> {
+    const obj = deserialize(arrName);
+    if (obj != null)
+        return obj;
+    try {
+        const arr = await context.variables.get(arrName, subtag);
+        if (arr !== undefined && Array.isArray(arr))
+            return { v: arr, n: arrName };
+    } catch (err) { }
+    return undefined;
 }

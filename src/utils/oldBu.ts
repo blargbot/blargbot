@@ -10,11 +10,10 @@ import { parse } from './parse';
 import snekfetch from 'snekfetch';
 import limax from 'limax';
 import { nfkd } from 'unorm';
-import { Engine as BBEngine, limits, BBTagContext as BBContext, SubtagCall } from '../core/bbtag';
+import { Engine as BBEngine, limits} from '../core/bbtag';
 import { ClusterUtilities } from '../cluster';
 import { StoredGuild, StoredTag } from '../core/database';
 import { defaultStaff, modlogColour } from './constants';
-import { deserialize as deserializeTagArray, BBArray } from './bbtag/tagArray';
 const TagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
     [key: string]: TagLocks
@@ -753,19 +752,7 @@ export const oldBu = {
             };
         }
         return null;
-    },
-    async getArray(context: BBContext, subtag: SubtagCall, arrName: string): Promise<BBArray | undefined> {
-        const obj = deserializeTagArray(arrName);
-        if (obj != null)
-            return obj;
-        try {
-            const arr = await context.variables.get(arrName, subtag);
-            if (arr !== undefined && Array.isArray(arr))
-                return { v: arr, n: arrName };
-        } catch (err) { }
-        return undefined;
-    },
-
+    }
 };
 
 class TimeoutError extends Error {

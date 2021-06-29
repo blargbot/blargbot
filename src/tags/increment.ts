@@ -18,7 +18,7 @@ export class IncrementSubtag extends BaseSubtag {
                     execute: (ctx, [{ value }], subtag) => this.increment(ctx, [value], subtag)
                 },
                 {
-                    parameters: ['varName', 'amount', 'floor?'],
+                    parameters: ['varName', 'amount:1', 'floor?'],
                     description: 'Increases `varName`\'s value by `amount`. ' +
                         '`floor` is a boolean, and if it is `true` then the value will be rounded down. ' +
                         '`amount` defaults to 1. `floor` defaults to `true`',
