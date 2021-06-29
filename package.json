@@ -68,6 +68,7 @@
     },
     "devDependencies": {
         "@types/cassandra-driver": "^3.5.0",
+        "@types/color": "^3.0.1",
         "@types/cron": "^1.7.2",
         "@types/gifencoder": "^2.0.0",
         "@types/gm": "^1.18.9",
