@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:26
  * @Last Modified by: RagingLink
- * @Last Modified time: 2021-06-29 23:39:41
+ * @Last Modified time: 2021-06-30 00:46:18
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,14 +25,14 @@ module.exports =
             'See [here](http://momentjs.com/docs/#/parsing/) for parsing documentation. ' +
             'See [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for a list of timezone codes.')
         .withExample(//Example code
-            'It\'s currently {time;YYYY/MM/DD HH:mm:ss}```\n```csharp\n' +
+            'It\'s currently {time;YYYY/MM/DD HH:mm:ss}\n```**Timezone manipulation**:\n```csharp\n' +
             'Time Berlin (as toTimezone): {time;HH:mm;;;;Europe/Berlin}\n' +
             'Time Berlin from UTC 12:00: {time;HH:mm;12:00;HH:mm;;Europe/Berlin}\n' +
             'Time Berlin (as fromTimezone): {time;HH:mm;;;Europe/Berlin}\n' +
             'Time Berlin (as fromTimezone and empty toTimezone): {time;HH:mm;;;Europe/Berlin;}\n' +
             'Time New York from Berlin (12:00 in Berlin): {time;HH:mm;12:00;HH:mm;Europe/Berlin;America/New_York}',
             //Example output
-            'It\'s currently 2021/05/29 21:33:00```\n```csharp\n' +
+            'It\'s currently 2021/05/29 21:33:00```\n**Timezone manipulation**:\n```csharp\n' +
             'Time Berlin (as toTimezone): 23:33\n' +
             'Time Berlin from UTC 12:00: 14:00\n' +
             'Time Berlin (as fromTimezone): 23:33\n' +
