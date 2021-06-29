@@ -1,8 +1,8 @@
-import { Embed, EmbedField } from 'eris';
+import { EmbedField, EmbedOptions } from 'eris';
 
 export type MalformedEmbed = { fields: [EmbedField], malformed: true };
 
-export function embed(embedText: string): Embed | MalformedEmbed | undefined | null {
+export function embed(embedText: string): EmbedOptions | MalformedEmbed | undefined {
     if (embedText == null)
         return undefined;
 
@@ -11,8 +11,8 @@ export function embed(embedText: string): Embed | MalformedEmbed | undefined | n
 
     try {
         const parsed = JSON.parse(embedText);
-        if (typeof parsed !== 'object' || Array.isArray(parsed))
-            return null;
+        if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed))
+            return undefined;
         else
             return parsed;
     } catch (e) {

@@ -1,7 +1,8 @@
 import { Cluster } from '../cluster';
 import moment from 'moment';
 import { guard } from '../utils';
-import { StoredEvent } from '../core/database';
+import { EventType, StoredEvent, StoredEventOptions } from '../core/database';
+import { BaseCommand, BaseEventCommand } from '../core/command';
 
 export class EventManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -13,13 +14,13 @@ export class EventManager {
         this.#events = new Map();
     }
 
-    public async insert(event: Omit<StoredEvent, 'id'>): Promise<void> {
-        const _event = <StoredEvent>event;
-        if (!await this.cluster.database.events.add(_event))
+    public async insert<K extends EventType>(type: K, event: StoredEventOptions<K>): Promise<void> {
+        const storedEvent = await this.cluster.database.events.add(type, event);
+        if (storedEvent === undefined)
             return;
 
         if (moment().add(5, 'minutes').diff(event.endtime) < 0)
-            this.#events.set(_event.id, _event);
+            this.#events.set(storedEvent.id, storedEvent);
     }
 
     public async process(): Promise<void> {
@@ -35,13 +36,13 @@ export class EventManager {
 
             const type = event.type;
             const command = this.cluster.commands.get(type);
-            if (canHandleEvents(command))
-                void command.event(event);
+            if (canHandleEvents(type, command))
+                void command.handleEvent(event);
             await this.delete(event.id);
         }
     }
 
-    private getShardId(event: StoredEvent): number {
+    private getShardId(event: StoredEventOptions): number {
         if (event.channel !== undefined) {
             const channel = this.cluster.discord.getChannel(event.channel);
             if (guard.isGuildChannel(channel))
@@ -74,6 +75,6 @@ export class EventManager {
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
-function canHandleEvents(command: any): command is { event(event: StoredEvent): Promise<void> } {
-    return command !== undefined && 'event' in command;
+function canHandleEvents<K extends EventType>(type: K, command: BaseCommand | undefined): command is BaseEventCommand<K> {
+    return command !== undefined && command instanceof BaseEventCommand && command.name === type;
 }

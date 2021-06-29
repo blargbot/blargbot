@@ -7,7 +7,7 @@ declare global {
     export type JToken = JObject | JArray | JValue | null | undefined;
     export type JValue = string | number | boolean;
     export type JObject = { [key: string]: JToken };
-    export type JArray = Array<JToken>;
+    export type JArray = JToken[];
     export type JTokenType = keyof JTokenTypeMap;
     export type JTokenTypeMap = {
         'string': string,

@@ -84,9 +84,11 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         }));
     }
 
-    public async getCommand(guildId: string, commandName: string, skipCache = false): Promise<StoredGuildCommand | undefined> {
+    public async getCommand(guildId: string, commandName: string, skipCache = false): Promise<NamedStoredGuildCommand | undefined> {
         const guild = await this.rget(guildId, skipCache);
-        return guild?.ccommands[commandName.toLowerCase()];
+        commandName = commandName.toLowerCase();
+        const command = guild?.ccommands[commandName];
+        return command === undefined ? undefined : { ...command, name: commandName };
     }
 
     public async withIntervalCommand(): Promise<readonly StoredGuild[] | undefined> {
@@ -109,6 +111,24 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         });
     }
 
+    public async setCommandProp<K extends keyof StoredGuildCommand>(guildId: string, commandName: string, key: K, value: StoredGuildCommand[K]): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (!guild)
+            return false;
+
+        commandName = commandName.toLowerCase();
+        if (!guild.ccommands[commandName])
+            return false;
+
+        return await this.rupdate(guildId, r => ({
+            ccommands: {
+                [commandName]: {
+                    [key]: r.literal(...(value !== undefined ? [value] : []))
+                }
+            }
+        }));
+    }
+
     public async setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean> {
         const guild = await this.rget(guildId);
         if (!guild)
@@ -118,8 +138,11 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (command === undefined)
             delete guild.ccommands[commandName];
 
-        else
+        else {
+            for (const key of Object.keys(command))
+                if (command[key] === undefined) delete command[key];
             guild.ccommands[commandName] = command;
+        }
 
         return await this.rupdate(guildId, r => ({
             ccommands: {

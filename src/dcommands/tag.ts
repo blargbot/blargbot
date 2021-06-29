@@ -3,12 +3,13 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster, ClusterUtilities } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
-import { ExecutionResult, getDocsEmbed, limits } from '../core/bbtag';
-import { BaseCommand, CommandContext } from '../core/command';
-import { StoredTag } from '../core/database';
+import { BBTagContext, getDocsEmbed, limits, Statement } from '../core/bbtag';
+import { DisabledRule } from '../core/bbtag/limits/rules/DisabledRule';
+import { BaseEventCommand, CommandContext } from '../core/command';
+import { StoredTag, TagStoredEventOptions, TagV4StoredEventOptions } from '../core/database';
 import { bbtagUtil, codeBlock, commandTypes, guard, humanize, parse } from '../utils';
 
-export class TagCommand extends BaseCommand {
+export class TagCommand extends BaseEventCommand<'tag'> {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'tag',
@@ -25,7 +26,7 @@ export class TagCommand extends BaseCommand {
                     'test|eval|exec|vtest': {
                         parameters: 'debug? {code+}',
                         execute: (ctx, [debug]) => this.runRaw(ctx, ctx.argRange(debug === undefined ? 1 : 2, true), '', debug !== undefined),
-                        description: 'Uses the BBTag engine to execute the content as it was a tag'
+                        description: 'Uses the BBTag engine to execute the content as if it was a tag'
                     },
                     'docs': {
                         parameters: '{topic*}',
@@ -144,6 +145,32 @@ export class TagCommand extends BaseCommand {
 
     }
 
+
+    public async scheduleEvent(context: BBTagContext, trigger: Date, content: Statement): Promise<void> {
+        await this._scheduleEvent({
+            version: 4,
+            endtime: trigger,
+            source: context.guild.id,
+            user: context.user.id,
+            channel: context.channel.id,
+            guild: context.guild.id,
+            context: context.serialize(),
+            content: bbtagUtil.stringify(content)
+        });
+    }
+
+    public async handleEvent(event: TagStoredEventOptions): Promise<void> {
+        const migratedEvent = migrateEvent(event);
+        if (migratedEvent === undefined)
+            return;
+
+        const context = await BBTagContext.deserialize(this.cluster.bbtag, migratedEvent.context);
+        const source = bbtagUtil.parse(migratedEvent.content);
+        context.limit.addRules(['timer', 'output'], DisabledRule.instance);
+
+        await this.cluster.bbtag.eval(source, context);
+    }
+
     public async runTag(
         context: CommandContext,
         tagName: string,
@@ -175,7 +202,7 @@ export class TagCommand extends BaseCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? createDebugOutput(match.name, match.content, args, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, args, result) : undefined;
     }
 
     public async runRaw(
@@ -197,7 +224,7 @@ export class TagCommand extends BaseCommand {
             author: context.author.id
         });
 
-        return debug ? createDebugOutput('test', content, args, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput('test', content, args, result) : undefined;
     }
 
     public async createTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -205,7 +232,7 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        return await this.saveTag(context, 'set', match.name, content, undefined);
+        return await this.saveTag(context, 'created', match.name, content, undefined);
     }
 
     public async editTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -213,7 +240,7 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        return await this.saveTag(context, 'set', match.name, content, match);
+        return await this.saveTag(context, 'edited', match.name, content, match);
     }
 
     public async deleteTag(context: CommandContext, tagName: string | undefined): Promise<string | undefined> {
@@ -343,9 +370,9 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.tags.setCooldown(match.name, cooldown?.asMilliseconds());
+        await this.database.tags.setProp(match.name, 'cooldown', cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
-        return `✅ The \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
+        return `✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
 
     public async getTagAuthor(context: CommandContext, tagName: string | undefined): Promise<string | undefined> {
@@ -355,7 +382,7 @@ export class TagCommand extends BaseCommand {
 
         const response = [];
         const author = await this.database.users.get(match.author);
-        response.push(`The tag \`${match.name}\` was made by **${humanize.fullName(author)}**`);
+        response.push(`✅ The tag \`${match.name}\` was made by **${humanize.fullName(author)}**`);
         if (match.authorizer !== undefined && match.authorizer !== match.author) {
             const authorizer = await this.database.users.get(match.authorizer);
             response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
@@ -520,7 +547,7 @@ export class TagCommand extends BaseCommand {
             flags.push({ flag, word, desc });
         }
 
-        await this.database.tags.setFlags(match.name, flags);
+        await this.database.tags.setProp(match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
@@ -534,7 +561,7 @@ export class TagCommand extends BaseCommand {
         const flags = [...(match.flags ?? [])]
             .filter(f => removeFlags[f.flag] === undefined);
 
-        await this.database.tags.setFlags(match.name, flags);
+        await this.database.tags.setProp(match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
@@ -543,7 +570,7 @@ export class TagCommand extends BaseCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.tags.setLanguage(match.name, language);
+        await this.database.tags.setProp(match.name, 'lang', language);
         return `✅ Lang for tag \`${match.name}\` set.`;
     }
 
@@ -698,7 +725,7 @@ export class TagCommand extends BaseCommand {
     private showDocs(ctx: CommandContext, topic: readonly string[]): SendPayload | string {
         const embed = getDocsEmbed(ctx, topic);
         if (!embed)
-            return `Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`;
+            return `❌ Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`;
 
         return { embed: embed, isHelp: true };
     }
@@ -744,45 +771,6 @@ function normalizeName(title: string): string {
     return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
 }
 
-
-
-function createDebugOutput(name: string, code: string, args: string[], result: ExecutionResult): { content: string, files: MessageFile } {
-    const performance: Record<string, unknown> = {};
-    for (const key of Object.keys(result.duration.subtag)) {
-        const times = result.duration.subtag[key];
-        if (times !== undefined && times.length > 0) {
-            const totalTime = times.reduce((l, r) => l + r);
-            performance[key] = {
-                count: times.length,
-                totalMs: totalTime,
-                averageMs: totalTime / times.length,
-                timesMs: times
-            };
-        }
-    }
-
-    return {
-        content: codeBlock(
-            `         Execution Time: ${humanize.duration(moment.duration(result.duration.active, 'ms'))}\n` +
-            `    Variables Committed: ${result.database.committed}\n` +
-            `Database Execution Time: ${humanize.duration(moment.duration(result.duration.database, 'ms'))}\n` +
-            `   Total Execution Time: ${humanize.duration(moment.duration(result.duration.total, 'ms'))}`,
-            'js'),
-        files: {
-            name: 'bbtag.debug.json',
-            file: JSON.stringify({
-                tagName: name,
-                userInput: args,
-                code: code,
-                debug: result.debug,
-                errors: result.errors,
-                variables: result.database.values,
-                performance: performance
-            }, undefined, 2)
-        }
-    };
-}
-
 const enum TagChangeAction {
     CREATE = 'Create',
     RENAME = 'Rename',
@@ -796,3 +784,14 @@ const tagChangeActionColour: { [P in TagChangeAction]: number } = {
     [TagChangeAction.EDIT]: 0xf20212,
     [TagChangeAction.DELETE]: 0x02f2ee
 };
+
+function migrateEvent<T extends TagStoredEventOptions>(event: T): TagV4StoredEventOptions | undefined {
+    switch (event.version) {
+        case undefined: // TODO actual migration
+        case 0: return undefined;
+        case 1: return undefined;
+        case 2: return undefined;
+        case 3: return undefined;
+        case 4: return event;
+    }
+}

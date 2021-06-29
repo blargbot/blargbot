@@ -12,4 +12,10 @@ export class DisabledRule implements RuntimeLimitRule {
     public displayText(subtagName: string): string {
         return `{${subtagName}} is disabled`;
     }
+    public state(): JToken {
+        return null;
+    }
+    public load(): void {
+        // NOOP
+    }
 }

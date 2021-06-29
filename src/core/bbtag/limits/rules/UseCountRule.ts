@@ -23,4 +23,13 @@ export class UseCountRule implements RuntimeLimitRule {
     public displayText(): string {
         return `Maximum ${this.#initial} ${this.#type[1]}`;
     }
+    public state(): number {
+        return this.#remaining;
+    }
+    public load(state: JToken): void {
+        if (typeof state !== 'number')
+            throw new Error(`Invalid state ${JSON.stringify(state)}`);
+
+        this.#remaining = state;
+    }
 }

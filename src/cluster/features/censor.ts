@@ -61,7 +61,8 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
             tagName: 'censor',
             limit: limits.CustomCommandLimit,
             input: humanize.smartSplit(msg.content),
-            isCC: true
+            isCC: true,
+            author: ''
         });
     }
 }

@@ -72,7 +72,7 @@ async function tryHandleCustomCommand(cluster: Cluster, context: CommandContext)
     const { authorizer, alias } = command;
     let { content, flags, cooldown, author } = command;
     if (alias) {
-        ({ content = '', flags, cooldown, author } = await cluster.database.tags.get(alias) ?? {});
+        ({ content = '', flags, cooldown, author = '' } = await cluster.database.tags.get(alias) ?? {});
     }
 
     if (!content)

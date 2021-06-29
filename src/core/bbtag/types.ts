@@ -7,6 +7,8 @@ import { BBTagContext } from './BBTagContext';
 import { BBRuntimeScope, ScopeCollection } from './ScopeCollection';
 import { TagCooldownManager } from './TagCooldownManager';
 import { SubtagArgumentValueArray } from './arguments';
+import { limits } from '.';
+import { RuntimeLimitRule } from './limits/rules/RuntimeLimitRule';
 
 export type Statement = Array<string | SubtagCall>;
 
@@ -48,6 +50,11 @@ export interface SourceToken {
     end: SourceMarker;
 }
 
+export interface SerializedRuntimeLimit {
+    type: keyof typeof limits;
+    rules: { [key: string]: JToken[]; };
+}
+
 export interface SerializedBBTagContext {
     msg: {
         id: string,
@@ -68,6 +75,7 @@ export interface SerializedBBTagContext {
     authorizer: string,
     tagVars: boolean,
     tempVars: Record<string, string | undefined>
+    limit: SerializedRuntimeLimit
 }
 
 export interface BBTagContextMessage {
@@ -96,7 +104,6 @@ export interface BBTagContextState {
     file: undefined | MessageFile,
     reactions: string[],
     nsfw: undefined | string,
-    /** @type {{regex: RegExp|string, with: string}} */
     replace: null | { regex: RegExp | string, with: string },
     break: number,
     continue: number,
@@ -109,6 +116,7 @@ export interface BBTagContextState {
         roles: string[],
         everybody: boolean
     }
+
 }
 
 export interface RuntimeError {
@@ -123,8 +131,12 @@ export interface RuntimeDebugEntry {
 }
 
 export interface RuntimeLimit {
+    addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this;
+    readonly scopeName: string | null;
     check(context: BBTagContext, subtag: SubtagCall, subtagName: string): Promise<string | null> | string | null;
     rulesFor(subtagName: string): string[];
+    serialize(): SerializedRuntimeLimit;
+    load(state: SerializedRuntimeLimit): void;
 }
 
 export const enum RuntimeReturnState {
@@ -139,7 +151,7 @@ export interface BBTagContextOptions {
     readonly flags?: readonly FlagDefinition[];
     readonly isCC: boolean;
     readonly tagVars?: boolean;
-    readonly author?: string;
+    readonly author: string;
     readonly authorizer?: string;
     readonly tagName: string;
     readonly cooldown?: number;

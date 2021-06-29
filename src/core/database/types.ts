@@ -2,13 +2,14 @@ import { AnyMessage, Client as ErisClient, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import { FlagDefinition, MessageFilter, SubtagVariableType } from '../../utils';
 import { Options as SequelizeOptions } from 'sequelize';
+import { SerializedBBTagContext } from '../bbtag';
 
 export type RethinkTableMap = {
     'guild': StoredGuild;
     'tag': StoredTag;
     'user': StoredUser;
     'vars': KnownStoredVars;
-    'events': Omit<StoredEvent, 'id'>
+    'events': Omit<StoredEventOptions, 'id'>
 }
 
 export interface StoredVar<T extends string> {
@@ -99,15 +100,45 @@ export type MutableKnownStoredVars =
 
 export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownStoredVars, { varname: T }>;
 
-export interface StoredEvent {
-    readonly id: string;
-    readonly type: string;
+
+export interface StoredEventOptionsBase {
+    readonly source: string;
+    readonly guild: string | undefined;
+    readonly channel: string | undefined;
+    readonly user: string | undefined;
     readonly endtime: Date;
-    readonly source?: string;
-    readonly channel?: string;
-    readonly guild?: string;
-    readonly user?: string;
 }
+
+export interface TagStoredEventOptionsBase<Version> extends StoredEventOptionsBase {
+    readonly version: Version;
+}
+
+export interface TagV4StoredEventOptions extends TagStoredEventOptionsBase<4> {
+    readonly source: string;
+    readonly context: SerializedBBTagContext;
+    readonly content: string;
+}
+
+export type TagStoredEventOptions =
+    | TagStoredEventOptionsBase<undefined>
+    | TagStoredEventOptionsBase<0>
+    | TagStoredEventOptionsBase<1>
+    | TagStoredEventOptionsBase<2>
+    | TagStoredEventOptionsBase<3>
+    | TagV4StoredEventOptions;
+
+export type EventOptionsTypeMap = {
+    'tag': TagStoredEventOptions;
+}
+
+export type EventTypeMap = {
+    [K in keyof EventOptionsTypeMap]: EventOptionsTypeMap[K] & { id: string, type: K };
+}
+
+export type EventType = keyof EventOptionsTypeMap;
+
+export type StoredEventOptions<K extends EventType = EventType> = EventOptionsTypeMap[K];
+export type StoredEvent<K extends EventType = EventType> = EventTypeMap[K];
 
 export interface StoredGuild {
     readonly guildid: string;
@@ -194,7 +225,7 @@ export interface StoredGuildCommand {
     readonly alias?: string;
     readonly authorizer?: string;
     readonly content: string;
-    readonly author?: string;
+    readonly author: string;
     readonly hidden?: boolean;
     readonly roles?: readonly string[];
     readonly uses?: number;
@@ -385,10 +416,11 @@ export interface GuildTable {
     getIds(skipCache?: boolean): Promise<readonly string[]>;
     getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<StoredGuildSettings[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
-    getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<StoredGuildCommand | undefined>;
+    getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<NamedStoredGuildCommand | undefined>;
     withIntervalCommand(skipCache?: boolean): Promise<readonly StoredGuild[] | undefined>;
     updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;
     setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean>;
+    setCommandProp<K extends keyof StoredGuildCommand>(guildId: string, commandName: string, key: K, value: StoredGuildCommand[K]): Promise<boolean>;
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
     setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean>;
@@ -412,13 +444,12 @@ export interface VarsTable {
 
 export interface EventsTable {
     between(from: Date | Moment | number, to: Date | Moment | number): Promise<StoredEvent[]>;
-    add(event: Omit<StoredEvent, 'id'>): Promise<boolean>;
+    add<K extends EventType>(type: K, event: StoredEventOptions<K>): Promise<StoredEvent<K> | undefined>;
     delete(eventId: string): Promise<boolean>;
-    delete(filter: Partial<StoredEvent>): Promise<boolean>;
+    delete(filter: Partial<StoredEventOptions>): Promise<boolean>;
 }
 
 export interface TagsTable {
-    setLanguage(tagName: string, language: string | undefined): Promise<boolean>;
     list(skip: number, take: number): Promise<readonly string[]>;
     count(): Promise<number>;
     byAuthor(userId: string, skip: number, take: number): Promise<readonly string[]>;
@@ -430,11 +461,10 @@ export interface TagsTable {
     top(count: number): Promise<readonly StoredTag[]>;
     get(tagName: string): Promise<StoredTag | undefined>;
     set(tag: StoredTag): Promise<boolean>;
+    setProp<K extends keyof StoredTag>(tagName: string, key: K, value: StoredTag[K]): Promise<boolean>;
     add(tag: StoredTag): Promise<boolean>;
-    setFlags(tagName: string, flags: readonly FlagDefinition[]): Promise<boolean>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;
     incrementReports(tagName: string, count?: number): Promise<boolean>;
-    setCooldown(tagName: string, cooldown: number | undefined): Promise<boolean>;
     getFavourites(userId: string): Promise<readonly string[]>;
     setFavourite(tagName: string, userId: string, favourite: boolean): Promise<boolean>;
 }

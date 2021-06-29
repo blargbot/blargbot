@@ -6,7 +6,7 @@ export class TagLimit extends BaseRuntimeLimit {
     public readonly scopeName = 'tags';
 
     public constructor() {
-        super();
+        super('TagLimit');
 
         this.addRules('ban', DisabledRule.instance)
             .addRules('unban', DisabledRule.instance)

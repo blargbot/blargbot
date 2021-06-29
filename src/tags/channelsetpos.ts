@@ -16,7 +16,7 @@ export class ChannelSetPosSubtag extends BaseSubtag {
                     description: 'Moves a channel to the provided position.',
                     exampleCode: '{channelsetpos;11111111111111111;5}',
                     exampleOut: '',
-                    execute: async (context, [{value: channelStr}, {value: posStr}], subtag) => {
+                    execute: async (context, [{ value: channelStr }, { value: posStr }], subtag) => {
                         const channel = await context.getChannel(channelStr);
 
                         if (!channel)
@@ -32,8 +32,8 @@ export class ChannelSetPosSubtag extends BaseSubtag {
                         try {
                             await channel.editPosition(pos);
                             return; //TODO return something on success
-                        } catch(e) {
-                            console.error(err.stack);
+                        } catch (err) {
+                            this.cluster.logger.error(err.stack);
                             return this.customError('Failed to move channel: no perms', context, subtag);
                         }
                     }

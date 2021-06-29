@@ -14,4 +14,10 @@ export class StaffOnlyRule implements RuntimeLimitRule {
     public displayText(): string {
         return 'Authorizer must be staff';
     }
+    public state(): JToken {
+        return null;
+    }
+    public load(): void {
+        // NOOP
+    }
 }

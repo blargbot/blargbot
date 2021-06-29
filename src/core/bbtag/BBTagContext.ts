@@ -10,6 +10,7 @@ import { SubtagCall, BBTagContextMessage, BBTagContextOptions, BBTagContextState
 import { FindEntityOptions } from '../../cluster/ClusterUtilities';
 import { Engine } from './Engine';
 import { Database, StoredGuildCommand, StoredTag } from '../database';
+import { limits } from '.';
 
 function serializeEntity(entity: { id: string }): { id: string, serialized: string } {
     return { id: entity.id, serialized: JSON.stringify(entity) };
@@ -281,7 +282,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return this.state.cache[key] = getIfNotSet(key);
     }
 
-    public static async deserialize(engine: Engine, limit: RuntimeLimit, obj: SerializedBBTagContext): Promise<BBTagContext> {
+    public static async deserialize(engine: Engine, obj: SerializedBBTagContext): Promise<BBTagContext> {
         let message: BBTagContextMessage | undefined;
         try {
             const msg = await engine.discord.getMessage(obj.msg.channel.id, obj.msg.id);
@@ -314,6 +315,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 embeds: obj.msg.embeds
             };
         }
+        const limit = new limits[obj.limit.type]();
+        limit.load(obj.limit);
         const result = new BBTagContext(engine, {
             input: obj.input,
             message: message,
@@ -357,6 +360,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             tagVars: this.tagVars,
             author: this.author,
             authorizer: this.authorizer,
+            limit: this.limit.serialize(),
             tempVars: this.variables.list
                 .filter(v => v.key.startsWith('~'))
                 .reduce((p, v) => {

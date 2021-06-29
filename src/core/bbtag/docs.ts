@@ -180,6 +180,8 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
 
             for (const key of Object.keys(limits)) {
                 const limit = new limits[key]();
+                if (limit.scopeName === null)
+                    continue;
                 const text = limit.rulesFor(subtag.name).join('\n');
                 if (text) {
                     limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}\n\n`;

@@ -1,5 +1,5 @@
 import { RethinkDb } from './core/RethinkDb';
-import { EventsTable, StoredEvent } from './types';
+import { EventsTable, EventType, StoredEvent, StoredEventOptions } from './types';
 import { RethinkDbTable } from './core/RethinkDbTable';
 import { Moment } from 'moment-timezone';
 import moment from 'moment';
@@ -19,13 +19,17 @@ export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements Ev
         return await this.rqueryAll(t => t.between(after, before, { index: 'endtime' }));
     }
 
-    public async add(event: Omit<StoredEvent, 'id'>): Promise<boolean> {
-        return await this.rinsert(event, true);
+    public async add<K extends EventType>(type: K, event: StoredEventOptions<K>): Promise<StoredEvent<K> | undefined> {
+        const insert = { ...event, type };
+        if (!await this.rinsert(insert, true))
+            return undefined;
+
+        return <StoredEvent<K>><unknown>insert;
     }
 
     public async delete(eventId: string): Promise<boolean>;
-    public async delete(filter: Partial<StoredEvent>): Promise<boolean>;
-    public async delete(filter: string | Partial<StoredEvent>): Promise<boolean> {
+    public async delete(filter: Partial<StoredEventOptions>): Promise<boolean>;
+    public async delete(filter: string | Partial<StoredEventOptions>): Promise<boolean> {
         return await this.rdelete(filter);
     }
 

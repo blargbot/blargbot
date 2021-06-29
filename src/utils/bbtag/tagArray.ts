@@ -13,7 +13,7 @@ export function serialize(array: JArray | BBArray, varName?: string): string {
     if (!varName)
         return JSON.stringify(array);
     return JSON.stringify({
-        v: array.v,
+        v: 'v' in array ? array.v : undefined,
         n: varName
     });
 }
@@ -49,7 +49,7 @@ export function deserialize(value: string): BBArray | null {
 export function flattenArray(array: JArray): JArray {
     const result = [];
     for (const arg of array) {
-        const arr = typeof arg === 'string' ? deserialize(arg) : {v: arg};
+        const arr = typeof arg === 'string' ? deserialize(arg) : { v: arg };
         if (arr != null && Array.isArray(arr.v))
             result.push(...arr.v);
         else result.push(arg);

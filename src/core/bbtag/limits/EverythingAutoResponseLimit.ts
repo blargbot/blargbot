@@ -1,4 +1,3 @@
-import { parse } from '../../../utils';
 import { BaseRuntimeLimit } from './BaseRuntimeLimit';
 import { DisabledRule } from './rules/DisabledRule';
 import { StaffOnlyRule } from './rules/StaffOnlyRule';
@@ -8,7 +7,7 @@ export class EverythingAutoResponseLimit extends BaseRuntimeLimit {
     public readonly scopeName = 'everything autoresponses';
 
     public constructor() {
-        super();
+        super('EverythingAutoResponseLimit');
 
         this.addRules('safeloops', new UseCountRule(100000))
             .addRules('ban', StaffOnlyRule.instance)
@@ -43,16 +42,6 @@ export class EverythingAutoResponseLimit extends BaseRuntimeLimit {
             .addRules('reactremove', new UseCountRule(1))
             .addRules('reactremove:requests', new UseCountRule(20, ['Request', 'requests']))
             .addRules('timer', DisabledRule.instance)
-            .addRules('sleep', {
-                async check(context, subtag) {
-                    const duration = parse.duration(await context.eval(subtag.args[0]));
-                    if (duration && duration.asMilliseconds() > 5000)
-                        subtag.args[0] = ['5000']; // Soft limit for duration
-                    return true;
-                },
-                displayText() { return 'Maximum 5s duration'; },
-                errorText() { return 'Maximum 5s duration'; }
-            })
             .addRules('usersetnick', StaffOnlyRule.instance)
             .addRules('waitmessage', DisabledRule.instance)
             .addRules('waitreaction', DisabledRule.instance)

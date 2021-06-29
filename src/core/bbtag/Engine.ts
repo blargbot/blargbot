@@ -129,10 +129,10 @@ export class Engine {
                     result.warnings.push({ location: call.start, message: 'Dynamic subtag' });
                 else {
                     const subtag = this.subtags.get(call.name.join(''));
+                    // TODO Detect unknown subtags
                     if (subtag?.deprecated) {
                         result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
                     }
-
                 }
             }
 

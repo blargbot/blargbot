@@ -10,7 +10,7 @@ import { parse } from './parse';
 import snekfetch from 'snekfetch';
 import limax from 'limax';
 import { nfkd } from 'unorm';
-import { Engine as BBEngine, limits} from '../core/bbtag';
+import { Engine as BBEngine, limits } from '../core/bbtag';
 import { ClusterUtilities } from '../cluster';
 import { StoredGuild, StoredTag } from '../core/database';
 import { defaultStaff, modlogColour } from './constants';
@@ -100,7 +100,8 @@ export const oldBu = {
                             limit: new limits.CustomCommandLimit(),
                             input: humanize.smartSplit(msg.content),
                             isCC: true,
-                            tagName: 'censor'
+                            tagName: 'censor',
+                            author: ''
                         });
                     }
                 }

@@ -1,7 +1,6 @@
 import { RethinkDb } from './core/RethinkDb';
 import { StoredTag, TagsTable } from './types';
 import { RethinkDbTable } from './core/RethinkDbTable';
-import { FlagDefinition } from '../../utils';
 
 export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTable {
     public constructor(
@@ -101,11 +100,6 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
         }));
     }
 
-    public async setCooldown(tagName: string, cooldown: number | undefined): Promise<boolean> {
-        return await this.rupdate(tagName, r => ({
-            cooldown: r.literal(...(cooldown === undefined ? [] : [cooldown]))
-        }));
-    }
     public async getFavourites(userId: string): Promise<readonly string[]> {
         return await this.rqueryAll(t =>
             t.getAll(userId, { index: 'user_favourite' })
@@ -121,15 +115,9 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
         });
     }
 
-    public async setFlags(tagName: string, flags: FlagDefinition[]): Promise<boolean> {
+    public async setProp<K extends keyof StoredTag>(tagName: string, key: K, value: StoredTag[K]): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            flags: r.literal(flags)
-        }));
-    }
-
-    public async setLanguage(tagName: string, language: string | undefined): Promise<boolean> {
-        return await this.rupdate(tagName, r => ({
-            lang: r.literal(...(location === undefined ? [] : [language]))
+            [key]: r.literal(...(value === undefined ? [] : [value]))
         }));
     }
 }

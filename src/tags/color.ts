@@ -20,7 +20,7 @@ export class ColorSubtag extends BaseSubtag {
                     description: 'Converts a color to `outputFormat`.',
                     exampleCode: '{color;#4286f4;RGB}',
                     exampleOut: '[66,134,244]',
-                    execute: (ctx, args, subtag) => this.parseColor(ctx, args[0].value, args[1].value, null, subtag)
+                    execute: (ctx, args, subtag) => this.parseColor(ctx, args[0].value, args[1].value, undefined, subtag)
                 },
                 {
                     parameters: ['color', 'outputFormat:hex', 'inputFormat'],

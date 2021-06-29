@@ -115,7 +115,7 @@ export abstract class BaseCommand implements Required<CommandOptions> {
     }
 }
 
-export function splitResult(result: CommandResult | null): [SendPayload | undefined, MessageFile[] | undefined] {
+function splitResult(result: CommandResult | null): [SendPayload | undefined, MessageFile[] | undefined] {
     if (result === undefined || result === null)
         return [undefined, undefined];
     if (typeof result !== 'object')

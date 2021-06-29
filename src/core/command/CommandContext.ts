@@ -40,6 +40,8 @@ export class CommandContext<TChannel extends Channel = Channel> {
                 : typeof arg2 === 'number' ? [arg2, arg3 ?? false]
                     : [this.args.length - 1, arg2];
 
+        if (this.args.length <= start)
+            return raw ? '' : [];
 
         if (raw) {
             const istart = this.#argRanges[start].start;

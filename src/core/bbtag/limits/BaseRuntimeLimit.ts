@@ -1,5 +1,6 @@
+import { limits } from '..';
 import { BBTagContext } from '../BBTagContext';
-import { SubtagCall, RuntimeLimit } from '../types';
+import { SubtagCall, RuntimeLimit, SerializedRuntimeLimit } from '../types';
 import { RuntimeLimitRule } from './rules/RuntimeLimitRule';
 
 interface RuntimeLimitRuleCollection {
@@ -9,11 +10,14 @@ interface RuntimeLimitRuleCollection {
 export abstract class BaseRuntimeLimit implements RuntimeLimit {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #rules: Record<string, RuntimeLimitRuleCollection | undefined>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #name: keyof typeof limits;
 
     abstract get scopeName(): string;
 
-    protected constructor() {
+    protected constructor(name: keyof typeof limits) {
         this.#rules = {};
+        this.#name = name;
     }
 
     private getKeys(key: string, useDefault?: true): [rootKey: string, subKey: string]
@@ -23,7 +27,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         return [keySplit[0], keySplit[1] ?? (useDefault ? 'default' : undefined)];
     }
 
-    protected addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this {
+    public addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this {
         rulekey = Array.isArray(rulekey) ? rulekey : [rulekey];
         for (const name of new Set(rulekey)) {
             const [rootKey, subKey] = this.getKeys(name);
@@ -57,5 +61,39 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
             : Object.keys(set).reduce((p, c) =>
                 (p.push(...set[c]), p), <RuntimeLimitRule[]>[]);
         return rules.map(r => r.displayText(rootKey, this.scopeName));
+    }
+
+    public serialize(): SerializedRuntimeLimit {
+        const result: SerializedRuntimeLimit = { rules: {}, type: this.#name };
+
+        for (const rootKey of Object.keys(this.#rules)) {
+            const ruleSet = this.#rules[rootKey];
+            if (ruleSet === undefined)
+                continue;
+
+            for (const subKey of Object.keys(ruleSet))
+                result.rules[`${rootKey}:${subKey}`] = ruleSet[subKey].map(r => r.state());
+        }
+
+        return result;
+    }
+
+    public load(state: SerializedRuntimeLimit): void {
+        for (const ruleKey of Object.keys(state)) {
+            const [rootKey, subKey] = this.getKeys(ruleKey);
+            const states = state.rules[ruleKey];
+
+            const set = this.#rules[rootKey];
+            if (set === undefined)
+                continue;
+
+            const rules = set[subKey];
+            if (rules === undefined)
+                continue;
+
+            const iter = Math.min(states.length, rules.length);
+            for (let i = 0; i < iter; i++)
+                rules[i].load(states[i]);
+        }
     }
 }

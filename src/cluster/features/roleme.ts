@@ -37,7 +37,8 @@ export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<v
                 tagName: 'roleme',
                 limit: limits.CustomCommandLimit,
                 input: [],
-                isCC: true
+                isCC: true,
+                author: ''
             });
         } catch (err) {
             await cluster.util.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
