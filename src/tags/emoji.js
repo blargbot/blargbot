@@ -26,7 +26,12 @@ module.exports =
             else if (amount < 1) amount = 1;
             let emojis = await new Promise((resolve, reject) => {
                 request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
-                    body = JSON.parse(body);
+                    try {
+                        body = JSON.parse(body);
+                    } catch (error) {
+                        console.error('Failed to parse body as json', { body, q, error });
+                        body = [];
+                    }
                     resolve(body.results.map(result => result.text));
                 });
             });
