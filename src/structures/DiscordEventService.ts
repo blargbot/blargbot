@@ -1,19 +1,19 @@
-import { Client as ErisClient } from 'eris';
+import { Client as ErisClient, ClientEventTypes } from 'eris';
 import { BaseService } from './BaseService';
 
-export abstract class DiscordEventService extends BaseService {
+export abstract class DiscordEventService<T extends keyof ClientEventTypes> extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #execute: (...args: unknown[]) => void;
+    readonly #execute: (...args: ClientEventTypes[T]) => void;
     public readonly type: string;
 
     protected constructor(
         public readonly discord: ErisClient,
-        public readonly event: string,
+        public readonly event: T,
         public readonly logger: CatLogger
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;
-        const execute = async (...args: unknown[]): Promise<void> => {
+        const execute = async (...args: ClientEventTypes[T]): Promise<void> => {
             try {
                 await this.execute(...args);
             } catch (err) {
@@ -21,16 +21,16 @@ export abstract class DiscordEventService extends BaseService {
             }
         };
 
-        this.#execute = (...args: unknown[]) => void execute(...args);
+        this.#execute = (...args) => void execute(...args);
     }
 
-    protected abstract execute(...args: unknown[]): Promise<void> | void;
+    protected abstract execute(...args: ClientEventTypes[T]): Promise<void> | void;
 
     public start(): void {
-        this.discord.on(this.event, this.#execute);
+        this.discord.on<T>(this.event, this.#execute);
     }
 
     public stop(): void {
-        this.discord.off(this.event, this.#execute);
+        this.discord.off<T>(this.event, this.#execute);
     }
 }

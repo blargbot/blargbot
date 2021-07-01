@@ -109,7 +109,7 @@ export interface BBTagContextState {
     continue: number,
     subtags: Record<string, number[] | undefined>,
     overrides: Record<string, SubtagHandler | undefined>,
-    cache: Record<string, StoredGuildCommand | StoredTag | undefined>,
+    cache: Record<string, StoredGuildCommand | StoredTag>,
     subtagCount: number,
     allowedMentions: {
         users: string[],

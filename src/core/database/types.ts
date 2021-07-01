@@ -162,11 +162,16 @@ export interface MutableStoredGuild extends StoredGuild {
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
     log?: { [key: string]: string };
+    autoresponse?: MutableGuildAutoresponses;
 }
 
 export interface GuildAutoresponses {
     readonly everything?: GuildAutoresponse;
     readonly list?: readonly GuildFilteredAutoresponse[];
+}
+export interface MutableGuildAutoresponses extends GuildAutoresponses {
+    everything?: GuildAutoresponse;
+    list?: GuildFilteredAutoresponse[];
 }
 
 export interface GuildAutoresponse {
@@ -215,23 +220,40 @@ export interface GuildCensorExceptions {
     readonly role: string | readonly string[];
 }
 
-export interface NamedStoredGuildCommand extends StoredGuildCommand {
-    readonly name: string;
-}
-
-export interface StoredGuildCommand {
-    readonly help?: string;
-    readonly lang?: string;
-    readonly alias?: string;
-    readonly authorizer?: string;
+export interface StoredRawGuildCommand {
     readonly content: string;
     readonly author: string;
+    readonly help?: string;
+    readonly lang?: string;
+    readonly authorizer?: string;
     readonly hidden?: boolean;
+    readonly managed?: boolean;
     readonly roles?: readonly string[];
     readonly uses?: number;
     readonly flags?: readonly FlagDefinition[];
     readonly cooldown?: number;
 }
+
+export interface NamedStoredRawGuildCommand extends StoredRawGuildCommand {
+    readonly name: string;
+}
+
+export interface StoredAliasedGuildCommand {
+    readonly alias: string;
+    readonly author: string;
+    readonly authorizer?: string;
+    readonly hidden?: boolean;
+    readonly roles?: readonly string[];
+    readonly cooldown?: number;
+    readonly help?: string;
+}
+
+export interface NamedStoredAliasedGuildCommand extends StoredAliasedGuildCommand {
+    readonly name: string;
+}
+
+export type StoredGuildCommand = StoredAliasedGuildCommand | StoredRawGuildCommand;
+export type NamedStoredGuildCommand = NamedStoredAliasedGuildCommand | NamedStoredRawGuildCommand;
 
 export interface CommandPermissions {
     readonly disabled?: boolean;
@@ -406,7 +428,14 @@ export interface PostgresDbOptions {
 }
 
 export interface GuildTable {
+    getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
+    getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>;
+    getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined>;
     getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses>;
+    setAutoresponse(guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>;
+    setAutoresponse(guildId: string, index: 'everything', autoresponse: GuildAutoresponse | undefined): Promise<boolean>;
+    setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>;
+    addAutoresponse(guildId: string, autoresponse: GuildFilteredAutoresponse): Promise<boolean>;
     getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined>;
     getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]>;
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
@@ -420,6 +449,8 @@ export interface GuildTable {
     withIntervalCommand(skipCache?: boolean): Promise<readonly StoredGuild[] | undefined>;
     updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;
     setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean>;
+    setCommandProp<K extends keyof StoredRawGuildCommand>(guildId: string, commandName: string, key: K, value: StoredRawGuildCommand[K]): Promise<boolean>;
+    setCommandProp<K extends keyof StoredAliasedGuildCommand>(guildId: string, commandName: string, key: K, value: StoredAliasedGuildCommand[K]): Promise<boolean>;
     setCommandProp<K extends keyof StoredGuildCommand>(guildId: string, commandName: string, key: K, value: StoredGuildCommand[K]): Promise<boolean>;
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;

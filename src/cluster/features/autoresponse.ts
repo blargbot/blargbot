@@ -2,24 +2,24 @@ import { AnyMessage, GuildMessage } from 'eris';
 import { limits, RuntimeLimit } from '../../core/bbtag';
 import { guard, humanize } from '../../utils';
 import { Cluster } from '../Cluster';
-import { AutoResponseWhitelistInterval } from '../services/AutoResponseWhitelistInterval';
+import { AutoResponseWhitelist } from '../services/AutoResponseWhitelist';
 
 
 export async function handleAutoresponse(cluster: Cluster, msg: AnyMessage, everything: boolean): Promise<void> {
     if (msg.author.discriminator === '0000' || !guard.isGuildMessage(msg))
         return;
 
-    const whitelist = cluster.services.get(AutoResponseWhitelistInterval.name, AutoResponseWhitelistInterval);
+    const whitelist = cluster.services.get(AutoResponseWhitelist.name, AutoResponseWhitelist);
     if (!whitelist?.guilds.has(msg.channel.guild.id))
         return;
 
     for await (const { commandName, limit, silent = false } of findAutoresponses(cluster, msg, everything)) {
-        const tag = await cluster.database.guilds.getCommand(msg.channel.id, commandName);
-        if (tag !== undefined) {
-            await cluster.bbtag.execute(tag.content, {
+        const command = await cluster.database.guilds.getCommand(msg.channel.guild.id, commandName);
+        if (command !== undefined && !guard.isAliasedCustomCommand(command)) {
+            await cluster.bbtag.execute(command.content, {
                 message: msg,
                 limit,
-                author: tag.author,
+                author: command.author,
                 input: humanize.smartSplit(msg.content),
                 isCC: true,
                 tagName: commandName,

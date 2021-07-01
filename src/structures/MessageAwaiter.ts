@@ -12,7 +12,33 @@ export class MessageAwaiter {
     }
 
     public emit(message: AnyMessage): boolean {
-        return this.#events.emit(message.channel.id, message);
+        const result = this.#events.emit(message.channel.id, message);
+        return this.#events.emit('any', message) || result;
+    }
+
+    public once(channelId: string, handler: (message: AnyMessage) => void): this {
+        this.#events.once(channelId, handler);
+        return this;
+    }
+
+    public on(channelId: string, handler: (message: AnyMessage) => void): this {
+        this.#events.on(channelId, handler);
+        return this;
+    }
+
+    public off(channelId: string, handler: (message: AnyMessage) => void): this {
+        this.#events.on(channelId, handler);
+        return this;
+    }
+
+    public onAny(handler: (message: AnyMessage) => void): this {
+        this.#events.on('any', handler);
+        return this;
+    }
+
+    public offAny(handler: (message: AnyMessage) => void): this {
+        this.#events.off('any', handler);
+        return this;
     }
 
     public async wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: AnyMessage) => boolean): Promise<AnyMessage | null> {
@@ -22,7 +48,7 @@ export class MessageAwaiter {
             const timeout = setTimeout(() => {
                 resolve(null);
                 for (const channel of channels)
-                    this.#events.off(channel, handler);
+                    this.off(channel, handler);
             }, timeoutMS);
 
             const _filter = buildFilter(users, filter);
@@ -33,11 +59,11 @@ export class MessageAwaiter {
                 resolve(message);
                 clearTimeout(timeout);
                 for (const channel of channels)
-                    this.#events.off(channel, handler);
+                    this.off(channel, handler);
             };
 
             for (const channel of channels)
-                this.#events.on(channel, handler);
+                this.on(channel, handler);
         });
     }
 }

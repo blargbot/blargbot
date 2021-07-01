@@ -33,6 +33,10 @@ declare global {
         keys<T>(value: T): Array<string & keyof T>
     }
 
+    interface Object {
+        hasOwnProperty<T>(this: T, name: string): name is string & keyof T;
+    }
+
     namespace NodeJS {
         type WorkerProcess = Process & Required<Pick<Process, 'send'>>;
 

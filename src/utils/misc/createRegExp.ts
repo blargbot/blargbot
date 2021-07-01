@@ -1,27 +1,33 @@
 import isSafeRegex from 'safe-regex';
 
-export function createRegExp(term: string): RegExp {
+export function createSafeRegExp(term: string): { success: true, regex: RegExp } | { success: false, reason: 'tooLong' | 'invalid' | 'unsafe' } {
     if (term.length > 2000)
-        throw new Error('Regex too long');
+        return { success: false, reason: 'tooLong' };
 
-    const segments = /^\/?(.*)\/(.*)/.exec(term);
-    if (!segments)
-        throw new Error('Invalid Regex');
+    let body: string;
+    let flags: string | undefined;
 
+    if (term.startsWith('/')) {
+        const flagStart = term.lastIndexOf('/');
+        if (flagStart === -1)
+            return { success: false, reason: 'invalid' };
+        body = term.slice(0, flagStart);
+        flags = term.slice(flagStart + 1);
+    } else {
+        body = term;
+    }
 
-    const result = new RegExp(segments[1], segments[2]);
+    const result = new RegExp(body, flags);
 
     if (!isSafeRegex(result))
-        throw new Error('Unsafe Regex');
+        return { success: false, reason: 'unsafe' };
 
-    return result;
+    return { success: true, regex: result };
 }
 
 export function testRegexSafe(term: string, text: string): boolean {
-    try {
-        const regex = createRegExp(term);
-        return regex.test(text);
-    } catch (err) {
+    const result = createSafeRegExp(term);
+    if (!result.success)
         return false;
-    }
+    return result.regex.test(text);
 }

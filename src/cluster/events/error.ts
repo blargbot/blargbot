@@ -1,7 +1,7 @@
 import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 
-export class ErrorHandler extends DiscordEventService {
+export class ErrorHandler extends DiscordEventService<'error'> {
     public constructor(cluster: Cluster) {
         super(cluster.discord, 'error', cluster.logger);
     }

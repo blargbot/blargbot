@@ -5,6 +5,7 @@ import { MessageAwaiter } from '../structures/MessageAwaiter';
 import request from 'request';
 import { metrics } from './Metrics';
 import { Database } from './database';
+import { ReactionAwaiter } from '../structures/ReactionAwaiter';
 
 
 export type SendContext = UserChannelInteraction | ChannelInteraction | (Textable & Channel) | string
@@ -24,11 +25,13 @@ export class BaseUtilities {
     public get logger(): CatLogger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
     public readonly messageAwaiter: MessageAwaiter;
+    public readonly reactionAwaiter: ReactionAwaiter;
 
     public constructor(
         public readonly client: BaseClient
     ) {
         this.messageAwaiter = new MessageAwaiter(this.logger);
+        this.reactionAwaiter = new ReactionAwaiter(this.logger);
     }
 
     private async getSendChannel(context: SendContext): Promise<Textable & Channel> {
@@ -223,6 +226,15 @@ export class BaseUtilities {
     public isDeveloper(userId: string): boolean {
         return this.config.discord.users.owner === userId
             || this.config.discord.users.developers.includes(userId);
+    }
+
+    public isPolice(id: string): Promise<boolean> | boolean {
+        return this.database.vars.get('police')
+            .then(police => police?.value.includes(id) ?? false);
+    }
+    public isSupport(id: string): Promise<boolean> | boolean {
+        return this.database.vars.get('support')
+            .then(support => support?.value.includes(id) ?? false);
     }
 }
 

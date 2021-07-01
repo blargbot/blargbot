@@ -7,3 +7,4 @@ export * from './bbtag';
 export * from './oldBu';
 export * from './stringify';
 export * from './discord';
+export * from './mapping';

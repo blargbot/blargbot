@@ -11,6 +11,7 @@ import { notNull } from './notNull';
 import { hasValue } from './hasValue';
 import { isGuildSetting } from './isGuildSetting';
 import { checkEmbedSize } from './checkEmbedSize';
+import { isAliasedCustomCommand } from "./isAliasedCustomCommand";
 import { isClass } from './isClass';
 import { testMessageFilter } from './testMessageFilter';
 export { MessageFilter } from './testMessageFilter';
@@ -30,5 +31,6 @@ export const guard = {
     isGuildSetting,
     checkEmbedSize,
     isClass,
-    testMessageFilter
+    testMessageFilter,
+    isAliasedCustomCommand
 };

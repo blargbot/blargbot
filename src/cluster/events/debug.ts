@@ -1,12 +1,12 @@
 import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 
-export class DebugHandler extends DiscordEventService {
+export class DebugHandler extends DiscordEventService<'debug'> {
     public constructor(cluster: Cluster) {
         super(cluster.discord, 'debug', cluster.logger);
     }
 
-    public execute(message: unknown): void {
+    public execute(message: string): void {
         this.logger.debug(message);
     }
 }

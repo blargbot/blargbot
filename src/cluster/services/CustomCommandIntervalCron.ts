@@ -28,7 +28,7 @@ export class CustomCommandIntervalCron extends CronService {
         for (const guild of guilds) {
             this.logger.debug('[%s] Performing interval on %s', nonce, guild.guildid);
             const interval = guild.ccommands?._interval;
-            if (!interval)
+            if (!interval || guard.isAliasedCustomCommand(interval))
                 continue;
 
             try {

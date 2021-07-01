@@ -1,12 +1,12 @@
 import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 
-export class ShardDisconnectHandler extends DiscordEventService {
+export class ShardDisconnectHandler extends DiscordEventService<'shardDisconnect'> {
     public constructor(cluster: Cluster) {
         super(cluster.discord, 'shardDisconnect', cluster.logger);
     }
 
-    public execute(error: Error | undefined, shardId: number): void {
+    public execute(error: Error, shardId: number): void {
         this.logger.cluster('shard', shardId, 'has disconnected', error);
 
         setTimeout(() => {

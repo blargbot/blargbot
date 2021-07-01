@@ -21,8 +21,7 @@ export class RespawnCommand extends BaseCommand {
     }
 
     public async respawn(context: CommandContext, clusterId?: number): Promise<void> {
-        const police = await this.cluster.database.vars.get('police');
-        if (police?.value.includes(context.author.id) !== true)
+        if (!await context.cluster.util.isPolice(context.author.id))
             return;
 
         await this.util.send(this.config.discord.channels.shardlog, `**${humanize.fullName(context.author)}** has called for a respawn of cluster ${clusterId}.`);

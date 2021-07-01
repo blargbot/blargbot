@@ -1,8 +1,9 @@
 import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { metrics } from '../../core/Metrics';
+import { BotStaffWhitelist } from '../services/BotStaffWhitelist';
 
-export class ReadyHandler extends DiscordEventService {
+export class ReadyHandler extends DiscordEventService<'ready'> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #obtainEventTimer?: NodeJS.Timeout;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -17,15 +18,7 @@ export class ReadyHandler extends DiscordEventService {
     public async execute(): Promise<void> {
         this.logger.init(`Ready! Logged in as ${this.cluster.discord.user.username}#${this.cluster.discord.user.discriminator}`);
 
-        let home;
-        if (home = this.cluster.discord.guilds.get(this.cluster.config.discord.guilds.home)) {
-            const police = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.police)).map(m => m.id);
-            await this.cluster.database.vars.set({ varname: 'police', value: police });
-
-            const support = home.members.filter(m => m.roles.includes(this.cluster.config.discord.roles.support)).map(m => m.id);
-            await this.cluster.database.vars.set({ varname: 'support', value: support });
-        }
-
+        await this.cluster.services.get(BotStaffWhitelist.name, BotStaffWhitelist)?.refresh();
         metrics.guildGauge.set(this.cluster.discord.guilds.size);
 
         const guildIds = new Set(await this.cluster.database.guilds.getIds());

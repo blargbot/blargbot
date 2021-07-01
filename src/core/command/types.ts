@@ -34,15 +34,22 @@ export type CommandParameter =
     | CommandVariableParameter
     | CommandLiteralParameter;
 
-export interface CommandHandlerDefinition {
+interface CommandHandlerDefinitionBase<TContext extends CommandContext> {
     readonly description: string;
     readonly parameters?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly execute: (context: CommandContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult
+    readonly execute: (context: TContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult
     readonly allowOverflow?: boolean;
     readonly dontBind?: boolean;
     readonly useFlags?: boolean;
     readonly strictFlags?: boolean;
+
+}
+
+export type CommandHandlerDefinition = CommandHandlerDefinitionBase<CommandContext>;
+
+export interface ScopedCommandHandlerDefinition<TContext extends CommandContext> extends CommandHandlerDefinitionBase<TContext> {
+    readonly checkContext: (context: CommandContext) => context is TContext;
 }
 
 export interface SubcommandDefinitionHolder {

@@ -276,8 +276,10 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return await (this.state.outputMessage ??= this._sendOutput(text));
     }
 
-    public getCached(key: string, getIfNotSet: (key: string) => StoredGuildCommand | StoredTag): StoredGuildCommand | StoredTag | undefined {
-        if (this.state.cache.hasOwnProperty(key))
+    public getCached(key: `tag_${string}`, getIfNotSet: (key: string) => StoredTag): StoredTag;
+    public getCached(key: `cc_${string}`, getIfNotSet: (key: string) => StoredGuildCommand): StoredGuildCommand;
+    public getCached(key: string, getIfNotSet: (key: string) => StoredGuildCommand | StoredTag): StoredGuildCommand | StoredTag {
+        if (key in this.state.cache[key])
             return this.state.cache[key];
         return this.state.cache[key] = getIfNotSet(key);
     }

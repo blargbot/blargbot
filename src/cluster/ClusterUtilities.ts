@@ -9,6 +9,7 @@ import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
 import { StoredGuildSettings, StoredGuild, StoredGuildCommand } from '../core/database';
 import { BaseCommand, CommandContext } from '../core/command';
+import { BotStaffWhitelist } from './services/BotStaffWhitelist';
 
 interface CanExecuteDefaultCommandOptions {
     readonly storedGuild?: StoredGuild,
@@ -646,5 +647,15 @@ export class ClusterUtilities extends BaseUtilities {
             }
         }
         return false;
+    }
+
+    public isPolice(id: string): Promise<boolean> | boolean {
+        const whitelist = this.cluster.services.get(BotStaffWhitelist.name, BotStaffWhitelist);
+        return whitelist !== undefined ? whitelist.police.has(id) : super.isPolice(id);
+    }
+
+    public isSupport(id: string): Promise<boolean> | boolean {
+        const whitelist = this.cluster.services.get(BotStaffWhitelist.name, BotStaffWhitelist);
+        return whitelist !== undefined ? whitelist.support.has(id) : super.isSupport(id);
     }
 }

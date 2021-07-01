@@ -1,4 +1,4 @@
-import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, MutableStoredGuild } from './types';
+import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, MutableStoredGuild, GuildAutoresponse, GuildFilteredAutoresponse } from './types';
 import { GuildTable } from './types';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { RethinkDb } from './core/RethinkDb';
@@ -16,7 +16,74 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.autoresponse ?? {};
+    }
 
+    public async getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>
+    public async getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>
+    public async getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined>
+    public async getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        if (guild?.autoresponse === undefined)
+            return undefined;
+
+        if (index === 'everything')
+            return guild.autoresponse.everything;
+        return guild.autoresponse.list?.[index];
+    }
+
+    public async setAutoresponse(guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>
+    public async setAutoresponse(guildId: string, index: 'everything', autoresponse: GuildAutoresponse | undefined): Promise<boolean>
+    public async setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>
+    public async setAutoresponse(guildId: string, index: number | 'everything', autoresponse: GuildAutoresponse | GuildFilteredAutoresponse | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (!guild)
+            return false;
+
+        if (guild.autoresponse === undefined) {
+            if (autoresponse === undefined)
+                return true;
+            guild.autoresponse = {};
+        }
+
+        if (index === 'everything') {
+            if (autoresponse === undefined)
+                delete guild.autoresponse.everything;
+            else if ('term' in autoresponse)
+                return false;
+            else
+                guild.autoresponse.everything = autoresponse;
+        } else {
+            if (guild.autoresponse.list?.[index] === undefined)
+                return false;
+
+            if (autoresponse === undefined)
+                guild.autoresponse.list.splice(index, 1);
+            else if ('term' in autoresponse)
+                guild.autoresponse.list[index] = autoresponse;
+            else
+                return false;
+        }
+
+        return await this.rupdate(guildId, r => ({
+            autoresponse: r.literal(guild.autoresponse)
+        }));
+    }
+
+    public async addAutoresponse(guildId: string, autoresponse: GuildFilteredAutoresponse): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (!guild)
+            return false;
+
+        guild.autoresponse ??= { list: [] };
+        guild.autoresponse.list ??= [];
+        const list = guild.autoresponse.list;
+        list.push(autoresponse);
+
+        return await this.rupdate(guildId, r => ({
+            autoresponse: {
+                list: r.literal(list)
+            }
+        }));
     }
 
     public async getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined> {
@@ -95,18 +162,21 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rqueryAll(t => t.getAll('interval'));
     }
 
-    public async updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean> {
+    public async updateCommand(guildId: string, commandName: string, partialCommand: Partial<StoredGuildCommand>): Promise<boolean> {
         const guild = await this.rget(guildId);
         if (!guild)
             return false;
 
         commandName = commandName.toLowerCase();
-        if (!guild.ccommands[commandName])
+        const command = guild.ccommands[commandName];
+        if (command === undefined)
             return false;
+
+        Object.assign(command, partialCommand);
 
         return await this.rupdate(guildId, {
             ccommands: {
-                [commandName]: command
+                [commandName]: partialCommand
             }
         });
     }
@@ -117,8 +187,14 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             return false;
 
         commandName = commandName.toLowerCase();
-        if (!guild.ccommands[commandName])
+        const command = guild.ccommands[commandName];
+        if (command === undefined)
             return false;
+
+        if (value === undefined)
+            delete command[key];
+        else
+            command[key] = value;
 
         return await this.rupdate(guildId, r => ({
             ccommands: {
@@ -192,7 +268,6 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         guild.log ??= {};
         if (channel === undefined)
             delete guild.log[event];
-
         else
             guild.log[event] = channel;
 

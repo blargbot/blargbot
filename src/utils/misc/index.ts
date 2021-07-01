@@ -1,7 +1,7 @@
 export { snowflake } from './snowflake';
-export { randInt } from './randInt';
+export { randInt, randChoose } from './rand';
 export { getRange, iterRange } from './getRange';
-export { createRegExp } from './createRegExp';
+export { createSafeRegExp } from './createRegExp';
 export { sleep } from './sleep';
 export { cpuLoad } from './cpuLoad';
 export { fafo } from './fafo';

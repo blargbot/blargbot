@@ -3,7 +3,7 @@ import { limits } from '../../core/bbtag';
 import { BaseCommand, CommandContext } from '../../core/command';
 import { metrics } from '../../core/Metrics';
 import { Timer } from '../../structures/Timer';
-import { commandTypes, guard, parse } from '../../utils';
+import { commandTypes, FlagDefinition, guard, humanize, parse } from '../../utils';
 import { Cluster } from '../Cluster';
 import { tryHandleCleverbot } from './cleverbot';
 
@@ -69,10 +69,42 @@ async function tryHandleCustomCommand(cluster: Cluster, context: CommandContext)
     if (command === undefined || !await cluster.util.canExecuteCustomCommand(context, command, true))
         return false;
 
-    const { authorizer, alias } = command;
-    let { content, flags, cooldown, author } = command;
-    if (alias) {
-        ({ content = '', flags, cooldown, author = '' } = await cluster.database.tags.get(alias) ?? {});
+    let content: string | undefined;
+    let flags: readonly FlagDefinition[] | undefined;
+    let cooldown: number | undefined;
+    let tagVars = false;
+
+    if (guard.isAliasedCustomCommand(command)) {
+        const importAuthor = await cluster.database.users.get(command.author);
+        const tag = await cluster.database.tags.get(command.alias);
+        if (tag === undefined) {
+            await cluster.util.send(context.channel,
+                `❌ When the command \`${context.commandName}\` was imported, the tag \`${command.alias}\` ` +
+                `was owned by **${humanize.fullName(importAuthor)}** (${command.author}) but it no longer exists. ` +
+                'To continue using this command, please re-create the tag and re-import it.');
+            return true;
+        }
+        if (tag.author !== command.author) {
+            const currentAuthor = await cluster.database.users.get(tag.author);
+            await cluster.util.send(context.channel,
+                `❌ When the command \`${context.commandName}\` was imported, the tag \`${command.alias}\` ` +
+                `was owned by **${humanize.fullName(importAuthor)}** (${command.author}) but it is ` +
+                `now owned by **${humanize.fullName(currentAuthor)}** (${tag.author}). ` +
+                'If this is acceptable, please re-import the tag to continue using this command.');
+            return true;
+        }
+        await cluster.database.tags.incrementUses(command.alias);
+        tagVars = true;
+        content = tag.content;
+        flags = tag.flags;
+        cooldown = tag.cooldown === undefined ? command.cooldown
+            : command.cooldown === undefined ? tag.cooldown
+                : Math.max(tag.cooldown, command.cooldown);
+    } else {
+        content = command.content;
+        flags = command.flags;
+        cooldown = command.cooldown;
+        tagVars = false;
     }
 
     if (!content)
@@ -80,9 +112,6 @@ async function tryHandleCustomCommand(cluster: Cluster, context: CommandContext)
 
     cluster.logger.command(`Custom command '${context.commandText}' executed by ${context.author.username} (${context.author.id}) on server ${context.channel.guild.name} (${context.channel.guild.id})`);
 
-    if (alias !== undefined) {
-        await cluster.database.tags.incrementUses(alias);
-    }
     await cluster.bbtag.execute(content, {
         message: context.message,
         tagName: context.commandName,
@@ -90,10 +119,10 @@ async function tryHandleCustomCommand(cluster: Cluster, context: CommandContext)
         flags,
         input: context.args,
         isCC: true,
-        tagVars: alias !== undefined,
+        tagVars,
         cooldown,
-        author,
-        authorizer
+        author: command.author,
+        authorizer: command.authorizer
     });
     metrics.commandCounter.labels('custom', 'custom').inc();
 
