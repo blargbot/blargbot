@@ -5,10 +5,6 @@ import snekfetch from 'snekfetch';
 import { BaseService } from '../structures/BaseService';
 import { ModuleLoader } from '../core/ModuleLoader';
 
-export interface MasterOptions {
-    avatars: string[];
-    holidays: Record<string, string>;
-}
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;
     public readonly eventHandlers: ModuleLoader<BaseService>;
@@ -67,4 +63,9 @@ export class Master extends BaseClient {
             return { success: false, result: err };
         }
     }
+}
+
+export interface MasterOptions {
+    readonly avatars: readonly string[];
+    readonly holidays: { readonly [key: string]: string };
 }
