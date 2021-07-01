@@ -7,13 +7,9 @@ import { BBTagContext, getDocsEmbed, limits } from '../core/bbtag';
 import { DisabledRule } from '../core/bbtag/limits/rules/DisabledRule';
 import { BaseGuildCommand, CommandContext, GuildCommandContext } from '../core/command';
 import { StoredTag, TagStoredEventOptions, TagV4StoredEventOptions } from '../core/database';
-import { TimeoutManager } from '../structures/TimeoutManager';
-import { bbtagUtil, codeBlock, commandTypes, humanize, parse } from '../utils';
+import { bbtagUtil, codeBlock, commandTypes, fafo, humanize, parse } from '../utils';
 
 export class TagCommand extends BaseGuildCommand {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #timeouts: TimeoutManager;
-
     public constructor(cluster: Cluster) {
         super({
             name: 'tag',
@@ -146,8 +142,7 @@ export class TagCommand extends BaseGuildCommand {
                 }
             }
         });
-        this.#timeouts = cluster.timeouts;
-        const handleEvent = async function (event: TagStoredEventOptions): Promise<void> {
+        cluster.timeouts.on('tag', fafo(async event => {
             const migratedEvent = migrateEvent(event);
             if (migratedEvent === undefined)
                 return;
@@ -157,8 +152,7 @@ export class TagCommand extends BaseGuildCommand {
             context.limit.addRules(['timer', 'output'], DisabledRule.instance);
 
             await cluster.bbtag.eval(source, context);
-        };
-        this.#timeouts.on('tag', event => void handleEvent(event));
+        }));
     }
 
     public async runTag(
