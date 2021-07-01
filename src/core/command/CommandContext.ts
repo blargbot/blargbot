@@ -1,6 +1,9 @@
-import { Channel, Textable, User, Message } from 'eris';
+import { Channel, Textable, User, Message, GuildChannel, PrivateChannel } from 'eris';
 import { Cluster } from '../../cluster';
 import { humanize } from '../../utils';
+
+export type GuildCommandContext<TChannel extends GuildChannel = GuildChannel> = CommandContext<TChannel>;
+export type PrivateCommandContext<TChannel extends PrivateChannel = PrivateChannel> = CommandContext<TChannel>;
 
 export class CommandContext<TChannel extends Channel = Channel> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

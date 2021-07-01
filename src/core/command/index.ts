@@ -1,4 +1,6 @@
 export * from './BaseCommand';
-export * from './BaseEventCommand';
+export * from './BaseGlobalCommand';
+export * from './BaseGuildCommand';
+export * from './BasePrivateCommand';
 export * from './CommandContext';
 export * from './types';

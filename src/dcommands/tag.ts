@@ -5,11 +5,11 @@ import { Cluster, ClusterUtilities } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
 import { BBTagContext, getDocsEmbed, limits, Statement } from '../core/bbtag';
 import { DisabledRule } from '../core/bbtag/limits/rules/DisabledRule';
-import { BaseEventCommand, CommandContext } from '../core/command';
+import { BaseGuildCommand, GuildCommandContext } from '../core/command';
 import { StoredTag, TagStoredEventOptions, TagV4StoredEventOptions } from '../core/database';
-import { bbtagUtil, codeBlock, commandTypes, guard, humanize, parse } from '../utils';
+import { bbtagUtil, codeBlock, commandTypes, humanize, parse } from '../utils';
 
-export class TagCommand extends BaseEventCommand<'tag'> {
+export class TagCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'tag',
@@ -142,12 +142,11 @@ export class TagCommand extends BaseEventCommand<'tag'> {
                 }
             }
         });
-
+        this.cluster.timeouts.on('tag', event => void this.handleEvent(event));
     }
 
-
-    public async scheduleEvent(context: BBTagContext, trigger: Date, content: Statement): Promise<void> {
-        await this._scheduleEvent({
+    public async schedule(context: BBTagContext, trigger: Date, content: Statement): Promise<void> {
+        await this.cluster.timeouts.insert('tag', {
             version: 4,
             endtime: trigger,
             source: context.guild.id,
@@ -172,14 +171,11 @@ export class TagCommand extends BaseEventCommand<'tag'> {
     }
 
     public async runTag(
-        context: CommandContext,
+        context: GuildCommandContext,
         tagName: string,
         input: string,
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Tags can only be run on guilds.';
-
         const match = await this.requestReadableTag(context, tagName, false);
         if (typeof match !== 'object')
             return match;
@@ -206,14 +202,11 @@ export class TagCommand extends BaseEventCommand<'tag'> {
     }
 
     public async runRaw(
-        context: CommandContext,
+        context: GuildCommandContext,
         content: string,
         input: string,
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Tags can only be run on guilds.';
-
         const args = humanize.smartSplit(input);
         const result = await this.cluster.bbtag.execute(content, {
             message: context.message,
@@ -227,7 +220,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return debug ? bbtagUtil.createDebugOutput('test', content, args, result) : undefined;
     }
 
-    public async createTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestCreatableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -235,7 +228,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return await this.saveTag(context, 'created', match.name, content, undefined);
     }
 
-    public async editTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async editTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -243,7 +236,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return await this.saveTag(context, 'edited', match.name, content, match);
     }
 
-    public async deleteTag(context: CommandContext, tagName: string | undefined): Promise<string | undefined> {
+    public async deleteTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -257,7 +250,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ The \`${match.name}\` tag is gone forever!`;
     }
 
-    public async setTag(context: CommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
+    public async setTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestSettableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -265,7 +258,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return await this.saveTag(context, 'set', match.name, content, match.tag);
     }
 
-    public async renameTag(context: CommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
+    public async renameTag(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
         const from = await this.requestEditableTag(context, oldName);
         if (typeof from !== 'object')
             return from;
@@ -287,7 +280,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`;
     }
 
-    public async getRawTag(context: CommandContext, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
+    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -304,7 +297,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
             };
     }
 
-    public async listTags(context: CommandContext, author?: string): Promise<string | undefined> {
+    public async listTags(context: GuildCommandContext, author?: string): Promise<string | undefined> {
         const args: Parameters<ClusterUtilities['displayPaged']> = [
             context.channel,
             context.author,
@@ -332,7 +325,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         }
     }
 
-    public async searchTags(context: CommandContext, query?: string): Promise<string | undefined> {
+    public async searchTags(context: GuildCommandContext, query?: string): Promise<string | undefined> {
         if (query === undefined || query?.length === 0)
             query = (await this.util.awaitQuery(context.channel, context.author, 'What would you like to search for?'))?.content;
         if (query === undefined || query?.length === 0)
@@ -355,14 +348,14 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         }
     }
 
-    public async disableTag(context: CommandContext, tagName: string, reason: string): Promise<string | undefined> {
+    public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
         tagName = normalizeName(tagName);
         if (!await this.database.tags.disable(tagName, context.author.id, reason))
             return `❌ The \`${tagName}\` tag doesn\'t exist!`;
         return `✅ The \`${tagName}\` tag has been deleted`;
     }
 
-    public async setTagCooldown(context: CommandContext, tagName: string, cooldown?: Duration): Promise<string | undefined> {
+    public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<string | undefined> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return '❌ The cooldown must be greater than 0ms';
 
@@ -375,7 +368,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
 
-    public async getTagAuthor(context: CommandContext, tagName: string | undefined): Promise<string | undefined> {
+    public async getTagAuthor(context: GuildCommandContext, tagName: string | undefined): Promise<string | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -391,7 +384,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return response.join(' ');
     }
 
-    public async getTagInfo(context: CommandContext, tagName: string | undefined): Promise<string | SendPayload | undefined> {
+    public async getTagInfo(context: GuildCommandContext, tagName: string | undefined): Promise<string | SendPayload | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -458,7 +451,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return result.join('\n');
     }
 
-    public async toggleFavouriteTag(context: CommandContext, tagName: string): Promise<string | undefined> {
+    public async toggleFavouriteTag(context: GuildCommandContext, tagName: string): Promise<string | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -472,14 +465,14 @@ export class TagCommand extends BaseEventCommand<'tag'> {
             : `✅ The \`${match.name}\` tag is no longer on your favourites list!`;
     }
 
-    public async listFavouriteTags(context: CommandContext): Promise<string> {
+    public async listFavouriteTags(context: GuildCommandContext): Promise<string> {
         const tags = await this.database.tags.getFavourites(context.author.id);
         if (tags.length === 0)
             return 'You have no favourite tags!';
         return `You have ${tags.length} favourite tag${tags.length === 1 ? '' : 's'}. ${codeBlock(tags.join(', '), 'fix')}`;
     }
 
-    public async reportTag(context: CommandContext, tagName: string, reason: string | undefined): Promise<string | undefined> {
+    public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<string | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -511,7 +504,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ The \`${match.name}\` tag has been reported.`;
     }
 
-    public async getTagFlags(context: CommandContext, tagName: string): Promise<string | undefined> {
+    public async getTagFlags(context: GuildCommandContext, tagName: string): Promise<string | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -523,7 +516,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `The \`${match.name}\` tag has the following flags:\n\n${flags.join('\n')}`;
     }
 
-    public async addTagFlags(context: CommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+    public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -551,7 +544,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async removeTagFlags(context: CommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+    public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -565,7 +558,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async setTagLanguage(context: CommandContext, tagName: string, language: string): Promise<string | undefined> {
+    public async setTagLanguage(context: GuildCommandContext, tagName: string, language: string): Promise<string | undefined> {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -574,7 +567,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ Lang for tag \`${match.name}\` set.`;
     }
 
-    private async saveTag(context: CommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<string | undefined> {
+    private async saveTag(context: GuildCommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<string | undefined> {
         content = await this.requestTagContent(context, content);
         if (content === undefined)
             return;
@@ -603,7 +596,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return `✅ Tag \`${tagName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`;
     }
 
-    private async requestTagName(context: CommandContext, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {
+    private async requestTagName(context: GuildCommandContext, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {
         if (name !== undefined) {
             name = normalizeName(name);
             if (name.length > 0)
@@ -621,7 +614,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return name.length > 0 ? name : undefined;
     }
 
-    private async requestTagContent(context: CommandContext, content: string | undefined): Promise<string | undefined> {
+    private async requestTagContent(context: GuildCommandContext, content: string | undefined): Promise<string | undefined> {
         if (content !== undefined && content.length > 0)
             return content;
 
@@ -633,7 +626,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
     }
 
     private async requestSettableTag(
-        context: CommandContext,
+        context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string, tag?: StoredTag } | string | undefined> {
@@ -651,7 +644,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
     }
 
     private async requestEditableTag(
-        context: CommandContext,
+        context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<StoredTag | string | undefined> {
@@ -666,7 +659,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
     }
 
     private async requestReadableTag(
-        context: CommandContext,
+        context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<StoredTag | string | undefined> {
@@ -681,7 +674,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
     }
 
     private async requestCreatableTag(
-        context: CommandContext,
+        context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string } | string | undefined> {
@@ -696,7 +689,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
     }
 
     private async requestTag(
-        context: CommandContext,
+        context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery: boolean
     ): Promise<{ name: string, tag?: StoredTag } | string | undefined> {
@@ -722,7 +715,7 @@ export class TagCommand extends BaseEventCommand<'tag'> {
         return { name: tag.name, tag };
     }
 
-    private showDocs(ctx: CommandContext, topic: readonly string[]): SendPayload | string {
+    private showDocs(ctx: GuildCommandContext, topic: readonly string[]): SendPayload | string {
         const embed = getDocsEmbed(ctx, topic);
         if (!embed)
             return `❌ Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`;

@@ -1,38 +1,16 @@
 import { createHmac } from 'crypto';
-import { EmbedOptions, GuildChannel, MessageFile } from 'eris';
+import { EmbedOptions, MessageFile } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import Snekfetch from 'snekfetch';
 import { Cluster } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
 import { getDocsEmbed, limits } from '../core/bbtag';
-import { BaseCommand, CommandContext, CommandResult } from '../core/command';
+import { AutoresponseShrinkwrap, BaseGuildCommand, CommandResult, CustomCommandShrinkwrap, FilteredAutoresponseShrinkwrap, GuildCommandContext, GuildShrinkwrap, SignedGuildShrinkwrap } from '../core/command';
 import { Database, GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredGuildCommand, NamedStoredRawGuildCommand } from '../core/database';
 import { bbtagUtil, codeBlock, commandTypes, FlagDefinition, guard, humanize, parse, mapping } from '../utils';
 
-type _ShrunkCommand = Omit<NamedStoredRawGuildCommand, 'author' | 'authorizer' | 'name'>;
-type ShrunkCommand = { -readonly [P in keyof _ShrunkCommand]: _ShrunkCommand[P] }
-
-interface ShrunkAutoresponse extends Omit<GuildAutoresponse, 'executes'> {
-    executes: ShrunkCommand;
-}
-
-interface ShrunkFilteredAutoresponse extends ShrunkAutoresponse, Omit<GuildFilteredAutoresponse, 'executes'> {
-    executes: ShrunkCommand;
-}
-
-interface Shrinkwrap {
-    readonly cc: Record<string, ShrunkCommand>;
-    readonly ar: ShrunkFilteredAutoresponse[];
-    are: null | ShrunkAutoresponse
-}
-
-interface SignedShrinkwrap {
-    readonly signature?: string;
-    readonly payload: Shrinkwrap
-}
-
-export class CustomCommand extends BaseCommand {
+export class CustomCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'ccommand',
@@ -167,14 +145,11 @@ export class CustomCommand extends BaseCommand {
     }
 
     public async runRaw(
-        context: CommandContext,
+        context: GuildCommandContext,
         content: string,
         input: string,
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
         const args = humanize.smartSplit(input);
         const result = await this.cluster.bbtag.execute(content, {
             message: context.message,
@@ -188,23 +163,20 @@ export class CustomCommand extends BaseCommand {
         return debug ? bbtagUtil.createDebugOutput('test', content, args, result) : undefined;
     }
 
-    private showDocs(ctx: CommandContext, topic: readonly string[]): SendPayload | string {
-        const embed = getDocsEmbed(ctx, topic);
+    public showDocs(context: GuildCommandContext, topic: readonly string[]): SendPayload | string {
+        const embed = getDocsEmbed(context, topic);
         if (!embed)
-            return `❌ Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`;
+            return `❌ Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`;
 
         return { embed: embed, isHelp: true };
     }
 
     public async runCommand(
-        context: CommandContext,
+        context: GuildCommandContext,
         commandName: string,
         input: string,
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
         const match = await this.requestReadableCommand(context, commandName, false);
         if (typeof match !== 'object')
             return match;
@@ -231,10 +203,7 @@ export class CustomCommand extends BaseCommand {
         return debug ? bbtagUtil.createDebugOutput(match.name, match.content, args, result) : undefined;
     }
 
-    public async createCommand(context: CommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async createCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestCreatableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -242,10 +211,7 @@ export class CustomCommand extends BaseCommand {
         return await this.saveCommand(context, 'created', match.name, content);
     }
 
-    public async editCommand(context: CommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async editCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -256,10 +222,7 @@ export class CustomCommand extends BaseCommand {
         return await this.saveCommand(context, 'edited', match.name, content, match);
     }
 
-    public async deleteCommand(context: CommandContext, commandName: string | undefined): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async deleteCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -268,10 +231,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ The \`${match.name}\` custom command is gone forever!`;
     }
 
-    public async setCommand(context: CommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async setCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
         const match = await this.requestSettableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -282,10 +242,7 @@ export class CustomCommand extends BaseCommand {
         return await this.saveCommand(context, 'set', match.name, content, match.command);
     }
 
-    public async renameCommand(context: CommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async renameCommand(context: GuildCommandContext, oldName: string | undefined, newName: string | undefined): Promise<string | undefined> {
         const from = await this.requestEditableCommand(context, oldName);
         if (typeof from !== 'object')
             return from;
@@ -299,10 +256,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ The \`${from.name}\` custom command has been renamed to \`${to.name}\`.`;
     }
 
-    public async getRawCommand(context: CommandContext, commandName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
         const match = await this.requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -322,10 +276,7 @@ export class CustomCommand extends BaseCommand {
             };
     }
 
-    public async listCommands(context: CommandContext): Promise<{ embed: EmbedOptions } | string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async listCommands(context: GuildCommandContext): Promise<{ embed: EmbedOptions } | string | undefined> {
         const grouped: Record<string, string[]> = {};
         for (const command of await this.database.guilds.listCommands(context.channel.guild.id)) {
             const roles = command.roles === undefined || command.roles.length === 0 ? ['All Roles'] : command.roles;
@@ -347,10 +298,7 @@ export class CustomCommand extends BaseCommand {
         };
     }
 
-    public async setCommandCooldown(context: CommandContext, commandName: string, cooldown?: Duration): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: Duration): Promise<string | undefined> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
             return '❌ The cooldown must be greater than 0ms';
 
@@ -363,10 +311,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ The custom command \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
 
-    public async getCommandAuthor(context: CommandContext, commandName: string | undefined): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async getCommandAuthor(context: GuildCommandContext, commandName: string | undefined): Promise<string | undefined> {
         const match = await this.requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -382,10 +327,7 @@ export class CustomCommand extends BaseCommand {
         return response.join(' ');
     }
 
-    public async getCommandFlags(context: CommandContext, commandName: string): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async getCommandFlags(context: GuildCommandContext, commandName: string): Promise<string | undefined> {
         const match = await this.requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -401,10 +343,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ The \`${match.name}\` custom command has the following flags:\n\n${flags.join('\n')}`;
     }
 
-    public async addCommandFlags(context: CommandContext, commandName: string, flagsRaw: string[]): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async addCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string[]): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -435,10 +374,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async removeCommandFlags(context: CommandContext, commandName: string, flagsRaw: string[]): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async removeCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string[]): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -455,10 +391,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async setCommandLanguage(context: CommandContext, commandName: string, language: string): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async setCommandLanguage(context: GuildCommandContext, commandName: string, language: string): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -467,10 +400,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ Lang for custom command \`${match.name}\` set.`;
     }
 
-    public async setCommandHelp(context: CommandContext, commandName: string, helpText: string): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async setCommandHelp(context: GuildCommandContext, commandName: string, helpText: string): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -479,10 +409,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ Help text for custom command \`${match.name}\` set.`;
     }
 
-    public async toggleCommandHidden(context: CommandContext, commandName: string): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async toggleCommandHidden(context: GuildCommandContext, commandName: string): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -492,10 +419,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ Custom command \`${match.name}\` is now ${isNowHidden ? 'hidden' : 'visible'}.`;
     }
 
-    public async setCommandRoles(context: CommandContext, commandName: string, roleNames: string[]): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async setCommandRoles(context: GuildCommandContext, commandName: string, roleNames: string[]): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -512,10 +436,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ Roles for custom command \`${match.name}\` set to ${humanize.smartJoin(roles.map(r => `\`${r.name}\``), ', ', ' and ')}.`;
     }
 
-    public async importCommand(context: CommandContext, tagName: string, commandName: string): Promise<string> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async importCommand(context: GuildCommandContext, tagName: string, commandName: string): Promise<string> {
         commandName = normalizeName(commandName);
         if (await this.cluster.database.guilds.getCommand(context.channel.guild.id, commandName) !== undefined)
             return `❌ The \`${commandName}\` custom command already exists!`;
@@ -533,11 +454,8 @@ export class CustomCommand extends BaseCommand {
         return `✅ The tag \`${tag.name}\` by **${humanize.fullName(author)}** has been imported as \`${commandName}\` and is authorized by **${humanize.fullName(context.author)}**. ✅`;
     }
 
-    public async shrinkwrapCommands(context: CommandContext, commandNames: string[]): Promise<CommandResult> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
-        const shrinkwrap: Shrinkwrap = { cc: {}, ar: [], are: null };
+    public async shrinkwrapCommands(context: GuildCommandContext, commandNames: string[]): Promise<CommandResult> {
+        const shrinkwrap: GuildShrinkwrap = { cc: {}, ar: [], are: null };
         const confirm = [
             'Salutations! You have discovered the super handy ShrinkWrapper9000!',
             '',
@@ -584,7 +502,7 @@ export class CustomCommand extends BaseCommand {
         return {
             content: '✅ No problem, my job here is done.',
             files: {
-                file: JSON.stringify(<SignedShrinkwrap>{
+                file: JSON.stringify(<SignedGuildShrinkwrap>{
                     signature: signShrinkwrap(shrinkwrap, this.config),
                     payload: shrinkwrap
                 }, null, 2),
@@ -593,16 +511,13 @@ export class CustomCommand extends BaseCommand {
         };
     }
 
-    public async installCommands(context: CommandContext, shrinkwrapUrl?: string): Promise<string> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Custom commands can only be used on guilds.';
-
+    public async installCommands(context: GuildCommandContext, shrinkwrapUrl?: string): Promise<string> {
         shrinkwrapUrl ??= context.message.attachments[0]?.url;
         if (shrinkwrapUrl === undefined)
             return '❌ You have to upload the installation file, or give me a URL to one.';
 
         const content = await requestSafe(shrinkwrapUrl);
-        const signedShrinkwrap = mapSignedShrinkwrap(content);
+        const signedShrinkwrap = mapSignedGuildShrinkwrap(content);
         if (!signedShrinkwrap.valid)
             return '❌ Your installation file was malformed.';
 
@@ -700,7 +615,7 @@ export class CustomCommand extends BaseCommand {
     }
 
     private async saveCommand(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         operation: string,
         commandName: string,
         content: string | undefined,
@@ -732,7 +647,7 @@ export class CustomCommand extends BaseCommand {
         return `✅ Custom command \`${commandName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`;
     }
     private async requestCommandName(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         name: string | undefined,
         query = 'Enter the name of the custom command or type `c` to cancel:'
     ): Promise<string | undefined> {
@@ -754,7 +669,7 @@ export class CustomCommand extends BaseCommand {
     }
 
     private async requestCommandContent(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         content: string | undefined
     ): Promise<string | undefined> {
         if (content !== undefined && content.length > 0)
@@ -768,7 +683,7 @@ export class CustomCommand extends BaseCommand {
     }
 
     private async requestSettableCommand(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string, command?: NamedStoredGuildCommand } | string | undefined> {
@@ -780,7 +695,7 @@ export class CustomCommand extends BaseCommand {
     }
 
     private async requestEditableCommand(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         commandName: string | undefined,
         { managed = false, hidden = true, allowQuery = true } = {}
     ): Promise<NamedStoredGuildCommand | string | undefined> {
@@ -801,7 +716,7 @@ export class CustomCommand extends BaseCommand {
     }
 
     private async requestReadableCommand(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
     ): Promise<NamedStoredGuildCommand | string | undefined> {
@@ -816,7 +731,7 @@ export class CustomCommand extends BaseCommand {
     }
 
     private async requestCreatableCommand(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
     ): Promise<{ name: string } | string | undefined> {
@@ -831,7 +746,7 @@ export class CustomCommand extends BaseCommand {
     }
 
     private async requestCommand(
-        context: CommandContext<GuildChannel>,
+        context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery: boolean
     ): Promise<{ name: string, command?: NamedStoredGuildCommand } | string | undefined> {
@@ -851,7 +766,7 @@ function normalizeName(title: string): string {
     return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()<>]/gi, '').toLowerCase();
 }
 
-function shrinkCommand(command: NamedStoredRawGuildCommand): ShrunkCommand {
+function shrinkCommand(command: NamedStoredRawGuildCommand): CustomCommandShrinkwrap {
     return {
         content: command.content,
         cooldown: command.cooldown,
@@ -865,7 +780,7 @@ function shrinkCommand(command: NamedStoredRawGuildCommand): ShrunkCommand {
     };
 }
 
-function signShrinkwrap(shrinkwrap: Shrinkwrap, config: Configuration): string {
+function signShrinkwrap(shrinkwrap: GuildShrinkwrap, config: Configuration): string {
     const content = JSON.stringify(shrinkwrap);
     return createHmac('sha256', config.general.interface_key).update(content).digest('hex');
 }
@@ -908,7 +823,7 @@ async function getShrinkwrapData(
     };
 }
 
-const mapShrunkCommand = mapping.object<ShrunkCommand>({
+const mapCustomCommandShrinkwrap = mapping.object<CustomCommandShrinkwrap>({
     content: mapping.string,
     cooldown: mapping.optionalNumber,
     flags: mapping.array(
@@ -927,21 +842,21 @@ const mapShrunkCommand = mapping.object<ShrunkCommand>({
     uses: mapping.optionalNumber
 });
 
-const mapShrinkwrap = mapping.object<Shrinkwrap>({
-    are: mapping.object<ShrunkAutoresponse | null>({
-        executes: mapShrunkCommand
+const mapGuildShrinkwrap = mapping.object<GuildShrinkwrap>({
+    are: mapping.object<AutoresponseShrinkwrap | null>({
+        executes: mapCustomCommandShrinkwrap
     }, { ifNull: mapping.result.null }),
     ar: mapping.array(
-        mapping.object<ShrunkFilteredAutoresponse>({
-            executes: mapShrunkCommand,
+        mapping.object<FilteredAutoresponseShrinkwrap>({
+            executes: mapCustomCommandShrinkwrap,
             regex: mapping.boolean,
             term: mapping.string
         })
     ),
-    cc: mapping.record(mapShrunkCommand)
+    cc: mapping.record(mapCustomCommandShrinkwrap)
 });
 
-const mapSignedShrinkwrap = mapping.object<SignedShrinkwrap>({
+const mapSignedGuildShrinkwrap = mapping.object<SignedGuildShrinkwrap>({
     signature: mapping.optionalString,
-    payload: mapping.any(mapping.json(mapShrinkwrap), mapShrinkwrap)
+    payload: mapping.any(mapping.json(mapGuildShrinkwrap), mapGuildShrinkwrap)
 });

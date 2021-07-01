@@ -1,4 +1,4 @@
-import { BaseCommand, CommandContext } from '../core/command';
+import { BaseGlobalCommand, CommandContext } from '../core/command';
 import { randInt, commandTypes } from '../utils';
 import { Cluster } from '../cluster';
 
@@ -15,7 +15,7 @@ const messages = [
     'We are all already dead.'
 ];
 
-export class PingCommand extends BaseCommand {
+export class PingCommand extends BaseGlobalCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'ping',

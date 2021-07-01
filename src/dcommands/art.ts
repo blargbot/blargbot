@@ -1,9 +1,9 @@
 import { MessageFile } from 'eris';
 import { Cluster } from '../cluster';
 import { commandTypes, FlagResult } from '../utils';
-import { BaseCommand, CommandContext } from '../core/command';
+import { BaseGlobalCommand, CommandContext } from '../core/command';
 
-export class ArtCommand extends BaseCommand {
+export class ArtCommand extends BaseGlobalCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'art',

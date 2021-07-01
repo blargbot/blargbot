@@ -2,37 +2,29 @@ import { MessageFile } from 'eris';
 import { Cluster, ClusterUtilities } from '../../cluster';
 import { CommandType, FlagDefinition } from '../../utils';
 import { Database } from '../database';
-import { CommandDefinition, CommandOptions, CommandResult, CommandHandler } from './types';
+import { CommandResult, CommandHandler, CommandOptionsBase } from './types';
 import { Client as ErisClient } from 'eris';
-import { compileHandler } from './compileHandler';
 import { SendPayload } from '../BaseUtilities';
 import { CommandContext } from './CommandContext';
 
-export const handlerDefaults = Object.seal<CommandDefinition>({
-    subcommands: {
-        // TODO: Help and docs
-    }
-});
-
-export abstract class BaseCommand implements Required<CommandOptions> {
+export abstract class BaseCommand implements Required<CommandOptionsBase> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #locks: Record<string, { times: number; } | undefined>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cooldowns: Record<string, { lasttime: number; times: number; }>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #handler: CommandHandler<CommandContext>;
 
     protected readonly ratelimit: Array<(context: CommandContext) => string>;
-    public readonly definition: CommandDefinition;
-    public readonly handler: CommandHandler;
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: CommandType;
     public readonly cannotDisable: boolean;
-    public readonly hidden: boolean;
-    public readonly usage: string;
     public readonly info: string;
     public readonly flags: readonly FlagDefinition[];
     public readonly onlyOn: string | null;
     public readonly cooldown: number;
+    public readonly usage: string;
 
     protected get util(): ClusterUtilities { return this.cluster.util; }
     protected get logger(): CatLogger { return this.cluster.logger; }
@@ -43,31 +35,32 @@ export abstract class BaseCommand implements Required<CommandOptions> {
 
     protected constructor(
         protected readonly cluster: Cluster,
-        options: CommandOptions
+        options: CommandOptionsBase,
+        handler: CommandHandler<CommandContext>
     ) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
         this.cannotDisable = options.cannotDisable ?? true;
-        this.hidden = options.hidden ?? false;
         this.info = options.info ?? 'WIP';
         this.flags = options.flags ?? [];
         this.onlyOn = options.onlyOn ?? null;
         this.cooldown = options.cooldown ?? 0;
         this.ratelimit = [];
-        this.definition = { ...options.definition };
         this.#locks = {};
         this.#cooldowns = {};
 
-        this.handler = compileHandler({ ...handlerDefaults, ...this.definition }, this.flags);
-        this.usage = this.handler.signatures.map(u => u.map(p => p.display).join(' ')).join('\n');
+        this.#handler = handler;
+        this.usage = handler.signatures.map(u => u.map(p => p.display).join(' ')).join('\n');
     }
+
+    public abstract checkContext(context: CommandContext): boolean;
 
     public async execute(context: CommandContext): Promise<void> {
         try {
             let result = await this.preExecute(context);
             if (result === undefined)
-                result = await this.handler.execute(context);
+                result = await this.#handler.execute(context);
             const [payload, files] = splitResult(result);
             if (payload !== undefined || files !== undefined)
                 await this.util.send(context, payload, files);

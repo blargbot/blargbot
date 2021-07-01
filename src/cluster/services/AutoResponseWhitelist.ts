@@ -39,7 +39,7 @@ export class AutoResponseWhitelist extends IntervalService {
         await this.execute();
         const isChange = whitelisted !== this.#whitelist.has(guildId);
         if (isChange) {
-            if (!await this.cluster.util.isPolice(userId)) {
+            if (!await this.cluster.util.isStaff(userId)) {
                 const user = await this.cluster.util.getUserById(userId);
                 const guild = this.cluster.discord.guilds.get(guildId);
                 const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
@@ -78,7 +78,7 @@ ${codeBlock(code, 'js')}`
     private async handleReaction(message: AnyMessage, emoji: Emoji, user: User): Promise<void> {
         if (message.channel.id !== this.cluster.config.discord.channels.autoresponse
             || !emojiValues.hasOwnProperty(emoji.name)
-            || !await this.cluster.util.isPolice(user.id))
+            || !await this.cluster.util.isStaff(user.id))
             return;
 
         const match = /```js\n(.+)\n```/.exec(message.content);

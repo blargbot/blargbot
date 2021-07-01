@@ -1,19 +1,22 @@
 import { MessageFile } from 'eris';
 import { CommandType, FlagDefinition, FlagResult } from '../../utils';
 import { SendPayload } from '../BaseUtilities';
+import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredRawGuildCommand } from '../database';
 import { CommandContext } from './CommandContext';
 
-export interface CommandOptions {
+export interface CommandOptionsBase {
     readonly name: string;
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly hidden?: boolean;
     readonly info?: string;
     readonly flags?: readonly FlagDefinition[];
     readonly onlyOn?: string | null;
     readonly cooldown?: number;
-    readonly definition: CommandDefinition;
+}
+
+export interface CommandOptions<TContext extends CommandContext> extends CommandOptionsBase {
+    readonly definition: CommandDefinition<TContext>;
 }
 
 export type CommandResult =
@@ -24,17 +27,17 @@ export type CommandResult =
     | string
     | void;
 
-export type CommandDefinition =
-    | CommandHandlerDefinition
-    | SubcommandDefinitionHolder
-    | CommandHandlerDefinition & SubcommandDefinitionHolder;
+export type CommandDefinition<TContext extends CommandContext> =
+    | CommandHandlerDefinition<TContext>
+    | SubcommandDefinitionHolder<TContext>
+    | CommandHandlerDefinition<TContext> & SubcommandDefinitionHolder<TContext>;
 
 
 export type CommandParameter =
     | CommandVariableParameter
     | CommandLiteralParameter;
 
-interface CommandHandlerDefinitionBase<TContext extends CommandContext> {
+export interface CommandHandlerDefinition<TContext extends CommandContext> {
     readonly description: string;
     readonly parameters?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -46,14 +49,8 @@ interface CommandHandlerDefinitionBase<TContext extends CommandContext> {
 
 }
 
-export type CommandHandlerDefinition = CommandHandlerDefinitionBase<CommandContext>;
-
-export interface ScopedCommandHandlerDefinition<TContext extends CommandContext> extends CommandHandlerDefinitionBase<TContext> {
-    readonly checkContext: (context: CommandContext) => context is TContext;
-}
-
-export interface SubcommandDefinitionHolder {
-    readonly subcommands: { readonly [name: string]: CommandDefinition }
+export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
+    readonly subcommands: { readonly [name: string]: CommandDefinition<TContext> }
 }
 
 export interface CommandVariableParameter {
@@ -75,13 +72,37 @@ export interface CommandLiteralParameter {
     readonly parse: (value: string) => unknown;
 }
 
-export interface CommandHandler {
+export interface CommandHandler<TContext extends CommandContext> {
     readonly signatures: ReadonlyArray<readonly CommandParameter[]>;
-    readonly execute: (context: CommandContext) => Promise<CommandResult> | CommandResult;
+    readonly execute: (context: TContext) => Promise<CommandResult> | CommandResult;
 }
 
-export interface CommandSignatureHandler {
+export interface CommandSignatureHandler<TContext extends CommandContext> {
     readonly description: string;
     readonly parameters: readonly CommandParameter[];
-    readonly execute: (context: CommandContext, args: readonly string[]) => Promise<CommandResult> | CommandResult;
+    readonly execute: (context: TContext, args: readonly string[]) => Promise<CommandResult> | CommandResult;
+}
+
+
+export type CustomCommandShrinkwrap = {
+    readonly [P in Exclude<keyof NamedStoredRawGuildCommand, 'author' | 'authorizer' | 'name'>]: NamedStoredRawGuildCommand[P]
+}
+
+export interface AutoresponseShrinkwrap extends Omit<GuildAutoresponse, 'executes'> {
+    readonly executes: CustomCommandShrinkwrap;
+}
+
+export interface FilteredAutoresponseShrinkwrap extends AutoresponseShrinkwrap, Omit<GuildFilteredAutoresponse, 'executes'> {
+    readonly executes: CustomCommandShrinkwrap;
+}
+
+export interface GuildShrinkwrap {
+    readonly cc: Record<string, CustomCommandShrinkwrap>;
+    readonly ar: FilteredAutoresponseShrinkwrap[];
+    are: null | AutoresponseShrinkwrap
+}
+
+export interface SignedGuildShrinkwrap {
+    readonly signature?: string;
+    readonly payload: GuildShrinkwrap
 }

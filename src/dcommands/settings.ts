@@ -1,9 +1,9 @@
 import { EmbedOptions, Guild } from 'eris';
 import { Cluster } from '../cluster';
-import { BaseCommand, CommandContext } from '../core/command';
+import { BaseGuildCommand, GuildCommandContext } from '../core/command';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '../utils';
 
-export class SettingsCommand extends BaseCommand {
+export class SettingsCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'settings',
@@ -31,10 +31,7 @@ export class SettingsCommand extends BaseCommand {
         });
     }
 
-    private async list(context: CommandContext): Promise<string | { embed: EmbedOptions }> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Settings are only available in a guild';
-
+    private async list(context: GuildCommandContext): Promise<string | { embed: EmbedOptions }> {
         const storedGuild = await this.database.guilds.get(context.channel.guild.id);
         if (!storedGuild)
             return '❌ Your guild is not correctly configured yet! Please try again later';
@@ -103,10 +100,7 @@ export class SettingsCommand extends BaseCommand {
         };
     }
 
-    private async set(context: CommandContext, setting: string, value: string): Promise<string> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Settings are only available in a guild';
-
+    private async set(context: GuildCommandContext, setting: string, value: string): Promise<string> {
         const key = setting.toLowerCase();
         if (!guard.isGuildSetting(key))
             return '❌ Invalid key!';

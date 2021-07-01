@@ -14,17 +14,15 @@ export class CommandListHandler extends ClusterEventService {
     protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
         const commands: CommandListResult = {};
         for (const c of this.cluster.commands.list()) {
-            if (!c.hidden) {
-                commands[c.name] = {
-                    name: c.name,
-                    usage: c.usage,
-                    info: c.info,
-                    category: c.category,
-                    aliases: c.aliases,
-                    flags: c.flags,
-                    onlyOn: c.onlyOn
-                };
-            }
+            commands[c.name] = {
+                name: c.name,
+                usage: c.usage,
+                info: c.info,
+                category: c.category,
+                aliases: c.aliases,
+                flags: c.flags,
+                onlyOn: c.onlyOn
+            };
         }
         reply(commands);
     }

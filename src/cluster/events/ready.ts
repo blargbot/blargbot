@@ -3,11 +3,6 @@ import { DiscordEventService } from '../../structures/DiscordEventService';
 import { metrics } from '../../core/Metrics';
 
 export class ReadyHandler extends DiscordEventService<'ready'> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #obtainEventTimer?: NodeJS.Timeout;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #processEventTimer?: NodeJS.Timeout;
-
     public constructor(
         public readonly cluster: Cluster
     ) {
@@ -48,7 +43,6 @@ export class ReadyHandler extends DiscordEventService<'ready'> {
 
 
         this.cluster.util.postStats();
-        void this.initEvents();
 
         const blacklist = await this.cluster.database.vars.get('guildBlacklist');
         if (blacklist) {
@@ -62,25 +56,5 @@ export class ReadyHandler extends DiscordEventService<'ready'> {
                 }
             }
         }
-    }
-
-    private async initEvents(): Promise<void> {
-        this.logger.init('Starting event interval!');
-        if (this.#obtainEventTimer)
-            clearInterval(this.#obtainEventTimer);
-
-        this.#obtainEventTimer = setInterval(
-            () => void this.cluster.triggers.obtain(),
-            5 * 60 * 1000);
-
-        if (this.#processEventTimer)
-            clearInterval(this.#processEventTimer);
-
-        this.#processEventTimer = setInterval(
-            () => void this.cluster.triggers.process(),
-            10 * 1000);
-
-        await this.cluster.triggers.obtain();
-        await this.cluster.triggers.process();
     }
 }

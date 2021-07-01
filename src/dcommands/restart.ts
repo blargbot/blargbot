@@ -1,16 +1,15 @@
 import { Cluster } from '../cluster';
 import { commandTypes } from '../utils';
-import { BaseCommand, CommandContext } from '../core/command';
+import { BaseGlobalCommand, CommandContext } from '../core/command';
 import moment from 'moment';
 
-export class RestartCommand extends BaseCommand {
+export class RestartCommand extends BaseGlobalCommand {
     public constructor(
         cluster: Cluster
     ) {
         super(cluster, {
             name: 'restart',
             category: commandTypes.DEVELOPER,
-            hidden: true,
             info: 'Restarts blargbot, or one of its components',
             definition: {
                 execute: (ctx) => this.respawnClusters(ctx),

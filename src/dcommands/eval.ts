@@ -1,11 +1,11 @@
 import { Cluster } from '../cluster';
 import { codeBlock, commandTypes } from '../utils';
-import { BaseCommand } from '../core/command';
+import { BaseGlobalCommand } from '../core/command';
 
 type EvalResult<T extends boolean = boolean> = { success: T, result: unknown };
 type EvalType = 'master' | 'global' | `cluster${number}`
 
-export class EvalCommand extends BaseCommand {
+export class EvalCommand extends BaseGlobalCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'eval',

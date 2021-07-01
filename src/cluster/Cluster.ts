@@ -3,7 +3,7 @@ import { ClusterUtilities } from './ClusterUtilities';
 import { BaseClient } from '../core/BaseClient';
 import { BaseSubtag } from '../core/bbtag/BaseSubtag';
 import moment, { Moment } from 'moment-timezone';
-import { EventManager } from '../structures/EventManager';
+import { TimeoutManager } from '../structures/TimeoutManager';
 import { commandTypes, tagTypes } from '../utils';
 import { Engine as BBEngine } from '../core/bbtag/Engine';
 import { ClusterWorker } from '../workers/ClusterWorker';
@@ -27,10 +27,10 @@ export class Cluster extends BaseClient {
     public readonly subtags: ModuleLoader<BaseSubtag>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
-    public readonly triggers: EventManager;
+    public readonly timeouts: TimeoutManager;
     public readonly bbtag: BBEngine;
     public readonly images: ImageConnection;
-    public readonly eventHandlers: ModuleLoader<BaseService>;
+    public readonly events: ModuleLoader<BaseService>;
 
     public constructor(
         logger: CatLogger,
@@ -71,22 +71,22 @@ export class Cluster extends BaseClient {
         this.worker = options.worker;
         this.commands = new ModuleLoader('dcommands', BaseCommand, [this], this.logger, c => [c.name, ...c.aliases]);
         this.subtags = new ModuleLoader('tags', BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
-        this.eventHandlers = new ModuleLoader('cluster/events', BaseService, [this], this.logger, e => e.name);
+        this.events = new ModuleLoader('cluster/events', BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader('cluster/services', BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
-        this.triggers = new EventManager(this);
+        this.timeouts = new TimeoutManager(this);
         this.bbtag = new BBEngine(this);
         this.images = new ImageConnection(1, this.logger);
 
         this.services.on('add', (module: BaseService) => void module.start());
         this.services.on('remove', (module: BaseService) => void module.stop());
-        this.eventHandlers.on('add', (module: BaseService) => void module.start());
-        this.eventHandlers.on('remove', (module: BaseService) => void module.stop());
+        this.events.on('add', (module: BaseService) => void module.start());
+        this.events.on('remove', (module: BaseService) => void module.stop());
     }
 
     public async start(): Promise<void> {
-        await this.eventHandlers.init();
-        this.logger.init(this.moduleStats(this.eventHandlers, 'Events', ev => ev.type));
+        await this.events.init();
+        this.logger.init(this.moduleStats(this.events, 'Events', ev => ev.type));
 
         await Promise.all([
             super.start(),

@@ -22,7 +22,9 @@ export enum Type {
     MUSIC,
     ADMIN,
     SOCIAL,
-    DEVELOPER
+    DEVELOPER,
+    STAFF,
+    SUPPORT
 }
 
 export const properties: CommandPropertiesSet = {
@@ -79,6 +81,22 @@ export const properties: CommandPropertiesSet = {
             return cluster.util.isDeveloper(context.author.id);
         },
         description: 'Commands that can only be executed by blargbot developers.',
+        color: 0xff0000
+    },
+    [Type.STAFF]: {
+        name: 'Bot staff',
+        async requirement(cluster: Cluster, context: CommandContext): Promise<boolean> {
+            return await cluster.util.isStaff(context.author.id);
+        },
+        description: 'Commands that can only be executed by staff on the official support server.',
+        color: 0xff0000
+    },
+    [Type.SUPPORT]: {
+        name: 'Bot support',
+        async requirement(cluster: Cluster, context: CommandContext): Promise<boolean> {
+            return await cluster.util.isSupport(context.author.id);
+        },
+        description: 'Commands that can only be executed by support members on the official support server.',
         color: 0xff0000
     }
 };

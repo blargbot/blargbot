@@ -529,7 +529,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async canExecuteDefaultCommand(
-        context: CommandContext<Channel>,
+        context: CommandContext,
         command: BaseCommand,
         quiet = false,
         options: CanExecuteDefaultCommandOptions = {}
@@ -649,9 +649,9 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public isPolice(id: string): Promise<boolean> | boolean {
+    public isStaff(id: string): Promise<boolean> | boolean {
         const whitelist = this.cluster.services.get(BotStaffWhitelist.name, BotStaffWhitelist);
-        return whitelist !== undefined ? whitelist.police.has(id) : super.isPolice(id);
+        return whitelist !== undefined ? whitelist.police.has(id) : super.isStaff(id);
     }
 
     public isSupport(id: string): Promise<boolean> | boolean {

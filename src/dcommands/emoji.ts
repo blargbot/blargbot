@@ -4,10 +4,10 @@ import twemoji from 'twemoji';
 import { Cluster } from '../cluster';
 import { commandTypes, FlagResult, parse } from '../utils';
 import { MessageFile } from 'eris';
-import { BaseCommand } from '../core/command';
+import { BaseGlobalCommand } from '../core/command';
 import { SendPayload } from '../core/BaseUtilities';
 
-export class EmojiCommand extends BaseCommand {
+export class EmojiCommand extends BaseGlobalCommand {
     public constructor(
         cluster: Cluster
     ) {

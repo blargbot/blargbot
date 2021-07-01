@@ -1,11 +1,11 @@
-import { EmbedOptions, GuildChannel } from 'eris';
+import { EmbedOptions } from 'eris';
 import { Cluster } from '../cluster';
 import { AutoResponseWhitelist } from '../cluster/services/AutoResponseWhitelist';
 import { SendPayload } from '../core/BaseUtilities';
-import { BaseCommand, CommandContext } from '../core/command';
-import { between, commandTypes, createSafeRegExp, getRange, guard, parse, randChoose, randInt } from '../utils';
+import { BaseGuildCommand, GuildCommandContext } from '../core/command';
+import { between, commandTypes, createSafeRegExp, getRange, parse, randChoose, randInt } from '../utils';
 
-export class AutoResponseCommand extends BaseCommand {
+export class AutoResponseCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'autoresponse',
@@ -54,10 +54,7 @@ export class AutoResponseCommand extends BaseCommand {
         });
     }
 
-    public async requestWhitelist(context: CommandContext, reason: string): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Autoresponses can only be used on guilds.';
-
+    public async requestWhitelist(context: GuildCommandContext, reason: string): Promise<string | undefined> {
         const service = this.cluster.services.get(AutoResponseWhitelist.name, AutoResponseWhitelist);
 
         switch (await service?.whitelist(context.channel.guild.id, context.channel.id, context.author.id, reason)) {
@@ -67,10 +64,7 @@ export class AutoResponseCommand extends BaseCommand {
         }
     }
 
-    public async listAutoresponses(context: CommandContext): Promise<SendPayload> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Autoresponses can only be used on guilds.';
-
+    public async listAutoresponses(context: GuildCommandContext): Promise<SendPayload> {
         const accessError = this.checkArAccess(context);
         if (accessError)
             return accessError;
@@ -103,10 +97,7 @@ export class AutoResponseCommand extends BaseCommand {
         return { embed };
     }
 
-    public async addAutoresponse(context: CommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Autoresponses can only be used on guilds.';
-
+    public async addAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string> {
         const accessError = this.checkArAccess(context);
         if (accessError)
             return accessError;
@@ -147,10 +138,7 @@ export class AutoResponseCommand extends BaseCommand {
         return `✅ Your autoresponse has been added! It will execute the hidden ccommand: \`${commandName}\``;
     }
 
-    public async removeAutoresponse(context: CommandContext): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Autoresponses can only be used on guilds.';
-
+    public async removeAutoresponse(context: GuildCommandContext): Promise<string | undefined> {
         const accessError = this.checkArAccess(context);
         if (accessError)
             return accessError;
@@ -168,10 +156,7 @@ export class AutoResponseCommand extends BaseCommand {
                 : '✅ The everything autoresponse has been removed!';
     }
 
-    public async editAutoresponse(context: CommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string | undefined> {
-        if (!guard.isGuildCommandContext(context))
-            return '❌ Autoresponses can only be used on guilds.';
-
+    public async editAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string | undefined> {
         const accessError = this.checkArAccess(context);
         if (accessError)
             return accessError;
@@ -199,7 +184,7 @@ export class AutoResponseCommand extends BaseCommand {
         return `✅ Autoresponse \`${pattern}\` has been edited!`;
     }
 
-    private checkArAccess(context: CommandContext<GuildChannel>): string | undefined {
+    private checkArAccess(context: GuildCommandContext): string | undefined {
         const service = this.cluster.services.get(AutoResponseWhitelist.name, AutoResponseWhitelist);
         if (!service)
             return '❌ Sorry, autoresponses are currently offline. Please try again later';
@@ -234,9 +219,9 @@ export class AutoResponseCommand extends BaseCommand {
             : '❌ Your regex cannot match everything!';
     }
 
-    private async requestEditableAutoresponse(context: CommandContext<GuildChannel>, includeEverything: false): Promise<string | undefined | { index: number, executes: string }>;
-    private async requestEditableAutoresponse(context: CommandContext<GuildChannel>, includeEverything: true): Promise<string | undefined | { index: number | 'everything', executes: string }>;
-    private async requestEditableAutoresponse(context: CommandContext<GuildChannel>, includeEverything: boolean): Promise<string | undefined | { index: number | 'everything', executes: string }> {
+    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: false): Promise<string | undefined | { index: number, executes: string }>;
+    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: true): Promise<string | undefined | { index: number | 'everything', executes: string }>;
+    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: boolean): Promise<string | undefined | { index: number | 'everything', executes: string }> {
         const ars = await this.cluster.database.guilds.getAutoresponses(context.channel.guild.id);
         const indexes: Array<{ name: string, result: { index: number | 'everything', executes: string } }> = [];
         if (includeEverything && ars?.everything !== undefined)

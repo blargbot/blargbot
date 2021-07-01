@@ -228,7 +228,7 @@ export class BaseUtilities {
             || this.config.discord.users.developers.includes(userId);
     }
 
-    public isPolice(id: string): Promise<boolean> | boolean {
+    public isStaff(id: string): Promise<boolean> | boolean {
         return this.database.vars.get('police')
             .then(police => police?.value.includes(id) ?? false);
     }

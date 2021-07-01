@@ -1,11 +1,11 @@
 import { EmbedField, GuildChannel } from 'eris';
 import { Cluster } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
-import { BaseCommand, CommandContext } from '../core/command';
+import { BaseCommand, BaseGlobalCommand, CommandContext } from '../core/command';
 import { StoredGuildCommand } from '../core/database';
 import { codeBlock, CommandType, commandTypes, guard, humanize } from '../utils';
 
-export class HelpCommand extends BaseCommand {
+export class HelpCommand extends BaseGlobalCommand {
     public constructor(cluster: Cluster) {
         super(cluster, {
             name: 'help',
@@ -14,9 +14,9 @@ export class HelpCommand extends BaseCommand {
                 description: 'Shows a list of all the available commands',
                 execute: (ctx) => this.listCommands(ctx),
                 subcommands: {
-                    '{commandName}': {
+                    '{commandName} {subcommand?}': {
                         description: 'Shows the help text for the given command',
-                        execute: (msg, [commandName]) => this.viewCommand(msg, commandName)
+                        execute: (msg, [commandName, subcommand]) => this.viewCommand(msg, commandName, subcommand)
                     }
                 }
             }
@@ -57,7 +57,7 @@ export class HelpCommand extends BaseCommand {
 
         const commandGroups = new Map<string, Set<string>>();
         for (const command of this.cluster.commands.list()) {
-            if (!await this.util.canExecuteDefaultCommand(context, command, true))
+            if (command.checkContext(context) && !await this.util.canExecuteDefaultCommand(context, command, true))
                 continue;
 
             const commandName = command.names.find(n => !customCommands.has(n));
@@ -102,7 +102,7 @@ export class HelpCommand extends BaseCommand {
         };
     }
 
-    public async viewCommand(context: CommandContext, commandName: string): Promise<SendPayload> {
+    public async viewCommand(context: CommandContext, commandName: string, subcommand?: string): Promise<SendPayload> {
 
         if (guard.isGuildCommandContext(context)) {
             const command = await this.database.guilds.getCommand(context.channel.guild.id, commandName);
@@ -112,7 +112,7 @@ export class HelpCommand extends BaseCommand {
 
         const command = this.cluster.commands.get(commandName);
         if (command !== undefined)
-            return this.viewDefaultCommand(context, command);
+            return this.viewDefaultCommand(context, command, subcommand);
 
         return { content: `❌ The command \`${commandName}\` could not be found` };
     }
@@ -131,7 +131,7 @@ export class HelpCommand extends BaseCommand {
         };
     }
 
-    public async viewDefaultCommand(context: CommandContext, command: BaseCommand): Promise<SendPayload> {
+    public async viewDefaultCommand(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
         if (!await this.util.canExecuteDefaultCommand(context, command, true))
             return { content: `❌ You dont have permission to run the \`${command.name}\` command` };
 
@@ -145,7 +145,7 @@ export class HelpCommand extends BaseCommand {
 
         return {
             embed: {
-                title: `Help for ${command.name}`,
+                title: `Help for ${command.name} ${subcommand ?? ''}`,
                 url: this.util.websiteLink(`/commands#${command.name}`),
                 description: 'TODO',
                 color: commandTypes.properties[command.category].color,
