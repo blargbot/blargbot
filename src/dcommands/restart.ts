@@ -1,13 +1,10 @@
-import { Cluster } from '../cluster';
 import { commandTypes } from '../utils';
 import { BaseGlobalCommand, CommandContext } from '../core/command';
 import moment from 'moment';
 
 export class RestartCommand extends BaseGlobalCommand {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'restart',
             category: commandTypes.DEVELOPER,
             info: 'Restarts blargbot, or one of its components',
@@ -28,25 +25,25 @@ export class RestartCommand extends BaseGlobalCommand {
         });
     }
 
-    private async restartWebsites(ctx: CommandContext): Promise<void> {
-        await this.cluster.util.send(ctx, 'Frontend has been respawned.');
-        this.cluster.worker.send('respawnFrontend', ctx.channel.id);
+    private async restartWebsites(context: CommandContext): Promise<void> {
+        await context.util.send(context, 'Frontend has been respawned.');
+        context.cluster.worker.send('respawnFrontend', context.channel.id);
     }
 
-    private async restart(ctx: CommandContext): Promise<void> {
-        await this.cluster.util.send(ctx, 'Ah! You\'ve killed me! D:');
-        await this.cluster.database.vars.set<'restart'>({
+    private async restart(context: CommandContext): Promise<void> {
+        await context.util.send(context, 'Ah! You\'ve killed me! D:');
+        await context.database.vars.set<'restart'>({
             varname: 'restart',
             varvalue: {
-                channel: ctx.channel.id,
+                channel: context.channel.id,
                 time: moment().valueOf()
             }
         });
-        this.cluster.worker.send('killAll', ctx.channel.id);
+        context.cluster.worker.send('killAll', context.channel.id);
     }
 
-    private async respawnClusters(ctx: CommandContext): Promise<void> {
-        await this.cluster.util.send(ctx, 'Ah! You\'ve killed me but in a way that minimizes downtime! D:');
-        this.cluster.worker.send('respawnAll', ctx.channel.id);
+    private async respawnClusters(context: CommandContext): Promise<void> {
+        await context.util.send(context, 'Ah! You\'ve killed me but in a way that minimizes downtime! D:');
+        context.cluster.worker.send('respawnAll', context.channel.id);
     }
 }

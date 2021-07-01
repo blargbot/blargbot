@@ -1,4 +1,3 @@
-import { Cluster } from '../../cluster';
 import { CommandOptions, CommandResult } from './types';
 import { compileHandler } from './compileHandler';
 import { CommandContext } from './CommandContext';
@@ -6,7 +5,7 @@ import { BaseCommand } from './BaseCommand';
 import { SendPayload } from '../BaseUtilities';
 
 export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
-    public constructor(cluster: Cluster, options: CommandOptions<TContext>) {
+    public constructor(options: CommandOptions<TContext>) {
         const handler = compileHandler({
             ...options.definition,
             subcommands: {
@@ -19,7 +18,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             }
         }, options.flags ?? []);
 
-        super(cluster, options, {
+        super(options, {
             signatures: handler.signatures,
             execute: async (context) => {
                 return this.checkContext(context)

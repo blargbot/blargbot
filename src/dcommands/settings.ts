@@ -5,7 +5,7 @@ import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } fro
 
 export class SettingsCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
-        super(cluster, {
+        super({
             name: 'settings',
             category: CommandType.ADMIN,
             info: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/commands/settings')} for key documentation.`,
@@ -32,7 +32,7 @@ export class SettingsCommand extends BaseGuildCommand {
     }
 
     private async list(context: GuildCommandContext): Promise<string | { embed: EmbedOptions }> {
-        const storedGuild = await this.database.guilds.get(context.channel.guild.id);
+        const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (!storedGuild)
             return '❌ Your guild is not correctly configured yet! Please try again later';
 
@@ -105,11 +105,11 @@ export class SettingsCommand extends BaseGuildCommand {
         if (!guard.isGuildSetting(key))
             return '❌ Invalid key!';
 
-        const parsed = await parse.guildSetting(context, this.util, key, value);
+        const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
             return `❌ '${value}' is not a ${guildSettings[key]?.type}`;
 
-        if (!await this.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
+        if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
             return '❌ Failed to set';
 
         return `✅ ${guildSettings[key]?.name} is set to ${parsed.display}`;

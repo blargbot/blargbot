@@ -3,15 +3,19 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster, ClusterUtilities } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
-import { BBTagContext, getDocsEmbed, limits, Statement } from '../core/bbtag';
+import { BBTagContext, getDocsEmbed, limits } from '../core/bbtag';
 import { DisabledRule } from '../core/bbtag/limits/rules/DisabledRule';
-import { BaseGuildCommand, GuildCommandContext } from '../core/command';
+import { BaseGuildCommand, CommandContext, GuildCommandContext } from '../core/command';
 import { StoredTag, TagStoredEventOptions, TagV4StoredEventOptions } from '../core/database';
+import { TimeoutManager } from '../structures/TimeoutManager';
 import { bbtagUtil, codeBlock, commandTypes, humanize, parse } from '../utils';
 
 export class TagCommand extends BaseGuildCommand {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #timeouts: TimeoutManager;
+
     public constructor(cluster: Cluster) {
-        super(cluster, {
+        super({
             name: 'tag',
             aliases: ['t'],
             category: commandTypes.GENERAL,
@@ -100,7 +104,7 @@ export class TagCommand extends BaseGuildCommand {
                     },
                     'top': {
                         parameters: '',
-                        execute: () => this.getTopTags(),
+                        execute: (ctx) => this.getTopTags(ctx),
                         description: 'Displays the top 5 tags'
                     },
                     'favourite|favorite|favourites|favorites': {
@@ -142,32 +146,19 @@ export class TagCommand extends BaseGuildCommand {
                 }
             }
         });
-        this.cluster.timeouts.on('tag', event => void this.handleEvent(event));
-    }
+        this.#timeouts = cluster.timeouts;
+        const handleEvent = async function (event: TagStoredEventOptions): Promise<void> {
+            const migratedEvent = migrateEvent(event);
+            if (migratedEvent === undefined)
+                return;
 
-    public async schedule(context: BBTagContext, trigger: Date, content: Statement): Promise<void> {
-        await this.cluster.timeouts.insert('tag', {
-            version: 4,
-            endtime: trigger,
-            source: context.guild.id,
-            user: context.user.id,
-            channel: context.channel.id,
-            guild: context.guild.id,
-            context: context.serialize(),
-            content: bbtagUtil.stringify(content)
-        });
-    }
+            const context = await BBTagContext.deserialize(cluster.bbtag, migratedEvent.context);
+            const source = bbtagUtil.parse(migratedEvent.content);
+            context.limit.addRules(['timer', 'output'], DisabledRule.instance);
 
-    public async handleEvent(event: TagStoredEventOptions): Promise<void> {
-        const migratedEvent = migrateEvent(event);
-        if (migratedEvent === undefined)
-            return;
-
-        const context = await BBTagContext.deserialize(this.cluster.bbtag, migratedEvent.context);
-        const source = bbtagUtil.parse(migratedEvent.content);
-        context.limit.addRules(['timer', 'output'], DisabledRule.instance);
-
-        await this.cluster.bbtag.eval(source, context);
+            await cluster.bbtag.eval(source, context);
+        };
+        this.#timeouts.on('tag', event => void handleEvent(event));
     }
 
     public async runTag(
@@ -183,10 +174,10 @@ export class TagCommand extends BaseGuildCommand {
         if (debug && match.author !== context.author.id)
             return '❌ You cannot debug someone elses tag.';
 
-        await this.database.tags.incrementUses(match.name, 1);
+        await context.database.tags.incrementUses(match.name, 1);
 
         const args = humanize.smartSplit(input);
-        const result = await this.cluster.bbtag.execute(match.content, {
+        const result = await context.bbtag.execute(match.content, {
             message: context.message,
             input: args,
             isCC: false,
@@ -208,7 +199,7 @@ export class TagCommand extends BaseGuildCommand {
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
         const args = humanize.smartSplit(input);
-        const result = await this.cluster.bbtag.execute(content, {
+        const result = await context.bbtag.execute(content, {
             message: context.message,
             input: args,
             isCC: false,
@@ -241,9 +232,9 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.tags.delete(match.name);
-        void this.logChange(TagChangeAction.DELETE, context.author, context.id, {
-            author: `${(await this.database.users.get(match.author))?.username} (${match.author})`,
+        await context.database.tags.delete(match.name);
+        void this.logChange(context, TagChangeAction.DELETE, context.author, context.id, {
+            author: `${(await context.database.users.get(match.author))?.username} (${match.author})`,
             tag: match.name,
             content: match.content
         });
@@ -267,13 +258,13 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof to !== 'object')
             return to;
 
-        await this.database.tags.delete(from.name);
-        await this.database.tags.add({
+        await context.database.tags.delete(from.name);
+        await context.database.tags.add({
             ...from,
             name: to.name
         });
 
-        void this.logChange(TagChangeAction.RENAME, context.author, context.id, {
+        void this.logChange(context, TagChangeAction.RENAME, context.author, context.id, {
             oldName: from.name,
             newName: to.name
         });
@@ -302,23 +293,23 @@ export class TagCommand extends BaseGuildCommand {
             context.channel,
             context.author,
             ' tags',
-            async (skip, take) => await this.database.tags.list(skip, take),
-            async () => await this.database.tags.count(),
+            async (skip, take) => await context.database.tags.list(skip, take),
+            async () => await context.database.tags.count(),
             100,
             ', '
         ];
 
         if (author) {
-            const user = await this.util.getUser(context, author);
+            const user = await context.util.getUser(context, author);
             if (!user)
                 return;
 
             args[2] += ` made by **${humanize.fullName(user)}**`;
-            args[3] = async (skip, take) => await this.database.tags.byAuthor(user.id, skip, take);
-            args[4] = async () => await this.database.tags.byAuthorCount(user.id);
+            args[3] = async (skip, take) => await context.database.tags.byAuthor(user.id, skip, take);
+            args[4] = async () => await context.database.tags.byAuthorCount(user.id);
         }
 
-        switch (await this.util.displayPaged(...args)) {
+        switch (await context.util.displayPaged(...args)) {
             case false: return '❌ No results found!';
             case true: return '✅ I hope you found what you were looking for!';
             case null: return undefined;
@@ -327,17 +318,17 @@ export class TagCommand extends BaseGuildCommand {
 
     public async searchTags(context: GuildCommandContext, query?: string): Promise<string | undefined> {
         if (query === undefined || query?.length === 0)
-            query = (await this.util.awaitQuery(context.channel, context.author, 'What would you like to search for?'))?.content;
+            query = (await context.util.awaitQuery(context.channel, context.author, 'What would you like to search for?'))?.content;
         if (query === undefined || query?.length === 0)
             return;
 
         const _query = query;
-        const result = await this.util.displayPaged(
+        const result = await context.util.displayPaged(
             context.channel,
             context.author,
             ` tags matching \`${query}\``,
-            (skip, take) => this.database.tags.search(_query, skip, take),
-            () => this.database.tags.searchCount(_query),
+            (skip, take) => context.database.tags.search(_query, skip, take),
+            () => context.database.tags.searchCount(_query),
             100,
             ', ');
 
@@ -350,7 +341,7 @@ export class TagCommand extends BaseGuildCommand {
 
     public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
         tagName = normalizeName(tagName);
-        if (!await this.database.tags.disable(tagName, context.author.id, reason))
+        if (!await context.database.tags.disable(tagName, context.author.id, reason))
             return `❌ The \`${tagName}\` tag doesn\'t exist!`;
         return `✅ The \`${tagName}\` tag has been deleted`;
     }
@@ -363,7 +354,7 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.tags.setProp(match.name, 'cooldown', cooldown?.asMilliseconds());
+        await context.database.tags.setProp(match.name, 'cooldown', cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
         return `✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
@@ -374,10 +365,10 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         const response = [];
-        const author = await this.database.users.get(match.author);
+        const author = await context.database.users.get(match.author);
         response.push(`✅ The tag \`${match.name}\` was made by **${humanize.fullName(author)}**`);
         if (match.authorizer !== undefined && match.authorizer !== match.author) {
-            const authorizer = await this.database.users.get(match.authorizer);
+            const authorizer = await context.database.users.get(match.authorizer);
             response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
         }
 
@@ -402,7 +393,7 @@ export class TagCommand extends BaseGuildCommand {
         };
 
         const favouriteCount = Object.values(match.favourites ?? {}).filter(v => v).length;
-        const author = await this.database.users.get(match.author);
+        const author = await context.database.users.get(match.author);
         embed.author = {
             name: humanize.fullName(author),
             icon_url: author?.avatarURL
@@ -415,7 +406,7 @@ export class TagCommand extends BaseGuildCommand {
         });
 
         if (match.authorizer !== undefined && match.authorizer !== match.author) {
-            const authorizer = await this.database.users.get(match.authorizer);
+            const authorizer = await context.database.users.get(match.authorizer);
             fields.push({
                 name: 'Authorizer',
                 value: `${humanize.fullName(authorizer)} (${authorizer?.userid ?? match.authorizer})`,
@@ -440,12 +431,12 @@ export class TagCommand extends BaseGuildCommand {
         return { embed };
     }
 
-    public async getTopTags(): Promise<string> {
-        const tags = await this.database.tags.top(10);
+    public async getTopTags(context: GuildCommandContext): Promise<string> {
+        const tags = await context.database.tags.top(10);
         const result = ['__Here are the top 10 tags:__'];
         let i = 1;
         for (const tag of tags) {
-            const author = await this.database.users.get(tag.author);
+            const author = await context.database.users.get(tag.author);
             result.push(`**${i++}.** **${tag.name}** (**${humanize.fullName(author)}**) - used **${tag.uses} time${tag.uses === 1 ? '' : 's'}**`);
         }
         return result.join('\n');
@@ -457,7 +448,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         const isFavourited = !match.favourites?.[context.author.id];
-        await this.database.tags.setFavourite(match.name, context.author.id, isFavourited);
+        await context.database.tags.setFavourite(match.name, context.author.id, isFavourited);
         return isFavourited
             ? `✅ The \`${match.name}\` tag is now on your favourites list!\n\n` +
             'Note: there is no way for a tag to tell if you\'ve favourited it, and thus it\'s impossible to give rewards for favouriting.\n' +
@@ -466,7 +457,7 @@ export class TagCommand extends BaseGuildCommand {
     }
 
     public async listFavouriteTags(context: GuildCommandContext): Promise<string> {
-        const tags = await this.database.tags.getFavourites(context.author.id);
+        const tags = await context.database.tags.getFavourites(context.author.id);
         if (tags.length === 0)
             return 'You have no favourite tags!';
         return `You have ${tags.length} favourite tag${tags.length === 1 ? '' : 's'}. ${codeBlock(tags.join(', '), 'fix')}`;
@@ -477,7 +468,7 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const user = await this.database.users.get(context.author.id);
+        const user = await context.database.users.get(context.author.id);
         if (user === undefined)
             return '❌ Sorry, you cannot report tags at this time. Please try again later!';
 
@@ -487,19 +478,19 @@ export class TagCommand extends BaseGuildCommand {
         if (reason?.length === 0) reason = undefined;
         if (reason === undefined) {
             if (user.reports?.[match.name] !== undefined) {
-                await this.database.tags.incrementReports(match.name, -1);
-                await this.database.users.setTagReport(context.author.id, match.name, undefined);
+                await context.database.tags.incrementReports(match.name, -1);
+                await context.database.users.setTagReport(context.author.id, match.name, undefined);
                 return `✅ The \`${match.name}\` tag is no longer being reported by you.`;
             }
-            reason = (await this.util.awaitQuery(context.channel, context.author, 'Please provide a reason for your report or type `c` to cancel:'))?.content;
+            reason = (await context.util.awaitQuery(context.channel, context.author, 'Please provide a reason for your report or type `c` to cancel:'))?.content;
             if (reason === undefined || reason === 'c')
                 return;
         }
 
         if (user.reports?.[match.name] !== undefined)
-            await this.database.tags.incrementReports(match.name, 1);
-        await this.database.users.setTagReport(context.author.id, match.name, reason);
-        await this.util.send(this.config.discord.channels.tagreports,
+            await context.database.tags.incrementReports(match.name, 1);
+        await context.database.users.setTagReport(context.author.id, match.name, reason);
+        await context.util.send(context.config.discord.channels.tagreports,
             `**${humanize.fullName(context.author)}** has reported the tag: ${match.name}\n\n${reason}`);
         return `✅ The \`${match.name}\` tag has been reported.`;
     }
@@ -540,7 +531,7 @@ export class TagCommand extends BaseGuildCommand {
             flags.push({ flag, word, desc });
         }
 
-        await this.database.tags.setProp(match.name, 'flags', flags);
+        await context.database.tags.setProp(match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
@@ -554,7 +545,7 @@ export class TagCommand extends BaseGuildCommand {
         const flags = [...(match.flags ?? [])]
             .filter(f => removeFlags[f.flag] === undefined);
 
-        await this.database.tags.setProp(match.name, 'flags', flags);
+        await context.database.tags.setProp(match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
@@ -563,7 +554,7 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.tags.setProp(match.name, 'lang', language);
+        await context.database.tags.setProp(match.name, 'lang', language);
         return `✅ Lang for tag \`${match.name}\` set.`;
     }
 
@@ -572,12 +563,12 @@ export class TagCommand extends BaseGuildCommand {
         if (content === undefined)
             return;
 
-        const analysis = this.cluster.bbtag.check(content);
+        const analysis = context.bbtag.check(content);
         if (analysis.errors.length > 0)
             return `❌ There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`;
 
 
-        await this.database.tags.set({
+        await context.database.tags.set({
             name: tagName,
             author: context.author.id,
             authorizer: oldTag?.authorizer ?? context.author.id,
@@ -588,7 +579,7 @@ export class TagCommand extends BaseGuildCommand {
             lang: oldTag?.lang ?? ''
         });
 
-        void this.logChange(oldTag ? TagChangeAction.EDIT : TagChangeAction.CREATE, context.author, context.id, {
+        void this.logChange(context, oldTag ? TagChangeAction.EDIT : TagChangeAction.CREATE, context.author, context.id, {
             tag: tagName,
             content
         });
@@ -606,7 +597,7 @@ export class TagCommand extends BaseGuildCommand {
         if (query.length === 0)
             return undefined;
 
-        name = (await this.util.awaitQuery(context.channel, context.author, query))?.content;
+        name = (await context.util.awaitQuery(context.channel, context.author, query))?.content;
         if (name === undefined || name === 'c')
             return undefined;
 
@@ -618,7 +609,7 @@ export class TagCommand extends BaseGuildCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        content = (await this.util.awaitQuery(context.channel, context.author, 'Enter the tag\'s contents or type `c` to cancel:'))?.content;
+        content = (await context.util.awaitQuery(context.channel, context.author, 'Enter the tag\'s contents or type `c` to cancel:'))?.content;
         if (content === undefined || content === 'c')
             return undefined;
 
@@ -634,7 +625,7 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (context.author.id !== this.config.discord.users.owner
+        if (context.author.id !== context.config.discord.users.owner
             && match.tag !== undefined
             && match.tag.author !== context.author.id) {
             return `❌ You don\'t own the \`${match.name}\` tag!`;
@@ -697,13 +688,13 @@ export class TagCommand extends BaseGuildCommand {
         if (tagName === undefined)
             return;
 
-        const tag = await this.database.tags.get(tagName);
+        const tag = await context.database.tags.get(tagName);
         if (tag === undefined)
             return { name: tagName };
         if (tag !== undefined && tag.deleted) {
             let result = `❌ The \`${tag.name}\` tag has been permanently deleted`;
             if (tag.deleter !== undefined) {
-                const deleter = await this.database.users.get(tag.deleter);
+                const deleter = await context.database.users.get(tag.deleter);
                 if (deleter !== undefined)
                     result += ` by **${humanize.fullName(deleter)}**`;
             }
@@ -724,6 +715,7 @@ export class TagCommand extends BaseGuildCommand {
     }
 
     private async logChange(
+        context: CommandContext,
         action: TagChangeAction,
         user: User,
         messageId: string,
@@ -741,7 +733,7 @@ export class TagCommand extends BaseGuildCommand {
             });
         }
 
-        await this.util.send(this.config.discord.channels.taglog, {
+        await context.util.send(context.config.discord.channels.taglog, {
             embed: {
                 title: action,
                 color: tagChangeActionColour[action],
@@ -749,7 +741,7 @@ export class TagCommand extends BaseGuildCommand {
                 author: {
                     name: humanize.fullName(user),
                     icon_url: user.avatarURL,
-                    url: `${this.config.website.secure ? 'https' : 'http'}://${this.config.website.host}/user/${user.id}`
+                    url: `${context.config.website.secure ? 'https' : 'http'}://${context.config.website.host}/user/${user.id}`
                 },
                 timestamp: new Date(),
                 footer: {

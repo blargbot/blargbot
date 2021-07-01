@@ -1,9 +1,6 @@
 import { MessageFile } from 'eris';
-import { Cluster, ClusterUtilities } from '../../cluster';
 import { CommandType, FlagDefinition } from '../../utils';
-import { Database } from '../database';
 import { CommandResult, CommandHandler, CommandOptionsBase } from './types';
-import { Client as ErisClient } from 'eris';
 import { SendPayload } from '../BaseUtilities';
 import { CommandContext } from './CommandContext';
 
@@ -26,15 +23,9 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
     public readonly cooldown: number;
     public readonly usage: string;
 
-    protected get util(): ClusterUtilities { return this.cluster.util; }
-    protected get logger(): CatLogger { return this.cluster.logger; }
-    protected get database(): Database { return this.cluster.database; }
-    protected get discord(): ErisClient { return this.cluster.discord; }
-    protected get config(): Configuration { return this.cluster.config; }
     public get names(): readonly string[] { return [this.name, ...this.aliases]; }
 
     protected constructor(
-        protected readonly cluster: Cluster,
         options: CommandOptionsBase,
         handler: CommandHandler<CommandContext>
     ) {
@@ -63,7 +54,7 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
                 result = await this.#handler.execute(context);
             const [payload, files] = splitResult(result);
             if (payload !== undefined || files !== undefined)
-                await this.util.send(context, payload, files);
+                await context.reply(payload, files);
         }
         finally {
             await this.postExecute(context);

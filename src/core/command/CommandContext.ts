@@ -1,6 +1,9 @@
-import { Channel, Textable, User, Message, GuildChannel, PrivateChannel } from 'eris';
-import { Cluster } from '../../cluster';
+import { Channel, Textable, User, Message, GuildChannel, PrivateChannel, MessageFile, AnyMessage, Client as ErisClient } from 'eris';
+import { Cluster, ClusterUtilities } from '../../cluster';
 import { humanize } from '../../utils';
+import { SendContext, SendPayload } from '../BaseUtilities';
+import { Engine as BBTagEngine } from '../bbtag';
+import { Database } from '../database';
 
 export type GuildCommandContext<TChannel extends GuildChannel = GuildChannel> = CommandContext<TChannel>;
 export type PrivateCommandContext<TChannel extends PrivateChannel = PrivateChannel> = CommandContext<TChannel>;
@@ -13,6 +16,12 @@ export class CommandContext<TChannel extends Channel = Channel> {
     public readonly argsString: string;
     public readonly args: string[];
 
+    public get logger(): CatLogger { return this.cluster.logger; }
+    public get bbtag(): BBTagEngine { return this.cluster.bbtag; }
+    public get util(): ClusterUtilities { return this.cluster.util; }
+    public get config(): Configuration { return this.cluster.config; }
+    public get discord(): ErisClient { return this.cluster.discord; }
+    public get database(): Database { return this.cluster.database; }
     public get channel(): TChannel & Textable { return this.message.channel; }
     public get author(): User { return this.message.author; }
     public get id(): string { return this.message.id; }
@@ -53,5 +62,13 @@ export class CommandContext<TChannel extends Channel = Channel> {
         }
 
         return this.args.slice(start, end);
+    }
+
+    public async reply(content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | null> {
+        return await this.cluster.util.send(this.message, content, files);
+    }
+
+    public async send(context: SendContext, content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | null> {
+        return await this.cluster.util.send(context, content, files);
     }
 }

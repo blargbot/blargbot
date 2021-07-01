@@ -66,7 +66,7 @@ export class BaseUtilities {
         return `${scheme}://${host}/${path}`;
     }
 
-    public async send(context: SendContext, payload?: SendPayload, files?: SendFiles): Promise<AnyMessage | null> {
+    public async send(context: SendContext, payload: SendPayload | undefined, files?: SendFiles): Promise<AnyMessage | null> {
         metrics.sendCounter.inc();
 
         let channel = await this.getSendChannel(context);

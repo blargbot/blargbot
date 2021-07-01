@@ -1,13 +1,12 @@
 import { EmbedField, GuildChannel } from 'eris';
-import { Cluster } from '../cluster';
 import { SendPayload } from '../core/BaseUtilities';
 import { BaseCommand, BaseGlobalCommand, CommandContext } from '../core/command';
 import { StoredGuildCommand } from '../core/database';
 import { codeBlock, CommandType, commandTypes, guard, humanize } from '../utils';
 
 export class HelpCommand extends BaseGlobalCommand {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'help',
             category: CommandType.GENERAL,
             definition: {
@@ -29,23 +28,23 @@ export class HelpCommand extends BaseGlobalCommand {
         let getCommandGroups = (command: BaseCommand): Promise<readonly string[]> =>
             Promise.resolve([commandTypes.properties[command.category].name]);
 
-        let prefix = this.config.discord.defaultPrefix;
+        let prefix = context.config.discord.defaultPrefix;
         const customCommands = new Map<string, StoredGuildCommand | undefined>();
         if (guard.isGuildCommandContext(context)) {
-            for (const command of await this.database.guilds.listCommands(context.channel.guild.id)) {
-                if (!await this.util.canExecuteCustomCommand(context, command, true))
+            for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
+                if (!await context.util.canExecuteCustomCommand(context, command, true))
                     customCommands.set(command.name, undefined);
                 else
                     customCommands.set(command.name, command);
             }
-            let prefixes = await this.database.guilds.getSetting(context.channel.guild.id, 'prefix');
+            let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, 'prefix');
             if (typeof prefixes === 'string')
                 prefixes = [prefixes];
             if (prefixes !== undefined)
                 prefix = prefixes[0];
 
             getCommandGroups = async (command) => {
-                const perms = await this.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
+                const perms = await context.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
                 const roles = perms?.rolename;
                 switch (typeof roles) {
                     case 'string': return [roles];
@@ -56,8 +55,8 @@ export class HelpCommand extends BaseGlobalCommand {
         }
 
         const commandGroups = new Map<string, Set<string>>();
-        for (const command of this.cluster.commands.list()) {
-            if (command.checkContext(context) && !await this.util.canExecuteDefaultCommand(context, command, true))
+        for (const command of context.cluster.commands.list()) {
+            if (command.checkContext(context) && !await context.util.canExecuteDefaultCommand(context, command, true))
                 continue;
 
             const commandName = command.names.find(n => !customCommands.has(n));
@@ -89,7 +88,7 @@ export class HelpCommand extends BaseGlobalCommand {
 
         fields.push({
             name: '\u200B',
-            value: `For more information about commands, do \`${prefix}help <commandname>\` or visit <${this.util.websiteLink('/commands')}>.\n` +
+            value: `For more information about commands, do \`${prefix}help <commandname>\` or visit <${context.util.websiteLink('/commands')}>.\n` +
                 'Want to support the bot? Consider donating to <https://patreon.com/blargbot> - all donations go directly towards recouping hosting costs.'
         });
 
@@ -105,12 +104,12 @@ export class HelpCommand extends BaseGlobalCommand {
     public async viewCommand(context: CommandContext, commandName: string, subcommand?: string): Promise<SendPayload> {
 
         if (guard.isGuildCommandContext(context)) {
-            const command = await this.database.guilds.getCommand(context.channel.guild.id, commandName);
+            const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
             if (command !== undefined)
                 return this.viewCustomCommand(context, commandName, command);
         }
 
-        const command = this.cluster.commands.get(commandName);
+        const command = context.cluster.commands.get(commandName);
         if (command !== undefined)
             return this.viewDefaultCommand(context, command, subcommand);
 
@@ -118,7 +117,7 @@ export class HelpCommand extends BaseGlobalCommand {
     }
 
     public async viewCustomCommand(context: CommandContext<GuildChannel>, commandName: string, command: StoredGuildCommand): Promise<SendPayload> {
-        if (!await this.util.canExecuteCustomCommand(context, command, true))
+        if (!await context.util.canExecuteCustomCommand(context, command, true))
             return { content: `❌ You dont have permission to run the \`${commandName}\` command` };
 
         return {
@@ -132,7 +131,7 @@ export class HelpCommand extends BaseGlobalCommand {
     }
 
     public async viewDefaultCommand(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
-        if (!await this.util.canExecuteDefaultCommand(context, command, true))
+        if (!await context.util.canExecuteDefaultCommand(context, command, true))
             return { content: `❌ You dont have permission to run the \`${command.name}\` command` };
 
         const fields: EmbedField[] = [];
@@ -146,7 +145,7 @@ export class HelpCommand extends BaseGlobalCommand {
         return {
             embed: {
                 title: `Help for ${command.name} ${subcommand ?? ''}`,
-                url: this.util.websiteLink(`/commands#${command.name}`),
+                url: context.util.websiteLink(`/commands#${command.name}`),
                 description: 'TODO',
                 color: commandTypes.properties[command.category].color,
                 fields: fields

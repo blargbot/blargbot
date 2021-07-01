@@ -12,7 +12,7 @@ import { bbtagUtil, codeBlock, commandTypes, FlagDefinition, guard, humanize, pa
 
 export class CustomCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
-        super(cluster, {
+        super({
             name: 'ccommand',
             aliases: ['cc'],
             category: commandTypes.ADMIN,
@@ -151,7 +151,7 @@ export class CustomCommand extends BaseGuildCommand {
         debug: boolean
     ): Promise<string | { content: string, files: MessageFile } | undefined> {
         const args = humanize.smartSplit(input);
-        const result = await this.cluster.bbtag.execute(content, {
+        const result = await context.bbtag.execute(content, {
             message: context.message,
             input: args,
             isCC: true,
@@ -188,7 +188,7 @@ export class CustomCommand extends BaseGuildCommand {
             return `❌ The command \`${commandName}\` is an alias to the tag \`${match.alias}\``;
 
         const args = humanize.smartSplit(input);
-        const result = await this.cluster.bbtag.execute(match.content, {
+        const result = await context.bbtag.execute(match.content, {
             message: context.message,
             input: args,
             isCC: true,
@@ -227,7 +227,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.guilds.setCommand(context.channel.guild.id, match.name, undefined);
+        await context.database.guilds.setCommand(context.channel.guild.id, match.name, undefined);
         return `✅ The \`${match.name}\` custom command is gone forever!`;
     }
 
@@ -251,7 +251,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof to !== 'object')
             return to;
 
-        await this.database.guilds.renameCommand(context.channel.guild.id, from.name, to.name);
+        await context.database.guilds.renameCommand(context.channel.guild.id, from.name, to.name);
 
         return `✅ The \`${from.name}\` custom command has been renamed to \`${to.name}\`.`;
     }
@@ -278,7 +278,7 @@ export class CustomCommand extends BaseGuildCommand {
 
     public async listCommands(context: GuildCommandContext): Promise<{ embed: EmbedOptions } | string | undefined> {
         const grouped: Record<string, string[]> = {};
-        for (const command of await this.database.guilds.listCommands(context.channel.guild.id)) {
+        for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
             const roles = command.roles === undefined || command.roles.length === 0 ? ['All Roles'] : command.roles;
             for (const role of roles) {
                 (grouped[role] ??= []).push(command.name);
@@ -306,7 +306,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'cooldown', cooldown?.asMilliseconds());
+        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'cooldown', cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
         return `✅ The custom command \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
     }
@@ -317,10 +317,10 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         const response = [];
-        const author = await this.database.users.get(match.author);
+        const author = await context.database.users.get(match.author);
         response.push(`✅ The custom command \`${match.name}\` was made by **${humanize.fullName(author)}**`);
         if (match.authorizer !== undefined && match.authorizer !== match.author) {
-            const authorizer = await this.database.users.get(match.authorizer);
+            const authorizer = await context.database.users.get(match.authorizer);
             response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
         }
 
@@ -333,7 +333,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         const flagDefinitions = guard.isAliasedCustomCommand(match)
-            ? (await this.cluster.database.tags.get(match.alias))?.flags ?? []
+            ? (await context.database.tags.get(match.alias))?.flags ?? []
             : match.flags ?? [];
 
         const flags = humanize.flags(flagDefinitions);
@@ -370,7 +370,7 @@ export class CustomCommand extends BaseGuildCommand {
             flags.push({ flag, word, desc });
         }
 
-        await this.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
+        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
@@ -387,7 +387,7 @@ export class CustomCommand extends BaseGuildCommand {
         const flags = [...(match.flags ?? [])]
             .filter(f => removeFlags[f.flag] === undefined);
 
-        await this.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
+        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
@@ -396,7 +396,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'lang', language);
+        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'lang', language);
         return `✅ Lang for custom command \`${match.name}\` set.`;
     }
 
@@ -405,7 +405,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        await this.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'help', helpText);
+        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'help', helpText);
         return `✅ Help text for custom command \`${match.name}\` set.`;
     }
 
@@ -415,7 +415,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         const isNowHidden = !match.hidden;
-        await this.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'hidden', isNowHidden);
+        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'hidden', isNowHidden);
         return `✅ Custom command \`${match.name}\` is now ${isNowHidden ? 'hidden' : 'visible'}.`;
     }
 
@@ -432,21 +432,21 @@ export class CustomCommand extends BaseGuildCommand {
             roles.push(role);
         }
 
-        await this.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'roles', roles.map(r => r.id));
+        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'roles', roles.map(r => r.id));
         return `✅ Roles for custom command \`${match.name}\` set to ${humanize.smartJoin(roles.map(r => `\`${r.name}\``), ', ', ' and ')}.`;
     }
 
     public async importCommand(context: GuildCommandContext, tagName: string, commandName: string): Promise<string> {
         commandName = normalizeName(commandName);
-        if (await this.cluster.database.guilds.getCommand(context.channel.guild.id, commandName) !== undefined)
+        if (await context.database.guilds.getCommand(context.channel.guild.id, commandName) !== undefined)
             return `❌ The \`${commandName}\` custom command already exists!`;
 
-        const tag = await this.cluster.database.tags.get(tagName);
+        const tag = await context.database.tags.get(tagName);
         if (tag === undefined)
             return `❌ The \`${tagName}\` tag doesnt exist!`;
 
-        const author = await this.cluster.database.users.get(tag.author);
-        await this.cluster.database.guilds.setCommand(context.channel.guild.id, commandName, {
+        const author = await context.database.users.get(tag.author);
+        await context.database.guilds.setCommand(context.channel.guild.id, commandName, {
             author: tag.author,
             alias: tagName,
             authorizer: context.author.id
@@ -503,7 +503,7 @@ export class CustomCommand extends BaseGuildCommand {
             content: '✅ No problem, my job here is done.',
             files: {
                 file: JSON.stringify(<SignedGuildShrinkwrap>{
-                    signature: signShrinkwrap(shrinkwrap, this.config),
+                    signature: signShrinkwrap(shrinkwrap, context.config),
                     payload: shrinkwrap
                 }, null, 2),
                 name: 'shrinkwrap.json'
@@ -526,7 +526,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         if (signedShrinkwrap.value.signature === undefined)
             confirm.push('⚠ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.', '');
-        else if (signedShrinkwrap.value.signature !== signShrinkwrap(signedShrinkwrap.value.payload, this.config)) {
+        else if (signedShrinkwrap.value.signature !== signShrinkwrap(signedShrinkwrap.value.payload, context.config)) {
             confirm.push('🛑 **Warning**: This installation file\'s signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.', '');
         }
         confirm.push(
@@ -625,7 +625,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (content === undefined)
             return;
 
-        const analysis = this.cluster.bbtag.check(content);
+        const analysis = context.bbtag.check(content);
         if (analysis.errors.length > 0)
             return `❌ There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`;
 
@@ -642,7 +642,7 @@ export class CustomCommand extends BaseGuildCommand {
             uses: currentCommand?.uses
         };
 
-        await this.database.guilds.setCommand(context.channel.guild.id, commandName, command);
+        await context.database.guilds.setCommand(context.channel.guild.id, commandName, command);
 
         return `✅ Custom command \`${commandName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`;
     }
@@ -660,7 +660,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (query.length === 0)
             return undefined;
 
-        name = (await this.util.awaitQuery(context.channel, context.author, query))?.content;
+        name = (await context.util.awaitQuery(context.channel, context.author, query))?.content;
         if (name === undefined || name === 'c')
             return undefined;
 
@@ -675,7 +675,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        content = (await this.util.awaitQuery(context.channel, context.author, 'Enter the custom command\'s contents or type `c` to cancel:'))?.content;
+        content = (await context.util.awaitQuery(context.channel, context.author, 'Enter the custom command\'s contents or type `c` to cancel:'))?.content;
         if (content === undefined || content === 'c')
             return undefined;
 
@@ -754,7 +754,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (commandName === undefined)
             return;
 
-        const command = await this.database.guilds.getCommand(context.channel.guild.id, commandName);
+        const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
         if (command === undefined)
             return { name: commandName };
 

@@ -1,11 +1,10 @@
 import { MessageFile } from 'eris';
-import { Cluster } from '../cluster';
 import { commandTypes, FlagResult } from '../utils';
 import { BaseGlobalCommand, CommandContext } from '../core/command';
 
 export class ArtCommand extends BaseGlobalCommand {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'art',
             category: commandTypes.IMAGE,
             info: 'Shows everyone a work of art.',
@@ -29,7 +28,7 @@ export class ArtCommand extends BaseGlobalCommand {
         } else if (flags.I) {
             url = flags.I.join(' ');
         } else if (user) {
-            const u = await this.util.getUser(context, user);
+            const u = await context.util.getUser(context, user);
             if (!u)
                 return;
             url = u.avatarURL;
@@ -37,9 +36,9 @@ export class ArtCommand extends BaseGlobalCommand {
             url = context.author.avatarURL;
         }
 
-        void this.discord.sendChannelTyping(context.channel.id);
+        void context.discord.sendChannelTyping(context.channel.id);
 
-        const buffer = await this.cluster.images.render('art', { avatar: url });
+        const buffer = await context.cluster.images.render('art', { avatar: url });
         if (!buffer || buffer.length === 0) {
             return '❌ Something went wrong while trying to render that!';
         } else {

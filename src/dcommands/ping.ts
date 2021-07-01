@@ -1,6 +1,28 @@
 import { BaseGlobalCommand, CommandContext } from '../core/command';
 import { randInt, commandTypes } from '../utils';
-import { Cluster } from '../cluster';
+
+export class PingCommand extends BaseGlobalCommand {
+    public constructor() {
+        super({
+            name: 'ping',
+            category: commandTypes.GENERAL,
+            info: 'Pong!\nFind the command latency.',
+            definition: {
+                parameters: '',
+                execute: ctx => this.ping(ctx),
+                description: 'Gets the current latency.'
+            }
+        });
+    }
+
+    private async ping(context: CommandContext): Promise<void> {
+        const content = messages[randInt(0, messages.length - 1)];
+        const message = await context.reply(content);
+        if (message !== null) {
+            await message.edit(`Pong! (${message.timestamp - context.timestamp}ms)`);
+        }
+    }
+}
 
 const messages = [
     'Existance is a lie.',
@@ -14,25 +36,3 @@ const messages = [
     'Your existence is pitiful.',
     'We are all already dead.'
 ];
-
-export class PingCommand extends BaseGlobalCommand {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
-            name: 'ping',
-            category: commandTypes.GENERAL,
-            info: 'Pong!\nFind the command latency.',
-            definition: {
-                parameters: '',
-                execute: ctx => this.ping(ctx),
-                description: 'Gets the current latency.'
-            }
-        });
-    }
-
-    private async ping(context: CommandContext): Promise<void> {
-        const message = messages[randInt(0, messages.length - 1)];
-        const msg2 = await this.util.send(context, message);
-        if (msg2)
-            await msg2.edit(`Pong! (${msg2.timestamp - context.timestamp}ms)`);
-    }
-}

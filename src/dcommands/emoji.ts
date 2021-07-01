@@ -1,17 +1,14 @@
 import fs from 'fs';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
-import { Cluster } from '../cluster';
 import { commandTypes, FlagResult, parse } from '../utils';
 import { MessageFile } from 'eris';
 import { BaseGlobalCommand } from '../core/command';
 import { SendPayload } from '../core/BaseUtilities';
 
 export class EmojiCommand extends BaseGlobalCommand {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'emoji',
             aliases: ['e'],
             category: commandTypes.GENERAL,

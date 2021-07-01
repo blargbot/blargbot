@@ -1,5 +1,4 @@
 import { CommandContext } from './CommandContext';
-import { CommandResult } from './types';
 import { ScopedCommandBase } from './ScopedCommandBase';
 
 export abstract class BaseGlobalCommand extends ScopedCommandBase<CommandContext> {
@@ -7,8 +6,7 @@ export abstract class BaseGlobalCommand extends ScopedCommandBase<CommandContext
         return context !== undefined;
     }
 
-    protected handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult {
-        this.logger.error('Global commands should accept all contexts, but', context, 'was rejected');
+    protected handleInvalidContext(): never {
         throw new Error('Unsuported context');
     }
 }

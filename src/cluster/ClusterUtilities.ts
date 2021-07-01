@@ -541,7 +541,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (!guard.isGuildCommandContext(context))
             return category.perm === undefined;
 
-        if (!await category.requirement(this.cluster, context))
+        if (!await category.requirement(context))
             return false;
 
         const commandPerms = await this.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
