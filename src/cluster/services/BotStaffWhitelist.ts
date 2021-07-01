@@ -13,7 +13,7 @@ export class BotStaffWhitelist extends IntervalService {
     public get support(): ReadonlySet<string> { return this.#support; }
 
     public constructor(private readonly cluster: Cluster) {
-        super(1, 'day', cluster.logger);
+        super(1, 'day', cluster.logger, true);
         this.#police = new Set();
         this.#support = new Set();
     }

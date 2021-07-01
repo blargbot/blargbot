@@ -4,6 +4,7 @@ import { mapAny } from './mapAny';
 import { mapArray } from './mapArray';
 import { mapBoolean } from './mapBoolean';
 import { mapJson } from './mapJson';
+import { mapBase64 } from './mapBase64';
 import { mapObject } from './mapObject';
 import { mapOptionalBoolean } from './mapOptionalBoolean';
 import { mapOptionalNumber } from './mapOptionalNumber';
@@ -28,5 +29,6 @@ export const mapping = {
     number: mapNumber,
     optionalNumber: mapOptionalNumber,
     string: mapString,
-    optionalString: mapOptionalString
+    optionalString: mapOptionalString,
+    base64: mapBase64
 };
