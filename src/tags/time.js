@@ -38,7 +38,7 @@ module.exports =
             'Time Berlin (as fromTimezone): 23:33\n' +
             'Time Berlin (as fromTimezone and empty toTimezone): 21:33\n' +
             'Time New York from Berlin (12:00 in Berlin): 06:00'
-        ).whenArgs(0, _ => bu.parseTime.format())
+        ).whenArgs(0, _ => bu.parseTime().format())
         .whenArgs(1, (_, __, args) => bu.parseTime().format(args[0]))
         .whenArgs('2-3', async (subtag, context, args) => {
             const date = bu.parseTime(args[1], args[2]);
