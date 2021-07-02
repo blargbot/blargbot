@@ -2,8 +2,8 @@ import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand,
 import { GuildTable } from './types';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { RethinkDb } from './core/RethinkDb';
-import { UpdateRequest } from './core/RethinkDbTable';
-import { guard } from '../../utils';
+import { guard } from '../utils';
+import { UpdateRequest } from 'rethinkdb';
 
 export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid', MutableStoredGuild> implements GuildTable {
     public constructor(

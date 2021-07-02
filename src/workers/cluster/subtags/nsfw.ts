@@ -1,0 +1,23 @@
+import { Cluster } from '../Cluster';
+import { BaseSubtag, SubtagType } from '../core';
+
+export class NsfwSubtag extends BaseSubtag {
+    public constructor(cluster: Cluster) {
+        super(cluster, {
+            name: 'nsfw',
+            category: SubtagType.BOT,
+            definition: [
+                {
+                    parameters: ['message?'],
+                    description: 'Marks the output as being NSFW, and only to be sent in NSFW channels. A requirement for any tag with NSFW content. ' +
+                        '`message` is the error to show, defaults to "❌ This contains NSFW content! Go to a NSFW channel. ❌"',
+                    exampleCode: 'This command is not safe! {nsfw}',
+                    exampleOut: 'This command is not safe!',
+                    execute: (context, [{ value: text }]) => {
+                        context.state.nsfw = text || '❌ This contains NSFW content! Go to a NSFW channel. ❌';
+                    }
+                }
+            ]
+        });
+    }
+}

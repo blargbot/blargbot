@@ -1,9 +1,9 @@
 import { RethinkDb } from './RethinkDb';
 import { RethinkTableMap } from '../types';
 import { RethinkDbTable } from './RethinkDbTable';
-import { sleep } from '../../../utils';
 import { WriteChange } from 'rethinkdb';
-import { Cache } from '../../../structures/Cache';
+import { Cache } from '../../Cache';
+import { sleep } from '../../utils';
 
 export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K extends string & keyof RethinkTableMap[T], M extends RethinkTableMap[T]> extends RethinkDbTable<T> {
     protected readonly cache: Cache<string, M>;

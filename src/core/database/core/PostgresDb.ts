@@ -1,6 +1,6 @@
 import pg from 'pg';
 import sequelize from 'sequelize';
-import { sleep } from '../../../utils';
+import { sleep } from '../../utils';
 import * as models from './postgresModels';
 import { BaseModel } from './postgresModels/Base';
 import { PostgresDbOptions } from '../types';
@@ -53,7 +53,7 @@ export class PostgresDb {
     }
 
     private async loadModels(): Promise<void> {
-        const keys = Object.keys(models) as Array<keyof typeof models>;
+        const keys = Object.keys(models);
         this.#models = {};
         this.#clientModels = {};
         for (const key of keys) {

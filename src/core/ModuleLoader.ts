@@ -1,5 +1,6 @@
-import { guard } from '../utils';
-import { BaseModuleLoader, ModuleResult } from './BaseModuleLoader';
+import { BaseModuleLoader } from './BaseModuleLoader';
+import { ModuleResult } from './types';
+import { guard } from './utils';
 
 export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

@@ -1,1 +1,1 @@
-import './src/entrypoint/master';
+import './src/entrypoints/master';

@@ -104,6 +104,7 @@
         "build": "tsc --outDir ./out",
         "build:watch": "tsc -w --outDir ./out",
         "build:check": "tsc --noemit",
+        "build:check:watch": "tsc -w --noemit",
         "lint": "eslint --ext .js,.ts,.vue ./",
         "lint-fix": "eslint --ext .js,.ts,.vue ./ --fix"
     },

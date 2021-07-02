@@ -1,9 +1,6 @@
 {
     "files.exclude": {
-        "node_modules": true,
-        "**/*.map": {
-            "when": "$(basename)"
-        }
+        "node_modules": true
     },
     "npm.packageManager": "yarn",
     "files.eol": "\n"

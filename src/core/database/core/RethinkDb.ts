@@ -1,11 +1,7 @@
 import * as r from 'rethinkdb';
+import { Query, Expression, Cursor, Connection, Time } from 'rethinkdb';
 import { RethinkDbOptions } from '../types';
 
-export type r = Parameters<Query<unknown>>[0];
-
-export type Query<T> = (rethink: typeof r) => r.Operation<T>;
-export type TableQuery<T> = (table: r.Table, rethink: typeof r) => r.Operation<T>;
-export type Cursor = r.Cursor;
 
 export class RethinkDb {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -26,7 +22,7 @@ export class RethinkDb {
         return await query(r)?.run(connection);
     }
 
-    public async queryAll<T>(query: Query<r.Cursor>): Promise<T[]> {
+    public async queryAll<T>(query: Query<Cursor>): Promise<T[]> {
         const stream = this.stream<T>(query);
         const result = [];
         for await (const item of stream)
@@ -34,7 +30,7 @@ export class RethinkDb {
         return result;
     }
 
-    public async * stream<T>(query: Query<r.Cursor>): AsyncIterableIterator<T> {
+    public async * stream<T>(query: Query<Cursor>): AsyncIterableIterator<T> {
         const cursor = await this.query(query);
         while (true) {
             try {
@@ -47,7 +43,7 @@ export class RethinkDb {
         }
     }
 
-    public async connect(): Promise<r.Connection> {
+    public async connect(): Promise<Connection> {
         if (!this.#connectionPromise) {
             this.#connectionPromise = r.connect({
                 host: this.#options.host,
@@ -78,7 +74,7 @@ export class RethinkDb {
         }
     }
 
-    public epochTime(time: number): r.Expression<r.Time> {
+    public epochTime(time: number): Expression<Time> {
         return r.epochTime(time);
     }
 }

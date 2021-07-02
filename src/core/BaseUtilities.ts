@@ -1,22 +1,10 @@
-import { AdvancedMessageContent, AnyChannel, Channel, ChannelInteraction, AnyMessage, Client as ErisClient, EmbedOptions, ExtendedUser, Member, MessageFile, Textable, User, UserChannelInteraction } from 'eris';
-import { BaseClient } from './BaseClient';
-import { guard, snowflake, stringify } from '../utils';
-import { MessageAwaiter } from '../structures/MessageAwaiter';
+import { ExtendedUser, Textable, Channel, AnyMessage, User, Member, AnyChannel, Client as ErisClient } from 'eris';
 import request from 'request';
 import { metrics } from './Metrics';
+import { BaseClient } from './BaseClient';
 import { Database } from './database';
-import { ReactionAwaiter } from '../structures/ReactionAwaiter';
-
-
-export type SendContext = UserChannelInteraction | ChannelInteraction | (Textable & Channel) | string
-export type SendEmbed = EmbedOptions & { asString?: string }
-export type SendFiles = MessageFile | Array<MessageFile>
-export type SendPayload = {
-    disableEveryone?: boolean,
-    embed?: SendEmbed,
-    nsfw?: string,
-    isHelp?: boolean
-} & AdvancedMessageContent | string | boolean
+import { SendContext, SendFiles, SendPayload } from './types';
+import { guard, humanize, snowflake } from './utils';
 
 export class BaseUtilities {
     public get user(): ExtendedUser { return this.client.discord.user; }
@@ -24,14 +12,10 @@ export class BaseUtilities {
     public get database(): Database { return this.client.database; }
     public get logger(): CatLogger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
-    public readonly messageAwaiter: MessageAwaiter;
-    public readonly reactionAwaiter: ReactionAwaiter;
 
     public constructor(
         public readonly client: BaseClient
     ) {
-        this.messageAwaiter = new MessageAwaiter(this.logger);
-        this.reactionAwaiter = new ReactionAwaiter(this.logger);
     }
 
     private async getSendChannel(context: SendContext): Promise<Textable & Channel> {
@@ -108,7 +92,7 @@ export class BaseUtilities {
             && guard.isGuildChannel(channel)
             && !channel.permissionsOf(this.user.id).has('embedLinks')
         ) {
-            payload.content = `${payload.content ?? ''}${stringify.embed(payload.embed)}`;
+            payload.content = `${payload.content ?? ''}${humanize.embed(payload.embed)}`;
             delete payload.embed;
         }
 

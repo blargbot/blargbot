@@ -22,5 +22,9 @@ declare module 'rethinkdb' {
     interface Row extends Expression<any> {
         <T>(name: string): Expression<T>;
     }
+
+    type Query<T> = (rethink: typeof import('rethinkdb')) => Operation<T>;
+    type TableQuery<T> = (table: Table, rethink: typeof import('rethinkdb')) => Operation<T>;
+    type UpdateRequest<T> = { [P in keyof T]?: T[P] | Expression<T[P]> | UpdateRequest<T[P]> }
 }
 

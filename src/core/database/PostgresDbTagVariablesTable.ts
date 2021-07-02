@@ -1,4 +1,4 @@
-import { SubtagVariableType } from '../../utils';
+import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { PostgresDb } from './core/PostgresDb';
 import { TagVariablesTable } from './types';
 

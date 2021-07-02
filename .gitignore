@@ -48,3 +48,5 @@ jsondiff.js
 !*cache.ts
 *.cpuprofile
 !.vscode/**/*.json
+!src/**/*.js
+!src/**/*.json

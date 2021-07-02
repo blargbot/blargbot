@@ -1,13 +1,6 @@
-import { Cursor, RethinkDb, TableQuery } from './RethinkDb';
+import { TableQuery, Cursor, UpdateRequest, WriteResult } from 'rethinkdb';
 import { RethinkTableMap } from '../types';
-import { r } from './RethinkDb';
-import { Expression } from 'rethinkdb';
-import { WriteResult } from 'rethinkdb';
-
-export type UpdateRequest<T> = {
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    [P in keyof T]?: T[P] | Expression<T[P]> | UpdateRequest<T[P]>
-}
+import { RethinkDb } from './RethinkDb';
 
 export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -55,7 +48,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         return result.inserted + result.replaced > 0;
     }
 
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[T]> | ((r: r) => UpdateRequest<RethinkTableMap[T]>)): Promise<boolean> {
+    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[T]> | ((r: typeof import('rethinkdb')) => UpdateRequest<RethinkTableMap[T]>)): Promise<boolean> {
         const getter = typeof value === 'function' ? value : () => value;
         const result = await this.rquery((t, r) => t.get(key).update(getter(r)));
         throwIfErrored(result);

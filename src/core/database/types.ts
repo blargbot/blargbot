@@ -1,8 +1,8 @@
 import { AnyMessage, Client as ErisClient, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
-import { FlagDefinition, MessageFilter, SubtagVariableType } from '../../utils';
 import { Options as SequelizeOptions } from 'sequelize';
-import { SerializedBBTagContext } from '../bbtag';
+import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
+import { FlagDefinition, SerializedBBTagContext } from '../../workers/cluster/core/types'; // TODO Core shouldnt reference cluster
 
 export type RethinkTableMap = {
     'guild': StoredGuild;
@@ -10,6 +10,11 @@ export type RethinkTableMap = {
     'user': StoredUser;
     'vars': KnownStoredVars;
     'events': Omit<StoredEventOptions, 'id'>
+}
+
+export interface MessageFilter {
+    readonly term: string;
+    readonly regex: boolean;
 }
 
 export interface StoredVar<T extends string> {

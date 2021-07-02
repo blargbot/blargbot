@@ -1,13 +1,13 @@
 import path from 'path';
 import { promises as fs } from 'fs';
 import { EventEmitter } from 'eventemitter3';
-import { MultiKeyMap } from '../structures/MultiKeyMap';
 import reloadFactory from 'require-reload';
-import { guard } from '../utils';
+import { ModuleResult } from './types';
+import { MultiKeyMap } from './MultiKeyMap';
+import { guard } from './utils';
 
 const reload = reloadFactory(require);
 
-export type ModuleResult<TModule> = { names: Iterable<string>, module: TModule };
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

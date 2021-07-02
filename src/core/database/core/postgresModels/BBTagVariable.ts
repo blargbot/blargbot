@@ -1,5 +1,5 @@
 import sequelize, { ENUM, STRING, TEXT } from 'sequelize';
-import { SubtagVariableType } from '../../../../utils';
+import { SubtagVariableType } from '../../../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { BaseModel } from './Base';
 
 type CreationAttributes = Attributes;

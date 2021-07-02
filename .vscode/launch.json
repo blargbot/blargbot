@@ -12,7 +12,7 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/src/entrypoint/master.ts",
+            "program": "${workspaceFolder}/src/entrypoints/master.ts",
             "args": [
                 "--async-stack-traces"
             ]
@@ -25,7 +25,7 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/src/entrypoint/master.ts",
+            "program": "${workspaceFolder}/src/entrypoints/master.ts",
             "preLaunchTask": "yarn: build",
             "args": [
                 "--async-stack-traces"
@@ -39,7 +39,7 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/src/entrypoint/cluster.ts",
+            "program": "${workspaceFolder}/src/entrypoints/cluster.ts",
             "args": [
                 "--async-stack-traces",
                 "--max-old-space-size=4096"
@@ -48,8 +48,7 @@
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
                 "SHARDS_FIRST": "1",
-                "SHARDS_LAST": "1",
-                "IGNORE_SEND": "true"
+                "SHARDS_LAST": "1"
             }
         },
         {
@@ -60,7 +59,7 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/src/entrypoint/cluster.ts",
+            "program": "${workspaceFolder}/src/entrypoints/cluster.ts",
             "preLaunchTask": "yarn: build",
             "args": [
                 "--async-stack-traces",
@@ -70,8 +69,7 @@
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
                 "SHARDS_FIRST": "1",
-                "SHARDS_LAST": "1",
-                "IGNORE_SEND": "true"
+                "SHARDS_LAST": "1"
             }
         },
         {

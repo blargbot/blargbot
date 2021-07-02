@@ -3,7 +3,7 @@ import { Duration } from 'moment-timezone';
 import { Chatlog, ChatlogsTable, ChatlogType } from './types';
 import { metrics } from '../Metrics';
 import { AnyMessage } from 'eris';
-import { guard, snowflake } from '../../utils';
+import { guard, snowflake } from '../utils';
 
 function stringifyType(type: ChatlogType): string {
     switch (type) {
