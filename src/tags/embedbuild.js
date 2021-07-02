@@ -21,7 +21,7 @@ const fields = [
     },
     {
         key: 'description',
-        error: (e, v) => v.length > 2048
+        error: (e, v) => v.length > 4096
             ? 'Description too long'
             : false,
         parse: v => v,
