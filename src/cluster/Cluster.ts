@@ -1,15 +1,16 @@
 import { ModuleLoader } from '../core/ModuleLoader';
 import { ClusterUtilities } from './ClusterUtilities';
 import { BaseClient } from '../core/BaseClient';
-import { BaseSubtag } from '../core/bbtag/BaseSubtag';
 import moment, { Moment } from 'moment-timezone';
 import { TimeoutManager } from '../structures/TimeoutManager';
-import { commandTypes, tagTypes } from '../utils';
-import { Engine as BBEngine } from '../core/bbtag/Engine';
-import { ClusterWorker } from '../workers/ClusterWorker';
 import { ImageConnection } from '../workers/ImageConnection';
 import { BaseService } from '../structures/BaseService';
+import { AutoresponseManager } from './managers/AutoresponseManager';
+import { BotStaffManager } from './managers/BotStaffManager';
+import { BaseSubtag, Engine as BBTagEngine } from '../core/bbtag';
 import { BaseCommand } from '../core/command';
+import { commandTypes, tagTypes } from '../utils';
+import { ClusterWorker } from '../workers/ClusterWorker';
 
 export interface ClusterOptions {
     id: number,
@@ -28,9 +29,11 @@ export class Cluster extends BaseClient {
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
     public readonly timeouts: TimeoutManager;
-    public readonly bbtag: BBEngine;
+    public readonly autoresponses: AutoresponseManager;
+    public readonly bbtag: BBTagEngine;
     public readonly images: ImageConnection;
     public readonly events: ModuleLoader<BaseService>;
+    public readonly botStaff: BotStaffManager;
 
     public constructor(
         logger: CatLogger,
@@ -75,7 +78,9 @@ export class Cluster extends BaseClient {
         this.services = new ModuleLoader('cluster/services', BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
         this.timeouts = new TimeoutManager(this);
-        this.bbtag = new BBEngine(this);
+        this.autoresponses = new AutoresponseManager(this);
+        this.botStaff = new BotStaffManager(this);
+        this.bbtag = new BBTagEngine(this);
         this.images = new ImageConnection(1, this.logger);
 
         this.services.on('add', (module: BaseService) => void module.start());

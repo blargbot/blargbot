@@ -1,5 +1,4 @@
 import { EmbedOptions } from 'eris';
-import { AutoResponseWhitelist } from '../cluster/services/AutoResponseWhitelist';
 import { SendPayload } from '../core/BaseUtilities';
 import { BaseGuildCommand, GuildCommandContext } from '../core/command';
 import { between, commandTypes, createSafeRegExp, getRange, parse, randChoose, randInt } from '../utils';
@@ -54,12 +53,10 @@ export class AutoResponseCommand extends BaseGuildCommand {
     }
 
     public async requestWhitelist(context: GuildCommandContext, reason: string): Promise<string | undefined> {
-        const service = context.cluster.services.get(AutoResponseWhitelist.name, AutoResponseWhitelist);
-
-        switch (await service?.whitelist(context.channel.guild.id, context.channel.id, context.author.id, reason)) {
-            case undefined: return '❌ Sorry, autoresponses are currently offline. Please try again later';
-            case false: return '❌ This server is already whitelisted!';
-            case true: return '✅ Your request has been sent. Please don\'t spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.';
+        switch (await context.cluster.autoresponses.whitelist(context.channel.guild.id, context.channel.id, context.author.id, reason)) {
+            case 'alreadyApproved': return '❌ This server is already whitelisted!';
+            case 'requested': return '✅ Your request has been sent. Please don\'t spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.';
+            default: return undefined;
         }
     }
 
@@ -184,11 +181,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
     }
 
     private checkArAccess(context: GuildCommandContext): string | undefined {
-        const service = context.cluster.services.get(AutoResponseWhitelist.name, AutoResponseWhitelist);
-        if (!service)
-            return '❌ Sorry, autoresponses are currently offline. Please try again later';
-
-        if (!service.guilds.has(context.channel.guild.id))
+        if (!context.cluster.autoresponses.guilds.has(context.channel.guild.id))
             return '❌ Sorry, autoresponses are currently whitelisted. To request access, do `b!ar whitelist [reason]`';
 
         return undefined;

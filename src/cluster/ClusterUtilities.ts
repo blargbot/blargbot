@@ -2,14 +2,13 @@ import { BaseUtilities, SendPayload } from '../core/BaseUtilities';
 import request from 'request';
 import { Cluster } from './Cluster';
 import { AnyChannel, Channel, AnyMessage, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
-import { codeBlock, commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
 import { BanStore } from '../structures/BanStore';
-import { ModerationUtils } from '../core/ModerationUtils';
+import { ModerationManager } from './managers/ModerationManager';
 import { MessageIdQueue } from '../structures/MessageIdQueue';
 import moment from 'moment';
 import { StoredGuildSettings, StoredGuild, StoredGuildCommand } from '../core/database';
-import { BaseCommand, CommandContext } from '../core/command';
-import { BotStaffWhitelist } from './services/BotStaffWhitelist';
+import { codeBlock, commandTypes, defaultStaff, guard, humanize, parse } from '../utils';
+import { CommandContext, BaseCommand } from '../core/command';
 
 interface CanExecuteDefaultCommandOptions {
     readonly storedGuild?: StoredGuild,
@@ -37,14 +36,14 @@ interface MessagePrompt {
 export class ClusterUtilities extends BaseUtilities {
     public readonly bans: BanStore;
     public readonly commandMessages: MessageIdQueue;
-    public readonly moderation: ModerationUtils;
+    public readonly moderation: ModerationManager;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
         super(cluster);
         this.bans = new BanStore();
-        this.moderation = new ModerationUtils(this.cluster);
+        this.moderation = new ModerationManager(this.cluster);
         this.commandMessages = new MessageIdQueue(100);
     }
 
@@ -649,13 +648,11 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public isStaff(id: string): Promise<boolean> | boolean {
-        const whitelist = this.cluster.services.get(BotStaffWhitelist.name, BotStaffWhitelist);
-        return whitelist !== undefined ? whitelist.police.has(id) : super.isStaff(id);
+    public isStaff(id: string): boolean {
+        return this.cluster.botStaff.staff.has(id);
     }
 
-    public isSupport(id: string): Promise<boolean> | boolean {
-        const whitelist = this.cluster.services.get(BotStaffWhitelist.name, BotStaffWhitelist);
-        return whitelist !== undefined ? whitelist.support.has(id) : super.isSupport(id);
+    public isSupport(id: string): boolean {
+        return this.cluster.botStaff.support.has(id);
     }
 }

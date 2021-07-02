@@ -3,7 +3,7 @@ import { guard } from '../../utils';
 import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../../structures/DiscordEventService';
 import { metrics } from '../../core/Metrics';
-import { addChatlog, handleAntiMention, handleAutoresponse, handleCensor, handleRoleme, handleTableFlip, tryHandleCommand } from '../features';
+import { addChatlog, handleAntiMention, handleCensor, handleRoleme, handleTableFlip, tryHandleCommand } from '../features';
 
 export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
     public constructor(
@@ -28,7 +28,7 @@ export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
             return;
 
         void handleRoleme(this.cluster, message);
-        void handleAutoresponse(this.cluster, message, true);
+        void this.cluster.autoresponses.execute(this.cluster, message, true);
         void handleTableFlip(this.cluster, message);
 
         if (message.author.bot) {
@@ -39,7 +39,7 @@ export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
             this.cluster.util.messageAwaiter.emit(message);
         }
 
-        void handleAutoresponse(this.cluster, message, false);
+        void this.cluster.autoresponses.execute(this.cluster, message, false);
     }
 
     private logMessage(msg: AnyMessage): void {

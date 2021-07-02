@@ -16,7 +16,7 @@ export abstract class BaseWorker extends IPCEvents {
 
         this.#process = process;
         this.#process.on('unhandledRejection', (err) =>
-            this.logger.error('Unhandled Promise Rejection: Promise' + JSON.stringify(err)));
+            this.logger.error('Unhandled Promise Rejection: Promise', err));
 
         this.logger.addPostHook(({ text, level, timestamp }: LogEntry) => {
             this.send('log', { text, level, timestamp });
