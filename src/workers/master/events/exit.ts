@@ -15,7 +15,7 @@ export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {
         if (worker.state !== WorkerState.EXITED)
             return;
         const logTracker = this.master.eventHandlers.get(LogHandler.name, LogHandler);
-        if (logTracker) {
+        if (logTracker !== undefined) {
             const logs = logTracker.get(worker.id);
             const logString = logs.slice(Math.max(logs.length - 5, 0))
                 .map(m => `[${m.timestamp}][${m.level}] ${m.text}`)

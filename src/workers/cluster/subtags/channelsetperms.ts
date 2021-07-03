@@ -25,7 +25,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222;1024;2048}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, args, subtag) => this.channelSetPerms(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, [channel, type, entityId, allow, deny], subtag) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.int(allow.value), parse.int(deny.value), subtag)
                 }
             ]
         });
@@ -40,7 +40,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
     ): Promise<string> {
         const channel = await context.getChannel(channelStr);
 
-        if (!channel)
+        if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag); //TODO No channel found error
 
         const permission = channel.permissionsOf(context.authorizer);
@@ -61,40 +61,38 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
 
     public async channelSetPerms(
         context: BBTagContext,
-        args: string[],
+        channelStr: string,
+        typeStr: string,
+        entityId: string,
+        allow: number,
+        deny: number,
         subtag: SubtagCall
     ): Promise<string> {
-        const channel = await context.getChannel(args[0]);
+        const channel = await context.getChannel(channelStr);
 
-        if (!channel)
+        if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag); //TODO No channel found error
 
         const permission = channel.permissionsOf(context.authorizer);
         if (!permission.has('manageChannels'))
             return this.customError('Author cannot edit this channel', context, subtag);
 
-        const typeStr = args[1].toLowerCase();
-
         if (!['member', 'role'].includes(typeStr))
             return this.customError('Type must be member or role', context, subtag);
         const type: 'member' | 'role' = typeStr as 'member' | 'role';
-
-        const itemId = args[2],
-            allow = args[3] ? parse.int(args[3] || 0) : null, //TODO feel like this should be set to the current permission value in the channel
-            deny = args[4] ? parse.int(args[4] || 0) : null; //TODO idem
 
         try {
             const fullReason = discordUtil.formatAuditReason(
                 context.user,
                 context.scope.reason ?? ''
             );
-            if (allow === null && deny === null) {
-                await channel.deletePermission(itemId);//* Feel like this shouldn't be here but backwards compatibility
+            if (isNaN(allow) && isNaN(deny)) {
+                await channel.deletePermission(entityId);//* Feel like this shouldn't be here but backwards compatibility
             } else {
                 await channel.editPermission(
-                    itemId,
-                    allow ?? 0,
-                    deny ?? 0,
+                    entityId,
+                    isNaN(allow) ? 0 : allow,//TODO feel like this should be set to the current permission value in the channel
+                    isNaN(deny) ? 0 : deny,//TODO idem
                     type,
                     fullReason
                 );

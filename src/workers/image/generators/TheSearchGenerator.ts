@@ -6,7 +6,7 @@ export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
         super('theSearch', logger, mapOptions);
     }
 
-    public async executeCore({ text }: TheSearchOptions): Promise<Buffer | null> {
+    public async executeCore({ text }: TheSearchOptions): Promise<Buffer> {
         const caption = await this.renderJimpText(text, {
             fill: '#393b3e',
             font: 'SFToontime.ttf',

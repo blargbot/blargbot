@@ -60,11 +60,11 @@ export class CommandContext<TChannel extends Channel = Channel> {
         return this.args.slice(start, end);
     }
 
-    public async reply(content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | null> {
+    public async reply(content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | undefined> {
         return await this.cluster.util.send(this.message, content, files);
     }
 
-    public async send(context: SendContext, content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | null> {
+    public async send(context: SendContext, content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | undefined> {
         return await this.cluster.util.send(context, content, files);
     }
 }

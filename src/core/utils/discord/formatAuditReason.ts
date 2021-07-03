@@ -3,7 +3,7 @@ import { humanize } from '../humanize';
 
 export function formatAuditReason(user: User, reason: string, ban = false): string {
     let fullReason = humanize.fullName(user);
-    if (reason) {
+    if (reason.length > 0) {
         fullReason += `: ${reason}`;
     }
     // bans use their own system and cannot be uriencoded. thanks discord!

@@ -49,13 +49,13 @@ export class IfSubtag extends BaseSubtag {
         elseCode?: SubtagArgumentValue
     ): Promise<string> {
         const actualBoolean = parse.boolean(bool);
-        if (typeof actualBoolean != 'boolean')
+        if (typeof actualBoolean !== 'boolean')
             return this.customError('Not a boolean', context, subtag);
 
         if (actualBoolean) {
             return thenCode.wait();
         } else {
-            if (elseCode) {
+            if (elseCode !== undefined) {
                 return elseCode.wait();
             }
             return '';

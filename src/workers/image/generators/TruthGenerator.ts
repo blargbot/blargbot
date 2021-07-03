@@ -6,7 +6,7 @@ export class TruthGenerator extends BaseImageGenerator<'truth'> {
         super('truth', logger, mapOptions);
     }
 
-    public async executeCore({ text }: TruthOptions): Promise<Buffer | null> {
+    public async executeCore({ text }: TruthOptions): Promise<Buffer> {
         const caption = await this.renderJimpText(text, {
             font: 'AnnieUseYourTelescope.ttf',
             size: '96x114',

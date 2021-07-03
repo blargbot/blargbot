@@ -45,7 +45,7 @@ export function flags(definitions: Iterable<FlagDefinition>, text: string | read
             words[i] = words[i].substring(1);
         }
         if (pushFlag) {
-            if (currentFlag != '') {
+            if (currentFlag !== '') {
                 output[currentFlag]?.push(words[i]);
             } else {
                 output['undefined'].push(words[i]);

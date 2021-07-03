@@ -14,7 +14,7 @@ export class FallBackSubtag extends BaseSubtag {
                     description: 'Should any tag fail to parse, it will be replaced with `message` instead of an error.',
                     exampleCode: '{fallback;This tag failed} {randint}',
                     exampleOut: 'This tag failed',
-                    execute: (ctx, args) => (ctx.scope.fallback = args[0]?.value) && ''
+                    execute: (ctx, [message]) => { ctx.scope.fallback = message.value; }
                 }
             ]
         });

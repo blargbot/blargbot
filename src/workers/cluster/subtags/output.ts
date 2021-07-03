@@ -16,7 +16,7 @@ export class OutputSubtag extends BaseSubtag {
                     exampleCode: '{output;Hello!}',
                     exampleOut: 'Hello!',
                     execute: async (context, [{ value: text }], subtag) => {
-                        if (context.state.outputMessage && text)
+                        if (context.state.outputMessage !== undefined && text.length > 0)
                             return this.customError('Cannot send multiple outputs', context, subtag);
                         return await context.sendOutput(text) ?? '';
                     }

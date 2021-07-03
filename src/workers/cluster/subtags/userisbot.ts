@@ -22,7 +22,7 @@ export class UserIsBotSubtag extends BaseSubtag {
                     description: 'Returns whether a `user` is a bot. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Is Stupid cat a bot? {userisbot;Stupid cat}',
                     exampleOut: 'Stupid cat\'s username is Stupid cat!',
-                    execute: (ctx, args) => this.getUserIsBot(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [userId, quietStr]) => this.getUserIsBot(ctx, userId.value, quietStr.value)
                 }
             ]
         });
@@ -30,15 +30,16 @@ export class UserIsBotSubtag extends BaseSubtag {
 
     public async getUserIsBot(
         context: BBTagContext,
-        args: string[]
+        userId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const user = await context.getUser(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const user = await context.getUser(userId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (user) {
+        if (user !== undefined) {
             return user.bot.toString();
         }
 

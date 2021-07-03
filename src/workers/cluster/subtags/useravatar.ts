@@ -22,7 +22,7 @@ export class UserAvatarSubtag extends BaseSubtag {
                     description: 'Returns the avatar of `user`. If `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s avatar is {useravatar;Stupid cat}',
                     exampleOut: 'Stupid cat\'s avatar is (avatar url)',
-                    execute: (ctx, args) => this.getUserAvatarUrl(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [userId, quietStr]) => this.getUserAvatarUrl(ctx, userId.value, quietStr.value)
                 }
             ]
         });
@@ -30,15 +30,16 @@ export class UserAvatarSubtag extends BaseSubtag {
 
     public async getUserAvatarUrl(
         context: BBTagContext,
-        args: string[]
+        userId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const user = await context.getUser(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const user = await context.getUser(userId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (user)
+        if (user !== undefined)
             return user.avatarURL;
 
         return quiet ? '' : ''; //TODO add behaviour for this????

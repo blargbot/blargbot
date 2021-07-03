@@ -7,11 +7,11 @@ export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<v
         return;
 
     const roleme = await cluster.database.guilds.getRolemes(msg.channel.guild.id);
-    if (!roleme?.length || !msg.member)
+    if (roleme.length === 0 || msg.member === null)
         return;
 
-    const rolemes = roleme.filter(m => m.channels.includes(msg.channel.id) || m.channels.length == 0);
-    if (rolemes.length == 0)
+    const rolemes = roleme.filter(m => m.channels.includes(msg.channel.id) || m.channels.length === 0);
+    if (rolemes.length === 0)
         return;
 
     for (const roleme of rolemes) {

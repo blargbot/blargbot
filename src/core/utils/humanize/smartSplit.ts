@@ -34,15 +34,14 @@ function* smartSplitIterLimit(source: string, limit: number): Generator<string> 
 
 function* smartSplitIter(source: string): Generator<SmartSplitItem> {
     let quote: string | undefined;
-    let builder = [];
+    let builder: number[] = [];
     let start: number | undefined;
 
     for (let i = 0; i < source.length; i++) {
         switch (source[i]) {
             case '\\': {
                 start ??= i;
-                const char = source[++i];
-                if (char !== undefined)
+                if (++i < source.length)
                     builder.push(i);
                 break;
             }

@@ -6,7 +6,7 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
         super('retarded', logger, mapOptions);
     }
 
-    public async executeCore({ text, avatar }: RetardedOptions): Promise<Buffer | null> {
+    public async executeCore({ text, avatar }: RetardedOptions): Promise<Buffer> {
         const caption = await this.renderJimpText(text, {
             font: 'ARCENA.ttf',
             fill: 'black',
@@ -16,7 +16,7 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
         });
 
         const img = await this.getLocalJimp('retarded.png');
-        if (avatar) {
+        if (avatar !== undefined) {
             const avatarImg = await this.getRemoteJimp(avatar);
             const smallAvatar = avatarImg.clone();
             smallAvatar.resize(74, 74);

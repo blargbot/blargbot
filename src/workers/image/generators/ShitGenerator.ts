@@ -6,7 +6,7 @@ export class ShitGenerator extends BaseImageGenerator<'shit'> {
         super('shit', logger, mapOptions);
     }
 
-    public async executeCore({ plural, text }: ShitOptions): Promise<Buffer | null> {
+    public async executeCore({ plural, text }: ShitOptions): Promise<Buffer> {
         const caption = await this.renderJimpText(text, {
             font: 'animeace.ttf',
             size: '200x160',

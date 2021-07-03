@@ -72,7 +72,7 @@ export class MultiKeyMap<TKey, TValue> extends EventEmitter {
             return false;
 
         const keys = this.#vk.get(value);
-        if (keys) {
+        if (keys !== undefined) {
             keys.delete(key);
             if (keys.size === 0)
                 this.#vk.delete(value);

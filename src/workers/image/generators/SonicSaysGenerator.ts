@@ -5,7 +5,7 @@ export class SonicSaysGenerator extends BaseImageGenerator<'sonicSays'> {
         super('sonicSays', logger, mapOptions);
     }
 
-    public async executeCore({ text }: SonicSaysOptions): Promise<Buffer | null> {
+    public async executeCore({ text }: SonicSaysOptions): Promise<Buffer> {
         return await this.renderPhantom('sonicsays.html', {
             scale: 2,
             replacements: { replace1: text }

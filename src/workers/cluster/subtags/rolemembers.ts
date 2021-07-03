@@ -14,7 +14,7 @@ export class RoleMembersSubtag extends BaseSubtag {
                     description: 'Returns an array of members in `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admins are: {rolemembers;Admin}.',
                     exampleOut: 'The admins are: ["11111111111111111","22222222222222222"].',
-                    execute: (ctx, args) => this.getRoleMembers(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [roleId, quietStr]) => this.getRoleMembers(ctx, roleId.value, quietStr.value)
                 }
             ]
         });
@@ -22,15 +22,16 @@ export class RoleMembersSubtag extends BaseSubtag {
 
     public async getRoleMembers(
         context: BBTagContext,
-        args: string[]
+        roleId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const role = await context.getRole(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const role = await context.getRole(roleId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (role) {
+        if (role !== undefined) {
             const membersInRole = context.guild.members.filter(m => m.roles.includes(role.id));
             return JSON.stringify(membersInRole.map(m => m.user.id));
         }

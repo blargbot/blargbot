@@ -11,8 +11,8 @@ export function getDocsEmbed(context: CommandContext, topic: readonly string[]):
     if (embed === undefined)
         return undefined;
 
-    embed.title = `BBTag documentation${embed.title}`;
-    embed.url = context.cluster.util.websiteLink(`tags${embed.url}`);
+    embed.title = `BBTag documentation${embed.title ?? ''}`;
+    embed.url = context.cluster.util.websiteLink(`tags${embed.url ?? ''}`);
     embed.color ??= 0xefff00;
     return embed;
 }
@@ -34,8 +34,8 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
         case 'subtags': {
             const category = Object.values(SubtagType)
                 .filter((p): p is SubtagType => typeof p !== 'string')
-                .find(p => tagTypes.properties[p].name.toLowerCase() == topic[1]?.toLowerCase());
-            if (!category) {
+                .find(p => tagTypes.properties[p].name.toLowerCase() === topic[1]?.toLowerCase());
+            if (category === undefined) {
                 return {
                     description: 'Available Subtag Categories:\n' +
                         Object.values(tagTypes.properties).map(k => `- ${k.name} - ${k.desc}`).join('\n')
@@ -43,7 +43,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             }
 
             const props = tagTypes.properties[category];
-            const subtags = [...context.cluster.subtags.list(s => s.category == category)].map(t => t.name);
+            const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
                     codeBlock(subtags.join(','))
@@ -151,7 +151,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
             const term = terms.find(t => t.name.toLowerCase() === topic[1]?.toLowerCase());
             if (term !== undefined) {
                 return {
-                    title: ` - Terminology - ${term}`,
+                    title: ` - Terminology - ${term.name}`,
                     description: term.description
                 };
             }
@@ -186,7 +186,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 description.push('**This subtag is deprecated**');
             if (subtag.aliases.length > 0)
                 description.push('**Aliases:**', codeBlock(subtag.aliases.join(', ')));
-            if (subtag.desc !== null)
+            if (subtag.desc !== undefined)
                 description.push(subtag.desc);
 
             const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
@@ -194,15 +194,13 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
 
             for (const key of Object.keys(limits)) {
                 const limit = new limits[key]();
-                if (limit.scopeName === null)
-                    continue;
                 const text = limit.rulesFor(subtag.name).join('\n');
-                if (text) {
+                if (text.length > 0) {
                     limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}\n\n`;
                 }
             }
 
-            if (limitField.value)
+            if (limitField.value.length > 0)
                 fields.push(limitField);
 
             return subtag.enrichDocs({
@@ -223,7 +221,7 @@ function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, inde
     let description = codeBlock(bbtagUtil.stringifyParameters(subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .filter(param => param.defaultValue !== '')
-        .map(param => `\`${param.name}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
+        .map(param => `\`${param.name ?? '\u200b'}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
         .join('\n');
     if (defaultDesc.length > 0)
         description += defaultDesc + '\n\n';

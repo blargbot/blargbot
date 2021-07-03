@@ -69,7 +69,7 @@ export class Master extends BaseClient {
             const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
         } catch (err: unknown) {
-            return { success: false, result: err };
+            return { success: false, error: err };
         }
     }
 }

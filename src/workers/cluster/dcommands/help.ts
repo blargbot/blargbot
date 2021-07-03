@@ -221,7 +221,7 @@ export class HelpCommand extends BaseGlobalCommand {
     //             //    console.debug(customizedCommands);
     //             for (let key in customizedCommands) {
     //                 if (!CommandManager.commandList.hasOwnProperty(key)) continue;
-    //                 if (customizedCommands[key].rolename != null)
+    //                 if (customizedCommands[key].rolename !== null)
     //                     for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
     //                         if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
     //                             console.debug('creating an entry for', customizedCommands[key].rolename[i].toLowerCase());
@@ -237,9 +237,9 @@ export class HelpCommand extends BaseGlobalCommand {
     //         //    console.debug(modifiedCommands);
     //         //   console.debug(otherCommands);
     //         for (var command in CommandManager.built) {
-    //             if (modifiedCommands.indexOf(command) == -1)
+    //             if (modifiedCommands.indexOf(command) === -1)
     //                 if (!CommandManager.built[command].hidden && (!CommandManager.built[command].onlyOn || (msg.guild && CommandManager.built[command].onlyOn === msg.guild.id))) {
-    //                     if (CommandManager.built[command].category == newbutils.commandTypes.GENERAL) {
+    //                     if (CommandManager.built[command].category === newbutils.commandTypes.GENERAL) {
     //                         if ((await bu.canExecuteCommand(msg, command, true, { storedGuild, permOverride, staffPerms })).executable)
     //                             generalCommands.push(command);
     //                     } else {
@@ -299,7 +299,7 @@ export class HelpCommand extends BaseGlobalCommand {
     //                     completeCommandList.sort();
     //                     let categoryString = '';
     //                     if (newbutils.commandTypes.properties.hasOwnProperty(category)) {
-    //                         if (category == newbutils.commandTypes.ADMIN && adminRole)
+    //                         if (category === newbutils.commandTypes.ADMIN && adminRole)
     //                             categoryString = adminRole;
     //                         else categoryString = newbutils.commandTypes.properties[category].name;
     //                     } else categoryString = category;
@@ -321,13 +321,13 @@ export class HelpCommand extends BaseGlobalCommand {
     //             if (executable) {
     //                 completeCommandList.push(name);
     //             }
-    //             if (--counter == 0) {
+    //             if (--counter === 0) {
     //                 nextCommand(category, completeCommandList);
     //             }
     //         }
 
     //         function processCategory() {
-    //             if (i == Object.keys(otherCommands).length) {
+    //             if (i === Object.keys(otherCommands).length) {
     //                 onComplete();
     //             } else {
     //                 category = Object.keys(otherCommands)[i];
@@ -345,7 +345,7 @@ export class HelpCommand extends BaseGlobalCommand {
     // }
 
     // async sendHelp(msg, message, type, isPlural = false) {
-    //     if (typeof message != 'object')
+    //     if (typeof message !== 'object')
     //         message = { content: message };
 
     //     if (msg.channel.guild && await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) {

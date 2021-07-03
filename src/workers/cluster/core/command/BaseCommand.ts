@@ -4,7 +4,7 @@ import { CommandHandler, CommandOptionsBase, CommandResult, FlagDefinition } fro
 import { CommandType } from '../utils';
 import { CommandContext } from './CommandContext';
 
-export abstract class BaseCommand implements Required<CommandOptionsBase> {
+export abstract class BaseCommand implements CommandOptionsBase {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #locks: Record<string, { times: number; } | undefined>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -19,7 +19,7 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
     public readonly cannotDisable: boolean;
     public readonly info: string;
     public readonly flags: readonly FlagDefinition[];
-    public readonly onlyOn: string | null;
+    public readonly onlyOn: string | undefined;
     public readonly cooldown: number;
     public readonly usage: string;
 
@@ -35,7 +35,7 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
         this.cannotDisable = options.cannotDisable ?? true;
         this.info = options.info ?? 'WIP';
         this.flags = options.flags ?? [];
-        this.onlyOn = options.onlyOn ?? null;
+        this.onlyOn = options.onlyOn;
         this.cooldown = options.cooldown ?? 0;
         this.ratelimit = [];
         this.#locks = {};
@@ -49,10 +49,10 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
 
     public async execute(context: CommandContext): Promise<void> {
         try {
-            let result = await this.preExecute(context);
-            if (result === undefined)
-                result = await this.#handler.execute(context);
-            const [payload, files] = splitResult(result);
+            const result = await this.preExecute(context);
+            if (result.continue)
+                result.value = await this.#handler.execute(context);
+            const [payload, files] = splitResult(result.value);
             if (payload !== undefined || files !== undefined)
                 await context.reply(payload, files);
         }
@@ -61,14 +61,14 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
         }
     }
 
-    protected preExecute(context: CommandContext): Promise<CommandResult | null> | CommandResult | null {
+    protected preExecute(context: CommandContext): Promise<MiddlewareResult> | MiddlewareResult {
         for (const getKey of this.ratelimit) {
             const lock = this.#locks[getKey(context)] ??= { times: 0 };
             lock.times++;
             if (lock.times === 2)
-                return '❌ Sorry, this command is already running! Please wait and try again.';
+                return { continue: false, value: '❌ Sorry, this command is already running! Please wait and try again.' };
             if (lock.times > 1)
-                return null;
+                return { continue: false, value: undefined };
         }
 
         if (this.cooldown > 0) {
@@ -77,11 +77,13 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
             const remaining = cd.lasttime + this.cooldown - Date.now();
             if (remaining > 0) {
                 return cd.times === 2
-                    ? `❌ Sorry, you ran this command too recently! Please wait ${Math.round(remaining / 100) / 10}s and try again.`
-                    : null;
+                    ? { continue: false, value: `❌ Sorry, you ran this command too recently! Please wait ${Math.round(remaining / 100) / 10}s and try again.` }
+                    : { continue: false, value: undefined };
             }
             cd.lasttime = Date.now() + 999999;
         }
+
+        return { continue: true, value: undefined };
     }
 
     protected postExecute(context: CommandContext): Promise<void> | void {
@@ -92,15 +94,15 @@ export abstract class BaseCommand implements Required<CommandOptionsBase> {
             const cd = this.#cooldowns[context.author.id] ??= { lasttime: 0, times: 1 };
             const now = cd.lasttime = Date.now();
             setTimeout(() => {
-                if (this.#cooldowns[context.author.id]?.lasttime === now)
+                if (this.#cooldowns[context.author.id].lasttime === now)
                     delete this.#cooldowns[context.author.id];
             }, this.cooldown);
         }
     }
 }
 
-function splitResult(result: CommandResult | null): [SendPayload | undefined, MessageFile[] | undefined] {
-    if (result === undefined || result === null)
+function splitResult(result: CommandResult | undefined): [SendPayload | undefined, MessageFile[] | undefined] {
+    if (result === undefined)
         return [undefined, undefined];
     if (typeof result !== 'object')
         return [result, undefined];
@@ -111,4 +113,9 @@ function splitResult(result: CommandResult | null): [SendPayload | undefined, Me
     if ('files' in result)
         return [result.content, Array.isArray(result.files) ? result.files : [result.files]];
     return [result, undefined];
+}
+
+interface MiddlewareResult {
+    continue: boolean;
+    value: CommandResult;
 }

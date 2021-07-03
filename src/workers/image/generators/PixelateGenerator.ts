@@ -6,7 +6,7 @@ export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
         super('pixelate', logger, mapOptions);
     }
 
-    public async executeCore({ url, scale }: PixelateOptions): Promise<Buffer | null> {
+    public async executeCore({ url, scale }: PixelateOptions): Promise<Buffer> {
         const image = await this.getRemoteJimp(url);
         if (image.bitmap.width >= image.bitmap.height) {
             image.resize(scale, Jimp.AUTO);

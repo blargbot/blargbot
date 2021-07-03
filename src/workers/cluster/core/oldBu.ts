@@ -1,84 +1,18 @@
 import { GuildMessage, Client as ErisClient, Member, EmbedAuthorOptions, EmbedField, EmbedOptions, Permission, User } from 'eris';
 import { ClusterUtilities } from '../ClusterUtilities';
-import { BBTagEngine, CustomCommandLimit } from './bbtag';
-import { humanize, oldBu as globalOldBu, StoredGuild } from './globalCore';
-import { defaultStaff, ModlogColour } from './utils';
+import { humanize, oldBu as globalOldBu } from './globalCore';
+import { defaultStaff } from './utils';
 import config from '../../../../config.json';
 
-const bbEngine: BBTagEngine = <BBTagEngine><unknown>undefined;
 const util = <ClusterUtilities><unknown>undefined;
 const bot = <ErisClient><unknown>undefined;
 
 export const oldBu = {
     ...globalOldBu,
 
-    async handleCensor(msg: GuildMessage, storedGuild: StoredGuild): Promise<void> {
-        const censor = storedGuild.censor;
-        if (censor?.list !== undefined && censor.list.length > 0) {
-            //First, let's check exceptions
-            const exceptions = censor.exception;
-            if (!(exceptions.channel.includes(msg.channel.id) ||
-                exceptions.user.includes(msg.author.id) ||
-                (exceptions.role.length > 0 && oldBu.hasRole(msg, exceptions.role)))) { // doesn't have an exception!
-                for (const cens of censor.list) {
-                    let violation = false;
-                    const term = cens.term;
-                    if (cens.regex) {
-                        try {
-                            const regex = oldBu.createRegExp(term);
-                            if (regex.test(msg.content)) violation = true;
-                        } catch {
-                            // NOOP
-                        }
-                    } else if (msg.content.toLowerCase().includes(term.toLowerCase())) violation = true;
-                    if (violation == true) { // Uh oh, they did a bad!
-                        const res = await util.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
-                        if (cens.weight > 0) {
-                            await util.moderation.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Warning', cens.reason ?? 'Said a blacklisted phrase.', ModlogColour.WARN, [{
-                                name: 'Warnings',
-                                value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
-                                inline: true
-                            }]);
-                        }
-                        try {
-                            await msg.delete();
-                        } catch (err: unknown) {
-                            // bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
-                        }
-                        let content = '';
-                        switch (res.type) {
-                            case 0:
-                                if (cens.deleteMessage !== undefined) content = cens.deleteMessage;
-                                else if (censor.rule.deleteMessage !== undefined) content = censor.rule.deleteMessage;
-                                else content = '';
-                                break;
-                            case 1:
-                                if (cens.banMessage !== undefined) content = cens.banMessage;
-                                else if (censor.rule.banMessage !== undefined) content = censor.rule.banMessage;
-                                else content = '';
-                                break;
-                            case 2:
-                                if (cens.kickMessage !== undefined) content = cens.kickMessage;
-                                else if (censor.rule.kickMessage !== undefined) content = censor.rule.kickMessage;
-                                else content = '';
-                                break;
-                        }
-                        await bbEngine.execute(content, {
-                            message: msg,
-                            limit: new CustomCommandLimit(),
-                            input: humanize.smartSplit(msg.content),
-                            isCC: true,
-                            tagName: 'censor',
-                            author: ''
-                        });
-                    }
-                }
-            }
-        }
-    },
     async isBlacklistedChannel(channelid: string): Promise<boolean> {
-        const guildid = bot.channelGuildMap[channelid];
-        if (!guildid) {
+        const guildid = bot.channelGuildMap[channelid] as string | undefined;
+        if (guildid === undefined) {
             //console.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
             return false;
         }
@@ -93,11 +27,11 @@ export const oldBu = {
         override = true
     ): Promise<boolean> {
         const member = msg instanceof Member ? msg : msg.member;
-        if (!member)
+        if (member === null)
             return false;
 
-        if (override && ((member.id === config.discord.users.owner) ||
-            member.guild.ownerID == member.id ||
+        if (override && (member.id === config.discord.users.owner ||
+            member.guild.ownerID === member.id ||
             member.permissions.json.administrator)) {
             return true;
         }
@@ -105,7 +39,7 @@ export const oldBu = {
         const roles = member.guild.roles.filter(m => {
             if (Array.isArray(perm) ?
                 perm.map(q => q.toLowerCase()).includes(m.name.toLowerCase()) :
-                m.name.toLowerCase() == perm.toLowerCase()) {
+                m.name.toLowerCase() === perm.toLowerCase()) {
                 return true;
             } else {
                 const roles = [];
@@ -113,7 +47,7 @@ export const oldBu = {
                 if (Array.isArray(perm)) {
                     for (const p of perm) {
                         const id = getId(p);
-                        if (id !== null)
+                        if (id !== undefined)
                             roles.push(id);
                     }
                 } else {
@@ -141,7 +75,7 @@ export const oldBu = {
         return storedUser?.dontdmerrors !== true;
     },
     comparePerms(m: Member, allow: number): boolean {
-        if (!allow) allow = defaultStaff;
+        if (allow === 0) allow = defaultStaff;
         const newPerm = new Permission(allow, 0);
         for (const key in newPerm.json) {
             if (m.permissions.has(key)) {
@@ -158,7 +92,7 @@ export const oldBu = {
         embed: EmbedOptions
     ): Promise<void> {
         const storedGuild = await util.database.guilds.get(guildid);
-        if (!storedGuild) throw new Error('Cannot find guild');
+        if (storedGuild === undefined) throw new Error('Cannot find guild');
         const log = storedGuild.log ?? {};
         const logIgnore = storedGuild.logIgnore ?? [];
         if (!Array.isArray(userids)) userids = [userids];
@@ -228,7 +162,7 @@ export const oldBu = {
             }
             const channel = log[event];
             embed ??= {};
-            embed.title = `ℹ ${eventName}`;
+            embed.title = `ℹ ${eventName ?? ''}`;
             embed.timestamp = new Date();
             embed.fields = fields;
             embed.color = color;
@@ -249,7 +183,7 @@ export const oldBu = {
     }
 };
 
-function getId(text: string): string | null {
+function getId(text: string): string | undefined {
     const match = /[0-9]{17,23}/.exec(text);
-    return match?.[1] ?? null;
+    return match?.[1] ?? undefined;
 }

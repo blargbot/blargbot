@@ -6,7 +6,7 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
         super('clyde', logger, mapOptions);
     }
 
-    public async executeCore({ text }: ClydeOptions): Promise<Buffer | null> {
+    public async executeCore({ text }: ClydeOptions): Promise<Buffer> {
         const originalText = await this.renderJimpText(text, {
             font: 'whitney.ttf',
             fontsize: 20,

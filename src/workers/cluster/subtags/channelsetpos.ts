@@ -18,7 +18,7 @@ export class ChannelSetPosSubtag extends BaseSubtag {
                     execute: async (context, [{ value: channelStr }, { value: posStr }], subtag) => {
                         const channel = await context.getChannel(channelStr);
 
-                        if (!channel)
+                        if (channel === undefined)
                             return this.customError('Channel does not exist', context, subtag);//TODO No channel found error
 
                         const permission = channel.permissionsOf(context.authorizer);

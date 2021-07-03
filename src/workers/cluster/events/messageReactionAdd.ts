@@ -11,9 +11,9 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
 
     protected async execute(maybeMessage: PossiblyUncachedMessage, emoji: Emoji, maybeUser: Member | { id: string; }): Promise<void> {
         const message = await this.resolveMessage(maybeMessage);
-        if (!message) return;
+        if (message === undefined) return;
         const user = await this.resolveUser(maybeUser);
-        if (!user) return;
+        if (user === undefined) return;
 
         this.cluster.util.reactionAwaiter.emit(message, emoji, user);
     }
@@ -23,7 +23,7 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
             return message;
 
         const channel = this.resolveChannel(message.channel);
-        if (!channel) return;
+        if (channel === undefined) return;
         try {
             return await channel.getMessage(message.id);
         } catch (err: unknown) {

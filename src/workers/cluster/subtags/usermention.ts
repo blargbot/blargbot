@@ -14,14 +14,14 @@ export class UserMentionSubtag extends BaseSubtag {
                     description: 'Mentions the executing user.',
                     exampleCode: 'Hello, {usermention}!',
                     exampleOut: 'Hello, @user!',
-                    execute: (ctx) => this.userMention(ctx, [ctx.user.id])
+                    execute: (ctx) => this.userMention(ctx, ctx.user.id, '')
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Mentions `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Hello, {usermention;Stupidcat}!',
                     exampleOut: 'Hello, @Stupid cat!',
-                    execute: (ctx, args) => this.userMention(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [userId, quietStr]) => this.userMention(ctx, userId.value, quietStr.value)
                 }
             ]
         });
@@ -29,15 +29,16 @@ export class UserMentionSubtag extends BaseSubtag {
 
     public async userMention(
         context: BBTagContext,
-        args: string[]
+        userId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const user = await context.getUser(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const user = await context.getUser(userId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (user) {
+        if (user !== undefined) {
             if (!context.state.allowedMentions.users.includes(user.id))
                 context.state.allowedMentions.users.push(user.id);
             return user.mention;

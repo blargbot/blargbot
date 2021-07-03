@@ -15,7 +15,7 @@ export class HereMentionSubtag extends BaseSubtag {
                     description: 'Returns the mention of `@here`.\nThis requires the `disableeveryone` setting to be false. If `mention` is set to `true`, `@here` will ping, else it will be silent.',
                     exampleCode: '{heremention}',
                     exampleOut: '@here',
-                    execute: (ctx, args) => this.hereMention(ctx, args[0]?.value)
+                    execute: (ctx, args) => this.hereMention(ctx, args[0].value)
                 }
             ]
         });

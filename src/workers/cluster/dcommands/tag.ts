@@ -224,7 +224,7 @@ export class TagCommand extends BaseGuildCommand {
 
         await context.database.tags.delete(match.name);
         void this.logChange(context, TagChangeAction.DELETE, context.author, context.id, {
-            author: `${(await context.database.users.get(match.author))?.username} (${match.author})`,
+            author: `${(await context.database.users.get(match.author))?.username ?? 'undefined'} (${match.author})`,
             tag: match.name,
             content: match.content
         });
@@ -266,7 +266,7 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const response = `The raw code for \`${match.name}\` is:\n\`\`\`${match.lang}\n${match.content}\n\`\`\``;
+        const response = `The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``;
         return response.length < 2000
             ? response
             : {
@@ -291,8 +291,8 @@ export class TagCommand extends BaseGuildCommand {
 
         if (author !== undefined) {
             const user = await context.util.getUser(context, author);
-            if (!user)
-                return;
+            if (user === undefined)
+                return undefined;
 
             args[2] += ` made by **${humanize.fullName(user)}**`;
             args[3] = async (skip, take) => await context.database.tags.byAuthor(user.id, skip, take);
@@ -302,15 +302,15 @@ export class TagCommand extends BaseGuildCommand {
         switch (await context.util.displayPaged(...args)) {
             case false: return '❌ No results found!';
             case true: return '✅ I hope you found what you were looking for!';
-            case null: return undefined;
+            case undefined: return undefined;
         }
     }
 
     public async searchTags(context: GuildCommandContext, query?: string): Promise<string | undefined> {
-        if (query === undefined || query?.length === 0)
+        if (query === undefined || query.length === 0)
             query = (await context.util.awaitQuery(context.channel, context.author, 'What would you like to search for?'))?.content;
-        if (query === undefined || query?.length === 0)
-            return;
+        if (query === undefined || query.length === 0)
+            return undefined;
 
         const _query = query;
         const result = await context.util.displayPaged(
@@ -325,7 +325,7 @@ export class TagCommand extends BaseGuildCommand {
         switch (result) {
             case false: return '❌ No results found!';
             case true: return '✅ I hope you found what you were looking for!';
-            case null: return undefined;
+            case undefined: return undefined;
         }
     }
 
@@ -408,11 +408,11 @@ export class TagCommand extends BaseGuildCommand {
             fields.push({ name: 'Cooldown', value: humanize.duration(moment.duration(match.cooldown)), inline: true });
 
         fields.push({ name: 'Last modified', value: moment(match.lastmodified.valueOf()).format('LLLL'), inline: true });
-        fields.push({ name: 'Used', value: `${match.uses} time${match.uses == 1 ? '' : 's'}`, inline: true });
-        fields.push({ name: 'Favourited', value: `${favouriteCount} time${favouriteCount == 1 ? '' : 's'}`, inline: true });
+        fields.push({ name: 'Used', value: `${match.uses} time${match.uses === 1 ? '' : 's'}`, inline: true });
+        fields.push({ name: 'Favourited', value: `${favouriteCount} time${favouriteCount === 1 ? '' : 's'}`, inline: true });
 
         if (match.reports !== undefined && match.reports > 0)
-            fields.push({ name: '⚠️ Reported ⚠️', value: `${match.reports} time${match.reports == 1 ? '' : 's'}`, inline: true });
+            fields.push({ name: '⚠️ Reported ⚠️', value: `${match.reports} time${match.reports === 1 ? '' : 's'}`, inline: true });
 
         const flags = humanize.flags(match.flags ?? []);
         if (flags.length > 0)
@@ -504,7 +504,7 @@ export class TagCommand extends BaseGuildCommand {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { undefined: _, ...addFlags } = parse.flags([], flagsRaw);
-        const flags = [...(match.flags ?? [])];
+        const flags = [...match.flags ?? []];
         for (const flag of Object.keys(addFlags)) {
             const args = addFlags[flag];
             if (args === undefined || args.length === 0)
@@ -532,7 +532,7 @@ export class TagCommand extends BaseGuildCommand {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { undefined: _, ...removeFlags } = parse.flags([], flagsRaw);
-        const flags = [...(match.flags ?? [])]
+        const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 
         await context.database.tags.setProp(match.name, 'flags', flags);
@@ -569,7 +569,7 @@ export class TagCommand extends BaseGuildCommand {
             lang: oldTag?.lang ?? ''
         });
 
-        void this.logChange(context, oldTag ? TagChangeAction.EDIT : TagChangeAction.CREATE, context.author, context.id, {
+        void this.logChange(context, oldTag !== undefined ? TagChangeAction.EDIT : TagChangeAction.CREATE, context.author, context.id, {
             tag: tagName,
             content
         });
@@ -681,7 +681,7 @@ export class TagCommand extends BaseGuildCommand {
         const tag = await context.database.tags.get(tagName);
         if (tag === undefined)
             return { name: tagName };
-        if (tag?.deleted === true) {
+        if (tag.deleted === true) {
             let result = `❌ The \`${tag.name}\` tag has been permanently deleted`;
             if (tag.deleter !== undefined) {
                 const deleter = await context.database.users.get(tag.deleter);
@@ -698,7 +698,7 @@ export class TagCommand extends BaseGuildCommand {
 
     private showDocs(ctx: GuildCommandContext, topic: readonly string[]): SendPayload | string {
         const embed = getDocsEmbed(ctx, topic);
-        if (!embed)
+        if (embed === undefined)
             return `❌ Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`;
 
         return { embed: embed, isHelp: true };

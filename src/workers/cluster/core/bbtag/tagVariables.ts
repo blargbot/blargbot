@@ -84,4 +84,4 @@ export const tagVariableScopes = [
         },
         getLock: (context: BBContext, _subtag: SubtagCall | undefined, key: string): ReadWriteLock => getLock(...['LOCAL', context.isCC ? 'CC' : 'TAG', key])
     }
-];
+] as const;

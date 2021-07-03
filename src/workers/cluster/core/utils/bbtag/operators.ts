@@ -15,8 +15,8 @@ export function isLogicOperator(operator: string): operator is keyof typeof logi
 }
 
 export const compare = {
-    '==': (a: string, b: string): boolean => comp(a, b) == 0,
-    '!=': (a: string, b: string): boolean => comp(a, b) != 0,
+    '==': (a: string, b: string): boolean => comp(a, b) === 0,
+    '!=': (a: string, b: string): boolean => comp(a, b) !== 0,
     '>=': (a: string, b: string): boolean => comp(a, b) >= 0,
     '>': (a: string, b: string): boolean => comp(a, b) > 0,
     '<=': (a: string, b: string): boolean => comp(a, b) <= 0,
@@ -24,7 +24,7 @@ export const compare = {
     startswith(a: string, b: string): boolean {
         const arr = getArray(a);
         if (arr !== false) {
-            return arr[0] == b;
+            return arr[0] === b;
         } else {
             return a.startsWith(b);
         }
@@ -32,7 +32,7 @@ export const compare = {
     endswith(a: string, b: string): boolean {
         const arr = getArray(a);
         if (arr !== false) {
-            return arr.slice(-1)[0] == b;
+            return arr.slice(-1)[0] === b;
         } else {
             return a.endsWith(b);
         }
@@ -40,7 +40,7 @@ export const compare = {
     includes(a: string, b: string): boolean {
         const arr = getArray(a);
         if (arr !== false) {
-            return arr.find((v) => v == b) != null;
+            return arr.find((v) => v === b) !== null;
         } else {
             return a.includes(b);
         }
@@ -48,7 +48,7 @@ export const compare = {
     contains(a: string, b: string): boolean {
         const arr = getArray(a);
         if (arr !== false) {
-            return arr.find((v) => v == b) != null;
+            return arr.find((v) => v === b) !== null;
         } else {
             return a.includes(b);
         }
@@ -65,10 +65,10 @@ export const numeric = {
 };
 
 export const logic = {
-    '&&': (vals: boolean[]): boolean => vals.length > 0 && vals.filter(v => v).length == vals.length,
+    '&&': (vals: boolean[]): boolean => vals.length > 0 && vals.filter(v => v).length === vals.length,
     '||': (vals: boolean[]): boolean => vals.filter(v => v).length > 0,
-    'xor': (vals: boolean[]): boolean => vals.filter(v => v).length == 1,
-    '^': (vals: boolean[]): boolean => vals.filter(v => v).length == 1, //* Alias of xor
+    'xor': (vals: boolean[]): boolean => vals.filter(v => v).length === 1,
+    '^': (vals: boolean[]): boolean => vals.filter(v => v).length === 1, //* Alias of xor
     '!': (vals: boolean[]): boolean => !vals[0]
 };
 
@@ -77,7 +77,7 @@ export const all: typeof compare & typeof numeric & typeof logic = Object.assign
 
 function getArray(text: string): JArray | false {
     const arr = deserialize(text);
-    if (arr && Array.isArray(arr.v)) {
+    if (arr !== undefined && Array.isArray(arr.v)) {
         return arr.v;
     } else {
         return false;

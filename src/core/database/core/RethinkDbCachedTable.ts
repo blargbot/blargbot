@@ -34,7 +34,7 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
 
     public async watchChanges(shouldCache: (id: RethinkTableMap[T][K]) => boolean = () => true): Promise<void> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
-        // eslint-disable-next-line no-constant-condition
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
         while (true) {
             try {
                 /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */

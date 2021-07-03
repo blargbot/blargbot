@@ -16,7 +16,7 @@ export function duration(text: string, fallback?: Duration): Duration | undefine
 
 function find(text: string, regex: RegExp, unit: DurationInputArg2): Duration | undefined {
     const match = regex.exec(text);
-    if (!match)
+    if (match === null)
         return undefined;
     return moment.duration(parseFloat(match[1]), unit);
 }

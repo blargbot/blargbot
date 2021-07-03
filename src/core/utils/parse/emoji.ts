@@ -1,7 +1,7 @@
 import * as twemoji from 'twemoji';
 
 export function emoji(text: string, distinct = false): string[] {
-    if (typeof text != 'string') return [];
+    if (typeof text !== 'string') return [];
     let match;
     let result: string[] = [];
 
@@ -10,7 +10,7 @@ export function emoji(text: string, distinct = false): string[] {
     // Find custom emotes
     const regex = /<(a?:\w+:\d{17,23})>|(\w+:\d{17,23})/gi;
     while ((match = regex.exec(text)) !== null) {
-        if (match[2])
+        if (match[2].length > 0)
             result.push(match[2]);
         else
             result.push(match[1]);

@@ -34,7 +34,7 @@ export class RandStrSubtag extends BaseSubtag {
         if (isNaN(count)) count = fallback;
         if (isNaN(count)) return this.notANumber(context, subtag, 'Count and fallback are not numbers');
 
-        if (chars.length == 0) return this.customError('Not enough characters', context, subtag);
+        if (chars.length === 0) return this.customError('Not enough characters', context, subtag);
 
         const numberArray = [...Array(count).keys()];
         return numberArray.map(_ => chars[Math.floor(Math.random() * chars.length)]).join('');

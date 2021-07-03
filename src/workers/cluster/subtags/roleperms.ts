@@ -15,7 +15,7 @@ export class RolePermsSubtag extends BaseSubtag {
                     description: 'Returns `role`\'s permission number. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role\'s permissions are: {roleperms;admin}.',
                     exampleOut: 'The admin role\'s permissions are: 8.',
-                    execute: (ctx, args) => this.getRolePerms(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [userId, quietStr]) => this.getRolePerms(ctx, userId.value, quietStr.value)
                 }
             ]
         });
@@ -23,15 +23,16 @@ export class RolePermsSubtag extends BaseSubtag {
 
     public async getRolePerms(
         context: BBTagContext,
-        args: string[]
+        roleId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const role = await context.getRole(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const role = await context.getRole(roleId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (role) {
+        if (role !== undefined) {
             return role.permissions.allow.toString();
         }
 

@@ -41,7 +41,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
 
     public get(id: number): TWorker {
         const worker = this.tryGet(id);
-        if (!worker)
+        if (worker === undefined)
             throw new Error(`${this.type} ${id} has not yet been spawned`);
 
         return worker;
@@ -78,7 +78,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
 
     public kill(id: number): void {
         const worker = this.#workers.get(id);
-        if (!worker)
+        if (worker === undefined)
             return;
 
         this.#workers.delete(id);
@@ -102,14 +102,18 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
     public forEach(callback: (id: number, worker: TWorker | undefined) => void): void;
     public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void>): Promise<void>;
     public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void> | void): Promise<void> | void {
-        const results: Array<Promise<void>> = [];
+        const results: Array<PromiseLike<void>> = [];
         let i = 0;
         for (const worker of this) {
             const result = callback(i++, worker);
-            if (result !== undefined)
+            if (isPromiseLike(result))
                 results.push(result);
         }
         if (results.length > 0)
             return Promise.all(results).then(() => undefined);
     }
+}
+
+function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
+    return typeof value === 'object' && 'then' in value && typeof value.then === 'function';
 }

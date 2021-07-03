@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { BaseSubtag, BBTagContext, discordUtil, mapping, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, discordUtil, guard, mapping, SubtagCall, SubtagType } from '../core';
 import { CreateChannelOptions, AnyGuildChannel, Overwrite } from 'eris';
 
 const typeMap: Record<string, 0 | 2 | 4 | 5 | 6> = {
@@ -22,7 +22,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
                     description: 'Creates a channel of type `type`',
                     exampleCode: '{channelcreate;super-voice-channel;voice}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, args, subtag) => this.channelCreate(ctx, [...args.map(arg => arg.value), '{}'], subtag)
+                    execute: (ctx, [name, type], subtag) => this.channelCreate(ctx, name.value, type.value, '{}', subtag)
                 },
                 {
                     parameters: ['name', 'type:text', 'options:{}'],
@@ -38,7 +38,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
                         'Returns the new channel\'s ID.',
                     exampleCode: '{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}',
                     exampleOut: '22222222222222222',
-                    execute: (ctx, args, subtag) => this.channelCreate(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, [name, type, options], subtag) => this.channelCreate(ctx, name.value, type.value, options.value, subtag)
                 }
             ]
         });
@@ -46,18 +46,19 @@ export class ChannelCreateSubtag extends BaseSubtag {
 
     public async channelCreate(
         context: BBTagContext,
-        args: string[],
+        name: string,
+        typeKey: string,
+        optionsJson: string,
         subtag: SubtagCall
     ): Promise<string> {
         const permissions = context.permissions;
         if (!permissions.has('manageChannels'))
             return this.customError('Author cannot create channels', context, subtag);
 
-        const name = args[0];
-        const type = typeMap[args[1].toLowerCase()] || 0;
+        const type = guard.hasProperty(typeMap, typeKey) ? typeMap[typeKey] : 0;
         let options: CreateChannelOptions;
         try {
-            const mapped = mapOptions(args[2]);
+            const mapped = mapOptions(optionsJson);
             if (!mapped.valid)
                 return this.customError('Invalid JSON', context, subtag);
             options = mapped.value;
@@ -67,10 +68,10 @@ export class ChannelCreateSubtag extends BaseSubtag {
 
         try {
             options.reason = context.scope.reason !== undefined
-                ? discordUtil.formatAuditReason(context.user, context.scope.reason || '')
+                ? discordUtil.formatAuditReason(context.user, context.scope.reason)
                 : options.reason;
             const channel = await context.guild.createChannel(name, type, options) as AnyGuildChannel;
-            if (!context.guild.channels.get(channel.id))
+            if (context.guild.channels.get(channel.id) === undefined)
                 context.guild.channels.add(channel);
             return channel.id;
         } catch (err: unknown) {

@@ -22,7 +22,7 @@ export class ChannelIsText extends BaseSubtag {
                     description: 'Checks if `channel` is a text channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{istext;feature discussions}',
                     exampleOut: 'true',
-                    execute: (ctx, args, subtag) => this.isTextChannel(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, [channel, quiet], subtag) => this.isTextChannel(ctx, channel.value, quiet.value, subtag)
                 }
             ]
         });
@@ -30,13 +30,14 @@ export class ChannelIsText extends BaseSubtag {
 
     public async isTextChannel(
         context: BBTagContext,
-        args: string[],
+        channelStr: string,
+        quietStr: string,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const channel = await context.getChannel(args[0], { quiet, suppress: context.scope.suppressLookup });
-        if (!channel)
-            return quiet ? 'false' : this.channelNotFound(context, subtag, `${args[0]} could not be found`);
+        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
+        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        if (channel === undefined)
+            return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
         return (channel.type === 0).toString();
     }
 }

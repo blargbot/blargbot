@@ -64,9 +64,9 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.flags = options.flags ?? [];
         this.isCC = options.isCC;
         this.tagVars = options.tagVars ?? !this.isCC;
-        this.author = options.author ?? this.guild.id;
+        this.author = options.author;
         this.authorizer = options.authorizer ?? this.author;
-        this.tagName = options.tagName;
+        this.tagName = options.tagName ?? 'unknown';
         this.cooldown = options.cooldown ?? 0;
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
         this.locks = options.locks ?? {};
@@ -76,8 +76,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.flaggedInput = parse.flags(this.flags, this.input);
         this.errors = [];
         this.debug = [];
-        this.scopes = options?.scopes ?? new ScopeCollection();
-        this.variables = options?.variables ?? new VariableCache(this);
+        this.scopes = options.scopes ?? new ScopeCollection();
+        this.variables = options.variables ?? new VariableCache(this);
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
@@ -88,7 +88,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 role: {},
                 channel: {}
             },
-            outputMessage: null,
+            outputMessage: undefined,
             ownedMsgs: [],
             return: RuntimeReturnState.NONE,
             stackSize: 0,
@@ -96,7 +96,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             file: undefined,
             reactions: [],
             nsfw: undefined,
-            replace: null,
+            replace: undefined,
             break: 0,
             continue: 0,
             subtags: {},
@@ -108,7 +108,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 roles: [],
                 everybody: false
             },
-            ...(options?.state ?? {})
+            ...options.state ?? {}
         };
     }
 
@@ -117,7 +117,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     }
 
     public ownsMessage(messageId: string): boolean {
-        return messageId == this.message.id || this.state.ownedMsgs.includes(messageId);
+        return messageId === this.message.id || this.state.ownedMsgs.includes(messageId);
     }
 
     public makeChild(options: Partial<BBTagContextOptions> = {}): BBTagContext {
@@ -129,79 +129,76 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public addError(error: string, subtag?: SubtagCall, debugMessage?: string): string {
         this.errors.push({
-            subtag: subtag ?? null,
+            subtag: subtag ?? undefined,
             error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}`,
-            debugMessage: debugMessage ?? null
+            debugMessage: debugMessage ?? undefined
         });
         return this.scope.fallback ?? `\`${error}\``;
     }
 
-    public async getUser(name: string, args: FindEntityOptions = {}): Promise<User | null> {
-        let didSend = false;
+    public async getUser(name: string, args: FindEntityOptions = {}): Promise<User | undefined> {
         if (this.state.query.count >= 5)
             args.quiet = args.suppress = true;
-        if (args.onSendCallback)
-            args.onSendCallback = ((oldCallback) => () => (didSend = true, oldCallback()))(args.onSendCallback);
+        if (args.onSendCallback !== undefined)
+            args.onSendCallback = ((oldCallback) => () => {
+                this.state.query.count++;
+                oldCallback();
+            })(args.onSendCallback);
         else
-            args.onSendCallback = () => didSend = true;
+            args.onSendCallback = () => this.state.query.count++;
 
         const cached = this.state.query.user[name];
         if (cached !== undefined) {
             const user = this.engine.discord.users.get(cached);
-            if (user)
+            if (user !== undefined)
                 return user;
             name = cached;
         }
 
         const user = await this.engine.util.getUser(this.message, name, args);
-        if (didSend)
-            this.state.query.count++;
-
         this.state.query.user[name] = user?.id;
         return user;
     }
 
-    public async getRole(name: string, args: FindEntityOptions = {}): Promise<Role | null> {
-        let didSend = false;
+    public async getRole(name: string, args: FindEntityOptions = {}): Promise<Role | undefined> {
         if (this.state.query.count >= 5)
             args.quiet = args.suppress = true;
-        if (args.onSendCallback)
-            args.onSendCallback = ((oldCallback) => () => (didSend = true, oldCallback()))(args.onSendCallback);
+        if (args.onSendCallback !== undefined)
+            args.onSendCallback = ((oldCallback) => () => {
+                this.state.query.count++;
+                oldCallback();
+            })(args.onSendCallback);
         else
-            args.onSendCallback = () => didSend = true;
+            args.onSendCallback = () => this.state.query.count++;
 
         const cached = this.state.query.role[name];
         if (cached !== undefined)
-            return this.engine.discord.guilds.get(this.guild.id)?.roles.get(cached) ?? null;
+            return this.engine.discord.guilds.get(this.guild.id)?.roles.get(cached) ?? undefined;
 
         const role = await this.engine.util.getRole(this.message, name, args);
-        if (didSend)
-            this.state.query.count++;
-
         this.state.query.role[name] = role?.id;
         return role;
     }
 
-    public async getChannel(name: string, args: FindEntityOptions = {}): Promise<AnyGuildChannel | null> {
-        let didSend = false;
+    public async getChannel(name: string, args: FindEntityOptions = {}): Promise<AnyGuildChannel | undefined> {
         if (this.state.query.count >= 5)
             args.quiet = args.suppress = true;
-        if (args.onSendCallback)
-            args.onSendCallback = ((oldCallback) => () => (didSend = true, oldCallback()))(args.onSendCallback);
+        if (args.onSendCallback !== undefined)
+            args.onSendCallback = ((oldCallback) => () => {
+                this.state.query.count++;
+                oldCallback();
+            })(args.onSendCallback);
         else
-            args.onSendCallback = () => didSend = true;
+            args.onSendCallback = () => this.state.query.count++;
 
         const cached = this.state.query.channel[name];
         if (cached !== undefined)
-            return this.engine.discord.guilds.get(this.guild.id)?.channels.get(cached) ?? null;
+            return this.engine.discord.guilds.get(this.guild.id)?.channels.get(cached) ?? undefined;
 
 
         const channel = await this.engine.util.getChannel(this.message, name, args);
-        if (didSend)
-            this.state.query.count++;
-
-        if (channel === null || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
-            return null;
+        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
+            return undefined;
 
         this.state.query.channel[name] = channel.id;
         return channel;
@@ -223,7 +220,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return this.locks[key] ??= new ReadWriteLock();
     }
 
-    private async _sendOutput(text: string): Promise<string | null> {
+    private async _sendOutput(text: string): Promise<string | undefined> {
         let disableEveryone = true;
         if (this.isCC) {
             disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, 'disableeveryone') ?? false;
@@ -244,7 +241,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                     }
                 }, this.state.file);
 
-            if (response) {
+            if (response !== undefined) {
                 await oldBu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
                 this.state.ownedMsgs.push(response.id);
                 return response.id;
@@ -255,15 +252,16 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 if (err.message !== 'No content') {
                     throw err;
                 }
-                return null;
+                return undefined;
             }
             this.logger.error(`Failed to send: ${text}`, err);
             throw new Error(`Failed to send: ${text}`);
         }
     }
 
-    public async sendOutput(text: string): Promise<string | null> {
-        if (this.silent) return await this.state.outputMessage;
+    public async sendOutput(text: string): Promise<string | undefined> {
+        if (this.silent)
+            return await this.state.outputMessage;
         return await (this.state.outputMessage ??= this._sendOutput(text));
     }
 
@@ -330,7 +328,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         result.state.cache = {};
         result.state.overrides = {};
 
-        for (const key of Object.keys(obj.tempVars ?? {}))
+        for (const key of Object.keys(obj.tempVars))
             await result.variables.set(key, new CacheEntry(result, key, obj.tempVars[key]));
         return result;
     }

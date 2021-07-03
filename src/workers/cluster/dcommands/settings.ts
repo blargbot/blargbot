@@ -32,7 +32,7 @@ export class SettingsCommand extends BaseGuildCommand {
 
     private async list(context: GuildCommandContext): Promise<string | { embed: EmbedOptions; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
-        if (!storedGuild)
+        if (storedGuild === undefined)
             return '❌ Your guild is not correctly configured yet! Please try again later';
 
         const settings = storedGuild.settings;
@@ -44,7 +44,6 @@ export class SettingsCommand extends BaseGuildCommand {
                     {
                         name: 'General',
                         value: settingGroup([
-                            ['prefix', Array.isArray(settings.prefix) ? settings.prefix[0] : settings.prefix],
                             ['dmhelp', parse.boolean(settings.dmhelp, false, true)],
                             ['disablenoperms', settings.disablenoperms ?? false],
                             ['social', settings.social ?? false]
@@ -101,27 +100,25 @@ export class SettingsCommand extends BaseGuildCommand {
 
     private async set(context: GuildCommandContext, setting: string, value: string): Promise<string> {
         const key = setting.toLowerCase();
-        if (!guard.isGuildSetting(key))
+        if (!guard.hasProperty(guildSettings, key))
             return '❌ Invalid key!';
 
         const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
-            return `❌ '${value}' is not a ${guildSettings[key]?.type}`;
+            return `❌ '${value}' is not a ${guildSettings[key].type}`;
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
             return '❌ Failed to set';
 
-        return `✅ ${guildSettings[key]?.name} is set to ${parsed.display}`;
+        return `✅ ${guildSettings[key].name} is set to ${parsed.display ?? 'nothing'}`;
     }
 
     private keys(): string {
         const message = [];
         for (const key in guildSettings) {
-            if (guard.isGuildSetting(key)) {
+            if (guard.hasProperty(guildSettings, key)) {
                 const setting = guildSettings[key];
-                if (setting !== undefined) {
-                    message.push(` - **${setting.name}:** \`${setting.key.toUpperCase()}\` (${setting.type})`);
-                }
+                message.push(` - **${setting.name}:** \`${setting.key.toUpperCase()}\` (${setting.type})`);
             }
         }
         return 'You can use `settings set <key> [value]` to set the following settings. All settings are case insensitive.\n'
@@ -134,7 +131,7 @@ function resolveChannel(guild: Guild, channelId: string | undefined): string | u
         return undefined;
     const channel = guild.channels.get(channelId)
         ?? guild.channels.find(c => c.name.toLowerCase() === channelId.toLowerCase());
-    if (!channel)
+    if (channel === undefined)
         return `Unknown channel (${channelId})`;
     return `${channel.name} (${channel.id})`;
 }
@@ -144,18 +141,18 @@ function resolveRole(guild: Guild, roleId: string | undefined): string | undefin
         return undefined;
     const role = guild.roles.get(roleId)
         ?? guild.roles.find(r => r.name.toLowerCase() === roleId.toLowerCase());
-    if (!role)
+    if (role === undefined)
         return `Unknown role (${roleId})`;
     return `${role.name} (${role.id})`;
 }
 
 function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | undefined | boolean | number]>): string {
-    const mapped = values.map<[string, unknown]>(([key, value]) => {
+    const mapped = values.map(([key, value]) => {
         const setting = guildSettings[key];
         return [
-            setting?.name ?? key,
+            setting.name,
             `${value ?? 'Not set'}`.substring(0, 100)
-        ];
+        ] as const;
     });
     const keyLength = Math.max(...mapped.map(([key]) => key.length));
     const content = mapped.map(v => `${v[0].padStart(keyLength, ' ')} : ${v[1]}`)

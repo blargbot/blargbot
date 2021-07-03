@@ -6,7 +6,7 @@ export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
         super('clippy', logger, mapOptions);
     }
 
-    public async executeCore({ text }: ClippyOptions): Promise<Buffer | null> {
+    public async executeCore({ text }: ClippyOptions): Promise<Buffer> {
         const caption = await this.renderJimpText(text, {
             font: 'arial.ttf',
             size: '290x130',

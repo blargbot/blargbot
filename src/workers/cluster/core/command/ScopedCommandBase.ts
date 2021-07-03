@@ -14,7 +14,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
                     execute: (context, [subcommand]) => showHelp(context, this, subcommand),
                     description: 'Gets the help message for this command'
                 },
-                ...('subcommands' in options.definition ? options.definition.subcommands : {})
+                ...'subcommands' in options.definition ? options.definition.subcommands : {}
             }
         }, options.flags ?? []);
 

@@ -46,7 +46,7 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection> e
 
     private detach(worker: TWorker): void {
         const handler = this.#handlers.get(worker);
-        if (!handler)
+        if (handler === undefined)
             return;
         worker.off(this.event, handler);
         this.#handlers.delete(worker);

@@ -2,8 +2,8 @@ import { CommandContext } from './CommandContext';
 import { ScopedCommandBase } from './ScopedCommandBase';
 
 export abstract class BaseGlobalCommand extends ScopedCommandBase<CommandContext> {
-    public checkContext(context: CommandContext): context is CommandContext {
-        return context !== undefined;
+    public checkContext(_context: CommandContext): _context is CommandContext {
+        return true;
     }
 
     protected handleInvalidContext(): never {

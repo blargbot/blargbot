@@ -104,8 +104,8 @@
         "build:watch": "tsc -w --outDir ./out",
         "build:check": "tsc --noemit",
         "build:check:watch": "tsc -w --noemit",
-        "lint": "eslint --ext .ts,.vue ./",
-        "lint-fix": "eslint --ext .ts,.vue ./ --fix"
+        "lint": "eslint --ext .ts ./",
+        "lint-fix": "eslint --ext .ts ./ --fix"
     },
     "repository": {
         "type": "git",

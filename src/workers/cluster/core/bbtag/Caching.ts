@@ -48,7 +48,7 @@ export class VariableCache {
             return entry;
 
         const scope = tagVariableScopes.find(s => variable.startsWith(s.prefix));
-        if (scope == null)
+        if (scope === undefined)
             throw new Error('Missing default variable scope!');
         try {
             return this.#cache[variable] = new CacheEntry(this.context, variable,
@@ -95,7 +95,7 @@ export class VariableCache {
         for (const v of vars) {
             if (v.changed) {
                 const scope = tagVariableScopes.find(s => v.key.startsWith(s.prefix));
-                if (scope == null) throw new Error('Missing default variable scope!');
+                if (scope === undefined) throw new Error('Missing default variable scope!');
                 const pool = pools[scope.prefix] ??= {};
                 pool[v.key.substring(scope.prefix.length)] = v.value === '' ? undefined : v.value;
                 v.persist();
@@ -104,7 +104,7 @@ export class VariableCache {
         for (const key in pools) {
             const timer = new Timer().start();
             const scope = tagVariableScopes.find(s => key === s.prefix);
-            if (scope == null)
+            if (scope === undefined)
                 throw new Error('Missing default variable scope!');
             const objectCount = Object.keys(pools[key]).length;
             this.context.logger.bbtag('Committing', objectCount, 'objects to the', key, 'pool.');

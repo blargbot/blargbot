@@ -30,9 +30,9 @@ export class PadSubtag extends BaseSubtag {
             backing = args[1],
             overlay = args[2];
 
-        if (direction.toLowerCase() == 'left')
+        if (direction.toLowerCase() === 'left')
             return backing.substr(0, backing.length - overlay.length) + overlay;
-        if (direction.toLowerCase() == 'right')
+        if (direction.toLowerCase() === 'right')
             return overlay + backing.substr(overlay.length);
         return this.customError('Invalid direction', context, subtag);
     }

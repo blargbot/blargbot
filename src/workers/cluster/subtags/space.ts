@@ -14,8 +14,8 @@ export class SpaceSubtag extends BaseSubtag {
                     description: 'Will be replaced by `count` spaces. If `count` is less than `0`, no spaces will be returned.',
                     exampleCode: 'Hello,{space;4}world!',
                     exampleOut: 'Hello,    world!',
-                    execute: (ctx, args, subtag) => {
-                        let count = parse.int(args[0]?.value || 1);
+                    execute: (ctx, [countStr], subtag) => {
+                        let count = parse.int(countStr.value);
                         const fallback = parse.int(ctx.scope.fallback ?? '');
                         if (isNaN(count)) {
                             if (isNaN(fallback))

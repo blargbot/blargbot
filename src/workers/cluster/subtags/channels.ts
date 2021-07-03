@@ -1,3 +1,4 @@
+import { Constants } from 'eris';
 import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
 
@@ -21,7 +22,7 @@ export class ChannelsSubtag extends BaseSubtag {
                     description: 'Returns an array of channel IDs in within the given `category`. If `category` is not a category, returns an empty array. If `category` cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: 'Category cat-channels has {length;{channels;cat-channels}} channels.',
                     exampleOut: 'Category cat-channels has 6 channels.',
-                    execute: (ctx, args, subtag) => this.getChannelsInCategory(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, [category, quiet], subtag) => this.getChannelsInCategory(ctx, category.value, quiet.value, subtag)
                 }
             ]
         });
@@ -29,15 +30,16 @@ export class ChannelsSubtag extends BaseSubtag {
 
     public async getChannelsInCategory(
         context: BBTagContext,
-        args: string[],
+        channelStr: string,
+        quietStr: string,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const channel = await context.getChannel(args[0], { quiet, suppress: context.scope.suppressLookup });
-        if (!channel)
-            return quiet ? '' : this.channelNotFound(context, subtag, `${args[0]} could not be found`);
-        if (channel.type !== 4)
+        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
+        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        if (channel === undefined)
+            return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
+        if (channel.type !== Constants.ChannelTypes.GUILD_CATEGORY)
             return '[]';
-        return JSON.stringify(channel.channels?.map(c => c.id) ?? []);
+        return JSON.stringify(channel.channels.map(c => c.id));
     }
 }

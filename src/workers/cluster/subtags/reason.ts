@@ -15,7 +15,7 @@ export class ReasonSubtag extends BaseSubtag {
                     exampleCode: '{reason;This will show up in the audit logs!}{roleadd;111111111111}',
                     exampleOut: '("This will show up in the audit logs" showed up)',
                     execute: (ctx, [reason]) => {
-                        ctx.scope.reason = reason?.value;
+                        ctx.scope.reason = reason.value;
                     }
                 }
             ]

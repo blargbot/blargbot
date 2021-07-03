@@ -6,7 +6,7 @@ export class CAHGenerator extends BaseImageGenerator<'cah'> {
         super('cah', logger, mapOptions);
     }
 
-    public async executeCore({ white, black }: CAHOptions): Promise<Buffer | null> {
+    public async executeCore({ white, black }: CAHOptions): Promise<Buffer> {
         const blackCard = await this.getLocalJimp('blackcard.png');
         const whiteCard = await this.getLocalJimp('whitecard.png');
 

@@ -1,7 +1,7 @@
 import { EmbedOptions } from 'eris';
 
 export function checkEmbedSize(embed: EmbedOptions | undefined): boolean {
-    if (!embed) return true;
+    if (embed === undefined) return true;
     for (const [value = '', limit] of getEmbedValueLimits(embed))
         if (value.length > limit)
             return false;

@@ -118,7 +118,7 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
 
     public async setProp<K extends keyof StoredTag>(tagName: string, key: K, value: StoredTag[K]): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            [key]: r.literal(...(value === undefined ? [] : [value]))
+            [key]: r.literal(...value === undefined ? [] : [value])
         }));
     }
 }

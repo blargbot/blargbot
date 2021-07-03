@@ -32,8 +32,8 @@ export class SendSubtag extends BaseSubtag {
     }
 
     public async send(context: BBTagContext, subtag: SubtagCall, channelId: string, message?: string, embed?: EmbedOptions | MalformedEmbed, file?: MessageFile): Promise<string> {
-        const channel = await context.getChannel(channelId);
-        if (channel === null)
+        const channel = await context.getChannel(channelId, { quiet: true, suppress: context.scope.suppressLookup });
+        if (channel === undefined)
             return this.channelNotFound(context, subtag, `Unable to read ${channelId} as a valid channel`);
         if (typeof file?.file === 'string' && file.file.startsWith('buffer:'))
             file.file = Buffer.from(file.file.slice(7), 'base64');
@@ -55,7 +55,7 @@ export class SendSubtag extends BaseSubtag {
                 }
             }, file);
 
-            if (!sent)
+            if (sent === undefined)
                 throw new Error('Send unsuccessful');
 
             context.state.ownedMsgs.push(sent.id);
@@ -72,7 +72,7 @@ export class SendSubtag extends BaseSubtag {
 
 function resolveContent(content: string): [string | undefined, EmbedOptions | undefined] {
     const embed = parse.embed(content);
-    if (embed === undefined || ('malformed' in embed && embed.malformed))
+    if (embed === undefined || 'malformed' in embed && embed.malformed)
         return [content, undefined];
     return [undefined, embed];
 }

@@ -2,10 +2,7 @@ import { EmbedOptions } from 'eris';
 import { MalformedEmbed } from '../../types';
 
 export function embed(embedText: string): EmbedOptions | MalformedEmbed | undefined {
-    if (embedText == null)
-        return undefined;
-
-    if (!embedText || !embedText.trim())
+    if (embedText.trim().length === 0)
         return undefined;
 
     try {

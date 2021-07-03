@@ -11,7 +11,7 @@ export class CustomCommandIntervalCron extends CronService {
     }
 
     protected async execute(): Promise<void> {
-        const nonce = (Math.floor(Math.random() * 0xffffffff)).toString(16).padStart(8, '0').toUpperCase();
+        const nonce = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0').toUpperCase();
 
         const guilds = (await this.cluster.database.guilds.withIntervalCommand())
             ?.filter(g => this.cluster.discord.guilds.get(g.guildid))
@@ -21,20 +21,20 @@ export class CustomCommandIntervalCron extends CronService {
 
         let count = 0;
         let failures = 0;
-        const promises: Array<Promise<string | null>> = [];
+        const promises: Array<Promise<string | undefined>> = [];
         for (const guild of guilds) {
             this.logger.debug('[%s] Performing interval on %s', nonce, guild.guildid);
-            const interval = guild.ccommands?._interval;
-            if (!interval || guard.isAliasedCustomCommand(interval))
+            const interval = guild.ccommands._interval;
+            if (interval === undefined || guard.isAliasedCustomCommand(interval))
                 continue;
 
             try {
                 const g = this.cluster.discord.guilds.get(guild.guildid);
-                if (!g) continue;
+                if (g === undefined) continue;
                 const id = interval.authorizer ?? interval.author;
-                if (!id) continue;
+                if (id.length === 0) continue;
                 const m = g.members.get(id);
-                if (!m) continue;
+                if (m === undefined) continue;
                 const u = this.cluster.discord.users.get(id) ?? await this.cluster.discord.getRESTUser(id);
                 if (guard.hasValue(u)) continue;
                 const c = g.channels.find(guard.isTextableChannel);
@@ -59,11 +59,14 @@ export class CustomCommandIntervalCron extends CronService {
                     authorizer: interval.authorizer,
                     silent: true
                 }).then(
-                    () => { count++; return null; },
+                    () => {
+                        count++;
+                        return undefined;
+                    },
                     err => {
                         this.logger.error('Issue with interval:', guild.guildid, err);
                         failures++;
-                        return null;
+                        return undefined;
                     });
 
                 promises.push(Promise.race([promise, sleep(10000).then(() => guild.guildid)]));

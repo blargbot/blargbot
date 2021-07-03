@@ -21,7 +21,7 @@ export class BBTagEngine {
     }
 
     public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult> {
-        this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.tagName}`);
+        this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.tagName ?? ''}`);
         const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
@@ -73,8 +73,8 @@ export class BBTagEngine {
         const override = context.state.overrides[name];
         const native = this.cluster.subtags.get(name);
         const [handler, definition]: [SubtagHandler?, BaseSubtag?] =
-            override ? [override, undefined]
-                : native ? [native, native]
+            override !== undefined ? [override, undefined]
+                : native !== undefined ? [native, native]
                     : [undefined, undefined];
 
         if (handler === undefined)
@@ -82,7 +82,7 @@ export class BBTagEngine {
 
         if (definition !== undefined) {
             const result = await context.limit.check(context, bbtag, definition.name);
-            if (result !== null)
+            if (result !== undefined)
                 return context.addError(result, bbtag);
         }
 
@@ -97,7 +97,7 @@ export class BBTagEngine {
             await this.util.send(this.cluster.config.discord.channels.errorlog, {
                 content: 'A tag error occurred.',
                 embed: {
-                    title: err instanceof Error ? err.message : typeof err == 'string' ? err : JSON.stringify(err),
+                    title: err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err),
                     description: err instanceof Error ? err.stack : 'No error stack!',
                     color: parse.color('red'),
                     fields: [

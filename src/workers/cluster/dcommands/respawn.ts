@@ -14,7 +14,7 @@ export class RespawnCommand extends BaseGlobalCommand {
         });
     }
 
-    public async respawn(context: CommandContext, clusterId?: number): Promise<void> {
+    public async respawn(context: CommandContext, clusterId: number): Promise<void> {
         await context.send(context.config.discord.channels.shardlog, `**${humanize.fullName(context.author)}** has called for a respawn of cluster ${clusterId}.`);
         context.cluster.worker.send('respawn', <ClusterRespawnRequest>{ id: clusterId, channel: context.channel.id });
         await context.send(context, `ok cluster ${clusterId} is being respawned and stuff now`);

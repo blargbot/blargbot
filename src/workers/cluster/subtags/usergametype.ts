@@ -25,14 +25,14 @@ export class UserGameTypeSubtag extends BaseSubtag {
                     description: 'Returns how the executing user is playing a game (playing, streaming).',
                     exampleCode: 'You are {usergametype} right now!',
                     exampleOut: 'You are streaming right now!',
-                    execute: (ctx) => gameTypes[ctx.member.game ? ctx.member.game.type : 'default']
+                    execute: (ctx) => gameTypes[ctx.member.game !== null ? ctx.member.game.type : 'default']
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns how `user` is playing a game. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat is {usergametype;Stupid cat} cats',
                     exampleOut: 'Stupid cat is streaming cats',
-                    execute: (ctx, args) => this.getUserGameType(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [userId, quietStr]) => this.getUserGameType(ctx, userId.value, quietStr.value)
                 }
             ]
         });
@@ -40,18 +40,19 @@ export class UserGameTypeSubtag extends BaseSubtag {
 
     public async getUserGameType(
         context: BBTagContext,
-        args: string[]
+        userId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const user = await context.getUser(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const user = await context.getUser(userId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (user) {
+        if (user !== undefined) {
             const member = context.guild.members.get(user.id);
-            if (member) {
-                return gameTypes[member.game ? member.game.type : 'default'] || gameTypes.default;
+            if (member !== undefined) {
+                return gameTypes[member.game !== null ? member.game.type : 'default'];
             }
         }
 

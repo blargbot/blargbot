@@ -12,16 +12,14 @@ export class TagListHandler extends ClusterEventService {
     protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
         const tags: SubtagListResult = {};
         for (const t of this.cluster.subtags.list()) {
-            if (t.isTag) {
-                tags[t.name] = {
-                    category: t.category,
-                    name: t.name,
-                    signatures: t.signatures,
-                    deprecated: t.deprecated,
-                    staff: t.staff,
-                    aliases: t.aliases
-                };
-            }
+            tags[t.name] = {
+                category: t.category,
+                name: t.name,
+                signatures: t.signatures,
+                deprecated: t.deprecated,
+                staff: t.staff,
+                aliases: t.aliases
+            };
         }
         reply(tags);
     }

@@ -17,9 +17,9 @@ function parseDefinition(definition: SubtagHandlerDefinition): SubtagHandlerCall
 function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup): SubtagHandlerParameter {
     if (typeof parameter === 'object') {
         return {
-            name: parameter.name ?? null,
+            name: parameter.name ?? undefined,
             autoResolve: false,
-            greedy: parameter.type?.endsWith('OrMore') === true ? parseInt(parameter.type) : null,
+            greedy: parameter.type?.endsWith('OrMore') === true ? parseInt(parameter.type) : false,
             required: argumentRequired.includes(parameter.type),
             nested: parameter.parameters.map(parseArgument),
             defaultValue: ''
@@ -37,7 +37,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
     const defaultValue = split.length >= 2 ? split.slice(1).join(':') : '';
 
     let required = true;
-    let greedy: number | null = null;
+    let greedy: number | false = false;
     switch (parameter[parameter.length - 1]) {
         case '?': required = false; break;
         case '*': required = false; greedy = 0; break;

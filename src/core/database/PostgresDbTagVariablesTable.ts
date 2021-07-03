@@ -1,5 +1,6 @@
 import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '../Logger';
+import { guard } from '../utils';
 import { PostgresDb } from './core/PostgresDb';
 import { TagVariablesTable } from './types';
 
@@ -16,15 +17,14 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
             throw new Error('The postgres models havent been configured!');
 
         const trans = await this.postgres.sequelize.transaction();
-        for (const key in values) {
-            const value = values[key];
+        for (const [key, value] of Object.entries(values)) {
             const query = {
                 name: key.substring(0, 255),
                 scope: scope,
                 type: type
             };
             try {
-                if (key !== undefined && key.length > 0)
+                if (guard.hasValue(value))
                     await model.upsert({ ...query, content: JSON.stringify(value) });
                 else
                     await model.destroy({ where: query });
@@ -43,8 +43,8 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
                 scope: scope
             }
         });
-        if (!record)
-            return undefined;
+        if (!guard.hasValue(record))
+            return record;
         try {
             return JSON.parse(record.content);
         } catch {

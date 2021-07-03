@@ -11,7 +11,6 @@ function stringifyType(type: ChatlogType): string {
         case ChatlogType.CREATE: return 'create';
         case ChatlogType.UPDATE: return 'update';
         case ChatlogType.DELETE: return 'delete';
-        default: throw new Error(`Unknown chatlog type ${type}`);
     }
 }
 

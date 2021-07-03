@@ -39,11 +39,11 @@ function createResolverOrder(parameters: readonly SubtagHandlerParameter[]): Arg
 }
 
 function addParameter(result: ArgumentResolverPermutations, parameter: SubtagHandlerParameter): void {
-    if (parameter.greedy !== null) {
+    if (parameter.greedy !== false) {
         if (result.greedy.length > 0) {
             throw new Error('Cannot have multiple greedy parameters!');
         }
-        const nestedParameters = parameter.nested.length == 0 ? [parameter] : [...flattenGreedyArgs(parameter.nested)];
+        const nestedParameters = parameter.nested.length === 0 ? [parameter] : [...flattenGreedyArgs(parameter.nested)];
         result.greedy.push(...nestedParameters);
         for (let i = 0; i < parameter.greedy; i++) {
             for (const signature of result.permutations) {
@@ -80,7 +80,7 @@ function createResolver(
     greedy: readonly SubtagHandlerParameter[],
     afterGreedy: readonly SubtagHandlerParameter[])
     : ArgumentResolver {
-    const defaultArgs = parameters.map(param => new LiteralSubtagArgumentValue(param.defaultValue ?? ''));
+    const defaultArgs = parameters.map(param => new LiteralSubtagArgumentValue(param.defaultValue));
     return async function* resolve(context, args) {
         let i = 0;
         for (const { arg, param } of matchArgs(args, beforeGreedy, greedy, afterGreedy)) {
@@ -135,7 +135,7 @@ function* flattenGreedyArgs(parameters: readonly SubtagHandlerParameter[]): Gene
         if (!parameter.required)
             throw new Error('Cannot have optional parameters inside a greedy parameter');
 
-        if (parameter.greedy !== null)
+        if (parameter.greedy !== false)
             throw new Error('Cannot have greedy parameters inside a greedy parameter');
 
         if (parameter.nested.length > 0)

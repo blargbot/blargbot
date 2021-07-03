@@ -10,7 +10,7 @@ export function parse(source: string): Statement {
     for (const token of tokenize(source)) {
         switch (token.type) {
             case SourceTokenType.STARTSUBTAG:
-                if (subtag)
+                if (subtag !== undefined)
                     subtags.push(subtag);
                 builder.push(subtag = {
                     name: [],

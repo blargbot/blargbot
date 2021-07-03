@@ -14,7 +14,7 @@ export class RoleNameSubtag extends BaseSubtag {
                     description: 'Returns `role`\'s name. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role name is: {rolename;admin}.',
                     exampleOut: 'The admin role name is: Adminstrator.',
-                    execute: (ctx, args) => this.getRoleName(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [roleId, quietStr]) => this.getRoleName(ctx, roleId.value, quietStr.value)
                 }
             ]
         });
@@ -22,15 +22,16 @@ export class RoleNameSubtag extends BaseSubtag {
 
     public async getRoleName(
         context: BBTagContext,
-        args: string[]
+        roleId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const role = await context.getRole(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const role = await context.getRole(roleId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (role) {
+        if (role !== undefined) {
             return role.name;
         }
 

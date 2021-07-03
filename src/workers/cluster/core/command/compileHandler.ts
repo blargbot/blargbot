@@ -13,7 +13,7 @@ export function compileHandler<TContext extends CommandContext>(definition: Comm
             args: for (const arg of context.args) {
                 // TODO improve traversal here
                 const switched = node.switch[arg.toLowerCase()];
-                if (switched) {
+                if (switched !== undefined) {
                     node = switched;
                     continue args;
                 }
@@ -23,7 +23,7 @@ export function compileHandler<TContext extends CommandContext>(definition: Comm
                         continue args;
                     }
                 }
-                if (node.handler)
+                if (node.handler !== undefined)
                     return node.handler.execute(context, context.args);
 
                 const expected = [...buildUsage(node)].map(u => `\`${u[0].display}\``);
@@ -31,7 +31,7 @@ export function compileHandler<TContext extends CommandContext>(definition: Comm
 
             }
 
-            if (node.handler)
+            if (node.handler !== undefined)
                 return node.handler.execute(context, context.args);
 
             const expected = [...buildUsage(node)].map(u => `\`${u[0].display}\``);
@@ -109,7 +109,7 @@ function populateTree<TContext extends CommandContext>(
             ? (args: readonly string[]) => args
             : compileArgBinder(path, parameters, definition.allowOverflow ?? false);
 
-        const getArgs = (definition.useFlags ?? flagDefinitions.length > 0)
+        const getArgs = definition.useFlags ?? flagDefinitions.length > 0
             ? (_args: readonly string[], flags: FlagResult) => flags.undefined
             : (args: readonly string[], _flags: FlagResult) => args;
 
@@ -137,7 +137,7 @@ function* buildUsage<TContext extends CommandContext>(tree: CommandTree<TContext
         yield inner;
     }
 
-    if (tree.handler) {
+    if (tree.handler !== undefined) {
         res.push(...tree.handler.parameters);
         yield res;
     }

@@ -22,7 +22,7 @@ export class ModerationManager {
             return;
 
         const storedGuild = await this.cluster.database.guilds.get(guild.id);
-        if (!storedGuild)
+        if (storedGuild === undefined)
             return;
 
         const caseid = storedGuild.modlog?.length ?? 0;
@@ -42,7 +42,7 @@ export class ModerationManager {
                 ...fields
             ]
         };
-        if (mod) {
+        if (mod !== undefined) {
             embed.footer = {
                 text: `${humanize.fullName(mod)} (${mod.id})`,
                 icon_url: mod.avatarURL
@@ -70,13 +70,13 @@ export class ModerationManager {
     }
     public async issueWarning(user: User, guild: Guild, count?: number): Promise<WarnResult> {
         const storedGuild = await this.cluster.database.guilds.get(guild.id);
-        if (!storedGuild) throw new Error('Cannot find guild');
+        if (storedGuild === undefined) throw new Error('Cannot find guild');
         let type = ModerationType.WARN;
         let error: unknown = undefined;
         const oldWarnings = storedGuild.warnings?.users?.[user.id] ?? 0;
         let warningCount: number | undefined = Math.max(0, oldWarnings + (count ?? 1));
         const member = guild.members.get(user.id);
-        if (member && this.cluster.util.isBotHigher(member))
+        if (member !== undefined && this.cluster.util.isBotHigher(member))
             if (storedGuild.settings.banat !== undefined && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
                 this.cluster.util.bans.set(guild.id, user.id, {
                     mod: this.cluster.discord.user,
@@ -104,7 +104,7 @@ export class ModerationManager {
 
     public async issuePardon(user: User, guild: Guild, count?: number): Promise<number> {
         const storedGuild = await this.cluster.database.guilds.get(guild.id);
-        if (!storedGuild) throw new Error('Cannot find guild');
+        if (storedGuild === undefined) throw new Error('Cannot find guild');
         const oldWarnings = storedGuild.warnings?.users?.[user.id] ?? 0;
         const warningCount = Math.max(0, oldWarnings - (count ?? 1));
         await this.cluster.database.guilds.setWarnings(guild.id, user.id, warningCount);

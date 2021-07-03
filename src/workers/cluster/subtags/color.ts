@@ -52,7 +52,7 @@
 //         let parsedInput;
 //         if (typeof input === 'string') {
 //             const match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(input);
-//             if (match != null) {
+//             if (match !== null) {
 //                 const r = parseInt(match[1]);
 //                 const g = parseInt(match[2]);
 //                 const b = parseInt(match[3]);
@@ -121,7 +121,7 @@
 // // 			let arr = await bu.getArray(context, args[0]);
 // // 			let input = undefined;
 
-// // 			if (arr == null || !Array.isArray(arr.v)) input = args[0];
+// // 			if (arr === null || !Array.isArray(arr.v)) input = args[0];
 // // 			else {
 // // 				input = arr.v;
 // // 				input = input.map(elem => elem.toString()).join(',');
@@ -129,7 +129,7 @@
 
 // // 			if (typeof input === 'string') {
 // // 				let match = input.match(/^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/);
-// // 				if (match != null) {
+// // 				if (match !== null) {
 // // 					let r = parseInt(match[1]);
 // // 					let g = parseInt(match[2]);
 // // 					let b = parseInt(match[3]);

@@ -33,19 +33,19 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         return this;
     }
 
-    public async check(context: BBTagContext, subtag: SubtagCall, rulekey: string): Promise<string | null> {
+    public async check(context: BBTagContext, subtag: SubtagCall, rulekey: string): Promise<string | undefined> {
         const [rootKey, subKey] = this.getKeys(rulekey);
         const set = this.#rules[rootKey] ?? {};
         const collection = set[subKey];
         if (collection === undefined)
-            return null;
+            return undefined;
 
         for (const rule of collection) {
             if (!await rule.check(context, subtag)) {
                 return context.addError(rule.errorText(rulekey, this.scopeName), subtag);
             }
         }
-        return null;
+        return undefined;
     }
 
     public rulesFor(rulekey: string): string[] {
@@ -54,7 +54,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         const rules = subKey !== undefined
             ? set[subKey] ?? []
             : Object.keys(set).reduce<RuntimeLimitRule[]>((p, c) =>
-                (p.push(...set[c]), p), []);
+                (p.push(...set[c] ?? []), p), []);
         return rules.map(r => r.displayText(rootKey, this.scopeName));
     }
 
@@ -66,8 +66,12 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
             if (ruleSet === undefined)
                 continue;
 
-            for (const subKey of Object.keys(ruleSet))
-                result.rules[`${rootKey}:${subKey}`] = ruleSet[subKey].map(r => r.state());
+            for (const subKey of Object.keys(ruleSet)) {
+                const subRules = ruleSet[subKey];
+                if (subRules !== undefined) {
+                    result.rules[`${rootKey}:${subKey}`] = subRules.map(r => r.state());
+                }
+            }
         }
 
         return result;
@@ -94,5 +98,5 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
 }
 
 interface RuntimeLimitRuleCollection {
-    [key: string]: RuntimeLimitRule[];
+    [key: string]: RuntimeLimitRule[] | undefined;
 }

@@ -6,8 +6,10 @@ export function toBlocks(text: string): Array<string | number> {
     const result = [];
     const max = Math.max(numbers.length, words.length);
     for (let i = 0; i < max; i++) {
-        if (words[i] !== undefined) result.push(words[i]);
-        if (numbers[i] !== undefined) result.push(parseFloat(numbers[i]));
+        if (i < words.length)
+            result.push(words[i]);
+        if (i < numbers.length)
+            result.push(parseFloat(numbers[i]));
     }
     return result;
 }

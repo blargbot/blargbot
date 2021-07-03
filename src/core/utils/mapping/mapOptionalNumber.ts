@@ -7,4 +7,3 @@ export function mapOptionalNumber(value: unknown): TypeMappingResult<number | un
         : mappingResultNever;
 }
 
-

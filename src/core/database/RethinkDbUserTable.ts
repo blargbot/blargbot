@@ -45,7 +45,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', M
             });
         } else {
             const update: Partial<MutableStoredUser> = {};
-            if (currentUser.username != user.username) {
+            if (currentUser.username !== user.username) {
                 currentUser.username = update.username = user.username;
                 update.usernames = currentUser.usernames;
                 update.usernames.push({
@@ -53,10 +53,10 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', M
                     date: new Date()
                 });
             }
-            if (currentUser.discriminator != user.discriminator) {
+            if (currentUser.discriminator !== user.discriminator) {
                 currentUser.discriminator = update.discriminator = user.discriminator;
             }
-            if (currentUser.avatarURL != user.avatarURL) {
+            if (currentUser.avatarURL !== user.avatarURL) {
                 currentUser.avatarURL = update.avatarURL = user.avatarURL;
             }
 
@@ -68,7 +68,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', M
 
     public async setTagReport(userId: string, tagName: string, reason: string | undefined): Promise<boolean> {
         const user = await this.rget(userId);
-        if (!user)
+        if (user === undefined)
             return false;
 
         const reports = user.reports ??= {};

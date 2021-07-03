@@ -37,7 +37,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     public async setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>
     public async setAutoresponse(guildId: string, index: number | 'everything', autoresponse: GuildAutoresponse | GuildFilteredAutoresponse | undefined): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         if (guild.autoresponse === undefined) {
@@ -72,7 +72,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async addAutoresponse(guildId: string, autoresponse: GuildFilteredAutoresponse): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         guild.autoresponse ??= { list: [] };
@@ -89,7 +89,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined> {
         const guild = await this.rget(guildId, skipCache);
-        return guild?.channels?.[channelId]?.[key];
+        return guild?.channels[channelId]?.[key];
     }
 
     public async getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]> {
@@ -109,7 +109,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async listCommands(guildId: string, skipCache = false): Promise<readonly NamedStoredGuildCommand[]> {
         const guild = await this.rget(guildId, skipCache);
-        if (!(guild?.ccommands))
+        if (guild?.ccommands === undefined)
             return [];
 
         return Object.entries(guild.ccommands)
@@ -136,7 +136,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         if (value === undefined)
@@ -147,7 +147,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
         return await this.rupdate(guildId, r => ({
             settings: {
-                [key]: r.literal(...(value !== undefined ? [value] : []))
+                [key]: r.literal(...value !== undefined ? [value] : [])
             }
         }));
     }
@@ -165,7 +165,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async updateCommand(guildId: string, commandName: string, partialCommand: Partial<StoredGuildCommand>): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         commandName = commandName.toLowerCase();
@@ -184,7 +184,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async setCommandProp<K extends keyof StoredGuildCommand>(guildId: string, commandName: string, key: K, value: StoredGuildCommand[K]): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         commandName = commandName.toLowerCase();
@@ -200,7 +200,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rupdate(guildId, r => ({
             ccommands: {
                 [commandName]: {
-                    [key]: r.literal(...(value !== undefined ? [value] : []))
+                    [key]: r.literal(...value !== undefined ? [value] : [])
                 }
             }
         }));
@@ -208,7 +208,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         commandName = commandName.toLowerCase();
@@ -223,19 +223,19 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
         return await this.rupdate(guildId, r => ({
             ccommands: {
-                [commandName]: r.literal(...(command !== undefined ? [command] : []))
+                [commandName]: r.literal(...command !== undefined ? [command] : [])
             }
         }));
     }
 
     public async renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         oldName = oldName.toLowerCase();
         newName = newName.toLowerCase();
-        if (!guild.ccommands[oldName])
+        if (guild.ccommands[oldName] === undefined)
             return false;
 
         guild.ccommands[newName] = guild.ccommands[oldName];
@@ -250,7 +250,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         guild.modlog ??= [];
@@ -263,7 +263,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         guild.log ??= {};
@@ -274,14 +274,14 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
         return await this.rupdate(guildId, r => ({
             log: <UpdateRequest<Record<string, string>>>{
-                [event]: r.literal(...(channel !== undefined ? [channel] : []))
+                [event]: r.literal(...channel !== undefined ? [channel] : [])
             }
         }));
     }
 
     public async setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean> {
         const guild = await this.rget(guildId);
-        if (!guild)
+        if (guild === undefined)
             return false;
 
         const warnings = guild.warnings ??= {};
@@ -290,7 +290,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rupdate(guildId, r => ({
             warnings: {
                 users: {
-                    [userId]: r.literal(...(count !== undefined ? [count] : []))
+                    [userId]: r.literal(...count !== undefined ? [count] : [])
                 }
             }
         }));

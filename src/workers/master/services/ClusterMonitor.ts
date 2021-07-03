@@ -16,7 +16,7 @@ export class ClusterMonitor extends IntervalService {
     public execute(cluster?: ClusterConnection): void {
         if (cluster === undefined) {
             return this.master.clusters.forEach((_, cluster) =>
-                cluster ? this.execute(cluster) : undefined);
+                cluster !== undefined ? this.execute(cluster) : undefined);
         }
 
         if (cluster.state !== WorkerState.RUNNING)
@@ -28,7 +28,7 @@ export class ClusterMonitor extends IntervalService {
         const cutoff = moment().add(-1, 'minute');
         const alerts = [];
 
-        if (stats) {
+        if (stats !== undefined) {
             for (const shard of stats.shards) {
                 if (cutoff.isAfter(shard.time)) {
                     const diff = moment.duration(now.diff(shard.time));

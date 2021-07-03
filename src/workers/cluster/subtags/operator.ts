@@ -136,7 +136,7 @@ export class OperatorSubtag extends BaseSubtag {
                 context,
                 subtag,
                 `At index ${parsedValues.findIndex(
-                    (v) => typeof v != 'boolean'
+                    (v) => typeof v !== 'boolean'
                 )}`
             );
         return logic[operator](parsedBools).toString();
@@ -159,7 +159,7 @@ export class OperatorSubtag extends BaseSubtag {
             '{&&;false;true} = false\n{||;false;true} = true\n{!;true;false;true} = false (this only considers the first value)' +
             '\n{xor;false;true} = true\n{xor;true;true} = false\n{^;false;true} = `Not a number` (don\'t do this! ^ is used for numeric operations!!)\n```';
         const comparisonOperationDesc = `\`${Object.keys(compare).join(', ')}\`` +
-            '\nComparison operators behave in a similar way to `{bool}`, but can accept more than two values. If an argument is an array, this array will be flattened (except for `startswith, includes, contains and endswith`). Because it can accept more than two values the logic is a little different. `{==;1;2;3;4}` would mean `1 == 2 && 2 == 3 && 3 == 4`. For `startswith, includes, contains and endswith` this translates to the following:\n- `{includes;abc;a;b;c} = "abc".includes("a") && "abc".includes("b") && "abc".includes("c")`\n**Examples**:```\n' +
+            '\nComparison operators behave in a similar way to `{bool}`, but can accept more than two values. If an argument is an array, this array will be flattened (except for `startswith, includes, contains and endswith`). Because it can accept more than two values the logic is a little different. `{==;1;2;3;4}` would mean `1 === 2 && 2 === 3 && 3 === 4`. For `startswith, includes, contains and endswith` this translates to the following:\n- `{includes;abc;a;b;c} = "abc".includes("a") && "abc".includes("b") && "abc".includes("c")`\n**Examples**:```\n' +
             '{==;true;true} = true\n{>;3;2;1} = true\n{startswith;Hello world!;Hello;He} = true\n{!=;blargbot;bad} = true\n' +
             '{>;3;1;2} = false\n{==;[1,2,3];[1,2,3]} = false\n{==;\'[1,2,3];\'[1,2,3]} = true\n```' +
             '\nBecause the arrays inside `{==;[1,2,3];[1,2,3]}` get flattened, this will result in `{==;1;2;3;1;2;3}`, which returns `false`. If you want to compare arrays, an additional character needs to be added, like: \n`{==;\'[1,2,3];\'[1,2,3]}`';

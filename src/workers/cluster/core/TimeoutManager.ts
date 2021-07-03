@@ -67,7 +67,7 @@ export class TimeoutManager {
         }
         if (event.guild !== undefined) {
             const guild = this.cluster.discord.guilds.get(event.guild);
-            if (guild)
+            if (guild !== undefined)
                 return guild.shard.id;
         }
         return 0;

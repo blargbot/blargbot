@@ -17,7 +17,7 @@ export class ClusterSpawner extends BaseService {
 
         const restart = await this.master.database.vars.get('restart');
 
-        if (restart?.varvalue) {
+        if (restart?.varvalue !== undefined) {
             void this.master.util.send(restart.varvalue.channel, `Ok I'm back. It took me ${humanize.duration(moment(), moment(restart.varvalue.time))}.`);
             void this.master.database.vars.delete('restart');
         }

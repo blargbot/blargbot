@@ -10,11 +10,11 @@ export class ThrowSubtag extends BaseSubtag {
             category: SubtagType.COMPLEX,
             definition: [
                 {
-                    parameters: ['error?'],
+                    parameters: ['error?:A custom error occurred'],
                     description: 'Throws `error`.',
                     exampleCode: '{throw;Custom Error}',
                     exampleOut: '\u200B`Custom Error`\u200B',
-                    execute: (ctx, args, subtag) => this.customError(args[0]?.value || 'A custom error occurred', ctx, subtag)
+                    execute: (ctx, [error], subtag) => this.customError(error.value, ctx, subtag)
                 }
             ]
         });

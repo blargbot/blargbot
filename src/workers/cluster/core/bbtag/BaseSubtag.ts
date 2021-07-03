@@ -7,12 +7,12 @@ import { BBTagContext } from './BBTagContext';
 import { compileSignatures } from './compilation/compileSignatures';
 import { parseDefinitions } from './compilation/parseDefinitions';
 
-export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandler {
+export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;
     public readonly isTag: true;
-    public readonly desc: string | null;
+    public readonly desc: string | undefined;
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
     public readonly signatures: readonly SubtagHandlerCallSignature[];

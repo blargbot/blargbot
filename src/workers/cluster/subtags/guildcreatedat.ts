@@ -16,7 +16,7 @@ export class GuildCreateDat extends BaseSubtag {
                         'formatted accordingly. Leave blank for default formatting. See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
                     exampleCode: 'This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'This guild was created on 2016/01/01 01:00:00',
-                    execute: (ctx, args) => moment(ctx.guild.createdAt).utcOffset(0).format(args[0]?.value || '')
+                    execute: (ctx, [format]) => moment(ctx.guild.createdAt).utcOffset(0).format(format.value)
                 }
             ]
         });

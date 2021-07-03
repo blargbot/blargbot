@@ -47,9 +47,9 @@ export class DeleteSubtag extends BaseSubtag {
 
         const channel = await context.getChannel(channelStr);
         let msg: Message;
-        if (!channel)
+        if (channel === undefined)
             return this.channelNotFound(context, subtag);
-        if (messageId) {
+        if (messageId.length > 0) {
             try {
                 msg = await this.discord.getMessage(channel.id, messageId);
             } catch (err: unknown) {

@@ -6,7 +6,7 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
         super('free', logger, mapOptions);
     }
 
-    public async executeCore({ top, bottom }: FreeOptions): Promise<Buffer | null> {
+    public async executeCore({ top, bottom }: FreeOptions): Promise<Buffer> {
         const topCaption = await this.renderJimpText(top, {
             font: 'impact.ttf',
             fill: 'white',
@@ -15,7 +15,7 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
             gravity: 'north',
             size: '380x100'
         });
-        const bottomText = bottom || 'CLICK HERE TO\nFIND OUT HOW';
+        const bottomText = bottom ?? 'CLICK HERE TO\nFIND OUT HOW';
         const bottomCaption = await this.renderJimpText(bottomText, {
             font: 'arial.ttf',
             fill: 'white',
@@ -32,7 +32,7 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
         for (let i = 0; i < frameCount; i++) {
             const frame = base.clone();
             frame.composite(i < frameCount / 2 ? back1 : back2, 0, 0);
-            frame.composite(topCaption, i == 0 ? 10 : randInt(-25, 25), i == 0 ? 15 : randInt(0, 20));
+            frame.composite(topCaption, i === 0 ? 10 : randInt(-25, 25), i === 0 ? 15 : randInt(0, 20));
             frame.composite(bottomCaption, 10, 228);
             gif.addFrame(frame);
         }
@@ -43,5 +43,5 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
 
 const mapOptions = mapping.object<FreeOptions>({
     top: mapping.string,
-    bottom: mapping.string
+    bottom: mapping.optionalString
 });

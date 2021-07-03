@@ -81,5 +81,6 @@ declare module 'eris' {
 
     interface Client {
         off: ClientEvents<this>;
+        getChannel(channelId: string): AnyChannel | undefined;
     }
 }

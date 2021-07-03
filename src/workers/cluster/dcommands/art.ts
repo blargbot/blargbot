@@ -24,11 +24,11 @@ export class ArtCommand extends BaseGlobalCommand {
         let url;
         if (context.message.attachments.length > 0) {
             url = context.message.attachments[0].url;
-        } else if (flags.I) {
+        } else if (flags.I !== undefined) {
             url = flags.I.join(' ');
         } else if (user !== undefined) {
             const u = await context.util.getUser(context, user);
-            if (!u)
+            if (u === undefined)
                 return;
             url = u.avatarURL;
         } else {
@@ -38,7 +38,7 @@ export class ArtCommand extends BaseGlobalCommand {
         void context.discord.sendChannelTyping(context.channel.id);
 
         const buffer = await context.cluster.images.render('art', { avatar: url });
-        if (!buffer || buffer.length === 0) {
+        if (buffer === undefined || buffer.length === 0) {
             return '❌ Something went wrong while trying to render that!';
         } else {
             return {

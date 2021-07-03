@@ -8,14 +8,14 @@ export class CommandNameSubtag extends BaseSubtag {
         super(cluster, {
             name: 'commandname',
             category: SubtagType.BOT,
-            desc: 'Gets the name of the current tag or custom command. Will throw an error in other instances.',
+            desc: 'Gets the name of the current tag or custom command.',
             definition: [
                 {
                     parameters: [],
                     exampleCode: 'This command is {commandname}',
                     exampleIn: 'b!cc test',
                     exampleOut: 'This command is test',
-                    execute: (ctx, _, subtag) => ctx.tagName || this.customError('Not a command', ctx, subtag)
+                    execute: (ctx) => ctx.tagName
                 }
             ]
         });

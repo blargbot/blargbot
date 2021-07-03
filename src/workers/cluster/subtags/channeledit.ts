@@ -36,7 +36,7 @@ export class ChannelEditSubtag extends BaseSubtag {
     ): Promise<string> {
         const channel = await context.getChannel(args[0]);
 
-        if (!channel)
+        if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag);//TODO no channel found error
 
         const permission = channel.permissionsOf(context.authorizer);
@@ -60,7 +60,7 @@ export class ChannelEditSubtag extends BaseSubtag {
                 context.scope.reason ?? ''
             );
             await channel.edit(options, fullReason);
-            if (!context.guild.channels.get(channel.id))
+            if (context.guild.channels.get(channel.id) === undefined)
                 context.guild.channels.add(channel);
             return channel.id;
         } catch (err: unknown) {

@@ -69,7 +69,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
             fields: [],
             title: 'Autoresponses'
         };
-        if (ars?.everything !== undefined) {
+        if (ars.everything !== undefined) {
             embed.fields.push({
                 name: `Command: \`${ars.everything.executes}\``,
                 value: 'Trigger: everything',
@@ -77,7 +77,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
             });
         }
 
-        if (ars?.list !== undefined) {
+        if (ars.list !== undefined) {
             embed.fields.push(...ars.list.map(ar => ({
                 name: `Command: \`${ar.executes}\``,
                 value: `Trigger: \`${ar.term}\`${ar.regex ? ' (regex)' : ''}`,
@@ -103,13 +103,13 @@ export class AutoResponseCommand extends BaseGuildCommand {
         let commandIndex = 0;
         if (isEverything) {
             if (ars.everything?.executes !== undefined)
-                return `❌ An autoresponse that responds to everything already exists! It executes the following ccommand: \`${ars.everything?.executes}\``;
+                return `❌ An autoresponse that responds to everything already exists! It executes the following ccommand: \`${ars.everything.executes}\``;
             if (pattern !== '')
                 return '❌ Autoresponses that respond to everything cannot have a pattern';
             while (commandNames.has(commandName = `_autoresponse_${commandIndex++}`));
             await context.database.guilds.setAutoresponse(context.channel.guild.id, 'everything', { executes: commandName });
         } else {
-            if (!isEverything && (ars.list?.length ?? 0) >= 20)
+            if ((ars.list?.length ?? 0) >= 20)
                 return '❌ You already have 20 autoresponses!';
             if (pattern === '')
                 return '❌ If you want to respond to everything, you need to use the `-e` flag.';
@@ -214,9 +214,9 @@ export class AutoResponseCommand extends BaseGuildCommand {
     private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: boolean): Promise<string | undefined | { index: number | 'everything'; executes: string; }> {
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
         const indexes: Array<{ name: string; result: { index: number | 'everything'; executes: string; }; }> = [];
-        if (includeEverything && ars?.everything !== undefined)
+        if (includeEverything && ars.everything !== undefined)
             indexes.push({ name: 'Trigger: Everything', result: { index: 'everything', executes: ars.everything.executes } });
-        if (ars?.list !== undefined) {
+        if (ars.list !== undefined) {
             for (let i = 0; i < ars.list.length; i++) {
                 const ar = ars.list[i];
                 indexes.push({ name: `Trigger: \`${ar.term}\`${ar.regex ? ' (regex)' : ''}`, result: { index: i, executes: ar.executes } });
@@ -235,7 +235,7 @@ Please type the number of the autoresponse you wish to remove, or type 'c' to ca
             300000
         );
 
-        if (result === null)
+        if (result === undefined)
             return undefined;
         if (result.content.toLowerCase() === 'c')
             return 'Query cancelled';

@@ -21,7 +21,7 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                          * TODO change this to "No channel found" for consistency
                          * * when versioning is out and about
                          */
-                        if (!channel)
+                        if (channel === undefined)
                             return this.customError('Channel does not exist', context, subtag);
                         const permission = channel.permissionsOf(context.authorizer);
 
@@ -34,7 +34,7 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                                 context.scope.reason ?? ''
                             );
                             await channel.delete(fullReason);
-                            if (context.guild.channels.get(channel.id))
+                            if (context.guild.channels.get(channel.id) !== undefined)
                                 context.guild.channels.remove(channel);
                             return;//TODO return something on success
                         } catch (err: unknown) {

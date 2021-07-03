@@ -161,7 +161,7 @@ export class CustomCommand extends BaseGuildCommand {
 
     public showDocs(context: GuildCommandContext, topic: readonly string[]): SendPayload | string {
         const embed = getDocsEmbed(context, topic);
-        if (!embed)
+        if (embed === undefined)
             return `❌ Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`;
 
         return { embed: embed, isHelp: true };
@@ -213,7 +213,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match))
-            return `❌ The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``;
+            return `❌ The \`${match.name}\` custom command is an alias to the tag \`${match.alias}\``;
 
         return await this.saveCommand(context, 'edited', match.name, content, match);
     }
@@ -233,7 +233,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match.command))
-            return `❌ The \`${commandName}\` custom command is an alias to the tag \`${match.command.alias}\``;
+            return `❌ The \`${match.name}\` custom command is an alias to the tag \`${match.command.alias}\``;
 
         return await this.saveCommand(context, 'set', match.name, content, match.command);
     }
@@ -258,9 +258,9 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match))
-            return `❌ The command \`${commandName}\` is an alias to the tag \`${match.alias}\``;
+            return `❌ The command \`${match.name}\` is an alias to the tag \`${match.alias}\``;
 
-        const response = `✅ The raw code for \`${match.name}\` is:\n\`\`\`${match.lang}\n${match.content}\n\`\`\``;
+        const response = `✅ The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``;
         return response.length < 2000
             ? response
             : {
@@ -349,7 +349,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { undefined: _, ...addFlags } = parse.flags([], flagsRaw);
-        const flags = [...(match.flags ?? [])];
+        const flags = [...match.flags ?? []];
         for (const flag of Object.keys(addFlags)) {
             const args = addFlags[flag];
             if (args === undefined || args.length === 0)
@@ -380,7 +380,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { undefined: _, ...removeFlags } = parse.flags([], flagsRaw);
-        const flags = [...(match.flags ?? [])]
+        const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
@@ -423,7 +423,7 @@ export class CustomCommand extends BaseGuildCommand {
         const roles = [];
         for (const roleName of roleNames) {
             const role = await context.cluster.util.getRole(context.message, roleName);
-            if (role === null)
+            if (role === undefined)
                 return;
             roles.push(role);
         }
@@ -551,7 +551,7 @@ export class CustomCommand extends BaseGuildCommand {
             });
         }
         let arIndex = -1;
-        let arCount = Object.values(autoResponses).reduce((c, a) => c + a.length, 0);
+        let arCount = Object.values(autoResponses).reduce((c, a) => c + (a?.length ?? 0), 0);
         for (const autoresponse of shrinkwrap.ar) {
             const arName = `\`${autoresponse.term}\`${autoresponse.regex ? ' (regex)' : ''}`;
             if (arCount++ >= 20) {
@@ -794,8 +794,8 @@ async function getShrinkwrapData(
     database: Database,
     guildId: string
 ): Promise<{
-    commands: Record<string, NamedStoredGuildCommand>;
-    autoResponses: Record<string, GuildFilteredAutoresponse[]>;
+    commands: Record<string, NamedStoredGuildCommand | undefined>;
+    autoResponses: Record<string, GuildFilteredAutoresponse[] | undefined>;
     everythingAutoResponse: GuildAutoresponse | undefined;
 }> {
 

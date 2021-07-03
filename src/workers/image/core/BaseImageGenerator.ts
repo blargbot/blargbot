@@ -6,6 +6,7 @@ import phantom from 'phantom';
 import { TypeMapping } from '../../cluster/core';
 import { Logger } from './globalCore';
 import { ImageGeneratorMap, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
+import { inspect } from 'util';
 
 const im = gm.subClass({ imageMagick: true });
 
@@ -21,15 +22,15 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         this.#mapping = mapping;
     }
 
-    public async execute(message: JToken): Promise<Buffer | null> {
+    public async execute(message: JToken): Promise<Buffer | undefined> {
         const mapped = this.#mapping(message);
         if (!mapped.valid)
-            return null;
+            return undefined;
 
         return await this.executeCore(mapped.value);
     }
 
-    protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<Buffer | null>;
+    protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<Buffer | undefined>;
 
     protected getLocalResourcePath(...segments: string[]): string {
         return path.join(__dirname, '../../../../res/img', ...segments);
@@ -49,7 +50,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
     protected async toBuffer(source: gm.State, format?: string): Promise<Buffer> {
         return await new Promise<Buffer>((resolve, reject) => {
             source.setFormat(format ?? 'png').toBuffer((err, buffer) => {
-                if (err) {
+                if (err !== null) {
                     reject(err);
                     return;
                 }
@@ -98,7 +99,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         else if (source instanceof Buffer)
             source = im(source);
         else if (!isGm(source))
-            throw new Error(`Unable to read ${source} into imagemagick`);
+            throw new Error(`Unable to read ${inspect(source)} into imagemagick`);
 
         source.command('convert');
         await configure(source);
@@ -111,9 +112,6 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
     }
 
     protected renderJimpText(text: string, options: TextOptions): Promise<Jimp> {
-        if (!text)
-            throw new Error('No text provided');
-
         options.fill ??= 'black';
         options.gravity ??= 'Center';
 
@@ -168,7 +166,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
 
         const rect = await page.evaluate(phantomGetrect, replacements);
 
-        if (rect) {
+        if (rect !== undefined) {
             await page.on('clipRect', {
                 top: rect.top,
                 left: rect.left,
@@ -177,7 +175,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
             });
         }
 
-        if (transform)
+        if (transform !== undefined)
             await page.evaluate(transform, transformArg);
 
         await page.evaluate(phantomResize);
@@ -190,13 +188,13 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
 
 // This method is turned into a string and run on the phantom instance, not in node
 function phantomGetrect(replacements: PhantomOptions['replacements']): { top: number; left: number; width: number; height: number; } | undefined {
-    if (replacements) {
+    if (replacements !== undefined) {
         const keys = Object.keys(replacements);
         // Phantom might not support the for-of syntax
         // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < keys.length; i++) {
             const thing = document.getElementById(keys[i]);
-            if (thing)
+            if (thing !== null)
                 thing.innerText = replacements[keys[i]];
         }
     }
@@ -235,7 +233,7 @@ function phantomResize(): void {
             let ii = 0;
             while (el.scrollHeight > wrapper.clientHeight) {
                 resizeText(el);
-                if (++ii == 1000)
+                if (++ii === 1000)
                     break;
             }
         }

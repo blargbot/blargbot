@@ -42,12 +42,12 @@ export class MessageAwaiter {
         return this;
     }
 
-    public async wait(channels: string[], users: string[] | null, timeoutMS: number, filter?: (message: AnyMessage) => boolean): Promise<AnyMessage | null> {
-        this.logger.debug(`awaiting message | channels: [${channels}] users: [${users}] timeout: ${timeoutMS}`);
+    public async wait(channels: string[], users: string[] | undefined, timeoutMS: number, filter?: (message: AnyMessage) => boolean): Promise<AnyMessage | undefined> {
+        this.logger.debug(`awaiting message | channels: [${channels.join(',')}] users: [${users?.join(',') ?? ''}] timeout: ${timeoutMS}`);
 
-        return await new Promise<AnyMessage | null>(resolve => {
+        return await new Promise<AnyMessage | undefined>(resolve => {
             const timeout = setTimeout(() => {
-                resolve(null);
+                resolve(undefined);
                 for (const channel of channels)
                     this.off(channel, handler);
             }, timeoutMS);
@@ -69,15 +69,15 @@ export class MessageAwaiter {
     }
 }
 
-function buildFilter(users: string[] | null, filter?: (message: AnyMessage) => boolean): (message: AnyMessage) => boolean {
-    if (users === null || users.length === 0)
+function buildFilter(users: string[] | undefined, filter?: (message: AnyMessage) => boolean): (message: AnyMessage) => boolean {
+    if (users === undefined || users.length === 0)
         return filter ?? (() => true);
 
     if (users.length === 1) {
         const user = users[0];
         if (filter === undefined)
             return m => m.author.id === user;
-        return m => m.author.id == user && filter(m);
+        return m => m.author.id === user && filter(m);
     }
 
     const userSet = new Set(users);

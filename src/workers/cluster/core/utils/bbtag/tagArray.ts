@@ -18,7 +18,7 @@ export function serialize(array: JArray | BBTagArray, varName?: string): string 
     });
 }
 
-export function deserialize(value: string): BBTagArray | null {
+export function deserialize(value: string): BBTagArray | undefined {
     let result = mapBBArray(value);
     if (!result.valid) {
         value = value.replace(
@@ -29,7 +29,7 @@ export function deserialize(value: string): BBTagArray | null {
     }
 
     if (!result.valid)
-        return null;
+        return undefined;
     if (Array.isArray(result.value))
         return { v: result.value };
     return result.value;
@@ -49,7 +49,7 @@ export function flattenArray(array: JArray): JArray {
     const result = [];
     for (const arg of array) {
         const arr = typeof arg === 'string' ? deserialize(arg) : { v: arg };
-        if (arr != null && Array.isArray(arr.v))
+        if (arr !== undefined && Array.isArray(arr.v))
             result.push(...arr.v);
         else result.push(arg);
     }
@@ -58,7 +58,7 @@ export function flattenArray(array: JArray): JArray {
 
 export async function getArray(context: BBTagContext, subtag: SubtagCall, arrName: string): Promise<BBTagArray | undefined> {
     const obj = deserialize(arrName);
-    if (obj != null)
+    if (obj !== undefined)
         return obj;
     try {
         const arr = await context.variables.get(arrName, subtag);

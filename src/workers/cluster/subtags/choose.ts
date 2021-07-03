@@ -25,7 +25,7 @@ export class ChooseSubtag extends BaseSubtag {
         options: SubtagArgumentValue[],
         subtag: SubtagCall
     ): Promise<string> | string {
-        const index = parse.int((choice));
+        const index = parse.int(choice);
 
         if (isNaN(index))
             return this.notANumber(context, subtag);

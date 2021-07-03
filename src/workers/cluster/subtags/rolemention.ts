@@ -14,7 +14,7 @@ export class RoleMentionSubtag extends BaseSubtag {
                     description: 'Returns a mention of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role will be mentioned: {rolemention;Admin}',
                     exampleOut: 'The admin role will be mentioned: @\u200BAdminstrator',
-                    execute: (ctx, args) => this.roleMention(ctx, args.map(arg => arg.value))
+                    execute: (ctx, [roleId, quietStr]) => this.roleMention(ctx, roleId.value, quietStr.value)
                 }
             ]
         });
@@ -22,15 +22,16 @@ export class RoleMentionSubtag extends BaseSubtag {
 
     public async roleMention(
         context: BBTagContext,
-        args: string[]
+        roleId: string,
+        quietStr: string
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const role = await context.getRole(args[0], {
+        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
+        const role = await context.getRole(roleId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
 
-        if (role) {
+        if (role !== undefined) {
             if (!context.state.allowedMentions.roles.includes(role.id)) {
                 context.state.allowedMentions.roles.push(role.id);
             }

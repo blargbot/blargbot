@@ -15,24 +15,27 @@ export class NumFormatSubtag extends BaseSubtag {
                     description: 'Rounds `number` to `roundTo` digits. `roundTo` can be left empty.',
                     exampleCode: '{numformat;123456.789;2}\n{numformat;123456.789;-3}\n{numformat;100.10000}',
                     exampleOut: '123456.79\n123000\n100.1',
-                    execute: (_, args) => this.numFormat(args.map(arg => arg.value))
+                    execute: (_, [numberStr, roundToStr]) => this.numFormat(numberStr.value, roundToStr.value, '.', '')
                 },
                 {
                     parameters: ['number', 'roundTo', 'decimal:.', 'thousands?:'],
                     description: 'Rounds `number` to `roundTo` digits. Uses `decimal` as the decimal separator and `thousands` for the thousands separator. To skip `roundTo` or `decimal` leave them empty.',
                     exampleCode: '{numformat;3.1415;4;,}\n{numformat;100000;;;.}',
                     exampleOut: '3,1415\n100.000',
-                    execute: (_, args) => this.numFormat(args.map(arg => arg.value))
+                    execute: (_, [numberStr, roundToStr, decimal, thousands]) => this.numFormat(numberStr.value, roundToStr.value, decimal.value, thousands.value)
                 }
             ]
         });
     }
     public numFormat(
-        args: string[]
+        numberStr: string,
+        roundToStr: string,
+        decimal: string,
+        thousands: string
     ): string {
-        const number = parse.float(args[0]);
+        const number = parse.float(numberStr);
         if (isNaN(number)) return 'NaN';
-        let roundto = parse.int(args[1]);
+        let roundto = parse.int(roundToStr);
         const options: LocaleNumOptions = {}; // create formatter options
         if (!isNaN(roundto)) {
             roundto = Math.min(20, Math.max(-21, roundto));
@@ -45,8 +48,8 @@ export class NumFormatSubtag extends BaseSubtag {
             }
         }
         let num: string | string[] = number.toLocaleString('en-US', options).split('.');
-        num[0] = num[0].split(',').join(args[3] || '');
-        num = num.join(args[2] || '.');
+        num[0] = num[0].split(',').join(thousands);
+        num = num.join(decimal);
         return num;
     }
 }

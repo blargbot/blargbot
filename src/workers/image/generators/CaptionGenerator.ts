@@ -6,7 +6,7 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
         super('caption', logger, mapOptions);
     }
 
-    public async executeCore({ url, input, font }: CaptionOptions): Promise<Buffer | null> {
+    public async executeCore({ url, input, font }: CaptionOptions): Promise<Buffer> {
         const img = await this.getRemoteJimp(url);
         img.scaleToFit(800, 800);
 

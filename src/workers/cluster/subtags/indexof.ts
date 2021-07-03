@@ -23,7 +23,7 @@ export class IndexOfSubtag extends BaseSubtag {
                         if (isNaN(from)) return this.notANumber(context, subtag, 'Start and fallback are not numbers');
 
                         let input;
-                        if (deserializedArray && Array.isArray(deserializedArray.v))
+                        if (deserializedArray !== undefined && Array.isArray(deserializedArray.v))
                             input = deserializedArray.v;
                         else
                             input = text;

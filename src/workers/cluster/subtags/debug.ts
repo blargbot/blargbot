@@ -17,7 +17,7 @@ export class DebugSubtag extends BaseSubtag {
                     exampleCode: '{debug;current value;{get;~i}}',
                     exampleOut: '(in debug output)[10]current value 1',
                     execute: (ctx, args, subtag) => {
-                        ctx.addError('', subtag, args?.map(arg => arg.value).join(' '));
+                        ctx.addError('', subtag, args.map(arg => arg.value).join(' '));
                         return '';
                     }
                 }

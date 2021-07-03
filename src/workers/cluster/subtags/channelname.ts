@@ -22,7 +22,7 @@ export class ChannelNameSubtag extends BaseSubtag {
                     description: 'Returns the name of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: '{channelname;111111111111111}',
                     exampleOut: 'cooler-test-channel',
-                    execute: (ctx, args, subtag) => this.getChannelName(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, [channel, quiet], subtag) => this.getChannelName(ctx, channel.value, quiet.value, subtag)
                 }
             ]
         });
@@ -30,13 +30,14 @@ export class ChannelNameSubtag extends BaseSubtag {
 
     public async getChannelName(
         context: BBTagContext,
-        args: string[],
+        channelStr: string,
+        quietStr: string,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const channel = await context.getChannel(args[0], { quiet, suppress: context.scope.suppressLookup });
-        if (!channel)
-            return quiet ? '' : this.channelNotFound(context, subtag, `${args[0]} could not be found`);
+        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
+        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        if (channel === undefined)
+            return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
         return channel.name;
     }
 }

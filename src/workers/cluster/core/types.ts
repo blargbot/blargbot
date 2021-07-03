@@ -92,12 +92,12 @@ export interface BBTagContextMessage {
 
 export interface BBTagContextState {
     query: {
-        count: 0;
+        count: number;
         user: Record<string, string | undefined>;
         role: Record<string, string | undefined>;
         channel: Record<string, string | undefined>;
     };
-    outputMessage: Promise<string | null> | null;
+    outputMessage: Promise<string | undefined> | undefined;
     ownedMsgs: string[];
     return: RuntimeReturnState;
     stackSize: number;
@@ -105,7 +105,7 @@ export interface BBTagContextState {
     file: undefined | MessageFile;
     reactions: string[];
     nsfw: undefined | string;
-    replace: null | { regex: RegExp | string; with: string; };
+    replace: undefined | { regex: RegExp | string; with: string; };
     break: number;
     continue: number;
     subtags: Record<string, number[] | undefined>;
@@ -121,9 +121,9 @@ export interface BBTagContextState {
 }
 
 export interface RuntimeError {
-    readonly subtag: SubtagCall | null;
+    readonly subtag: SubtagCall | undefined;
     readonly error: string | readonly RuntimeError[];
-    readonly debugMessage: string | null;
+    readonly debugMessage: string | undefined;
 }
 
 export interface RuntimeDebugEntry {
@@ -133,8 +133,8 @@ export interface RuntimeDebugEntry {
 
 export interface RuntimeLimit {
     addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this;
-    readonly scopeName: string | null;
-    check(context: BBTagContext, subtag: SubtagCall, subtagName: string): Promise<string | null> | string | null;
+    readonly scopeName: string;
+    check(context: BBTagContext, subtag: SubtagCall, subtagName: string): Promise<string | undefined> | string | undefined;
     rulesFor(subtagName: string): string[];
     serialize(): SerializedRuntimeLimit;
     load(state: SerializedRuntimeLimit): void;
@@ -154,7 +154,7 @@ export interface BBTagContextOptions {
     readonly tagVars?: boolean;
     readonly author: string;
     readonly authorizer?: string;
-    readonly tagName: string;
+    readonly tagName?: string;
     readonly cooldown?: number;
     readonly cooldowns?: TagCooldownManager;
     readonly locks?: Record<string, ReadWriteLock | undefined>;
@@ -194,9 +194,9 @@ export interface SubtagHandler {
 }
 
 export interface SubtagHandlerParameter {
-    readonly name: string | null;
+    readonly name: string | undefined;
     readonly required: boolean;
-    readonly greedy: number | null;
+    readonly greedy: number | false;
     readonly autoResolve: boolean;
     readonly defaultValue: string;
     readonly nested: readonly SubtagHandlerParameter[];
@@ -219,7 +219,6 @@ export interface SubtagHandlerDefinitionParameterGroup {
     readonly type?: 'optional' | 'required' | `${number}OrMore`;
     readonly parameters: ReadonlyArray<string | SubtagHandlerDefinitionParameterGroup>;
 }
-
 
 
 export type FlagDefinition = {
@@ -245,7 +244,7 @@ export interface CommandOptionsBase {
     readonly cannotDisable?: boolean;
     readonly info?: string;
     readonly flags?: readonly FlagDefinition[];
-    readonly onlyOn?: string | null;
+    readonly onlyOn?: string | undefined;
     readonly cooldown?: number;
 }
 
@@ -393,14 +392,14 @@ export interface CommandDetails {
     readonly category: CommandType;
     readonly aliases: readonly string[];
     readonly flags: readonly FlagDefinition[];
-    readonly onlyOn: string | null;
+    readonly onlyOn: string | undefined;
 }
 
 export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
 export type ArgumentResolver = (context: BBTagContext, args: readonly Statement[]) => AsyncGenerator<SubtagArgumentValue>;
 
 export interface SubHandlerCollection {
-    byNumber: { [argLength: number]: SubHandler; };
+    byNumber: { [argLength: number]: SubHandler | undefined; };
     byTest: Array<{
         execute: SubHandler;
         test: (argCount: number) => boolean;
@@ -473,8 +472,8 @@ export interface LookupMatch<T> {
 }
 
 export interface MessagePrompt {
-    prompt: AnyMessage | null;
-    response: Promise<AnyMessage | null>;
+    prompt: AnyMessage | undefined;
+    response: Promise<AnyMessage | undefined>;
 }
 
 export interface BanDetails {
@@ -495,7 +494,7 @@ export interface SubtagOptions {
     name: string;
     aliases?: readonly string[];
     category: SubtagType;
-    desc?: string | null;
+    desc?: string;
     deprecated?: string | boolean;
     staff?: boolean;
 }

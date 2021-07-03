@@ -25,13 +25,14 @@ export class EmojiCommand extends BaseGlobalCommand {
     }
 
     public async emoji(emoji: string, size: number, flags: FlagResult): Promise<MessageFile | SendPayload> {
-        const parsedEmoji = parse.emoji(emoji)[0];
-        if (!parsedEmoji)
+        const parsedEmojis = parse.emoji(emoji);
+        if (parsedEmojis.length === 0)
             return 'No emoji found!';
 
+        const parsedEmoji = parsedEmojis[0];
         if (parsedEmoji.startsWith('a:') || parsedEmoji.startsWith(':')) {
             const id = parse.entityId(parsedEmoji, 'a?:\\w+:', true);
-            if (id !== null) {
+            if (id !== undefined) {
                 const url = `https://cdn.discordapp.com/emojis/${id}.${parsedEmoji.startsWith('a') ? 'gif' : 'png'}`;
                 return { embed: { image: { url } } };
             }
@@ -41,7 +42,7 @@ export class EmojiCommand extends BaseGlobalCommand {
             const codePoint = twemoji.convert.toCodePoint(parsedEmoji);
             const file = require.resolve(`twemoji/2/svg/${codePoint}.svg`);
             const body = fs.readFileSync(file);
-            if (flags.s) {
+            if (flags.s !== undefined) {
                 return { name: 'emoji.svg', file: body };
             }
             const buffer = await svg2png(body, {

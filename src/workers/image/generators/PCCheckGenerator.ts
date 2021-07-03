@@ -5,7 +5,7 @@ export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
         super('pcCheck', logger, mapOptions);
     }
 
-    public async executeCore({ text }: PCCheckOptions): Promise<Buffer | null> {
+    public async executeCore({ text }: PCCheckOptions): Promise<Buffer> {
         const container: Array<{ italic: boolean; text: string; }> = [];
         let italic = false;
         let temp = '';
@@ -25,7 +25,7 @@ export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
             transformArg: container,
             transform(m: typeof container) {
                 const thing = document.getElementById('replace1');
-                if (thing) {
+                if (thing !== null) {
                     // This is run in phantom which might not support for-of
                     // eslint-disable-next-line @typescript-eslint/prefer-for-of
                     for (let i = 0; i < m.length; i++) {

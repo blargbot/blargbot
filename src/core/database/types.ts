@@ -30,7 +30,7 @@ export interface RestartStoredVar extends StoredVar<'restart'> {
 }
 
 export interface TagVarsStoredVar extends StoredVar<'tagVars'> {
-    readonly values: { readonly [key: string]: unknown; } | null;
+    readonly values: { readonly [key: string]: unknown; } | undefined;
 }
 
 export interface ARWhitelistStoredVar extends StoredVar<'arwhitelist'> {
@@ -205,8 +205,8 @@ export interface MutableGuildWarnings {
 
 export interface GuildCensors {
     readonly list: readonly GuildCensor[];
-    readonly exception: GuildCensorExceptions;
-    readonly rule: GuildCensorRule;
+    readonly exception?: GuildCensorExceptions;
+    readonly rule?: GuildCensorRule;
 }
 
 export interface GuildCensorRule {

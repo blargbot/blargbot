@@ -19,7 +19,7 @@ export class RethinkDb {
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined>
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined> {
         const connection = this.#connection ?? await this.connect();
-        return await query(r)?.run(connection);
+        return await query(r).run(connection);
     }
 
     public async queryAll<T>(query: Query<Cursor>): Promise<T[]> {
@@ -32,6 +32,7 @@ export class RethinkDb {
 
     public async * stream<T>(query: Query<Cursor>): AsyncIterableIterator<T> {
         const cursor = await this.query(query);
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         while (true) {
             try {
                 yield <T>await cursor.next();
@@ -44,7 +45,7 @@ export class RethinkDb {
     }
 
     public async connect(): Promise<Connection> {
-        if (!this.#connectionPromise) {
+        if (this.#connectionPromise === undefined) {
             this.#connectionPromise = r.connect({
                 host: this.#options.host,
                 db: this.#options.database,
@@ -59,15 +60,15 @@ export class RethinkDb {
     }
 
     public async disconnect(): Promise<void> {
-        if (!this.#connection) {
-            if (!this.#connectionPromise) {
+        if (this.#connection === undefined) {
+            if (this.#connectionPromise === undefined) {
                 return;
             }
 
             await this.#connectionPromise;
         }
 
-        if (this.#connection) {
+        if (this.#connection !== undefined) {
             await this.#connection.close();
             this.#connection = undefined;
             this.#connectionPromise = undefined;

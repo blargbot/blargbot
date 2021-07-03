@@ -92,7 +92,7 @@ export interface ShitOptions {
 
 export interface RetardedOptions {
     text: string;
-    avatar: string;
+    avatar?: string;
 }
 
 export interface PixelateOptions {
@@ -106,7 +106,7 @@ export interface PCCheckOptions {
 
 export interface FreeOptions {
     top: string;
-    bottom: string;
+    bottom?: string;
 }
 
 export interface DistortOptions {

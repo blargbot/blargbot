@@ -62,11 +62,11 @@ export class LockSubtag extends BaseSubtag {
             );
         }
 
-        if (!key)
+        if (key.length === 0)
             return this.customError('Key cannot be empty', context, subtag);
 
         const scope = tagVariableScopes.find((s) => key.startsWith(s.prefix));
-        if (scope == null) throw new Error('Missing default variable scope!');
+        if (scope === undefined) throw new Error('Missing default variable scope!');
 
         const lock = scope.getLock(
             context,

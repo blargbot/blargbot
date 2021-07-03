@@ -24,8 +24,8 @@ export class AvatarInterval extends CronService {
         const time = moment();
         const h = parseInt(time.format('H'));
         // account for any number of possible avatars
-        const m = Math.floor((parseInt(time.format('m')) / 15));
-        const c = (h * 4) + m;
+        const m = Math.floor(parseInt(time.format('m')) / 15);
+        const c = h * 4 + m;
         const id = c % this.#avatars.length;
         await this.master.discord.editSelf({
             avatar: this.#avatars[id]

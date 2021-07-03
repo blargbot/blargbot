@@ -38,7 +38,7 @@ export class LogicSubtag extends BaseSubtag {
             }
         }
 
-        if (!operator)
+        if (operator === undefined)
             return this.customError('Invalid operator', context, subtag);
 
         const values = args;
@@ -55,7 +55,7 @@ export class LogicSubtag extends BaseSubtag {
                 context,
                 subtag,
                 `At index ${parsedValues.findIndex(
-                    (v) => typeof v != 'boolean'
+                    (v) => typeof v !== 'boolean'
                 )}`
             );
         return operators[operator](parsedBools).toString();

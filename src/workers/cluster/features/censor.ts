@@ -11,10 +11,10 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
         return;
 
     //First, let's check exceptions
-    const { channel, user, role } = censor.exception ?? {};
-    if ((channel?.includes(msg.channel.id))
-        || (user?.includes(msg.author.id))
-        || (role?.length && msg.member && cluster.util.hasRole(msg.member, role)))
+    const { channel = [], user = [], role = [] } = censor.exception ?? {};
+    if (channel.includes(msg.channel.id)
+        || user.includes(msg.author.id)
+        || role.length > 0 && msg.member !== null && cluster.util.hasRole(msg.member, role))
         return;
 
     for (const cens of censor.list) {
@@ -33,7 +33,7 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
                 [
                     {
                         name: 'Warnings',
-                        value: `Assigned: ${cens.weight}\nNew Total: ${res?.count || 0}`,
+                        value: `Assigned: ${cens.weight}\nNew Total: ${res.count}`,
                         inline: true
                     }
                 ]);
@@ -44,7 +44,7 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
             // bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
         }
         let content = '';
-        switch (res?.type) {
+        switch (res.type) {
             case ModerationType.KICK:
                 content = cens.deleteMessage ?? censor.rule?.deleteMessage ?? ''; // TODO cant find the definition for the default messages
                 break;
@@ -65,6 +65,4 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
         });
     }
 }
-
-
 

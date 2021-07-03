@@ -19,7 +19,7 @@ export class SetSubtag extends BaseSubtag {
                     description:
                         'Stores `value` under `name`. These variables are saved between sessions. ' +
                         'You can use a character prefix to determine the scope of your variable.\n' +
-                        'Valid scopes are: ' + tagVariableScopes.map((s) => '`' + (s.prefix || 'none') + '` (' + s.name + ')').join(', ') +
+                        'Valid scopes are: ' + tagVariableScopes.map((s) => `${s.prefix.length === 0 ? 'no prefix' : `\`${s.prefix}\``} (${s.name})`).join(', ') +
                         '.\nFor performance reasons, variables are not immediately stored to the database. See `{commit}` and `{rollback}`' +
                         'for more information, or use `b!t docs variable` or `b!cc docs variable`',
                     exampleCode:
@@ -48,7 +48,7 @@ export class SetSubtag extends BaseSubtag {
         value: string
     ): Promise<void> {
         const deserializedArray = bbtagUtil.tagArray.deserialize(value);
-        if (deserializedArray && Array.isArray(deserializedArray.v)) {
+        if (deserializedArray !== undefined && Array.isArray(deserializedArray.v)) {
             await context.variables.set(variableName, deserializedArray.v);
         } else {
             await context.variables.set(variableName, value);

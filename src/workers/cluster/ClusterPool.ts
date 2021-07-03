@@ -26,7 +26,7 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
                 try {
                     currentCluster.send('killshard', shardId);
                 } catch (err: unknown) {
-                    this.logger.error(`Wasn't able to send \`killShard ${shardId}\` message to cluster`, id, err);
+                    this.logger.error('Wasn\'t able to send killShard', shardId, 'message to cluster', id, err);
                 }
             };
 

@@ -12,7 +12,7 @@ type LogLevels =
 export function createLogger(config: Configuration, workerId: string): Logger {
     const logger = new CatLoggr({
         shardId: workerId,
-        level: config.general.loglevel ?? 'info',
+        level: config.general.loglevel,
         shardLength: 12,
         levels: [...logLevels]
     });
@@ -78,9 +78,9 @@ function isSequelizeValidationError(error: unknown): error is ValidationError {
 }
 
 function coreceLogLevel<T extends string, R extends readonly string[] | undefined>(
-    value: Omit<Partial<LogLevel>, 'color' | 'aliases' | 'name'> & { name: T; color: Color; aliases?: R; }
-): value is GenericLogLevel<T, R> {
-    return value !== undefined;
+    _value: Omit<Partial<LogLevel>, 'color' | 'aliases' | 'name'> & { name: T; color: Color; aliases?: R; }
+): _value is GenericLogLevel<T, R> {
+    return true;
 }
 
 function coerceCatLoggr(logger: CatLoggr): logger is CatLoggr & Logger {

@@ -9,7 +9,7 @@ export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
         super(source, logger);
     }
 
-    protected tryActivate(rawModule: unknown): ModuleResult<BaseImageGenerator> | null {
+    protected tryActivate(rawModule: unknown): ModuleResult<BaseImageGenerator> | undefined {
         if (rawModule instanceof BaseImageGenerator) {
             return { module: <BaseImageGenerator>rawModule, names: [rawModule.key] };
         }
@@ -19,6 +19,6 @@ export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
             return { module: <BaseImageGenerator>instance, names: [instance.key] };
         }
 
-        return null;
+        return undefined;
     }
 }

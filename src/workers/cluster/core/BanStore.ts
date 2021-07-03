@@ -15,7 +15,7 @@ export class BanStore {
         if (userId !== undefined)
             return guild?.get(userId);
 
-        if (!guild)
+        if (guild === undefined)
             this.#guilds.set(guildId, guild = new GuildBanStore(guildId));
 
         return guild;

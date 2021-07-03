@@ -45,7 +45,7 @@ export class Cache<TKey, TValue> {
 
     public set(key: TKey, value: TValue, timeToLive?: Duration | number): this {
         const entry = this.#entries.get(key);
-        if (entry)
+        if (entry !== undefined)
             clearTimeout(entry.timeout);
 
         const ttl = toMS(timeToLive ?? this.#defaultTTL);

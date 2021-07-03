@@ -29,7 +29,7 @@ export function mapObject<T>(
             const mapped = mapping(val);
             if (!mapped.valid)
                 return false;
-            if (mapped.value !== undefined)
+            if (<unknown>mapped.value !== undefined)
                 result[key] = mapped.value;
             return true;
         }

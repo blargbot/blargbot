@@ -6,7 +6,7 @@ export class ArtGenerator extends BaseImageGenerator<'art'> {
         super('art', logger, mapOptions);
     }
 
-    public async executeCore({ avatar }: ArtOptions): Promise<Buffer | null> {
+    public async executeCore({ avatar }: ArtOptions): Promise<Buffer> {
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(370, 370);
         const foreground = await this.getLocalJimp('art.png');

@@ -18,5 +18,3 @@ export class LiteralSubtagArgumentValue implements SubtagArgumentValue {
     }
 }
 
-
-

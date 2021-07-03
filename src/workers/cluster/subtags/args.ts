@@ -63,7 +63,7 @@ export class ArgsSubtag extends BaseSubtag {
 
         // TODO This behaviour should be documented
         if (from > to)
-            from = [to, (to = from)][0];
+            from = [to, to = from][0];
 
         if (context.input.length >= from || from < 0)
             return this.notEnoughArguments(context, subtag);

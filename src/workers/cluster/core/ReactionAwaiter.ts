@@ -42,12 +42,12 @@ export class ReactionAwaiter {
         this.#events.off('any', handler);
         return this;
     }
-    public async wait(messageId: string, users: string[] | null, timeoutMS: number, filter?: (emoji: Emoji, user: User) => boolean): Promise<{ emoji: Emoji; user: User; } | null> {
-        this.logger.debug(`awaiting reaction | message: [${messageId}] users: [${users}] timeout: ${timeoutMS}`);
+    public async wait(messageId: string, users: string[] | undefined, timeoutMS: number, filter?: (emoji: Emoji, user: User) => boolean): Promise<{ emoji: Emoji; user: User; } | undefined> {
+        this.logger.debug(`awaiting reaction | message: [${messageId}] users: [${users?.join(',') ?? ''}] timeout: ${timeoutMS}`);
 
-        return await new Promise<{ emoji: Emoji; user: User; } | null>(resolve => {
+        return await new Promise<{ emoji: Emoji; user: User; } | undefined>(resolve => {
             const timeout = setTimeout(() => {
-                resolve(null);
+                resolve(undefined);
                 this.off(messageId, handler);
             }, timeoutMS);
 
@@ -66,15 +66,15 @@ export class ReactionAwaiter {
     }
 }
 
-function buildFilter(users: string[] | null, filter?: (emoji: Emoji, user: User) => boolean): (emoji: Emoji, user: User) => boolean {
-    if (users === null || users.length === 0)
+function buildFilter(users: string[] | undefined, filter?: (emoji: Emoji, user: User) => boolean): (emoji: Emoji, user: User) => boolean {
+    if (users === undefined || users.length === 0)
         return filter ?? (() => true);
 
     if (users.length === 1) {
         const user = users[0];
         if (filter === undefined)
             return (_, r) => r.id === user;
-        return (e, r) => r.id == user && filter(e, r);
+        return (e, r) => r.id === user && filter(e, r);
     }
 
     const userSet = new Set(users);

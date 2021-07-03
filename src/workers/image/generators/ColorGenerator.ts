@@ -6,7 +6,7 @@ export class ColorGenerator extends BaseImageGenerator<'color'> {
         super('color', logger, mapOptions);
     }
 
-    public async executeCore({ hex }: ColorOptions): Promise<Buffer | null> {
+    public async executeCore({ hex }: ColorOptions): Promise<Buffer> {
         return await new Jimp(128, 128, hex)
             .getBufferAsync(Jimp.MIME_PNG);
     }

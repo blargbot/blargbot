@@ -52,9 +52,8 @@ export const metrics = {
         labelNames: ['method', 'endpoint']
     }),
     get aggregated(): Prometheus.Registry {
-        const c = metrics.registryCache.filter(() => true);
+        const c = [...metrics.registryCache];
         c.unshift(Prometheus.register.getMetricsAsJSON());
-
         return aggregate(c);
     }
 };

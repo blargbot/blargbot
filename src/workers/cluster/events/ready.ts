@@ -43,11 +43,11 @@ export class ReadyHandler extends DiscordEventService<'ready'> {
         void this.cluster.util.postStats();
 
         const blacklist = await this.cluster.database.vars.get('guildBlacklist');
-        if (blacklist) {
+        if (blacklist !== undefined) {
             for (const g of Object.keys(blacklist.values)) {
-                if (blacklist.values[g] !== undefined && this.cluster.discord.guilds.get(g)) {
+                if (blacklist.values[g] !== undefined && this.cluster.discord.guilds.get(g) !== undefined) {
                     const guild = this.cluster.discord.guilds.get(g);
-                    if (guild) {
+                    if (guild !== undefined) {
                         await this.cluster.util.sendDM(guild.ownerID, `Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
                         await guild.leave();
                     }

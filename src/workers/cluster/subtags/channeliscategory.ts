@@ -1,3 +1,4 @@
+import { Constants } from 'eris';
 import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
 
@@ -15,7 +16,7 @@ export class ChannelIsCategorySubtag extends BaseSubtag {
                     description: 'Checks if `channel` is a category. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{channeliscategory;cool category}\n{channeliscategory;category that doesn\'t exist}',
                     exampleOut: 'true\n(nothing is returned here)',
-                    execute: (ctx, args, subtag) => this.isCategory(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, [channel, quiet], subtag) => this.isCategory(ctx, channel.value, quiet.value, subtag)
 
                 }
             ]
@@ -24,13 +25,14 @@ export class ChannelIsCategorySubtag extends BaseSubtag {
 
     public async isCategory(
         context: BBTagContext,
-        args: string[],
+        channelStr: string,
+        quietStr: string,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : !!args[1];
-        const channel = await context.getChannel(args[0], { quiet, suppress: context.scope.suppressLookup });
-        if (!channel)
-            return quiet ? 'false' : this.channelNotFound(context, subtag, `${args[0]} could not be found`);
-        return (channel.type === 4).toString();
+        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
+        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        if (channel === undefined)
+            return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
+        return (channel.type === Constants.ChannelTypes.GUILD_CATEGORY).toString();
     }
 }

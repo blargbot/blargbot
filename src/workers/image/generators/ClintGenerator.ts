@@ -6,7 +6,7 @@ export class ClintGenerator extends BaseImageGenerator<'clint'> {
         super('clint', logger, mapOptions);
     }
 
-    public async executeCore({ image }: ClintOptions): Promise<Buffer | null> {
+    public async executeCore({ image }: ClintOptions): Promise<Buffer> {
         const avatarImg = await this.getRemoteJimp(image);
         avatarImg.resize(700, 700);
         const bgImg = await this.generateJimp(avatarImg, x => {

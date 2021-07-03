@@ -3,7 +3,7 @@ import { guard } from '../guard';
 
 export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
     const now = moment.tz(timezone);
-    if (!text)
+    if (text.length === 0)
         return now;
 
     switch (text.toLowerCase()) {

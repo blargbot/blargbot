@@ -1,5 +1,5 @@
 import { ClusterConnection } from '../../cluster';
-import { parse, WorkerPoolEventHandler, WorkerPoolEventService, EvalType, EvalResult } from '../core';
+import { parse, WorkerPoolEventHandler, WorkerPoolEventService, EvalResult, MasterEvalResult, EvalRequest, MasterEvalRequest } from '../core';
 import { Master } from '../Master';
 
 export class MasterEval extends WorkerPoolEventService<ClusterConnection> {
@@ -8,26 +8,35 @@ export class MasterEval extends WorkerPoolEventService<ClusterConnection> {
     }
 
     protected async execute(...[, data, , reply]: Parameters<WorkerPoolEventHandler<ClusterConnection>>): Promise<void> {
-        const { type, userId, code } = <{ type: EvalType; userId: string; code: string; }>data;
+        const { type, userId, code } = data as MasterEvalRequest;
         switch (type) {
             case 'master': {
                 try {
-                    return reply(await this.master.eval(userId, code));
+                    return reply<EvalResult>(await this.master.eval(userId, code));
                 } catch (ex: unknown) {
-                    return reply(<EvalResult>{ success: false, result: ex });
+                    return reply<EvalResult>({ success: false, error: ex });
                 }
             }
             case 'global': {
-                const results: Record<number, unknown> = {};
-                const requests: Array<Promise<unknown>> = [];
-                this.master.clusters.forEach((id, c) => requests.push((async () => results[id] = await c?.request('ceval', { userId, code }))()));
-                await Promise.all(requests);
-                return reply(results);
+                const results: MasterEvalResult = {};
+                const promises: Record<string, Promise<EvalResult>> = {};
+                this.master.clusters.forEach(id => promises[`${id}`] = this.getClusterResult(id, { userId, code }));
+                for (const [key, promise] of Object.entries(promises))
+                    results[key] = await promise;
+                return reply<MasterEvalResult>(results);
             }
             default: {
                 const clusterId = parse.int(type.slice(7));
-                return reply(await this.master.clusters.tryGet(clusterId)?.request('ceval', { userId, code }));
+                reply<EvalResult>(await this.getClusterResult(clusterId, { userId, code }));
             }
         }
+    }
+
+    private async getClusterResult(clusterId: number, request: EvalRequest): Promise<EvalResult> {
+        const cluster = this.master.clusters.tryGet(clusterId);
+        if (cluster === undefined)
+            return { success: false, error: `Cluster ${clusterId} doesnt exist!` };
+        return await cluster.request<EvalRequest, EvalResult>('ceval', request);
+
     }
 }

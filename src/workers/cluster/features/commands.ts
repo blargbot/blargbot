@@ -103,7 +103,7 @@ async function tryHandleCustomCommand(cluster: Cluster, context: CommandContext)
         tagVars = false;
     }
 
-    if (!content)
+    if (content.length === 0)
         return false;
 
     cluster.logger.command(`Custom command '${context.commandText}' executed by ${context.author.username} (${context.author.id}) on server ${context.channel.guild.name} (${context.channel.guild.id})`);
@@ -127,7 +127,7 @@ async function tryHandleCustomCommand(cluster: Cluster, context: CommandContext)
 
 async function tryHandleDefaultCommand(cluster: Cluster, context: CommandContext): Promise<boolean> {
     const command = cluster.commands.get(context.commandName);
-    if (!command || !await cluster.util.canExecuteDefaultCommand(context, command))
+    if (command === undefined || !await cluster.util.canExecuteDefaultCommand(context, command))
         return false;
 
     try {

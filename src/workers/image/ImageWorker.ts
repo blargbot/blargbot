@@ -23,16 +23,16 @@ export class ImageWorker extends BaseWorker {
         }));
     }
 
-    private async render(command: keyof ImageGeneratorMap, message: JToken): Promise<Buffer | null> {
+    private async render(command: keyof ImageGeneratorMap, message: JToken): Promise<Buffer | undefined> {
         const generator = this.renderers.get(command);
         if (generator === undefined)
-            return null;
+            return undefined;
 
         try {
             return await generator.execute(message);
         } catch (err: unknown) {
             this.logger.error(`An error occurred while generating ${command}:`, err);
-            return null;
+            return undefined;
         }
     }
 

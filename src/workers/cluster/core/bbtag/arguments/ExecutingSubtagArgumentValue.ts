@@ -36,6 +36,6 @@ export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
 
     private async executeInner(): Promise<string> {
         const result = await this.#context.eval(this.code);
-        return this.#value = result || this.#defaultValue;
+        return this.#value = result.length === 0 ? this.#defaultValue : result;
     }
 }

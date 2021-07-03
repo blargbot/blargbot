@@ -47,7 +47,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
         if (type === undefined || result === undefined)
             return result;
         return typeof result === 'object'
-            && result !== null
+            && guard.hasValue(result)
             && result instanceof type
             ? result
             : undefined;
@@ -76,10 +76,10 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     public foreach(action: (module: TModule) => void): void;
     public foreach(action: (module: TModule) => Promise<void>): Promise<void>;
     public foreach(action: (module: TModule) => void | Promise<void>): Promise<void> | void {
-        const results = [];
+        const results: Array<PromiseLike<void>> = [];
         for (const module of this.#modules.values()) {
             const result = action(module);
-            if (result !== undefined)
+            if (isPromiseLike(result))
                 results.push(result);
         }
         if (results.length > 0)
@@ -100,10 +100,10 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
         switch (typeof rawModule) {
             case 'function':
             case 'object': {
-                if (rawModule === null)
+                if (!guard.hasValue(rawModule))
                     break;
                 const result = this.tryActivate(rawModule);
-                if (result !== null)
+                if (guard.hasValue(result))
                     return [result];
                 const values = Object.values(rawModule)
                     .map(m => this.tryActivate(m))
@@ -116,7 +116,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
         return [];
     }
 
-    protected abstract tryActivate(rawModule: unknown): ModuleResult<TModule> | null;
+    protected abstract tryActivate(rawModule: unknown): ModuleResult<TModule> | undefined;
 
     private async findFiles(): Promise<Iterable<string>> {
         const fileNames = await fs.readdir(this.#root);
@@ -129,4 +129,8 @@ function getAbsolutePath(...segments: string[]): string {
     if (path.isAbsolute(result))
         return result;
     return path.join(__dirname, '..', result);
+}
+
+function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
+    return typeof value === 'object' && 'then' in value && typeof value.then === 'function';
 }

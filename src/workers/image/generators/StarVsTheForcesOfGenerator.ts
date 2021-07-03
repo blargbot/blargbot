@@ -8,7 +8,7 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
         super('starVsTheForcesOf', logger, mapOptions);
     }
 
-    public async executeCore({ avatar }: StarVsTheForcesOfOptions): Promise<Buffer | null> {
+    public async executeCore({ avatar }: StarVsTheForcesOfOptions): Promise<Buffer> {
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(700, 700);
         const color = colorThief.getColor(avatarImg);

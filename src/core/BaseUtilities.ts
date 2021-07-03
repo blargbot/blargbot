@@ -1,4 +1,4 @@
-import { ExtendedUser, Textable, Channel, AnyMessage, User, Member, Client as ErisClient, DiscordRESTError, DiscordHTTPError } from 'eris';
+import { ExtendedUser, Textable, Channel, AnyMessage, User, Member, Client as ErisClient, DiscordRESTError, DiscordHTTPError, AnyChannel, Guild } from 'eris';
 import { metrics } from './Metrics';
 import { BaseClient } from './BaseClient';
 import { Database } from './database';
@@ -25,7 +25,7 @@ export class BaseUtilities {
             // Id provided, get channel object
             case 'string': {
                 const foundChannel = this.discord.getChannel(context)
-                    ?? await this.discord.getRESTChannel(context);
+                    ?? await this.getRESTChannel(context);
 
                 if (guard.isTextableChannel(foundChannel))
                     return foundChannel;
@@ -52,7 +52,7 @@ export class BaseUtilities {
         return `${scheme}://${host}/${path}`;
     }
 
-    public async send(context: SendContext, payload: SendPayload | undefined, files?: SendFiles): Promise<AnyMessage | null> {
+    public async send(context: SendContext, payload: SendPayload | undefined, files?: SendFiles): Promise<AnyMessage | undefined> {
         metrics.sendCounter.inc();
 
         let channel = await this.getSendChannel(context);
@@ -73,9 +73,7 @@ export class BaseUtilities {
 
         this.logger.log(payload);
         if (payload.disableEveryone === true) {
-            if (!payload.allowedMentions) {
-                payload.allowedMentions = {};
-            }
+            payload.allowedMentions ??= {};
             payload.allowedMentions.everyone = false;
         }
 
@@ -98,7 +96,7 @@ export class BaseUtilities {
             delete payload.embed;
         }
 
-        if (files != null && !Array.isArray(files))
+        if (files !== undefined && !Array.isArray(files))
             files = [files];
 
         payload.content = payload.content?.trim() ?? '';
@@ -107,7 +105,7 @@ export class BaseUtilities {
             payload.embed = files = undefined;
         }
 
-        if (!payload.content && !payload.embed && (!files || files.length == 0)) {
+        if (payload.content.length === 0 && payload.embed === undefined && (files === undefined || files.length === 0)) {
             this.logger.error('Tried to send an empty message!');
             throw new Error('No content');
         }
@@ -117,8 +115,8 @@ export class BaseUtilities {
             const output = this.websiteLink('/output');
             payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n' +
                 '\n' +
-                `To see what I would have said, please visit ${output}${id}`;
-            if (payload.embed)
+                `To see what I would have said, please visit ${output}${id.toString()}`;
+            if (payload.embed !== undefined)
                 delete payload.embed;
         }
 
@@ -129,14 +127,14 @@ export class BaseUtilities {
             if (!(error instanceof DiscordRESTError || error instanceof DiscordHTTPError))
                 throw error;
 
-            const code = error.response.code.toString();
+            const code = error.response.code;
             if (!guard.hasProperty(sendErrors, code)) {
                 this.logger.error(error);
-                return null;
+                return undefined;
             }
 
             let result = sendErrors[code](this, channel, payload);
-            if (typeof result === 'string' && author && await this.canDmErrors(author.id)) {
+            if (typeof result === 'string' && author !== undefined && await this.canDmErrors(author.id)) {
                 if (guard.isGuildChannel(channel))
                     result += `\nGuild: ${channel.guild.name} (${channel.guild.id})`;
 
@@ -146,14 +144,14 @@ export class BaseUtilities {
 
                 await this.sendDM(author.id, result);
             }
-            return null;
+            return undefined;
         }
     }
 
-    public async sendFile(context: SendContext, payload: SendPayload, fileUrl: string): Promise<AnyMessage | null> {
+    public async sendFile(context: SendContext, payload: SendPayload, fileUrl: string): Promise<AnyMessage | undefined> {
         const i = fileUrl.lastIndexOf('/');
         if (i === -1)
-            return null;
+            return undefined;
 
         const filename = fileUrl.substring(i + 1, fileUrl.length);
         try {
@@ -164,11 +162,11 @@ export class BaseUtilities {
             });
         } catch (err: unknown) {
             this.logger.error(err);
-            return null;
+            return undefined;
         }
     }
 
-    public async sendDM(context: AnyMessage | User | Member | string, message: SendPayload, files?: SendFiles): Promise<AnyMessage | null> {
+    public async sendDM(context: AnyMessage | User | Member | string, message: SendPayload, files?: SendFiles): Promise<AnyMessage | undefined> {
         let userid: string;
         switch (typeof context) {
             case 'string': userid = context; break;
@@ -221,28 +219,69 @@ export class BaseUtilities {
         return this.database.vars.get('support')
             .then(support => support?.value.includes(id) ?? false);
     }
+    public async getRESTChannel(channelId: string): Promise<AnyChannel | undefined> {
+        try {
+            return await this.discord.getRESTChannel(channelId);
+        } catch (err: unknown) {
+            if (err instanceof DiscordRESTError && err.code === DiscordErrorCodes.UNKNOWN_CHANNEL)
+                return undefined;
+            throw err;
+        }
+    }
+    public async getRESTUser(userId: string): Promise<User | undefined> {
+        try {
+            return await this.discord.getRESTUser(userId);
+        } catch (err: unknown) {
+            if (err instanceof DiscordRESTError && err.code === DiscordErrorCodes.UNKNOWN_USER)
+                return undefined;
+            throw err;
+        }
+    }
+    public async getRESTGuild(userId: string): Promise<Guild | undefined> {
+        try {
+            return await this.discord.getRESTGuild(userId);
+        } catch (err: unknown) {
+            if (err instanceof DiscordRESTError && err.code === DiscordErrorCodes.UNKNOWN_GUILD)
+                return undefined;
+            throw err;
+        }
+    }
 }
 
+const enum DiscordErrorCodes {
+    UNKNOWN_ACCOUNT = 10001,
+    UNKNOWN_APPLICATION = 10002,
+    UNKNOWN_CHANNEL = 10003,
+    UNKNOWN_GUILD = 10004,
+    UNKNOWN_MEMBER = 10007,
+    UNKNOWN_USER = 10013,
+    MISSING_ACCESS = 50001,
+    WIDGET_DISABLED = 50004,
+    CANT_SEND_EMPTY_MESSAGE = 50006,
+    CANT_SEND_TO_USER = 50007,
+    CANT_SEND_TO_VOICE = 50008,
+    MISSING_PERMISSIONS = 50013,
+    INVALID_FORM_BODY = 50035
+}
 
 const sendErrors = {
-    '10003': () => { /* console.error('10003: Channel not found. ', channel); */ },
-    '50006': (util: BaseUtilities, _: unknown, payload: SendPayload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
-    '50007': () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
-    '50008': () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
-
-    '50013': (util: BaseUtilities) => {
+    [DiscordErrorCodes.UNKNOWN_CHANNEL]: () => { /* console.error('10003: Channel not found. ', channel); */ },
+    [DiscordErrorCodes.CANT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendPayload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
+    [DiscordErrorCodes.CANT_SEND_TO_USER]: () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
+    [DiscordErrorCodes.CANT_SEND_TO_VOICE]: () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
+    [DiscordErrorCodes.MISSING_PERMISSIONS]: (util: BaseUtilities) => {
         util.logger.warn('50013: Tried sending a message, but had no permissions!');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to speak. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Send Messages` permission.';
     },
-    '50001': (util: BaseUtilities) => {
+    [DiscordErrorCodes.MISSING_ACCESS]: (util: BaseUtilities) => {
         util.logger.warn('50001: Missing Access');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to see the channel. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Read Messages` permission.';
     },
-    '50004': (util: BaseUtilities, channel: Channel) => {
+    [DiscordErrorCodes.WIDGET_DISABLED]: (util: BaseUtilities, channel: Channel) => {
         util.logger.warn('50004: Tried embeding a link, but had no permissions!');
         void util.send(channel.id, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
         return 'I tried to send a message in response to your command, ' +
@@ -252,7 +291,7 @@ const sendErrors = {
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    '50035': (util: BaseUtilities, channel: Channel, payload: SendPayload) => {
+    [DiscordErrorCodes.INVALID_FORM_BODY]: (util: BaseUtilities, channel: Channel, payload: SendPayload) => {
         util.logger.warn('%s|%s: %o', channel.id, guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL', payload);
     }
 } as const;

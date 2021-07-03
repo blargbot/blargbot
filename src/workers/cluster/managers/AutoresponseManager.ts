@@ -36,7 +36,7 @@ New AR request from **${humanize.fullName(user)}** (${userId}):
 **Channel**: ${channelId}
 **Members**: ${guild?.memberCount ?? '??'}
 
-${reason.length == 0 ? '*No reason given*' : reason}
+${reason.length === 0 ? '*No reason given*' : reason}
 
 ${codeBlock(code, 'js')}`
                 );
@@ -95,7 +95,7 @@ ${codeBlock(code, 'js')}`
             return;
 
         const match = /```js\n(.+)\n```/.exec(message.content);
-        if (!match)
+        if (match === null)
             return;
 
         const mapped = mapArData(match[1]);
@@ -119,7 +119,7 @@ ${codeBlock(code, 'js')}`
     private async * findAutoresponses(cluster: Cluster, msg: GuildMessage, everything: boolean): AsyncGenerator<{ commandName: string; limit: RuntimeLimit; silent?: boolean; }> {
         const ars = await cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
         if (everything) {
-            if (ars.everything)
+            if (ars.everything !== undefined)
                 yield { commandName: ars.everything.executes, limit: new EverythingAutoResponseLimit(), silent: true };
             return;
         }

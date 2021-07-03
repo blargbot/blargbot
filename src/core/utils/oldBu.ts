@@ -36,8 +36,8 @@ export const oldBu = {
     commandUses: 0,
     cleverbotStats: 0,
     messageStats: 0,
-    awaitMessages: {} as Record<string, Record<string, string[]>>,
-    awaitReactions: {} as Record<string, Record<string, string[]>>,
+    awaitMessages: {} as { [key: string]: { [key: string]: string[] | undefined; } | undefined; },
+    awaitReactions: {} as { [key: string]: { [key: string]: string[] | undefined; } | undefined; },
     tagLocks: {} as TagLocks,
     stats: {} as Record<string, unknown>,
     cleverStats: {},
@@ -68,7 +68,7 @@ export const oldBu = {
             messages = [messages];
         if (!Array.isArray(users))
             users = [users];
-        if (reactions) {
+        if (reactions !== undefined) {
             if (!Array.isArray(reactions))
                 reactions = [reactions];
             reactions = reactions.map(r => r.replace(/[<>]/g, ''));
@@ -90,14 +90,14 @@ export const oldBu = {
 
         oldBu.emitter.removeAllListeners(eventName);
 
-        console.debug(`awaiting reaction | messages: [${messages}] users: [${users}] reactions: ${JSON.stringify(reactions)} timeout: ${_timeout}`);
+        console.debug(`awaiting reaction | messages: [${messages.join(',')}] users: [${users.join(',')}] reactions: ${JSON.stringify(reactions)} timeout: ${_timeout}`);
 
-        const watchFor = reactions ? reactions.map(r => {
+        const watchFor = reactions !== undefined ? reactions.map(r => {
             const match = SANITIZED.exec(r);
-            if (match)
+            if (match !== null)
                 return match[1];
             else return r;
-        }) : null;
+        }) : undefined;
 
         return await new Promise<{ message: GuildMessage; user: User; emoji: string; }>((resolve, reject) => {
             const timeoutId = setTimeout(() => reject(new TimeoutError(_timeout)), _timeout);
@@ -105,12 +105,12 @@ export const oldBu = {
             oldBu.emitter.on(eventName, fafo(async (message: GuildMessage, emoji: string, user: User) => {
                 let sanitized = emoji;
                 const match = SANITIZED.exec(sanitized);
-                if (match)
+                if (match !== null)
                     sanitized = match[1];
 
                 console.log('Received reaction event:', eventName, sanitized, watchFor);
                 try {
-                    if (watchFor && !watchFor.includes(sanitized))
+                    if (watchFor !== undefined && !watchFor.includes(sanitized))
                         return;
                     if (await _check(message, user, emoji)) {
                         clearTimeout(timeoutId);
@@ -125,7 +125,7 @@ export const oldBu = {
             oldBu.emitter.removeAllListeners(eventName);
             for (const ref of eventReferences) {
                 const index = ref.indexOf(eventName);
-                if (index != -1) {
+                if (index !== -1) {
                     ref.splice(index, 1);
                 }
             }
@@ -137,11 +137,11 @@ export const oldBu = {
         override = true
     ): boolean {
         const member = msg instanceof Member ? msg : msg.member;
-        if (!member)
+        if (member === null)
             return false;
 
-        if (override && ((member.id === config.discord.users.owner) ||
-            member.guild.ownerID == member.id ||
+        if (override && (member.id === config.discord.users.owner ||
+            member.guild.ownerID === member.id ||
             member.permissions.json.administrator)) {
             return true;
         }
@@ -160,7 +160,7 @@ export const oldBu = {
         reactions: string[]
     ): Promise<Record<number, { error: unknown; reactions: string[]; }>> {
         const errors = {} as Record<number, { error: unknown; reactions: string[]; }>;
-        for (const reaction of new Set(reactions ?? [])) {
+        for (const reaction of new Set(reactions)) {
             try {
                 await bot.addMessageReaction(channelId, messageId, reaction);
             } catch (e: unknown) {
@@ -183,26 +183,26 @@ export const oldBu = {
         return errors;
     },
 
-    async getUserById(userId: string): Promise<User | null> {
+    async getUserById(userId: string): Promise<User | undefined> {
         const match = /\d{17,21}/.exec(userId);
-        if (match) {
+        if (match !== null) {
             const user = bot.users.get(match[0]);
-            if (user) {
+            if (user !== undefined) {
                 return user;
             } else {
                 try {
                     return await bot.getRESTUser(match[0]);
-                } catch (err: unknown) { return null; }
+                } catch (err: unknown) { return undefined; }
             }
         }
-        return null;
+        return undefined;
     },
-    async getMessage(channelId: string, messageId: string): Promise<AnyMessage | null> {
+    async getMessage(channelId: string, messageId: string): Promise<AnyMessage | undefined> {
         if (/^\d{ 17, 23 } $ /.test(messageId)) {
             const channel = bot.getChannel(channelId);
             if ('messages' in channel) {
                 const messageAttempt = channel.messages.get(messageId);
-                if (messageAttempt)
+                if (messageAttempt !== undefined)
                     return messageAttempt;
             }
             try {
@@ -211,7 +211,7 @@ export const oldBu = {
                 // NOOP
             }
         }
-        return null;
+        return undefined;
     },
     saveConfig(): void {
         oldBu.emitter.emit('saveConfig');
@@ -236,12 +236,12 @@ export const oldBu = {
         }
     },
     padLeft(value: string, length: number): string {
-        return (value.toString().length < length) ? oldBu.padLeft(' ' + value, length) : value;
+        return value.toString().length < length ? oldBu.padLeft(' ' + value, length) : value;
     },
     padRight(value: string, length: number): string {
-        return (value.toString().length < length) ? oldBu.padRight(value + ' ', length) : value;
+        return value.toString().length < length ? oldBu.padRight(value + ' ', length) : value;
     },
-    async getAudit(guildId: string, targetId: string, type?: number): Promise<GuildAuditLogEntry | null> {
+    async getAudit(guildId: string, targetId: string, type?: number): Promise<GuildAuditLogEntry | undefined> {
         try {
             const al = await bot.getGuildAuditLogs(guildId, 50, undefined, type);
             for (const e of al.entries) {
@@ -249,10 +249,10 @@ export const oldBu = {
                     return e;
                 }
             }
-            return null;
+            return undefined;
         } catch (err: unknown) {
             // may not have audit log perms
-            return null;
+            return undefined;
         }
     },
     async filterMentions(message: string, guild: Guild): Promise<string> {
@@ -279,7 +279,7 @@ export const oldBu = {
             while ((match = /<@&([0-9]{17,21})>/.exec(message)) !== null) {
                 const id = match[1];
                 const role = guild.roles.get(id);
-                if (role) {
+                if (role !== undefined) {
                     message = message.replace(new RegExp(`<@&${id}>`), `${role.name}`);
                 } else {
                     message = message.replace(new RegExp(`<@&${id}>`), `<@&\u200b${id}>`);
@@ -287,17 +287,17 @@ export const oldBu = {
             }
         return message;
     },
-    getPerms(channelid: string): Permission['json'] | null {
+    getPerms(channelid: string): Permission['json'] | undefined {
         const channel = bot.getChannel(channelid);
         if (guard.hasValue(channel) && 'guild' in channel) {
             const permission = channel.permissionsOf(bot.user.id);
             return permission.json;
         } else {
-            return null;
+            return undefined;
         }
     },
     genToken(length: number): string {
-        if (!length)
+        if (length === 0)
             length = 7;
         let output = '';
         for (let i = 0; i < length; i++) {
@@ -319,7 +319,7 @@ export const oldBu = {
         if (term.length > 2000)
             throw new Error('Regex too long');
         const regexList = /^\/?(.*)\/(.*)/.exec(term);
-        if (regexList) {
+        if (regexList !== null) {
             const temp = new RegExp(regexList[1], regexList[2]);
             if (!isSafeRegex(temp)) {
                 throw new Error('Unsafe Regex');
@@ -336,11 +336,11 @@ export const oldBu = {
         return tempContent.join('\n');
     },
     isBoolean(value: unknown): value is boolean {
-        return typeof value == 'boolean';
+        return typeof value === 'boolean';
     },
-    parseChannel(text: string, allowJustId = false): AnyChannel | null {
+    parseChannel(text: string, allowJustId = false): AnyChannel | undefined {
         const id = parse.entityId(text, '#', allowJustId);
-        if (id == null) return null;
+        if (id === undefined) return undefined;
         return bot.getChannel(id);
     },
     groupBy<T, K extends string | number | symbol>(values: IterableIterator<T>, selector: (value: T) => K): Array<T[] & { key: K; }> {
@@ -349,7 +349,7 @@ export const oldBu = {
         for (const value of values) {
             const key = selector(value);
             let group = groups[key];
-            if (group == undefined) {
+            if (group === undefined) {
                 keys.add(key);
                 group = groups[key] = <T[] & { key: K; }><unknown>[];
                 group.key = key;
@@ -363,7 +363,7 @@ export const oldBu = {
     },
 
     // eslint-disable-next-line @typescript-eslint/ban-types
-    async blargbotApi(endpoint: string, args: string | Buffer | object = {}): Promise<Buffer | string | object | null> {
+    async blargbotApi(endpoint: string, args: string | Buffer | object = {}): Promise<Buffer | undefined> {
         try {
             if (typeof args !== 'string' && !(args instanceof Buffer))
                 args = JSON.stringify(args);
@@ -378,7 +378,7 @@ export const oldBu = {
             return await response.buffer();
         } catch (err: unknown) {
             console.error(err);
-            return null;
+            return undefined;
         }
     },
     decancer(text: string): string {
@@ -393,7 +393,7 @@ export const oldBu = {
         return text;
     },
 
-    async findMessages(channelId: string, count: number, filter: (m: AnyMessage) => boolean, before?: string, after?: string): Promise<AnyMessage[]> {
+    async findMessages(channelId: string, count: number, filter?: (m: AnyMessage) => boolean, before?: string, after?: string): Promise<AnyMessage[]> {
         const result = [];
         filter = filter ?? (() => true);
 
@@ -402,7 +402,7 @@ export const oldBu = {
             const batch = await bot.getMessages(channelId, batchSize, before, after);
             result.push(...batch);
 
-            if (batch.length != batchSize)
+            if (batch.length !== batchSize)
                 break;
 
             before = result[result.length - 1].id;

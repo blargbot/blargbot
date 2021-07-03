@@ -60,7 +60,7 @@ export const properties: CommandPropertiesSet = {
     [CommandType.OWNER]: {
         name: 'Blargbot Owner',
         requirement(context: CommandContext): boolean {
-            return context.author.id == context.cluster.config.discord.users.owner;
+            return context.author.id === context.cluster.config.discord.users.owner;
         },
         description: 'MREOW MEOWWWOW! **purr**',
         color: 0xff0000
