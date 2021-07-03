@@ -12,7 +12,7 @@ export class LookupChannelHandler extends ClusterEventService {
     protected execute([data, , reply]: Parameters<ProcessMessageHandler>): void {
         if (typeof data === 'string') {
             const chan = this.cluster.discord.getChannel(data);
-            if (guard.isGuildChannel(chan)) {
+            if (chan !== undefined && guard.isGuildChannel(chan)) {
                 return reply({ channel: chan.name, guild: chan.guild.name });
             }
         }

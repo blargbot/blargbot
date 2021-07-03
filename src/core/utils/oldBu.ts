@@ -46,7 +46,7 @@ export const oldBu = {
     events: new EventEmitter(),
     isNsfwChannel(channelid: string): boolean {
         const channel = bot.getChannel(channelid);
-        if ('nsfw' in channel)
+        if (channel !== undefined && 'nsfw' in channel)
             return channel.nsfw;
         return false;
     },
@@ -193,22 +193,6 @@ export const oldBu = {
                 try {
                     return await bot.getRESTUser(match[0]);
                 } catch (err: unknown) { return undefined; }
-            }
-        }
-        return undefined;
-    },
-    async getMessage(channelId: string, messageId: string): Promise<AnyMessage | undefined> {
-        if (/^\d{ 17, 23 } $ /.test(messageId)) {
-            const channel = bot.getChannel(channelId);
-            if ('messages' in channel) {
-                const messageAttempt = channel.messages.get(messageId);
-                if (messageAttempt !== undefined)
-                    return messageAttempt;
-            }
-            try {
-                return await bot.getMessage(channelId, messageId);
-            } catch {
-                // NOOP
             }
         }
         return undefined;

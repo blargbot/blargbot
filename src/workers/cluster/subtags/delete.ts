@@ -1,6 +1,7 @@
 import { Message } from 'eris';
 import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
+import { guard } from '../core/globalCore';
 
 export class DeleteSubtag extends BaseSubtag {
     public constructor(
@@ -46,10 +47,10 @@ export class DeleteSubtag extends BaseSubtag {
             return this.customError('Author must be staff to delete unrelated messages', context, subtag);
 
         const channel = await context.getChannel(channelStr);
-        let msg: Message;
+        let msg: Message | undefined;
         if (channel === undefined)
             return this.channelNotFound(context, subtag);
-        if (messageId.length > 0) {
+        if (messageId.length > 0 && guard.isTextableChannel(channel)) {
             try {
                 msg = await this.discord.getMessage(channel.id, messageId);
             } catch (err: unknown) {

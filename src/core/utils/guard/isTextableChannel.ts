@@ -1,7 +1,7 @@
-import { AnyChannel, Constants, TextableChannel } from 'eris';
+import { Channel, Constants, TextableChannel } from 'eris';
 
 
-export function isTextableChannel<T extends AnyChannel>(channel: T): channel is TextableChannel & T {
+export function isTextableChannel<T extends Channel>(channel: T): channel is TextableChannel & T {
     switch (channel.type) {
         case Constants.ChannelTypes.DM:
         case Constants.ChannelTypes.GROUP_DM:

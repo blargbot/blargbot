@@ -35,7 +35,7 @@ export class CustomCommandIntervalCron extends CronService {
                 if (id.length === 0) continue;
                 const m = g.members.get(id);
                 if (m === undefined) continue;
-                const u = this.cluster.discord.users.get(id) ?? await this.cluster.discord.getRESTUser(id);
+                const u = this.cluster.util.getGlobalUser(id);
                 if (guard.hasValue(u)) continue;
                 const c = g.channels.find(guard.isTextableChannel);
                 if (c === undefined || !guard.isTextableChannel(c)) continue;

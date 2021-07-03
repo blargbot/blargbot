@@ -129,9 +129,9 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public addError(error: string, subtag?: SubtagCall, debugMessage?: string): string {
         this.errors.push({
-            subtag: subtag ?? undefined,
+            subtag: subtag,
             error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}`,
-            debugMessage: debugMessage ?? undefined
+            debugMessage: debugMessage
         });
         return this.scope.fallback ?? `\`${error}\``;
     }
@@ -277,12 +277,14 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         let message: BBTagContextMessage | undefined;
         try {
             const msg = await engine.discord.getMessage(obj.msg.channel.id, obj.msg.id);
+            if (msg === undefined)
+                throw new Error(`Cannot access message ${obj.msg.id} in channel ${obj.msg.id}. It may have been deleted`);
             if (!guard.isGuildMessage(msg))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             message = <BBTagContextMessage>msg;
         } catch (err: unknown) {
             const channel = engine.discord.getChannel(obj.msg.channel.id);
-            if (!guard.isGuildChannel(channel))
+            if (channel === undefined || !guard.isGuildChannel(channel))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             if (!guard.isTextableChannel(channel))
                 throw new Error('Channel must be able to send and receive messages to work with BBTag');

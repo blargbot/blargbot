@@ -344,39 +344,26 @@ export class ClusterUtilities extends BaseUtilities {
         const match = /\d{17,21}/.exec(userId);
         if (match === null)
             return undefined;
-
-        try {
-            return this.discord.users.get(match[0])
-                ?? await this.getRESTUser(match[0])
-                ?? undefined;
-        } catch {
-            return undefined;
-        }
+        return await this.getGlobalUser(match[0]);
     }
 
     public async getGuildById(guildId: string): Promise<Guild | undefined> {
         const match = /\d{17,21}/.exec(guildId);
         if (match === null)
             return undefined;
-        try {
-            return this.discord.guilds.get(match[0])
-                ?? await this.getRESTGuild(match[0])
-                ?? undefined;
-        } catch {
-            return undefined;
-        }
+        return await this.getGlobalGuild(match[0]);
     }
 
     public async getRoleById(guild: string | Guild, roleId: string): Promise<Role | undefined> {
-        const _guild = typeof guild === 'string' ? await this.getGuildById(guild) : guild;
-        if (_guild === undefined)
+        const foundGuild = typeof guild === 'string' ? await this.getGuildById(guild) : guild;
+        if (foundGuild === undefined)
             return undefined;
         const match = /\d{17,21}/.exec(roleId);
         if (match === null)
             return undefined;
 
         try {
-            return _guild.roles.get(match[0]);
+            return foundGuild.roles.get(match[0]);
         } catch {
             return undefined;
         }
@@ -386,14 +373,7 @@ export class ClusterUtilities extends BaseUtilities {
         const match = /\d{17,21}/.exec(channelId);
         if (match === null)
             return undefined;
-
-        try {
-            return this.discord.getChannel(match[0])
-                ?? await this.getRESTChannel(match[0])
-                ?? undefined;
-        } catch {
-            return undefined;
-        }
+        return await this.getGlobalChannel(match[0]);
     }
 
     /* eslint-disable @typescript-eslint/naming-convention */

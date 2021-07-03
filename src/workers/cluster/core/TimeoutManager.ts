@@ -62,7 +62,7 @@ export class TimeoutManager {
     private getShardId(event: StoredEventOptions): number {
         if (event.channel !== undefined) {
             const channel = this.cluster.discord.getChannel(event.channel);
-            if (guard.isGuildChannel(channel))
+            if (channel !== undefined && guard.isGuildChannel(channel))
                 return channel.guild.shard.id;
         }
         if (event.guild !== undefined) {

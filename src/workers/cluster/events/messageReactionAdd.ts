@@ -1,18 +1,17 @@
-import { PossiblyUncachedMessage, Emoji, Member, Message, User, TextableChannel, AnyChannel } from 'eris';
+import { PossiblyUncachedMessage, Emoji, Member, Message, User, TextableChannel } from 'eris';
 import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../core';
+import { guard } from '../core/globalCore';
 
 export class MessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
-    public constructor(
-        public readonly cluster: Cluster
-    ) {
+    public constructor(public readonly cluster: Cluster) {
         super(cluster.discord, 'messageReactionAdd', cluster.logger);
     }
 
     protected async execute(maybeMessage: PossiblyUncachedMessage, emoji: Emoji, maybeUser: Member | { id: string; }): Promise<void> {
         const message = await this.resolveMessage(maybeMessage);
         if (message === undefined) return;
-        const user = await this.resolveUser(maybeUser);
+        const user = this.resolveUser(maybeUser);
         if (user === undefined) return;
 
         this.cluster.util.reactionAwaiter.emit(message, emoji, user);
@@ -33,26 +32,11 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
     }
 
     protected resolveChannel(maybeChannel: PossiblyUncachedMessage['channel']): TextableChannel | undefined {
-        let channel: AnyChannel;
-        if ('type' in maybeChannel) {
-            channel = maybeChannel;
-        } else {
-            try {
-                channel = this.cluster.discord.getChannel(maybeChannel.id);
-            } catch { return undefined; }
-        }
-
-        return 'messages' in channel ? channel : undefined;
+        const channel = 'type' in maybeChannel ? maybeChannel : this.cluster.discord.getChannel(maybeChannel.id);
+        return channel !== undefined && guard.isTextableChannel(channel) ? channel : undefined;
     }
 
-    protected async resolveUser(maybeUser: Member | { id: string; }): Promise<User | undefined> {
-        if ('user' in maybeUser)
-            return maybeUser.user;
-
-        try {
-            return await this.cluster.discord.getRESTUser(maybeUser.id);
-        } catch (error: unknown) {
-            return undefined;
-        }
+    protected resolveUser(maybeUser: Member | { id: string; }): User | undefined {
+        return 'user' in maybeUser ? maybeUser.user : this.cluster.discord.users.get(maybeUser.id);
     }
 }

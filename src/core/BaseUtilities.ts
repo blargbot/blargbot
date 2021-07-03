@@ -24,15 +24,13 @@ export class BaseUtilities {
         switch (typeof context) {
             // Id provided, get channel object
             case 'string': {
-                const foundChannel = this.discord.getChannel(context)
-                    ?? await this.getRESTChannel(context);
-
-                if (guard.isTextableChannel(foundChannel))
+                const foundChannel = await this.getGlobalChannel(context);
+                if (foundChannel === undefined)
+                    break;
+                else if (guard.isTextableChannel(foundChannel))
                     return foundChannel;
-                else if (guard.hasValue(foundChannel))
+                else
                     throw new Error('Cannot send messages to the given channel');
-
-                break;
             }
             case 'object':
                 // Probably a message provided
@@ -219,32 +217,54 @@ export class BaseUtilities {
         return this.database.vars.get('support')
             .then(support => support?.value.includes(id) ?? false);
     }
-    public async getRESTChannel(channelId: string): Promise<AnyChannel | undefined> {
+    public async getGlobalChannel(channelId: string): Promise<AnyChannel | undefined> {
         try {
-            return await this.discord.getRESTChannel(channelId);
+            return this.discord.getChannel(channelId)
+                ?? await this.discord.getRESTChannel(channelId);
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError && err.code === DiscordErrorCodes.UNKNOWN_CHANNEL)
                 return undefined;
             throw err;
         }
     }
-    public async getRESTUser(userId: string): Promise<User | undefined> {
+    public async getGlobalUser(userId: string): Promise<User | undefined> {
         try {
-            return await this.discord.getRESTUser(userId);
+            return this.discord.users.get(userId)
+                ?? await this.discord.getRESTUser(userId);
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError && err.code === DiscordErrorCodes.UNKNOWN_USER)
                 return undefined;
             throw err;
         }
     }
-    public async getRESTGuild(userId: string): Promise<Guild | undefined> {
+    public async getGlobalGuild(guildId: string): Promise<Guild | undefined> {
         try {
-            return await this.discord.getRESTGuild(userId);
+            return this.discord.guilds.get(guildId)
+                ?? await this.discord.getRESTGuild(guildId);
         } catch (err: unknown) {
             if (err instanceof DiscordRESTError && err.code === DiscordErrorCodes.UNKNOWN_GUILD)
                 return undefined;
             throw err;
         }
+    }
+    public async getMessage(channel: string | Channel, messageId: string): Promise<AnyMessage | undefined> {
+        const foundChannel = typeof channel === 'string' ? this.discord.getChannel(channel) : channel;
+
+        if (foundChannel === undefined || !guard.isTextableChannel(foundChannel))
+            return undefined;
+
+        try {
+            return await foundChannel.getMessage(messageId);
+        } catch (err: unknown) {
+            if (err instanceof DiscordRESTError && err.code === DiscordErrorCodes.UNKNOWN_MESSAGE)
+                return undefined;
+            throw err;
+        }
+    }
+
+    public async getGlobalMessage(channel: string | Channel, messageId: string): Promise<AnyMessage | undefined> {
+        const foundChannel = typeof channel === 'string' ? await this.getGlobalChannel(channel) : channel;
+        return foundChannel === undefined ? undefined : await this.getMessage(foundChannel, messageId);
     }
 }
 
@@ -254,6 +274,7 @@ const enum DiscordErrorCodes {
     UNKNOWN_CHANNEL = 10003,
     UNKNOWN_GUILD = 10004,
     UNKNOWN_MEMBER = 10007,
+    UNKNOWN_MESSAGE = 10008,
     UNKNOWN_USER = 10013,
     MISSING_ACCESS = 50001,
     WIDGET_DISABLED = 50004,
