@@ -6,11 +6,11 @@ import { AnyGuildChannel, GuildTextableChannel, Member, User, Guild, Role, Permi
 import { TagCooldownManager } from './TagCooldownManager';
 import { BBTagEngine } from './Engine';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '../types';
-import { Database, oldBu, StoredGuildCommand, StoredTag, Timer } from '../globalCore';
+import { Database, oldBu, StoredGuildCommand, StoredTag, Timer, Logger } from '../globalCore';
 import { bbtagUtil, guard, parse } from '../utils';
 import { limits } from './limits';
 
-function serializeEntity(entity: { id: string }): { id: string, serialized: string } {
+function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
     return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
@@ -50,7 +50,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get scope(): BBTagRuntimeScope { return this.scopes.local; }
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
     public get database(): Database { return this.engine.database; }
-    public get logger(): CatLogger { return this.engine.logger; }
+    public get logger(): Logger { return this.engine.logger; }
     public get permissions(): Permission { return (this.guild.members.get(this.authorizer) || { permissions: new Permission(0, 0) }).permissions; }
     public get perms(): Permission { return this.permissions; }
     public constructor(
@@ -117,7 +117,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     }
 
     public ownsMessage(messageId: string): boolean {
-        return messageId == this.message.id || this.state.ownedMsgs.indexOf(messageId) != -1;
+        return messageId == this.message.id || this.state.ownedMsgs.includes(messageId);
     }
 
     public makeChild(options: Partial<BBTagContextOptions> = {}): BBTagContext {
@@ -210,7 +210,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return result as (AnyGuildChannel | null);
     }
 
-    public override(subtag: string, handler: SubtagHandler): { previous: SubtagHandler | undefined, revert: () => void } {
+    public override(subtag: string, handler: SubtagHandler): { previous: SubtagHandler | undefined; revert: () => void; } {
         const overrides = this.state.overrides;
         const exists = overrides.hasOwnProperty(subtag);
         const previous = overrides[subtag];
@@ -362,10 +362,10 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             limit: this.limit.serialize(),
             tempVars: this.variables.list
                 .filter(v => v.key.startsWith('~'))
-                .reduce((p, v) => {
+                .reduce<Record<string, JToken>>((p, v) => {
                     p[v.key] = v.value;
                     return p;
-                }, <Record<string, JToken>>{})
+                }, {})
         };
     }
 }

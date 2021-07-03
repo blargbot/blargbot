@@ -33,7 +33,7 @@ export class ChooseSubtag extends BaseSubtag {
         if (index < 0)
             return this.customError('Choice cannot be negative', context, subtag);
 
-        if (!options[index])
+        if (index >= options.length)
             return this.customError('Index out of range', context, subtag);
 
         return options[index].wait();

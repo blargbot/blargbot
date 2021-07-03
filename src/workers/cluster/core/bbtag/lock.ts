@@ -2,7 +2,7 @@ import ReadWriteLock from 'rwlock';
 
 const TagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
-    [key: string]: TagLocks
+    [key: string]: TagLocks;
     [TagLock]?: ReadWriteLock;
 }
 

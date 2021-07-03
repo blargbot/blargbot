@@ -1,5 +1,6 @@
 import sequelize, { ENUM, STRING, TEXT } from 'sequelize';
 import { SubtagVariableType } from '../../../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
+import { Logger } from '../../../Logger';
 import { BaseModel } from './Base';
 
 type CreationAttributes = Attributes;
@@ -16,7 +17,7 @@ export class BBTagVariableModel extends BaseModel<Instance, Attributes, Creation
 
     public constructor(
         db: sequelize.Sequelize,
-        logger: CatLogger
+        logger: Logger
     ) {
         super(db, logger);
 

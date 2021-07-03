@@ -55,18 +55,18 @@ class ModuleCommand extends BaseCommand {
                             'Type that command again to confirm.');
                         confirmDiscord = true;
                     } else {
-                        bu.send(msg, `:ok_hand: Reloading the discord module :ok_hand:`)
+                        bu.send(msg, ':ok_hand: Reloading the discord module :ok_hand:')
                             .then(() => {
                                 bu.emitter.emit('reloadDiscord');
                             });
                     }
                 } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'irc') {
                     if (!confirmIrc) {
-                        bu.send(msg, `I really hope you know what you're doing. ` +
-                            `Type that command again to confirm.`);
+                        bu.send(msg, 'I really hope you know what you\'re doing. ' +
+                            'Type that command again to confirm.');
                         confirmIrc = true;
                     } else {
-                        bu.send(msg, `:ok_hand: Reloading the irc module :ok_hand:`)
+                        bu.send(msg, ':ok_hand: Reloading the irc module :ok_hand:')
                             .then(() => {
                                 bu.emitter.emit('reloadIrc');
                             });
@@ -75,7 +75,7 @@ class ModuleCommand extends BaseCommand {
                     bu.emitter.emit('reloadBu');
                 } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'cluster') {
                     cluster.reset();
-                    bu.send(msg, `:ok_hand: Reloading the workers. :ok_hand:`);
+                    bu.send(msg, ':ok_hand: Reloading the workers. :ok_hand:');
                 }
             }
         }

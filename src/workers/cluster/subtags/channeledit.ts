@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { BaseSubtag, BBTagContext, discordUtil, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, discordUtil, mapping, SubtagCall, SubtagType } from '../core';
 import { EditChannelOptions } from 'eris';
 
 export class ChannelEditSubtag extends BaseSubtag {
@@ -46,25 +46,40 @@ export class ChannelEditSubtag extends BaseSubtag {
 
         let options: EditChannelOptions;
         try {
-            options = JSON.parse(args[1]);
-            if (typeof options !== 'object' || Array.isArray(options))
+            const mapped = mapOptions(args[1]);
+            if (!mapped.valid)
                 return this.customError('Invalid JSON', context, subtag);
-        } catch (e) {
+            options = mapped.value;
+        } catch (e: unknown) {
             return this.customError('Invalid JSON', context, subtag);
         }
 
         try {
             const fullReason = discordUtil.formatAuditReason(
                 context.user,
-                context.scope.reason || ''
+                context.scope.reason ?? ''
             );
             await channel.edit(options, fullReason);
             if (!context.guild.channels.get(channel.id))
                 context.guild.channels.add(channel);
             return channel.id;
-        } catch (err) {
-            this.logger.error(err.stack);
+        } catch (err: unknown) {
+            this.logger.error(err);
             return this.customError('Failed to edit channel: no perms', context, subtag);
         }
     }
 }
+
+const mapOptions = mapping.json(
+    mapping.object<EditChannelOptions>({
+        bitrate: mapping.optionalNumber,
+        icon: mapping.optionalString,
+        name: mapping.optionalString,
+        nsfw: mapping.optionalBoolean,
+        ownerID: mapping.optionalString,
+        parentID: mapping.optionalString,
+        rateLimitPerUser: mapping.optionalNumber,
+        topic: mapping.optionalString,
+        userLimit: mapping.optionalNumber
+    })
+);

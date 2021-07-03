@@ -1,17 +1,18 @@
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, Logger, mapping, SonicSaysOptions } from '../core';
 
-export class SonicSaysGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class SonicSaysGenerator extends BaseImageGenerator<'sonicSays'> {
+    public constructor(logger: Logger) {
+        super('sonicSays', logger, mapOptions);
     }
 
-    public async execute({ text }: JObject): Promise<Buffer | null> {
-        if (typeof text !== 'string')
-            return null;
-
+    public async executeCore({ text }: SonicSaysOptions): Promise<Buffer | null> {
         return await this.renderPhantom('sonicsays.html', {
             scale: 2,
             replacements: { replace1: text }
         });
     }
 }
+
+const mapOptions = mapping.object<SonicSaysOptions>({
+    text: mapping.string
+});

@@ -14,7 +14,7 @@ export class UserNickSubtag extends BaseSubtag {
                     description: 'Returns the nickname of the executing user.',
                     exampleCode: 'Your nick is {usernick}!',
                     exampleOut: 'Your nick is Cool Dude 1337!',
-                    execute: (ctx) => (ctx.member.nick || ctx.user.username).replace(/@/g, '@\u200b')
+                    execute: (ctx) => (ctx.member.nick ?? ctx.user.username).replace(/@/g, '@\u200b')
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -40,7 +40,7 @@ export class UserNickSubtag extends BaseSubtag {
         if (user) {
             const member = context.guild.members.get(user.id);
             if (member)
-                return (member.nick || user.username).replace(/@/g, '@\u200b');
+                return (member.nick ?? user.username).replace(/@/g, '@\u200b');
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

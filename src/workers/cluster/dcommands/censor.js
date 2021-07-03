@@ -90,7 +90,7 @@ class CensorCommand extends BaseCommand {
                 };
                 term = input.undefined.slice(1).join(' ');
                 if (term == '') {
-                    bu.send(msg, `You can't censor nothing!`);
+                    bu.send(msg, 'You can\'t censor nothing!');
                     return;
                 }
                 if (input.R) {
@@ -133,11 +133,11 @@ class CensorCommand extends BaseCommand {
                 break;
             case 'edit':
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
-                    bu.send(msg, `There are no censors on this guild!`);
+                    bu.send(msg, 'There are no censors on this guild!');
                     return;
                 }
-                censorList = "Existing censors:\n```prolog\n";
-                suffix = "```\nPlease type the number of the censor you wish to view, or type 'c' to cancel. This prompt will expire in 5 minutes.";
+                censorList = 'Existing censors:\n```prolog\n';
+                suffix = '```\nPlease type the number of the censor you wish to view, or type \'c\' to cancel. This prompt will expire in 5 minutes.';
                 for (let i = 0; i < storedGuild.censor.list.length; i++) {
                     let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
                     if (censorList.length + phrase.length + suffix.length > 1500) {
@@ -202,11 +202,11 @@ class CensorCommand extends BaseCommand {
             case 'delete':
             case 'remove':
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
-                    bu.send(msg, `There are no censors on this guild!`);
+                    bu.send(msg, 'There are no censors on this guild!');
                     return;
                 }
-                censorList = "Existing censors:\n```prolog\n";
-                suffix = "```\nPlease type the number of the censor you wish to remove, or type 'c' to cancel. This prompt will expire in 5 minutes.";
+                censorList = 'Existing censors:\n```prolog\n';
+                suffix = '```\nPlease type the number of the censor you wish to remove, or type \'c\' to cancel. This prompt will expire in 5 minutes.';
                 for (let i = 0; i < storedGuild.censor.list.length; i++) {
                     let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
                     if (censorList.length + phrase.length + suffix.length > 1500) {
@@ -345,11 +345,11 @@ class CensorCommand extends BaseCommand {
                 break;
             case 'info':
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
-                    bu.send(msg, `There are no censors on this guild!`);
+                    bu.send(msg, 'There are no censors on this guild!');
                     return;
                 }
-                censorList = "Existing censors:\n```prolog\n";
-                suffix = "```\nPlease type the number of the censor you wish to view, or type 'c' to cancel. This prompt will expire in 5 minutes.";
+                censorList = 'Existing censors:\n```prolog\n';
+                suffix = '```\nPlease type the number of the censor you wish to view, or type \'c\' to cancel. This prompt will expire in 5 minutes.';
                 for (let i = 0; i < storedGuild.censor.list.length; i++) {
                     let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
                     if (censorList.length + phrase.length + suffix.length > 1500) {
@@ -383,15 +383,15 @@ class CensorCommand extends BaseCommand {
                 let output = `There are currently ${storedGuild.censor.list.length} censors active.
 **__Exceptions__**
 User Exceptions: ${storedGuild.censor.exception.user.map(u => {
-                    let user = bot.users.get(u);
-                    if (user) return bu.getFullName(user);
-                    else return u;
-                }).join(', ')}
+        let user = bot.users.get(u);
+        if (user) return bu.getFullName(user);
+        else return u;
+    }).join(', ')}
 Role Exceptions: ${storedGuild.censor.exception.role.map(r => {
-                    let role = msg.guild.roles.get(r);
-                    if (role) return role.name;
-                    else return r;
-                }).join(', ')}
+        let role = msg.guild.roles.get(r);
+        if (role) return role.name;
+        else return r;
+    }).join(', ')}
 Channel Exceptions: ${storedGuild.censor.exception.channel.map(c => `<#${c}>`).join(', ')}
 
 **__Settings__**

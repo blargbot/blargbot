@@ -156,7 +156,7 @@ export class TagCommand extends BaseGuildCommand {
         tagName: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string, files: MessageFile } | undefined> {
+    ): Promise<string | { content: string; files: MessageFile; } | undefined> {
         const match = await this.requestReadableTag(context, tagName, false);
         if (typeof match !== 'object')
             return match;
@@ -187,7 +187,7 @@ export class TagCommand extends BaseGuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string, files: MessageFile } | undefined> {
+    ): Promise<string | { content: string; files: MessageFile; } | undefined> {
         const args = humanize.smartSplit(input);
         const result = await context.bbtag.execute(content, {
             message: context.message,
@@ -261,7 +261,7 @@ export class TagCommand extends BaseGuildCommand {
         return `✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`;
     }
 
-    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
+    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: MessageFile; } | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -610,7 +610,7 @@ export class TagCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery = true
-    ): Promise<{ name: string, tag?: StoredTag } | string | undefined> {
+    ): Promise<{ name: string; tag?: StoredTag; } | string | undefined> {
         const match = await this.requestTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -658,7 +658,7 @@ export class TagCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery = true
-    ): Promise<{ name: string } | string | undefined> {
+    ): Promise<{ name: string; } | string | undefined> {
         const match = await this.requestTag(context, tagName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -673,7 +673,7 @@ export class TagCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         tagName: string | undefined,
         allowQuery: boolean
-    ): Promise<{ name: string, tag?: StoredTag } | string | undefined> {
+    ): Promise<{ name: string; tag?: StoredTag; } | string | undefined> {
         tagName = await this.requestTagName(context, tagName, allowQuery ? undefined : '');
         if (tagName === undefined)
             return;

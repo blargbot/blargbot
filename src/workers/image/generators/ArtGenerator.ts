@@ -1,15 +1,12 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { ArtOptions, BaseImageGenerator, Logger, mapping } from '../core';
 
-export class ArtGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class ArtGenerator extends BaseImageGenerator<'art'> {
+    public constructor(logger: Logger) {
+        super('art', logger, mapOptions);
     }
 
-    public async execute({ avatar }: JObject): Promise<Buffer | null> {
-        if (typeof avatar !== 'string')
-            return null;
-
+    public async executeCore({ avatar }: ArtOptions): Promise<Buffer | null> {
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(370, 370);
         const foreground = await this.getLocalJimp('art.png');
@@ -20,3 +17,7 @@ export class ArtGenerator extends BaseImageGenerator {
         return await img.getBufferAsync(Jimp.MIME_PNG);
     }
 }
+
+const mapOptions = mapping.object<ArtOptions>({
+    avatar: mapping.string
+});

@@ -58,7 +58,7 @@ module.exports =
             }
 
             let result;
-            if (typeof tagContent == "string" || tagContent == null) {
+            if (typeof tagContent == 'string' || tagContent == null) {
                 let parsed = bbEngine.parse(tagContent || '');
                 if (!parsed.success)
                     return Builder.util.error(subtag, context, parsed.error);

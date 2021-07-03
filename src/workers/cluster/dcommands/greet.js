@@ -43,9 +43,9 @@ class GreetCommand extends BaseCommand {
         if (/[0-9]{17,23}/.test(channelStr)) {
             let channel = channelStr.match(/([0-9]{17,23})/)[1];
             if (!bot.getChannel(channel)) {
-                suffix = `A channel could not be found from the channel input, so this message will go into the default channel. `;
+                suffix = 'A channel could not be found from the channel input, so this message will go into the default channel. ';
             } else if (bot.channelGuildMap[channel] != msg.guild.id) {
-                suffix = `The channel must be on this guild! `;
+                suffix = 'The channel must be on this guild! ';
             } else {
                 await bu.guildSettings.set(msg.guild.id, 'greetchan', channel);
                 suffix = `This greeting will be outputted in <#${channel}>. `;

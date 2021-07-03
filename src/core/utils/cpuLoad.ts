@@ -18,7 +18,7 @@ let lastTotalCpuTime = 0;
 let lastUserCpuTime = 0;
 let lastSystemCpuTime = 0;
 
-export function cpuLoad(): { userCpu: number, systemCpu: number } {
+export function cpuLoad(): { userCpu: number; systemCpu: number; } {
     const totalCpuTime = getTotalCpuTime();
     const cpuUsage = process.cpuUsage();
     const userTime = cpuUsage.user / 1000;

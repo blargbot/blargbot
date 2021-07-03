@@ -22,7 +22,7 @@ export class MinSubtag extends BaseSubtag {
         args: string[]
     ): string {
         const flattenedArgs = bbtagUtil.tagArray.flattenArray(args);
-        const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() || ''));
+        const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
 
         if (parsedArgs.filter(isNaN).length > 0)
             return 'NaN';

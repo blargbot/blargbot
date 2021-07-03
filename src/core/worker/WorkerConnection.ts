@@ -4,6 +4,7 @@ import { Moment } from 'moment-timezone';
 import moment from 'moment';
 import { IPCEvents } from './IPCEvents';
 import { snowflake } from '../utils';
+import { Logger } from '../Logger';
 
 export const enum WorkerState {
     READY,
@@ -36,7 +37,7 @@ export abstract class WorkerConnection extends IPCEvents {
     protected constructor(
         public readonly id: number,
         public readonly worker: string,
-        public readonly logger: CatLogger
+        public readonly logger: Logger
     ) {
         super();
         this.created = moment();

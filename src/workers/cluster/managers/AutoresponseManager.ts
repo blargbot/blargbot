@@ -105,7 +105,7 @@ ${codeBlock(code, 'js')}`
         const whitelist = emojiValues[emoji.name];
         const reason = `${whitelist ? 'Approved' : 'Rejected'} by ${humanize.fullName(user)}`;
 
-        const promises: Promise<unknown>[] = [];
+        const promises: Array<Promise<unknown>> = [];
         promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user.id, reason, whitelist));
         for (const m of await message.channel.getMessages()) {
             if (m.author.id === this.cluster.discord.user.id && m.content.includes(match[0])) {
@@ -116,7 +116,7 @@ ${codeBlock(code, 'js')}`
         await Promise.all(promises);
     }
 
-    private async * findAutoresponses(cluster: Cluster, msg: GuildMessage, everything: boolean): AsyncGenerator<{ commandName: string, limit: RuntimeLimit, silent?: boolean }> {
+    private async * findAutoresponses(cluster: Cluster, msg: GuildMessage, everything: boolean): AsyncGenerator<{ commandName: string; limit: RuntimeLimit; silent?: boolean; }> {
         const ars = await cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
         if (everything) {
             if (ars.everything)

@@ -11,6 +11,7 @@ import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
 import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
 import { PostgresDbTagVariablesTable } from './PostgresDbTagVariablesTable';
 import { PostgresDb } from './core/PostgresDb';
+import { Logger } from '../Logger';
 
 export * from './types';
 
@@ -38,7 +39,7 @@ export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #tagVariables: PostgresDbTagVariablesTable;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #logger: CatLogger;
+    readonly #logger: Logger;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #discord: ErisClient;
 

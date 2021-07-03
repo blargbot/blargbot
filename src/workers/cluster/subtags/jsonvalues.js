@@ -7,7 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require("../structures/TagBuilder");
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.ArrayTag('jsonvalues')
@@ -19,7 +19,7 @@ module.exports =
         )
         .withExample('{set;~json;{json;{"key": "value", "key2" : "value2"}}\n'
             + '{jsonvalues;~json}',
-            '["value","value2"]')
+        '["value","value2"]')
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async (subtag, context, args) => {
             let obj = args[0],

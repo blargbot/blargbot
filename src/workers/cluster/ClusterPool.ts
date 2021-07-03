@@ -1,10 +1,10 @@
-import { ProcessMessageHandler, WorkerPool } from './core';
+import { Logger, ProcessMessageHandler, WorkerPool } from './core';
 import { ClusterConnection } from './ClusterConnection';
 
 export class ClusterPool extends WorkerPool<ClusterConnection> {
     public constructor(
         public readonly config: Configuration['shards'],
-        logger: CatLogger
+        logger: Logger
     ) {
         super('Cluster',
             Math.ceil(config.max / config.perCluster),

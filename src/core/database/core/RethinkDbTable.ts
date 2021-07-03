@@ -1,4 +1,5 @@
 import { TableQuery, Cursor, UpdateRequest, WriteResult } from 'rethinkdb';
+import { Logger } from '../../Logger';
 import { RethinkTableMap } from '../types';
 import { RethinkDb } from './RethinkDb';
 
@@ -9,7 +10,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
     protected constructor(
         protected readonly table: T,
         rethinkDb: RethinkDb,
-        protected readonly logger: CatLogger
+        protected readonly logger: Logger
     ) {
         this.#rethinkDb = rethinkDb;
     }

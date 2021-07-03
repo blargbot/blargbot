@@ -1,4 +1,4 @@
-import { WorkerConnection } from './core';
+import { WorkerConnection, Logger } from './core';
 
 export class ClusterConnection extends WorkerConnection {
 
@@ -6,7 +6,7 @@ export class ClusterConnection extends WorkerConnection {
         id: number,
         public readonly shardRange: [number, number],
         shardCount: number,
-        logger: CatLogger
+        logger: Logger
     ) {
         super(id, 'cluster', logger);
         this.args.push('--max-old-space-size=4096');

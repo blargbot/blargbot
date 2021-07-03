@@ -14,7 +14,7 @@ class KickCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         if (!words[1]) {
-            bu.send(msg, `You didn't tell me who to kick!`);
+            bu.send(msg, 'You didn\'t tell me who to kick!');
             return;
         }
 
@@ -27,16 +27,16 @@ class KickCommand extends BaseCommand {
         let response;
         switch (state) {
             case 0: //Successful
-                response = `:ok_hand:`;
+                response = ':ok_hand:';
                 break;
             case 1: //Bot doesnt have perms
-                response = `I don't have permission to kick users!`;
+                response = 'I don\'t have permission to kick users!';
                 break;
             case 2: //Bot cannot kick target
                 response = `I don't have permission to kick ${target.username}!`;
                 break;
             case 3: //User doesnt have perms
-                response = `You don't have permission to kick users!`;
+                response = 'You don\'t have permission to kick users!';
                 break;
             case 4: //User cannot kick target
                 response = `You don't have permission to kick ${target.username}!`;

@@ -1,5 +1,6 @@
 import { Client as ErisClient, ClientEventTypes } from 'eris';
 import { BaseService } from './BaseService';
+import { Logger } from './Logger';
 
 export abstract class DiscordEventService<T extends keyof ClientEventTypes> extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -9,14 +10,14 @@ export abstract class DiscordEventService<T extends keyof ClientEventTypes> exte
     protected constructor(
         public readonly discord: ErisClient,
         public readonly event: T,
-        public readonly logger: CatLogger
+        public readonly logger: Logger
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;
         const execute = async (...args: ClientEventTypes[T]): Promise<void> => {
             try {
                 await this.execute(...args);
-            } catch (err) {
+            } catch (err: unknown) {
                 this.logger.error(`Discord event handler ${this.name} threw an error:`, err);
             }
         };

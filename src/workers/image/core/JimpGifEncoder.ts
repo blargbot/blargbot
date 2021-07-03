@@ -19,7 +19,7 @@ export class JimpGifEncoder {
         this.#buffers = [];
         this.#promise = new Promise<Buffer>((resolve, reject) => {
             const sr = this.#encoder.createReadStream();
-            sr.on('data', data => this.#buffers.push(data));
+            sr.on('data', (data: Uint8Array) => this.#buffers.push(data));
             sr.on('error', err => reject(err));
             sr.on('end', () => resolve(Buffer.from(this.#buffers)));
         });

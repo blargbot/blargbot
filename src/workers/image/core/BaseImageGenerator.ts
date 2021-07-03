@@ -3,17 +3,34 @@ import Jimp from 'jimp';
 import path from 'path';
 import phantom from 'phantom';
 import request, { CoreOptions, RequiredUriUrl, Response } from 'request';
-import { MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
+import { guard } from '../../../core';
+import { TypeMapping } from '../../cluster/core';
+import { Logger } from './globalCore';
+import { ImageGeneratorMap, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
 
-export abstract class BaseImageGenerator {
+export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = keyof ImageGeneratorMap> {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #mapping: TypeMapping<ImageGeneratorMap[T]>;
+
     public constructor(
-        public readonly logger: CatLogger
+        public readonly key: T,
+        public readonly logger: Logger,
+        mapping: TypeMapping<ImageGeneratorMap[T]>
     ) {
+        this.#mapping = mapping;
     }
 
-    public abstract execute(message: JObject): Promise<Buffer | null>;
+    public async execute(message: unknown): Promise<Buffer | null> {
+        const mapped = this.#mapping(message);
+        if (!mapped.valid)
+            return null;
+
+        return await this.executeCore(mapped.value);
+    }
+
+    protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<Buffer | null>;
 
     protected getLocalResourcePath(...segments: string[]): string {
         return path.join(__dirname, '../../../../res/img', ...segments);
@@ -32,7 +49,7 @@ export abstract class BaseImageGenerator {
 
     protected async toBuffer(source: gm.State, format?: string): Promise<Buffer> {
         return await new Promise<Buffer>((resolve, reject) => {
-            source.setFormat(format || 'png').toBuffer((err, buffer) => {
+            source.setFormat(format ?? 'png').toBuffer((err, buffer) => {
                 if (err) {
                     reject(err);
                     return;
@@ -98,10 +115,8 @@ export abstract class BaseImageGenerator {
         if (!text)
             throw new Error('No text provided');
 
-        if (!options.fill)
-            options.fill = 'black';
-        if (!options.gravity)
-            options.gravity = 'Center';
+        options.fill ??= 'black';
+        options.gravity ??= 'Center';
 
         this.logger.debug(`Generating caption for text '${text}'`);
 
@@ -152,7 +167,7 @@ export abstract class BaseImageGenerator {
         await page.on('viewportSize', { width: 1440, height: 900 });
         await page.on('zoomFactor', scale);
 
-        const rect = await page.evaluate(phantom_getrect, replacements);
+        const rect = await page.evaluate(phantomGetrect, replacements);
 
         if (rect) {
             await page.on('clipRect', {
@@ -166,7 +181,7 @@ export abstract class BaseImageGenerator {
         if (transform)
             await page.evaluate(transform, transformArg);
 
-        await page.evaluate(phantom_resize);
+        await page.evaluate(phantomResize);
 
         const base64 = await page.renderBase64(format);
         instance.exit();
@@ -174,9 +189,12 @@ export abstract class BaseImageGenerator {
     }
 }
 
-function phantom_getrect(replacements: PhantomOptions['replacements']): { top: number, left: number, width: number, height: number } | undefined {
+// This method is turned into a string and run on the phantom instance, not in node
+function phantomGetrect(replacements: PhantomOptions['replacements']): { top: number; left: number; width: number; height: number; } | undefined {
     if (replacements) {
         const keys = Object.keys(replacements);
+        // Phantom might not support the for-of syntax
+        // eslint-disable-next-line @typescript-eslint/prefer-for-of
         for (let i = 0; i < keys.length; i++) {
             const thing = document.getElementById(keys[i]);
             if (thing)
@@ -186,14 +204,14 @@ function phantom_getrect(replacements: PhantomOptions['replacements']): { top: n
     try {
         const workspace = document.getElementById('workspace');
         return workspace?.getBoundingClientRect();
-    } catch (err) {
+    } catch (err: unknown) {
         // eslint-disable-next-line no-console
-        console.error(err); // console inside the phantom browser, not the blargbot console
+        console.error(err);
         return { top: 0, left: 0, width: 300, height: 300 };
     }
 }
 
-function phantom_resize(): void {
+function phantomResize(): void {
     let el, i;
     const elements = document.getElementsByClassName('resize');
     const wrapper = document.getElementById('wrapper');
@@ -225,20 +243,22 @@ function phantom_resize(): void {
     }
 }
 
-async function aRequest(obj: RequiredUriUrl & CoreOptions): Promise<{ res: Response, body: Buffer }> {
-    return await new Promise<{ res: Response, body: Buffer }>((resolve, reject) => {
-        if (!obj.encoding)
-            obj.encoding = null;
+async function aRequest(obj: RequiredUriUrl & CoreOptions): Promise<{ res: Response; body: Buffer; }> {
+    return await new Promise<{ res: Response; body: Buffer; }>((resolve, reject) => {
+        obj.encoding ??= null;
 
         request(obj, (err, res, body) => {
-            if (err) {
+            if (guard.hasValue(err)) {
                 reject(err);
                 return;
             }
-            resolve({
-                res: res,
-                body: body
-            });
+            if (body instanceof Buffer)
+                resolve({
+                    res: res,
+                    body: body
+                });
+            else
+                reject(new Error('Response body was not a buffer!'));
         });
     });
 }

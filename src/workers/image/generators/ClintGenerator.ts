@@ -1,15 +1,12 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, ClintOptions, Logger, mapping } from '../core';
 
-export class ClintGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class ClintGenerator extends BaseImageGenerator<'clint'> {
+    public constructor(logger: Logger) {
+        super('clint', logger, mapOptions);
     }
 
-    public async execute({ image }: JObject): Promise<Buffer | null> {
-        if (typeof image !== 'string')
-            return null;
-
+    public async executeCore({ image }: ClintOptions): Promise<Buffer | null> {
         const avatarImg = await this.getRemoteJimp(image);
         avatarImg.resize(700, 700);
         const bgImg = await this.generateJimp(avatarImg, x => {
@@ -28,3 +25,7 @@ export class ClintGenerator extends BaseImageGenerator {
         return img.getBufferAsync(Jimp.MIME_PNG);
     }
 }
+
+const mapOptions = mapping.object<ClintOptions>({
+    image: mapping.string
+});

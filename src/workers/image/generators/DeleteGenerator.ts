@@ -1,15 +1,12 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, DeleteOptions, Logger, mapping } from '../core';
 
-export class DeleteGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class DeleteGenerator extends BaseImageGenerator<'delete'> {
+    public constructor(logger: Logger) {
+        super('delete', logger, mapOptions);
     }
 
-    public async execute({ text }: JObject): Promise<Buffer | null> {
-        if (typeof text !== 'string')
-            return null;
-
+    public async executeCore({ text }: DeleteOptions): Promise<Buffer | null> {
         const originalText = await this.renderJimpText(text, {
             font: 'whitneybold.ttf',
             size: '512x24',
@@ -40,3 +37,6 @@ export class DeleteGenerator extends BaseImageGenerator {
     }
 }
 
+const mapOptions = mapping.object<DeleteOptions>({
+    text: mapping.string
+});

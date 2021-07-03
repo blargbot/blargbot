@@ -30,7 +30,7 @@ async function getOutput(id) {
             expiry: 0
         };
     }
-    let m = await bu.cclient.execute(`SELECT id, content, embeds, channelid, TTL(content) as expiry FROM message_outputs WHERE id = :id`, {
+    let m = await bu.cclient.execute('SELECT id, content, embeds, channelid, TTL(content) as expiry FROM message_outputs WHERE id = :id', {
         id
     }, { prepare: true });
 

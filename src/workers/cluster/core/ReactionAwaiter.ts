@@ -1,5 +1,6 @@
 import { AnyMessage, Emoji, User } from 'eris';
-import { EventEmitter } from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
+import { Logger } from './globalCore';
 
 
 export class ReactionAwaiter {
@@ -7,7 +8,7 @@ export class ReactionAwaiter {
     readonly #events: EventEmitter;
 
     public constructor(
-        public readonly logger: CatLogger
+        public readonly logger: Logger
     ) {
         this.#events = new EventEmitter();
     }

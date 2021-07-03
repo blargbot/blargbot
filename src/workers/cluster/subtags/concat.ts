@@ -22,9 +22,10 @@ export class ConcatSubtag extends BaseSubtag {
     public concatArrays(values: string[]): string {
         const parsedArray = values.map((value) => {
             try {
-                value = JSON.parse(value);
-            } catch (e) { }
-            return value;
+                return JSON.parse(value);
+            } catch (e: unknown) {
+                return value;
+            }
         });
         const flattenedArray = bbtagUtil.tagArray.flattenArray(parsedArray);
         return JSON.stringify(flattenedArray);

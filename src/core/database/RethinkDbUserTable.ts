@@ -2,11 +2,12 @@ import { RethinkDb } from './core/RethinkDb';
 import { User } from 'eris';
 import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { MutableStoredUser, StoredUser, StoredUserSettings, UserTable } from './types';
+import { Logger } from '../Logger';
 
 export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', MutableStoredUser> implements UserTable {
     public constructor(
         rethinkDb: RethinkDb,
-        logger: CatLogger
+        logger: Logger
     ) {
         super('user', 'userid', rethinkDb, logger);
     }

@@ -44,7 +44,7 @@ ${bu.padLeft('Denied Permissions', 19)} : ${userToGet.permissions.deny}
 ${bu.padLeft('Avatar URL', 19)} : ${userToGet.user.avatarURL}
 Account created on ${moment(userToGet.user.createdAt).format('llll')}
 Account joined guild '${msg.channel.guild.name}' on ${moment(userToGet.joinedAt).format('llll')}
-${userToGet.game == null ? `Not playing anything` : `Currently ${userToGet.game.type != null && userToGet.game.type > 0 ? 'streaming' : 'playing'} ${userToGet.game.name}`}
+${userToGet.game == null ? 'Not playing anything' : `Currently ${userToGet.game.type != null && userToGet.game.type > 0 ? 'streaming' : 'playing'} ${userToGet.game.name}`}
 \`\`\``;
         } else {
             message = `\`\`\`prolog

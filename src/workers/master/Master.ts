@@ -1,7 +1,7 @@
 import moment from 'moment';
 import snekfetch from 'snekfetch';
 import { ClusterPool } from '../cluster/ClusterPool';
-import { BaseClient, ModuleLoader, BaseService } from './core';
+import { BaseClient, ModuleLoader, BaseService, EvalResult, Logger } from './core';
 import { MasterWorker } from './MasterWorker';
 import { MasterOptions } from './core/types';
 
@@ -12,7 +12,7 @@ export class Master extends BaseClient {
     public readonly worker: MasterWorker;
 
     public constructor(
-        logger: CatLogger,
+        logger: Logger,
         config: Configuration,
         options: MasterOptions
     ) {
@@ -47,21 +47,21 @@ export class Master extends BaseClient {
             await snekfetch.post(`https://discordapp.com/api/channels/${this.config.discord.channels.botlog}/messages`)
                 .set('Authorization', this.config.discord.token)
                 .send({ content: `My master process just initialized on \`${moment().format('MMMM Do, YYYY[` at `]hh:mm:ss.SS')}\`.` });
-        } catch (err) {
+        } catch (err: unknown) {
             this.logger.error('Could not post startup message', err);
         }
     }
-    public async eval(author: string, text: string): Promise<{ success: boolean, result: unknown }> {
+    public async eval(author: string, text: string): Promise<EvalResult> {
         if (author !== this.config.discord.users.owner)
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {
-            const func: () => Promise<unknown>
-                = eval(text.split('\n').length === 1
-                    ? `async () => ${text}`
-                    : `async () => { ${text} }`);
+            const code = text.includes('\n')
+                ? `async () => ${text}`
+                : `async () => { ${text} }`;
+            const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
-        } catch (err) {
+        } catch (err: unknown) {
             return { success: false, result: err };
         }
     }

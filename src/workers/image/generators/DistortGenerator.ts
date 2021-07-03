@@ -1,14 +1,12 @@
-import { BaseImageGenerator, randInt } from '../core';
+import { BaseImageGenerator, randInt, Logger, DistortOptions, mapping } from '../core';
 import { BetterColorAction } from '@jimp/plugin-color';
 
-export class DistortGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class DistortGenerator extends BaseImageGenerator<'distort'> {
+    public constructor(logger: Logger) {
+        super('distort', logger, mapOptions);
     }
 
-    public async execute({ avatar }: JObject): Promise<Buffer | null> {
-        if (typeof avatar !== 'string')
-            return null;
+    public async executeCore({ avatar }: DistortOptions): Promise<Buffer | null> {
         // 344x410
         // 28 - 70
         // 400x620
@@ -29,3 +27,6 @@ export class DistortGenerator extends BaseImageGenerator {
     }
 }
 
+const mapOptions = mapping.object<DistortOptions>({
+    avatar: mapping.string
+});

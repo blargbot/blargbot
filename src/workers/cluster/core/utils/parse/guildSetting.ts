@@ -10,7 +10,7 @@ export async function guildSetting<T extends keyof StoredGuildSettings>(
     util: ClusterUtilities,
     key: T,
     raw: string
-): Promise<{ success: true, value: StoredGuildSettings[T], display: string | undefined } | { success: false }> {
+): Promise<{ success: true; value: StoredGuildSettings[T]; display: string | undefined; } | { success: false; }> {
     const def = guildSettings[key];
     if (!def)
         return { success: false };

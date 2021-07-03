@@ -12,16 +12,16 @@ class SnippetCommand extends BaseCommand {
             info: 'submit a snippet and stuff',
             onlyOn: cluster.config.discord.guilds.home,
             flags: [{ flag: 't', word: 'title', desc: 'The title of the snippet' },
-            {
-                flag: 'd',
-                word: 'description',
-                desc: 'The description of the snippet'
-            },
-            {
-                flag: 'c',
-                word: 'command',
-                desc: 'Use this to designate it as a command instead of a snippet'
-            }]
+                {
+                    flag: 'd',
+                    word: 'description',
+                    desc: 'The description of the snippet'
+                },
+                {
+                    flag: 'c',
+                    word: 'command',
+                    desc: 'Use this to designate it as a command instead of a snippet'
+                }]
         });
     }
 

@@ -24,7 +24,7 @@ class InsultCommand extends BaseCommand {
         var chosenNoun = config.insult.nouns[(bu.getRandomInt(0, config.insult.nouns.length - 1))];
         var chosenVerb = config.insult.verbs[(bu.getRandomInt(0, config.insult.verbs.length - 1))];
         var chosenAdje = config.insult.adjectives[(bu.getRandomInt(0, config.insult.adjectives.length - 1))];
-        var message = `${target}${target == 'Your' ? `` : `'s`} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
+        var message = `${target}${target == 'Your' ? '' : '\'s'} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
         bu.send(msg, message);
     }
 }

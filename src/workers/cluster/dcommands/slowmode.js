@@ -9,7 +9,7 @@ class SlowmodeCommand extends BaseCommand {
             usage: 'slowmode [time]',
             info: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 120. Leave empty to disable slowmode.',
             flags: [{ flag: 'c', word: 'channel', desc: 'The channel to put under slowmode' },
-            { flag: 'r', word: 'reason', desc: 'The reason for the slowmode' }]
+                { flag: 'r', word: 'reason', desc: 'The reason for the slowmode' }]
         });
     }
 

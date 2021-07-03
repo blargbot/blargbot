@@ -31,8 +31,8 @@ export class ChannelSetPosSubtag extends BaseSubtag {
                         try {
                             await channel.editPosition(pos);
                             return; //TODO return something on success
-                        } catch (err) {
-                            this.cluster.logger.error(err.stack);
+                        } catch (err: unknown) {
+                            this.cluster.logger.error(err);
                             return this.customError('Failed to move channel: no perms', context, subtag);
                         }
                     }

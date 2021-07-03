@@ -1,25 +1,22 @@
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, Logger, mapping, PCCheckOptions } from '../core';
 
-export class PCCheckGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
+    public constructor(logger: Logger) {
+        super('pcCheck', logger, mapOptions);
     }
 
-    public async execute({ text }: JObject): Promise<Buffer | null> {
-        if (typeof text !== 'string')
-            return null;
-
-        const container: Array<{ italic: boolean, text: string }> = [];
+    public async executeCore({ text }: PCCheckOptions): Promise<Buffer | null> {
+        const container: Array<{ italic: boolean; text: string; }> = [];
         let italic = false;
         let temp = '';
-        for (let i = 0; i < text.length; i++) {
-            if (text[i] === '*') {
+        for (const t of text) {
+            if (t === '*') {
                 container.push({ italic, text: temp });
                 temp = '';
                 italic = !italic;
             }
             else
-                temp += text[i];
+                temp += t;
         }
         container.push({ italic, text: temp });
 
@@ -29,6 +26,8 @@ export class PCCheckGenerator extends BaseImageGenerator {
             transform(m: typeof container) {
                 const thing = document.getElementById('replace1');
                 if (thing) {
+                    // This is run in phantom which might not support for-of
+                    // eslint-disable-next-line @typescript-eslint/prefer-for-of
                     for (let i = 0; i < m.length; i++) {
                         const el = document.createElement(m[i].italic ? 'em' : 'span');
                         el.innerText = m[i].text;
@@ -39,3 +38,7 @@ export class PCCheckGenerator extends BaseImageGenerator {
         });
     }
 }
+
+const mapOptions = mapping.object<PCCheckOptions>({
+    text: mapping.string
+});

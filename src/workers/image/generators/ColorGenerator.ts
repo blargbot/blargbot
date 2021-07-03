@@ -1,16 +1,17 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, ColorOptions, Logger, mapping } from '../core';
 
-export class ColorGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class ColorGenerator extends BaseImageGenerator<'color'> {
+    public constructor(logger: Logger) {
+        super('color', logger, mapOptions);
     }
 
-    public async execute({ hex }: JObject): Promise<Buffer | null> {
-        if (typeof hex !== 'number')
-            return null;
-
+    public async executeCore({ hex }: ColorOptions): Promise<Buffer | null> {
         return await new Jimp(128, 128, hex)
             .getBufferAsync(Jimp.MIME_PNG);
     }
 }
+
+const mapOptions = mapping.object<ColorOptions>({
+    hex: mapping.number
+});

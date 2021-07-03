@@ -77,7 +77,7 @@ module.exports =
             if (args[3]) {
                 checkBBTag = args[3];
             } else {
-                checkBBTag = bbengine.parse("true").bbtag;
+                checkBBTag = bbengine.parse('true').bbtag;
             }
 
             // parse timeout
@@ -104,7 +104,7 @@ module.exports =
                 let result = await bu.awaitReact(messages, users, reactions, checkFunc, timeout * 1000);
                 return JSON.stringify([result.channel.id, result.message.id, result.user.id, padEmoji(result.emoji)]);
             } catch (err) {
-                if (typeof err == "function") {
+                if (typeof err == 'function') {
                     return err(subtag, context);
                 }
                 if (err instanceof bu.TimeoutError) {

@@ -1,6 +1,7 @@
 import { CronJob, CronJobParameters } from 'cron';
 import { inspect } from 'util';
 import { BaseService } from './BaseService';
+import { Logger } from './Logger';
 
 export abstract class CronService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -10,7 +11,7 @@ export abstract class CronService extends BaseService {
 
     protected constructor(
         options: Omit<CronJobParameters, 'onTick' | 'onComplete'>,
-        public readonly logger: CatLogger
+        public readonly logger: Logger
     ) {
         super();
         this.#execute = async () => {

@@ -47,11 +47,11 @@ module.exports =
                 case 0: //Successful
                     return 'Success';
                 case 1: //Bot doesnt have perms
-                    return error(`I don't have permission to kick users!`);
+                    return error('I don\'t have permission to kick users!');
                 case 2: //Bot cannot kick target
                     return error(`I don't have permission to kick ${user.username}!`);
                 case 3: //User doesnt have perms
-                    return error(`You don't have permission to kick users!`);
+                    return error('You don\'t have permission to kick users!');
                 case 4: //User cannot kick target
                     return error(`You don't have permission to kick ${user.username}!`);
                 default: //Error occurred

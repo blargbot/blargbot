@@ -38,7 +38,7 @@ export class CommitSubtag extends BaseSubtag {
         const values = args.length === 0
             ? context.variables.list.map(entry => entry.key)
             : bbtagUtil.tagArray.flattenArray(args)
-                .map(value => typeof value === 'object' ? JSON.stringify(value) : value?.toString() || '');
+                .map(value => typeof value === 'object' ? JSON.stringify(value) : value?.toString() ?? '');
         await context.variables.persist(values);
     }
 }

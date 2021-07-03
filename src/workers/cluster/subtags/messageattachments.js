@@ -34,7 +34,7 @@ module.exports =
         })
         .whenArgs(2, async function (subtag, context, args) {
             let channel = Builder.util.parseChannel(context, args[0]);
-            if (typeof channel == "function")
+            if (typeof channel == 'function')
                 return channel(subtag, context);
 
             let message = await bu.getMessage(channel.id, args[1]);

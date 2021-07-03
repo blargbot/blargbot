@@ -1,21 +1,18 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, CaptionOptions, Logger, mapping } from '../core';
 
-export class CaptionGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class CaptionGenerator extends BaseImageGenerator<'caption'> {
+    public constructor(logger: Logger) {
+        super('caption', logger, mapOptions);
     }
 
-    public async execute({ url, input, font }: JObject): Promise<Buffer | null> {
-        if (typeof url !== 'string' || !checkInput(input) || typeof font !== 'string')
-            return null;
-
+    public async executeCore({ url, input, font }: CaptionOptions): Promise<Buffer | null> {
         const img = await this.getRemoteJimp(url);
         img.scaleToFit(800, 800);
 
         const height = img.bitmap.height;
         const width = img.bitmap.width;
-        if (input.t) {
+        if (input.t !== undefined) {
             const topcap = await this.renderJimpText(input.t.join(' '), {
                 font,
                 size: `${width}x${height / 6}`,
@@ -26,7 +23,7 @@ export class CaptionGenerator extends BaseImageGenerator {
             });
             img.composite(topcap, 0, 0);
         }
-        if (input.b) {
+        if (input.b !== undefined) {
             const botcap = await this.renderJimpText(input.b.join(' '), {
                 font,
                 size: `${width}x${height / 6}`,
@@ -42,15 +39,11 @@ export class CaptionGenerator extends BaseImageGenerator {
     }
 }
 
-function checkInput(source: JToken): source is { t?: JArray, b?: JArray } {
-    if (typeof source !== 'object' || source === null || Array.isArray(source))
-        return false;
-
-    if ('t' in source && !Array.isArray(source.t))
-        return false;
-
-    if ('b' in source && !Array.isArray(source.b))
-        return false;
-
-    return true;
-}
+const mapOptions = mapping.object<CaptionOptions>({
+    font: mapping.string,
+    url: mapping.string,
+    input: mapping.object({
+        t: mapping.array<string, undefined>(mapping.string, { ifUndefined: mapping.result.undefined }),
+        b: mapping.array<string, undefined>(mapping.string, { ifUndefined: mapping.result.undefined })
+    })
+});

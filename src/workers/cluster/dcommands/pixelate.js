@@ -38,13 +38,13 @@ class PixelateCommand extends BaseCommand {
         } else if (msg.attachments.length > 0) url = msg.attachments[0].url;
         else if (input.undefined.length > 0) url = input.undefined.join(' ');
         else {
-            bu.send(msg, `You must provide an image, either via url, attachment, or the user flag!`);
+            bu.send(msg, 'You must provide an image, either via url, attachment, or the user flag!');
             return;
         }
         if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(url)) {
             url = url.match(/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))/)[0];
         } else {
-            bu.send(msg, `That's not a valid url!`);
+            bu.send(msg, 'That\'s not a valid url!');
             return;
         }
         let code = bu.genEventCode();

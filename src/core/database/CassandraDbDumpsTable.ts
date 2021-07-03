@@ -1,12 +1,13 @@
 import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
+import { Logger } from '../Logger';
 import { Dump, DumpsTable } from './types';
 
 
 export class CassandraDbDumpsTable implements DumpsTable {
     public constructor(
         protected readonly cassandra: Cassandra,
-        protected readonly logger: CatLogger
+        protected readonly logger: Logger
     ) {
     }
 

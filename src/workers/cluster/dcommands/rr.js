@@ -61,10 +61,10 @@ class RrCommand extends BaseCommand {
                 setTimeout(() => {
                     if (dead) {
                         bot.editMessage(msg2.channel.id, msg2.id, emojify(message + `\n***BOOM!*** ${deathMsg[bu.getRandomInt(0, deathMsg.length - 1)]}`));
-                        bot.editMessage(msg3.channel.id, msg3.id, emojify(`:boom::gun:`));
+                        bot.editMessage(msg3.channel.id, msg3.id, emojify(':boom::gun:'));
                     } else {
                         bot.editMessage(msg2.channel.id, msg2.id, emojify(msg2.content + `\n*Click!* ${liveMsg[bu.getRandomInt(0, liveMsg.length - 1)]}`));
-                        bot.editMessage(msg3.channel.id, msg3.id, emojify(`:relieved::gun:`));
+                        bot.editMessage(msg3.channel.id, msg3.id, emojify(':relieved::gun:'));
                     }
                 }, 4000);
             });

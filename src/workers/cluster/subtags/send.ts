@@ -39,8 +39,8 @@ export class SendSubtag extends BaseSubtag {
             file.file = Buffer.from(file.file.slice(7), 'base64');
 
         const disableEveryone = !context.isCC
-            || await context.database.guilds.getSetting(channel.guild.id, 'disableeveryone')
-            || !context.state.allowedMentions.everybody;
+            || (await context.database.guilds.getSetting(channel.guild.id, 'disableeveryone')
+                ?? !context.state.allowedMentions.everybody);
 
         try {
             const sent = await this.cluster.util.send(context.message, {
@@ -60,8 +60,11 @@ export class SendSubtag extends BaseSubtag {
 
             context.state.ownedMsgs.push(sent.id);
             return sent.id;
-        } catch (err) {
-            return context.addError(`Failed to send: ${err.message}`, subtag);
+        } catch (err: unknown) {
+            if (err instanceof Error)
+                return context.addError(`Failed to send: ${err.message}`, subtag);
+            context.logger.error('Failed to send!', err);
+            return context.addError('Failed to send: UNKNOWN', subtag);
         }
 
     }

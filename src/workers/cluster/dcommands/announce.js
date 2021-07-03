@@ -48,7 +48,7 @@ class AnnounceCommand extends BaseCommand {
                 if (role != null) {
                     roleId = role.id;
                 } else {
-                    bu.send(msg, `I couldn't find a role with that name. Run \`b!announce\` to attempt the setup again.`);
+                    bu.send(msg, 'I couldn\'t find a role with that name. Run `b!announce` to attempt the setup again.');
                     return;
                 }
                 await r.table('guild').get(msg.channel.guild.id).update({
@@ -59,7 +59,7 @@ class AnnounceCommand extends BaseCommand {
                 }).run();
             }
             if (msg.channel.guild.channels.get(changeChannel) == undefined || msg.channel.guild.roles.get(roleId) == undefined) {
-                bu.send(msg, `The assigned channel or role has been deleted, the config will be cleaned. Please run the command again.`);
+                bu.send(msg, 'The assigned channel or role has been deleted, the config will be cleaned. Please run the command again.');
                 delete storedGuild.announce;
                 await r.table('guild').get(msg.channel.guild.id).update({
                     announce: r.literal({})

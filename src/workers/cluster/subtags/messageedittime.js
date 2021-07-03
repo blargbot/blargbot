@@ -21,10 +21,10 @@ module.exports =
             'That was edited at "{messageedittime;DD/MM/YYYY HH:mm:ss}"',
             'That was sent at "10/06/2018 10:07:44"'
         )
-        .whenArgs("0-3", async function (subtag, context, args) {
+        .whenArgs('0-3', async function (subtag, context, args) {
             let channel = context.channel,
                 message = context.msg,
-                format = "x";
+                format = 'x';
 
             switch (args.length) {
                 case 1:
@@ -36,7 +36,7 @@ module.exports =
                 case 2:
                     channel = Builder.util.parseChannel(context, args[0]);
                     let i = 1;
-                    if (typeof channel == "function") {
+                    if (typeof channel == 'function') {
                         channel = context.channel;
                         format = args[(i = 0) + 1];
                     }
@@ -44,7 +44,7 @@ module.exports =
                     break;
                 case 3:
                     channel = Builder.util.parseChannel(context, args[0]);
-                    if (typeof channel == "function")
+                    if (typeof channel == 'function')
                         return channel(subtag, context);
                     message = await bu.getMessage(channel.id, args[1]);
                     format = args[2];

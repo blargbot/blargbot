@@ -54,7 +54,7 @@ class PollCommand extends BaseCommand {
                 time = bu.parseDuration(input.t.join(' '));
             }
             if (time.asMilliseconds() <= 0) {
-                bu.send(msg, `The length of a poll can't be less than 0 seconds!`);
+                bu.send(msg, 'The length of a poll can\'t be less than 0 seconds!');
                 return;
             }
             if (!input.c) input.c = [];

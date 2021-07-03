@@ -9,7 +9,7 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
         super(cluster.discord, 'messageReactionAdd', cluster.logger);
     }
 
-    protected async execute(maybeMessage: PossiblyUncachedMessage, emoji: Emoji, maybeUser: Member | { id: string }): Promise<void> {
+    protected async execute(maybeMessage: PossiblyUncachedMessage, emoji: Emoji, maybeUser: Member | { id: string; }): Promise<void> {
         const message = await this.resolveMessage(maybeMessage);
         if (!message) return;
         const user = await this.resolveUser(maybeUser);
@@ -45,7 +45,7 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
         return 'messages' in channel ? channel : undefined;
     }
 
-    protected async resolveUser(maybeUser: Member | { id: string }): Promise<User | undefined> {
+    protected async resolveUser(maybeUser: Member | { id: string; }): Promise<User | undefined> {
         if ('user' in maybeUser)
             return maybeUser.user;
 

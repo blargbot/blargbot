@@ -1,3 +1,4 @@
+import { Logger } from '../Logger';
 import { LogEntry } from '../types';
 import { IPCEvents } from './IPCEvents';
 
@@ -9,7 +10,7 @@ export abstract class BaseWorker extends IPCEvents {
     public get memoryUsage(): NodeJS.MemoryUsage { return this.#process.memoryUsage(); }
 
     public constructor(
-        public readonly logger: CatLogger
+        public readonly logger: Logger
     ) {
         super(process);
 

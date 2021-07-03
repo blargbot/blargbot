@@ -28,7 +28,7 @@ export class ClusterUtilities extends BaseUtilities {
             return null;
 
         const normName = name.toLowerCase();
-        const matchScore = (user: { name: string, nick: string, normName: string, normNick: string }): number => {
+        const matchScore = (user: { name: string; nick: string; normName: string; normNick: string; }): number => {
             let score = 0;
             if (user.name.startsWith(name)) score += 100;
             if (user.nick.startsWith(name)) score += 100;
@@ -98,7 +98,7 @@ export class ClusterUtilities extends BaseUtilities {
             return null;
 
         const normName = name.toLowerCase();
-        const matchScore = (role: { name: string, normName: string }): number => {
+        const matchScore = (role: { name: string; normName: string; }): number => {
             let score = 0;
             if (role.name.startsWith(name)) score += 100;
             if (role.normName.startsWith(normName)) score += 10;
@@ -148,7 +148,7 @@ export class ClusterUtilities extends BaseUtilities {
             return null;
 
         const normName = name.toLowerCase();
-        const matchScore = (role: { name: string, normName: string }): number => {
+        const matchScore = (role: { name: string; normName: string; }): number => {
             let score = 0;
             if (role.name.startsWith(name)) score += 100;
             if (role.normName.startsWith(normName)) score += 10;
@@ -236,7 +236,7 @@ export class ClusterUtilities extends BaseUtilities {
         return true;
     }
 
-    public async createLookup<T>(msg: UserChannelInteraction, type: string, matches: LookupMatch<T>[], args: FindEntityOptions = {}): Promise<T | null> {
+    public async createLookup<T>(msg: UserChannelInteraction, type: string, matches: Array<LookupMatch<T>>, args: FindEntityOptions = {}): Promise<T | null> {
         const lookupList = matches.slice(0, 20);
         let outputString = '';
         for (let i = 0; i < lookupList.length; i++) {

@@ -52,7 +52,7 @@ export class DeleteSubtag extends BaseSubtag {
         if (messageId) {
             try {
                 msg = await this.discord.getMessage(channel.id, messageId);
-            } catch (err) {
+            } catch (err: unknown) {
                 return this.noMessageFound(context, subtag);
             }
         } else {
@@ -68,10 +68,8 @@ export class DeleteSubtag extends BaseSubtag {
 
         //TODO return something like true/false
         try {
-            if (msg) {
-                await this.discord.deleteMessage(msg.channel.id, msg.id);
-            }
-        } catch (e) {
+            await this.discord.deleteMessage(msg.channel.id, msg.id);
+        } catch (e: unknown) {
             // NO-OP
         }
     }

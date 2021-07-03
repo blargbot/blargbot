@@ -24,7 +24,7 @@ class AddDomainCommand extends BaseCommand {
             output += `These ones are great!\`\`\`${res.a.join('\n')}\`\`\``;
         if (res.r.length > 0)
             output += `I always hated these ones anyways.\`\`\`${res.r.join('\n')}\`\`\``;
-        output += `Just remember: it might take up to 15 minutes for these to go live.`;
+        output += 'Just remember: it might take up to 15 minutes for these to go live.';
 
         await r.table('vars').get('whitelistedDomains').update(whitelist);
         await bu.send(msg, output);

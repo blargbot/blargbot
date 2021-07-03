@@ -1,7 +1,7 @@
 import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, discordUtil, SubtagCall, SubtagType } from '../core';
 
-const DMCache: DMCache = {};
+const dmCache: DMCache = {};
 export class DMSubtag extends BaseSubtag {
     public constructor(
         cluster: Cluster
@@ -42,32 +42,32 @@ export class DMSubtag extends BaseSubtag {
         if (!context.guild.members.get(user.id))
             return this.userNotInGuild(context, subtag);
 
-        if (embed != null && !embed.malformed)
+        if (embed != null && embed?.malformed !== true)
             content = undefined;
         else
             embed = discordUtil.parseEmbed(embedStr);
 
         try {
-            const DMChannel = await user.getDMChannel();
-            if (!DMCache[user.id] ||
-                DMCache[user.id].count > 5 ||
-                DMCache[user.id].user != context.user.id ||
-                DMCache[user.id].guild != context.guild.id) {
+            const dmChannel = await user.getDMChannel();
+            if (dmCache[user.id] === undefined ||
+                dmCache[user.id].count > 5 ||
+                dmCache[user.id].user != context.user.id ||
+                dmCache[user.id].guild != context.guild.id) {
                 // Ew we're gonna send a message first? It was voted...
-                await this.cluster.util.send(DMChannel.id, 'The following message was sent from ' +
+                await this.cluster.util.send(dmChannel.id, 'The following message was sent from ' +
                     `**__${context.guild.name}__** (${context.guild.id}), ` +
                     'and was sent by ' +
                     `**__${context.user.username}#${context.user.discriminator}}__** (${context.user.id}):`
                 );
-                DMCache[user.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
+                dmCache[user.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
             }
-            await this.cluster.util.send(DMChannel.id, {
+            await this.cluster.util.send(dmChannel.id, {
                 content,
                 embed,
                 nsfw: context.state.nsfw
             });
-            DMCache[user.id].count++;
-        } catch (e) {
+            dmCache[user.id].count++;
+        } catch (e: unknown) {
             return this.customError('Could not send DM', context, subtag);
         }
     }
@@ -78,5 +78,5 @@ interface DMCache {
         guild: string;
         count: number;
         user: string;
-    }
+    };
 }

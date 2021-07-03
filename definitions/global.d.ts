@@ -20,7 +20,6 @@ declare global {
     }
 
     export type Configuration = typeof configJson;
-    export type CatLogger = CatLoggr;
     export type Snowflake = _Snowflake;
 
     export type ClassOf<T> = Function & { prototype: T };
@@ -35,6 +34,10 @@ declare global {
 
     interface Object {
         hasOwnProperty<T>(this: T, name: string): name is string & keyof T;
+    }
+
+    interface JSON {
+        parse(text: string): JToken;
     }
 
     namespace NodeJS {

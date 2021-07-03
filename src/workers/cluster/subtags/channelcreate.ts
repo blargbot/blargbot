@@ -1,6 +1,6 @@
 import { Cluster } from '../Cluster';
-import { BaseSubtag, BBTagContext, discordUtil, SubtagCall, SubtagType } from '../core';
-import { CreateChannelOptions, AnyGuildChannel } from 'eris';
+import { BaseSubtag, BBTagContext, discordUtil, mapping, SubtagCall, SubtagType } from '../core';
+import { CreateChannelOptions, AnyGuildChannel, Overwrite } from 'eris';
 
 const typeMap: Record<string, 0 | 2 | 4 | 5 | 6> = {
     text: 0,
@@ -57,22 +57,43 @@ export class ChannelCreateSubtag extends BaseSubtag {
         const type = typeMap[args[1].toLowerCase()] || 0;
         let options: CreateChannelOptions;
         try {
-            options = JSON.parse(args[2]);
-            if (typeof options !== 'object' || Array.isArray(options))
+            const mapped = mapOptions(args[2]);
+            if (!mapped.valid)
                 return this.customError('Invalid JSON', context, subtag);
-        } catch (e) {
+            options = mapped.value;
+        } catch (e: unknown) {
             return this.customError('Invalid JSON', context, subtag);
         }
 
         try {
-            options.reason = context.scope.reason ? discordUtil.formatAuditReason(context.user, context.scope.reason || '') : options.reason;
+            options.reason = context.scope.reason !== undefined
+                ? discordUtil.formatAuditReason(context.user, context.scope.reason || '')
+                : options.reason;
             const channel = await context.guild.createChannel(name, type, options) as AnyGuildChannel;
             if (!context.guild.channels.get(channel.id))
                 context.guild.channels.add(channel);
             return channel.id;
-        } catch (err) {
-            this.logger.error(err.stack);
+        } catch (err: unknown) {
+            this.logger.error(err);
             return this.customError('Failed to create channel: no perms', context, subtag);
         }
     }
 }
+
+const mapOptions = mapping.json(
+    mapping.object<CreateChannelOptions>({
+        bitrate: mapping.optionalNumber,
+        nsfw: mapping.optionalBoolean,
+        parentID: mapping.optionalString,
+        rateLimitPerUser: mapping.optionalNumber,
+        topic: mapping.optionalString,
+        userLimit: mapping.optionalNumber,
+        permissionOverwrites: mapping.array<Overwrite, undefined>(mapping.object({
+            allow: mapping.number,
+            deny: mapping.number,
+            id: mapping.string,
+            type: mapping.in('role', 'member')
+        }), { ifUndefined: mapping.result.undefined }),
+        reason: mapping.optionalString
+    })
+);

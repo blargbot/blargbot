@@ -41,7 +41,7 @@ export class UserStatusSubtag extends BaseSubtag {
         if (user) {
             const member = context.guild.members.get(user.id);
             if (member)
-                return member.status || 'offline';
+                return member.status ?? 'offline';
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

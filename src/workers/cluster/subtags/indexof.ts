@@ -16,12 +16,12 @@ export class IndexOfSubtag extends BaseSubtag {
                     exampleOut: 'The index of "o" in "hello world" is 4',
                     execute: (context, [{ value: text }, { value: query }, { value: start }], subtag) => {
                         const deserializedArray = bbtagUtil.tagArray.deserialize(text),
-                            fallback = parse.int(context.scope.fallback || '');
+                            fallback = parse.int(context.scope.fallback ?? '');
                         let from = parse.int(start);
                         let searchFor;
                         try {
-                            searchFor = JSON.parse(query);
-                        } catch (e) {
+                            searchFor = JSON.parse(query); // TODO Errrr what?
+                        } catch (e: unknown) {
                             searchFor = query;
                         }
 

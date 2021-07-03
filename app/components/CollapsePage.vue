@@ -34,107 +34,107 @@
 </template>
 
 <script>
-import VueMarkdown from "vue-markdown";
-import Vue from "vue";
-import { clearInterval } from "timers";
+import VueMarkdown from 'vue-markdown';
+import Vue from 'vue';
+import { clearInterval } from 'timers';
 
 /* globals window, document, NodeList */
 
 export default {
-  data: () => ({
-    filter: ""
-  }),
-  props: ["collapseData"],
-  computed: {
-    keys() {
-      return Object.values(this.collapseData)
-        .map(d => ({
-          name: d.name,
-          desc: d.desc,
-          id: d.id
-        }))
-        .sort((a, b) => a.id - b.id);
-    }
-  },
-  methods: {
-    filtered(key) {
-      return this.collapseData[key].el.filter(o => {
-        return (
-          o.keywords.filter(k =>
-            (o.category.name.toLowerCase() + "." + k.toLowerCase()).includes(
-              (this.filter || "").toLowerCase()
+    data: () => ({
+        filter: ''
+    }),
+    props: ['collapseData'],
+    computed: {
+        keys() {
+            return Object.values(this.collapseData)
+                .map(d => ({
+                    name: d.name,
+                    desc: d.desc,
+                    id: d.id
+                }))
+                .sort((a, b) => a.id - b.id);
+        }
+    },
+    methods: {
+        filtered(key) {
+            return this.collapseData[key].el.filter(o => {
+                return (
+                    o.keywords.filter(k =>
+                        (o.category.name.toLowerCase() + '.' + k.toLowerCase()).includes(
+                            (this.filter || '').toLowerCase()
+                        )
+                    ).length > 0
+                );
+            });
+        },
+        clickCollapse(e) {
+            let target = e.target;
+            if (target.tagName === 'H3') target = target.parentNode.parentNode;
+            else if (target.tagName === 'DIV' && target.classList.contains('title'))
+                target = target.parentNode;
+            else if (
+                target.tagName === 'DIV' &&
+        target.classList.contains('collapsible')
             )
-          ).length > 0
-        );
-      });
-    },
-    clickCollapse(e) {
-      let target = e.target;
-      if (target.tagName === "H3") target = target.parentNode.parentNode;
-      else if (target.tagName === "DIV" && target.classList.contains("title"))
-        target = target.parentNode;
-      else if (
-        target.tagName === "DIV" &&
-        target.classList.contains("collapsible")
-      )
-        target = target;
-      else return;
-      this.collapse(target);
-    },
-    async collapseAll() {
-      let els = document.getElementsByClassName("collapsible");
-      this.collapse(els, true);
-    },
-    async expandAll() {
-      let els = document.getElementsByClassName("collapsible");
-      this.collapse(els, false);
-    },
-    sleep(time = 1) {
-      return new Promise(res => {
-        setTimeout(res, time);
-      });
-    },
-    async collapse(els, position) {
-      if (els.length === undefined) els = [els];
-      let toProcess = [];
-      for (const el of els) {
-        if (el.classList.contains("locked")) continue;
-        let content = el.querySelector(".content");
-        let collapsed = el.classList.contains("collapsed");
-        if (position !== undefined) {
-          if (collapsed === true && position === true) continue;
-          if (collapsed === false && position === false) continue;
+                target = target;
+            else return;
+            this.collapse(target);
+        },
+        async collapseAll() {
+            let els = document.getElementsByClassName('collapsible');
+            this.collapse(els, true);
+        },
+        async expandAll() {
+            let els = document.getElementsByClassName('collapsible');
+            this.collapse(els, false);
+        },
+        sleep(time = 1) {
+            return new Promise(res => {
+                setTimeout(res, time);
+            });
+        },
+        async collapse(els, position) {
+            if (els.length === undefined) els = [els];
+            let toProcess = [];
+            for (const el of els) {
+                if (el.classList.contains('locked')) continue;
+                let content = el.querySelector('.content');
+                let collapsed = el.classList.contains('collapsed');
+                if (position !== undefined) {
+                    if (collapsed === true && position === true) continue;
+                    if (collapsed === false && position === false) continue;
+                }
+                el.classList.add('locked');
+                toProcess.push({
+                    content,
+                    el,
+                    collapsed,
+                    inc: content.scrollHeight / 20 * (collapsed ? 1 : -1),
+                    i: collapsed ? 0 : content.scrollHeight
+                });
+            }
+            for (let ii = 0; ii < 20; ii++) {
+                for (const obj of toProcess) {
+                    let { el, content, collapsed, inc } = obj;
+                    obj.i += inc;
+                    content.style.height = obj.i + 'px';
+                }
+                await this.sleep();
+            }
+            for (const { el, content, collapsed } of toProcess) {
+                content.style.height = collapsed ? undefined : 0;
+                el.classList.toggle('collapsed');
+                el.classList.remove('locked');
+            }
         }
-        el.classList.add("locked");
-        toProcess.push({
-          content,
-          el,
-          collapsed,
-          inc: content.scrollHeight / 20 * (collapsed ? 1 : -1),
-          i: collapsed ? 0 : content.scrollHeight
-        });
-      }
-      for (let ii = 0; ii < 20; ii++) {
-        for (const obj of toProcess) {
-          let { el, content, collapsed, inc } = obj;
-          obj.i += inc;
-          content.style.height = obj.i + "px";
-        }
-        await this.sleep();
-      }
-      for (const { el, content, collapsed } of toProcess) {
-        content.style.height = collapsed ? undefined : 0;
-        el.classList.toggle("collapsed");
-        el.classList.remove("locked");
-      }
+    },
+    components: {
+        VueMarkdown
+    },
+    created() {
+        this.filter = this.$route.params.name;
     }
-  },
-  components: {
-    VueMarkdown
-  },
-  created() {
-    this.filter = this.$route.params.name;
-  }
 };
 </script>
 

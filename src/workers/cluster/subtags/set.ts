@@ -61,11 +61,11 @@ export class SetSubtag extends BaseSubtag {
         arrayElements: string[]
     ): Promise<void> {
         const result = [];
-        for (let i = 0; i < arrayElements.length; i++) {
+        for (const element of arrayElements) {
             try {
-                result.push(JSON.parse(arrayElements[i]));
-            } catch (e) {
-                result.push(arrayElements[i]);
+                result.push(JSON.parse(element));
+            } catch (e: unknown) {
+                result.push(element);
             }
         }
         await context.variables.set(variableName, result);

@@ -1,6 +1,6 @@
 import isSafeRegex from 'safe-regex';
 
-export function createSafeRegExp(term: string): { success: true, regex: RegExp } | { success: false, reason: 'tooLong' | 'invalid' | 'unsafe' } {
+export function createSafeRegExp(term: string): { success: true; regex: RegExp; } | { success: false; reason: 'tooLong' | 'invalid' | 'unsafe'; } {
     if (term.length > 2000)
         return { success: false, reason: 'tooLong' };
 

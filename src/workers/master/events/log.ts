@@ -4,7 +4,7 @@ import { LogEntry, RollingArray, WorkerPoolEventService } from '../core';
 import { Master } from '../Master';
 
 export class LogHandler extends WorkerPoolEventService<ClusterConnection> {
-    private readonly logs: { [workerId: number]: RollingArray<LogEntry> | undefined };
+    private readonly logs: { [workerId: number]: RollingArray<LogEntry> | undefined; };
 
     public constructor(
         public readonly master: Master

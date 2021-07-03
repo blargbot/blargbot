@@ -209,11 +209,11 @@ export class AutoResponseCommand extends BaseGuildCommand {
             : '❌ Your regex cannot match everything!';
     }
 
-    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: false): Promise<string | undefined | { index: number, executes: string }>;
-    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: true): Promise<string | undefined | { index: number | 'everything', executes: string }>;
-    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: boolean): Promise<string | undefined | { index: number | 'everything', executes: string }> {
+    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: false): Promise<string | undefined | { index: number; executes: string; }>;
+    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: true): Promise<string | undefined | { index: number | 'everything'; executes: string; }>;
+    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: boolean): Promise<string | undefined | { index: number | 'everything'; executes: string; }> {
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
-        const indexes: Array<{ name: string, result: { index: number | 'everything', executes: string } }> = [];
+        const indexes: Array<{ name: string; result: { index: number | 'everything'; executes: string; }; }> = [];
         if (includeEverything && ars?.everything !== undefined)
             indexes.push({ name: 'Trigger: Everything', result: { index: 'everything', executes: ars.everything.executes } });
         if (ars?.list !== undefined) {

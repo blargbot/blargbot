@@ -1,6 +1,6 @@
 import { EmbedOptions } from 'eris';
 
-export function parseEmbed (embedText?: string): (EmbedOptions & { malformed?: true}) | undefined {
+export function parseEmbed (embedText?: string): (EmbedOptions & { malformed?: true;}) | undefined {
     if (embedText == null)
         return undefined;
 

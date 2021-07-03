@@ -1,15 +1,12 @@
-import { BaseImageGenerator, randInt, JimpGifEncoder } from '../core';
+import { BaseImageGenerator, randInt, JimpGifEncoder, Logger, mapping, TriggeredOptions } from '../core';
 import Jimp from 'jimp';
 
-export class TriggeredGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
+    public constructor(logger: Logger) {
+        super('triggered', logger, mapOptions);
     }
 
-    public async execute({ avatar, inverted, horizontal, vertical, sepia, blur, greyscale }: JObject): Promise<Buffer | null> {
-        if (typeof avatar !== 'string')
-            return null;
-
+    public async executeCore({ avatar, inverted, horizontal, vertical, sepia, blur, greyscale }: TriggeredOptions): Promise<Buffer | null> {
         const frameCount = 8;
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(320, 320);
@@ -61,3 +58,13 @@ export class TriggeredGenerator extends BaseImageGenerator {
 
 
 }
+
+const mapOptions = mapping.object<TriggeredOptions>({
+    avatar: mapping.string,
+    inverted: mapping.boolean,
+    horizontal: mapping.boolean,
+    vertical: mapping.boolean,
+    sepia: mapping.boolean,
+    blur: mapping.boolean,
+    greyscale: mapping.boolean
+});

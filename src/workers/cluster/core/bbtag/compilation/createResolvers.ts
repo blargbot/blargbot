@@ -120,7 +120,7 @@ function* matchArgs(
     beforeGreedy: readonly SubtagHandlerParameter[],
     greedy: readonly SubtagHandlerParameter[],
     afterGreedy: readonly SubtagHandlerParameter[])
-    : Generator<{ arg: Statement, param: SubtagHandlerParameter }> {
+    : Generator<{ arg: Statement; param: SubtagHandlerParameter; }> {
     let i, j;
     for (i = 0; i < beforeGreedy.length; i++)
         yield { arg: args[i], param: beforeGreedy[i] };

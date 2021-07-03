@@ -4,6 +4,7 @@ import { Chatlog, ChatlogsTable, ChatlogType } from './types';
 import { metrics } from '../Metrics';
 import { AnyMessage } from 'eris';
 import { guard, snowflake } from '../utils';
+import { Logger } from '../Logger';
 
 function stringifyType(type: ChatlogType): string {
     switch (type) {
@@ -18,7 +19,7 @@ function stringifyType(type: ChatlogType): string {
 export class CassandraDbChatlogTable implements ChatlogsTable {
     public constructor(
         protected readonly cassandra: Cassandra,
-        protected readonly logger: CatLogger
+        protected readonly logger: Logger
     ) {
 
     }

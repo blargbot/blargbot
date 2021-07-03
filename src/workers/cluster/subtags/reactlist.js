@@ -15,7 +15,7 @@ module.exports =
         .withAlias('listreact')
         .withArgs(a => [
             a.optional([a.optional('channelId'),
-            a.required('messageId')]),
+                a.required('messageId')]),
             a.optional('reactions', true)
         ])
         .withDesc(

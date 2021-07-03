@@ -17,7 +17,7 @@ class UnmuteCommand extends BaseCommand {
         let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
         if (!mutedrole) {
-            bu.send(msg, `No muted users were found. You can only unmute users muted with \`mute\`.`);
+            bu.send(msg, 'No muted users were found. You can only unmute users muted with `mute`.');
         }
         if (words.length > 1) {
 
@@ -63,7 +63,7 @@ class UnmuteCommand extends BaseCommand {
                     }
                 }
             } else {
-                bu.send(msg, `I don't have permission to unmute users! Make sure I have the \`manage roles\` permission and try again.`);
+                bu.send(msg, 'I don\'t have permission to unmute users! Make sure I have the `manage roles` permission and try again.');
             }
         }
     }

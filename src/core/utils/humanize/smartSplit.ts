@@ -2,7 +2,7 @@ export function smartSplit(source: string, limit = 0): string[] {
     return [...smartSplitIterLimit(source, limit)];
 }
 
-export function* smartSplitRanges(source: string): Generator<{ start: number, end: number }> {
+export function* smartSplitRanges(source: string): Generator<{ start: number; end: number; }> {
     for (const { start, end } of smartSplitIter(source)) {
         yield { start, end };
     }
@@ -80,7 +80,7 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
 }
 
 function createSplitItem(source: string, charIndexes: number[], start: number, end: number): SmartSplitItem {
-    const ranges = charIndexes.reduce((ranges, index) => {
+    const ranges = charIndexes.reduce<Array<[number, number]>>((ranges, index) => {
         const prevRange = ranges[ranges.length - 1] ?? [index, index];
         if (prevRange[1] === index - 1) {
             prevRange[1] = index;
@@ -88,7 +88,7 @@ function createSplitItem(source: string, charIndexes: number[], start: number, e
             ranges.push([index, index]);
         }
         return ranges;
-    }, <Array<[number, number]>>[])
+    }, [])
         .map(([start, end]) => ({
             start,
             end,

@@ -36,25 +36,25 @@ wss.onmessage = function(event) {
                 let keys = Object.keys(settings);
                 document.getElementById('modal-guild').innerText = 'Settings for ' + data.data.guild.guild.name;
 
-                let channelSelectors = document.getElementsByClassName("channel-selector");
+                let channelSelectors = document.getElementsByClassName('channel-selector');
                 let channels = data.data.guild.guild.channels;
                 for (let i = 0; i < channelSelectors.length; i++) {
                     let select = channelSelectors[i];
                     if (select.tagName == 'SELECT') {
                         let defaultVal = select.getAttribute('data-default');
                         if (defaultVal == 'none') {
-                            let channel = document.createElement("option");
-                            channel.setAttribute("value", "");
-                            channel.setAttribute("selected", "");
-                            channel.text = "None";
+                            let channel = document.createElement('option');
+                            channel.setAttribute('value', '');
+                            channel.setAttribute('selected', '');
+                            channel.text = 'None';
                             select.appendChild(channel);
                         }
                         for (let ii = 0; ii < channels.length; ii++) {
                             if (channels[ii].type == 0) {
-                                let channel = document.createElement("option");
-                                channel.setAttribute("value", channels[ii].id);
+                                let channel = document.createElement('option');
+                                channel.setAttribute('value', channels[ii].id);
                                 if (channels[ii].id == data.data.guild.guildid && defaultVal == 'default') {
-                                    channel.setAttribute("selected", "");
+                                    channel.setAttribute('selected', '');
                                 }
                                 channel.text = channels[ii].name;
                                 select.appendChild(channel);
@@ -63,27 +63,27 @@ wss.onmessage = function(event) {
                     }
                 }
 
-                let roleSelectors = document.getElementsByClassName("role-selector");
+                let roleSelectors = document.getElementsByClassName('role-selector');
                 let roles = data.data.guild.guild.roles;
                 for (let i = 0; i < roleSelectors.length; i++) {
                     let select = roleSelectors[i];
                     if (select.tagName == 'SELECT') {
                         let defaultVal = select.getAttribute('data-default');
                         if (defaultVal == 'none') {
-                            let role = document.createElement("option");
-                            role.setAttribute("value", "");
-                            role.setAttribute("selected", "");
-                            role.text = "None";
+                            let role = document.createElement('option');
+                            role.setAttribute('value', '');
+                            role.setAttribute('selected', '');
+                            role.text = 'None';
                             select.appendChild(role);
                         }
                         for (let ii = 0; ii < roles.length; ii++) {
-                            let role = document.createElement("option");
-                            role.setAttribute("value", roles[ii].id);
+                            let role = document.createElement('option');
+                            role.setAttribute('value', roles[ii].id);
                             role.text = roles[ii].name;
                             if (roles[ii].color != '') {
-                                let roleText = document.createElement("div");
+                                let roleText = document.createElement('div');
                                 roleText.className += 'colored-class';
-                                roleText.setAttribute("data-color", roles[ii].color);
+                                roleText.setAttribute('data-color', roles[ii].color);
                                 role.appendChild(roleText);
                             }
                             select.appendChild(role);
@@ -119,7 +119,7 @@ wss.onmessage = function(event) {
                     let element = toColor[i];
                     let parent = element.parentElement;
                     if (parent.tagName == 'SPAN') {
-                        parent.setAttribute("style", "color: " + element.getAttribute("data-color"));
+                        parent.setAttribute('style', 'color: ' + element.getAttribute('data-color'));
 
                     }
                     //   element.remove();
@@ -127,12 +127,12 @@ wss.onmessage = function(event) {
                 for (let i = 0; i < toColor.length; i++) {
                     toColor[i].remove();
                 }
-                let inputs = document.getElementsByTagName("INPUT");
+                let inputs = document.getElementsByTagName('INPUT');
                 for (let i = 0; i < inputs.length; i++) {
-                    if (inputs[i].getAttribute("value")) {
-                        let index = inputs[i].getAttribute("value").indexOf("<div class=\"colored-class\" data-color=");
+                    if (inputs[i].getAttribute('value')) {
+                        let index = inputs[i].getAttribute('value').indexOf('<div class="colored-class" data-color=');
                         if (index > -1) {
-                            inputs[i].setAttribute("value", inputs[i].getAttribute("value").substring(0, index));
+                            inputs[i].setAttribute('value', inputs[i].getAttribute('value').substring(0, index));
                         }
                     }
                 }

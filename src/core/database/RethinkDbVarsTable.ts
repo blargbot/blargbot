@@ -1,11 +1,12 @@
 import { RethinkDb } from './core/RethinkDb';
 import { GetStoredVar, KnownStoredVars, VarsTable } from './types';
 import { RethinkDbTable } from './core/RethinkDbTable';
+import { Logger } from '../Logger';
 
 export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTable {
     public constructor(
         rethinkDb: RethinkDb,
-        logger: CatLogger
+        logger: Logger
     ) {
         super('vars', rethinkDb, logger);
     }

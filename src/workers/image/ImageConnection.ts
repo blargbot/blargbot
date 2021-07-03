@@ -1,19 +1,21 @@
-import { WorkerConnection } from './core';
+import { WorkerConnection, Logger, ImageGeneratorMap, ImageRequest } from './core';
 
 export class ImageConnection extends WorkerConnection {
     public constructor(
         id: number,
-        logger: CatLogger
+        logger: Logger
     ) {
         super(id, 'image', logger);
     }
 
-    public async render(type: string, data: Record<string, unknown>): Promise<Buffer | null> {
+    public async render<T extends keyof ImageGeneratorMap>(command: T, data: ImageGeneratorMap[T]): Promise<Buffer | null> {
         try {
-            const result = await this.request('img', { command: type, ...data });
+            const result = await this.request<ImageRequest<T>, string | null>('img', { command, data });
             if (typeof result === 'string')
                 return Buffer.from(result, 'base64');
-        } catch (err) { this.logger.error(err); }
+        } catch (err: unknown) {
+            this.logger.error(err);
+        }
         return null;
     }
 }

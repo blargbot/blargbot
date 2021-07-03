@@ -27,7 +27,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
     }
 
     let autoResolve = true;
-    if (parameter[0] === '~') {
+    if (parameter.startsWith('~')) {
         autoResolve = false;
         parameter = parameter.slice(1);
     }

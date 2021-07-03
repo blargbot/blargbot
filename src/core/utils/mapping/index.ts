@@ -1,6 +1,8 @@
 export * from './types';
 import { mappingResultNever, mappingResultUndefined, mappingResultNull } from './constants';
 import { mapAny } from './mapAny';
+import { mapUnknown } from './mapUnknown';
+import { mapIn } from './mapIn';
 import { mapArray } from './mapArray';
 import { mapBoolean } from './mapBoolean';
 import { mapJson } from './mapJson';
@@ -30,5 +32,7 @@ export const mapping = {
     optionalNumber: mapOptionalNumber,
     string: mapString,
     optionalString: mapOptionalString,
-    base64: mapBase64
+    base64: mapBase64,
+    in: mapIn,
+    unknown: mapUnknown
 };

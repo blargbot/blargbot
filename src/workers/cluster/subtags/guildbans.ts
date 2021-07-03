@@ -26,7 +26,7 @@ export class GuildBansSubtag extends BaseSubtag {
     ): Promise<string> {
         try {
             return JSON.stringify((await context.guild.getBans()).map(u => u.user.id));
-        } catch (err) {
+        } catch (err: unknown) {
             return this.customError('Missing required permissions', context, subtag);
         }
     }

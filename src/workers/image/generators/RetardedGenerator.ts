@@ -1,15 +1,12 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, Logger, mapping, RetardedOptions } from '../core';
 
-export class RetardedGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
+    public constructor(logger: Logger) {
+        super('retarded', logger, mapOptions);
     }
 
-    public async execute({ text, avatar }: JObject): Promise<Buffer | null> {
-        if (typeof text !== 'string' || typeof avatar !== 'string')
-            return null;
-
+    public async executeCore({ text, avatar }: RetardedOptions): Promise<Buffer | null> {
         const caption = await this.renderJimpText(text, {
             font: 'ARCENA.ttf',
             fill: 'black',
@@ -33,3 +30,8 @@ export class RetardedGenerator extends BaseImageGenerator {
         return await img.getBufferAsync(Jimp.MIME_PNG);
     }
 }
+
+const mapOptions = mapping.object<RetardedOptions>({
+    avatar: mapping.string,
+    text: mapping.string
+});

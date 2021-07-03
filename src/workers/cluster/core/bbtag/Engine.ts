@@ -1,7 +1,7 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster } from '../../Cluster';
 import { ClusterUtilities } from '../../ClusterUtilities';
-import { Database, ModuleLoader, sleep, Timer } from '../globalCore';
+import { Database, ModuleLoader, sleep, Timer, Logger } from '../globalCore';
 import { AnalysisResults, BBTagContextOptions, ExecutionResult, RuntimeReturnState, Statement, SubtagCall, SubtagHandler } from '../types';
 import { bbtagUtil, parse } from '../utils';
 import { BaseSubtag } from './BaseSubtag';
@@ -10,7 +10,7 @@ import { BBTagError } from './BBTagError';
 
 export class BBTagEngine {
     public get discord(): ErisClient { return this.cluster.discord; }
-    public get logger(): CatLogger { return this.cluster.logger; }
+    public get logger(): Logger { return this.cluster.logger; }
     public get database(): Database { return this.cluster.database; }
     public get util(): ClusterUtilities { return this.cluster.util; }
     public get subtags(): ModuleLoader<BaseSubtag> { return this.cluster.subtags; }
@@ -47,7 +47,7 @@ export class BBTagEngine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: context.variables.list.reduce((v, c) => (v[c.key] = c.value, v), <Record<string, JToken>>{})
+                values: context.variables.list.reduce<Record<string, JToken>>((v, c) => (v[c.key] = c.value, v), {})
             }
         };
     }

@@ -49,18 +49,18 @@ class NamesCommand extends BaseCommand {
                 let filteredUserNames = input.a ? [] : storedUser.usernames.filter(u => !(u.name.toLowerCase().includes(name)));
 
                 if (filteredUserNames.length === storedUser.usernames.length)
-                    return bu.send(msg, `No usernames found!`);
+                    return bu.send(msg, 'No usernames found!');
 
                 if (!input.y) {
                     prompt = await bu.createPrompt(msg, `Are you sure you want to remove ${storedUser.usernames.length - filteredUserNames.length} username${storedUser.usernames.length - filteredUserNames.length > 1 ? 's' : ''}?` +
-                        `\nType \`yes\` or anything else to cancel`, null, 60000);
+                        '\nType `yes` or anything else to cancel', null, 60000);
                     response = await prompt.response || {};
                 }
                 if ((response && bu.parseBoolean(response.content)) || input.y) {
                     await r.table('user').get(user.id).update({ usernames: filteredUserNames }).run();
                     await bu.send(msg, `Succesfully removed ${storedUser.usernames.length - filteredUserNames.length} username${storedUser.usernames.length - filteredUserNames.length > 1 ? 's' : ''}.`);
                 } else {
-                    await bu.send(msg, `OK, not removing your usernames!`);
+                    await bu.send(msg, 'OK, not removing your usernames!');
                 }
                 if (prompt.prompt)
                     await bot.deleteMessage(prompt.prompt.channel.id, prompt.prompt.id);

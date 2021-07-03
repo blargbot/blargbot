@@ -37,7 +37,7 @@ export class StatusInterval extends CronService {
     }
 }
 
-const games: Array<{ name: string, type?: BotActivityType }> = [
+const games: Array<{ name: string; type?: BotActivityType; }> = [
     { name: 'with tiny bits of string!' },
     { name: 'with a mouse!' },
     { name: 'with a laser pointer!', type: 3 },

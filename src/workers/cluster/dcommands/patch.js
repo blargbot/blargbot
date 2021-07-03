@@ -9,7 +9,7 @@ class PatchCommand extends BaseCommand {
             usage: 'patch [features] [flags]',
             info: 'Makes a patch note',
             flags: [{ flag: 'f', word: 'fixes', desc: 'The bug fixes of the patch.' },
-            { flag: 'n', word: 'notes', desc: 'Other notes.' }]
+                { flag: 'n', word: 'notes', desc: 'Other notes.' }]
         });
     }
 
@@ -46,7 +46,7 @@ class PatchCommand extends BaseCommand {
         };
 
         let res = await bu.awaitQuery(msg, {
-            embed, content: `This is a preview of what the patch will look like. Say 'yes' to continue, or anything else to cancel.`
+            embed, content: 'This is a preview of what the patch will look like. Say \'yes\' to continue, or anything else to cancel.'
         });
         if (res.content.toLowerCase() !== 'yes')
             return await bu.send(msg, 'Patch canceled.');

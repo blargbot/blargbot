@@ -28,10 +28,10 @@ class ChangelogCommand extends BaseCommand {
 
         if (changelogs.guilds[msg.guild.id] == msg.channel.id) {
             changelogs.guilds[msg.guild.id] = undefined;
-            await bu.send(msg, `You will no longer receive changelog notifications.`);
+            await bu.send(msg, 'You will no longer receive changelog notifications.');
         } else {
             changelogs.guilds[msg.guild.id] = msg.channel.id;
-            await bu.send(msg, `You will now receive changelog notifications in this channel.`);
+            await bu.send(msg, 'You will now receive changelog notifications in this channel.');
         }
 
         await r.table('vars').get('changelog').replace(changelogs).run();

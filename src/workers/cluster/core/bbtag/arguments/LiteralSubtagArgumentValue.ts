@@ -3,7 +3,7 @@ import { Statement, SubtagArgumentValue } from '../../types';
 export class LiteralSubtagArgumentValue implements SubtagArgumentValue {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #value: string;
-    public get isCached(): boolean { return true; }
+    public readonly isCached = true;
     public get value(): string { return this.#value; }
     public get code(): Statement { return [this.#value]; }
     public get raw(): string { return this.#value; }

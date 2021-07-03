@@ -10,7 +10,7 @@ export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<v
     if (!roleme?.length || !msg.member)
         return;
 
-    const rolemes = roleme.filter(m => m.channels.indexOf(msg.channel.id) > -1 || m.channels.length == 0);
+    const rolemes = roleme.filter(m => m.channels.includes(msg.channel.id) || m.channels.length == 0);
     if (rolemes.length == 0)
         return;
 

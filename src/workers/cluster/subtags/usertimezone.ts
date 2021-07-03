@@ -16,7 +16,7 @@ export class UserTimezoneSubtag extends BaseSubtag {
                     exampleOut: 'UTC',
                     execute: async (ctx) => {
                         const userTimezone = await ctx.database.users.getSetting(ctx.user.id, 'timezone');
-                        return userTimezone || 'UTC';
+                        return userTimezone ?? 'UTC';
                     }
                 },
                 {
@@ -44,6 +44,6 @@ export class UserTimezoneSubtag extends BaseSubtag {
             return quiet ? '' : ''; //TODO add behavior for this??? Old code did nothing if user didnt exist
 
         const userTimezone = await context.database.users.getSetting(user.id, 'timezone');
-        return userTimezone || 'UTC';
+        return userTimezone ?? 'UTC';
     }
 }

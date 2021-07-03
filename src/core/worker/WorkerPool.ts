@@ -1,4 +1,5 @@
-import { EventEmitter } from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
+import { Logger } from '../Logger';
 import { getRange } from '../utils';
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
@@ -17,7 +18,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
         public readonly type: string,
         public readonly workerCount: number,
         public readonly defaultTimeout: number,
-        public readonly logger: CatLogger
+        public readonly logger: Logger
     ) {
         this.#workers = new Map();
         this.#events = new EventEmitter();
@@ -101,7 +102,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
     public forEach(callback: (id: number, worker: TWorker | undefined) => void): void;
     public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void>): Promise<void>;
     public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void> | void): Promise<void> | void {
-        const results: Promise<void>[] = [];
+        const results: Array<Promise<void>> = [];
         let i = 0;
         for (const worker of this) {
             const result = callback(i++, worker);

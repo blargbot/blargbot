@@ -1,4 +1,5 @@
 import { BaseModuleLoader } from './BaseModuleLoader';
+import { Logger } from './Logger';
 import { ModuleResult } from './types';
 import { guard } from './utils';
 
@@ -10,7 +11,7 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
         public readonly source: string,
         public readonly type: ClassOf<TModule>,
         public readonly constructorArguments: unknown[],
-        public readonly logger: CatLogger,
+        public readonly logger: Logger,
         getNames: (module: TModule) => Iterable<string>
     ) {
         super(source, logger);

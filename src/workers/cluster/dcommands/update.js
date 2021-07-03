@@ -54,7 +54,7 @@ class UpdateCommand extends BaseCommand {
                     bu.send(msg, message);
                 });
             } else {
-                bu.send(msg, `Whoa, you can't do that! This is the beta build!`);
+                bu.send(msg, 'Whoa, you can\'t do that! This is the beta build!');
             }
         }
     }

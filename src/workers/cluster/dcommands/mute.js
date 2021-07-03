@@ -10,11 +10,11 @@ class MuteCommand extends BaseCommand {
             usage: 'mute <user> [flags]',
             info: 'Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to `manage roles` to create and assign the role, and `manage channels` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the mute.' },
-            {
-                flag: 't',
-                word: 'time',
-                desc: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
-            }]
+                {
+                    flag: 't',
+                    word: 'time',
+                    desc: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
+                }]
         });
     }
 
@@ -38,15 +38,15 @@ class MuteCommand extends BaseCommand {
                     }
                     this.execute(msg, words, text);
                 } else {
-                    bu.send(msg, `I created a \`muted\` role, but don't have permissions to configure it! Either configure it yourself, or make sure I have the \`manage channel\` permission, delete the \`muted\` role, and try again.`);
+                    bu.send(msg, 'I created a `muted` role, but don\'t have permissions to configure it! Either configure it yourself, or make sure I have the `manage channel` permission, delete the `muted` role, and try again.');
                 }
             } else {
-                bu.send(msg, `I don't have enough permissions to create a \`muted\` role! Make sure I have the \`manage roles\` permission and try again.`);
+                bu.send(msg, 'I don\'t have enough permissions to create a `muted` role! Make sure I have the `manage roles` permission and try again.');
             }
             return;
         } else {
             if (!msg.channel.guild.roles.get(mutedrole)) {
-                await bu.send(msg, `Couldn't find the muted role! Attempting to regenerate it...`);
+                await bu.send(msg, 'Couldn\'t find the muted role! Attempting to regenerate it...');
                 await bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole');
                 await this.execute(msg, words, text);
                 return;
@@ -59,18 +59,18 @@ class MuteCommand extends BaseCommand {
                 if (words[1]) {
                     var user = await bu.getUser(msg, words[1]);
                     if (!user) {
-                        await bu.send(msg, `I couldn't find that user!`);
+                        await bu.send(msg, 'I couldn\'t find that user!');
                         return;
                     }
                     var member = msg.channel.guild.members.get(user.id);
                     if (!member) {
-                        await bu.send(msg, `I couldn't find that user!`);
+                        await bu.send(msg, 'I couldn\'t find that user!');
                         return;
                     }
                     var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
                     console.debug(role.position, botPos);
                     if (role.position >= botPos) {
-                        await bu.send(msg, `I can't assign the muted role! (it's higher than or equal to my top role)`);
+                        await bu.send(msg, 'I can\'t assign the muted role! (it\'s higher than or equal to my top role)');
                         return;
                     }
                     let voiceMute = msg.guild.members.get(bot.user.id).permissions.json.voiceMuteMembers;
@@ -127,7 +127,7 @@ class MuteCommand extends BaseCommand {
                                     });
                                     suffix = `The user will be unmuted ${duration.humanize(true)}.`;
                                 } else {
-                                    suffix = `The user was muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`;
+                                    suffix = 'The user was muted, but the duration was either 0 seconds or improperly formatted so they won\'t automatically be unmuted.';
                                 }
                             }
                             bu.send(msg, ':ok_hand: ' + suffix);
@@ -138,7 +138,7 @@ class MuteCommand extends BaseCommand {
                     }
                 }
             } else {
-                bu.send(msg, `I don't have permission to mute users! Make sure I have the \`manage roles\` permission and try again.`);
+                bu.send(msg, 'I don\'t have permission to mute users! Make sure I have the `manage roles` permission and try again.');
             }
         }
     }

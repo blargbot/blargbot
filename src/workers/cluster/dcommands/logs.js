@@ -43,7 +43,7 @@ class LogsCommand extends BaseCommand {
     async execute(msg, words, text) {
         const storedGuild = await bu.getGuild(msg.guild.id);
         if (!storedGuild.settings.makelogs) {
-            bu.send(msg, `This guild has not opted into chatlogs. Please do \`b!settings makelogs true\` to allow me to start creating chatlogs.`);
+            bu.send(msg, 'This guild has not opted into chatlogs. Please do `b!settings makelogs true` to allow me to start creating chatlogs.');
             return;
         }
         if (words[0].toLowerCase() == 'help') {
@@ -116,7 +116,7 @@ class LogsCommand extends BaseCommand {
         }, 10000);
         let msgids = [msg.id, msg2.id];
 
-        let query = `SELECT * FROM chatlogs WHERE channelid = :channel`;
+        let query = 'SELECT * FROM chatlogs WHERE channelid = :channel';
         let results = [];
         try {
             let qresults = await bu.cclient.execute(query, { channel: channel }, { prepare: true, readTimeout: 200000 });

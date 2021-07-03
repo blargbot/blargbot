@@ -321,8 +321,8 @@ interface ChildCommandTree<TContext extends CommandContext> extends CommandTree<
 }
 
 interface CommandTree<TContext extends CommandContext> {
-    readonly switch: { [key: string]: ChildCommandTree<TContext> | undefined };
-    readonly tests: VariableCommandTree<TContext>[];
+    readonly switch: { [key: string]: ChildCommandTree<TContext> | undefined; };
+    readonly tests: Array<VariableCommandTree<TContext>>;
     handler?: CommandSignatureHandler<TContext>;
 }
 

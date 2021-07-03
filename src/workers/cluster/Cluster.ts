@@ -2,7 +2,7 @@ import moment, { Moment } from 'moment-timezone';
 import { ImageConnection } from '../image/ImageConnection';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { BaseClient, BaseCommand, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager } from './core';
+import { BaseClient, BaseCommand, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from './core';
 import { AutoresponseManager, BotStaffManager } from './managers';
 
 export class Cluster extends BaseClient {
@@ -21,7 +21,7 @@ export class Cluster extends BaseClient {
     public readonly botStaff: BotStaffManager;
 
     public constructor(
-        logger: CatLogger,
+        logger: Logger,
         config: Configuration,
         options: ClusterOptions
     ) {
@@ -92,7 +92,7 @@ export class Cluster extends BaseClient {
         this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
     }
 
-    public async eval(author: string, text: string): Promise<{ success: boolean, result: unknown }> {
+    public async eval(author: string, text: string): Promise<{ success: boolean; result: unknown; }> {
         if (author !== this.config.discord.users.owner)
             throw new Error(`User ${author} does not have permission to run eval`);
 

@@ -2,6 +2,7 @@ import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
 import { BaseUtilities } from './BaseUtilities';
 import { BaseModuleLoader } from './BaseModuleLoader';
 import { Database } from './database';
+import { Logger } from './Logger';
 
 export class BaseClient {
     public readonly util: BaseUtilities;
@@ -9,7 +10,7 @@ export class BaseClient {
     public readonly discord: ErisClient;
 
     public constructor(
-        public readonly logger: CatLogger,
+        public readonly logger: Logger,
         public readonly config: Configuration,
         discordConfig: Omit<ErisOptions, 'restMode' | 'defaultImageFormat'>
     ) {

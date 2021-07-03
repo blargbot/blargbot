@@ -11,7 +11,7 @@ export function checkEmbedSize(embed: EmbedOptions | undefined): boolean {
 }
 
 function* getEmbedValueLimits(embed: EmbedOptions): IterableIterator<[value: string | unknown[] | undefined, limit: number]> {
-    const allValues: Array<unknown> = [];
+    const allValues: unknown[] = [];
     const append = <T>(value: T): T => (allValues.push(value), value);
 
     // Limits come from the discord documentation

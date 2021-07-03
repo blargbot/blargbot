@@ -15,7 +15,7 @@ export function randChoose(set: unknown[] | Set<unknown> | Map<unknown, unknown>
     return result;
 }
 
-function createWrapper<T>(set: T[] | Set<T> | Iterable<T>): { length: number, get(index: number): T } {
+function createWrapper<T>(set: T[] | Set<T> | Iterable<T>): { length: number; get(index: number): T; } {
     if ('size' in set) {
         let values;
         return { length: set.size, get(index) { return (values ??= [...set])[index]; } };

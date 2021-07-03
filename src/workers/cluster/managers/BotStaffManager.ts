@@ -27,7 +27,7 @@ export class BotStaffManager {
             this.#support.add(userId);
     }
 
-    private async getUsers(): Promise<{ staff: readonly string[], support: readonly string[] }> {
+    private async getUsers(): Promise<{ staff: readonly string[]; support: readonly string[]; }> {
         const guild = this.cluster.discord.guilds.get(this.cluster.config.discord.guilds.home);
         if (guild === undefined) { // The guild is on another cluster
             const staff = await this.cluster.database.vars.get('police');

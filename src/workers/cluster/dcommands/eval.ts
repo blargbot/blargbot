@@ -72,9 +72,9 @@ export class EvalCommand extends BaseGlobalCommand {
             : `An error occured!${codeBlock(result, 'json')}`;
     }
 
-    private async requestEval<T = EvalResult>(context: CommandContext, data: { type: EvalType, userId: string, code: string }): Promise<T | EvalResult<false>> {
+    private async requestEval<T = EvalResult>(context: CommandContext, data: { type: EvalType; userId: string; code: string; }): Promise<T | EvalResult<false>> {
         try {
-            return <T>await context.cluster.worker.request('meval', data);
+            return await context.cluster.worker.request('meval', data);
         } catch (err) {
             return { success: false, result: err };
         }

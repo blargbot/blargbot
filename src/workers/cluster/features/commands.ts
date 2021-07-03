@@ -28,7 +28,7 @@ export async function tryHandleCommand(cluster: Cluster, msg: AnyMessage): Promi
     return false;
 }
 
-async function getPrefix(cluster: Cluster, msg: AnyMessage): Promise<undefined | { prefix: string, isMention: boolean }> {
+async function getPrefix(cluster: Cluster, msg: AnyMessage): Promise<undefined | { prefix: string; isMention: boolean; }> {
     const guildPrefixes = await getGuildPrefixes(cluster, msg);
     const userPrefixes = await cluster.database.users.getSetting(msg.author.id, 'prefixes') ?? [];
     const defaultPrefixes = [cluster.config.discord.defaultPrefix, cluster.discord.user.username];

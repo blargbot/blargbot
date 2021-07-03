@@ -1,15 +1,12 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, ClydeOptions, Logger, mapping } from '../core';
 
-export class ClydeGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
+    public constructor(logger: Logger) {
+        super('clyde', logger, mapOptions);
     }
 
-    public async execute({ text }: JObject): Promise<Buffer | null> {
-        if (typeof text !== 'string')
-            return null;
-
+    public async executeCore({ text }: ClydeOptions): Promise<Buffer | null> {
         const originalText = await this.renderJimpText(text, {
             font: 'whitney.ttf',
             fontsize: 20,
@@ -31,3 +28,7 @@ export class ClydeGenerator extends BaseImageGenerator {
 
 
 }
+
+const mapOptions = mapping.object<ClydeOptions>({
+    text: mapping.string
+});

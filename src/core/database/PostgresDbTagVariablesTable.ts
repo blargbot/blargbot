@@ -1,11 +1,12 @@
 import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
+import { Logger } from '../Logger';
 import { PostgresDb } from './core/PostgresDb';
 import { TagVariablesTable } from './types';
 
 export class PostgresDbTagVariablesTable implements TagVariablesTable {
     public constructor(
         protected readonly postgres: PostgresDb,
-        protected readonly logger: CatLogger
+        protected readonly logger: Logger
     ) {
     }
 

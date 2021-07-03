@@ -58,7 +58,7 @@ module.exports =
                     if (i++ % 1000 === 0)
                         await this.sleep();
                 } catch (err) {
-                    if (typeof err == "function") {
+                    if (typeof err == 'function') {
                         return err(subtag, context);
                     }
                     throw err;

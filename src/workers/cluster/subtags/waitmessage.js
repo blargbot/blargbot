@@ -69,7 +69,7 @@ module.exports =
             if (args[0]) {
                 channels = Builder.util.flattenArgArrays([args[0]]);
                 channels = await Promise.all(channels.map(async input => await Builder.util.parseChannel(context, input)));
-                if (failure = channels.find(channel => typeof channel == "function"))
+                if (failure = channels.find(channel => typeof channel == 'function'))
                     return failure(subtag, context);
                 channels = channels.map(channel => channel);
             }
@@ -95,7 +95,7 @@ module.exports =
             if (args[2]) {
                 checkBBTag = args[2];
             } else {
-                checkBBTag = bbengine.parse("true").bbtag;
+                checkBBTag = bbengine.parse('true').bbtag;
             }
 
             // parse timeout
@@ -117,7 +117,7 @@ module.exports =
                 let result = await bu.awaitMessage(channels.map(c => c.id), users, checkFunc, timeout * 1000);
                 return JSON.stringify([result.channel.id, result.id]);
             } catch (err) {
-                if (typeof err == "function") {
+                if (typeof err == 'function') {
                     return err(subtag, context);
                 }
                 if (err instanceof bu.TimeoutError) {
@@ -146,7 +146,7 @@ module.exports =
                         throw (subtag, context) => Builder.util.error(
                             subtag,
                             context,
-                            `Condition must return 'true' or 'false'`
+                            'Condition must return \'true\' or \'false\''
                         );
                     return bool;
                 }

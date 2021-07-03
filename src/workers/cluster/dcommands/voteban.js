@@ -25,7 +25,7 @@ class VotebanCommand extends BaseCommand {
                     let userList = [];
                     for (let userId of votebans[user.id]) {
                         let tempUser;
-                        if (typeof userId == "string") {
+                        if (typeof userId == 'string') {
                             tempUser = bot.users.get(userId) || await bot.getRESTUser(userId);
 
                             userList.push(`**${bu.getFullName(tempUser)}**`);
@@ -36,8 +36,8 @@ class VotebanCommand extends BaseCommand {
                     }
                     bu.send(msg, `**${userList.length}** ${userList.length == 1 ? 'person has' : 'people have'} signed to ban **${bu.getFullName(user)}**.
 ${userList.map(u => {
-                        return ' - ' + u;
-                    }).join('\n')}`);
+        return ' - ' + u;
+    }).join('\n')}`);
                 }
             } else {
                 let user = await bu.getUser(msg, words[1]);
@@ -84,7 +84,7 @@ ${reason ? '**Reason:** ' + reason : ''}`);
             let returnMsg = '';
             if (votebanStats.length > 0)
                 returnMsg = `The **__Top ${votebanStats.length}__** most wanted!\n`;
-            else returnMsg = `There's nobody here to ban.`;
+            else returnMsg = 'There\'s nobody here to ban.';
             let i = 1;
             for (let stat of votebanStats) {
                 let user = bot.users.get(stat.id) || await bot.getRESTUser(stat.id);

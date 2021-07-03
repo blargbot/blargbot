@@ -22,7 +22,7 @@ export class JsonSubtag extends BaseSubtag {
     public getJSON(context: BBTagContext, input: string, subtag: SubtagCall): string {
         try {
             return JSON.stringify(JSON.parse(input));
-        } catch (err) {
+        } catch (err: unknown) {
             return this.customError('Invalid JSON provided', context, subtag);
         }
     }

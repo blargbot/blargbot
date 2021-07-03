@@ -28,7 +28,7 @@ export const oldBu = {
                             const regex = oldBu.createRegExp(term);
                             if (regex.test(msg.content)) violation = true;
                         } catch (err) { }
-                    } else if (msg.content.toLowerCase().indexOf(term.toLowerCase()) > -1) violation = true;
+                    } else if (msg.content.toLowerCase().includes(term.toLowerCase())) violation = true;
                     if (violation == true) { // Uh oh, they did a bad!
                         const res = await util.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
                         if (cens.weight > 0) {
@@ -102,7 +102,7 @@ export const oldBu = {
 
         const roles = member.guild.roles.filter(m => {
             if (Array.isArray(perm) ?
-                perm.map(q => q.toLowerCase()).indexOf(m.name.toLowerCase()) > -1 :
+                perm.map(q => q.toLowerCase()).includes(m.name.toLowerCase()) :
                 m.name.toLowerCase() == perm.toLowerCase()) {
                 return true;
             } else {
@@ -121,7 +121,7 @@ export const oldBu = {
             }
         });
         for (let i = 0; i < roles.length; i++) {
-            if (member.roles.indexOf(roles[i].id) > -1) {
+            if (member.roles.includes(roles[i].id)) {
                 return true;
             }
         }

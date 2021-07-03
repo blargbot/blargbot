@@ -5,12 +5,13 @@ import { BaseClient } from './BaseClient';
 import { Database } from './database';
 import { SendContext, SendFiles, SendPayload } from './types';
 import { guard, humanize, snowflake } from './utils';
+import { Logger } from './Logger';
 
 export class BaseUtilities {
     public get user(): ExtendedUser { return this.client.discord.user; }
     public get discord(): ErisClient { return this.client.discord; }
     public get database(): Database { return this.client.database; }
-    public get logger(): CatLogger { return this.client.logger; }
+    public get logger(): Logger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
 
     public constructor(
@@ -223,7 +224,7 @@ export class BaseUtilities {
 }
 
 
-const sendErrors: { [key: string]: (utilities: BaseUtilities, channel: AnyChannel | Channel, payload: SendPayload, files?: SendFiles) => Promise<string | void> | string | void } = {
+const sendErrors: { [key: string]: (utilities: BaseUtilities, channel: AnyChannel | Channel, payload: SendPayload, files?: SendFiles) => Promise<string | void> | string | void; } = {
     '10003': () => { /* console.error('10003: Channel not found. ', channel); */ },
     '50006': (util, _, payload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
     '50007': () => { /* console.error('50007: Can\'t send a message to this user!'); */ },

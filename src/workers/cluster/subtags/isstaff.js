@@ -16,8 +16,8 @@ module.exports =
         .withDesc('Checks if `user` is a member of staff. `user` defaults to the author of the tag. ' +
         'If the `user` cannot be found `false` will be returned.')
         .withExample(
-        '{if;{isstaff;{userid}};You are a staff member!;You are not a staff member :(}',
-        'You are a staff member!'
+            '{if;{isstaff;{userid}};You are a staff member!;You are not a staff member :(}',
+            'You are a staff member!'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
             if (args.length == 0)

@@ -96,10 +96,10 @@ export class OperatorSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): string {
         const flattenedValues = bbtagUtil.tagArray.flattenArray(values).map((arg) => {
-            if (arg) {
-                return parse.float(arg.toString());
-            } else {
-                return NaN;
+            switch (typeof arg) {
+                case 'number': return arg;
+                case 'string': return parse.float(arg);
+                default: return NaN;
             }
         });
 

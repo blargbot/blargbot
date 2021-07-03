@@ -35,10 +35,10 @@ class EditcommandCommand extends BaseCommand {
                             commandList.push(`**${key}** ${commandperms[key].rolename
                                 ? '\n   __Role__: ' + commandperms[key].rolename
                                 : ''}${commandperms[key].permission
-                                    ? '\n   __Perm__: ' + commandperms[key].permission
-                                    : ''}${commandperms[key].disabled
-                                        ? '\n   __DISABLED__'
-                                        : ''}`);
+                                ? '\n   __Perm__: ' + commandperms[key].permission
+                                : ''}${commandperms[key].disabled
+                                ? '\n   __DISABLED__'
+                                : ''}`);
                     }
                     if (commandList.length > 0) message += commandList.join('\n');
                     else message += 'No modified commands found.';
@@ -52,9 +52,9 @@ class EditcommandCommand extends BaseCommand {
                     commands = words[2].toLowerCase().split(/\s*,\s*/);
                     toSend = '';
                     if (words.length == 3) {
-                        toSend += `Removed the custom role requirement from command(s)\n\`\`\`fix\n`;
+                        toSend += 'Removed the custom role requirement from command(s)\n```fix\n';
                     } else if (words.length >= 4) {
-                        toSend += `Added custom role requirement to command(s)\n\`\`\`fix\n`;
+                        toSend += 'Added custom role requirement to command(s)\n```fix\n';
                     }
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
@@ -75,7 +75,7 @@ class EditcommandCommand extends BaseCommand {
                             }
                         } else {
                             if (commands.length == 1) {
-                                bu.send(msg, `That's not a command!`);
+                                bu.send(msg, 'That\'s not a command!');
                                 break;
                             }
                         }
@@ -113,7 +113,7 @@ class EditcommandCommand extends BaseCommand {
                             }
                         } else {
                             if (commands.length == 1) {
-                                bu.send(msg, `That's not a command!`);
+                                bu.send(msg, 'That\'s not a command!');
                                 break;
                             }
                         }
@@ -131,9 +131,9 @@ class EditcommandCommand extends BaseCommand {
                     commands = words[2].toLowerCase().split(/\s*,\s*/);
                     toSend = '';
                     if (words.length == 3) {
-                        toSend += `Removed the custom role requirement from command(s)\n\`\`\`fix\n`;
+                        toSend += 'Removed the custom role requirement from command(s)\n```fix\n';
                     } else if (words.length >= 4) {
-                        toSend += `Added custom role requirement to command(s)\n\`\`\`fix\n`;
+                        toSend += 'Added custom role requirement to command(s)\n```fix\n';
                     }
                     for (let i = 0; i < commands.length; i++) {
                         if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
@@ -153,14 +153,14 @@ class EditcommandCommand extends BaseCommand {
                                         commandperms[commandName].permission = allow;
                                         changedCommands.push(commandName);
                                     } else {
-                                        bu.send(msg, `The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.`);
+                                        bu.send(msg, 'The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.');
                                         return;
                                     }
                                 }
                             }
                         } else {
                             if (commands.length == 1) {
-                                bu.send(msg, `That's not a command!`);
+                                bu.send(msg, 'That\'s not a command!');
                                 break;
                             }
                         }

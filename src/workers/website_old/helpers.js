@@ -17,10 +17,10 @@ const newbutils = require('../newbu');
 const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 let e = module.exports = {};
 let TagManager = {
-    list: {}
-}, CommandManager = {
-    list: {}
-};
+        list: {}
+    }, CommandManager = {
+        list: {}
+    };
 
 async function updateManagers() {
     let s = spawner.get(0);
@@ -31,12 +31,12 @@ updateManagers();
 setInterval(updateManagers, 10 * 60 * 1000);
 
 const commandType = {
-    1: "General Commands",
-    2: "CAT ERROR",
-    3: "NSFW Commands",
-    4: "Image Commands",
-    5: "MUSIC ERROR",
-    6: "Admin Commands",
+    1: 'General Commands',
+    2: 'CAT ERROR',
+    3: 'NSFW Commands',
+    4: 'Image Commands',
+    5: 'MUSIC ERROR',
+    6: 'Admin Commands',
     perms: {
         1: 'None',
         2: 'None',
@@ -48,10 +48,10 @@ const commandType = {
 };
 
 const tagType = {
-    1: "Simple Tags",
-    2: "General Tags",
-    3: "Array Tags",
-    4: "CCommand Tags"
+    1: 'Simple Tags',
+    2: 'General Tags',
+    3: 'Array Tags',
+    4: 'CCommand Tags'
 };
 
 function mdToHtml(text) {
@@ -211,20 +211,20 @@ e.init = () => {
             toReturn += `<h4 id='${keys[i]}'>${keys[i]}${aliasBlock}</h4>`;
             if (subtag.deprecated) {
                 toReturn += `<div class="tagdeprecated"><p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''
-                    }</p></div>`;
+                }</p></div>`;
             }
             if (subtag.args) {
                 toReturn += `<div class="tagargs">${mdToHtml('`' + argumentFactory.toString(subtag.args) + '`')}</div>`;
             }
-            if (subtag.array) toReturn += `<div class="tagarray"><p>Array compatible</p></div>`;
+            if (subtag.array) toReturn += '<div class="tagarray"><p>Array compatible</p></div>';
             toReturn += `<div class="tagdescription">${addSubtagReferences(mdToHtml(subtag.desc))}</div><div class="taglimits">`;
 
             for (const key of Object.keys(bbtag.limits)) {
                 let text = bbtag.limitToSring(key, subtag.name);
                 if (text) {
                     toReturn += `<div class="taglimit"><h5>Limits for ${bbtag.limits[key].instance._name
-                        }s</h5><blockquote>${text.replace(/\n/g, '<br />')
-                        }</blockquote></div>`;
+                    }s</h5><blockquote>${text.replace(/\n/g, '<br />')
+                    }</blockquote></div>`;
                 }
             }
 
@@ -273,26 +273,26 @@ e.init = () => {
                     toReturn += `<div class='centre white-text'><h2 id='${commands[keys[i]].category}' class='white-text'>${commandType[commands[keys[i]].category]}</h2></div>`;
                     lastType = commands[keys[i]].category;
                 }
-                toReturn += "<div class='row'>";
-                toReturn += "<div class='col s12 m10 offset-m1 l10 offset-l1'>";
+                toReturn += '<div class=\'row\'>';
+                toReturn += '<div class=\'col s12 m10 offset-m1 l10 offset-l1\'>';
                 toReturn += `<div class=\"card blue-grey darken-3\" id='${keys[i]}'>`;
-                toReturn += "<div class='card-content'>";
+                toReturn += '<div class=\'card-content\'>';
                 toReturn += `<span class='card-title'>${keys[i]}</span>`;
                 toReturn += `<p>Usage: <pre style="margin: 0" class="wrap"><code>${commands[keys[i]].usage.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></p>`;
                 toReturn += `<p>Role Needed: ${commandType.perms[commands[keys[i]].category]}</p>`;
                 toReturn += mdToHtml(commands[keys[i]].longinfo);
                 let flags = commands[keys[i]].flags;
                 if (flags && flags.length > 0) {
-                    toReturn += `<p>Flags:</p><ul>`;
+                    toReturn += '<p>Flags:</p><ul>';
                     for (let flag of flags) {
                         toReturn += `<li><code>-${flag.flag}</code>/<code>--${flag.word}</code> - ${flag.desc}</li>`;
                     }
                     toReturn += '</ul>';
                 }
-                toReturn += "</div>";
-                toReturn += "</div>";
-                toReturn += "</div>";
-                toReturn += "</div>";
+                toReturn += '</div>';
+                toReturn += '</div>';
+                toReturn += '</div>';
+                toReturn += '</div>';
             }
         }
         return toReturn;

@@ -7,7 +7,7 @@ export class ErrorHandler extends DiscordEventService<'error'> {
     }
 
     public execute(error: Error): void {
-        if (error.message.indexOf('Message.guild') == -1)
+        if (!error.message.includes('Message.guild'))
             this.logger.error(error);
     }
 }

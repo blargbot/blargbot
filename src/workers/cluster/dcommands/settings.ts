@@ -30,7 +30,7 @@ export class SettingsCommand extends BaseGuildCommand {
         });
     }
 
-    private async list(context: GuildCommandContext): Promise<string | { embed: EmbedOptions }> {
+    private async list(context: GuildCommandContext): Promise<string | { embed: EmbedOptions; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (!storedGuild)
             return '❌ Your guild is not correctly configured yet! Please try again later';

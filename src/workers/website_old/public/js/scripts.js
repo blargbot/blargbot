@@ -8,7 +8,7 @@
         (i[r].q = i[r].q || []).push(arguments);
     }, i[r].l = 1 * new Date();
     a = s.createElement(o),
-        m = s.getElementsByTagName(o)[0];
+    m = s.getElementsByTagName(o)[0];
     a.async = 1;
     a.src = g;
     m.parentNode.insertBefore(a, m);
@@ -34,7 +34,7 @@ function init() {
 
     $(document).ready(function() {
         $('.parallax').parallax();
-        $(".button-collapse").sideNav({
+        $('.button-collapse').sideNav({
             edge: 'left',
             closeOnClick: false
         });
@@ -43,7 +43,7 @@ function init() {
         //    });
     });
 
-    $(".sidebar-dropdown").click(function(e) {
+    $('.sidebar-dropdown').click(function(e) {
         if (e.target['href']) {
             var element = e.target['href'].split('#')[1];
             if (element) {

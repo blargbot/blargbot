@@ -145,7 +145,7 @@ export class CustomCommand extends BaseGuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string, files: MessageFile } | undefined> {
+    ): Promise<string | { content: string; files: MessageFile; } | undefined> {
         const args = humanize.smartSplit(input);
         const result = await context.bbtag.execute(content, {
             message: context.message,
@@ -172,7 +172,7 @@ export class CustomCommand extends BaseGuildCommand {
         commandName: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string, files: MessageFile } | undefined> {
+    ): Promise<string | { content: string; files: MessageFile; } | undefined> {
         const match = await this.requestReadableCommand(context, commandName, false);
         if (typeof match !== 'object')
             return match;
@@ -252,7 +252,7 @@ export class CustomCommand extends BaseGuildCommand {
         return `✅ The \`${from.name}\` custom command has been renamed to \`${to.name}\`.`;
     }
 
-    public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string, files: MessageFile } | undefined> {
+    public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string; files: MessageFile; } | undefined> {
         const match = await this.requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -272,7 +272,7 @@ export class CustomCommand extends BaseGuildCommand {
             };
     }
 
-    public async listCommands(context: GuildCommandContext): Promise<{ embed: EmbedOptions } | string | undefined> {
+    public async listCommands(context: GuildCommandContext): Promise<{ embed: EmbedOptions; } | string | undefined> {
         const grouped: Record<string, string[]> = {};
         for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
             const roles = command.roles === undefined || command.roles.length === 0 ? ['All Roles'] : command.roles;
@@ -682,7 +682,7 @@ export class CustomCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
-    ): Promise<{ name: string, command?: NamedStoredGuildCommand } | string | undefined> {
+    ): Promise<{ name: string; command?: NamedStoredGuildCommand; } | string | undefined> {
         const match = await this.requestCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -730,7 +730,7 @@ export class CustomCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
-    ): Promise<{ name: string } | string | undefined> {
+    ): Promise<{ name: string; } | string | undefined> {
         const match = await this.requestCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -745,7 +745,7 @@ export class CustomCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery: boolean
-    ): Promise<{ name: string, command?: NamedStoredGuildCommand } | string | undefined> {
+    ): Promise<{ name: string; command?: NamedStoredGuildCommand; } | string | undefined> {
         commandName = await this.requestCommandName(context, commandName, allowQuery ? undefined : '');
         if (commandName === undefined)
             return;
@@ -795,9 +795,9 @@ async function getShrinkwrapData(
     database: Database,
     guildId: string
 ): Promise<{
-    commands: Record<string, NamedStoredGuildCommand>,
-    autoResponses: Record<string, GuildFilteredAutoresponse[]>,
-    everythingAutoResponse: GuildAutoresponse | undefined
+    commands: Record<string, NamedStoredGuildCommand>;
+    autoResponses: Record<string, GuildFilteredAutoresponse[]>;
+    everythingAutoResponse: GuildAutoresponse | undefined;
 }> {
 
     const autoresponses = await database.guilds.getAutoresponses(guildId);

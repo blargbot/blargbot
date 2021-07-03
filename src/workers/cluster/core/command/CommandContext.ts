@@ -2,7 +2,7 @@ import { Channel, Textable, User, Message, MessageFile, AnyMessage, Client as Er
 import { Cluster } from '../../Cluster';
 import { ClusterUtilities } from '../../ClusterUtilities';
 import { BBTagEngine } from '../bbtag';
-import { Database, humanize, SendContext, SendPayload } from '../globalCore';
+import { Database, humanize, SendContext, SendPayload, Logger } from '../globalCore';
 
 export class CommandContext<TChannel extends Channel = Channel> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -12,7 +12,7 @@ export class CommandContext<TChannel extends Channel = Channel> {
     public readonly argsString: string;
     public readonly args: string[];
 
-    public get logger(): CatLogger { return this.cluster.logger; }
+    public get logger(): Logger { return this.cluster.logger; }
     public get bbtag(): BBTagEngine { return this.cluster.bbtag; }
     public get util(): ClusterUtilities { return this.cluster.util; }
     public get config(): Configuration { return this.cluster.config; }

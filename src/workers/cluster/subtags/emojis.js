@@ -27,7 +27,7 @@ module.exports =
         })
         .whenArgs(1, async (subtag, context, args) => {
             let emojis = context.guild.emojis.filter(e => e.roles !== undefined && e.roles.find(r => r.id === args[1]))
-                         .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
+                .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
             return JSON.stringify(emojis);
         })
         .whenDefault(Builder.errors.tooManyArguments)

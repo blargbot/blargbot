@@ -4,6 +4,7 @@ import { RethinkDbTable } from './RethinkDbTable';
 import { WriteChange } from 'rethinkdb';
 import { Cache } from '../../Cache';
 import { sleep } from '../../utils';
+import { Logger } from '../../Logger';
 
 export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K extends string & keyof RethinkTableMap[T], M extends RethinkTableMap[T]> extends RethinkDbTable<T> {
     protected readonly cache: Cache<string, M>;
@@ -12,7 +13,7 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
         table: T,
         protected readonly keyName: K,
         rethinkDb: RethinkDb,
-        logger: CatLogger
+        logger: Logger
     ) {
         super(table, rethinkDb, logger);
         this.cache = new Cache(5, 'minutes');

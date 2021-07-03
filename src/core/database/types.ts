@@ -3,13 +3,14 @@ import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { FlagDefinition, SerializedBBTagContext } from '../../workers/cluster/core/types'; // TODO Core shouldnt reference cluster
+import { Logger } from '../Logger';
 
 export type RethinkTableMap = {
     'guild': StoredGuild;
     'tag': StoredTag;
     'user': StoredUser;
     'vars': KnownStoredVars;
-    'events': Omit<StoredEventOptions, 'id'>
+    'events': Omit<StoredEventOptions, 'id'>;
 }
 
 export interface MessageFilter {
@@ -29,7 +30,7 @@ export interface RestartStoredVar extends StoredVar<'restart'> {
 }
 
 export interface TagVarsStoredVar extends StoredVar<'tagVars'> {
-    readonly values: { readonly [key: string]: unknown } | null;
+    readonly values: { readonly [key: string]: unknown; } | null;
 }
 
 export interface ARWhitelistStoredVar extends StoredVar<'arwhitelist'> {
@@ -37,7 +38,7 @@ export interface ARWhitelistStoredVar extends StoredVar<'arwhitelist'> {
 }
 
 export interface GuildBlacklistStoredVar extends StoredVar<'guildBlacklist'> {
-    readonly values: { readonly [guildid: string]: boolean | undefined };
+    readonly values: { readonly [guildid: string]: boolean | undefined; };
 }
 
 export interface BlacklistStoredVar extends StoredVar<'blacklist'> {
@@ -46,11 +47,11 @@ export interface BlacklistStoredVar extends StoredVar<'blacklist'> {
 }
 
 export interface WhitelistedDomainsStoredVar extends StoredVar<'whitelistedDomains'> {
-    readonly values: { readonly [domain: string]: boolean };
+    readonly values: { readonly [domain: string]: boolean; };
 }
 
 export interface ChangelogStoredVar extends StoredVar<'changelog'> {
-    readonly guilds: { readonly [guildid: string]: string };
+    readonly guilds: { readonly [guildid: string]: string; };
 }
 
 export interface PGStoredVar extends StoredVar<'pg'> {
@@ -66,7 +67,7 @@ export interface SupportStoredVar extends StoredVar<'support'> {
 }
 
 export interface CleverStatsStoredVar extends StoredVar<'cleverstats'> {
-    readonly stats: { readonly [date: string]: { readonly uses: number } };
+    readonly stats: { readonly [date: string]: { readonly uses: number; }; };
 }
 
 export interface VersionStoredVar extends StoredVar<'version'> {
@@ -103,7 +104,7 @@ export type MutableKnownStoredVars =
     | VersionStoredVar
     | CleverStatsStoredVar
 
-export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownStoredVars, { varname: T }>;
+export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownStoredVars, { varname: T; }>;
 
 
 export interface StoredEventOptionsBase {
@@ -137,7 +138,7 @@ export type EventOptionsTypeMap = {
 }
 
 export type EventTypeMap = {
-    [K in keyof EventOptionsTypeMap]: EventOptionsTypeMap[K] & { id: string, type: K };
+    [K in keyof EventOptionsTypeMap]: EventOptionsTypeMap[K] & { id: string; type: K; };
 }
 
 export type EventType = keyof EventOptionsTypeMap;
@@ -150,23 +151,23 @@ export interface StoredGuild {
     readonly active: boolean;
     readonly name: string;
     readonly settings: StoredGuildSettings;
-    readonly channels: { readonly [channelId: string]: ChannelSettings | undefined };
-    readonly ccommands: { readonly [key: string]: StoredGuildCommand | undefined };
-    readonly commandperms?: { readonly [key: string]: CommandPermissions | undefined };
+    readonly channels: { readonly [channelId: string]: ChannelSettings | undefined; };
+    readonly ccommands: { readonly [key: string]: StoredGuildCommand | undefined; };
+    readonly commandperms?: { readonly [key: string]: CommandPermissions | undefined; };
     readonly censor?: GuildCensors;
     readonly warnings?: GuildWarnings;
     readonly modlog?: readonly GuildModlogEntry[];
     readonly roleme?: readonly GuildRolemeEntry[];
     readonly autoresponse?: GuildAutoresponses;
-    readonly log?: { readonly [key: string]: string };
+    readonly log?: { readonly [key: string]: string; };
     readonly logIgnore?: readonly string[];
 }
 
 export interface MutableStoredGuild extends StoredGuild {
-    ccommands: { [key: string]: StoredGuildCommand | undefined };
+    ccommands: { [key: string]: StoredGuildCommand | undefined; };
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
-    log?: { [key: string]: string };
+    log?: { [key: string]: string; };
     autoresponse?: MutableGuildAutoresponses;
 }
 
@@ -196,14 +197,14 @@ export interface GuildRolemeEntry {
 }
 
 export interface GuildWarnings {
-    readonly users?: { readonly [userId: string]: number | undefined };
+    readonly users?: { readonly [userId: string]: number | undefined; };
 }
 export interface MutableGuildWarnings {
-    users?: { [userId: string]: number | undefined };
+    users?: { [userId: string]: number | undefined; };
 }
 
 export interface GuildCensors {
-    readonly list: readonly GuildCensor[]
+    readonly list: readonly GuildCensor[];
     readonly exception: GuildCensorExceptions;
     readonly rule: GuildCensorRule;
 }
@@ -272,7 +273,7 @@ export interface StoredTag {
     readonly author: string;
     readonly authorizer?: string;
     readonly uses: number;
-    readonly flags?: readonly FlagDefinition[]
+    readonly flags?: readonly FlagDefinition[];
     readonly cooldown?: number;
     readonly lastuse?: Date;
     readonly lastmodified: Date;
@@ -280,7 +281,7 @@ export interface StoredTag {
     readonly lang?: string;
     readonly deleter?: string;
     readonly reason?: string;
-    readonly favourites?: { readonly [key: string]: boolean | undefined };
+    readonly favourites?: { readonly [key: string]: boolean | undefined; };
     readonly reports?: number;
 }
 
@@ -325,8 +326,8 @@ export interface ChannelSettings {
 }
 
 export interface StoredUsername {
-    readonly name: string,
-    readonly date: Date
+    readonly name: string;
+    readonly date: Date;
 }
 
 export interface StoredUser extends StoredUserSettings {
@@ -341,7 +342,7 @@ export interface StoredUser extends StoredUserSettings {
     readonly lastcommanddate?: Date;
     readonly todo: readonly UserTodo[];
     readonly reportblock?: string;
-    readonly reports?: { readonly [key: string]: string };
+    readonly reports?: { readonly [key: string]: string; };
 }
 
 export interface MutableStoredUser extends StoredUser {
@@ -349,7 +350,7 @@ export interface MutableStoredUser extends StoredUser {
     username?: string;
     discriminator?: string;
     avatarURL?: string;
-    reports?: { [key: string]: string };
+    reports?: { [key: string]: string; };
 }
 
 export interface StoredUserSettings {
@@ -402,7 +403,7 @@ export interface BBTagVariable extends BBTagVariableReference {
 }
 
 export interface DatabaseOptions {
-    readonly logger: CatLogger;
+    readonly logger: Logger;
     readonly discord: ErisClient;
     readonly rethinkDb: RethinkDbOptions;
     readonly cassandra: CassandraDbOptions;
@@ -468,7 +469,7 @@ export interface UserTable {
     getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<StoredUserSettings[K] | undefined>;
     get(userId: string, skipCache?: boolean): Promise<StoredUser | undefined>;
     add(user: StoredUser): Promise<boolean>;
-    upsert(user: User): Promise<boolean>
+    upsert(user: User): Promise<boolean>;
     setTagReport(userId: string, tagName: string, reason: string | undefined): Promise<boolean>;
 }
 

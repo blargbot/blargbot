@@ -16,7 +16,7 @@
 </template>
 <script>
 export default {
-  props: ["error"]
+    props: ['error']
 };
 </script>
 <style lang="scss" scoped>

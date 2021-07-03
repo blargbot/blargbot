@@ -54,7 +54,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         try {
             await channel.deletePermission(item);
             return channel.id;
-        } catch (e) {
+        } catch (e: unknown) {
             return this.customError('Failed to edit channel: no perms', context, subtag);
         }
     }
@@ -86,22 +86,22 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         try {
             const fullReason = discordUtil.formatAuditReason(
                 context.user,
-                context.scope.reason || ''
+                context.scope.reason ?? ''
             );
             if (allow === null && deny === null) {
                 await channel.deletePermission(itemId);//* Feel like this shouldn't be here but backwards compatibility
             } else {
                 await channel.editPermission(
                     itemId,
-                    allow || 0,
-                    deny || 0,
+                    allow ?? 0,
+                    deny ?? 0,
                     type,
                     fullReason
                 );
             }
             return channel.id;
-        } catch (err) {
-            this.logger.error(err.stack);
+        } catch (err: unknown) {
+            this.logger.error(err);
             return this.customError('Failed to edit channel: no perms', context, subtag);
         }
     }

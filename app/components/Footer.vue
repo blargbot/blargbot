@@ -7,14 +7,14 @@
 </template>
 
 <script>
-import moment from "moment";
+import moment from 'moment';
 
 export default {
-  computed: {
-    year() {
-      return moment().year();
+    computed: {
+        year() {
+            return moment().year();
+        }
     }
-  }
 };
 </script>
 

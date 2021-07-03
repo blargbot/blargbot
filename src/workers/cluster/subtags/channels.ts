@@ -38,6 +38,6 @@ export class ChannelsSubtag extends BaseSubtag {
             return quiet ? '' : this.channelNotFound(context, subtag, `${args[0]} could not be found`);
         if (channel.type !== 4)
             return '[]';
-        return JSON.stringify(channel.channels ? channel.channels.map(c => c.id) : []);
+        return JSON.stringify(channel.channels?.map(c => c.id) ?? []);
     }
 }

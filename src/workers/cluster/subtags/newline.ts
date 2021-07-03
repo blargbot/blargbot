@@ -14,7 +14,7 @@ export class NewlineSubtag extends BaseSubtag {
                     exampleOut: 'Hello,\nworld!',
                     execute: (context, [{ value: countStr }], subtag) => {
                         let count = parse.int(countStr);
-                        const fallback = parse.int(context.scope.fallback || '');
+                        const fallback = parse.int(context.scope.fallback ?? '');
 
                         if (isNaN(count)) count = fallback;
                         if (isNaN(count)) return this.notANumber(context, subtag, 'Number and fallback are not numbers');

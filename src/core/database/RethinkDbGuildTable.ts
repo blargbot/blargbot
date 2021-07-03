@@ -4,11 +4,12 @@ import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { RethinkDb } from './core/RethinkDb';
 import { guard } from '../utils';
 import { UpdateRequest } from 'rethinkdb';
+import { Logger } from '../Logger';
 
 export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid', MutableStoredGuild> implements GuildTable {
     public constructor(
         rethinkDb: RethinkDb,
-        logger: CatLogger
+        logger: Logger
     ) {
         super('guild', 'guildid', rethinkDb, logger);
     }

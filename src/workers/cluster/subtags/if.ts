@@ -91,13 +91,10 @@ export class IfSubtag extends BaseSubtag {
         const result = operators[operator](value1, value2).toString();
         if (result !== 'false' && result !== 'true') return result;
 
-        if (parse.boolean(result)) {
+        if (parse.boolean(result, false)) {
             return thenCode.wait();
         } else {
-            if (elseCode) {
-                return elseCode.wait();
-            }
-            return '';
+            return elseCode?.wait() ?? '';
         }
     }
 }

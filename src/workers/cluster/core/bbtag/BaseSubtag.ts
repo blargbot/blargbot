@@ -1,6 +1,6 @@
 import { Client as ErisClient, EmbedOptions } from 'eris';
 import { Cluster } from '../../Cluster';
-import { metrics, Timer } from '../globalCore';
+import { metrics, Timer, Logger } from '../globalCore';
 import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagOptions, SubtagResult } from '../types';
 import { SubtagType } from '../utils';
 import { BBTagContext } from './BBTagContext';
@@ -18,12 +18,12 @@ export abstract class BaseSubtag implements Required<SubtagOptions>, SubtagHandl
     public readonly signatures: readonly SubtagHandlerCallSignature[];
     public readonly handler: SubtagHandler;
 
-    public get logger(): CatLogger { return this.cluster.logger; }
+    public get logger(): Logger { return this.cluster.logger; }
     public get discord(): ErisClient { return this.cluster.discord; }
 
     protected constructor(
         public readonly cluster: Cluster,
-        options: SubtagOptions & { definition: readonly SubtagHandlerDefinition[] }
+        options: SubtagOptions & { definition: readonly SubtagHandlerDefinition[]; }
     ) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];

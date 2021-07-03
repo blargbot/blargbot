@@ -34,15 +34,15 @@ module.exports = {
     loading: { color: '#3B8070' },
 
     modules: [
-        ["@nuxtjs/axios", {
-            prefix: "/api",
+        ['@nuxtjs/axios', {
+            prefix: '/api',
             proxy: true,
             port: 8086
         }]
     ],
     plugins: [{ src: '@/plugins/websocket.js', ssr: false }],
     proxy: {
-        "/api/": config.origin || "https://beta.blargbot.xyz"
+        '/api/': config.origin || 'https://beta.blargbot.xyz'
     },
     css: [{ src: '@/assets/scss/base.scss', type: 'scss' }],
     /*

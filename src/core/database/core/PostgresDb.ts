@@ -4,6 +4,7 @@ import { sleep } from '../../utils';
 import * as models from './postgresModels';
 import { BaseModel } from './postgresModels/Base';
 import { PostgresDbOptions } from '../types';
+import { Logger } from '../../Logger';
 
 delete (<Record<string, unknown>>pg).native; // TODO Do we need to do this?
 
@@ -21,7 +22,7 @@ export class PostgresDb {
     public get models(): { [P in keyof Models]?: ModelType<InstanceType<Models[P]>> } { return this.#clientModels; }
 
     public constructor(
-        public readonly logger: CatLogger,
+        public readonly logger: Logger,
         options: PostgresDbOptions
     ) {
         this.#clientModels = {};

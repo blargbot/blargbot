@@ -9,11 +9,11 @@ class PardonCommand extends BaseCommand {
             usage: 'pardon <user> [flags]',
             info: 'Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the pardon.' },
-            {
-                flag: 'c',
-                word: 'count',
-                desc: 'The number of warnings that will be removed.'
-            }]
+                {
+                    flag: 'c',
+                    word: 'count',
+                    desc: 'The number of warnings that will be removed.'
+                }]
         });
     }
 

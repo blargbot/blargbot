@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { EventEmitter } from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
 import { Duration } from 'moment-timezone';
 import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from './globalCore';
 import { Cluster } from '../Cluster';

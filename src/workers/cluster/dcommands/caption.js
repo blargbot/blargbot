@@ -47,7 +47,7 @@ class CaptionCommand extends BaseCommand {
             return;
         }
         if ((!input.t || input.t.length == 0) && (!input.b || input.b.length == 0)) {
-            bu.send(msg, `You have to have at least one caption!`);
+            bu.send(msg, 'You have to have at least one caption!');
             return;
         }
         if (!input.f) input.f = ['impact'];
@@ -58,13 +58,13 @@ class CaptionCommand extends BaseCommand {
         if (msg.attachments.length > 0) url = msg.attachments[0].url;
         else if (input.undefined.length > 0) url = input.undefined.join(' ');
         else {
-            bu.send(msg, `You must provide an image, either via url or attachment!`);
+            bu.send(msg, 'You must provide an image, either via url or attachment!');
             return;
         }
         if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(url)) {
             url = url.match(/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))/)[0];
         } else {
-            bu.send(msg, `That's not a valid url!`);
+            bu.send(msg, 'That\'s not a valid url!');
             return;
         }
         let code = bu.genEventCode();

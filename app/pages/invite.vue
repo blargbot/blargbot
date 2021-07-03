@@ -19,25 +19,25 @@
 </template>
 
 <script>
-import Banner from "~/components/Banner.vue";
+import Banner from '~/components/Banner.vue';
 
 export default {
-  data: () => ({
-    base:
-      "https://discordapp.com/oauth2/authorize?client_id=170237838334492682&scope=bot"
-  }),
-  computed: {
-    pbase() {
-      return this.base + "&permissions=";
+    data: () => ({
+        base:
+      'https://discordapp.com/oauth2/authorize?client_id=170237838334492682&scope=bot'
+    }),
+    computed: {
+        pbase() {
+            return this.base + '&permissions=';
+        },
+        minvite() {
+            return this.pbase + 19520;
+        },
+        invite() {
+            return this.pbase + 8;
+        }
     },
-    minvite() {
-      return this.pbase + 19520;
-    },
-    invite() {
-      return this.pbase + 8;
-    }
-  },
-  components: { Banner }
+    components: { Banner }
 };
 </script>
 

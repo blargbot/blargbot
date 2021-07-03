@@ -11,14 +11,15 @@ import limax from 'limax';
 import { nfkd } from 'unorm';
 import { humanize, fafo, randInt, getRange } from '../utils';
 import { StoredTag } from '../database';
+import { Logger } from '../Logger';
 
 const TagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
-    [key: string]: TagLocks
+    [key: string]: TagLocks;
     [TagLock]?: ReadWriteLock;
 }
 
-const console: CatLogger = <CatLogger><unknown>undefined;
+const console: Logger = <Logger><unknown>undefined;
 const bot = <ErisClient><unknown>undefined;
 const cluster = <NodeJS.Process & Required<Pick<NodeJS.Process, 'send'>>><unknown>process;
 let awaitReactionCounter = 0;
@@ -27,7 +28,7 @@ let awaitReactionCounter = 0;
 export const oldBu = {
     commandMessages: {},
     notCommandMessages: {},
-    bans: {} as Record<string, Record<string, { mod: User, type: string, reason: string }>>,
+    bans: {} as Record<string, Record<string, { mod: User; type: string; reason: string; }>>,
     unbans: {},
     globalVars: {},
     commandStats: {},
@@ -61,7 +62,7 @@ export const oldBu = {
         reactions?: string[],
         check?: (message: GuildMessage, user: User, reaction: string) => Promise<boolean> | boolean,
         timeout?: number
-    ): Promise<{ message: GuildMessage, user: User, emoji: string }> {
+    ): Promise<{ message: GuildMessage; user: User; emoji: string; }> {
         if (!Array.isArray(messages))
             messages = [messages];
         if (!Array.isArray(users))
@@ -97,7 +98,7 @@ export const oldBu = {
             else return r;
         }) : null;
 
-        return await new Promise<{ message: GuildMessage, user: User, emoji: string }>((resolve, reject) => {
+        return await new Promise<{ message: GuildMessage; user: User; emoji: string; }>((resolve, reject) => {
             const timeoutId = setTimeout(() => reject(new TimeoutError(_timeout)), _timeout);
 
             oldBu.emitter.on(eventName, fafo(async (message: GuildMessage, emoji: string, user: User) => {
@@ -146,7 +147,7 @@ export const oldBu = {
         if (typeof roles === 'string')
             roles = [roles];
         for (let i = 0; i < roles.length; i++) {
-            if (member.roles.indexOf(roles[i]) > -1) {
+            if (member.roles.includes(roles[i])) {
                 return true;
             }
         }
@@ -156,8 +157,8 @@ export const oldBu = {
         channelId: string,
         messageId: string,
         reactions: string[]
-    ): Promise<Record<number, { error: unknown, reactions: string[] }>> {
-        const errors = {} as Record<number, { error: unknown, reactions: string[] }>;
+    ): Promise<Record<number, { error: unknown; reactions: string[]; }>> {
+        const errors = {} as Record<number, { error: unknown; reactions: string[]; }>;
         for (const reaction of new Set(reactions || [])) {
             try {
                 await bot.addMessageReaction(channelId, messageId, reaction);
@@ -312,13 +313,6 @@ export const oldBu = {
             }, 60000);
         });
     },
-    genEventCode(): string {
-        let code = oldBu.genToken(15);
-        while (oldBu.emitter.listeners(code, true)) {
-            code = oldBu.genToken(15);
-        }
-        return code;
-    },
     createRegExp(term: string): RegExp {
         if (term.length > 2000)
             throw new Error('Regex too long');
@@ -411,15 +405,15 @@ export const oldBu = {
         if (id == null) return null;
         return bot.getChannel(id);
     },
-    groupBy<T, K extends string | number | symbol>(values: IterableIterator<T>, selector: (value: T) => K): Array<T[] & { key: K }> {
-        const groups: Partial<Record<K, T[] & { key: K }>> = {};
+    groupBy<T, K extends string | number | symbol>(values: IterableIterator<T>, selector: (value: T) => K): Array<T[] & { key: K; }> {
+        const groups: Partial<Record<K, T[] & { key: K; }>> = {};
         const keys = new Set<K>();
         for (const value of values) {
             const key = selector(value);
             let group = groups[key];
             if (group == undefined) {
                 keys.add(key);
-                group = groups[key] = <T[] & { key: K }><unknown>[];
+                group = groups[key] = <T[] & { key: K; }><unknown>[];
                 group.key = key;
             }
             group.push(value);
@@ -427,7 +421,7 @@ export const oldBu = {
 
         return [...keys]
             .map(k => groups[k])
-            .filter((i): i is T[] & { key: K } => i !== undefined);
+            .filter((i): i is T[] & { key: K; } => i !== undefined);
     },
 
     // eslint-disable-next-line @typescript-eslint/ban-types
@@ -489,7 +483,7 @@ export const oldBu = {
         };
         return JSON.stringify(obj);
     },
-    deserializeTagArray(value: string): { v: JArray, n: string } | null {
+    deserializeTagArray(value: string): { v: JArray; n: string; } | null {
         let parsed;
         try {
             parsed = JSON.parse(value);

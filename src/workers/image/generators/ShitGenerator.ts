@@ -1,15 +1,12 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, Logger, mapping, ShitOptions } from '../core';
 
-export class ShitGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class ShitGenerator extends BaseImageGenerator<'shit'> {
+    public constructor(logger: Logger) {
+        super('shit', logger, mapOptions);
     }
 
-    public async execute({ plural, text }: JObject): Promise<Buffer | null> {
-        if (typeof text !== 'string')
-            return null;
-
+    public async executeCore({ plural, text }: ShitOptions): Promise<Buffer | null> {
         const caption = await this.renderJimpText(text, {
             font: 'animeace.ttf',
             size: '200x160',
@@ -21,3 +18,8 @@ export class ShitGenerator extends BaseImageGenerator {
         return await img.getBufferAsync(Jimp.MIME_PNG);
     }
 }
+
+const mapOptions = mapping.object<ShitOptions>({
+    plural: mapping.boolean,
+    text: mapping.string
+});

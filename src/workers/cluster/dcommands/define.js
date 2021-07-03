@@ -53,13 +53,13 @@ class DefineCommand extends BaseCommand {
                 var res = JSON.parse(body);
                 var message = `Definitions for ${args}:\n`;
                 if (res.results) {
-                    message += `\`\`\`xl\n`;
+                    message += '```xl\n';
 
                     for (let i = 0; i < res.results.length; i++) {
                         var type = res.results[i].partOfSpeech;
                         message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i + 1}` : i + 1) : i + 1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
                     }
-                    message += `\`\`\``;
+                    message += '```';
                 } else {
                     message += 'No results found!';
                 }

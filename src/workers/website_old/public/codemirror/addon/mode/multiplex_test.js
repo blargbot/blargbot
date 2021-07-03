@@ -2,32 +2,32 @@
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
 (function() {
-  CodeMirror.defineMode("markdown_with_stex", function(){
-    var inner = CodeMirror.getMode({}, "stex");
-    var outer = CodeMirror.getMode({}, "markdown");
+    CodeMirror.defineMode('markdown_with_stex', function(){
+        var inner = CodeMirror.getMode({}, 'stex');
+        var outer = CodeMirror.getMode({}, 'markdown');
 
-    var innerOptions = {
-      open: '$',
-      close: '$',
-      mode: inner,
-      delimStyle: 'delim',
-      innerStyle: 'inner'
-    };
+        var innerOptions = {
+            open: '$',
+            close: '$',
+            mode: inner,
+            delimStyle: 'delim',
+            innerStyle: 'inner'
+        };
 
-    return CodeMirror.multiplexingMode(outer, innerOptions);
-  });
+        return CodeMirror.multiplexingMode(outer, innerOptions);
+    });
 
-  var mode = CodeMirror.getMode({}, "markdown_with_stex");
+    var mode = CodeMirror.getMode({}, 'markdown_with_stex');
 
-  function MT(name) {
-    test.mode(
-      name,
-      mode,
-      Array.prototype.slice.call(arguments, 1),
-      'multiplexing');
-  }
+    function MT(name) {
+        test.mode(
+            name,
+            mode,
+            Array.prototype.slice.call(arguments, 1),
+            'multiplexing');
+    }
 
-  MT(
-    "stexInsideMarkdown",
-    "[strong **Equation:**] [delim&delim-open $][inner&tag \\pi][delim&delim-close $]");
+    MT(
+        'stexInsideMarkdown',
+        '[strong **Equation:**] [delim&delim-open $][inner&tag \\pi][delim&delim-close $]');
 })();

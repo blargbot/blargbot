@@ -32,10 +32,10 @@ export class MathSubtag extends BaseSubtag {
 
         const values = bbtagUtil.tagArray.flattenArray(args);
         const parsedValues = values.map(value => {
-            if (value) {
-                return parse.float(value.toString());
-            } else {
-                return NaN;
+            switch (typeof value) {
+                case 'number': return value;
+                case 'string': return parse.float(value);
+                default: return NaN;
             }
         });
 

@@ -22,10 +22,10 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
             let user = await context.getUser(args[0], {
-                quiet: false,
-                suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
-            }),
+                    quiet: false,
+                    suppress: context.scope.suppressLookup,
+                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+                }),
                 reason = args[1],
                 noPerms = args[2] != null;
 

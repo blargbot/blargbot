@@ -31,14 +31,14 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                         try {
                             const fullReason = discordUtil.formatAuditReason(
                                 context.user,
-                                context.scope.reason || ''
+                                context.scope.reason ?? ''
                             );
                             await channel.delete(fullReason);
                             if (context.guild.channels.get(channel.id))
                                 context.guild.channels.remove(channel);
                             return;//TODO return something on success
-                        } catch (err) {
-                            this.logger.error(err.stack);
+                        } catch (err: unknown) {
+                            this.logger.error(err);
                             return this.customError('Failed to edit channel: no perms', context, subtag);
                         }
                     }

@@ -60,10 +60,10 @@ class WarnCommand extends BaseCommand {
         }
 
         bu.send(msg, `:ok_hand: **${bu.getFullName(user)
-            }** has been given ${count == 1 ? 'a warning' : count + ' warnings'
-            }. They now have ${res.count
-            } warning${res.count == 1 ? '' : 's'
-            }.\n${furtherAction}`);
+        }** has been given ${count == 1 ? 'a warning' : count + ' warnings'
+        }. They now have ${res.count
+        } warning${res.count == 1 ? '' : 's'
+        }.\n${furtherAction}`);
     }
 }
 

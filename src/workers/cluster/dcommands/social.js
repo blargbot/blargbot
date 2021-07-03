@@ -162,7 +162,7 @@ for (const key in actions) {
                 info: action.desc
             });
 
-            this.wolken = new Wolken(cluster.config.wolke, 'Wolke', 'blargbot/6.0.0')
+            this.wolken = new Wolken(cluster.config.wolke, 'Wolke', 'blargbot/6.0.0');
         }
 
         static get name() {

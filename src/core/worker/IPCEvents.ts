@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { EventEmitter } from 'eventemitter3';
+import EventEmitter from 'eventemitter3';
 import { ChildProcess } from 'child_process';
 import { snowflake } from '../utils';
 import { AnyProcessMessageHandler, ProcessMessage, ProcessMessageHandler } from '../types';
@@ -72,28 +72,23 @@ export class IPCEvents {
         return this;
     }
 
-    public async request(type: string, data: unknown, timeoutMS = 10000): Promise<unknown> {
+    public async request<T = unknown, R = unknown>(type: string, data: T, timeoutMS = 10000): Promise<R> {
         const requestId = snowflake.create();
-        try {
-            return await new Promise<unknown>((resolve, reject) => {
-                const handler: ProcessMessageHandler = (data, id) => {
-                    if (id === requestId) {
-                        resolve(data);
-                        this.off(type, handler);
-                    }
-                };
-
-                this.on(type, handler);
-                setTimeout(() => {
+        return await new Promise<R>((resolve, reject) => {
+            const handler: ProcessMessageHandler = (data, id) => {
+                if (id === requestId) {
+                    resolve(<R>data);
                     this.off(type, handler);
-                    reject(new Error(`Failed to get a response to '${type}' in time`));
-                }, timeoutMS);
-                this.send(type, data, requestId);
-            });
-        } catch (err) {
-            Error.captureStackTrace(err);
-            throw err;
-        }
+                }
+            };
+
+            this.on(type, handler);
+            setTimeout(() => {
+                this.off(type, handler);
+                reject(new Error(`Failed to get a response to '${type}' in time`));
+            }, timeoutMS);
+            this.send(type, data, requestId);
+        });
     }
 }
 

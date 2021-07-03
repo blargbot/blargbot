@@ -1,5 +1,5 @@
 import { ClusterConnection } from '../../cluster';
-import { parse, WorkerPoolEventHandler, WorkerPoolEventService, EvalType } from '../core';
+import { parse, WorkerPoolEventHandler, WorkerPoolEventService, EvalType, EvalResult } from '../core';
 import { Master } from '../Master';
 
 export class MasterEval extends WorkerPoolEventService<ClusterConnection> {
@@ -8,13 +8,13 @@ export class MasterEval extends WorkerPoolEventService<ClusterConnection> {
     }
 
     protected async execute(...[, data, , reply]: Parameters<WorkerPoolEventHandler<ClusterConnection>>): Promise<void> {
-        const { type, userId, code } = <{ type: EvalType, userId: string; code: string; }>data;
+        const { type, userId, code } = <{ type: EvalType; userId: string; code: string; }>data;
         switch (type) {
             case 'master': {
                 try {
                     return reply(await this.master.eval(userId, code));
-                } catch (ex) {
-                    return reply({ success: false, result: ex });
+                } catch (ex: unknown) {
+                    return reply(<EvalResult>{ success: false, result: ex });
                 }
             }
             case 'global': {

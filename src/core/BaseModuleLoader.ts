@@ -5,9 +5,9 @@ import reloadFactory from 'require-reload';
 import { ModuleResult } from './types';
 import { MultiKeyMap } from './MultiKeyMap';
 import { guard } from './utils';
+import { Logger } from './Logger';
 
 const reload = reloadFactory(require);
-
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -17,7 +17,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
 
     public constructor(
         public readonly source: string,
-        public readonly logger: CatLogger
+        public readonly logger: Logger
     ) {
         super();
         this.#root = getAbsolutePath(source);
@@ -118,7 +118,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
 
     private async findFiles(): Promise<Iterable<string>> {
         const fileNames = await fs.readdir(this.#root);
-        return fileNames.filter(n => /\.js$/.test(n));
+        return fileNames.filter(n => n.endsWith('.js'));
     }
 }
 

@@ -11,45 +11,45 @@ class TidyCommand extends BaseCommand {
             usage: 'tidy [amount] [flags]',
             info: 'Clears messages from chat. Defaults to 100.',
             flags: [{ flag: 'b', word: 'bots', desc: 'Remove messages from bots.' },
-            {
-                flag: 'i',
-                word: 'invites',
-                desc: 'Remove messages containing invites.'
-            },
-            {
-                flag: 'l',
-                word: 'links',
-                desc: 'Remove messages containing links.'
-            },
-            {
-                flag: 'e',
-                word: 'embeds',
-                desc: 'Remove messages containing embeds.'
-            },
-            {
-                flag: 'a',
-                word: 'attachments',
-                desc: 'Remove messages containing attachments.'
-            },
-            {
-                flag: 'u',
-                word: 'user',
-                desc: 'Removes messages from the users specified, separated by commas.'
-            },
-            {
-                flag: 'q',
-                word: 'query',
-                desc: 'Removes messages that match the provided query. You can also use /regex/.'
-            },
-            {
-                flag: 'I',
-                word: 'invert',
-                desc: 'Reverses the effects of all the flag filters.'
-            }, {
-                flag: 'y',
-                word: 'yes',
-                desc: 'Bypasses the confirmation'
-            }]
+                {
+                    flag: 'i',
+                    word: 'invites',
+                    desc: 'Remove messages containing invites.'
+                },
+                {
+                    flag: 'l',
+                    word: 'links',
+                    desc: 'Remove messages containing links.'
+                },
+                {
+                    flag: 'e',
+                    word: 'embeds',
+                    desc: 'Remove messages containing embeds.'
+                },
+                {
+                    flag: 'a',
+                    word: 'attachments',
+                    desc: 'Remove messages containing attachments.'
+                },
+                {
+                    flag: 'u',
+                    word: 'user',
+                    desc: 'Removes messages from the users specified, separated by commas.'
+                },
+                {
+                    flag: 'q',
+                    word: 'query',
+                    desc: 'Removes messages that match the provided query. You can also use /regex/.'
+                },
+                {
+                    flag: 'I',
+                    word: 'invert',
+                    desc: 'Reverses the effects of all the flag filters.'
+                }, {
+                    flag: 'y',
+                    word: 'yes',
+                    desc: 'Bypasses the confirmation'
+                }]
         });
 
         this.executing = {};
@@ -59,7 +59,7 @@ class TidyCommand extends BaseCommand {
         const executing = this.executing[msg.channel.id];
         if (executing) {
             if (executing === 1) {
-                await bu.send(msg, `I'm already tidying up this channel. Please wait.`);
+                await bu.send(msg, 'I\'m already tidying up this channel. Please wait.');
                 this.executing[msg.channel.id] = 2;
             }
             return;

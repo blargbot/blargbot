@@ -14,12 +14,12 @@ class HackbanCommand extends BaseCommand {
 
     async execute(msg, words, text) {
         if (!msg.channel.guild.members.get(bot.user.id).permissions.json.banMembers) {
-            bu.send(msg, `I don't have permission to ban users!`);
+            bu.send(msg, 'I don\'t have permission to ban users!');
             return;
         }
         let banPerms = (await bu.guildSettings.get(msg.guild.id, 'banoverride')) || 0;
         if (!bu.comparePerms(msg.member, banPerms) && !msg.member.permissions.json.banMembers) {
-            bu.send(msg, `You don't have permission to ban users!`);
+            bu.send(msg, 'You don\'t have permission to ban users!');
             return;
         }
         let input = newbutils.parse.flags(this.flags, words);
@@ -42,7 +42,7 @@ class HackbanCommand extends BaseCommand {
             bu.bans[msg.channel.guild.id] = {};
         console.verbose(userList);
         if (userList.length == 0) {
-            bu.send(msg, `You can't ban no one!`);
+            bu.send(msg, 'You can\'t ban no one!');
             return;
         }
         else if (userList.length == 1)

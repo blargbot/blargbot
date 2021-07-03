@@ -19,7 +19,7 @@
         "cron": "^1.4.1",
         "crypto": "^1.0.1",
         "eris": "^0.14.0",
-        "eventemitter3": "^2.0.3",
+        "eventemitter3": "^4.0.7",
         "express": "^4.16.3",
         "express-session": "^1.14.2",
         "gifencoder": "^2.0.1",
@@ -51,7 +51,7 @@
         "rethinkdb": "^2.4.2",
         "rethinkdbdash": "^2.3.26",
         "rwlock": "^5.0.0",
-        "safe-regex": "^1.1.0",
+        "safe-regex": "^2.1.1",
         "sequelize": "^4.39.0",
         "server-destroy": "^1.0.1",
         "showdown": "^1.8.6",
@@ -59,7 +59,7 @@
         "strip-ansi": "^6.0.0",
         "svg2png": "^4.1.1",
         "table": "^4.0.3",
-        "twemoji": "12.0.1",
+        "twemoji": "13.1.0",
         "unorm": "^1.4.1",
         "vue-markdown": "^2.2.4",
         "wolken": "^0.2.1",
@@ -105,8 +105,8 @@
         "build:watch": "tsc -w --outDir ./out",
         "build:check": "tsc --noemit",
         "build:check:watch": "tsc -w --noemit",
-        "lint": "eslint --ext .js,.ts,.vue ./",
-        "lint-fix": "eslint --ext .js,.ts,.vue ./ --fix"
+        "lint": "eslint --ext .ts,.vue ./",
+        "lint-fix": "eslint --ext .ts,.vue ./ --fix"
     },
     "repository": {
         "type": "git",

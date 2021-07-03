@@ -37,7 +37,7 @@ export interface SourceMarker {
     line: number;
     column: number;
 }
-export type BBTagArray = { n?: string, v: JArray };
+export type BBTagArray = { n?: string; v: JArray; };
 
 export interface SourceToken {
     type: SourceTokenType;
@@ -58,72 +58,72 @@ export interface SerializedRuntimeLimit {
 
 export interface SerializedBBTagContext {
     msg: {
-        id: string,
-        timestamp: number,
-        content: string,
-        channel: { id: string, serialized: string },
-        member: { id: string, serialized: string },
-        attachments: Attachment[],
-        embeds: Embed[]
-    },
-    isCC: boolean,
-    state: Omit<BBTagContextState, 'cache' | 'overrides'>,
-    scope: BBTagRuntimeScope,
-    input: readonly string[],
-    flaggedInput: FlagResult,
-    tagName: string,
-    author: string,
-    authorizer: string,
-    tagVars: boolean,
-    tempVars: Record<string, string | undefined>
-    limit: SerializedRuntimeLimit
+        id: string;
+        timestamp: number;
+        content: string;
+        channel: { id: string; serialized: string; };
+        member: { id: string; serialized: string; };
+        attachments: Attachment[];
+        embeds: Embed[];
+    };
+    isCC: boolean;
+    state: Omit<BBTagContextState, 'cache' | 'overrides'>;
+    scope: BBTagRuntimeScope;
+    input: readonly string[];
+    flaggedInput: FlagResult;
+    tagName: string;
+    author: string;
+    authorizer: string;
+    tagVars: boolean;
+    tempVars: Record<string, string | undefined>;
+    limit: SerializedRuntimeLimit;
 }
 
 export interface BBTagContextMessage {
     id: string;
-    timestamp: number,
-    content: string,
-    channel: GuildTextableChannel,
-    member: Member,
-    author: User,
-    attachments: Attachment[],
-    embeds: Embed[]
+    timestamp: number;
+    content: string;
+    channel: GuildTextableChannel;
+    member: Member;
+    author: User;
+    attachments: Attachment[];
+    embeds: Embed[];
 }
 
 export interface BBTagContextState {
     query: {
-        count: 0,
-        user: Record<string, string | undefined>,
-        role: Record<string, string | undefined>,
-        channel: Record<string, string | undefined>
-    },
-    outputMessage: Promise<string | null> | null,
-    ownedMsgs: string[],
-    return: RuntimeReturnState,
-    stackSize: number,
-    embed: undefined | EmbedOptions,
-    file: undefined | MessageFile,
-    reactions: string[],
-    nsfw: undefined | string,
-    replace: null | { regex: RegExp | string, with: string },
-    break: number,
-    continue: number,
-    subtags: Record<string, number[] | undefined>,
-    overrides: Record<string, SubtagHandler | undefined>,
-    cache: Record<string, StoredGuildCommand | StoredTag>,
-    subtagCount: number,
+        count: 0;
+        user: Record<string, string | undefined>;
+        role: Record<string, string | undefined>;
+        channel: Record<string, string | undefined>;
+    };
+    outputMessage: Promise<string | null> | null;
+    ownedMsgs: string[];
+    return: RuntimeReturnState;
+    stackSize: number;
+    embed: undefined | EmbedOptions;
+    file: undefined | MessageFile;
+    reactions: string[];
+    nsfw: undefined | string;
+    replace: null | { regex: RegExp | string; with: string; };
+    break: number;
+    continue: number;
+    subtags: Record<string, number[] | undefined>;
+    overrides: Record<string, SubtagHandler | undefined>;
+    cache: Record<string, StoredGuildCommand | StoredTag>;
+    subtagCount: number;
     allowedMentions: {
-        users: string[],
-        roles: string[],
-        everybody: boolean
-    }
+        users: string[];
+        roles: string[];
+        everybody: boolean;
+    };
 
 }
 
 export interface RuntimeError {
     readonly subtag: SubtagCall | null;
-    readonly error: string | readonly RuntimeError[],
-    readonly debugMessage: string | null
+    readonly error: string | readonly RuntimeError[];
+    readonly debugMessage: string | null;
 }
 
 export interface RuntimeDebugEntry {
@@ -223,9 +223,9 @@ export interface SubtagHandlerDefinitionParameterGroup {
 
 
 export type FlagDefinition = {
-    readonly flag: string
-    readonly word: string,
-    readonly desc: string
+    readonly flag: string;
+    readonly word: string;
+    readonly desc: string;
 };
 
 export interface FlagResult {
@@ -257,7 +257,7 @@ export type CommandResult =
     | SendPayload
     | MessageFile
     | MessageFile[]
-    | { readonly content: SendPayload, readonly files: MessageFile | MessageFile[] }
+    | { readonly content: SendPayload; readonly files: MessageFile | MessageFile[]; }
     | string
     | void;
 
@@ -275,7 +275,7 @@ export interface CommandHandlerDefinition<TContext extends CommandContext> {
     readonly description: string;
     readonly parameters?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly execute: (context: TContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult
+    readonly execute: (context: TContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
     readonly allowOverflow?: boolean;
     readonly dontBind?: boolean;
     readonly useFlags?: boolean;
@@ -284,7 +284,7 @@ export interface CommandHandlerDefinition<TContext extends CommandContext> {
 }
 
 export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
-    readonly subcommands: { readonly [name: string]: CommandDefinition<TContext> }
+    readonly subcommands: { readonly [name: string]: CommandDefinition<TContext>; };
 }
 
 export interface CommandVariableParameter {
@@ -333,17 +333,17 @@ export interface FilteredAutoresponseShrinkwrap extends AutoresponseShrinkwrap, 
 export interface GuildShrinkwrap {
     readonly cc: Record<string, CustomCommandShrinkwrap>;
     readonly ar: FilteredAutoresponseShrinkwrap[];
-    are: null | AutoresponseShrinkwrap
+    are: null | AutoresponseShrinkwrap;
 }
 
 export interface SignedGuildShrinkwrap {
     readonly signature?: string;
-    readonly payload: GuildShrinkwrap
+    readonly payload: GuildShrinkwrap;
 }
 
 export interface LookupChannelResult {
     channel: string;
-    guild: string
+    guild: string;
 }
 
 export interface GetStaffGuildsRequest {
@@ -400,26 +400,26 @@ export type SubHandler = (context: BBTagContext, subtagName: string, call: Subta
 export type ArgumentResolver = (context: BBTagContext, args: readonly Statement[]) => AsyncGenerator<SubtagArgumentValue>;
 
 export interface SubHandlerCollection {
-    byNumber: { [argLength: number]: SubHandler };
+    byNumber: { [argLength: number]: SubHandler; };
     byTest: Array<{
-        execute: SubHandler,
-        test: (argCount: number) => boolean
+        execute: SubHandler;
+        test: (argCount: number) => boolean;
     }>;
 }
 
 export interface ArgumentResolvers {
-    byNumber: { [argLength: number]: ArgumentResolver };
+    byNumber: { [argLength: number]: ArgumentResolver; };
     byTest: Array<{
-        resolver: ArgumentResolver,
-        test: (argCount: number) => boolean, minArgCount: number, maxArgCount: number,
+        resolver: ArgumentResolver;
+        test: (argCount: number) => boolean; minArgCount: number; maxArgCount: number;
     }>;
 }
 
 export interface ArgumentResolverPermutations {
     greedy: SubtagHandlerParameter[];
     permutations: Array<{
-        beforeGreedy: SubtagHandlerParameter[],
-        afterGreedy: SubtagHandlerParameter[]
+        beforeGreedy: SubtagHandlerParameter[];
+        afterGreedy: SubtagHandlerParameter[];
     }>;
 }
 export interface ClusterStats {
@@ -431,7 +431,7 @@ export interface ClusterStats {
     readonly userCpu: number;
     readonly systemCpu: number;
     readonly shardCount: number;
-    readonly shards: readonly ShardStats[]
+    readonly shards: readonly ShardStats[];
 }
 
 export interface ShardStats {
@@ -443,11 +443,11 @@ export interface ShardStats {
     readonly time: number;
 }
 export interface ClusterOptions {
-    id: number,
-    worker: ClusterWorker,
-    shardCount: number,
-    firstShardId: number,
-    lastShardId: number
+    id: number;
+    worker: ClusterWorker;
+    shardCount: number;
+    firstShardId: number;
+    lastShardId: number;
 }
 
 export interface ClusterPoolOptions {
@@ -462,14 +462,14 @@ export interface FindEntityOptions {
 }
 
 export interface CanExecuteDefaultCommandOptions {
-    readonly storedGuild?: StoredGuild,
-    readonly permOverride?: StoredGuildSettings['permoverride'],
-    readonly staffPerms?: StoredGuildSettings['staffperms']
+    readonly storedGuild?: StoredGuild;
+    readonly permOverride?: StoredGuildSettings['permoverride'];
+    readonly staffPerms?: StoredGuildSettings['staffperms'];
 }
 
 export interface LookupMatch<T> {
-    content: string,
-    value: T
+    content: string;
+    value: T;
 }
 
 export interface MessagePrompt {
@@ -529,7 +529,7 @@ export type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof S
     key: T;
     name: string;
     desc: string;
-    type: GuildSettingTypeName<StoredGuildSettings[T]>
+    type: GuildSettingTypeName<StoredGuildSettings[T]>;
 }
 
 export type SubtagPropertiesSet = { [key in SubtagType]: SubtagProperties; }

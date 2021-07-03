@@ -72,14 +72,14 @@ router.get('/editor', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;
 
-    res.locals.startText = ``;
+    res.locals.startText = '';
     renderEditor(req, res);
 });
 
 router.post('/editor', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;
-    res.locals.startText = ``;
+    res.locals.startText = '';
     renderEditor(req, res);
 });
 

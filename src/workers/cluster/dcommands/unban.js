@@ -18,7 +18,7 @@ class UnbanCommand extends BaseCommand {
         if (input.undefined.length > 0) {
             var user = input.undefined.join(' ').match(/(\d+)/)[1];
             if (!user) {
-                bu.send(msg, `I couldn't find that user. Please make sure you're giving me a user id or a mention.`);
+                bu.send(msg, 'I couldn\'t find that user. Please make sure you\'re giving me a user id or a mention.');
                 return;
             }
             let response = await this.unban(msg, user, input.r);
@@ -49,10 +49,10 @@ class UnbanCommand extends BaseCommand {
                     return [`Failed to unban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
                 }
             } else {
-                return [`You don't have permission to unban users!`, '`User has no permissions`'];
+                return ['You don\'t have permission to unban users!', '`User has no permissions`'];
             }
         } else {
-            return [`I don't have permission to unban users!`, '`Bot has no permissions`'];
+            return ['I don\'t have permission to unban users!', '`Bot has no permissions`'];
         }
     }
 

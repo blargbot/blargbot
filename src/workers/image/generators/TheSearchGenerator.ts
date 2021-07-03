@@ -1,15 +1,12 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator } from '../core';
+import { BaseImageGenerator, Logger, mapping, TheSearchOptions } from '../core';
 
-export class TheSearchGenerator extends BaseImageGenerator {
-    public constructor(logger: CatLogger) {
-        super(logger);
+export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
+    public constructor(logger: Logger) {
+        super('theSearch', logger, mapOptions);
     }
 
-    public async execute({ text }: JObject): Promise<Buffer | null> {
-        if (typeof text !== 'string')
-            return null;
-
+    public async executeCore({ text }: TheSearchOptions): Promise<Buffer | null> {
         const caption = await this.renderJimpText(text, {
             fill: '#393b3e',
             font: 'SFToontime.ttf',
@@ -21,6 +18,8 @@ export class TheSearchGenerator extends BaseImageGenerator {
 
         return await img.getBufferAsync(Jimp.MIME_PNG);
     }
-
-
 }
+
+const mapOptions = mapping.object<TheSearchOptions>({
+    text: mapping.string
+});

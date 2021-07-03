@@ -1,11 +1,11 @@
 import { Cluster } from './Cluster';
-import { BaseWorker } from '../../core';
+import { BaseWorker, Logger } from '../../core';
 
 export class ClusterWorker extends BaseWorker {
     public readonly cluster: Cluster;
 
     public constructor(
-        logger: CatLogger,
+        logger: Logger,
         public readonly config: Configuration
     ) {
         super(logger);
