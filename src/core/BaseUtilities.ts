@@ -23,7 +23,7 @@ export class BaseUtilities {
         // Process context into a channel and maybe a message
         switch (typeof context) {
             // Id provided, get channel object
-            case 'string':
+            case 'string': {
                 const foundChannel = this.discord.getChannel(context)
                     ?? await this.discord.getRESTChannel(context);
 
@@ -33,6 +33,7 @@ export class BaseUtilities {
                     throw new Error('Cannot send messages to the given channel');
 
                 break;
+            }
             case 'object':
                 // Probably a message provided
                 if ('channel' in context)
@@ -45,7 +46,7 @@ export class BaseUtilities {
     }
 
     public websiteLink(path: string): string {
-        path = path.replace(/^[\/\\]+/, '');
+        path = path.replace(/^[/\\]+/, '');
         const scheme = this.config.website.secure ? 'https' : 'http';
         const host = this.config.website.host;
         return `${scheme}://${host}/${path}`;
@@ -129,7 +130,7 @@ export class BaseUtilities {
                 throw error;
 
             const code = error.response.code.toString();
-            if (!sendErrors.hasOwnProperty(code)) {
+            if (!guard.hasProperty(sendErrors, code)) {
                 this.logger.error(error);
                 return null;
             }
@@ -175,6 +176,7 @@ export class BaseUtilities {
                 if ('author' in context) { userid = context.author.id; break; }
                 if ('user' in context) { userid = context.user.id; break; }
                 if ('id' in context) { userid = context.id; break; }
+            // fallthrough
             default:
                 throw new Error('Not a user');
 

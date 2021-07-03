@@ -76,10 +76,10 @@ export class IfSubtag extends BaseSubtag {
             operator = evaluator;
         } else if (bbtagUtil.operators.isCompareOperator(value1)) {
             operator = value1;
-            [value1, evaluator, value2] = [evaluator, value1, value2];
+            [value1, evaluator] = [evaluator, value1];
         } else if (bbtagUtil.operators.isCompareOperator(value2)) {
             operator = value2;
-            [value1, evaluator, value2] = [value1, value2, evaluator];
+            [evaluator, value2] = [value2, evaluator];
         } else {
             return this.customError('Invalid operator', context, subtag);
         }

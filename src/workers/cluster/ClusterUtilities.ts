@@ -84,12 +84,13 @@ export class ClusterUtilities extends BaseUtilities {
                     args.onSendCallback();
                 await this.send(msg, `No users found${args.label !== undefined ? ' in ' + args.label : ''}.`);
                 return null;
-            default:
+            default: {
                 if (args.quiet === true || args.suppress == true)
                     return null;
                 const matches = userList.map(m => ({ content: `${m.username}#${m.discriminator} - ${m.id}`, value: m }));
                 const lookupResponse = await this.createLookup(msg, 'user', matches, args);
                 return lookupResponse;
+            }
         }
     }
 
@@ -134,12 +135,13 @@ export class ClusterUtilities extends BaseUtilities {
                     args.onSendCallback();
                 await this.send(msg, `No roles found${args.label !== undefined ? ' in ' + args.label : ''}.`);
                 return null;
-            default:
+            default: {
                 if (args.quiet === true || args.suppress == true)
                     return null;
                 const matches = roleList.map(r => ({ content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r }));
                 const lookupResponse = await this.createLookup(msg, 'role', matches, args);
                 return lookupResponse;
+            }
         }
     }
 
@@ -188,12 +190,13 @@ export class ClusterUtilities extends BaseUtilities {
                     args.onSendCallback();
                 await this.send(msg, `No channel found${args.label !== undefined ? ' in ' + args.label : ''}.`);
                 return null;
-            default:
+            default: {
                 if (args.quiet === true || args.suppress == true)
                     return null;
                 const matches = channelList.map(c => ({ content: `${c.name} (${c.id})`, value: c }));
                 const lookupResponse = await this.createLookup(msg, 'channel', matches, args);
                 return lookupResponse;
+            }
         }
     }
 

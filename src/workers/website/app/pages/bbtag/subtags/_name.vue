@@ -1,10 +1,10 @@
 <template>
     <div>
         <section>
-            <h1 class='center'>SubTags</h1>
+            <h1 class="center">SubTags</h1>
         </section>
         <section>
-            <collapse-page :collapseData='data'/>
+            <collapse-page :collapseData="data" />
         </section>
     </div>
 </template>
@@ -27,15 +27,24 @@ export default {
 
                 if (c.exampleCode)
                     out.push(
-                        `**Example Code**:\n> ${c.exampleCode.replace(/\n/g, '\n> ')}\n`
+                        `**Example Code**:\n> ${c.exampleCode.replace(
+                            /\n/g,
+                            '\n> '
+                        )}\n`
                     );
                 if (c.exampleIn)
                     out.push(
-                        `**Example Input**:\n> ${c.exampleIn.replace(/\n/g, '\n> ')}\n`
+                        `**Example Input**:\n> ${c.exampleIn.replace(
+                            /\n/g,
+                            '\n> '
+                        )}\n`
                     );
                 if (c.exampleOut)
                     out.push(
-                        `**Example Output**:\n> ${c.exampleOut.replace(/\n/g, '\n> ')}\n`
+                        `**Example Output**:\n> ${c.exampleOut.replace(
+                            /\n/g,
+                            '\n> '
+                        )}\n`
                     );
 
                 if (c.limits.length > 0) {

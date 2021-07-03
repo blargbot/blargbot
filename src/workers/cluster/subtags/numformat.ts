@@ -31,10 +31,10 @@ export class NumFormatSubtag extends BaseSubtag {
         args: string[]
     ): string {
         const number = parse.float(args[0]);
-        if (number === NaN) return 'NaN';
+        if (isNaN(number)) return 'NaN';
         let roundto = parse.int(args[1]);
         const options: LocaleNumOptions = {}; // create formatter options
-        if (roundto != NaN) {
+        if (!isNaN(roundto)) {
             roundto = Math.min(20, Math.max(-21, roundto));
             const trunclen = Math.trunc(number).toString().length;
             if (roundto >= 0) {

@@ -65,10 +65,11 @@ export class OperatorSubtag extends BaseSubtag {
             switch (typeof arg) {
                 case 'string':
                 case 'number':
-                case 'boolean':
+                case 'boolean': {
                     const possibleBoolean = parse.boolean(arg, undefined, false);
                     if (typeof possibleBoolean === 'boolean') arg = possibleBoolean;
                     return arg.toString();
+                }
                 case 'object':
                     return JSON.stringify(arg);
                 case 'undefined':

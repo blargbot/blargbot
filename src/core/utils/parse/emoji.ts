@@ -9,7 +9,7 @@ export function emoji(text: string, distinct = false): string[] {
 
     // Find custom emotes
     const regex = /<(a?:\w+:\d{17,23})>|(\w+:\d{17,23})/gi;
-    while (match = regex.exec(text)) {
+    while ((match = regex.exec(text)) !== null) {
         if (match[2])
             result.push(match[2]);
         else

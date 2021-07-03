@@ -207,7 +207,9 @@ export const oldBu = {
             }
             try {
                 return await bot.getMessage(channelId, messageId);
-            } catch (e: unknown) { }
+            } catch {
+                // NOOP
+            }
         }
         return null;
     },
@@ -255,7 +257,7 @@ export const oldBu = {
     },
     async filterMentions(message: string, guild: Guild): Promise<string> {
         let match: RegExpExecArray | null;
-        while (match = /<@!?([0-9]{17,21})>/.exec(message)) {
+        while ((match = /<@!?([0-9]{17,21})>/.exec(message)) !== null) {
             const id = match[1];
             try {
                 const user = bot.users.get(id) ?? await bot.getRESTUser(id);
@@ -264,7 +266,7 @@ export const oldBu = {
                 message = message.replace(new RegExp(`<@!?${id}>`), `<@\u200b${id}>`);
             }
         }
-        while (match = /<#([0-9]{17,21})>/.exec(message)) {
+        while ((match = /<#([0-9]{17,21})>/.exec(message)) !== null) {
             const id = match[1];
             const channel = bot.getChannel(id);
             if (guard.hasValue(channel) && 'name' in channel) {
@@ -274,7 +276,7 @@ export const oldBu = {
             }
         }
         if (guard.hasValue(guild))
-            while (match = /<@&([0-9]{17,21})>/.exec(message)) {
+            while ((match = /<@&([0-9]{17,21})>/.exec(message)) !== null) {
                 const id = match[1];
                 const role = guild.roles.get(id);
                 if (role) {

@@ -33,10 +33,6 @@ declare global {
         create<T extends object>(value: T): T;
     }
 
-    interface Object {
-        hasOwnProperty<T>(this: T, name: string): name is string & keyof T;
-    }
-
     interface JSON {
         parse(text: string): JToken;
     }

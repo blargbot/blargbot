@@ -1,7 +1,7 @@
-const config = require('./config.json');
+const config = require('../../../config.json');
 
 module.exports = {
-    srcDir: 'app',
+    srcDir: `${__dirname}/app`,
     /*
     ** Headers of the page
     */

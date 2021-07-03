@@ -260,11 +260,11 @@ function compileArgBinder(prefixes: readonly CommandParameter[], params: readonl
 }
 
 function* compileParameters(raw: string): Generator<CommandParameter> {
-    const regex = /(?<= |^)(?:(?<lname>[\w|]+)(?<lmod>[\?])?|\{(?<vname>\w+)(?<vmod>[\?\+\*])?(?:\:(?<vtype>\w+))?\})(?= |$)/g;
+    const regex = /(?<= |^)(?:(?<lname>[\w|]+)(?<lmod>[?])?|\{(?<vname>\w+)(?<vmod>[?+*])?(?::(?<vtype>\w+))?\})(?= |$)/g;
     const rest = ['+', '*'];
     const required = ['+', undefined];
-    let match;
-    while (match = regex.exec(raw)) {
+    let match: RegExpExecArray | null;
+    while ((match = regex.exec(raw)) !== null) {
         if (match.groups?.lname !== undefined) {
             const { lname, lmod } = match.groups;
             const names = lname.split('|');

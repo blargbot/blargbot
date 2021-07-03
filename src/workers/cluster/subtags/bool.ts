@@ -37,10 +37,10 @@ export class BoolSubtag extends BaseSubtag {
             operator = evaluator;
         } else if (bbtagUtil.operators.isCompareOperator(left)) {
             operator = left;
-            [left, operator, right] = [operator, left, right];
+            [left, operator] = [operator, left];
         } else if (bbtagUtil.operators.isCompareOperator(right)) {
             operator = right;
-            [left, operator, right] = [left, right, operator];
+            [operator, right] = [right, operator];
         } else {
             return this.customError('Invalid operator', context, subtag);
         }

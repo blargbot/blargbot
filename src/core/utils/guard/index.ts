@@ -10,6 +10,7 @@ import { hasValue } from './hasValue';
 import { checkEmbedSize } from './checkEmbedSize';
 import { isClass } from './isClass';
 import { testMessageFilter } from './testMessageFilter';
+import { hasProperty } from './hasProperty';
 
 export const guard = {
     isGuildChannel,
@@ -23,5 +24,6 @@ export const guard = {
     hasValue,
     checkEmbedSize,
     isClass,
-    testMessageFilter
+    testMessageFilter,
+    hasProperty
 };

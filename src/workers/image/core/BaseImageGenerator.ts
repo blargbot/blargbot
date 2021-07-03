@@ -97,9 +97,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
             source = im(await source.getBufferAsync(Jimp.MIME_PNG));
         else if (source instanceof Buffer)
             source = im(source);
-        else if (isGm(source))
-            source = source;
-        else
+        else if (!isGm(source))
             throw new Error(`Unable to read ${source} into imagemagick`);
 
         source.command('convert');

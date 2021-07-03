@@ -43,7 +43,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         case '*': required = false; greedy = 0; break;
         case '+': greedy = 1; break;
         case '!': break;
-        default:
+        default: {
             const match = /^(.*?)\+(\d)$/.exec(parameter);
             if (match !== null) {
                 greedy = parseInt(match[2]);
@@ -51,6 +51,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
                 parameter = match[1];
             }
             parameter += '!';
+        }
     }
     parameter = parameter.slice(0, parameter.length - 1);
 

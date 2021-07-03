@@ -32,11 +32,12 @@ function envNumber(env: NodeJS.ProcessEnv, key: string): number {
     const res = env[key];
     switch (typeof res) {
         case 'number': return res;
-        case 'string':
+        case 'string': {
             const num = parseInt(res);
             if (Number.isNaN(num))
                 throw new Error(`Environment variable ${key} is expected to be a number`);
             return num;
+        }
     }
 
     throw new Error(`Missing reqired environment variable ${key}`);

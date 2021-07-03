@@ -1,16 +1,17 @@
 import { compare as comp } from '../../globalCore';
+import { guard } from '../guard';
 import { deserialize } from './tagArray';
 
 export function isCompareOperator(operator: string): operator is keyof typeof compare {
-    return compare.hasOwnProperty(operator);
+    return guard.hasProperty(compare, operator);
 }
 
 export function isNumericOperator(operator: string): operator is keyof typeof numeric {
-    return numeric.hasOwnProperty(operator);
+    return guard.hasProperty(numeric, operator);
 }
 
 export function isLogicOperator(operator: string): operator is keyof typeof logic {
-    return logic.hasOwnProperty(operator);
+    return guard.hasProperty(logic, operator);
 }
 
 export const compare = {

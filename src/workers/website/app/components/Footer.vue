@@ -1,8 +1,6 @@
 <template>
     <footer>
-        <div class='footer-content'>
-        &copy; 2016-{{year}} | stupid cat
-        </div>
+        <div class="footer-content">&copy; 2016-{{ year }} | stupid cat</div>
     </footer>
 </template>
 
@@ -21,12 +19,12 @@ export default {
 
 <style lang="scss" scoped>
 footer {
-  padding: 20px;
-  text-align: center;
+    padding: 20px;
+    text-align: center;
 
-  .footer-content {
-    max-width: 780px;
-    margin: 0 auto;
-  }
+    .footer-content {
+        max-width: 780px;
+        margin: 0 auto;
+    }
 }
 </style>

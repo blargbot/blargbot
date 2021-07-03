@@ -1,0 +1,15 @@
+{
+    "env": {
+        "browser": true,
+        "node": false,
+        "es6": true,
+        "jest": false,
+        "jquery": false
+    },
+    "extends": [
+        "plugin:vue/essential"
+    ],
+    "plugins": [
+        "vue"
+    ]
+}

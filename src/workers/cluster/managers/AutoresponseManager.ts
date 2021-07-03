@@ -90,7 +90,7 @@ ${codeBlock(code, 'js')}`
 
     private async handleWhitelistApproval(message: AnyMessage, emoji: Emoji, user: User): Promise<void> {
         if (message.channel.id !== this.cluster.config.discord.channels.autoresponse
-            || !emojiValues.hasOwnProperty(emoji.name)
+            || !guard.hasProperty(emojiValues, emoji.name)
             || !this.cluster.util.isStaff(user.id))
             return;
 

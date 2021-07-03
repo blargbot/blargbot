@@ -27,7 +27,9 @@ export const oldBu = {
                         try {
                             const regex = oldBu.createRegExp(term);
                             if (regex.test(msg.content)) violation = true;
-                        } catch (err: unknown) { }
+                        } catch {
+                            // NOOP
+                        }
                     } else if (msg.content.toLowerCase().includes(term.toLowerCase())) violation = true;
                     if (violation == true) { // Uh oh, they did a bad!
                         const res = await util.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
@@ -217,6 +219,7 @@ export const oldBu = {
                 case 'kick':
                     color = 0xe8b022;
                     eventName = 'User Was Kicked';
+                    break;
                 default:
                     if (event.startsWith('role:')) {
                         eventName = `Special Role ${roleAdd ? 'Added' : 'Removed'}`;

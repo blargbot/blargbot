@@ -31,7 +31,7 @@ export class EvalCommand extends BaseGlobalCommand {
     }
 
     public async eval(context: CommandContext, userId: string, code: string): Promise<string> {
-        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [, code];
+        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const { success, result } = await context.cluster.eval(userId, code);
         return success
@@ -40,7 +40,7 @@ export class EvalCommand extends BaseGlobalCommand {
     }
 
     public async mastereval(context: CommandContext, userId: string, code: string): Promise<string> {
-        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [, code];
+        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const { success, result } = await this.requestEval(context, { type: 'master', userId, code });
         return success
@@ -49,7 +49,7 @@ export class EvalCommand extends BaseGlobalCommand {
     }
 
     public async globaleval(context: CommandContext, userId: string, code: string): Promise<string> {
-        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [, code];
+        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const response = await this.requestEval<Record<number, EvalResult>>(context, { type: 'global', userId, code });
         if ('success' in response)
@@ -64,7 +64,7 @@ export class EvalCommand extends BaseGlobalCommand {
     }
 
     public async clustereval(context: CommandContext, clusterId: number, userId: string, code: string): Promise<string> {
-        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [, code];
+        [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
         const { success, result } = await this.requestEval(context, { type: `cluster${clusterId}`, userId, code });
         return success

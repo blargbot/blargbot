@@ -143,9 +143,8 @@ async function tryHandleDefaultCommand(cluster: Cluster, context: CommandContext
     } catch (err: unknown) {
         cluster.logger.error(err);
         metrics.commandError.labels(command.name).inc();
-    } finally {
-        return true;
     }
+    return true;
 }
 
 async function executeCommand(cluster: Cluster, command: BaseCommand, context: CommandContext): Promise<void> {

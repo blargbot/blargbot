@@ -1,28 +1,47 @@
 <template>
-  <div>
-    <div v-if='Object.keys(collapseData).length === 0'>
-      <div class='center loading'>
-        <h1>Loading...</h1>
-      </div>
-    </div>
-    <div v-else>
-        <input type='text' class='textbox' v-model='filter'>
-
-        <div class='button-flex'>
-            <button class='button' v-on:click='collapseAll'>Collapse All</button>
-            <button class='button' v-on:click='expandAll'>Expand All</button>
+    <div>
+        <div v-if="Object.keys(collapseData).length === 0">
+            <div class="center loading">
+                <h1>Loading...</h1>
+            </div>
         </div>
+        <div v-else>
+            <input type="text" class="textbox" v-model="filter" />
 
-        <div class='categories'>
-            <div class='category' v-for='category in keys' :key='category.name'>
-                <div v-if='filtered(category.name).length > 0'>
-                    <h2 class='categoryHeader'>{{category.name}}</h2>
-                    <p>{{category.desc}}</p>
-                    <div class='objects'>
-                        <div class='collapsible shadow-1' v-for='obj in filtered(category.name)' :key='obj.key'>
-                            <div class='title' v-on:click='clickCollapse'><h3>{{obj.title}}</h3></div>
-                            <div class='content'>
-                                <vue-markdown :source='obj.message' :emoji="false" table-class="collapse-page-table"/>
+            <div class="button-flex">
+                <button class="button" v-on:click="collapseAll">
+                    Collapse All
+                </button>
+                <button class="button" v-on:click="expandAll">
+                    Expand All
+                </button>
+            </div>
+
+            <div class="categories">
+                <div
+                    class="category"
+                    v-for="category in keys"
+                    :key="category.name"
+                >
+                    <div v-if="filtered(category.name).length > 0">
+                        <h2 class="categoryHeader">{{ category.name }}</h2>
+                        <p>{{ category.desc }}</p>
+                        <div class="objects">
+                            <div
+                                class="collapsible shadow-1"
+                                v-for="obj in filtered(category.name)"
+                                :key="obj.key"
+                            >
+                                <div class="title" v-on:click="clickCollapse">
+                                    <h3>{{ obj.title }}</h3>
+                                </div>
+                                <div class="content">
+                                    <vue-markdown
+                                        :source="obj.message"
+                                        :emoji="false"
+                                        table-class="collapse-page-table"
+                                    />
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -30,15 +49,11 @@
             </div>
         </div>
     </div>
-  </div>
 </template>
 
 <script>
 import VueMarkdown from 'vue-markdown';
-import Vue from 'vue';
-import { clearInterval } from 'timers';
-
-/* globals window, document, NodeList */
+import 'vue';
 
 export default {
     data: () => ({
@@ -61,9 +76,11 @@ export default {
             return this.collapseData[key].el.filter(o => {
                 return (
                     o.keywords.filter(k =>
-                        (o.category.name.toLowerCase() + '.' + k.toLowerCase()).includes(
-                            (this.filter || '').toLowerCase()
-                        )
+                        (
+                            o.category.name.toLowerCase() +
+                            '.' +
+                            k.toLowerCase()
+                        ).includes((this.filter || '').toLowerCase())
                     ).length > 0
                 );
             });
@@ -71,13 +88,11 @@ export default {
         clickCollapse(e) {
             let target = e.target;
             if (target.tagName === 'H3') target = target.parentNode.parentNode;
-            else if (target.tagName === 'DIV' && target.classList.contains('title'))
-                target = target.parentNode;
             else if (
                 target.tagName === 'DIV' &&
-        target.classList.contains('collapsible')
+                target.classList.contains('title')
             )
-                target = target;
+                target = target.parentNode;
             else return;
             this.collapse(target);
         },
@@ -110,13 +125,13 @@ export default {
                     content,
                     el,
                     collapsed,
-                    inc: content.scrollHeight / 20 * (collapsed ? 1 : -1),
+                    inc: (content.scrollHeight / 20) * (collapsed ? 1 : -1),
                     i: collapsed ? 0 : content.scrollHeight
                 });
             }
             for (let ii = 0; ii < 20; ii++) {
                 for (const obj of toProcess) {
-                    let { el, content, collapsed, inc } = obj;
+                    let { content, inc } = obj;
                     obj.i += inc;
                     content.style.height = obj.i + 'px';
                 }
@@ -140,48 +155,48 @@ export default {
 
 <style lang='scss' scoped>
 .loading {
-  padding: 30px;
+    padding: 30px;
 }
 
 .categories,
 .objects {
-  display: flex;
-  flex-flow: column;
+    display: flex;
+    flex-flow: column;
 }
 
 .collapsible {
-  //   background: rgba(0, 0, 0, 0.1);
-  margin: 5px 0;
-  border-radius: 3px;
+    //   background: rgba(0, 0, 0, 0.1);
+    margin: 5px 0;
+    border-radius: 3px;
 
-  .title {
-    background: rgba(0, 0, 0, 0.2);
-    margin: 0;
-    padding: 10px;
-    cursor: pointer;
+    .title {
+        background: rgba(0, 0, 0, 0.2);
+        margin: 0;
+        padding: 10px;
+        cursor: pointer;
 
-    border-radius: 3px 3px 0 0;
+        border-radius: 3px 3px 0 0;
 
-    h3 {
-      margin: 0;
+        h3 {
+            margin: 0;
+        }
     }
-  }
 
-  .content {
-    background: rgba(0, 0, 0, 0.1);
-    padding: 0 10px;
-    box-sizing: border-box;
-    overflow: hidden;
-    margin: 0;
-    border-radius: 0 0 3px 3px;
-  }
+    .content {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 0 10px;
+        box-sizing: border-box;
+        overflow: hidden;
+        margin: 0;
+        border-radius: 0 0 3px 3px;
+    }
 }
 
 .button-flex {
-  display: flex;
+    display: flex;
 
-  button {
-    flex: 0 1 50%;
-  }
+    button {
+        flex: 0 1 50%;
+    }
 }
 </style>

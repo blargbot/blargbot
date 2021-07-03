@@ -332,7 +332,7 @@ export class TagCommand extends BaseGuildCommand {
     public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
         tagName = normalizeName(tagName);
         if (!await context.database.tags.disable(tagName, context.author.id, reason))
-            return `❌ The \`${tagName}\` tag doesn\'t exist!`;
+            return `❌ The \`${tagName}\` tag doesn't exist!`;
         return `✅ The \`${tagName}\` tag has been deleted`;
     }
 
@@ -618,7 +618,7 @@ export class TagCommand extends BaseGuildCommand {
         if (context.author.id !== context.config.discord.users.owner
             && match.tag !== undefined
             && match.tag.author !== context.author.id) {
-            return `❌ You don\'t own the \`${match.name}\` tag!`;
+            return `❌ You don't own the \`${match.name}\` tag!`;
         }
 
         return { name: match.name, tag: match.tag };
@@ -634,7 +634,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         if (match.tag === undefined)
-            return `❌ The \`${match.name}\` tag doesn\'t exist!`;
+            return `❌ The \`${match.name}\` tag doesn't exist!`;
 
         return match.tag;
     }
@@ -649,7 +649,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         if (match.tag === undefined)
-            return `❌ The \`${match.name}\` tag doesn\'t exist!`;
+            return `❌ The \`${match.name}\` tag doesn't exist!`;
 
         return match.tag;
     }
@@ -743,7 +743,7 @@ export class TagCommand extends BaseGuildCommand {
 }
 
 function normalizeName(title: string): string {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()]/gi, '');
+    return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()]/gi, '');
 }
 
 const enum TagChangeAction {

@@ -99,7 +99,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     protected activate(fileName: string, rawModule: unknown): Array<ModuleResult<TModule>> {
         switch (typeof rawModule) {
             case 'function':
-            case 'object':
+            case 'object': {
                 if (rawModule === null)
                     break;
                 const result = this.tryActivate(rawModule);
@@ -110,6 +110,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
                     .filter(guard.hasValue);
                 if (values.length > 0)
                     return values;
+            }
         }
         this.logger.debug(`No modules found in ${fileName}`);
         return [];

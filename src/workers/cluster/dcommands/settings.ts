@@ -124,7 +124,7 @@ export class SettingsCommand extends BaseGuildCommand {
                 }
             }
         }
-        return 'You can use \`settings set <key> [value]\` to set the following settings. All settings are case insensitive.\n'
+        return 'You can use `settings set <key> [value]` to set the following settings. All settings are case insensitive.\n'
             + message.sort().join('\n');
     }
 }

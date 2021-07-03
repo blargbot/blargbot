@@ -49,8 +49,9 @@ export class EmojiCommand extends BaseGlobalCommand {
                 height: size
             });
             return { name: 'emoji.png', file: buffer };
-        } catch { }
+        } catch {
+            return 'Invalid emoji!';
+        }
 
-        return 'Invalid emoji!';
     }
 }

@@ -153,14 +153,12 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             name = cached;
         }
 
-        let result: User | null = null;
-        try {
-            result = await this.engine.util.getUser(this.message, name, args);
-        } finally { }
+        const user = await this.engine.util.getUser(this.message, name, args);
         if (didSend)
             this.state.query.count++;
-        this.state.query.user[name] = result?.id;
-        return result;
+
+        this.state.query.user[name] = user?.id;
+        return user;
     }
 
     public async getRole(name: string, args: FindEntityOptions = {}): Promise<Role | null> {
@@ -176,14 +174,12 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         if (cached !== undefined)
             return this.engine.discord.guilds.get(this.guild.id)?.roles.get(cached) ?? null;
 
-        let result;
-        try {
-            result = await this.engine.util.getRole(this.message, name, args);
-        } finally { }
+        const role = await this.engine.util.getRole(this.message, name, args);
         if (didSend)
             this.state.query.count++;
-        this.state.query.role[name] = result?.id;
-        return result;
+
+        this.state.query.role[name] = role?.id;
+        return role;
     }
 
     public async getChannel(name: string, args: FindEntityOptions = {}): Promise<AnyGuildChannel | null> {
@@ -199,31 +195,28 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         if (cached !== undefined)
             return this.engine.discord.guilds.get(this.guild.id)?.channels.get(cached) ?? null;
 
-        let result;
-        try {
-            result = await this.engine.util.getChannel(this.message, name, args);
-            if (result?.type === 1 || result?.type === 3) result = null; //* DM channels, these are not used in BBtag
-        } finally { }
+
+        const channel = await this.engine.util.getChannel(this.message, name, args);
         if (didSend)
             this.state.query.count++;
-        this.state.query.channel[name] = result?.id;
-        return result as (AnyGuildChannel | null);
+
+        if (channel === null || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
+            return null;
+
+        this.state.query.channel[name] = channel.id;
+        return channel;
     }
 
-    public override(subtag: string, handler: SubtagHandler): { previous: SubtagHandler | undefined; revert: () => void; } {
+    public override(subtag: string, handler: SubtagHandler): { previous?: SubtagHandler; revert: () => void; } {
         const overrides = this.state.overrides;
-        const exists = overrides.hasOwnProperty(subtag);
+        if (!guard.hasProperty(overrides, subtag)) {
+            overrides[subtag] = handler;
+            return { revert() { delete overrides[subtag]; } };
+        }
+
         const previous = overrides[subtag];
         overrides[subtag] = handler;
-        return {
-            previous,
-            revert() {
-                if (!exists)
-                    delete overrides[subtag];
-                else
-                    overrides[subtag] = previous;
-            }
-        };
+        return { previous, revert() { overrides[subtag] = previous; } };
     }
 
     public getLock(key: string): ReadWriteLock {
@@ -246,8 +239,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                     nsfw: this.state.nsfw,
                     allowedMentions: {
                         everyone: !disableEveryone,
-                        roles: !!this.isCC ? this.state.allowedMentions.roles : false,
-                        users: !!this.isCC ? this.state.allowedMentions.users : false
+                        roles: this.isCC ? this.state.allowedMentions.roles : false,
+                        users: this.isCC ? this.state.allowedMentions.users : false
                     }
                 }, this.state.file);
 

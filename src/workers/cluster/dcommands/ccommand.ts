@@ -536,7 +536,7 @@ export class CustomCommand extends BaseGuildCommand {
         const { commands, autoResponses, everythingAutoResponse } = await getShrinkwrapData(context.cluster.database, guildId);
         const shrinkwrap = signedShrinkwrap.value.payload;
         for (const commandName of Object.keys(shrinkwrap.cc)) {
-            if (commands.hasOwnProperty(commandName.toLowerCase())) {
+            if (guard.hasProperty(commands, commandName.toLowerCase())) {
                 confirm.push(`❌ Ignore the command \`${commandName}\` as a command with that name already exists`);
                 continue;
             }
@@ -700,7 +700,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (match.command === undefined)
-            return `❌ The \`${match.name}\` custom command doesn\'t exist!`;
+            return `❌ The \`${match.name}\` custom command doesn't exist!`;
 
         if (!managed && !guard.isAliasedCustomCommand(match.command) && match.command.managed === true)
             return `❌ The \`${match.name}\` custom command is a managed command`;
@@ -721,7 +721,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (match.command === undefined)
-            return `❌ The \`${match.name}\` custom command doesn\'t exist!`;
+            return `❌ The \`${match.name}\` custom command doesn't exist!`;
 
         return match.command;
     }
@@ -759,7 +759,7 @@ export class CustomCommand extends BaseGuildCommand {
 }
 
 function normalizeName(title: string): string {
-    return title.replace(/[^\d\w .,\/#!$%\^&\*;:{}[\]=\-_~()<>]/gi, '').toLowerCase();
+    return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()<>]/gi, '').toLowerCase();
 }
 
 function shrinkCommand(command: NamedStoredRawGuildCommand): CustomCommandShrinkwrap {

@@ -1,10 +1,10 @@
 <template>
     <div>
         <section>
-            <h1 class='center'>Commands</h1>
+            <h1 class="center">Commands</h1>
         </section>
         <section>
-            <collapse-page :collapseData='data'/>
+            <collapse-page :collapseData="data" />
         </section>
     </div>
 </template>
@@ -31,7 +31,9 @@ export default {
                 if (c.flags && c.flags.length > 0) {
                     out.push('\n**Flags**:');
                     for (const flag of c.flags) {
-                        out.push(`- \`-${flag.flag}\`/\`--${flag.word}\` - ${flag.desc}`);
+                        out.push(
+                            `- \`-${flag.flag}\`/\`--${flag.word}\` - ${flag.desc}`
+                        );
                     }
                 }
 

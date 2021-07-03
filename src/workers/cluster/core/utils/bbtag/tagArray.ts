@@ -22,7 +22,7 @@ export function deserialize(value: string): BBTagArray | null {
     let result = mapBBArray(value);
     if (!result.valid) {
         value = value.replace(
-            /([\[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
+            /([[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
             (_, ...[before, from, to, after]: string[]) =>
                 before + getRange(parse.int(from), parse.int(to)).join(',') + after);
         result = mapBBArray(value);
@@ -64,6 +64,8 @@ export async function getArray(context: BBTagContext, subtag: SubtagCall, arrNam
         const arr = await context.variables.get(arrName, subtag);
         if (arr !== undefined && Array.isArray(arr))
             return { v: arr, n: arrName };
-    } catch (err: unknown) { }
+    } catch {
+        // NOOP
+    }
     return undefined;
 }

@@ -174,7 +174,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.'
         };
         default: {
-            const subtagName = topic[0].replace(/[\{\}]/g, '').toLowerCase();
+            const subtagName = topic[0].replace(/[{}]/g, '').toLowerCase();
             const subtag = context.cluster.subtags.get(subtagName);
             if (subtag === undefined)
                 return undefined;

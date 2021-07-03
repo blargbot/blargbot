@@ -3,5 +3,5 @@ export function int(s: string | number, radix = 10): number {
         return s;
     if (typeof s !== 'string')
         return NaN;
-    return parseInt(s.replace(/[,\.](?=.*[,\.])/g, '').replace(',', '.'), radix);
+    return parseInt(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
 }

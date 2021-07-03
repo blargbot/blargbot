@@ -1,3 +1,4 @@
+import { guard } from '../guard';
 import { mappingResultNever } from './constants';
 import { TypeMapping, TypeMappingResult, TypeMappings } from './types';
 
@@ -21,7 +22,7 @@ export function mapObject<T>(
         const result = initial();
 
         function checkKey<K extends string & keyof T>(key: K, mapping: TypeMapping<T[K]>): boolean {
-            if (!objValue.hasOwnProperty(key)) {
+            if (!guard.hasProperty(objValue, key)) {
                 return mapping(undefined).valid;
             }
             const val = objValue[key];
