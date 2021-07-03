@@ -1,5 +1,6 @@
 import { TableQuery, Cursor, UpdateRequest, WriteResult } from 'rethinkdb';
 import { Logger } from '../../Logger';
+import { guard } from '../../utils';
 import { RethinkTableMap } from '../types';
 import { RethinkDb } from './RethinkDb';
 
@@ -35,7 +36,8 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
 
     protected async rinsert(value: RethinkTableMap[T], applyChanges = false): Promise<boolean> {
         const result = await this.rquery(t => t.insert(value, { returnChanges: applyChanges }));
-        if (applyChanges && result.changes?.[0]?.new_val)
+        if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             Object.apply(value, result.changes?.[0].new_val);
         throwIfErrored(result);
         return result.inserted > 0;
@@ -43,14 +45,15 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
 
     protected async rset(key: string, value: RethinkTableMap[T], applyChanges = false): Promise<boolean> {
         const result = await this.rquery(t => t.get(key).replace(value, { returnChanges: applyChanges }));
-        if (applyChanges && result.changes?.[0]?.new_val)
+        if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
+            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             Object.apply(value, result.changes?.[0].new_val);
         throwIfErrored(result);
         return result.inserted + result.replaced > 0;
     }
 
     protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[T]> | ((r: typeof import('rethinkdb')) => UpdateRequest<RethinkTableMap[T]>)): Promise<boolean> {
-        const getter = typeof value === 'function' ? value : () => value;
+        const getter = typeof value === 'object' ? () => value : value;
         const result = await this.rquery((t, r) => t.get(key).update(getter(r)));
         throwIfErrored(result);
         return result.replaced + result.unchanged > 0;

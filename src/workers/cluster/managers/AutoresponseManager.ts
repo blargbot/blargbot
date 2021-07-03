@@ -1,6 +1,6 @@
 import { AnyMessage, Emoji, GuildMessage, User } from 'eris';
 import { Cluster } from '../Cluster';
-import { codeBlock, guard, humanize, limits, mapping, RuntimeLimit, WhitelistResponse } from '../core';
+import { codeBlock, EverythingAutoResponseLimit, GeneralAutoResponseLimit, guard, humanize, mapping, RuntimeLimit, WhitelistResponse } from '../core';
 
 
 export class AutoresponseManager {
@@ -120,7 +120,7 @@ ${codeBlock(code, 'js')}`
         const ars = await cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
         if (everything) {
             if (ars.everything)
-                yield { commandName: ars.everything.executes, limit: new limits.EverythingAutoResponseLimit(), silent: true };
+                yield { commandName: ars.everything.executes, limit: new EverythingAutoResponseLimit(), silent: true };
             return;
         }
 
@@ -129,7 +129,7 @@ ${codeBlock(code, 'js')}`
 
         for (const ar of ars.list) {
             if (guard.testMessageFilter(ar, msg)) {
-                yield { commandName: ar.executes, limit: new limits.GeneralAutoResponseLimit() };
+                yield { commandName: ar.executes, limit: new GeneralAutoResponseLimit() };
             }
         }
     }

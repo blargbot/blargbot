@@ -17,7 +17,7 @@ export abstract class CronService extends BaseService {
         this.#execute = async () => {
             try {
                 await this.execute();
-            } catch (err) {
+            } catch (err: unknown) {
                 this.logger.error(`CronJob ${this.name} threw an error: ${inspect(err)}`);
             }
         };

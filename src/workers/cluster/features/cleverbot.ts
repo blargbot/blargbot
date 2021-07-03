@@ -1,10 +1,11 @@
 import { AnyMessage } from 'eris';
-import request from 'request';
 import { Cluster } from '../Cluster';
 import { guard, metrics, sleep } from '../core';
+import fetch from 'node-fetch';
+import FormData from 'form-data';
 
 export async function tryHandleCleverbot(cluster: Cluster, msg: AnyMessage): Promise<boolean> {
-    if (!guard.isGuildMessage(msg) || await cluster.database.guilds.getSetting(msg.channel.guild.id, 'nocleverbot'))
+    if (!guard.isGuildMessage(msg) || await cluster.database.guilds.getSetting(msg.channel.guild.id, 'nocleverbot') === true)
         return false;
 
     void handleCleverbot(cluster, msg);
@@ -16,7 +17,7 @@ async function handleCleverbot(cluster: Cluster, msg: AnyMessage): Promise<void>
     let username = cluster.discord.user.username;
     if (guard.isGuildMessage(msg)) {
         const member = msg.channel.guild.members.get(cluster.discord.user.id);
-        if (member?.nick)
+        if (member !== undefined && guard.hasValue(member.nick))
             username = member.nick;
     }
 
@@ -26,22 +27,24 @@ async function handleCleverbot(cluster: Cluster, msg: AnyMessage): Promise<void>
         const response = await queryCleverbot(cluster, msgToSend);
         await sleep(1500);
         await cluster.util.send(msg, response);
-    } catch (err) {
+    } catch (err: unknown) {
         cluster.logger.error(err);
         await cluster.util.send(msg, 'Failed to contact the API. Blame cleverbot.io');
     }
 }
 
 async function queryCleverbot(cluster: Cluster, input: string): Promise<string> {
-    return await new Promise<string>((res, rej) => {
-        request.post(cluster.config.cleverbot.endpoint, { form: { input } }, (err, _, bod: string) => {
-            if (err) rej(err);
-            else {
-                const content = /<font size="2" face="Verdana" color=darkred>(.+)<\/font>/.exec(bod);
-                if (content)
-                    return res(content[1].replace(/(\W)alice(\W)/gi, '$1blargbot$2').replace(/<br>/gm, '\n'));
-                res('Hi, I\'m blargbot! It\'s nice to meet you.');
-            }
-        });
+    const form = new FormData();
+    form.append('input', input);
+
+    const result = await fetch(cluster.config.cleverbot.endpoint, {
+        method: 'POST',
+        body: form,
+        headers: form.getHeaders()
     });
+
+    const content = /<font size="2" face="Verdana" color=darkred>(.+)<\/font>/.exec(result.body.toString());
+    if (content !== null)
+        return content[1].replace(/\balice\b/gi, 'blargbot').replace(/<br>/gm, '\n');
+    return 'Hi, I\'m blargbot! It\'s nice to meet you.';
 }

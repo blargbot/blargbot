@@ -1,7 +1,7 @@
 import { mappingResultNever } from './constants';
 import { TypeMapping, TypeMappingResult } from './types';
 
-export function mapArray<T, R>(
+export function mapArray<T, R = T[]>(
     mapping: TypeMapping<T, [index: number]>,
     {
         ifNull = mappingResultNever as TypeMappingResult<T[] | R>,

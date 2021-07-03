@@ -1,7 +1,6 @@
 import { Cluster } from '../Cluster';
 import { ClusterEventService, ProcessMessageHandler } from '../core';
 
-
 export class RetrieveUserHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster
@@ -10,6 +9,9 @@ export class RetrieveUserHandler extends ClusterEventService {
     }
 
     protected execute([id, , reply]: Parameters<ProcessMessageHandler>): void {
-        reply(this.cluster.discord.users.get(id) ?? null);
+        if (typeof id === 'string')
+            reply(this.cluster.discord.users.get(id) ?? null);
+        else
+            reply(null);
     }
 }

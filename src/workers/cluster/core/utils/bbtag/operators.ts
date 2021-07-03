@@ -22,7 +22,7 @@ export const compare = {
     '<': (a: string, b: string): boolean => comp(a, b) < 0,
     startswith(a: string, b: string): boolean {
         const arr = getArray(a);
-        if (arr) {
+        if (arr !== false) {
             return arr[0] == b;
         } else {
             return a.startsWith(b);
@@ -30,7 +30,7 @@ export const compare = {
     },
     endswith(a: string, b: string): boolean {
         const arr = getArray(a);
-        if (arr) {
+        if (arr !== false) {
             return arr.slice(-1)[0] == b;
         } else {
             return a.endsWith(b);
@@ -38,7 +38,7 @@ export const compare = {
     },
     includes(a: string, b: string): boolean {
         const arr = getArray(a);
-        if (arr) {
+        if (arr !== false) {
             return arr.find((v) => v == b) != null;
         } else {
             return a.includes(b);
@@ -46,7 +46,7 @@ export const compare = {
     },
     contains(a: string, b: string): boolean {
         const arr = getArray(a);
-        if (arr) {
+        if (arr !== false) {
             return arr.find((v) => v == b) != null;
         } else {
             return a.includes(b);

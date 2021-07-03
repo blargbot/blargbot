@@ -14,7 +14,7 @@ export function embed(embedText: string): EmbedOptions | MalformedEmbed | undefi
             return undefined;
         else
             return parsed;
-    } catch (e) {
+    } catch (e: unknown) {
         return {
             fields: [
                 {

@@ -29,7 +29,8 @@ declare global {
     export var console: never | Console;
 
     interface ObjectConstructor {
-        keys<T>(value: T): Array<string & keyof T>
+        keys<T>(value: T): Array<string & keyof T>;
+        create<T extends object>(value: T): T;
     }
 
     interface Object {
@@ -47,4 +48,6 @@ declare global {
             kill(): true;
         }
     }
+
+    function setTimeout<TArgs extends unknown[]>(callback: (...args: TArgs) => void, ms: number, ...args: TArgs): NodeJS.Timeout;
 }

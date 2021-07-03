@@ -1,22 +1,23 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import moment from 'moment';
 import config from '../../../config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
 import { Client as ErisClient, User, Member, DiscordRESTError, DiscordHTTPError, Guild, Permission, GuildAuditLogEntry, AnyChannel, GuildMessage, AnyMessage } from 'eris';
 import isSafeRegex from 'safe-regex';
-import request from 'request';
 import { parse } from './parse';
-import snekfetch from 'snekfetch';
 import limax from 'limax';
 import { nfkd } from 'unorm';
-import { humanize, fafo, randInt, getRange } from '../utils';
+import { humanize, fafo, randInt } from '../utils';
 import { StoredTag } from '../database';
 import { Logger } from '../Logger';
+import { guard } from './guard';
+import fetch from 'node-fetch';
 
-const TagLock = Symbol('The key for a ReadWriteLock');
+const tagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
     [key: string]: TagLocks;
-    [TagLock]?: ReadWriteLock;
+    [tagLock]?: ReadWriteLock;
 }
 
 const console: Logger = <Logger><unknown>undefined;
@@ -79,9 +80,9 @@ export const oldBu = {
         const eventReferences: string[][] = [];
 
         for (const message of messages) {
-            const msg = oldBu.awaitReactions[message] || (oldBu.awaitReactions[message] = {});
+            const msg = oldBu.awaitReactions[message] ?? (oldBu.awaitReactions[message] = {});
             for (const user of users) {
-                const usr = msg[user] || (msg[user] = []);
+                const usr = msg[user] ??= [];
                 usr.push(eventName);
                 eventReferences.push(usr);
             }
@@ -115,7 +116,7 @@ export const oldBu = {
                         clearTimeout(timeoutId);
                         resolve({ message, user, emoji });
                     }
-                } catch (err) {
+                } catch (err: unknown) {
                     clearTimeout(timeoutId);
                     reject(err);
                 }
@@ -146,8 +147,8 @@ export const oldBu = {
         }
         if (typeof roles === 'string')
             roles = [roles];
-        for (let i = 0; i < roles.length; i++) {
-            if (member.roles.includes(roles[i])) {
+        for (const role of roles) {
+            if (member.roles.includes(role)) {
                 return true;
             }
         }
@@ -159,13 +160,12 @@ export const oldBu = {
         reactions: string[]
     ): Promise<Record<number, { error: unknown; reactions: string[]; }>> {
         const errors = {} as Record<number, { error: unknown; reactions: string[]; }>;
-        for (const reaction of new Set(reactions || [])) {
+        for (const reaction of new Set(reactions ?? [])) {
             try {
                 await bot.addMessageReaction(channelId, messageId, reaction);
-            } catch (e) {
+            } catch (e: unknown) {
                 if (e instanceof DiscordHTTPError || e instanceof DiscordRESTError) {
-                    if (!errors[e.code])
-                        errors[e.code] = { error: e, reactions: [] };
+                    errors[e.code] ??= { error: e, reactions: [] };
                     switch (e.code) {
                         case 50013:
                             errors[e.code].reactions.push(...new Set(reactions));
@@ -192,7 +192,7 @@ export const oldBu = {
             } else {
                 try {
                     return await bot.getRESTUser(match[0]);
-                } catch (err) { return null; }
+                } catch (err: unknown) { return null; }
             }
         }
         return null;
@@ -207,7 +207,7 @@ export const oldBu = {
             }
             try {
                 return await bot.getMessage(channelId, messageId);
-            } catch (e) { }
+            } catch (e: unknown) { }
         }
         return null;
     },
@@ -248,7 +248,7 @@ export const oldBu = {
                 }
             }
             return null;
-        } catch (err) {
+        } catch (err: unknown) {
             // may not have audit log perms
             return null;
         }
@@ -258,22 +258,22 @@ export const oldBu = {
         while (match = /<@!?([0-9]{17,21})>/.exec(message)) {
             const id = match[1];
             try {
-                const user = bot.users.get(id) || await bot.getRESTUser(id);
+                const user = bot.users.get(id) ?? await bot.getRESTUser(id);
                 message = message.replace(new RegExp(`<@!?${id}>`), humanize.fullName(user));
-            } catch (err) {
+            } catch (err: unknown) {
                 message = message.replace(new RegExp(`<@!?${id}>`), `<@\u200b${id}>`);
             }
         }
         while (match = /<#([0-9]{17,21})>/.exec(message)) {
             const id = match[1];
             const channel = bot.getChannel(id);
-            if (channel && 'name' in channel) {
+            if (guard.hasValue(channel) && 'name' in channel) {
                 message = message.replace(new RegExp(`<#${id}>`), `#${channel.name}`);
             } else {
                 message = message.replace(new RegExp(`<#${id}>`), `<#\u200b${id}>`);
             }
         }
-        if (guild)
+        if (guard.hasValue(guild))
             while (match = /<@&([0-9]{17,21})>/.exec(message)) {
                 const id = match[1];
                 const role = guild.roles.get(id);
@@ -287,7 +287,7 @@ export const oldBu = {
     },
     getPerms(channelid: string): Permission['json'] | null {
         const channel = bot.getChannel(channelid);
-        if (channel && 'guild' in channel) {
+        if (guard.hasValue(channel) && 'guild' in channel) {
             const permission = channel.permissionsOf(bot.user.id);
             return permission.json;
         } else {
@@ -326,70 +326,6 @@ export const oldBu = {
         }
         throw new Error('Invalid Regex');
     },
-    postStats(): void {
-        // updateStats();
-        const stats = {
-            server_count: bot.guilds.size,
-            shard_count: config.shards.max,
-            shard_id: parseInt(<string>process.env.CLUSTER_ID)
-        };
-        // bot.executeWebhook('511922345099919360', config.shards.shardToken, {
-        //     content: JSON.stringify(stats)
-        // });
-        console.log(stats);
-        request.post({
-            'url': `https://discord.bots.gg/api/v1/bots/${bot.user.id}/stats`,
-            'headers': {
-                'content-type': 'application/json',
-                'Authorization': config.general.botlisttoken,
-                'User-Agent': 'blargbot/1.0 (ratismal)'
-            },
-            'json': true,
-            body: stats
-        }, (err) => {
-            if (err) console.error(err);
-        });
-
-        if (!config.general.isbeta) {
-            console.info('Posting to matt');
-
-            request.post({
-                'url': 'https://www.carbonitex.net/discord/data/botdata.php',
-                'headers': {
-                    'content-type': 'application/json'
-                },
-                'json': true,
-                body: {
-                    'key': config.general.carbontoken,
-                    'servercount': stats.server_count,
-                    shard_count: stats.shard_count,
-                    shard_id: stats.shard_id,
-                    'logoid': bot.user.avatar
-                }
-            }, (err) => {
-                if (err) console.error(err);
-            });
-
-            const shards = [];
-            for (const shardId of bot.shards.map(s => s.id)) {
-                shards[shardId] = bot.guilds.filter(g => g.shard.id === shardId);
-            }
-            request.post({
-                url: `https://discordbots.org/api/bots/${bot.user.id}/stats`,
-                json: true,
-                headers: {
-                    'content-type': 'application/json',
-                    'Authorization': config.general.botlistorgtoken,
-                    'User-Agent': 'blargbot/1.0 (ratismal)'
-                },
-                body: {
-                    shards
-                }
-            }, err => {
-                if (err) console.error(err);
-            });
-        }
-    },
     fixContent(content: string): string {
         const tempContent = content.split('\n');
         for (let i = 0; i < tempContent.length; i++) {
@@ -427,11 +363,18 @@ export const oldBu = {
     // eslint-disable-next-line @typescript-eslint/ban-types
     async blargbotApi(endpoint: string, args: string | Buffer | object = {}): Promise<Buffer | string | object | null> {
         try {
-            const res = await snekfetch.post(config.blargbot_api.base + endpoint)
-                .set({ Authorization: config.blargbot_api.token })
-                .send(args);
-            return res.body;
-        } catch (err) {
+            if (typeof args !== 'string' && !(args instanceof Buffer))
+                args = JSON.stringify(args);
+
+            const response = await fetch(config.blargbot_api.base + endpoint, {
+                method: 'POST',
+                headers: {
+                    Authorization: config.blargbot_api.token
+                },
+                body: args
+            });
+            return await response.buffer();
+        } catch (err: unknown) {
             console.error(err);
             return null;
         }
@@ -450,7 +393,7 @@ export const oldBu = {
 
     async findMessages(channelId: string, count: number, filter: (m: AnyMessage) => boolean, before?: string, after?: string): Promise<AnyMessage[]> {
         const result = [];
-        filter = filter || (() => true);
+        filter = filter ?? (() => true);
 
         while (result.length < count) {
             const batchSize = Math.min(100, count - result.length);
@@ -464,53 +407,6 @@ export const oldBu = {
         }
 
         return result.filter(filter);
-    },
-    formatAuditReason(user: User, reason: string, ban = false): string {
-        let fullReason = humanize.fullName(user);
-        if (reason) {
-            fullReason += `: ${reason}`;
-        }
-        // bans use their own system and cannot be uriencoded. thanks discord!
-        return !ban ? encodeURIComponent(fullReason) : fullReason;
-    },
-    serializeTagArray(array: JArray, varName: string): string {
-        if (!varName)
-            return JSON.stringify(array);
-
-        const obj = {
-            v: array,
-            n: varName
-        };
-        return JSON.stringify(obj);
-    },
-    deserializeTagArray(value: string): { v: JArray; n: string; } | null {
-        let parsed;
-        try {
-            parsed = JSON.parse(value);
-        }
-        catch (err) { }
-        if (!parsed) {
-            try {
-                const replaced = value.replace(/([\[,]\s*)(\d+)\s*\.\.\.\s*(\d+)(\s*[\],])/gi,
-                    (_, before, from, to, after) => `${before}${getRange(from, to).join(',')}${after}`);
-                parsed = JSON.parse(replaced);
-            }
-            catch (err) { }
-        }
-        if (Array.isArray(parsed)) {
-            parsed = {
-                v: parsed
-            };
-        }
-        if (!parsed || !Array.isArray(parsed.v) || (parsed.n !== undefined && typeof parsed.n != 'string'))
-            parsed = null;
-        if (parsed) {
-            return {
-                n: parsed.n,
-                v: parsed.v
-            };
-        }
-        return null;
     }
 };
 

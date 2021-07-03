@@ -5,7 +5,7 @@ export class GeneralAutoResponseLimit extends BaseRuntimeLimit {
     public readonly scopeName = 'general autoresponses';
 
     public constructor() {
-        super('GeneralAutoResponseLimit');
+        super('generalAutoResponseLimit');
 
         this.addRules('ban', StaffOnlyRule.instance)
             .addRules('unban', StaffOnlyRule.instance)

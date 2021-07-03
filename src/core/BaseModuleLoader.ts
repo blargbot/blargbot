@@ -7,6 +7,7 @@ import { MultiKeyMap } from './MultiKeyMap';
 import { guard } from './utils';
 import { Logger } from './Logger';
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const reload = reloadFactory(require);
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter {
@@ -59,12 +60,12 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     private load(fileNames: Iterable<string>, loader = require): void {
         for (const fileName of fileNames) {
             try {
-                const rawModule = loader(path.join(this.#root, fileName));
+                const rawModule = loader(path.join(this.#root, fileName)) as unknown;
                 const modules = this.activate(fileName, rawModule);
                 for (const { names, module } of modules)
                     for (const name of names)
                         this.#modules.set(name, module);
-            } catch (err) {
+            } catch (err: unknown) {
                 if (err instanceof Error)
                     this.logger.error(err.stack);
                 this.logger.module(this.source, 'Error while loading module', fileName);

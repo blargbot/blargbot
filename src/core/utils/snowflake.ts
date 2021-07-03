@@ -1,6 +1,6 @@
 import Catflake, { Snowflake } from 'catflake';
 
-const workerId = process.env.CLUSTER_ID
+const workerId = process.env.CLUSTER_ID !== undefined
     ? parseInt(process.env.CLUSTER_ID)
     : 31;
 

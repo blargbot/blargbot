@@ -19,7 +19,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         return {
             name: parameter.name ?? null,
             autoResolve: false,
-            greedy: parameter.type?.endsWith('OrMore') ? parseInt(parameter.type) : null,
+            greedy: parameter.type?.endsWith('OrMore') === true ? parseInt(parameter.type) : null,
             required: argumentRequired.includes(parameter.type),
             nested: parameter.parameters.map(parseArgument),
             defaultValue: ''

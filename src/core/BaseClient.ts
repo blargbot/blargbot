@@ -59,7 +59,7 @@ export class BaseClient {
         const result = [];
         for (const item of items) {
             const key = getKey(item);
-            groups.set(key, (groups.get(key) || 0) + 1);
+            groups.set(key, (groups.get(key) ?? 0) + 1);
         }
         for (const [key, count] of groups)
             result.push(`${friendlyKey(key)}: ${count}`);

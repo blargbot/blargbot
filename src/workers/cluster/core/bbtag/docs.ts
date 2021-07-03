@@ -18,7 +18,7 @@ export function getDocsEmbed(context: CommandContext, topic: readonly string[]):
 }
 
 function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedOptions | undefined {
-    switch (topic[0] && topic[0].toLowerCase()) {
+    switch (topic[0]?.toLowerCase()) {
         case undefined:
         case 'index': return {
             description: `Please use \`${context.prefix}${context.commandName} docs [topic]\` to view available information on a topic.\n\n` +
@@ -116,30 +116,43 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
         case 'terminology':
         case 'definitions':
         case 'define': {
-            const terms = {
-                BBTag: 'BBTag is a text replacement language. Any text between a `{` and `}` pair (called a subtag) ' +
-                    'will be taken as code and run, with the output of that replacing the whole subtag. ' +
-                    'Each subtag does something different, and each accepts its own list of arguments.',
-                Subtag: 'A subtag is a pre-defined function that accepts some arguments and returns a single output. ' +
-                    'Subtags can be called by placing their name between a pair of `{` and `}`, ' +
-                    'with any arguments to be passed to the subtag being separated by `;`.\nAs an example:```{math;+;1;2}```' +
-                    'Subtag: `math`\nArguments: `+`, `1`, `2`\nResult: `3`',
-                Tag: 'A tag is a user-made block of text which may or may not contain subtags. ' +
-                    'Any subtags that it does contain will be executed and be replaced by their output.',
-                Argument: 'An argument is a single value which gets given to a subtag. Arguments can be numbers, text, arrays, anything you can type really. ' +
-                    'Each subtag will require a different argument pattern, so be sure to check what pattern your subtag needs!',
-                Variable: 'A variable is a value that is stored in the bots memory ready to access it later on. ' +
-                    `For more in-depth details about variables, please use \`${context.prefix}${context.commandName} docs variable\`.`,
-                Array: 'An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. ' +
-                    'In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might ' +
-                    'see an array displayed like this `{"v":["1","2","3"],"n":"varname"}`. If you do, dont worry, nothing is broken! ' +
-                    `That is just there to allow ${context.cluster.discord.user.username} to modify the array in place within certain subtags.`
-            };
-            const term = Object.keys(terms).find(k => k.toLowerCase() === topic[1]?.toLowerCase());
+            const terms = [
+                {
+                    name: 'BBTag',
+                    description: 'BBTag is a text replacement language. Any text between a `{` and `}` pair (called a subtag) ' +
+                        'will be taken as code and run, with the output of that replacing the whole subtag. ' +
+                        'Each subtag does something different, and each accepts its own list of arguments.'
+                },
+                {
+                    name: 'Subtag', description: 'A subtag is a pre-defined function that accepts some arguments and returns a single output. ' +
+                        'Subtags can be called by placing their name between a pair of `{` and `}`, ' +
+                        'with any arguments to be passed to the subtag being separated by `;`.\nAs an example:```{math;+;1;2}```' +
+                        'Subtag: `math`\nArguments: `+`, `1`, `2`\nResult: `3`'
+                },
+                {
+                    name: 'Tag', description: 'A tag is a user-made block of text which may or may not contain subtags. ' +
+                        'Any subtags that it does contain will be executed and be replaced by their output.'
+                },
+                {
+                    name: 'Argument', description: 'An argument is a single value which gets given to a subtag. Arguments can be numbers, text, arrays, anything you can type really. ' +
+                        'Each subtag will require a different argument pattern, so be sure to check what pattern your subtag needs!'
+                },
+                {
+                    name: 'Variable', description: 'A variable is a value that is stored in the bots memory ready to access it later on. ' +
+                        `For more in-depth details about variables, please use \`${context.prefix}${context.commandName} docs variable\`.`
+                },
+                {
+                    name: 'Array', description: 'An array is a collection of values all grouped together, commonly done so by enclosing them inside `[]`. ' +
+                        'In BBTag, arrays can be assigned to a variable to store them for later use. In this situation, you might ' +
+                        'see an array displayed like this `{"v":["1","2","3"],"n":"varname"}`. If you do, dont worry, nothing is broken! ' +
+                        `That is just there to allow ${context.cluster.discord.user.username} to modify the array in place within certain subtags.`
+                }
+            ];
+            const term = terms.find(t => t.name.toLowerCase() === topic[1]?.toLowerCase());
             if (term !== undefined) {
                 return {
                     title: ` - Terminology - ${term}`,
-                    description: terms[term]
+                    description: term.description
                 };
             }
 
@@ -147,9 +160,9 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 title: ' - Terminology',
                 description: 'There are various terms used in BBTag that might not be intuitive, ' +
                     'so here is a list of definitions for some of the most important ones:\n\u200B',
-                fields: Object.keys(terms).map(k => ({
-                    name: k,
-                    value: `${terms[k]}\n\u200B`
+                fields: terms.map(t => ({
+                    name: t.name,
+                    value: `${t.description}\n\u200B`
                 }))
             };
         }
@@ -173,7 +186,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 description.push('**This subtag is deprecated**');
             if (subtag.aliases.length > 0)
                 description.push('**Aliases:**', codeBlock(subtag.aliases.join(', ')));
-            if (subtag.desc)
+            if (subtag.desc !== null)
                 description.push(subtag.desc);
 
             const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
@@ -196,7 +209,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 title: ` - {${subtag.name}}`,
                 url: `/#${encodeURIComponent(subtag.name)}`,
                 description: description.length === 0 ? undefined : description.join('\n') + '\u200b',
-                color: subtag.deprecated ? 0xff0000 : undefined,
+                color: subtag.deprecated !== false ? 0xff0000 : undefined,
                 fields,
                 footer: {
                     text: `For detailed info about the argument syntax, use: ${context.prefix}${context.commandName} docs arguments`
@@ -215,14 +228,14 @@ function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, inde
     if (defaultDesc.length > 0)
         description += defaultDesc + '\n\n';
 
-    if (signature.description)
+    if (signature.description !== undefined)
         description += `${signature.description}\n`;
     description += '\n';
-    if (signature.exampleCode)
+    if (signature.exampleCode !== undefined)
         description += `**Example code:**${quote(signature.exampleCode)}`;
-    if (signature.exampleIn)
+    if (signature.exampleIn !== undefined)
         description += `**Example user input:**${quote(signature.exampleIn)}`;
-    if (signature.exampleOut)
+    if (signature.exampleOut !== undefined)
         description += `**Example output:**${quote(signature.exampleOut)}`;
     return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
 }

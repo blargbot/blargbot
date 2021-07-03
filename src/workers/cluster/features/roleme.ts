@@ -1,6 +1,6 @@
 import { AnyMessage } from 'eris';
 import { Cluster } from '../Cluster';
-import { guard, limits } from '../core';
+import { CustomCommandLimit, guard } from '../core';
 
 export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<void> {
     if (!guard.isGuildMessage(msg))
@@ -31,15 +31,15 @@ export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<v
         try {
             await msg.member.edit({ roles: [...roleList] });
             cluster.logger.verbose(roleme.output);
-            await cluster.bbtag.execute(roleme.output || 'Your roles have been edited!', {
+            await cluster.bbtag.execute(roleme.output ?? 'Your roles have been edited!', {
                 message: msg,
                 tagName: 'roleme',
-                limit: limits.CustomCommandLimit,
+                limit: new CustomCommandLimit(),
                 input: [],
                 isCC: true,
                 author: ''
             });
-        } catch (err) {
+        } catch (err: unknown) {
             await cluster.util.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');
         }
     }

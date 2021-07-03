@@ -36,7 +36,7 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection> e
         const handler: ProcessMessageHandler = (...args) => void (async () => {
             try {
                 await this.execute(worker, ...args);
-            } catch (ex) {
+            } catch (ex: unknown) {
                 this.workers.logger.error(ex);
             }
         })();

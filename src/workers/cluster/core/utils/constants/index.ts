@@ -6,7 +6,7 @@ import * as variables from './subtagVariableType';
 export { CommandType } from './commandType';
 export * from './guildSettings';
 export { ModerationType } from './moderationType';
-export { modlogColour } from './modlogColour';
+export { ModlogColour } from './modlogColour';
 export { SubtagArgumentKind } from './subtagArgumentKind';
 export { SubtagType } from './subtagType';
 export { SubtagVariableType } from './subtagVariableType';

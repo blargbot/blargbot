@@ -1,4 +1,4 @@
-import moment, { DurationInputArg2, Moment } from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 
 export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
     const now = moment.tz(timezone);
@@ -21,7 +21,7 @@ export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, 
     if (match !== null) {
         const magnitude = sign * parseFloat(match[1]);
         const key = match[2].toLowerCase();
-        if (!(key in prettyTimeMagnitudes))
+        if (!prettyTimeMagnitudes.hasOwnProperty(key))
             throw new Error('Invalid quantity ' + match[2]);
         const quantity = prettyTimeMagnitudes[key];
         return now.add(magnitude, quantity);
@@ -33,7 +33,8 @@ export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, 
     return tz.utcOffset(0);
 }
 
-const prettyTimeMagnitudes: Record<string, DurationInputArg2> = {
+/* eslint-disable @typescript-eslint/naming-convention */
+const prettyTimeMagnitudes = {
     //defaults
     year: 'year', years: 'years', y: 'y',
     month: 'month', months: 'months', M: 'M',
@@ -46,4 +47,5 @@ const prettyTimeMagnitudes: Record<string, DurationInputArg2> = {
     quarter: 'quarter', quarters: 'quarters', q: 'Q',
     //Custom
     mins: 'minutes', min: 'minute'
-};
+} as const;
+/* eslint-enable @typescript-eslint/naming-convention */

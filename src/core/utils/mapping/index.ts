@@ -1,19 +1,22 @@
 export * from './types';
-import { mappingResultNever, mappingResultUndefined, mappingResultNull } from './constants';
-import { mapAny } from './mapAny';
-import { mapUnknown } from './mapUnknown';
-import { mapIn } from './mapIn';
+import { mappingResultNever, mappingResultNull, mappingResultUndefined } from './constants';
 import { mapArray } from './mapArray';
-import { mapBoolean } from './mapBoolean';
-import { mapJson } from './mapJson';
 import { mapBase64 } from './mapBase64';
+import { mapBoolean } from './mapBoolean';
+import { mapChoice } from './mapChoice';
+import { mapIn } from './mapIn';
+import { mapInstanceof } from './mapInstanceof';
+import { mapJObject } from './mapJObject';
+import { mapJson } from './mapJson';
+import { mapJToken } from './mapJToken';
+import { mapNumber } from './mapNumber';
 import { mapObject } from './mapObject';
 import { mapOptionalBoolean } from './mapOptionalBoolean';
 import { mapOptionalNumber } from './mapOptionalNumber';
-import { mapNumber } from './mapNumber';
 import { mapOptionalString } from './mapOptionalString';
 import { mapRecord } from './mapRecord';
 import { mapString } from './mapString';
+import { mapUnknown } from './mapUnknown';
 
 export const mapping = {
     result: {
@@ -21,7 +24,7 @@ export const mapping = {
         undefined: mappingResultUndefined,
         null: mappingResultNull
     },
-    any: mapAny,
+    choose: mapChoice,
     array: mapArray,
     json: mapJson,
     object: mapObject,
@@ -34,5 +37,8 @@ export const mapping = {
     optionalString: mapOptionalString,
     base64: mapBase64,
     in: mapIn,
-    unknown: mapUnknown
+    unknown: mapUnknown,
+    jToken: mapJToken,
+    jObject: mapJObject,
+    instanceof: mapInstanceof
 };

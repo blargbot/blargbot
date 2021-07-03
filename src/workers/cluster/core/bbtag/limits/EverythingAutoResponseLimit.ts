@@ -5,7 +5,7 @@ export class EverythingAutoResponseLimit extends BaseRuntimeLimit {
     public readonly scopeName = 'everything autoresponses';
 
     public constructor() {
-        super('EverythingAutoResponseLimit');
+        super('everythingAutoResponseLimit');
 
         this.addRules('safeloops', new UseCountRule(100000))
             .addRules('ban', StaffOnlyRule.instance)

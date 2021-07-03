@@ -28,13 +28,8 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
                     await model.upsert({ ...query, content: JSON.stringify(value) });
                 else
                     await model.destroy({ where: query });
-            } catch (err) {
-                this.logger.error(err);
-                if (err.errors) {
-                    for (const e of err.errors)
-                        this.logger.error(e.path, e.validatorKey, e.value);
-                }
-                this.logger.info(query);
+            } catch (err: unknown) {
+                this.logger.error(query, err);
             }
         }
         return await trans.commit();

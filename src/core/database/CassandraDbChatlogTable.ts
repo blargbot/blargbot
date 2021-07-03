@@ -3,7 +3,7 @@ import { Duration } from 'moment-timezone';
 import { Chatlog, ChatlogsTable, ChatlogType } from './types';
 import { metrics } from '../Metrics';
 import { AnyMessage } from 'eris';
-import { guard, snowflake } from '../utils';
+import { guard, mapping, snowflake } from '../utils';
 import { Logger } from '../Logger';
 
 function stringifyType(type: ChatlogType): string {
@@ -41,28 +41,8 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
             { prepare: true });
         if (messages.rows.length === 0)
             return undefined;
-        const r = messages.rows[0];
-        const message = {
-            id: r.id,
-            content: r.content,
-            attachment: r.attachment,
-            userid: r.userid,
-            msgid: r.msgid,
-            channelid: r.channelid,
-            guildid: r.guildid,
-            msgtime: new Date(r.msgtime),
-            type: r.type,
-            embeds: r.embeds
-        };
-        if (typeof message.embeds === 'string') {
-            try {
-                message.embeds = JSON.parse(message.embeds);
-            } catch (err) {
-                this.logger.log(r, message);
-                this.logger.error(err);
-            }
-        }
-        return message;
+        const mapped = mapChatlog(messages.rows[0]);
+        return mapped.valid ? mapped.value : undefined;
     }
 
     public async add(message: AnyMessage, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {
@@ -71,7 +51,7 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
         const chatlog: Chatlog = {
             id: snowflake.create().toString(),
             content: message.content,
-            attachment: message.attachments[0] ? message.attachments[0].url : undefined,
+            attachment: message.attachments[0]?.url,
             userid: message.author.id,
             msgid: message.id,
             channelid: message.channel.id,
@@ -120,9 +100,27 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
                 '    PRIMARY KEY((msgid), id)\n' +
                 ')\n' +
                 'WITH CLUSTERING ORDER BY(id DESC);');
-        } catch (err) {
-            this.logger.error(err.message, err.stack);
+        } catch (err: unknown) {
+            this.logger.error(err);
         }
     }
 }
 
+const mapChatlog = mapping.object<Chatlog>({
+    attachment: mapping.optionalString,
+    channelid: mapping.string,
+    content: mapping.string,
+    embeds: mapping.choose(
+        mapping.jObject,
+        mapping.json(mapping.jObject)
+    ),
+    guildid: mapping.string,
+    id: mapping.string,
+    msgid: mapping.string,
+    msgtime: mapping.choose<number | Date>(
+        mapping.number,
+        mapping.instanceof(Date)
+    ),
+    type: mapping.in(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
+    userid: mapping.string
+});

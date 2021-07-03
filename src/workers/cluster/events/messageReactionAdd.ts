@@ -26,7 +26,7 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
         if (!channel) return;
         try {
             return await channel.getMessage(message.id);
-        } catch (err) {
+        } catch (err: unknown) {
             return undefined;
         }
 
@@ -51,7 +51,7 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
 
         try {
             return await this.cluster.discord.getRESTUser(maybeUser.id);
-        } catch (error) {
+        } catch (error: unknown) {
             return undefined;
         }
     }

@@ -49,7 +49,7 @@ export abstract class WorkerConnection extends IPCEvents {
         this.on('error', err => this.logger.error(`${this.worker} worker (ID: ${this.id}) error: `, err));
     }
 
-    public async connect(timeoutMS: number): Promise<unknown> {
+    public async connect(timeoutMs: number): Promise<unknown> {
         if (this.#process)
             throw new Error('Cannot connect to a worker multiple times. Create a new instance for a new worker');
 
@@ -80,16 +80,15 @@ export abstract class WorkerConnection extends IPCEvents {
         try {
             const result = await new Promise<unknown>((resolve, reject) => {
                 this.once('ready', data => resolve(data));
-                this.once('exit', data => reject(new Error(`Child process has exited with code ${data.code}: ${data.signal}`)));
-                setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMS);
+                this.once('exit', data => reject(new Error(`Child process has exited with ${JSON.stringify(data)}`)));
+                setTimeout(() => reject(new Error('Child process failed to send ready in time')), timeoutMs);
             });
             timer.end();
             this.logger.worker(`${this.worker} worker (ID: ${this.id} PID: ${this.#process?.pid}) is ready after ${timer.elapsed}ms and said ${JSON.stringify(result)}`);
             return result;
-        } catch (err) {
-            Error.captureStackTrace(err);
+        } catch (err: unknown) {
             this.#process.kill();
-            this.logger.error(`${this.worker} worker (ID: ${this.id} PID: ${this.#process?.pid}) failed to start: ${err.stack}`);
+            this.logger.error(`${this.worker} worker (ID: ${this.id} PID: ${this.#process?.pid}) failed to start`, err);
             throw err;
         }
     }

@@ -10,6 +10,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             subcommands: {
                 'help': {
                     parameters: '{subcommand?}',
+                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     execute: (context, [subcommand]) => showHelp(context, this, subcommand),
                     description: 'Gets the help message for this command'
                 },
@@ -34,7 +35,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
 // Circular reference means this needs to be resolved asyncronously;
 const helpCommandPromise = import('../../dcommands/help');
 async function showHelp(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
-    const { HelpCommand } = await helpCommandPromise;
-    const help = context.cluster.commands.get('help', HelpCommand);
+    const { HelpCommand: helpCommandClass } = await helpCommandPromise;
+    const help = context.cluster.commands.get('help', helpCommandClass);
     return await help?.viewDefaultCommand(context, command, subcommand) ?? '❌ Unable to load help, please try again later';
 }

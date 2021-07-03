@@ -1,9 +1,9 @@
 import moment from 'moment';
-import snekfetch from 'snekfetch';
 import { ClusterPool } from '../cluster/ClusterPool';
 import { BaseClient, ModuleLoader, BaseService, EvalResult, Logger } from './core';
 import { MasterWorker } from './MasterWorker';
 import { MasterOptions } from './core/types';
+import fetch from 'node-fetch';
 
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;
@@ -44,9 +44,16 @@ export class Master extends BaseClient {
 
     private async hello(): Promise<void> {
         try {
-            await snekfetch.post(`https://discordapp.com/api/channels/${this.config.discord.channels.botlog}/messages`)
-                .set('Authorization', this.config.discord.token)
-                .send({ content: `My master process just initialized on \`${moment().format('MMMM Do, YYYY[` at `]hh:mm:ss.SS')}\`.` });
+            await fetch(`https://discordapp.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
+                method: 'POST',
+                headers: {
+                    /* eslint-disable @typescript-eslint/naming-convention */
+                    'Authorization': this.config.discord.token,
+                    'Content-Type': 'application/json'
+                    /* eslint-enable @typescript-eslint/naming-convention */
+                },
+                body: JSON.stringify({ content: `My master process just initialized on \`${moment().format('MMMM Do, YYYY[` at `]hh:mm:ss.SS')}\`.` })
+            });
         } catch (err: unknown) {
             this.logger.error('Could not post startup message', err);
         }

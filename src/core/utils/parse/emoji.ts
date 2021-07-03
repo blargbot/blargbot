@@ -18,7 +18,7 @@ export function emoji(text: string, distinct = false): string[] {
 
     // Find twemoji defined emotes
     twemoji.replace(text, (match?: string) =>
-        void (match ? result.push(match) : undefined));
+        void (match !== undefined ? result.push(match) : undefined));
 
     if (distinct)
         result = [...new Set(result)];

@@ -22,10 +22,10 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
 
         const currentCluster = this.tryGet(id);
         if (currentCluster !== undefined) {
-            const shardReady: ProcessMessageHandler = (shardId: number) => {
+            const shardReady: ProcessMessageHandler = shardId => {
                 try {
                     currentCluster.send('killshard', shardId);
-                } catch (err) {
+                } catch (err: unknown) {
                     this.logger.error(`Wasn't able to send \`killShard ${shardId}\` message to cluster`, id, err);
                 }
             };

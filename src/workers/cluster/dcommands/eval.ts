@@ -75,7 +75,7 @@ export class EvalCommand extends BaseGlobalCommand {
     private async requestEval<T = EvalResult>(context: CommandContext, data: { type: EvalType; userId: string; code: string; }): Promise<T | EvalResult<false>> {
         try {
             return await context.cluster.worker.request('meval', data);
-        } catch (err) {
+        } catch (err: unknown) {
             return { success: false, result: err };
         }
     }

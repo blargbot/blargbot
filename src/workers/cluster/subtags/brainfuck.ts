@@ -19,8 +19,10 @@ export class BrainFuckSubtag extends BaseSubtag {
                     execute: (ctx, [code, input], subtag) => {
                         try {
                             return bfClient.execute(code.value, input.value).output;
-                        } catch (e) {
-                            return this.customError(e.message, ctx, subtag);
+                        } catch (e: unknown) {
+                            if (e instanceof Error)
+                                return this.customError(e.message, ctx, subtag);
+                            return this.customError('Unexpected error from brainfuck', ctx, subtag);
                         }
                     }
                 }

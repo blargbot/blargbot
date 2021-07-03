@@ -135,10 +135,10 @@ function* flattenGreedyArgs(parameters: readonly SubtagHandlerParameter[]): Gene
         if (!parameter.required)
             throw new Error('Cannot have optional parameters inside a greedy parameter');
 
-        if (parameter.greedy)
+        if (parameter.greedy !== null)
             throw new Error('Cannot have greedy parameters inside a greedy parameter');
 
-        if (parameter.nested)
+        if (parameter.nested.length > 0)
             yield* flattenGreedyArgs(parameter.nested);
         else
             yield parameter;

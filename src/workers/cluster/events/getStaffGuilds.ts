@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { ClusterEventService, ProcessMessageHandler } from '../core';
+import { ClusterEventService, mapping, ProcessMessageHandler } from '../core';
 
 
 export class GetStaffGuildsHandler extends ClusterEventService {
@@ -11,12 +11,20 @@ export class GetStaffGuildsHandler extends ClusterEventService {
 
     protected async execute([data, , reply]: Parameters<ProcessMessageHandler>): Promise<void> {
         const res = [];
-        for (const guild of data.guilds) {
-            if (this.cluster.discord.guilds.get(guild)) {
-                if (await this.cluster.util.isUserStaff(data.user, guild))
-                    res.push(guild);
+        const mapped = mapData(data);
+        if (mapped.valid) {
+            for (const guild of mapped.value.guilds) {
+                if (this.cluster.discord.guilds.get(guild)) {
+                    if (await this.cluster.util.isUserStaff(mapped.value.user, guild))
+                        res.push(guild);
+                }
             }
         }
         reply(res);
     }
 }
+
+const mapData = mapping.object<{ guilds: string[]; user: string; }>({
+    guilds: mapping.array(mapping.string),
+    user: mapping.string
+});

@@ -158,52 +158,52 @@ function* buildUsageInner<TContext extends CommandContext>(tree: CommandTree<TCo
 }
 
 function compileArgBinder(prefixes: readonly CommandParameter[], params: readonly CommandParameter[], allowOverflow: boolean): (args: readonly string[]) => readonly unknown[] | string {
-    const v_args = 'args';
-    const v_params = 'params';
-    const v_parsed = 'parsed';
-    const v_result = 'result';
-    const v_rest = 'rest';
-    const v_i = 'i';
-    const v_argRaw = `${v_args}[${v_i}]`;
-    let m_push = `${v_result}.push(${v_parsed});`;
+    const argsName = 'args';
+    const paramsName = 'params';
+    const parsedName = 'parsed';
+    const resultName = 'result';
+    const restName = 'rest';
+    const indexName = 'i';
+    const argRawName = `${argsName}[${indexName}]`;
+    let callPushResult = `${resultName}.push(${parsedName});`;
 
     const allParams = [...prefixes, ...params];
-    const body = [`const ${v_result} = [];`];
+    const body = [`const ${resultName} = [];`];
     if (allParams.length > 0)
-        body.push(`let ${v_i} = 0, ${v_rest}, ${v_parsed};`);
+        body.push(`let ${indexName} = 0, ${restName}, ${parsedName};`);
     else if (!allowOverflow)
-        body.push(`let ${v_i} = 0;`);
+        body.push(`let ${indexName} = 0;`);
 
     let i = 0;
     for (; i < allParams.length; i++) {
         const param = allParams[i];
         const isPrefix = i < prefixes.length;
-        const m_parse = `${v_params}[${i}].parse(${v_argRaw});`;
+        const callParse = `${paramsName}[${i}].parse(${argRawName});`;
 
         body.push(`// ******** Binding ${param.display} ********`);
         if (param.required) {
             body.push(
-                `if (${v_argRaw} === undefined)`,
+                `if (${argRawName} === undefined)`,
                 `    return \`❌ Invalid arguments! A value for \\\`${param.display}\\\` is required!\`;`,
-                `${v_parsed} = ${m_parse}`);
+                `${parsedName} = ${callParse}`);
         } else {
-            body.push(`${v_parsed} = ${v_argRaw} === undefined ? undefined : ${m_parse}`);
+            body.push(`${parsedName} = ${argRawName} === undefined ? undefined : ${callParse}`);
         }
         switch (param.type) {
             case 'literal': {
                 if (param.required) {
                     body.push(
-                        `if (${v_parsed} === undefined)`,
-                        `    return \`❌ Invalid arguments! \\\`\${${v_argRaw}}\\\` is not a valid value for \\\`${param.display}\\\`\`;`,
-                        `${v_i}++;`);
+                        `if (${parsedName} === undefined)`,
+                        `    return \`❌ Invalid arguments! \\\`\${${argRawName}}\\\` is not a valid value for \\\`${param.display}\\\`\`;`,
+                        `${indexName}++;`);
                     if (!isPrefix)
-                        body.push(m_push);
+                        body.push(callPushResult);
                 } else {
                     if (!isPrefix)
-                        body.push(m_push);
+                        body.push(callPushResult);
                     body.push(
-                        `if (${v_parsed} !== undefined)`,
-                        `    ${v_i}++`);
+                        `if (${parsedName} !== undefined)`,
+                        `    ${indexName}++`);
                 }
                 break;
             }
@@ -213,31 +213,31 @@ function compileArgBinder(prefixes: readonly CommandParameter[], params: readonl
                     indent = '    ';
                     body.pop();
                     body.push(
-                        `${v_rest} = [];`,
-                        `for (;${v_i} < ${v_args}.length;) {`,
-                        `${indent}${v_parsed} = ${v_argRaw} === undefined ? undefined : ${m_parse}`);
-                    m_push = `${v_rest}.push(${v_parsed})`;
+                        `${restName} = [];`,
+                        `for (;${indexName} < ${argsName}.length;) {`,
+                        `${indent}${parsedName} = ${argRawName} === undefined ? undefined : ${callParse}`);
+                    callPushResult = `${restName}.push(${parsedName})`;
                 }
 
                 if (param.required) {
                     body.push(
-                        `${indent}if (${v_parsed} === undefined)`,
-                        `${indent}    return \`❌ Invalid arguments! \\\`${param.display}\\\` expects a ${param.valueType} but \\\`\${${v_argRaw}}\\\` is not\`;`);
+                        `${indent}if (${parsedName} === undefined)`,
+                        `${indent}    return \`❌ Invalid arguments! \\\`${param.display}\\\` expects a ${param.valueType} but \\\`\${${argRawName}}\\\` is not\`;`);
                 } else {
                     body.push(
-                        `${indent}if (${v_argRaw} !== undefined && ${v_parsed} === undefined)`,
-                        `${indent}    return \`❌ Invalid arguments! \\\`${param.display}\\\` expects a ${param.valueType} but \\\`\${${v_argRaw}}\\\` is not\`;`);
+                        `${indent}if (${argRawName} !== undefined && ${parsedName} === undefined)`,
+                        `${indent}    return \`❌ Invalid arguments! \\\`${param.display}\\\` expects a ${param.valueType} but \\\`\${${argRawName}}\\\` is not\`;`);
                 }
 
                 body.push(
-                    `${indent}${m_push}`,
-                    `${indent}${v_i}++;`);
+                    `${indent}${callPushResult}`,
+                    `${indent}${indexName}++;`);
 
                 if (param.rest) {
                     body.push(
                         '}',
-                        `${v_result}.push(${v_rest});`);
-                    m_push = `${v_result}.push(${v_parsed})`;
+                        `${resultName}.push(${restName});`);
+                    callPushResult = `${resultName}.push(${parsedName})`;
                 }
             }
         }
@@ -245,17 +245,18 @@ function compileArgBinder(prefixes: readonly CommandParameter[], params: readonl
 
     if (!allowOverflow) {
         body.push(
-            `if (${v_argRaw} !== undefined)`,
-            `   return \`❌ Invalid arguments! \${${v_i}} argument\${${v_i} === 1 ? ' is' : 's are'} expected, but you gave \${${v_args}.length}\`;`);
+            `if (${argRawName} !== undefined)`,
+            `   return \`❌ Invalid arguments! \${${indexName}} argument\${${indexName} === 1 ? ' is' : 's are'} expected, but you gave \${${argsName}.length}\`;`);
     }
 
     const src = [
-        `(${v_params}) => (${v_args}) => {`,
+        `(${paramsName}) => (${argsName}) => {`,
         ...body.map(l => '    ' + l),
-        `    return ${v_result};`,
+        `    return ${resultName};`,
         '}'
     ];
-    return eval(src.join('\n'))(allParams);
+    const builder = eval(src.join('\n')) as (parameters: CommandParameter[]) => (args: readonly string[]) => readonly unknown[] | string;
+    return builder(allParams);
 }
 
 function* compileParameters(raw: string): Generator<CommandParameter> {

@@ -26,7 +26,7 @@ export class ArtCommand extends BaseGlobalCommand {
             url = context.message.attachments[0].url;
         } else if (flags.I) {
             url = flags.I.join(' ');
-        } else if (user) {
+        } else if (user !== undefined) {
             const u = await context.util.getUser(context, user);
             if (!u)
                 return;

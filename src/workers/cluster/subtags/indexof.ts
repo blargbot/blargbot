@@ -18,12 +18,6 @@ export class IndexOfSubtag extends BaseSubtag {
                         const deserializedArray = bbtagUtil.tagArray.deserialize(text),
                             fallback = parse.int(context.scope.fallback ?? '');
                         let from = parse.int(start);
-                        let searchFor;
-                        try {
-                            searchFor = JSON.parse(query); // TODO Errrr what?
-                        } catch (e: unknown) {
-                            searchFor = query;
-                        }
 
                         if (isNaN(from)) from = fallback;
                         if (isNaN(from)) return this.notANumber(context, subtag, 'Start and fallback are not numbers');
@@ -34,7 +28,7 @@ export class IndexOfSubtag extends BaseSubtag {
                         else
                             input = text;
 
-                        return input.indexOf(searchFor, from).toString();
+                        return input.indexOf(query, from).toString();
                     }
                 }
             ]

@@ -46,7 +46,7 @@ export class PostgresDb {
             await this.sequelize.authenticate();
             this.logger.init('Connected to postgres. Loading models...');
             await this.loadModels();
-        } catch (err) {
+        } catch (err: unknown) {
             this.logger.error('Failed to connect to postgres, retrying in 5 seconds', err);
             await sleep(5 * 1000);
             return await this.authenticate();
@@ -58,11 +58,11 @@ export class PostgresDb {
         this.#models = {};
         this.#clientModels = {};
         for (const key of keys) {
-            const Model = models[key];
-            if (typeof Model !== 'function')
+            const modelType = models[key];
+            if (typeof modelType !== 'function')
                 continue;
 
-            const model = this.#models[key] = new Model(this.sequelize, this.logger);
+            const model = this.#models[key] = new modelType(this.sequelize, this.logger);
             if ('model' in model) {
                 await model.model.sync({ force: false, alter: false });
                 this.#clientModels[key] = model.model;

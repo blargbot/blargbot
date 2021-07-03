@@ -22,7 +22,7 @@ export async function handleAntiMention(cluster: Cluster, msg: AnyMessage): Prom
 
     try {
         await cluster.discord.banGuildMember(msg.channel.guild.id, msg.author.id, 1);
-    } catch (err) {
+    } catch (err: unknown) {
         cluster.util.bans.clear(msg.channel.guild.id, msg.author.id);
         await cluster.util.send(msg, `${msg.author.username} is mention spamming, but I lack the permissions to ban them!`);
     }

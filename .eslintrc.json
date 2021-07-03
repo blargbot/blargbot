@@ -10,7 +10,6 @@
     "overrides": [
         {
             "files": [
-                "*.ts",
                 "*.ts"
             ],
             "parser": "@typescript-eslint/parser",
@@ -35,7 +34,37 @@
                 "@typescript-eslint/explicit-member-accessibility": "error",
                 "@typescript-eslint/explicit-module-boundary-types": "error",
                 "@typescript-eslint/adjacent-overload-signatures": "error",
-                "@typescript-eslint/naming-convention": "error",
+                "@typescript-eslint/naming-convention": [
+                    "error",
+                    {
+                        "selector": "default",
+                        "format": [
+                            "camelCase"
+                        ],
+                        "leadingUnderscore": "allow",
+                        "trailingUnderscore": "allow"
+                    },
+                    {
+                        "selector": "enumMember",
+                        "format": [
+                            "UPPER_CASE"
+                        ]
+                    },
+                    {
+                        "selector": "default",
+                        "format": null,
+                        "filter": {
+                            "regex": "icon_url|ownerID|parentID|isCC",
+                            "match": true
+                        }
+                    },
+                    {
+                        "selector": "typeLike",
+                        "format": [
+                            "PascalCase"
+                        ]
+                    }
+                ],
                 "@typescript-eslint/no-explicit-any": "error",
                 "@typescript-eslint/no-extra-non-null-assertion": "error",
                 "@typescript-eslint/no-floating-promises": "error",

@@ -60,7 +60,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
     public async listAutoresponses(context: GuildCommandContext): Promise<SendPayload> {
         const accessError = this.checkArAccess(context);
-        if (accessError)
+        if (accessError !== undefined)
             return accessError;
 
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
@@ -93,7 +93,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
     public async addAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string> {
         const accessError = this.checkArAccess(context);
-        if (accessError)
+        if (accessError !== undefined)
             return accessError;
 
         let commandName;
@@ -115,7 +115,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
                 return '❌ If you want to respond to everything, you need to use the `-e` flag.';
             if (isRegex) {
                 const regexError = this.validateRegex(context, pattern);
-                if (regexError)
+                if (regexError !== undefined)
                     return regexError;
             }
             while (commandNames.has(commandName = `_autoresponse_${commandIndex++}`));
@@ -134,7 +134,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
     public async removeAutoresponse(context: GuildCommandContext): Promise<string | undefined> {
         const accessError = this.checkArAccess(context);
-        if (accessError)
+        if (accessError !== undefined)
             return accessError;
 
         const ar = await this.requestEditableAutoresponse(context, true);
@@ -152,7 +152,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
     public async editAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string | undefined> {
         const accessError = this.checkArAccess(context);
-        if (accessError)
+        if (accessError !== undefined)
             return accessError;
 
         if (isEverything)
@@ -161,7 +161,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
             return '❌ The pattern cannot be empty';
         if (isRegex) {
             const regexError = this.validateRegex(context, pattern);
-            if (regexError)
+            if (regexError !== undefined)
                 return regexError;
         }
 

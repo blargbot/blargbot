@@ -31,7 +31,7 @@ export class EmojiCommand extends BaseGlobalCommand {
 
         if (parsedEmoji.startsWith('a:') || parsedEmoji.startsWith(':')) {
             const id = parse.entityId(parsedEmoji, 'a?:\\w+:', true);
-            if (id) {
+            if (id !== null) {
                 const url = `https://cdn.discordapp.com/emojis/${id}.${parsedEmoji.startsWith('a') ? 'gif' : 'png'}`;
                 return { embed: { image: { url } } };
             }

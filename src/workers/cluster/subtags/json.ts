@@ -14,12 +14,12 @@ export class JsonSubtag extends BaseSubtag {
                 description: 'Defines a raw JSON object. Usage of subtags is disabled in `input`, inside `input` all brackets are required to match.',
                 exampleCode: '{json;{\n  "key": "value"\n}}',
                 exampleOut: '{\n  "key": "value"\n}',
-                execute: (ctx, [value], subtag) => this.getJSON(ctx, value.raw, subtag)
+                execute: (ctx, [value], subtag) => this.getJson(ctx, value.raw, subtag)
             }]
         });
     }
 
-    public getJSON(context: BBTagContext, input: string, subtag: SubtagCall): string {
+    public getJson(context: BBTagContext, input: string, subtag: SubtagCall): string {
         try {
             return JSON.stringify(JSON.parse(input));
         } catch (err: unknown) {

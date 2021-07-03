@@ -1,6 +1,6 @@
 import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Cluster } from '../Cluster';
-import { humanize, ModerationType, WarnResult } from '../core';
+import { guard, humanize, ModerationType, WarnResult } from '../core';
 
 
 export class ModerationManager {
@@ -18,7 +18,7 @@ export class ModerationManager {
     ): Promise<void> {
         if (Array.isArray(reason)) reason = reason.join(' ');
         const val = await this.cluster.database.guilds.getSetting(guild.id, 'modlog');
-        if (!val)
+        if (!guard.hasValue(val))
             return;
 
         const storedGuild = await this.cluster.database.guilds.get(guild.id);
@@ -29,8 +29,7 @@ export class ModerationManager {
         const users = Array.isArray(user) ?
             user.map(u => `${u.username}#${u.discriminator} (${u.id})`).join('\n') :
             `${user.username}#${user.discriminator} (${user.id})`;
-        reason = reason || `Responsible moderator, please do \`reason ${caseid}\` to set.`;
-
+        reason ??= `Responsible moderator, please do \`reason ${caseid}\` to set.`;
         fields ??= [];
 
         const embed: EmbedOptions = {
@@ -73,12 +72,12 @@ export class ModerationManager {
         const storedGuild = await this.cluster.database.guilds.get(guild.id);
         if (!storedGuild) throw new Error('Cannot find guild');
         let type = ModerationType.WARN;
-        let error = undefined;
+        let error: unknown = undefined;
         const oldWarnings = storedGuild.warnings?.users?.[user.id] ?? 0;
         let warningCount: number | undefined = Math.max(0, oldWarnings + (count ?? 1));
         const member = guild.members.get(user.id);
         if (member && this.cluster.util.isBotHigher(member))
-            if (storedGuild.settings.banat && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
+            if (storedGuild.settings.banat !== undefined && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
                 this.cluster.util.bans.set(guild.id, user.id, {
                     mod: this.cluster.discord.user,
                     type: 'Auto-Ban',
@@ -86,13 +85,13 @@ export class ModerationManager {
                 });
                 try {
                     await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
-                } catch (e) { error = e; }
+                } catch (e: unknown) { error = e; }
                 warningCount = undefined;
                 type = ModerationType.BAN;
-            } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
+            } else if (storedGuild.settings.kickat !== undefined && storedGuild.settings.kickat > 0 && warningCount >= storedGuild.settings.kickat) {
                 try {
                     await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
-                } catch (e) { error = e; }
+                } catch (e: unknown) { error = e; }
                 type = ModerationType.KICK;
             }
         await this.cluster.database.guilds.setWarnings(guild.id, user.id, warningCount);

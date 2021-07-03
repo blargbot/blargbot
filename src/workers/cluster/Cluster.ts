@@ -34,8 +34,10 @@ export class Cluster extends BaseClient {
             },
             getAllUsers: false,
             disableEvents: {
+                /* eslint-disable @typescript-eslint/naming-convention */
                 TYPING_START: true,
                 VOICE_STATE_UPDATE: true
+                /* eslint-enable @typescript-eslint/naming-convention */
             },
             maxShards: options.shardCount,
             firstShardID: options.firstShardId,
@@ -97,12 +99,12 @@ export class Cluster extends BaseClient {
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {
-            const func: () => Promise<unknown>
-                = eval(text.split('\n').length === 1
-                    ? `async () => ${text}`
-                    : `async () => { ${text} }`);
+            const code = text.split('\n').length === 1
+                ? `async () => ${text}`
+                : `async () => { ${text} }`;
+            const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
-        } catch (err) {
+        } catch (err: unknown) {
             return { success: false, result: err };
         }
     }

@@ -3,11 +3,11 @@ import { RethinkTableMap } from '../types';
 import { RethinkDbTable } from './RethinkDbTable';
 import { WriteChange } from 'rethinkdb';
 import { Cache } from '../../Cache';
-import { sleep } from '../../utils';
+import { guard, sleep } from '../../utils';
 import { Logger } from '../../Logger';
 
 export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K extends string & keyof RethinkTableMap[T], M extends RethinkTableMap[T]> extends RethinkDbTable<T> {
-    protected readonly cache: Cache<string, M>;
+    protected readonly cache: Cache<string & RethinkTableMap[T][K], M>;
 
     protected constructor(
         table: T,
@@ -20,7 +20,7 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
     }
 
     protected async rget(
-        key: string,
+        key: string & RethinkTableMap[T][K],
         skipCache = false
     ): Promise<M | undefined> {
         if (skipCache || !this.cache.has(key)) {
@@ -36,18 +36,20 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
         this.logger.info(`Registering a ${this.table} changefeed!`);
         while (true) {
             try {
+                /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
                 const changefeed = this.rstream<WriteChange>(t => t.changes({ squash: true }));
                 for await (const data of changefeed) {
-                    if (!data.new_val)
+                    if (!guard.hasValue(data.new_val))
                         this.cache.delete(data.old_val[this.keyName]);
                     else {
-                        const id = data.new_val[this.keyName];
+                        const id = data.new_val[this.keyName] as string & RethinkTableMap[T][K];
                         if (this.cache.has(id) || shouldCache(id))
                             this.cache.set(id, data.new_val);
                     }
                 }
+                /* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
             }
-            catch (err) {
+            catch (err: unknown) {
                 this.logger.warn(`Error from changefeed for table '${this.table}', will try again in 10 seconds.`, err);
                 await sleep(10000);
             }

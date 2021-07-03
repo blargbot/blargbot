@@ -356,7 +356,7 @@ export interface MutableStoredUser extends StoredUser {
 export interface StoredUserSettings {
     readonly dontdmerrors?: boolean;
     readonly prefixes?: readonly string[];
-    readonly blacklisted?: boolean;
+    readonly blacklisted?: string;
     readonly timezone?: string;
 }
 

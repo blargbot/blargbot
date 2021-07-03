@@ -85,7 +85,7 @@ function coreceLogLevel<T extends string, R extends readonly string[] | undefine
 
 function coerceCatLoggr(logger: CatLoggr): logger is CatLoggr & Logger {
     for (const { name } of logLevels)
-        if (!(name in logger) || typeof logger.name !== 'function')
+        if (!(name in logger) || typeof logger[name] !== 'function')
             return false;
     return true;
 }

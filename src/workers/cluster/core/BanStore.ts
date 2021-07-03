@@ -12,7 +12,7 @@ export class BanStore {
     public get(guildId: string, userId: string): BanDetails | undefined;
     public get(guildId: string, userId?: string): BanDetails | undefined | GuildBanStore {
         let guild = this.#guilds.get(guildId);
-        if (userId)
+        if (userId !== undefined)
             return guild?.get(userId);
 
         if (!guild)
@@ -33,7 +33,7 @@ export class BanStore {
     public clear(guildId: string): void
     public clear(guildId: string, userId: string): void
     public clear(guildId: string, userId?: string): void {
-        if (userId)
+        if (userId !== undefined)
             this.#guilds.get(guildId)?.delete(userId);
         else
             this.#guilds.delete(guildId);

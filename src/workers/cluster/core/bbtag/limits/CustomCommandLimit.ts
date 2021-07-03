@@ -5,7 +5,7 @@ export class CustomCommandLimit extends BaseRuntimeLimit {
     public readonly scopeName = 'custom commands';
 
     public constructor() {
-        super('CustomCommandLimit');
+        super('customCommandLimit');
 
         this.addRules('safeloops', new UseCountRule(100000))
             .addRules('ban', StaffOnlyRule.instance)

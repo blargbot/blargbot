@@ -1,34 +1,34 @@
-import { AnyMessage, GuildMessage } from 'eris';
+import { AnyMessage, DiscordRESTError, GuildMessage } from 'eris';
 import { Cluster } from '../Cluster';
 import { tryHandleCleverbot } from './cleverbot';
-import { BaseCommand, CommandContext, commandTypes, FlagDefinition, guard, humanize, limits, metrics, parse, Timer } from '../core';
+import { BaseCommand, CommandContext, commandTypes, CustomCommandLimit, FlagDefinition, guard, humanize, metrics, parse, Timer } from '../core';
 
 
 export async function tryHandleCommand(cluster: Cluster, msg: AnyMessage): Promise<boolean> {
-    const { prefix, isMention } = await getPrefix(cluster, msg) ?? {};
+    const prefix = await getPrefix(cluster, msg);
     if (prefix === undefined)
         return false;
 
     const blacklistReason = await cluster.database.users.getSetting(msg.author.id, 'blacklisted');
-    if (blacklistReason) {
+    if (blacklistReason !== undefined) {
         await cluster.util.send(msg, `You have been blacklisted from the bot for the following reason: ${blacklistReason}`);
         return true;
     }
 
-    const context = new CommandContext(cluster, msg, prefix);
+    const context = new CommandContext(cluster, msg, prefix.value);
     if (await tryHandleCustomCommand(cluster, context) || await tryHandleDefaultCommand(cluster, context)) {
         if (guard.isGuildMessage(msg))
             void handleDeleteNotif(cluster, msg);
         return true;
     }
 
-    if (isMention)
+    if (prefix.isMention === true)
         return await tryHandleCleverbot(cluster, msg);
 
     return false;
 }
 
-async function getPrefix(cluster: Cluster, msg: AnyMessage): Promise<undefined | { prefix: string; isMention: boolean; }> {
+async function getPrefix(cluster: Cluster, msg: AnyMessage): Promise<undefined | { value: string; isMention: boolean; }> {
     const guildPrefixes = await getGuildPrefixes(cluster, msg);
     const userPrefixes = await cluster.database.users.getSetting(msg.author.id, 'prefixes') ?? [];
     const defaultPrefixes = [cluster.config.discord.defaultPrefix, cluster.discord.user.username];
@@ -39,7 +39,7 @@ async function getPrefix(cluster: Cluster, msg: AnyMessage): Promise<undefined |
         .find(p => msg.content.startsWith(p));
 
     return prefix !== undefined
-        ? { prefix, isMention: mentionPrefixes.includes(prefix) }
+        ? { value: prefix, isMention: mentionPrefixes.includes(prefix) }
         : undefined;
 }
 
@@ -111,7 +111,7 @@ async function tryHandleCustomCommand(cluster: Cluster, context: CommandContext)
     await cluster.bbtag.execute(content, {
         message: context.message,
         tagName: context.commandName,
-        limit: limits.CustomCommandLimit,
+        limit: new CustomCommandLimit(),
         flags,
         input: context.args,
         isCC: true,
@@ -140,8 +140,8 @@ async function tryHandleDefaultCommand(cluster: Cluster, context: CommandContext
         timer.end();
         metrics.commandLatency.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).observe(timer.elapsed);
         metrics.commandCounter.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).inc();
-    } catch (err) {
-        cluster.logger.error(err.stack);
+    } catch (err: unknown) {
+        cluster.logger.error(err);
         metrics.commandError.labels(command.name).inc();
     } finally {
         return true;
@@ -151,20 +151,22 @@ async function tryHandleDefaultCommand(cluster: Cluster, context: CommandContext
 async function executeCommand(cluster: Cluster, command: BaseCommand, context: CommandContext): Promise<void> {
     try {
         await command.execute(context);
-    } catch (err) {
+    } catch (err: unknown) {
         cluster.logger.error(err);
-        if (err.code === 50001 && !(await cluster.database.users.get(context.author.id))?.dontdmerrors) {
-            if (!guard.isGuildChannel(context.channel))
-                void cluster.util.sendDM(context.author,
-                    'Oops, I dont seem to have permission to do that!');
-            else
-                void cluster.util.sendDM(context.author,
-                    'Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\n' +
-                    `Guild: ${context.channel.guild.name}\n` +
-                    `Channel: ${context.channel.name}\n` +
-                    `Command: ${context.commandText}\n` +
-                    '\n' +
-                    'If you wish to stop seeing these messages, do the command `dmerrors`.');
+        if (err instanceof DiscordRESTError) {
+            if (err.code === 50001 && (await cluster.database.users.get(context.author.id))?.dontdmerrors !== true) {
+                if (!guard.isGuildChannel(context.channel))
+                    void cluster.util.sendDM(context.author,
+                        'Oops, I dont seem to have permission to do that!');
+                else
+                    void cluster.util.sendDM(context.author,
+                        'Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\n' +
+                        `Guild: ${context.channel.guild.name}\n` +
+                        `Channel: ${context.channel.name}\n` +
+                        `Command: ${context.commandText}\n` +
+                        '\n' +
+                        'If you wish to stop seeing these messages, do the command `dmerrors`.');
+            }
         }
         throw err;
     }

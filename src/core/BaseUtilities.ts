@@ -1,11 +1,11 @@
-import { ExtendedUser, Textable, Channel, AnyMessage, User, Member, AnyChannel, Client as ErisClient } from 'eris';
-import request from 'request';
+import { ExtendedUser, Textable, Channel, AnyMessage, User, Member, Client as ErisClient, DiscordRESTError, DiscordHTTPError } from 'eris';
 import { metrics } from './Metrics';
 import { BaseClient } from './BaseClient';
 import { Database } from './database';
 import { SendContext, SendFiles, SendPayload } from './types';
 import { guard, humanize, snowflake } from './utils';
 import { Logger } from './Logger';
+import fetch from 'node-fetch';
 
 export class BaseUtilities {
     public get user(): ExtendedUser { return this.client.discord.user; }
@@ -29,7 +29,7 @@ export class BaseUtilities {
 
                 if (guard.isTextableChannel(foundChannel))
                     return foundChannel;
-                else if (foundChannel)
+                else if (guard.hasValue(foundChannel))
                     throw new Error('Cannot send messages to the given channel');
 
                 break;
@@ -71,7 +71,7 @@ export class BaseUtilities {
         }
 
         this.logger.log(payload);
-        if (payload.disableEveryone) {
+        if (payload.disableEveryone === true) {
             if (!payload.allowedMentions) {
                 payload.allowedMentions = {};
             }
@@ -79,9 +79,9 @@ export class BaseUtilities {
         }
 
         // Send help messages to DMs if the message is marked as a help message
-        if (payload.isHelp
+        if (payload.isHelp === true
             && guard.isGuildChannel(channel)
-            && await this.database.guilds.getSetting(channel.guild.id, 'dmhelp')
+            && await this.database.guilds.getSetting(channel.guild.id, 'dmhelp') === true
             && author !== undefined) {
             await this.send(channel, '📧 DMing you the help 📧');
             payload.content = `Here is the help you requested in ${channel.mention}:\n${payload.content ?? ''}`;
@@ -100,11 +100,8 @@ export class BaseUtilities {
         if (files != null && !Array.isArray(files))
             files = [files];
 
-        if (!payload.content)
-            payload.content = '';
-        else
-            payload.content = payload.content.trim();
-        if (payload.nsfw && guard.isGuildChannel(channel) && channel.nsfw) {
+        payload.content = payload.content?.trim() ?? '';
+        if (payload.nsfw !== undefined && guard.isGuildChannel(channel) && channel.nsfw) {
             payload.content = payload.nsfw;
             payload.embed = files = undefined;
         }
@@ -127,16 +124,17 @@ export class BaseUtilities {
         this.logger.debug('Sending content: ', JSON.stringify(payload));
         try {
             return await this.discord.createMessage(channel.id, payload, files);
-        } catch (error) {
-            let response = error.response;
-            if (typeof response !== 'object')
-                response = JSON.parse(error.response || '{}');
-            if (!sendErrors.hasOwnProperty(response.code)) {
-                this.logger.error(error.response, error.stack);
+        } catch (error: unknown) {
+            if (!(error instanceof DiscordRESTError || error instanceof DiscordHTTPError))
+                throw error;
+
+            const code = error.response.code.toString();
+            if (!sendErrors.hasOwnProperty(code)) {
+                this.logger.error(error);
                 return null;
             }
 
-            let result = await sendErrors[response.code](this, channel, payload, files);
+            let result = sendErrors[code](this, channel, payload);
             if (typeof result === 'string' && author && await this.canDmErrors(author.id)) {
                 if (guard.isGuildChannel(channel))
                     result += `\nGuild: ${channel.guild.name} (${channel.guild.id})`;
@@ -158,12 +156,12 @@ export class BaseUtilities {
 
         const filename = fileUrl.substring(i + 1, fileUrl.length);
         try {
-            const response = await new Promise<string | Buffer>((res, rej) => request({ uri: fileUrl, encoding: null }, (err, _, bod) => err ? rej(err) : res(bod)));
+            const response = await fetch(fileUrl);
             return await this.send(context, payload, {
                 name: filename,
-                file: response
+                file: await response.buffer()
             });
-        } catch (err) {
+        } catch (err: unknown) {
             this.logger.error(err);
             return null;
         }
@@ -205,7 +203,7 @@ export class BaseUtilities {
 
     public async canDmErrors(userId: string): Promise<boolean> {
         const storedUser = await this.database.users.get(userId);
-        return !storedUser?.dontdmerrors;
+        return storedUser?.dontdmerrors !== true;
     }
 
     public isDeveloper(userId: string): boolean {
@@ -224,25 +222,25 @@ export class BaseUtilities {
 }
 
 
-const sendErrors: { [key: string]: (utilities: BaseUtilities, channel: AnyChannel | Channel, payload: SendPayload, files?: SendFiles) => Promise<string | void> | string | void; } = {
+const sendErrors = {
     '10003': () => { /* console.error('10003: Channel not found. ', channel); */ },
-    '50006': (util, _, payload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
+    '50006': (util: BaseUtilities, _: unknown, payload: SendPayload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
     '50007': () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
     '50008': () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
 
-    '50013': (util) => {
+    '50013': (util: BaseUtilities) => {
         util.logger.warn('50013: Tried sending a message, but had no permissions!');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to speak. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Send Messages` permission.';
     },
-    '50001': (util) => {
+    '50001': (util: BaseUtilities) => {
         util.logger.warn('50001: Missing Access');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to see the channel. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Read Messages` permission.';
     },
-    '50004': (util, channel) => {
+    '50004': (util: BaseUtilities, channel: Channel) => {
         util.logger.warn('50004: Tried embeding a link, but had no permissions!');
         void util.send(channel.id, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
         return 'I tried to send a message in response to your command, ' +
@@ -252,7 +250,7 @@ const sendErrors: { [key: string]: (utilities: BaseUtilities, channel: AnyChanne
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    '50035': (util, channel, payload) => {
-        util.logger.warn('%s|%s: %o', channel.id, 'name' in channel ? channel.name : 'PRIVATE CHANNEL', payload);
+    '50035': (util: BaseUtilities, channel: Channel, payload: SendPayload) => {
+        util.logger.warn('%s|%s: %o', channel.id, guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL', payload);
     }
-};
+} as const;

@@ -32,7 +32,7 @@ export abstract class IntervalService extends BaseService {
             try {
                 this.logger.debug(`Executing ${this.name}`);
                 await this.execute();
-            } catch (err) {
+            } catch (err: unknown) {
                 this.logger.error(`Interval ${this.name} threw an error: ${inspect(err)}`);
             }
         };

@@ -51,7 +51,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
     public get database(): Database { return this.engine.database; }
     public get logger(): Logger { return this.engine.logger; }
-    public get permissions(): Permission { return (this.guild.members.get(this.authorizer) || { permissions: new Permission(0, 0) }).permissions; }
+    public get permissions(): Permission { return (this.guild.members.get(this.authorizer) ?? { permissions: new Permission(0, 0) }).permissions; }
     public get perms(): Permission { return this.permissions; }
     public constructor(
         public readonly engine: BBTagEngine,
@@ -70,7 +70,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.cooldown = options.cooldown ?? 0;
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
         this.locks = options.locks ?? {};
-        this.limit = typeof options.limit === 'function' ? new options.limit() : options.limit;
+        this.limit = options.limit;
         // this.outputModify = options.outputModify ?? ((_, r) => r);
         this.silent = options.silent ?? false;
         this.flaggedInput = parse.flags(this.flags, this.input);
@@ -159,7 +159,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         } finally { }
         if (didSend)
             this.state.query.count++;
-        this.state.query.user[name] = (result || { id: undefined }).id;
+        this.state.query.user[name] = result?.id;
         return result;
     }
 
@@ -182,7 +182,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         } finally { }
         if (didSend)
             this.state.query.count++;
-        this.state.query.role[name] = (result || { id: undefined }).id;
+        this.state.query.role[name] = result?.id;
         return result;
     }
 
@@ -206,7 +206,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         } finally { }
         if (didSend)
             this.state.query.count++;
-        this.state.query.channel[name] = (result || { id: undefined }).id;
+        this.state.query.channel[name] = result?.id;
         return result as (AnyGuildChannel | null);
     }
 
@@ -257,14 +257,15 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 return response.id;
             }
             throw new Error(`Failed to send: ${text}`);
-        } catch (err) {
+        } catch (err: unknown) {
             if (err instanceof Error) {
                 if (err.message !== 'No content') {
                     throw err;
                 }
                 return null;
             }
-            throw new Error(`Failed to send: ${text} ${err}`);
+            this.logger.error(`Failed to send: ${text}`, err);
+            throw new Error(`Failed to send: ${text}`);
         }
     }
 
@@ -288,21 +289,25 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             if (!guard.isGuildMessage(msg))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             message = <BBTagContextMessage>msg;
-        } catch (err) {
-            let channel = engine.discord.getChannel(obj.msg.channel.id);
+        } catch (err: unknown) {
+            const channel = engine.discord.getChannel(obj.msg.channel.id);
             if (!guard.isGuildChannel(channel))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             if (!guard.isTextableChannel(channel))
                 throw new Error('Channel must be able to send and receive messages to work with BBTag');
+            const member = channel.guild.members.get(obj.msg.member.id);
+            if (member === undefined)
+                throw new Error(`User ${obj.msg.member.id} doesnt exist on ${channel.guild.id} any more`);
 
-            let member: Member;
-            if (channel === null) {
-                channel = <GuildTextableChannel>JSON.parse(obj.msg.channel.serialized); // TODO this isnt true
-                member = <Member>JSON.parse(obj.msg.member.serialized); // TODO this isnt true
-            } else {
-                member = channel.guild.members.get(obj.msg.member.id)
-                    ?? <Member>JSON.parse(obj.msg.member.serialized); // TODO this isnt true
-            }
+            // TODO Do we need this any more?
+            // let member: Member;
+            // if (channel === null) {
+            //     channel = <GuildTextableChannel>JSON.parse(obj.msg.channel.serialized);
+            //     member = <Member>JSON.parse(obj.msg.member.serialized);
+            // } else {
+            //     member = channel.guild.members.get(obj.msg.member.id)
+            //         ?? <Member>JSON.parse(obj.msg.member.serialized);
+            // }
             message = {
                 id: obj.msg.id,
                 timestamp: obj.msg.timestamp,
@@ -332,7 +337,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         result.state.cache = {};
         result.state.overrides = {};
 
-        for (const key of Object.keys(obj.tempVars || {}))
+        for (const key of Object.keys(obj.tempVars ?? {}))
             await result.variables.set(key, new CacheEntry(result, key, obj.tempVars[key]));
         return result;
     }

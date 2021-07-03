@@ -92,13 +92,13 @@ export class BBTagEngine {
                 await sleep(100);
             const result = await handler.execute(context, name, bbtag);
             return typeof result === 'string' ? result : '';
-        } catch (err) {
+        } catch (err: unknown) {
             this.logger.error(err);
             await this.util.send(this.cluster.config.discord.channels.errorlog, {
                 content: 'A tag error occurred.',
                 embed: {
-                    title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),
-                    description: err.stack || 'No error stack!',
+                    title: err instanceof Error ? err.message : typeof err == 'string' ? err : JSON.stringify(err),
+                    description: err instanceof Error ? err.stack : 'No error stack!',
                     color: parse.color('red'),
                     fields: [
                         { name: 'SubTag', value: definition?.name ?? name, inline: true },
@@ -110,7 +110,7 @@ export class BBTagEngine {
                     ]
                 }
             });
-            return context.addError('An internal server error has occurred', bbtag, err.message);
+            return context.addError('An internal server error has occurred', bbtag, err instanceof Error ? err.message : undefined);
         }
     }
 
@@ -128,13 +128,19 @@ export class BBTagEngine {
                 else {
                     const subtag = this.subtags.get(call.name.join(''));
                     // TODO Detect unknown subtags
-                    if (subtag?.deprecated) {
-                        result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
+                    switch (typeof subtag?.deprecated) {
+                        case 'boolean':
+                            if (!subtag.deprecated)
+                                break;
+                        // fallthrough
+                        case 'string':
+                            result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
+
                     }
                 }
             }
 
-        } catch (err) {
+        } catch (err: unknown) {
             if (err instanceof BBTagError)
                 result.errors.push(err);
             else

@@ -18,7 +18,7 @@ export async function handleTableFlip(cluster: Cluster, msg: AnyMessage): Promis
 
 async function flipTables(cluster: Cluster, msg: GuildMessage, unflip: boolean): Promise<void> {
     const tableflip = await cluster.database.guilds.getSetting(msg.channel.guild.id, 'tableflip');
-    if (tableflip) {
+    if (tableflip === true) {
         const seed = randInt(0, 3);
         await cluster.util.send(msg, tables[unflip ? 'unflip' : 'flip'].prod[seed]);
     }

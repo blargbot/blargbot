@@ -35,8 +35,8 @@ export class RethinkDb {
         while (true) {
             try {
                 yield <T>await cursor.next();
-            } catch (err) {
-                if (err && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
+            } catch (err: unknown) {
+                if (err instanceof Error && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
                     break;
                 throw err;
             }

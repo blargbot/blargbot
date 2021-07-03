@@ -52,8 +52,8 @@ export class VariableCache {
             throw new Error('Missing default variable scope!');
         try {
             return this.#cache[variable] = new CacheEntry(this.context, variable,
-                await scope.getter(this.context, subtag, variable.substring(scope.prefix.length)) || '');
-        } catch (err) {
+                await scope.getter(this.context, subtag, variable.substring(scope.prefix.length)) ?? '');
+        } catch (err: unknown) {
             this.context.logger.error(err, this.context.isCC, this.context.tagName);
             throw err;
         }
@@ -88,7 +88,7 @@ export class VariableCache {
         if (execRunning)
             this.context.execTimer.end();
         this.context.dbTimer.resume();
-        const vars = (variables || Object.keys(this.#cache))
+        const vars = (variables ?? Object.keys(this.#cache))
             .map(key => this.#cache[key])
             .filter((c): c is CacheEntry => c !== undefined);
         const pools: Record<string, Record<string, JToken>> = {};

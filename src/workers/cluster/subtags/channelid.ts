@@ -22,14 +22,14 @@ export class ChannelIdSubtag extends BaseSubtag {
                     description: 'Returns the ID of the given channel. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: '{channelid;cool channel}\n{channelid;some channel that doesn\'t exist;true}',
                     exampleOut: '111111111111111\n(nothing is returned here)',
-                    execute: (ctx, args, subtag) => this.getChannelID(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, args, subtag) => this.getChannelId(ctx, args.map(arg => arg.value), subtag)
 
                 }
             ]
         });
     }
 
-    public async getChannelID(
+    public async getChannelId(
         context: BBTagContext,
         args: string[],
         subtag: SubtagCall

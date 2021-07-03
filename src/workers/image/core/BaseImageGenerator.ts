@@ -1,9 +1,8 @@
 import gm from 'gm';
 import Jimp from 'jimp';
+import fetch from 'node-fetch';
 import path from 'path';
 import phantom from 'phantom';
-import request, { CoreOptions, RequiredUriUrl, Response } from 'request';
-import { guard } from '../../../core';
 import { TypeMapping } from '../../cluster/core';
 import { Logger } from './globalCore';
 import { ImageGeneratorMap, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
@@ -22,7 +21,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         this.#mapping = mapping;
     }
 
-    public async execute(message: unknown): Promise<Buffer | null> {
+    public async execute(message: JToken): Promise<Buffer | null> {
         const mapped = this.#mapping(message);
         if (!mapped.valid)
             return null;
@@ -71,19 +70,21 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         }
 
         this.logger.debug(url);
-        const r = await aRequest({ uri: url });
+        const response = await fetch(url);
 
-        if (r.res.headers['content-type'] == 'image/gif') {
-            return await this.toBuffer(
-                gm(r.body, 'temp.gif')
-                    .selectFrame(1)
-                    .setFormat('png'));
-        } else if (r.res.headers['content-type'] == 'image/png' ||
-            r.res.headers['content-type'] == 'image/jpeg' ||
-            r.res.headers['content-type'] == 'image/bmp') {
-            return r.body;
-        } else {
-            throw new Error('Wrong file type!');
+        switch (response.headers.get('content-type')) {
+            case 'image/gif':
+                return await this.toBuffer(
+                    gm(response.body, 'temp.gif')
+                        .selectFrame(1)
+                        .setFormat('png')
+                );
+            case 'image/png':
+            case 'image/jpeg':
+            case 'image/bmp':
+                return await response.buffer();
+            default:
+                throw new Error('Wrong file type!');
         }
     }
 
@@ -241,26 +242,6 @@ function phantomResize(): void {
             }
         }
     }
-}
-
-async function aRequest(obj: RequiredUriUrl & CoreOptions): Promise<{ res: Response; body: Buffer; }> {
-    return await new Promise<{ res: Response; body: Buffer; }>((resolve, reject) => {
-        obj.encoding ??= null;
-
-        request(obj, (err, res, body) => {
-            if (guard.hasValue(err)) {
-                reject(err);
-                return;
-            }
-            if (body instanceof Buffer)
-                resolve({
-                    res: res,
-                    body: body
-                });
-            else
-                reject(new Error('Response body was not a buffer!'));
-        });
-    });
 }
 
 function isJimp(source: MagickSource): source is Jimp {

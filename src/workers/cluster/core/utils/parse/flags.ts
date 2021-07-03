@@ -20,7 +20,7 @@ export function flags(definitions: Iterable<FlagDefinition>, text: string | read
         if (words[i].startsWith('--')) {
             if (words[i].length > 2) {
                 const flag = flagmap.get(words[i].substr(2).toLowerCase());
-                if (flag) {
+                if (flag !== undefined) {
                     currentFlag = flag;
                     output[currentFlag] = [];
                     pushFlag = false;

@@ -27,7 +27,7 @@ export class BaseNumberSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): string {
         let fallback;
-        if (context.scope.fallback) {
+        if (context.scope.fallback !== undefined) {
             fallback = parse.int(context.scope.fallback);
             if (isNaN(fallback) || !between(fallback, 2, 36, true))
                 fallback = undefined;
@@ -55,7 +55,7 @@ export class BaseNumberSubtag extends BaseSubtag {
 
         let value = parse.int(valueStr, origin);
         if (isNaN(value)) {
-            if (fallback && !isNaN(fallback)) {
+            if (fallback !== undefined && !isNaN(fallback)) {
                 value = fallback;
             } else {
                 return this.notANumber(context, subtag);

@@ -2,9 +2,9 @@ import { createHmac } from 'crypto';
 import { EmbedOptions, MessageFile } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
-import Snekfetch from 'snekfetch';
+import fetch from 'node-fetch';
 import { Cluster } from '../Cluster';
-import { AutoresponseShrinkwrap, BaseGuildCommand, bbtagUtil, codeBlock, CommandResult, commandTypes, CustomCommandShrinkwrap, Database, FilteredAutoresponseShrinkwrap, FlagDefinition, getDocsEmbed, guard, GuildAutoresponse, GuildCommandContext, GuildFilteredAutoresponse, GuildShrinkwrap, humanize, limits, mapping, NamedStoredGuildCommand, NamedStoredRawGuildCommand, parse, SendPayload, SignedGuildShrinkwrap } from '../core';
+import { AutoresponseShrinkwrap, BaseGuildCommand, bbtagUtil, codeBlock, CommandResult, commandTypes, CustomCommandLimit, CustomCommandShrinkwrap, Database, FilteredAutoresponseShrinkwrap, FlagDefinition, getDocsEmbed, guard, GuildAutoresponse, GuildCommandContext, GuildFilteredAutoresponse, GuildShrinkwrap, humanize, mapping, NamedStoredGuildCommand, NamedStoredRawGuildCommand, parse, SendPayload, SignedGuildShrinkwrap } from '../core';
 
 export class CustomCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
@@ -151,7 +151,7 @@ export class CustomCommand extends BaseGuildCommand {
             message: context.message,
             input: args,
             isCC: true,
-            limit: new limits.CustomCommandLimit(),
+            limit: new CustomCommandLimit(),
             tagName: 'test',
             author: context.author.id
         });
@@ -188,7 +188,7 @@ export class CustomCommand extends BaseGuildCommand {
             message: context.message,
             input: args,
             isCC: true,
-            limit: new limits.CustomCommandLimit(),
+            limit: new CustomCommandLimit(),
             tagName: match.name,
             author: match.author,
             authorizer: match.authorizer,
@@ -410,7 +410,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const isNowHidden = !match.hidden;
+        const isNowHidden = match.hidden !== true;
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'hidden', isNowHidden);
         return `✅ Custom command \`${match.name}\` is now ${isNowHidden ? 'hidden' : 'visible'}.`;
     }
@@ -702,10 +702,10 @@ export class CustomCommand extends BaseGuildCommand {
         if (match.command === undefined)
             return `❌ The \`${match.name}\` custom command doesn\'t exist!`;
 
-        if (!managed && 'managed' in match.command && match.command.managed)
+        if (!managed && !guard.isAliasedCustomCommand(match.command) && match.command.managed === true)
             return `❌ The \`${match.name}\` custom command is a managed command`;
 
-        if (!hidden && match.command.hidden)
+        if (!hidden && match.command.hidden === true)
             return `❌ The \`${match.name}\` custom command is a hidden command`;
 
         return match.command;
@@ -781,11 +781,10 @@ function signShrinkwrap(shrinkwrap: GuildShrinkwrap, config: Configuration): str
     return createHmac('sha256', config.general.interface_key).update(content).digest('hex');
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 async function requestSafe(url: string): Promise<unknown> {
     try {
-        const result = await Snekfetch.get(url);
-        return result.body;
+        const response = await fetch(url);
+        return await response.json() as unknown;
     } catch {
         return undefined;
     }
@@ -854,5 +853,5 @@ const mapGuildShrinkwrap = mapping.object<GuildShrinkwrap>({
 
 const mapSignedGuildShrinkwrap = mapping.object<SignedGuildShrinkwrap>({
     signature: mapping.optionalString,
-    payload: mapping.any(mapping.json(mapGuildShrinkwrap), mapGuildShrinkwrap)
+    payload: mapping.choose(mapping.json(mapGuildShrinkwrap), mapGuildShrinkwrap)
 });

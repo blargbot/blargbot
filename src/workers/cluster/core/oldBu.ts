@@ -1,8 +1,8 @@
 import { GuildMessage, Client as ErisClient, Member, EmbedAuthorOptions, EmbedField, EmbedOptions, Permission, User } from 'eris';
 import { ClusterUtilities } from '../ClusterUtilities';
-import { BBTagEngine, limits } from './bbtag';
+import { BBTagEngine, CustomCommandLimit } from './bbtag';
 import { humanize, oldBu as globalOldBu, StoredGuild } from './globalCore';
-import { defaultStaff, modlogColour } from './utils';
+import { defaultStaff, ModlogColour } from './utils';
 import config from '../../../../config.json';
 
 const bbEngine: BBTagEngine = <BBTagEngine><unknown>undefined;
@@ -14,7 +14,7 @@ export const oldBu = {
 
     async handleCensor(msg: GuildMessage, storedGuild: StoredGuild): Promise<void> {
         const censor = storedGuild.censor;
-        if (censor?.list.length) {
+        if (censor?.list !== undefined && censor.list.length > 0) {
             //First, let's check exceptions
             const exceptions = censor.exception;
             if (!(exceptions.channel.includes(msg.channel.id) ||
@@ -27,12 +27,12 @@ export const oldBu = {
                         try {
                             const regex = oldBu.createRegExp(term);
                             if (regex.test(msg.content)) violation = true;
-                        } catch (err) { }
+                        } catch (err: unknown) { }
                     } else if (msg.content.toLowerCase().includes(term.toLowerCase())) violation = true;
                     if (violation == true) { // Uh oh, they did a bad!
                         const res = await util.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
                         if (cens.weight > 0) {
-                            await util.moderation.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Warning', cens.reason || 'Said a blacklisted phrase.', modlogColour.WARN, [{
+                            await util.moderation.logAction(msg.channel.guild, msg.author, bot.user, 'Auto-Warning', cens.reason ?? 'Said a blacklisted phrase.', ModlogColour.WARN, [{
                                 name: 'Warnings',
                                 value: `Assigned: ${cens.weight}\nNew Total: ${res.count || 0}`,
                                 inline: true
@@ -40,30 +40,30 @@ export const oldBu = {
                         }
                         try {
                             await msg.delete();
-                        } catch (err) {
+                        } catch (err: unknown) {
                             // bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
                         }
                         let content = '';
                         switch (res.type) {
                             case 0:
-                                if (cens.deleteMessage) content = cens.deleteMessage;
-                                else if (censor.rule.deleteMessage) content = censor.rule.deleteMessage;
+                                if (cens.deleteMessage !== undefined) content = cens.deleteMessage;
+                                else if (censor.rule.deleteMessage !== undefined) content = censor.rule.deleteMessage;
                                 else content = '';
                                 break;
                             case 1:
-                                if (cens.banMessage) content = cens.banMessage;
-                                else if (censor.rule.banMessage) content = censor.rule.banMessage;
+                                if (cens.banMessage !== undefined) content = cens.banMessage;
+                                else if (censor.rule.banMessage !== undefined) content = censor.rule.banMessage;
                                 else content = '';
                                 break;
                             case 2:
-                                if (cens.kickMessage) content = cens.kickMessage;
-                                else if (censor.rule.kickMessage) content = censor.rule.kickMessage;
+                                if (cens.kickMessage !== undefined) content = cens.kickMessage;
+                                else if (censor.rule.kickMessage !== undefined) content = censor.rule.kickMessage;
                                 else content = '';
                                 break;
                         }
                         await bbEngine.execute(content, {
                             message: msg,
-                            limit: new limits.CustomCommandLimit(),
+                            limit: new CustomCommandLimit(),
                             input: humanize.smartSplit(msg.content),
                             isCC: true,
                             tagName: 'censor',
@@ -109,8 +109,8 @@ export const oldBu = {
                 const roles = [];
 
                 if (Array.isArray(perm)) {
-                    for (let i = 0; i < perm.length; i++) {
-                        const id = getId(perm[i]);
+                    for (const p of perm) {
+                        const id = getId(p);
                         if (id !== null)
                             roles.push(id);
                     }
@@ -120,14 +120,14 @@ export const oldBu = {
                 return roles.includes(m.id);
             }
         });
-        for (let i = 0; i < roles.length; i++) {
-            if (member.roles.includes(roles[i].id)) {
+        for (const role of roles) {
+            if (member.roles.includes(role.id)) {
                 return true;
             }
         }
         if (!quiet && 'content' in msg) {
             const guild = await util.database.guilds.get(member.guild.id);
-            if (!guild?.settings.disablenoperms) {
+            if (guild?.settings.disablenoperms !== true) {
                 const permString = Array.isArray(perm) ? perm.map(m => '`' + m + '`').join(', or ') : '`' + perm + '`';
                 void util.send(msg, `You need the role ${permString} in order to use this command!`);
             }
@@ -136,7 +136,7 @@ export const oldBu = {
     },
     async canDmErrors(userId: string): Promise<boolean> {
         const storedUser = await util.database.users.get(userId, true);
-        return !storedUser?.dontdmerrors;
+        return storedUser?.dontdmerrors !== true;
     },
     comparePerms(m: Member, allow: number): boolean {
         if (!allow) allow = defaultStaff;
@@ -162,7 +162,7 @@ export const oldBu = {
         if (!Array.isArray(userids)) userids = [userids];
         // If there are not any userId's that are not contained in the ignore, then return
         // I.e. if all the users are contained in the ignore list
-        if (!userids.find(id => !logIgnore.includes(id)))
+        if (!userids.some(id => !logIgnore.includes(id)))
             return;
         event = event.toLowerCase();
 
@@ -224,14 +224,14 @@ export const oldBu = {
                     break;
             }
             const channel = log[event];
-            if (!embed) embed = {};
+            embed ??= {};
             embed.title = `ℹ ${eventName}`;
             embed.timestamp = new Date();
             embed.fields = fields;
             embed.color = color;
             try {
                 await util.send(channel, { embed });
-            } catch (err) {
+            } catch (err: unknown) {
                 await util.database.guilds.setLogChannel(guildid, event, undefined);
                 await util.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
             }

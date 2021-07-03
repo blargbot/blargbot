@@ -6,8 +6,8 @@ export function stringifyParameters(subtagName: string, parameters: readonly Sub
 
 function stringifyParameter(parameter: SubtagHandlerParameter): string {
     const innerParams = parameter.nested.map(stringifyParameter).join(';');
-    let result = innerParams && parameter.name ? `${parameter.name} ${innerParams}`
-        : parameter.name ? parameter.name : innerParams;
+    let result = innerParams && parameter.name !== null ? `${parameter.name} ${innerParams}`
+        : parameter.name !== null ? parameter.name : innerParams;
 
     if (parameter.greedy !== null)
         result += '...';

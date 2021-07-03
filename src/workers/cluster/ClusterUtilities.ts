@@ -1,9 +1,9 @@
-import request from 'request';
 import { Cluster } from './Cluster';
 import { AnyChannel, Channel, AnyMessage, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
 import moment from 'moment';
 import { BaseUtilities, BanStore, MessageIdQueue, MessageAwaiter, ReactionAwaiter, FindEntityOptions, guard, codeBlock, LookupMatch, humanize, SendPayload, MessagePrompt, CommandContext, StoredGuildCommand, BaseCommand, CanExecuteDefaultCommandOptions, commandTypes, defaultStaff, parse } from './core';
 import { ModerationManager } from './managers';
+import fetch from 'node-fetch';
 
 export class ClusterUtilities extends BaseUtilities {
     public readonly bans: BanStore;
@@ -71,21 +71,21 @@ export class ClusterUtilities extends BaseUtilities {
                     normName: m.username.toLowerCase()
                 })
             }))
-            .filter(m => m.match > 0 && (!discrim || discrim == m.member.discriminator))
+            .filter(m => m.match > 0 && (discrim === undefined || discrim == m.member.discriminator))
             .sort((a, b) => b.match - a.match)
             .map(m => m.member.user);
 
         switch (userList.length) {
             case 1: return userList[0];
             case 0:
-                if (args.quiet || args.suppress)
+                if (args.quiet === true || args.suppress == true)
                     return null;
                 if (args.onSendCallback)
                     args.onSendCallback();
-                await this.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
+                await this.send(msg, `No users found${args.label !== undefined ? ' in ' + args.label : ''}.`);
                 return null;
             default:
-                if (args.quiet || args.suppress)
+                if (args.quiet === true || args.suppress == true)
                     return null;
                 const matches = userList.map(m => ({ content: `${m.username}#${m.discriminator} - ${m.id}`, value: m }));
                 const lookupResponse = await this.createLookup(msg, 'user', matches, args);
@@ -128,14 +128,14 @@ export class ClusterUtilities extends BaseUtilities {
         switch (roleList.length) {
             case 1: return roleList[0];
             case 0:
-                if (args.quiet || args.suppress)
+                if (args.quiet === true || args.suppress == true)
                     return null;
                 if (args.onSendCallback)
                     args.onSendCallback();
-                await this.send(msg, `No roles found${args.label ? ' in ' + args.label : ''}.`);
+                await this.send(msg, `No roles found${args.label !== undefined ? ' in ' + args.label : ''}.`);
                 return null;
             default:
-                if (args.quiet || args.suppress)
+                if (args.quiet === true || args.suppress == true)
                     return null;
                 const matches = roleList.map(r => ({ content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r }));
                 const lookupResponse = await this.createLookup(msg, 'role', matches, args);
@@ -182,14 +182,14 @@ export class ClusterUtilities extends BaseUtilities {
         switch (channelList.length) {
             case 1: return channelList[0];
             case 0:
-                if (args.quiet || args.suppress)
+                if (args.quiet === true || args.suppress == true)
                     return null;
                 if (args.onSendCallback)
                     args.onSendCallback();
-                await this.send(msg, `No channel found${args.label ? ' in ' + args.label : ''}.`);
+                await this.send(msg, `No channel found${args.label !== undefined ? ' in ' + args.label : ''}.`);
                 return null;
             default:
-                if (args.quiet || args.suppress)
+                if (args.quiet === true || args.suppress == true)
                     return null;
                 const matches = channelList.map(c => ({ content: `${c.name} (${c.id})`, value: c }));
                 const lookupResponse = await this.createLookup(msg, 'channel', matches, args);
@@ -227,7 +227,7 @@ export class ClusterUtilities extends BaseUtilities {
             const response = await query.response;
             try {
                 await query.prompt?.delete();
-            } catch (err) {
+            } catch (err: unknown) {
                 this.logger.error(`Failed to paging prompt (channel: ${query.prompt?.channel.id} message: ${query.prompt?.id}):`, err);
             }
             if (!response)
@@ -261,18 +261,18 @@ export class ClusterUtilities extends BaseUtilities {
                 await this.discord.deleteMessage(query.prompt.channel.id, query.prompt.id);
 
             if (!response || response.content.toLowerCase() === 'c') {
-                if (args.suppress)
+                if (args.suppress === true)
                     return null;
 
                 if (args.onSendCallback)
                     args.onSendCallback();
 
-                await this.send(msg, `Query ${response ? 'cancelled' : 'timed out'}${args.label ? ' in ' + args.label : ''}.`);
+                await this.send(msg, `Query ${response ? 'cancelled' : 'timed out'}${args.label !== undefined ? ' in ' + args.label : ''}.`);
                 return null;
             }
 
             return lookupList[parseInt(response.content) - 1].value;
-        } catch (err) {
+        } catch (err: unknown) {
             return null;
         }
     }
@@ -297,7 +297,7 @@ export class ClusterUtilities extends BaseUtilities {
         timeoutMS = 300000,
         label?: string
     ): Promise<MessagePrompt> {
-        const timeoutMessage = `Query canceled${label ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
+        const timeoutMessage = `Query canceled${label !== undefined ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
         return this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
     }
 
@@ -324,7 +324,7 @@ export class ClusterUtilities extends BaseUtilities {
         const prompt = await this.send(channel, content);
         const response = this.messageAwaiter.wait([channel.id], [user.id], timeoutMS, check);
 
-        if (timeoutMessage) {
+        if (timeoutMessage !== undefined) {
             void response.then(async m => {
                 if (m === null)
                     await this.send(channel, timeoutMessage);
@@ -393,74 +393,77 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public postStats(): void {
+    /* eslint-disable @typescript-eslint/naming-convention */
+    public async postStats(): Promise<void> {
         const stats = {
             server_count: this.discord.guilds.size,
             shard_count: this.discord.shards.size,
             shard_id: this.cluster.id
         };
         this.logger.log(stats);
-        request.post({
-            'url': `https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`,
-            'headers': {
-                'content-type': 'application/json',
-                'Authorization': this.config.general.botlisttoken,
-                'User-Agent': 'blargbot/1.0 (ratismal)'
-            },
-            'json': true,
-            body: stats
-        }, (err) => {
-            if (err)
-                this.logger.error(err);
-        });
+        const promises: Array<PromiseLike<unknown>> = [];
+        promises.push(
+            fetch(`https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`, {
+                method: 'POST',
+                headers: {
+                    'content-type': 'application/json',
+                    'Authorization': this.config.general.botlisttoken,
+                    'User-Agent': 'blargbot/1.0 (ratismal)'
+                },
+                body: JSON.stringify(stats)
+            })
+        );
 
         if (!this.config.general.isbeta) {
             this.logger.info('Posting to matt');
 
-            request.post({
-                'url': 'https://www.carbonitex.net/discord/data/botdata.php',
-                'headers': {
-                    'content-type': 'application/json'
-                },
-                'json': true,
-                body: {
-                    'key': this.config.general.carbontoken,
-                    'servercount': stats.server_count,
-                    shard_count: stats.shard_count,
-                    shard_id: stats.shard_id,
-                    'logoid': this.user.avatar
-                }
-            }, (err) => {
-                if (err)
-                    this.logger.error(err);
-            });
+            promises.push(
+                fetch('https://www.carbonitex.net/discord/data/botdata.php', {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        'key': this.config.general.carbontoken,
+                        'servercount': stats.server_count,
+                        shard_count: stats.shard_count,
+                        shard_id: stats.shard_id,
+                        'logoid': this.user.avatar
+                    })
+                })
+            );
 
             const shards = [];
             for (const shardId of this.discord.shards.map(s => s.id)) {
                 shards[shardId] = this.discord.guilds.filter(g => g.shard.id === shardId);
             }
-            request.post({
-                url: `https://discordbots.org/api/bots/${this.user.id}/stats`,
-                json: true,
-                headers: {
-                    'content-type': 'application/json',
-                    'Authorization': this.config.general.botlistorgtoken,
-                    'User-Agent': 'blargbot/1.0 (ratismal)'
-                },
-                body: {
-                    shards
-                }
-            }, err => {
-                if (err)
-                    this.logger.error(err);
-            });
+            promises.push(
+                fetch(`https://discordbots.org/api/bots/${this.user.id}/stats`, {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                        'Authorization': this.config.general.botlistorgtoken,
+                        'User-Agent': 'blargbot/1.0 (ratismal)'
+                    },
+                    body: JSON.stringify(shards)
+                })
+            );
+        }
+
+        for (const promise of promises) {
+            try {
+                await promise;
+            } catch (err: unknown) {
+                this.logger.error(err);
+            }
         }
     }
+    /* eslint-enable @typescript-eslint/naming-convention */
 
     public async canExecuteCustomCommand(context: CommandContext<GuildChannel>, command: StoredGuildCommand, quiet: boolean): Promise<boolean> {
         return command !== null
-            && !command.hidden
-            && (!command.roles?.length || await this.hasPerm(context.message, command.roles, quiet));
+            && command.hidden !== true
+            && (command.roles === undefined || await this.hasPerm(context.message, command.roles, quiet));
     }
 
     public hasRole(msg: Member | AnyMessage, roles: string | readonly string[], override = true): boolean {
@@ -520,11 +523,11 @@ export class ClusterUtilities extends BaseUtilities {
             return false;
 
         const commandPerms = await this.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
-        if (commandPerms?.disabled && !command.cannotDisable)
+        if (commandPerms?.disabled === true && !command.cannotDisable)
             return false;
 
         const permOverride = options.permOverride ?? await this.database.guilds.getSetting(context.channel.guild.id, 'permoverride');
-        if (permOverride) {
+        if (permOverride === true) {
             const staffPerms = options.staffPerms ?? await this.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
             const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
             if (!isNaN(allow) && context.message.member && this.comparePerms(context.message.member, allow))
@@ -532,7 +535,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
 
         if (commandPerms) {
-            if (commandPerms.permission && context.message.member && this.comparePerms(context.message.member, commandPerms.permission))
+            if (commandPerms.permission !== undefined && context.message.member && this.comparePerms(context.message.member, commandPerms.permission))
                 return true;
 
             switch (typeof commandPerms.rolename) {
@@ -543,7 +546,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
 
         const adminrole = await this.database.guilds.getSetting(context.channel.guild.id, 'adminrole');
-        if (category.perm && !await this.hasPerm(context.message, [adminrole || category.perm], quiet))
+        if (category.perm !== undefined && !await this.hasPerm(context.message, [adminrole ?? category.perm], quiet))
             return false;
 
         return true;
@@ -562,8 +565,8 @@ export class ClusterUtilities extends BaseUtilities {
         if (member.permissions.has('administrator')) return true;
 
         const storedGuild = await this.database.guilds.get(guildId);
-        if (storedGuild?.settings?.permoverride) {
-            let allow = storedGuild.settings.staffperms || defaultStaff;
+        if (storedGuild?.settings?.permoverride === true) {
+            let allow = storedGuild.settings.staffperms ?? defaultStaff;
             if (typeof allow === 'string')
                 allow = parseInt(allow);
             const member = this.discord.guilds.get(guildId)?.members.get(userId);
@@ -616,7 +619,7 @@ export class ClusterUtilities extends BaseUtilities {
 
         if (channel && !quiet) {
             const guild = await this.database.guilds.get(member.guild.id);
-            if (!guild?.settings?.disablenoperms) {
+            if (guild?.settings?.disablenoperms !== true) {
                 const permString = roles.map(m => '`' + m + '`').join(', or ');
                 void this.send(channel, `You need the role ${permString} in order to use this command!`);
             }

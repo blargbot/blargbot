@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster } from '../Cluster';
 import { ClusterUtilities } from '../ClusterUtilities';
-import { BaseGuildCommand, commandTypes, fafo, BBTagContext, bbtagUtil, GuildCommandContext, humanize, limits, SendPayload, codeBlock, parse, StoredTag, getDocsEmbed, CommandContext, TagStoredEventOptions, TagV4StoredEventOptions, rules } from '../core';
+import { BaseGuildCommand, commandTypes, fafo, BBTagContext, bbtagUtil, GuildCommandContext, humanize, SendPayload, codeBlock, parse, StoredTag, getDocsEmbed, CommandContext, TagStoredEventOptions, TagV4StoredEventOptions, rules, TagLimit } from '../core';
 
 export class TagCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
@@ -171,7 +171,7 @@ export class TagCommand extends BaseGuildCommand {
             message: context.message,
             input: args,
             isCC: false,
-            limit: new limits.TagLimit(),
+            limit: new TagLimit(),
             tagName: match.name,
             author: match.author,
             authorizer: match.authorizer,
@@ -193,7 +193,7 @@ export class TagCommand extends BaseGuildCommand {
             message: context.message,
             input: args,
             isCC: false,
-            limit: new limits.TagLimit(),
+            limit: new TagLimit(),
             tagName: 'test',
             author: context.author.id
         });
@@ -289,7 +289,7 @@ export class TagCommand extends BaseGuildCommand {
             ', '
         ];
 
-        if (author) {
+        if (author !== undefined) {
             const user = await context.util.getUser(context, author);
             if (!user)
                 return;
@@ -437,7 +437,7 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const isFavourited = !match.favourites?.[context.author.id];
+        const isFavourited = match.favourites?.[context.author.id] === true;
         await context.database.tags.setFavourite(match.name, context.author.id, isFavourited);
         return isFavourited
             ? `✅ The \`${match.name}\` tag is now on your favourites list!\n\n` +
@@ -681,14 +681,14 @@ export class TagCommand extends BaseGuildCommand {
         const tag = await context.database.tags.get(tagName);
         if (tag === undefined)
             return { name: tagName };
-        if (tag !== undefined && tag.deleted) {
+        if (tag?.deleted === true) {
             let result = `❌ The \`${tag.name}\` tag has been permanently deleted`;
             if (tag.deleter !== undefined) {
                 const deleter = await context.database.users.get(tag.deleter);
                 if (deleter !== undefined)
                     result += ` by **${humanize.fullName(deleter)}**`;
             }
-            if (tag.reason)
+            if (tag.reason !== undefined)
                 result += `\n\nReason: ${tag.reason}`;
             return result;
         }

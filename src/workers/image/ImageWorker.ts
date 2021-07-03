@@ -23,7 +23,7 @@ export class ImageWorker extends BaseWorker {
         }));
     }
 
-    private async render(command: keyof ImageGeneratorMap, message: unknown): Promise<Buffer | null> {
+    private async render(command: keyof ImageGeneratorMap, message: JToken): Promise<Buffer | null> {
         const generator = this.renderers.get(command);
         if (generator === undefined)
             return null;
@@ -66,7 +66,7 @@ const commands = Object.keys<{ [P in keyof ImageGeneratorMap]: undefined }>({
     truth: undefined
 });
 
-const mapData = mapping.object<ImageRequest<keyof ImageGeneratorMap, unknown>>({
+const mapData = mapping.object<ImageRequest<keyof ImageGeneratorMap, JToken>>({
     command: mapping.in(...commands),
-    data: mapping.unknown
+    data: mapping.jToken
 });

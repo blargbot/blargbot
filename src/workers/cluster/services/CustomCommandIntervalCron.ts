@@ -1,5 +1,4 @@
-import { GuildTextableChannel } from 'eris';
-import { CronService, guard, limits, sleep, snowflake } from '../core';
+import { CronService, CustomCommandLimit, guard, sleep, snowflake } from '../core';
 import { Cluster } from '../Cluster';
 import moment from 'moment';
 
@@ -32,14 +31,14 @@ export class CustomCommandIntervalCron extends CronService {
             try {
                 const g = this.cluster.discord.guilds.get(guild.guildid);
                 if (!g) continue;
-                const id = interval.authorizer || interval.author;
+                const id = interval.authorizer ?? interval.author;
                 if (!id) continue;
                 const m = g.members.get(id);
                 if (!m) continue;
                 const u = this.cluster.discord.users.get(id) ?? await this.cluster.discord.getRESTUser(id);
-                if (!u) continue;
-                const c = g.channels.find(guard.isTextableChannel) as GuildTextableChannel;
-                if (!c) continue;
+                if (guard.hasValue(u)) continue;
+                const c = g.channels.find(guard.isTextableChannel);
+                if (c === undefined || !guard.isTextableChannel(c)) continue;
 
                 const promise = this.cluster.bbtag.execute(interval.content, {
                     message: {
@@ -52,7 +51,7 @@ export class CustomCommandIntervalCron extends CronService {
                         content: '',
                         id: snowflake.create().toString()
                     },
-                    limit: limits.CustomCommandLimit,
+                    limit: new CustomCommandLimit(),
                     input: [],
                     isCC: true,
                     tagName: '_interval',
@@ -68,7 +67,7 @@ export class CustomCommandIntervalCron extends CronService {
                     });
 
                 promises.push(Promise.race([promise, sleep(10000).then(() => guild.guildid)]));
-            } catch (err) {
+            } catch (err: unknown) {
                 this.logger.error('Issue with interval:', guild.guildid, err);
                 failures++;
             }

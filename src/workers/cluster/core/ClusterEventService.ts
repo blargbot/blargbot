@@ -16,7 +16,7 @@ export abstract class ClusterEventService extends BaseService {
         const execute = async (...args: Parameters<ProcessMessageHandler>): Promise<void> => {
             try {
                 await this.execute(...args);
-            } catch (err) {
+            } catch (err: unknown) {
                 this.cluster.logger.error(`Discord event handler ${this.name} threw an error: ${inspect(err)}`);
             }
         };

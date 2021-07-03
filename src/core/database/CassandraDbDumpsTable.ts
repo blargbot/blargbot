@@ -30,8 +30,8 @@ export class CassandraDbDumpsTable implements DumpsTable {
                 '    embeds TEXT,\n' +
                 '    channelid BIGINT,\n' +
                 ')');
-        } catch (err) {
-            this.logger.error(err.message, err.stack);
+        } catch (err: unknown) {
+            this.logger.error(err);
         }
     }
 }

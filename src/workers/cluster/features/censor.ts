@@ -1,5 +1,5 @@
 import { AnyMessage } from 'eris';
-import { guard, modlogColour, ModerationType, limits, humanize } from '../core';
+import { guard, ModlogColour, ModerationType, humanize, CustomCommandLimit } from '../core';
 import { Cluster } from '../Cluster';
 
 export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<void> {
@@ -7,7 +7,7 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
         return;
 
     const censor = await cluster.database.guilds.getCensors(msg.channel.guild.id);
-    if (!censor?.list?.length)
+    if (censor?.list === undefined || censor.list.length === 0)
         return;
 
     //First, let's check exceptions
@@ -28,8 +28,8 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
                 msg.author,
                 cluster.discord.user,
                 'Auto-Warning',
-                cens.reason || 'Said a blacklisted phrase.',
-                modlogColour.WARN,
+                cens.reason ?? 'Said a blacklisted phrase.',
+                ModlogColour.WARN,
                 [
                     {
                         name: 'Warnings',
@@ -40,7 +40,7 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
         }
         try {
             await msg.delete();
-        } catch (err) {
+        } catch (err: unknown) {
             // bu.send(msg, `${bu.getFullName(msg.author)} said a blacklisted word, but I was not able to delete it.`);
         }
         let content = '';
@@ -58,7 +58,7 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
         await cluster.bbtag.execute(content, {
             message: msg,
             tagName: 'censor',
-            limit: limits.CustomCommandLimit,
+            limit: new CustomCommandLimit(),
             input: humanize.smartSplit(msg.content),
             isCC: true,
             author: ''
