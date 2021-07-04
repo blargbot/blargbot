@@ -2,7 +2,7 @@ import { ScopeCollection } from './ScopeCollection';
 import { VariableCache, CacheEntry } from './Caching';
 import ReadWriteLock from 'rwlock';
 import { Duration } from 'moment-timezone';
-import { AnyGuildChannel, GuildTextableChannel, Member, User, Guild, Role, Permission, Client as ErisClient } from 'eris';
+import { AnyGuildChannel, Member, User, Guild, Role, Permission, Client as ErisClient, GuildChannel, Textable } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
 import { BBTagEngine } from './Engine';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '../types';
@@ -45,7 +45,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public readonly state: BBTagContextState;
 
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
-    public get channel(): GuildTextableChannel { return this.message.channel; }
+    public get channel(): GuildChannel & Textable { return this.message.channel; }
     public get member(): Member { return this.message.member; }
     public get guild(): Guild { return this.message.channel.guild; }
     public get user(): User { return this.message.author; }
@@ -63,9 +63,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         public readonly engine: BBTagEngine,
         options: BBTagContextOptions
     ) {
-        if (options.message.member === null)
-            throw new Error('The member of a message must be set');
-        this.message = <BBTagContextMessage>options.message;
+        this.message = options.message;
         this.input = options.input;
         this.flags = options.flags ?? [];
         this.isCC = options.isCC;
@@ -293,7 +291,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             const msg = await engine.discord.getMessage(obj.msg.channel.id, obj.msg.id);
             if (!guard.isGuildMessage(msg))
                 throw new Error('Channel must be a guild channel to work with BBTag');
-            message = <BBTagContextMessage>msg;
+            message = msg;
         } catch (err: unknown) {
             const channel = engine.discord.getChannel(obj.msg.channel.id);
             if (channel === undefined || !guard.isGuildChannel(channel))
@@ -304,15 +302,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             if (member === undefined)
                 throw new Error(`User ${obj.msg.member.id} doesnt exist on ${channel.guild.id} any more`);
 
-            // TODO Do we need this any more?
-            // let member: Member;
-            // if (channel === null) {
-            //     channel = <GuildTextableChannel>JSON.parse(obj.msg.channel.serialized);
-            //     member = <Member>JSON.parse(obj.msg.member.serialized);
-            // } else {
-            //     member = channel.guild.members.get(obj.msg.member.id)
-            //         ?? <Member>JSON.parse(obj.msg.member.serialized);
-            // }
             message = {
                 id: obj.msg.id,
                 timestamp: obj.msg.timestamp,
@@ -350,7 +339,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public serialize(): SerializedBBTagContext {
         const newState = { ...this.state, cache: undefined, overrides: undefined };
         const newScope = { ...this.scope };
-        return <SerializedBBTagContext>{
+        return {
             msg: {
                 id: this.message.id,
                 timestamp: this.message.timestamp,

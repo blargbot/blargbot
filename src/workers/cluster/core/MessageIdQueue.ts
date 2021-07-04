@@ -1,4 +1,3 @@
-import { GuildMessage } from 'eris';
 import { RollingArray } from './globalCore';
 
 export class MessageIdQueue {
@@ -11,10 +10,7 @@ export class MessageIdQueue {
         this.#messageQueue = {};
     }
 
-    public push(message: GuildMessage): void;
-    public push(guildId: string, messageId: string): void
-    public push(...args: [guildId: string, messageId: string] | [message: GuildMessage]): void {
-        const [guildId, messageId] = args.length === 1 ? [args[0].channel.guild.id, args[0].id] : args;
+    public push(guildId: string, messageId: string): void {
         const messageQueue = this.#messageQueue[guildId] ??= new RollingArray(this.maxSize);
         messageQueue.push(messageId);
     }

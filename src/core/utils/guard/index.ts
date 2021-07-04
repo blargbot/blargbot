@@ -1,5 +1,7 @@
 import { isGuildChannel } from './isGuildChannel';
 import { isTextableChannel } from './isTextableChannel';
+import { isCategoryChannel } from './isCategoryChannel';
+import { isVoiceChannel } from './isVoiceChannel';
 import { isPrivateChannel } from './isPrivateChannel';
 import { isPrivateMessage } from './isPrivateMessage';
 import { isGuildRelated } from './isGuildRelated';
@@ -16,6 +18,8 @@ export const guard = {
     isGuildChannel,
     isGuildMessage,
     isTextableChannel,
+    isCategoryChannel,
+    isVoiceChannel,
     isGuildRelated,
     isPrivateChannel,
     isPrivateMessage,

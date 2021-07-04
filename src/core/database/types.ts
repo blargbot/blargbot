@@ -114,6 +114,18 @@ export interface StoredEventOptionsBase {
     readonly endtime: Date;
 }
 
+export interface UnmuteEventOptions extends StoredEventOptionsBase {
+    readonly guild: string;
+    readonly user: string;
+    readonly duration: string;
+}
+
+export interface UnbanEventOptions extends StoredEventOptionsBase {
+    readonly guild: string;
+    readonly user: string;
+    readonly duration: string;
+}
+
 export interface TagStoredEventOptionsBase<Version> extends StoredEventOptionsBase {
     readonly version: Version;
 }
@@ -134,6 +146,8 @@ export type TagStoredEventOptions =
 
 export type EventOptionsTypeMap = {
     'tag': TagStoredEventOptions;
+    'unmute': UnmuteEventOptions;
+    'unban': UnbanEventOptions;
 }
 
 export type EventTypeMap = {
@@ -458,8 +472,10 @@ export interface GuildTable {
     setCommandProp<K extends keyof StoredAliasedGuildCommand>(guildId: string, commandName: string, key: K, value: StoredAliasedGuildCommand[K]): Promise<boolean>;
     setCommandProp<K extends keyof StoredGuildCommand>(guildId: string, commandName: string, key: K, value: StoredGuildCommand[K]): Promise<boolean>;
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
+    getNewModlogCaseId(guildId: string, skipCache?: boolean): Promise<number | undefined>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
     setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean>;
+    getWarnings(guildId: string, userId: string, skipCache?: boolean): Promise<number | undefined>;
     setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
     getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<CommandPermissions | undefined>;
 }

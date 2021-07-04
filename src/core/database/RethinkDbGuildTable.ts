@@ -247,6 +247,11 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         }));
     }
 
+    public async getNewModlogCaseId(guildId: string, skipCache?: boolean): Promise<number | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.modlog?.length;
+    }
+
     public async addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean> {
         const guild = await this.rget(guildId);
         if (guild === undefined)
@@ -276,6 +281,14 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
                 [event]: r.literal(...channel !== undefined ? [channel] : [])
             }
         }));
+    }
+
+    public async getWarnings(guildId: string, userId: string, skipCache?: boolean): Promise<number | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        if (guild === undefined)
+            return undefined;
+
+        return guild.warnings?.users?.[userId];
     }
 
     public async setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean> {

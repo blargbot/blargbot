@@ -1,17 +1,14 @@
 import { Cluster } from './Cluster';
 import { AnyChannel, Channel, AnyMessage, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
 import moment from 'moment';
-import { BaseUtilities, BanStore, FindEntityOptions, guard, codeBlock, LookupMatch, humanize, SendPayload, MessagePrompt, defaultStaff, parse } from './core';
+import { BaseUtilities, FindEntityOptions, guard, codeBlock, LookupMatch, humanize, SendPayload, MessagePrompt, defaultStaff, parse } from './core';
 import fetch from 'node-fetch';
 
 export class ClusterUtilities extends BaseUtilities {
-    public readonly bans: BanStore;
-
     public constructor(
         public readonly cluster: Cluster
     ) {
         super(cluster);
-        this.bans = new BanStore();
     }
 
     public async getUser(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<User | undefined> {

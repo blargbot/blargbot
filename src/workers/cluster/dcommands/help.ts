@@ -1,5 +1,5 @@
-import { EmbedField, GuildChannel } from 'eris';
-import { BaseGlobalCommand, CommandType, CommandContext, SendPayload, BaseCommand, commandTypes, StoredGuildCommand, guard, codeBlock, humanize } from '../core';
+import { EmbedField } from 'eris';
+import { BaseGlobalCommand, CommandType, CommandContext, SendPayload, BaseCommand, commandTypes, StoredGuildCommand, guard, codeBlock, humanize, GuildCommandContext } from '../core';
 
 export class HelpCommand extends BaseGlobalCommand {
     public constructor() {
@@ -113,7 +113,7 @@ export class HelpCommand extends BaseGlobalCommand {
         return { content: `❌ The command \`${commandName}\` could not be found` };
     }
 
-    public async viewCustomCommand(context: CommandContext<GuildChannel>, commandName: string, command: StoredGuildCommand): Promise<SendPayload> {
+    public async viewCustomCommand(context: GuildCommandContext, commandName: string, command: StoredGuildCommand): Promise<SendPayload> {
         if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
             return { content: `❌ You dont have permission to run the \`${commandName}\` command` };
 

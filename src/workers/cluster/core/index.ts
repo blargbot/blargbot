@@ -6,7 +6,7 @@ export * from './command';
 export * from './bbtag';
 export * from './TimeoutManager';
 export * from './MessageIdQueue';
-export * from './BanStore';
+export * from './Modlog';
 export * from './types';
 
 export { guard, parse, humanize } from './utils'; // Resolve conflict

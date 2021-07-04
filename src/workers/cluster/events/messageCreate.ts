@@ -1,7 +1,7 @@
 import { AnyMessage, Channel, User } from 'eris';
 import { Cluster } from '../Cluster';
 import { DiscordEventService, metrics, guard } from '../core';
-import { addChatlog, handleAntiMention, handleCensor, handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
+import { addChatlog, handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
 
 export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
     public constructor(
@@ -20,8 +20,9 @@ export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
             return;
         }
 
-        void handleCensor(this.cluster, message);
-        void handleAntiMention(this.cluster, message);
+        if (guard.isGuildMessage(message) && await this.cluster.moderation.censors.censor(message))
+            return;
+
         if (await this.isBlacklisted(message.channel, message.author))
             return;
 

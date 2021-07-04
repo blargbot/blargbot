@@ -1,4 +1,4 @@
-import { AnyMessage, DiscordRESTError } from 'eris';
+import { AnyMessage, DiscordRESTError, PossiblyUncachedMessage } from 'eris';
 import { Cluster } from '../Cluster';
 import { BaseCommand, CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, CommandContext, commandTypes, CustomCommandLimit, defaultStaff, FlagDefinition, guard, GuildCommandContext, humanize, MessageIdQueue, metrics, ModuleLoader, StoredAliasedGuildCommand, StoredGuildCommand, StoredRawGuildCommand, Timer } from '../core';
 
@@ -12,6 +12,11 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
     ) {
         super(source, BaseCommand, [cluster], cluster.logger, c => [c.name, ...c.aliases]);
         this.#commandMessages = new MessageIdQueue(100);
+    }
+
+    public init(): Promise<void> {
+        this.cluster.discord.on('messageDelete', message => void this.handleMessageDelete(message));
+        return super.init();
     }
 
     public async tryExecute(message: AnyMessage): Promise<boolean> {
@@ -28,7 +33,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         const context = new CommandContext(this.cluster, message, prefix);
         if (await this.tryHandleCustomCommand(context) || await this.tryHandleDefaultCommand(context)) {
             if (guard.isGuildMessage(message) && await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'deletenotif') === true)
-                this.#commandMessages.push(message);
+                this.#commandMessages.push(message.channel.guild.id, message.id);
             return true;
         }
 
@@ -59,12 +64,12 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         if (permOverride === true) {
             const staffPerms = options.staffPerms ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
             const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
-            if (!isNaN(allow) && context.message.member !== null && this.cluster.util.hasPerms(context.message.member, allow))
+            if (!isNaN(allow) && this.cluster.util.hasPerms(context.message.member, allow))
                 return true;
         }
 
         if (commandPerms !== undefined) {
-            if (commandPerms.permission !== undefined && context.message.member !== null && this.cluster.util.hasPerms(context.message.member, commandPerms.permission))
+            if (commandPerms.permission !== undefined && this.cluster.util.hasPerms(context.message.member, commandPerms.permission))
                 return true;
 
             switch (typeof commandPerms.rolename) {
@@ -228,6 +233,29 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
             flags: command.flags,
             tagVars: false
         };
+    }
+
+    private async handleMessageDelete(message: PossiblyUncachedMessage): Promise<void> {
+        const guildId = 'guild' in message.channel ? message.channel.guild.id : undefined;
+        if (guildId === undefined
+            || !this.#commandMessages.has(guildId, message.id)
+            || await this.cluster.database.guilds.getSetting(guildId, 'deletenotif') !== true) {
+            return;
+        }
+
+        let author: string | undefined;
+        if ('author' in message)
+            author = humanize.fullName(message.author);
+        else {
+            const chatlog = await this.cluster.database.chatlogs.get(message.id);
+            if (chatlog !== undefined) {
+                author = this.cluster.discord.users.get(chatlog.userid)?.username
+                    ?? (await this.cluster.database.users.get(chatlog.userid))?.username;
+            }
+        }
+
+        if (author !== undefined)
+            await this.cluster.util.send(message.channel.id, `**${author}** deleted their command message.`);
     }
 }
 

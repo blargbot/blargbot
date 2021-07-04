@@ -1,4 +1,4 @@
-import { AnyMessage, Attachment, Embed, EmbedOptions, GuildChannel, GuildMessage, GuildTextableChannel, Member, MessageFile, PrivateChannel, Shard, User } from 'eris';
+import { AnyMessage, Attachment, Embed, EmbedOptions, GuildChannel, Member, MessageFile, PrivateChannel, Shard, Textable, User } from 'eris';
 import ReadWriteLock from 'rwlock';
 import { StoredGuildCommand, StoredTag, CommandType, CommandContext, SendPayload, NamedStoredRawGuildCommand, GuildAutoresponse, GuildFilteredAutoresponse, SubtagType, StoredGuild, StoredGuildSettings, SubtagVariableType, ModerationType } from '.';
 import { ClusterWorker } from '../ClusterWorker';
@@ -74,7 +74,7 @@ export interface SerializedBBTagContext {
     author: string;
     authorizer: string;
     tagVars: boolean;
-    tempVars: Record<string, string | undefined>;
+    tempVars: Record<string, JToken>;
     limit: SerializedRuntimeLimit;
 }
 
@@ -82,7 +82,7 @@ export interface BBTagContextMessage {
     id: string;
     timestamp: number;
     content: string;
-    channel: GuildTextableChannel;
+    channel: GuildChannel & Textable;
     member: Member;
     author: User;
     attachments: Attachment[];
@@ -146,7 +146,7 @@ export const enum RuntimeReturnState {
 }
 
 export interface BBTagContextOptions {
-    readonly message: BBTagContextMessage | GuildMessage;
+    readonly message: BBTagContextMessage;
     readonly input: readonly string[];
     readonly flags?: readonly FlagDefinition[];
     readonly isCC: boolean;
@@ -479,7 +479,6 @@ export interface MessagePrompt {
 
 export interface BanDetails {
     mod: User;
-    type: string;
     reason: string;
 }
 
@@ -508,7 +507,7 @@ export interface RuntimeLimitRule {
     load(state: JToken): void;
 }
 
-export type GuildCommandContext<TChannel extends GuildChannel = GuildChannel> = CommandContext<TChannel>;
+export type GuildCommandContext<TChannel extends GuildChannel = GuildChannel> = CommandContext<TChannel> & { message: { member: Member; guildID: string; }; };
 export type PrivateCommandContext<TChannel extends PrivateChannel = PrivateChannel> = CommandContext<TChannel>;
 
 export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
@@ -545,8 +544,22 @@ export interface SubtagVariableProperties {
 
 export type WhitelistResponse = 'approved' | 'rejected' | 'requested' | 'alreadyApproved' | 'alreadyRejected';
 
-export interface WarnResult {
-    type: ModerationType;
+export type MuteResult = 'success' | 'alreadyMuted' | 'noPermissions' | 'roleMissing' | 'roleTooHigh';
+export type UnmuteResult = 'success' | 'notMuted' | 'noPermissions' | 'roleTooHigh';
+export type BanResult = 'success' | 'noPerms' | 'memberTooHigh';
+export type KickResult = 'success' | 'noPerms' | 'memberTooHigh';
+export type UnbanResult = 'success' | 'noPerms';
+
+export type WarnResult = {
+    type: ModerationType.BAN;
     count: number;
-    error: unknown;
+    result: BanResult;
+} | {
+    type: ModerationType.KICK;
+    count: number;
+    result: KickResult;
+} | {
+    type: ModerationType.WARN;
+    count: number;
+    result: 'success';
 }

@@ -7,7 +7,7 @@ export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<v
         return;
 
     const roleme = await cluster.database.guilds.getRolemes(msg.channel.guild.id);
-    if (roleme.length === 0 || msg.member === null)
+    if (roleme.length === 0)
         return;
 
     const rolemes = roleme.filter(m => m.channels.includes(msg.channel.id) || m.channels.length === 0);

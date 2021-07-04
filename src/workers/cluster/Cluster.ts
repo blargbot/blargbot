@@ -90,7 +90,9 @@ export class Cluster extends BaseClient {
             super.start(),
             this.commands.init(),
             this.subtags.init(),
-            this.images.connect(20000)
+            this.images.connect(20000),
+            this.autoresponses.init(),
+            this.moderation.init()
         ]);
 
         this.logger.init(this.moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name));

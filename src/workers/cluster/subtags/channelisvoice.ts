@@ -1,3 +1,4 @@
+import { Constants } from 'eris';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
 
 export class ChannelIsVoice extends BaseSubtag {
@@ -12,8 +13,7 @@ export class ChannelIsVoice extends BaseSubtag {
                     description: 'Checks if the current channel is a voice channel.',
                     exampleCode: '{if;{isvoice};Yeah you can write stuff here;How did you even call the command?}',
                     exampleOut: 'How did you even call the command?',
-                    //@ts-expect-error why is this even supported lol??
-                    execute: (ctx) => (ctx.channel.type === 2).toString()
+                    execute: (ctx) => (ctx.channel.type === Constants.ChannelTypes.GUILD_VOICE).toString()
                 },
                 {
                     parameters: ['channel', 'quiet?'],
