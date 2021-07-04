@@ -1,26 +1,17 @@
 import { Cluster } from './Cluster';
 import { AnyChannel, Channel, AnyMessage, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
 import moment from 'moment';
-import { BaseUtilities, BanStore, MessageIdQueue, MessageAwaiter, ReactionAwaiter, FindEntityOptions, guard, codeBlock, LookupMatch, humanize, SendPayload, MessagePrompt, CommandContext, StoredGuildCommand, BaseCommand, CanExecuteDefaultCommandOptions, commandTypes, defaultStaff, parse } from './core';
-import { ModerationManager } from './managers';
+import { BaseUtilities, BanStore, FindEntityOptions, guard, codeBlock, LookupMatch, humanize, SendPayload, MessagePrompt, defaultStaff, parse } from './core';
 import fetch from 'node-fetch';
 
 export class ClusterUtilities extends BaseUtilities {
     public readonly bans: BanStore;
-    public readonly commandMessages: MessageIdQueue;
-    public readonly moderation: ModerationManager;
-    public readonly messageAwaiter: MessageAwaiter;
-    public readonly reactionAwaiter: ReactionAwaiter;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
         super(cluster);
         this.bans = new BanStore();
-        this.moderation = new ModerationManager(this.cluster);
-        this.commandMessages = new MessageIdQueue(100);
-        this.messageAwaiter = new MessageAwaiter(this.logger);
-        this.reactionAwaiter = new ReactionAwaiter(this.logger);
     }
 
     public async getUser(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<User | undefined> {
@@ -325,7 +316,7 @@ export class ClusterUtilities extends BaseUtilities {
         timeoutMessage?: SendPayload
     ): Promise<MessagePrompt> {
         const prompt = await this.send(channel, content);
-        const response = this.messageAwaiter.wait([channel.id], [user.id], timeoutMS, check);
+        const response = this.cluster.messageAwaiter.wait([channel.id], [user.id], timeoutMS, check);
 
         if (timeoutMessage !== undefined) {
             void response.then(async m => {
@@ -443,11 +434,6 @@ export class ClusterUtilities extends BaseUtilities {
     }
     /* eslint-enable @typescript-eslint/naming-convention */
 
-    public async canExecuteCustomCommand(context: CommandContext<GuildChannel>, command: StoredGuildCommand, quiet: boolean): Promise<boolean> {
-        return command.hidden !== true
-            && (command.roles === undefined || await this.hasPerm(context.message, command.roles, quiet));
-    }
-
     public hasRole(msg: Member | AnyMessage, roles: string | readonly string[], override = true): boolean {
         let member: Member;
         if (msg instanceof Member) {
@@ -486,52 +472,6 @@ export class ClusterUtilities extends BaseUtilities {
         return roles.sort((a, b) => b.position - a.position)[0].position;
     }
 
-    public async canExecuteDefaultCommand(
-        context: CommandContext,
-        command: BaseCommand,
-        quiet = false,
-        options: CanExecuteDefaultCommandOptions = {}
-    ): Promise<boolean> {
-        if (context.author.id === this.cluster.config.discord.users.owner)
-            return true;
-
-        const category = commandTypes.properties[command.category];
-        if (!guard.isGuildCommandContext(context))
-            return category.perm === undefined;
-
-        if (!await category.requirement(context))
-            return false;
-
-        const commandPerms = await this.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
-        if (commandPerms?.disabled === true && !command.cannotDisable)
-            return false;
-
-        const permOverride = options.permOverride ?? await this.database.guilds.getSetting(context.channel.guild.id, 'permoverride');
-        if (permOverride === true) {
-            const staffPerms = options.staffPerms ?? await this.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
-            const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
-            if (!isNaN(allow) && context.message.member !== null && this.comparePerms(context.message.member, allow))
-                return true;
-        }
-
-        if (commandPerms !== undefined) {
-            if (commandPerms.permission !== undefined && context.message.member !== null && this.comparePerms(context.message.member, commandPerms.permission))
-                return true;
-
-            switch (typeof commandPerms.rolename) {
-                case 'undefined': break;
-                case 'string': return await this.hasPerm(context.message, [commandPerms.rolename], quiet);
-                case 'object': return await this.hasPerm(context.message, commandPerms.rolename, quiet);
-            }
-        }
-
-        const adminrole = await this.database.guilds.getSetting(context.channel.guild.id, 'adminrole');
-        if (category.perm !== undefined && !await this.hasPerm(context.message, [adminrole ?? category.perm], quiet))
-            return false;
-
-        return true;
-    }
-
     public async isUserStaff(userId: string, guildId: string): Promise<boolean> {
         if (userId === guildId) return true;
 
@@ -550,14 +490,14 @@ export class ClusterUtilities extends BaseUtilities {
             if (typeof allow === 'string')
                 allow = parseInt(allow);
             const member = this.discord.guilds.get(guildId)?.members.get(userId);
-            if (member !== undefined && this.comparePerms(member, allow)) {
+            if (member !== undefined && this.hasPerms(member, allow)) {
                 return true;
             }
         }
         return false;
     }
 
-    public comparePerms(member: Member, allow?: number): boolean {
+    public hasPerms(member: Member, allow?: number): boolean {
         allow ??= defaultStaff;
         const newPerm = new Permission(allow, 0);
         for (const key in newPerm.json) {
@@ -568,7 +508,7 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public async hasPerm(msg: Member | AnyMessage, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
+    public async hasRoles(msg: Member | AnyMessage, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
         let member: Member;
         let channel: (Textable & Channel) | undefined;
         if (msg instanceof Member) {

@@ -36,6 +36,10 @@ declare global {
         parse(text: string): JToken;
     }
 
+    interface ArrayConstructor {
+        isArray(value: unknown): value is readonly unknown[] | unknown[];
+    }
+
     namespace NodeJS {
         type WorkerProcess = Process & Required<Pick<Process, 'send'>>;
 

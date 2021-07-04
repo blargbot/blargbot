@@ -29,7 +29,7 @@ export class HelpCommand extends BaseGlobalCommand {
         const customCommands = new Map<string, StoredGuildCommand | undefined>();
         if (guard.isGuildCommandContext(context)) {
             for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
-                if (!await context.util.canExecuteCustomCommand(context, command, true))
+                if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
                     customCommands.set(command.name, undefined);
                 else
                     customCommands.set(command.name, command);
@@ -53,7 +53,7 @@ export class HelpCommand extends BaseGlobalCommand {
 
         const commandGroups = new Map<string, Set<string>>();
         for (const command of context.cluster.commands.list()) {
-            if (command.checkContext(context) && !await context.util.canExecuteDefaultCommand(context, command, true))
+            if (command.checkContext(context) && !await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
                 continue;
 
             const commandName = command.names.find(n => !customCommands.has(n));
@@ -114,7 +114,7 @@ export class HelpCommand extends BaseGlobalCommand {
     }
 
     public async viewCustomCommand(context: CommandContext<GuildChannel>, commandName: string, command: StoredGuildCommand): Promise<SendPayload> {
-        if (!await context.util.canExecuteCustomCommand(context, command, true))
+        if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
             return { content: `❌ You dont have permission to run the \`${commandName}\` command` };
 
         return {
@@ -128,7 +128,7 @@ export class HelpCommand extends BaseGlobalCommand {
     }
 
     public async viewDefaultCommand(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
-        if (!await context.util.canExecuteDefaultCommand(context, command, true))
+        if (!await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
             return { content: `❌ You dont have permission to run the \`${command.name}\` command` };
 
         const fields: EmbedField[] = [];

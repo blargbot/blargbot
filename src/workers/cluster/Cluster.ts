@@ -2,14 +2,13 @@ import moment, { Moment } from 'moment-timezone';
 import { ImageConnection } from '../image';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { BaseClient, BaseCommand, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from './core';
-import { AutoresponseManager, BotStaffManager } from './managers';
+import { BaseClient, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from './core';
+import { AutoresponseManager, BotStaffManager, CommandManager, MessageAwaiter, ModerationManager, ReactionAwaiter } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
     public readonly createdAt: Moment;
     public readonly worker: ClusterWorker;
-    public readonly commands: ModuleLoader<BaseCommand>;
     public readonly subtags: ModuleLoader<BaseSubtag>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
@@ -19,6 +18,10 @@ export class Cluster extends BaseClient {
     public readonly images: ImageConnection;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
+    public readonly messageAwaiter: MessageAwaiter;
+    public readonly reactionAwaiter: ReactionAwaiter;
+    public readonly moderation: ModerationManager;
+    public readonly commands: CommandManager;
 
     public constructor(
         logger: Logger,
@@ -59,7 +62,10 @@ export class Cluster extends BaseClient {
         this.id = options.id;
         this.createdAt = moment();
         this.worker = options.worker;
-        this.commands = new ModuleLoader(`${__dirname}/dcommands`, BaseCommand, [this], this.logger, c => [c.name, ...c.aliases]);
+        this.messageAwaiter = new MessageAwaiter(this.logger);
+        this.reactionAwaiter = new ReactionAwaiter(this.logger);
+        this.images = new ImageConnection(1, this.logger);
+        this.commands = new CommandManager(`${__dirname}/dcommands`, this);
         this.subtags = new ModuleLoader(`${__dirname}/subtags`, BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
@@ -67,8 +73,8 @@ export class Cluster extends BaseClient {
         this.timeouts = new TimeoutManager(this);
         this.autoresponses = new AutoresponseManager(this);
         this.botStaff = new BotStaffManager(this);
+        this.moderation = new ModerationManager(this);
         this.bbtag = new BBTagEngine(this);
-        this.images = new ImageConnection(1, this.logger);
 
         this.services.on('add', (module: BaseService) => void module.start());
         this.services.on('remove', (module: BaseService) => void module.stop());

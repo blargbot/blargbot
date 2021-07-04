@@ -13,7 +13,7 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
         const user = this.resolveUser(maybeUser);
         if (user === undefined) return;
 
-        this.cluster.util.reactionAwaiter.emit(message, emoji, user);
+        this.cluster.reactionAwaiter.emit(message, emoji, user);
     }
 
     protected async resolveMessage(message: PossiblyUncachedMessage): Promise<Message | undefined> {

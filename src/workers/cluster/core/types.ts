@@ -457,9 +457,14 @@ export interface FindEntityOptions {
 }
 
 export interface CanExecuteDefaultCommandOptions {
+    readonly quiet?: boolean;
     readonly storedGuild?: StoredGuild;
     readonly permOverride?: StoredGuildSettings['permoverride'];
     readonly staffPerms?: StoredGuildSettings['staffperms'];
+}
+
+export interface CanExecuteCustomCommandOptions {
+    readonly quiet?: boolean;
 }
 
 export interface LookupMatch<T> {

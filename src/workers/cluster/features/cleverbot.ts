@@ -5,10 +5,12 @@ import fetch from 'node-fetch';
 import FormData from 'form-data';
 
 export async function tryHandleCleverbot(cluster: Cluster, msg: AnyMessage): Promise<boolean> {
-    if (!guard.isGuildMessage(msg) || await cluster.database.guilds.getSetting(msg.channel.guild.id, 'nocleverbot') === true)
+    if (!guard.isGuildMessage(msg)
+        || !msg.content.startsWith(cluster.discord.user.mention)
+        || await cluster.database.guilds.getSetting(msg.channel.guild.id, 'nocleverbot') === true)
         return false;
 
-    void handleCleverbot(cluster, msg);
+    await handleCleverbot(cluster, msg);
     return true;
 }
 

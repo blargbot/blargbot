@@ -1,7 +1,7 @@
 import { AnyMessage, Channel, User } from 'eris';
 import { Cluster } from '../Cluster';
 import { DiscordEventService, metrics, guard } from '../core';
-import { addChatlog, handleAntiMention, handleCensor, handleRoleme, handleTableFlip, tryHandleCommand } from '../features';
+import { addChatlog, handleAntiMention, handleCensor, handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
 
 export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
     public constructor(
@@ -31,10 +31,10 @@ export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
 
         if (message.author.bot) {
             //
-        } else if (await tryHandleCommand(this.cluster, message)) {
+        } else if (await this.cluster.commands.tryExecute(message) || await tryHandleCleverbot(this.cluster, message)) {
             return;
         } else {
-            this.cluster.util.messageAwaiter.emit(message);
+            this.cluster.messageAwaiter.emit(message);
         }
 
         void this.cluster.autoresponses.execute(this.cluster, message, false);

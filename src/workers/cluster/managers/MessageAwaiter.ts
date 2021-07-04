@@ -1,13 +1,13 @@
 import { AnyMessage } from 'eris';
 import EventEmitter from 'eventemitter3';
-import { Logger } from './globalCore';
+import { Logger } from '../core';
 
 export class MessageAwaiter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #events: EventEmitter;
 
     public constructor(
-        public readonly logger: Logger
+        private readonly logger: Logger
     ) {
         this.#events = new EventEmitter();
     }

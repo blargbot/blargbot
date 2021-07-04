@@ -21,9 +21,9 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
         if (!guard.testMessageFilter(cens, msg))
             continue;
 
-        const res = await cluster.util.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
+        const res = await cluster.moderation.issueWarning(msg.author, msg.channel.guild, cens.weight);
         if (cens.weight > 0) {
-            await cluster.util.moderation.logAction(
+            await cluster.moderation.logAction(
                 msg.channel.guild,
                 msg.author,
                 cluster.discord.user,

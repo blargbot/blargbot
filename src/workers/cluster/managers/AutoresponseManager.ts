@@ -9,7 +9,7 @@ export class AutoresponseManager {
 
     public constructor(private readonly cluster: Cluster) {
         this.#guilds = new Set();
-        cluster.util.reactionAwaiter.onAny((message, emoji, user) => void this.handleWhitelistApproval(message, emoji, user));
+        cluster.reactionAwaiter.onAny((message, emoji, user) => void this.handleWhitelistApproval(message, emoji, user));
     }
 
     public async refresh(): Promise<void> {
