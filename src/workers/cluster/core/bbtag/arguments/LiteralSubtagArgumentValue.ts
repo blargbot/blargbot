@@ -17,4 +17,3 @@ export class LiteralSubtagArgumentValue implements SubtagArgumentValue {
         return Promise.resolve(this.#value);
     }
 }
-

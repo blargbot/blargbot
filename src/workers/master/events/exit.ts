@@ -31,4 +31,3 @@ export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {
         this.master.logger.cluster(`Cluster ${worker.id} is back after ${moment.duration(moment().diff(diedAt)).asSeconds()} seconds`);
     }
 }
-

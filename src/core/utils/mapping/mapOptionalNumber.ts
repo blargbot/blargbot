@@ -6,4 +6,3 @@ export function mapOptionalNumber(value: unknown): TypeMappingResult<number | un
         ? { valid: true, value }
         : mappingResultNever;
 }
-

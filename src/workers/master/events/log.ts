@@ -21,4 +21,3 @@ export class LogHandler extends WorkerPoolEventService<ClusterConnection> {
         this.get(worker.id).push({ level, timestamp, text: stripAnsi(text) });
     }
 }
-

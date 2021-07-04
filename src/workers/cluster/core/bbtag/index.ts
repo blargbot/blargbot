@@ -12,4 +12,3 @@ export * from './TagCooldownManager';
 
 import { get as getLock } from './lock';
 export { getLock };
-

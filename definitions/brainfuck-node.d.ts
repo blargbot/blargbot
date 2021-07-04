@@ -1,4 +1,3 @@
-
 declare module 'brainfuck-node' {
     export default class Brainfuck {
         public execute(code: string, input: string): Result;

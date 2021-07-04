@@ -65,4 +65,3 @@ export async function handleCensor(cluster: Cluster, msg: AnyMessage): Promise<v
         });
     }
 }
-

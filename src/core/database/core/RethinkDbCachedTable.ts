@@ -57,4 +57,3 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
         }
     }
 }
-

@@ -17,4 +17,3 @@ export class KillShardHandler extends ClusterEventService {
         this.cluster.discord.shards.remove(shard);
     }
 }
-

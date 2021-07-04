@@ -19,4 +19,3 @@ export class ShardDisconnectHandler extends DiscordEventService<'shardDisconnect
         }, 5000);
     }
 }
-

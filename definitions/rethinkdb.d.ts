@@ -7,18 +7,21 @@ declare module 'rethinkdb' {
     }
 
     interface WriteChange {
+        /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any */
         new_val?: any;
         old_val?: any;
+        /* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any */
     }
 
     interface Sequence {
-        changes(opts?: Partial<ChangesOptions>): Sequence
+        changes(opts?: Partial<ChangesOptions>): Sequence;
     }
     interface Expression<T> {
         append<E>(prop: E): Expression<E[]>;
         match: T extends string ? (re2: string) => Expression<string> : never;
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     interface Row extends Expression<any> {
         <T>(name: string): Expression<T>;
     }
@@ -27,4 +30,3 @@ declare module 'rethinkdb' {
     type TableQuery<T> = (table: Table, rethink: typeof import('rethinkdb')) => Operation<T>;
     type UpdateRequest<T> = { [P in keyof T]?: T[P] | Expression<T[P]> | UpdateRequest<T[P]> }
 }
-

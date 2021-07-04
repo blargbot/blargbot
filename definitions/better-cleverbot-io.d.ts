@@ -1,15 +1,15 @@
 declare module 'better-cleverbot-io' {
     export interface CleverbotOptions {
-        user: string,
-        key: string,
-        nick: string
+        readonly user: string;
+        readonly key: string;
+        readonly nick: string;
     }
 
     export default class CleverbotIO {
-        constructor(options: CleverbotOptions);
+        public constructor(options: CleverbotOptions);
 
-        create(): Promise<string>
-        ask(question: string): Promise<string>;
+        public create(): Promise<string>
+        public ask(question: string): Promise<string>;
     }
 
 

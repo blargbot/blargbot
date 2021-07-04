@@ -283,8 +283,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         let message: BBTagContextMessage | undefined;
         try {
             const msg = await engine.discord.getMessage(obj.msg.channel.id, obj.msg.id);
-            if (msg === undefined)
-                throw new Error(`Cannot access message ${obj.msg.id} in channel ${obj.msg.id}. It may have been deleted`);
             if (!guard.isGuildMessage(msg))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             message = <BBTagContextMessage>msg;

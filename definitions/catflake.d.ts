@@ -1,28 +1,28 @@
 declare module 'catflake' {
     export interface CatflakeOptions {
-        epoch?: number,
-        incrementBits?: number,
-        workerBits?: number,
-        processBits?: number,
-        processId?: number,
-        workerId?: number,
-        stringify?: boolean
+        readonly epoch?: number;
+        readonly incrementBits?: number;
+        readonly workerBits?: number;
+        readonly processBits?: number;
+        readonly processId?: number;
+        readonly workerId?: number;
+        readonly stringify?: boolean;
     }
 
     export interface DeconstructedSnowflake {
-        timestamp: BigInt;
-        workerId: BigInt;
-        processId: BigInt;
-        increment: BigInt;
+        readonly timestamp: BigInt;
+        readonly workerId: BigInt;
+        readonly processId: BigInt;
+        readonly increment: BigInt;
     }
 
     export type Snowflake = string | BigInt;
 
     export default class Catflake {
-        constructor(options: CatflakeOptions);
+        public constructor(options: CatflakeOptions);
 
-        generate(): Snowflake | Promise<Snowflake>;
-        _generate(date?: Date, increment?: number): Snowflake;
-        deconstruct(snowflake: Snowflake): DeconstructedSnowflake;
+        public generate(): Snowflake | Promise<Snowflake>;
+        public _generate(date?: Date, increment?: number): Snowflake;
+        public deconstruct(snowflake: Snowflake): DeconstructedSnowflake;
     }
 }

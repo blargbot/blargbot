@@ -1,7 +1,8 @@
-import phantom from 'phantom';
+import 'phantom';
 
 declare module 'phantom' {
     export interface WebPage {
-        on(event: string, ...args: any[]): Promise<{ pageId: string }>
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        on(event: string, ...args: any[]): Promise<{ pageId: string; }>;
     }
 }
