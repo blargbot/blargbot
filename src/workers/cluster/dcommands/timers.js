@@ -13,12 +13,12 @@ class TimersCommand extends BaseCommand {
         this.pageSize = 15;
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let source = msg.guild ? msg.guild.id : msg.author.id;
         switch (String(words[1] || '').toLowerCase()) {
-            case 'clear':
+            case 'clear': {
                 let response = await bu.awaitPrompt(msg, 'Are you sure you want to cancel all timers? Type `yes` to confirm, or anything else to cancel.',
-                    m => true, 60000, 'Query timed out. Cancelling clear');
+                    () => true, 60000, 'Query timed out. Cancelling clear');
                 if (response && response.content.toLowerCase() == 'yes') {
                     await bu.events.deleteFilter({ source });
                     bu.send(msg, 'All timers cancelled.');
@@ -26,12 +26,14 @@ class TimersCommand extends BaseCommand {
                     bu.send(msg, 'Failed to clear timers');
                 }
                 break;
+            }
             case 'delete':
             case 'cancel':
                 if (words[2]) {
                     let ids = (words.slice(2) || '').map(s => s.toLowerCase());
                     let timers = await r.table('events').filter({ source }).run();
-                    let failed = [], success = [];
+                    let failed = [];
+                    let success = [];
                     for (const id of ids) {
                         let timer = timers.find(t => t.id.startsWith(id));
                         if (timer && timer.source == source) {
@@ -70,7 +72,7 @@ class TimersCommand extends BaseCommand {
                     bu.send(msg, 'You must give me the id of the timer to cancel.');
                 }
                 break;
-            default:
+            default: {
                 let timers = await r.table('events').filter({ source }).run();
                 if (timers && timers.length > 0) {
                     let now = moment();
@@ -84,7 +86,8 @@ class TimersCommand extends BaseCommand {
                     if (isNaN(page))
                         return await bu.send(msg, words[1] + ' is not a valid page number!');
 
-                    let from, to;
+                    let from;
+                    let to;
                     let selected = timers.slice(from = page * this.pageSize, to = Math.min((page + 1) * this.pageSize, timers.length));
                     if (selected.length == 0)
                         selected = timers.slice(from = (to = timers.length) - (timers.length % this.pageSize));
@@ -131,6 +134,7 @@ class TimersCommand extends BaseCommand {
                     bu.send(msg, 'There are no currently active timers!');
                 }
                 break;
+            }
         }
     }
 }

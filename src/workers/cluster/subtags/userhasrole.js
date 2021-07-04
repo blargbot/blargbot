@@ -16,7 +16,7 @@ module.exports =
         .withArgs(a => [a.required('roleids'), a.optional('user'), a.optional('quiet')])
         .withDesc('Checks if a user has any of the provided `roleids`, and returns either `true` or `false`. ' +
             'Roleid can be an array of role ids, or a single role id. ' +
-            'You can find a list of roles and their ids by doing \`b!roles\`. ' +
+            'You can find a list of roles and their ids by doing `b!roles`. ' +
             'If `user` is provided, check that `user`, otherwise use the person who called this tag.' +
             'If `quiet` is specified, if a user can\'t be found it will simply return `false`')
         .withExample(
@@ -25,8 +25,8 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
-                result = await this.checkRoles(context, args[0], args[1], quiet);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2];
+            let result = await this.checkRoles(context, args[0], args[1], quiet);
 
             if (result.user == null)
                 return quiet ? false : Builder.errors.noUserFound(subtag, context);
@@ -37,13 +37,13 @@ module.exports =
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .withProp('checkRoles', async function (context, roleText, userText, quiet) {
-            let roleExpr = /(\d{17,23})/,
-                deserialized = await bu.deserializeTagArray(roleText),
-                result = {
-                    user: context.member,
-                    roles: [],
-                    hasRole: []
-                };
+            let roleExpr = /(\d{17,23})/;
+            let deserialized = await bu.deserializeTagArray(roleText);
+            let result = {
+                user: context.member,
+                roles: [],
+                hasRole: []
+            };
 
             roleText = [roleText];
             if (userText) {
@@ -60,8 +60,8 @@ module.exports =
                 roleText = deserialized.v;
 
             for (const entry of roleText) {
-                let match = entry.match(roleExpr) || [],
-                    role = context.guild.roles.get(match[1]);
+                let match = entry.match(roleExpr) || [];
+                let role = context.guild.roles.get(match[1]);
                 if (role == null)
                     continue;
                 result.roles.push(role);
@@ -70,7 +70,7 @@ module.exports =
             if (result.user && result.roles.length > 0)
                 result.hasRole = result.roles.map(role => bu.hasRole(result.user, role.id, false));
             else
-                result.hasRole = result.roles.map(r => false);
+                result.hasRole = result.roles.map(() => false);
             return result;
         })
         .build();

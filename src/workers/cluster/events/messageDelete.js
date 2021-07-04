@@ -9,7 +9,7 @@
 
 async function handleDelete(msg, quiet) {
     if (msg.channel.guild == undefined) {
-        if (bot.channelGuildMap.hasOwnProperty(msg.channel.id)) {
+        if (Object.prototype.hasOwnProperty.call(bot.channelGuildMap, msg.channel.id)) {
             msg.channel.guild = bot.guilds.get(bot.channelGuildMap[msg.channel.id]);
             msg.guild = msg.channel.guild;
         } else return; // Don't handle DM

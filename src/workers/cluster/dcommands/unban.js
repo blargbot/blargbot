@@ -13,10 +13,10 @@ class UnbanCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length > 0) {
-            var user = input.undefined.join(' ').match(/(\d+)/)[1];
+            let user = input.undefined.join(' ').match(/(\d+)/)[1];
             if (!user) {
                 bu.send(msg, 'I couldn\'t find that user. Please make sure you\'re giving me a user id or a mention.');
                 return;

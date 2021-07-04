@@ -40,10 +40,10 @@ class FeedbackCommand extends BaseCommand {
             filterByFormula: `{ID} = '${id}'`
         }).firstPage();
         if (Array.isArray(data)) return data[0];
-        else return null;
+        return null;
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         if (words.length > 1) {
             let blacklist = await r.table('vars').get('blacklist');
@@ -68,16 +68,16 @@ class FeedbackCommand extends BaseCommand {
                         await r.table('vars').get('blacklist').replace(blacklist);
                         await bu.send(msg, 'Done');
                         return;
-                    case 'unblacklist':
+                    case 'unblacklist': {
                         let index;
                         switch (words[2].toLowerCase()) {
                             case 'guild':
-                                while (index = blacklist.guilds.indexOf(words[3]) > -1) {
+                                while ((index = blacklist.guilds.indexOf(words[3])) > -1) {
                                     blacklist.guilds.splice(index, 1);
                                 }
                                 break;
                             case 'user':
-                                while (index = blacklist.users.indexOf(words[3]) > -1) {
+                                while ((index = blacklist.users.indexOf(words[3])) > -1) {
                                     blacklist.users.splice(index, 1);
                                 }
                                 break;
@@ -85,9 +85,13 @@ class FeedbackCommand extends BaseCommand {
                         await r.table('vars').get('blacklist').replace(blacklist);
                         await bu.send(msg, 'Done');
                         return;
+                    }
                 }
             }
-            let type, colour, channel, bug = false;
+            let type;
+            let colour;
+            let channel;
+            let bug = false;
             let subTypes = [];
 
             let title = input.undefined.join(' ').replace(/ +/g, ' ');
@@ -163,12 +167,10 @@ class FeedbackCommand extends BaseCommand {
                             ID: msg.author.id,
                             Username: username
                         }, { typecast: true });
-                    } else {
-                        if (u.fields.Username !== username)
-                            await this.airtable('Suggestors').update(u.id, {
-                                Username: username
-                            });
-                    }
+                    } else if (u.fields.Username !== username)
+                        await this.airtable('Suggestors').update(u.id, {
+                            Username: username
+                        });
 
                     let payload = {
                         AA: true,

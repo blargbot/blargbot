@@ -23,8 +23,8 @@ class RemindCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        const example = '\`remind Do a thing! -t 1 day, two hours\`';
+    async execute(msg, words) {
+        const example = '`remind Do a thing! -t 1 day, two hours`';
 
         let input = newbutils.parse.flags(this.flags, words);
         let duration = moment.duration();
@@ -70,7 +70,7 @@ ${args.content}`,
             bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this ${duration.humanize(true)}:
     ${args.content}`);
         }
-    };
+    }
 }
 
 module.exports = RemindCommand;

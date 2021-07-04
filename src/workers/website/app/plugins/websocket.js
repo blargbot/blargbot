@@ -9,7 +9,7 @@ class VueWebsocket extends EventEmitter3 {
         this.ws = new window.WebSocket(this.url);
     }
 
-    install(Vue, options) {
+    install(Vue) {
         Vue.ws = this;
     }
 }
@@ -19,5 +19,5 @@ const options = {};
 // Activate plugin
 Vue.use(new VueWebsocket(), options);
 
-export default async ({ app }) => {
+export default async (/*{ app }*/) => {
 };

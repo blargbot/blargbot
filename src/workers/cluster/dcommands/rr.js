@@ -2,11 +2,11 @@ const BaseCommand = require('../structures/BaseCommand');
 const { emojify } = require('node-emoji');
 const newbutils = require('../newbu');
 
-var numMap = ['zero', 'one', 'two', 'three', 'four', 'five'];
-var mojiList =
+let numMap = ['zero', 'one', 'two', 'three', 'four', 'five'];
+let mojiList =
     ':grinning: :grimacing: :joy: :smiley: :smile: :wink: :fearful: :persevere: :confounded: :tired_face: :triumph: :flushed: :neutral_face: :expressionless: :mask: :sob: :sleepy: :stuck_out_tongue_winking_eye: :blush: :smiley_cat:'
         .split(' ');
-var deathMsg = [
+let deathMsg = [
     'The gun goes off, splattering your brains across the wall. Unlucky!',
     ':skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:',
     'Before you know it, it\'s all over.',
@@ -19,7 +19,7 @@ var deathMsg = [
     'Today just wasn\'t your lucky day.',
     'Pssh, foresight is for losers.'
 ];
-var liveMsg = [
+let liveMsg = [
     'The gun clicks, empty. You get to live another day.',
     'You breath a sign of relief as you realize that you aren\'t going to die today.',
     'As if it would ever go off! Luck is on your side.',
@@ -38,7 +38,7 @@ class RrCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let bullets = parseInt(words[1]);
         if (isNaN(bullets)) {
             bullets = 1;

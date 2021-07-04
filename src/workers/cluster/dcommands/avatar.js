@@ -21,8 +21,8 @@ class AvatarCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        var user;
+    async execute(msg, words) {
+        let user;
         let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             user = msg.author;
@@ -32,8 +32,8 @@ class AvatarCommand extends BaseCommand {
         if (!user) {
             return;
         }
-        let format,
-            size;
+        let format;
+        let size;
         if (input.f && input.f.length > 0) format = input.f.join(' ');
         if (input.s && input.s.length > 0) size = parseInt(input.s.join(' '));
         console.debug(format, size);

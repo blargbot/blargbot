@@ -10,18 +10,17 @@ module.exports = class ApiRoute {
             prefix: '/api'
         });
 
-        router.get('/', async (ctx, next) => {
+        router.get('/', async (ctx) => {
             ctx.body = 'Hello, world!';
         });
 
-        router.get('/authenticate', async (ctx, next) => {
+        router.get('/authenticate', async (ctx) => {
             console.log(ctx.req.user);
             ctx.body = 'ok';
         });
 
-        router.get('/users/@me', async (ctx, next) => {
-            let id = Security.validateToken(ctx.req.headers.authorization);
-
+        router.get('/users/@me', async (ctx) => {
+            Security.validateToken(ctx.req.headers.authorization);
         });
 
         this.commands = {};
@@ -29,11 +28,11 @@ module.exports = class ApiRoute {
         this.refreshContent();
         this.rInterval = setInterval(this.refreshContent.bind(this), 1000 * 60 * 10);
 
-        router.get('/commands', async (ctx, next) => {
+        router.get('/commands', async (ctx) => {
             ctx.body = JSON.stringify(this.commands);
         });
 
-        router.get('/subtags', async (ctx, next) => {
+        router.get('/subtags', async (ctx) => {
             ctx.body = JSON.stringify(this.subtags);
         });
 
@@ -45,8 +44,7 @@ module.exports = class ApiRoute {
         let shard = spawner.get(0);
         let st = await shard.request('tagList');
         this.subtags = {};
-        for (const key in st) {
-            let subtag = st[key];
+        for (const subtag of Object.values(st)) {
             subtag.usage = argumentFactory.toString(subtag.args);
 
             let category = newbutils.tagTypes.properties[subtag.category];
@@ -55,7 +53,7 @@ module.exports = class ApiRoute {
                 desc: category.desc,
                 id: subtag.category,
                 el: []
-            };;
+            };
             subtag.limits = [];
             for (const key of Object.keys(bbtag.limits)) {
                 let text = bbtag.limitToSring(key, subtag.name);
@@ -74,8 +72,7 @@ module.exports = class ApiRoute {
 
         let co = await shard.request('commandList');
         this.commands = {};
-        for (const key in co) {
-            let command = co[key];
+        for (const command of Object.values(co)) {
             if (command.category === newbutils.commandTypes.CAT) continue;
             let category = newbutils.commandTypes.properties[command.category];
             if (!this.commands[category.name]) this.commands[category.name] = {

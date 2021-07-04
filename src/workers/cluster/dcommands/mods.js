@@ -5,10 +5,6 @@ function getName(member) {
     return member.user.username + '#' + member.user.discriminator;
 }
 
-function pad(value, length) {
-    return (value.toString().length < length) ? pad(value + ' ', length) : value;
-}
-
 class ModsCommand extends BaseCommand {
     constructor() {
         super({
@@ -19,12 +15,12 @@ class ModsCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         console.debug('a');
         try {
             bu.guildSettings.get(msg.channel.guild.id, 'staffperms').then(val => {
                 console.debug('aa');
-                var allow = val || defaultStaff;
+                let allow = val || defaultStaff;
                 let status = 0;
                 if (words[1])
                     switch (words[1].toLowerCase()) {
@@ -44,15 +40,15 @@ class ModsCommand extends BaseCommand {
                             status = 4;
                             break;
                     }
-                var includeOffline = true;
+                let includeOffline = true;
                 if (words[1] && words[1].toLowerCase() == 'online') {
                     includeOffline = false;
                 }
-                var mods = msg.channel.guild.members.filter(m => {
+                let mods = msg.channel.guild.members.filter(m => {
                     return !m.user.bot && bu.comparePerms(m, allow) &&
                         (includeOffline || m.status == 'online');
                 });
-                var maxLength = 0;
+                let maxLength = 0;
                 mods.forEach(m => {
                     if (getName(m).length > maxLength) {
                         maxLength = getName(m).length;

@@ -11,8 +11,6 @@ bot.on('userUpdate', (user, oldUser) => {
     if (user && oldUser) {
         if (user.id != bot.user.id) {
             let guilds = bot.guilds.filter(g => g.members.get(user.id) != undefined);
-            let username;
-            let discrim;
             let fields;
             let description = '';
 

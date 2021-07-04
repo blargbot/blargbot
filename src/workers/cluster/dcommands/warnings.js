@@ -11,7 +11,7 @@ class WarningsCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let user = msg.author;
         if (words.length > 1) {
             user = await bu.getUser(msg, words.slice(1).join(' '));

@@ -12,8 +12,8 @@ export class IndexOfSubtag extends BaseSubtag {
                     exampleCode: 'The index of "o" in "hello world" is {indexof;hello world;o}',
                     exampleOut: 'The index of "o" in "hello world" is 4',
                     execute: (context, [{ value: text }, { value: query }, { value: start }], subtag) => {
-                        const deserializedArray = bbtagUtil.tagArray.deserialize(text),
-                            fallback = parse.int(context.scope.fallback ?? '');
+                        const deserializedArray = bbtagUtil.tagArray.deserialize(text);
+                        const fallback = parse.int(context.scope.fallback ?? '');
                         let from = parse.int(start);
 
                         if (isNaN(from)) from = fallback;

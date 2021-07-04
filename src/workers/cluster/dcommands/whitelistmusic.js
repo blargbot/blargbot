@@ -9,7 +9,7 @@ class WhitelistmusicCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         if (msg.author.id == config.discord.users.owner) {
             if (config.discord.musicGuilds[msg.channel.guild.id]) {
                 config.discord.musicGuilds[msg.channel.guild.id] = false;

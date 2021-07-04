@@ -1,27 +1,28 @@
-var workspace = document.getElementById('workspace');
-var index = workspace.innerHTML;
 let data;
-function save() {
-    if (!data) return;
-    let keys = Object.keys(data.data.guild.settings);
-    for (let i = 0; i < keys.length; i++) {
-        let element = document.getElementById(keys[i]);
 
-        if (element) {
-            switch (element.type) {
-                case 'checkbox':
-                    data.data.guild.settings[keys[i]] = element.checked;
-                    break;
-                default:
-                    data.data.guild.settings[keys[i]] = element.value;
-                    break;
+$(function () {
+    $('#save_btn').click(function save() {
+        if (!data) return;
+        let keys = Object.keys(data.data.guild.settings);
+        for (let i = 0; i < keys.length; i++) {
+            let element = document.getElementById(keys[i]);
+
+            if (element) {
+                switch (element.type) {
+                    case 'checkbox':
+                        data.data.guild.settings[keys[i]] = element.checked;
+                        break;
+                    default:
+                        data.data.guild.settings[keys[i]] = element.value;
+                        break;
+                }
             }
         }
-    }
-    sendData('saveGuild', data.data.guild);
-}
+        sendData('saveGuild', data.data.guild);
+    });
+});
 
-wss.onmessage = function(event) {
+wss.onmessage = function (event) {
     data = JSON.parse(event.data);
     console.dir(data);
     if (data.code == 200) {
@@ -30,9 +31,8 @@ wss.onmessage = function(event) {
                 console.dir(data);
                 Materialize.toast(data.data.data, 5000);
                 break;
-            case 'displayGuild':
+            case 'displayGuild': {
                 let settings = data.data.guild.settings;
-                let modal = document.getElementById('settings-modal');
                 let keys = Object.keys(settings);
                 document.getElementById('modal-guild').innerText = 'Settings for ' + data.data.guild.guild.name;
 
@@ -92,7 +92,6 @@ wss.onmessage = function(event) {
                 }
 
 
-
                 for (let i = 0; i < keys.length; i++) {
                     let element = document.getElementById(keys[i]);
 
@@ -142,6 +141,7 @@ wss.onmessage = function(event) {
                 });
 
                 break;
+            }
         }
     } else {
         Materialize.toast(data.data, 5000);

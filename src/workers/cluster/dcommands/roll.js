@@ -24,7 +24,7 @@ class RollCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let message = `**${msg.author.username}**, rolling `;
         let max = 20;
         let dice = 1;

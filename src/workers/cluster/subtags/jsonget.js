@@ -23,8 +23,8 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
-            let obj = args[0],
-                path = args[1];
+            let obj = args[0];
+            let path = args[1];
 
             if (!obj)
                 obj = '{}';
@@ -61,7 +61,9 @@ module.exports =
                     if (typeof obj === 'string') {
                         try {
                             obj = JSON.parse(obj);
-                        } catch (err) { }
+                        } catch (err) {
+                            // NOOP
+                        }
                     }
 
                     if (typeof obj === 'object') {
@@ -72,7 +74,7 @@ module.exports =
                     }
 
                     // intentionally let it error if undefined
-                    if (obj === undefined || obj.hasOwnProperty(part))
+                    if (obj === undefined || Object.prototype.hasOwnProperty.call(obj, part))
                         obj = obj[part];
                     else obj = undefined;
                 }

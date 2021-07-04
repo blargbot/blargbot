@@ -11,7 +11,7 @@ class ShipCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words.length > 2) {
             let users = [await bu.getUser(msg, words[1]), await bu.getUser(msg, words[2])];
             if (!users[0] || !users[1]) {

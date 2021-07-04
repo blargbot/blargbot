@@ -11,28 +11,30 @@ class TokenifyCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         console.debug(words.length);
         if (words.length > 1) {
-            var pasta = words.splice(1, words.length).join(' ').replace(/[^0-9a-z]/gi, '').toLowerCase();
+            let pasta = words.splice(1, words.length).join(' ').replace(/[^0-9a-z]/gi, '').toLowerCase();
             console.debug(pasta);
-            var newPasta = [];
-            for (var i = 0; i < pasta.length; i++) {
+            let newPasta = [];
+            for (let i = 0; i < pasta.length; i++) {
                 console.debug(pasta[i]);
-                var seed = bu.getRandomInt(1, 4);
+                let seed = bu.getRandomInt(1, 4);
                 if (seed >= 3) {
                     newPasta.push(pasta[i].toUpperCase());
                 } else {
                     newPasta.push(pasta[i]);
                 }
-                if (i != pasta.length - 1)
-                    if (bu.getRandomInt(1, 20) == 15) {
+                if (i != pasta.length - 1) {
+                    const randInts = [bu.getRandomInt(1, 20), bu.getRandomInt(1, 30), bu.getRandomInt(1, 30)];
+                    if (randInts[0] == 15) {
                         newPasta.push('.');
-                    } else if (bu.getRandomInt(1, 30) == 15) {
+                    } else if (randInts[1] == 15) {
                         newPasta.push('-');
-                    } else if (bu.getRandomInt(1, 30) == 15) {
+                    } else if (randInts[2] == 15) {
                         newPasta.push('\\_');
                     }
+                }
             }
             console.debug(newPasta.join(''));
             bu.send(msg, newPasta.join(''));

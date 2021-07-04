@@ -2,10 +2,6 @@ const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const { commandTypes, avatarColours } = require('../newbu');
 
-function pad(value, length) {
-    return (value.toString().length < length) ? pad(' ' + value, length) : value;
-}
-
 function compareStats(a, b) {
     if (a[1] < b[1])
         return 1;
@@ -24,21 +20,17 @@ class StatsCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let full = words[1] && words[1].toLowerCase().startsWith('c');
         let sum = await r.table('stats').sum('uses').run();
         let stats = await r.table('stats').orderBy({
             index: r.desc('uses')
         }).limit(6).run();
 
-        let topCommandsSession = '';
-        var sortable = [];
-        for (let name in bu.commandStats)
-            sortable.push([name, bu.commandStats[name]]);
+        let sortable = [];
+        for (let [name, stat] of Object.entries(bu.commandStats))
+            sortable.push([name, stat]);
         sortable.sort(compareStats);
-        for (let i = 0; i < sortable.length && i < 6; i++) {
-            topCommandsSession += pad(sortable[i][0] + ':', 13) + ' ' + sortable[i][1] + '\n';
-        }
         let embeds = {
             color: avatarColours[bu.avatarId],
             timestamp: moment(),

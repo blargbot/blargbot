@@ -22,8 +22,8 @@ module.exports =
             'Your account was created on 2016/01/01 01:00:00.'
         )
         .whenArgs('0-3', async function (subtag, context, args) {
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
-                user = context.user;
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2];
+            let user = context.user;
 
             if (args[1])
                 user = await context.getUser(args[1], {

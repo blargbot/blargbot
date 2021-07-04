@@ -15,9 +15,7 @@ const converter = new showdown.Converter({ extensions: ['codehighlight'] });
 converter.setFlavor('github');
 converter.setOption('disableForced4SpacesIndentedSublists', true);
 const xss = require('xss');
-const hbs = require('hbs');
 const moment = require('moment-timezone');
-
 
 
 async function getOutput(id) {
@@ -50,7 +48,7 @@ whiteList.style = []; // Allow style without attributes
 whiteList.link = ['rel', 'href']; // Allow link tags for external CSS.
 
 // add class and id attributes to all whitelisted elements
-for (const key in whiteList) {
+for (const key of Object.keys(whiteList)) {
     whiteList[key].push('class', 'id');
 }
 
@@ -102,7 +100,7 @@ router.get('/:id/perm', async function (req, res) {
 
     let output = await getOutput(id[0]);
 
-    let m = await bu.cclient.execute(`UPDATE message_outputs USING TTL 0 
+    await bu.cclient.execute(`UPDATE message_outputs USING TTL 0 
         SET content = :content, embeds = :embeds, channelid = :channelid
     WHERE id = :id`, {
         id: output.id, content: output.content, embeds: output.embeds, channelid: output.channelid

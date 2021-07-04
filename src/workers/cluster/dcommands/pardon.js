@@ -8,16 +8,18 @@ class PardonCommand extends BaseCommand {
             category: commandTypes.ADMIN,
             usage: 'pardon <user> [flags]',
             info: 'Pardons a user.\nIf mod-logging is enabled, the pardon will be logged.\nThis will not unban users.',
-            flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the pardon.' },
+            flags: [
+                { flag: 'r', word: 'reason', desc: 'The reason for the pardon.' },
                 {
                     flag: 'c',
                     word: 'count',
                     desc: 'The number of warnings that will be removed.'
-                }]
+                }
+            ]
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, 'Not enough input. Do `b!help pardon` for usage instructions.');

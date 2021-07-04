@@ -14,8 +14,10 @@ module.exports =
     Builder.APITag('reactlist')
         .withAlias('listreact')
         .withArgs(a => [
-            a.optional([a.optional('channelId'),
-                a.required('messageId')]),
+            a.optional([
+                a.optional('channelId'),
+                a.required('messageId')
+            ]),
             a.optional('reactions', true)
         ])
         .withDesc(
@@ -27,8 +29,8 @@ module.exports =
             '{reactlist}\n{reactlist;:thinking:}',
             '["🤔","😂"]\n["1111111111111","2222222222222","1234567890123"]'
         ).whenDefault(async function (subtag, context, emotes) {
-            let channel = null,
-                message = null;
+            let channel = null;
+            let message = null;
 
             // Check if the first "emote" is actually a valid channel
             channel = bu.parseChannel(emotes[0], true);
@@ -43,7 +45,9 @@ module.exports =
             // Check that the current first "emote" is a message id
             try {
                 message = await bot.getMessage(channel.id, emotes[0]);
-            } catch (e) { }
+            } catch (e) {
+                // NOOP
+            }
             if (message == null)
                 return Builder.errors.noMessageFound(subtag, context);
             emotes.shift();
@@ -67,7 +71,6 @@ module.exports =
                     continue;
                 }
                 try {
-                    const escaped = emote.replace(/^a?:/gi, '');
                     do {
                         let lastUser = users.length === 0 ? null : users[users.length - 1].id;
                         users.push(...await message.getReaction(emote, 100, null, lastUser));

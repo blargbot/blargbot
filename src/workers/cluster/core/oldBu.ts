@@ -41,20 +41,20 @@ export const oldBu = {
                 perm.map(q => q.toLowerCase()).includes(m.name.toLowerCase()) :
                 m.name.toLowerCase() === perm.toLowerCase()) {
                 return true;
-            } else {
-                const roles = [];
-
-                if (Array.isArray(perm)) {
-                    for (const p of perm) {
-                        const id = getId(p);
-                        if (id !== undefined)
-                            roles.push(id);
-                    }
-                } else {
-                    roles.push(getId(perm));
-                }
-                return roles.includes(m.id);
             }
+            const roles = [];
+
+            if (Array.isArray(perm)) {
+                for (const p of perm) {
+                    const id = getId(p);
+                    if (id !== undefined)
+                        roles.push(id);
+                }
+            } else {
+                roles.push(getId(perm));
+            }
+            return roles.includes(m.id);
+
         });
         for (const role of roles) {
             if (member.roles.includes(role.id)) {

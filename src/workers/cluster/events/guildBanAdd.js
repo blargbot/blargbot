@@ -13,7 +13,7 @@ bot.on('guildBanAdd', async function (guild, user) {
     let storedGuild = await bu.getGuild(guild.id);
     let votebans = storedGuild.votebans || {};
     console.debug(0, votebans);
-    if (votebans.hasOwnProperty(user.id)) {
+    if (Object.prototype.hasOwnProperty.call(votebans, user.id)) {
         console.debug(1, votebans);
         delete votebans[user.id];
         console.debug(2, votebans);
@@ -21,9 +21,9 @@ bot.on('guildBanAdd', async function (guild, user) {
             votebans: r.literal(votebans)
         });
     }
-    var mod;
-    var type = 'Ban';
-    var reason;
+    let mod;
+    let type = 'Ban';
+    let reason;
     if (!bu.bans[guild.id])
         bu.bans[guild.id] = {};
 

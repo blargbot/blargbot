@@ -40,10 +40,10 @@ export class OperatorSubtag extends BaseSubtag {
             return this.applyNumericOperation(context, operator, values, subtag);
         } else if (bbtagUtil.operators.isLogicOperator(operator)) {
             return this.applyLogicOperation(context, operator, values, subtag);
-        } else {
-            //! This should never happen
-            return this.customError('Invalid operator \'' + operator + '\'', context, subtag);
         }
+        //! This should never happen
+        return this.customError('Invalid operator \'' + operator + '\'', context, subtag);
+
     }
 
     public applyComparisonOperation(

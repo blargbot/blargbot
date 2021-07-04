@@ -36,8 +36,7 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
             else if (call.args.length > maxArgs)
                 return context.addError('Too many arguments', call, `Expected ${maxArgs} arguments or fewer but got ${call.args.length}`);
 
-            else
-                throw new Error(`Missing handler for ${call.args.length} arguments!`);
+            throw new Error(`Missing handler for ${call.args.length} arguments!`);
         }
     };
 }

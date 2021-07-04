@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
-var typeRef = {
+let typeRef = {
     CREATE: 0,
     UPDATE: 1,
     DELETE: 2
@@ -40,7 +40,7 @@ class LogsCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         const storedGuild = await bu.getGuild(msg.guild.id);
         if (!storedGuild.settings.makelogs) {
             bu.send(msg, 'This guild has not opted into chatlogs. Please do `b!settings makelogs true` to allow me to start creating chatlogs.');
@@ -51,7 +51,8 @@ class LogsCommand extends BaseCommand {
             return;
         }
         let input = newbutils.parse.flags(this.flags, words);
-        let numberOfMessages = NaN, channel = msg.channel.id;
+        let numberOfMessages = NaN;
+        let channel = msg.channel.id;
         if (input.undefined.length > 0) {
             numberOfMessages = parseInt(input.undefined[0]);
         }
@@ -75,14 +76,14 @@ class LogsCommand extends BaseCommand {
             return await bu.send(msg, 'You do not have permissions to look in that channel!');
         }
 
-        let user = '',
-            type = '';
+        let user = '';
+        let type = '';
         if (input.t) type = input.t.join(' ');
         if (input.u) user = input.u.join(' ');
-        var typesRaw = type.split(','),
-            usersRaw = user.split(','),
-            types = [],
-            users = [];
+        let typesRaw = type.split(',');
+        let usersRaw = user.split(',');
+        let types = [];
+        let users = [];
         for (let i = 0; i < typesRaw.length; i++) {
             if (typesRaw[i] != '') {
                 types.push(typeRef[typesRaw[i].toUpperCase().trim()]);
@@ -91,8 +92,8 @@ class LogsCommand extends BaseCommand {
 
         for (let i = 0; i < usersRaw.length; i++) {
             if (usersRaw[i] != '') {
-                var name = usersRaw[i].trim();
-                var u = await bu.getUser(msg, name, false);
+                let name = usersRaw[i].trim();
+                let u = await bu.getUser(msg, name, false);
                 if (!u) {
                     if (/[0-9]{17,21}/.test(usersRaw[i])) {
                         users.push(usersRaw[i].match(/([0-9]{17,21})/)[1]);

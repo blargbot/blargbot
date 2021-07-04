@@ -1,8 +1,8 @@
 const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
-var confirmIrc = false;
-var confirmDiscord = false;
+let confirmIrc = false;
+let confirmDiscord = false;
 
 class ModuleCommand extends BaseCommand {
     constructor() {
@@ -11,18 +11,20 @@ class ModuleCommand extends BaseCommand {
             category: newbutils.commandTypes.CAT,
             usage: 'module <reload|unload|load> <name>',
             info: 'Loads, unloads, or reloads a module',
-            flags: [{
-                flag: 'c',
-                word: 'command',
-                desc: 'Do for a command (default)'
-            },
-            { flag: 't', word: 'tag', desc: 'Do for a tag' },
-            { flag: 'e', word: 'event', desc: 'Do for an event' },
-            { flag: 'u', word: 'utils', desc: 'Do for a util module' }]
+            flags: [
+                {
+                    flag: 'c',
+                    word: 'command',
+                    desc: 'Do for a command (default)'
+                },
+                { flag: 't', word: 'tag', desc: 'Do for a tag' },
+                { flag: 'e', word: 'event', desc: 'Do for an event' },
+                { flag: 'u', word: 'utils', desc: 'Do for a util module' }
+            ]
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id == config.discord.users.owner) {
             let input = newbutils.parse.flags(this.flags, words);
             if (input.undefined.length > 1) {
@@ -48,35 +50,33 @@ class ModuleCommand extends BaseCommand {
                         else bu.send(msg, `:no_good: Failed to load ${manager.type} ${input.undefined[0]} :no_good:`);
                         break;
                 }
-            } else {
-                if (input.undefined[0] && input.undefined[0].toLowerCase() == 'discord') {
-                    if (!confirmDiscord) {
-                        bu.send(msg, 'I really hope you know what you\'re doing. ' +
-                            'Type that command again to confirm.');
-                        confirmDiscord = true;
-                    } else {
-                        bu.send(msg, ':ok_hand: Reloading the discord module :ok_hand:')
-                            .then(() => {
-                                bu.emitter.emit('reloadDiscord');
-                            });
-                    }
-                } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'irc') {
-                    if (!confirmIrc) {
-                        bu.send(msg, 'I really hope you know what you\'re doing. ' +
-                            'Type that command again to confirm.');
-                        confirmIrc = true;
-                    } else {
-                        bu.send(msg, ':ok_hand: Reloading the irc module :ok_hand:')
-                            .then(() => {
-                                bu.emitter.emit('reloadIrc');
-                            });
-                    }
-                } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'bu') {
-                    bu.emitter.emit('reloadBu');
-                } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'cluster') {
-                    cluster.reset();
-                    bu.send(msg, ':ok_hand: Reloading the workers. :ok_hand:');
+            } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'discord') {
+                if (!confirmDiscord) {
+                    bu.send(msg, 'I really hope you know what you\'re doing. ' +
+                        'Type that command again to confirm.');
+                    confirmDiscord = true;
+                } else {
+                    bu.send(msg, ':ok_hand: Reloading the discord module :ok_hand:')
+                        .then(() => {
+                            bu.emitter.emit('reloadDiscord');
+                        });
                 }
+            } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'irc') {
+                if (!confirmIrc) {
+                    bu.send(msg, 'I really hope you know what you\'re doing. ' +
+                        'Type that command again to confirm.');
+                    confirmIrc = true;
+                } else {
+                    bu.send(msg, ':ok_hand: Reloading the irc module :ok_hand:')
+                        .then(() => {
+                            bu.emitter.emit('reloadIrc');
+                        });
+                }
+            } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'bu') {
+                bu.emitter.emit('reloadBu');
+            } else if (input.undefined[0] && input.undefined[0].toLowerCase() == 'cluster') {
+                cluster.reset();
+                bu.send(msg, ':ok_hand: Reloading the workers. :ok_hand:');
             }
         }
     }

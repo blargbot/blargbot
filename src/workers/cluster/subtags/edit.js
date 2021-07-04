@@ -23,8 +23,8 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) { //args = [<messageId>,<text|embed>]
-            let text = args[1],
-                embed = bu.parseEmbed(args[1]);
+            let text = args[1];
+            let embed = bu.parseEmbed(args[1]);
 
             if (embed != null && !embed.malformed)
                 text = undefined; //args = [<messageId>,<embed>]
@@ -36,14 +36,14 @@ module.exports =
         .whenArgs(3, async function (subtag, context, args) { //args = [(<messageId>,<text>,<embed>)|(<channelid>,<messageId>,<text|embed>)]
             let channel = bu.parseChannel(args[0], true);
             if (channel == null) { //args = [<messageId>,<text>,<embed>]
-                let text = args[1] || undefined,
-                    embed = bu.parseEmbed(args[2]);
+                let text = args[1] || undefined;
+                let embed = bu.parseEmbed(args[2]);
                 if (!embed || embed.malformed) embed = args[2];
                 return await this.runEdit(subtag, context, context.channel, args[0], text, embed);
             }
 
-            let text = args[2],
-                embed = bu.parseEmbed(args[2]);
+            let text = args[2];
+            let embed = bu.parseEmbed(args[2]);
 
             if (embed != null && !embed.malformed)
                 text = undefined; //args = [<channelId>,<messageId>,<embed>]
@@ -52,10 +52,10 @@ module.exports =
             return await this.runEdit(subtag, context, channel, args[1], text, embed);
         })
         .whenArgs(4, async function (subtag, context, args) { //args = [<channelId>,<messageId>,<text>,<embed>]
-            let channel = bu.parseChannel(args[0], true),
-                messageId = args[1],
-                text = args[2] || undefined,
-                embed = bu.parseEmbed(args[3]) || args[3];
+            let channel = bu.parseChannel(args[0], true);
+            let messageId = args[1];
+            let text = args[2] || undefined;
+            let embed = bu.parseEmbed(args[3]) || args[3];
             if (!embed || embed.malformed) embed = args[3];
             return await this.runEdit(subtag, context, channel, messageId, text, embed);
         })
@@ -72,8 +72,7 @@ module.exports =
             let message;
             try {
                 message = await bot.getMessage(channel.id, messageId);
-            }
-            catch (err) {
+            } catch (err) {
                 if (err.code == 10008)
                     return Builder.errors.noMessageFound(subtag, context);
                 return Builder.util.error(subtag, context, 'Unable to get message');
@@ -107,6 +106,8 @@ module.exports =
                         content: text,
                         embed: embed
                     });
-            } catch (err) { }
+            } catch (err) {
+                // NOOP
+            }
         })
         .build();

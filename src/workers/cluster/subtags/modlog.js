@@ -26,14 +26,14 @@ module.exports =
         )
         .whenArgs('1-2', Builder.errors.notEnoughArguments)
         .whenArgs('3-6', async function (subtag, context, args) {
-            let action = args[0],
-                user = await context.getUser(args[1], {
-                    suppress: context.scope.suppressLookup,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
-                }),
-                mod = args[2] || undefined,
-                reason = args[3] || undefined,
-                color = bu.parseColor(args[4]) || undefined;
+            let action = args[0];
+            let user = await context.getUser(args[1], {
+                suppress: context.scope.suppressLookup,
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            });
+            let mod = args[2] || undefined;
+            let reason = args[3] || undefined;
+            let color = bu.parseColor(args[4]) || undefined;
 
             if (mod != null)
                 mod = await context.getUser(mod, {

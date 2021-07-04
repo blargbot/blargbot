@@ -10,7 +10,7 @@ class CQLCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         try {
             let res = await bu.cclient.execute(words.slice(1).join(' '));
             let rows = res.rows.map(r => Object.values(r).map(rr => (rr === undefined || rr === null ? '' : rr).toString().replace(/\n/g, ' ').replace(/`/g, '').substring(0, 32)));

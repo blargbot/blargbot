@@ -8,8 +8,6 @@
  */
 
 const router = require('express').Router();
-const hbs = require('hbs');
-const moment = require('moment-timezone');
 
 async function getDomains() {
     await spawner.recacheDomains();

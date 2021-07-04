@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand'),
-    sf = require('snekfetch');
+const BaseCommand = require('../structures/BaseCommand');
+const sf = require('snekfetch');
 const newbutils = require('../newbu');
 
 let total = 0;
@@ -14,7 +14,7 @@ class CommitCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (total === 0) {
             let c = await sf.get('https://api.github.com/repos/blargbot/blargbot/contributors')
                 .query({

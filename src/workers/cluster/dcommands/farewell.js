@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand'),
-    bbEngine = require('../structures/bbtag/Engine');
+const BaseCommand = require('../structures/BaseCommand');
+const bbEngine = require('../structures/bbtag/Engine');
 const newbutils = require('../newbu');
 
 class FarewellCommand extends BaseCommand {
@@ -21,7 +21,7 @@ class FarewellCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
 
         if (input.r) {
@@ -37,7 +37,7 @@ class FarewellCommand extends BaseCommand {
             });
             return;
         }
-        var farewell = { content: input.undefined.join(' '), author: msg.author.id, authorizer: msg.author.id };
+        let farewell = { content: input.undefined.join(' '), author: msg.author.id, authorizer: msg.author.id };
         await bu.guildSettings.set(msg.channel.guild.id, 'farewell', farewell);
         let suffix = '';
         let channelStr = input.c ? input.c.join(' ') : msg.channel.id;

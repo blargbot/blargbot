@@ -25,7 +25,7 @@ class BeeMovieCommand extends BaseCommand {
         this.characterLines = beemovie.filter(l => l.type === 0);
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         const input = newbutils.parse.flags(this.flags, words);
         const lines = input.c ? this.characterLines : this.lines;
         const { content, actor } = lines[Math.floor(Math.random() * lines.length)];

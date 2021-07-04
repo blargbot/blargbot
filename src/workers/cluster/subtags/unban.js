@@ -22,12 +22,12 @@ module.exports =
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-3', async function (subtag, context, args) {
             let user = await context.getUser(args[0], {
-                    quiet: false,
-                    suppress: context.scope.suppressLookup,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
-                }),
-                reason = args[1],
-                noPerms = args[2] != null;
+                quiet: false,
+                suppress: context.scope.suppressLookup,
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            });
+            let reason = args[1];
+            let noPerms = args[2] != null;
 
             if (user == null) return Builder.errors.noUserFound(subtag, context);
             let response = await CommandManager.built['unban'].unban(context.msg, user, reason || context.scope.reason || undefined, true, noPerms);

@@ -13,7 +13,7 @@ class RvotebanCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let storedGuild = await bu.getGuild(msg.guild.id);
         let votebans = storedGuild.votebans || {};
         let input = newbutils.parse.flags(this.flags, words);

@@ -23,8 +23,8 @@ export class RandIntSubtag extends BaseSubtag {
         args: string[],
         subtag: SubtagCall
     ): string {
-        let min = parse.int(args[0]),
-            max = parse.int(args[1]);
+        let min = parse.int(args[0]);
+        let max = parse.int(args[1]);
         const fallback = parse.int(context.scope.fallback ?? '');
 
         if (isNaN(min)) min = fallback;

@@ -9,7 +9,6 @@
 
 const Builder = require('../structures/TagBuilder');
 const snekfetch = require('snekfetch');
-const { parse: UrlParse } = require('url');
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
 function makeRequest(request) {
@@ -53,7 +52,8 @@ module.exports = Builder.AutoTag('request')
         } else {
             return Builder.errors.invalidDomain(subtag, context, url);
         }
-        let options = { method: 'GET' }, data;
+        let options = { method: 'GET' };
+        let data;
         if (args[1]) {
             try {
                 options = JSON.parse(args[1]);

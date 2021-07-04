@@ -18,8 +18,14 @@ export function randChoose(set: unknown[] | Set<unknown> | Map<unknown, unknown>
 function createWrapper<T>(set: T[] | Set<T> | Iterable<T>): { length: number; get(index: number): T; } {
     if ('size' in set) {
         let values: undefined | T[];
-        return { length: set.size, get(index) { return (values ??= [...set])[index]; } };
+        return {
+            length: set.size,
+            get: (index) => (values ??= [...set])[index]
+        };
     }
     const arr = 'length' in set ? set : [...set];
-    return { length: arr.length, get(index) { return arr[index]; } };
+    return {
+        length: arr.length,
+        get: (index) => arr[index]
+    };
 }

@@ -15,7 +15,7 @@ class FreeCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, `Usage: \`${this.usage}\``);
@@ -23,7 +23,6 @@ class FreeCommand extends BaseCommand {
         }
         bot.sendChannelTyping(msg.channel.id);
 
-        let code = bu.genEventCode();
         let buffer = await bu.awaitEvent({
             cmd: 'img',
             command: 'free',

@@ -28,10 +28,10 @@ module.exports =
         .resolveArgs(0, 1)
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
         .whenArgs('3', async function (subtag, context, args) {
-            let varName = args[0],
-                arr = await bu.getArray(context, args[1]),
-                array = Array.from(arr.v),
-                newArray = [];
+            let varName = args[0];
+            let arr = await bu.getArray(context, args[1]);
+            let array = Array.from(arr.v);
+            let newArray = [];
 
             let remaining = context.state.limits.map || { loops: NaN };
             for (const item of array) {
@@ -45,7 +45,7 @@ module.exports =
 
                 if (context.state.return)
                     break;
-            };
+            }
 
             context.variables.reset(varName);
             return bu.serializeTagArray(newArray);

@@ -31,8 +31,8 @@ export class DMSubtag extends BaseSubtag {
             suppress: context.scope.suppressLookup,
             label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
         });
-        let content: string | undefined = messageStr,
-            embed = discordUtil.parseEmbed(messageStr);
+        let content: string | undefined = messageStr;
+        let embed = discordUtil.parseEmbed(messageStr);
 
         if (user === undefined)
             return this.noUserFound(context, subtag);

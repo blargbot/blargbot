@@ -108,11 +108,11 @@
                                         { regex: /[^\{}]*/, token: 'comment' }
                                     ],
                                     innerTag: [
-                                        { regex: /\{\/\//, token: 'comment', push: 'comment' },                                    
+                                        { regex: /\{\/\//, token: 'comment', push: 'comment' },
                                         { regex: /\{/, token: brace, push: 'innerTag', indent: true },
                                         { regex: /\}/, token: brace, pop: true, dedent: true },
                                         { regex: /([^{}; ]+)/, token: 'keyword' },
-                                        { regex: /(;+)(\{\/\/)/, token: [semiColon, 'comment'], push: 'comment'},
+                                        { regex: /(;+)(\{\/\/)/, token: [semiColon, 'comment'], push: 'comment' },
                                         { regex: /(;+)(\{)/, token: [semiColon, brace], push: 'innerTag', indent: true },
                                         { regex: /(;+)(})/, token: [semiColon, brace], pop: true, dedent: true },
                                         { regex: /(;+)$/, token: [semiColon] },
@@ -120,7 +120,7 @@
                                         { regex: /^(\d*)?([^{};]*)?/, token: ['number', 'string'] }
                                     ],
                                     args: [
-                                        { regex: /\{\/\//, token: 'comment', push: 'comment' },                                                                        
+                                        { regex: /\{\/\//, token: 'comment', push: 'comment' },
                                         { regex: /\{/, token: brace, push: 'innerTag', indent: true },
                                         { regex: /\}/, token: brace, pop: true, dedent: true },
                                         { regex: /;/, token: semiColon },
@@ -128,7 +128,7 @@
                                     ],
                                     meta: {}
                                 });
-                              
+
                             </script>
                             <style>
                                 .CodeMirror {
@@ -144,123 +144,138 @@
                                 <div class='row' style='margin-bottom: 0'>
 
                                     <div class="input-field col s3">
-                                        <input id='tagname' type="text" name="tagName" {{#if tagName}}value='{{tagName}}' {{/if}}>
+                                        <input id='tagname' type="text" name="tagName" {{#if
+                                            tagName}}value='{{tagName}}' {{/if}}>
                                         <label for='tagname'>Tag Name</label>
                                     </div>
                                     <div class='input-field col s3'>
-                                        <input id='newname' type="text" name="newname" {{#if user}}{{else}}disabled{{/if}}>
+                                        <input id='newname' type="text" name="newname" {{#if
+                                            user}}{{else}}disabled{{/if}}>
                                         <label for='newname'>New Name</label>
                                     </div>
                                     <div class='col s3'>
-                                        <button type="submit" name="action" value='load' class="cyan accent-3 white-text btn waves-effect waves-light full">
-										Load
-										</button>
+                                        <button type="submit" name="action" value='load'
+                                            class="cyan accent-3 white-text btn waves-effect waves-light full">
+                                            Load
+                                        </button>
                                     </div>
                                     <div class='col s3'>
-                                        <button type="submit" name="action" value='save' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+                                        <button type="submit" name="action" value='save'
+                                            class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
                                             {{#if user}}{{else}}disabled{{/if}}>
-										 Save
-										 </button>
+                                            Save
+                                        </button>
                                     </div>
                                 </div>
                                 <div class='row' style='margin-top: 0px'>
                                     <div class="input-field col s3">
                                         <select id="destSelect" name="destination">
                                             {{#if destination}}
-                                            <option value="">Tag</option>                                            
+                                            <option value="">Tag</option>
                                             {{else}}
                                             <option value="" selected>Tag</option>
                                             {{/if}}
                                             {{#each guilds}}
-                                            <option value="{{id}}" {{#ifCond id '==' ../destination}}selected{{/ifCond}}>{{name}}</option>
+                                            <option value="{{id}}" {{#ifCond id '=='
+                                                ../destination}}selected{{/ifCond}}>{{name}}</option>
                                             {{/each}}
                                         </select>
                                         <label for="destSelect">Destination</label>
                                     </div>
                                     <div class='input-field col s3'>
-                                        <input id='fontsize' type="number" name="fontsize" value=20 onchange="setFontSize(event.target.value)">
+                                        <input id='fontsize' type="number" name="fontsize" value=20
+                                            onchange="setFontSize(event.target.value)">
                                         <label for='fontsize'>Font Size</label>
                                     </div>
 
                                     <div class='col s3'>
-                                        <button type="submit" name="action" value='rename' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+                                        <button type="submit" name="action" value='rename'
+                                            class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
                                             {{#if user}}{{else}}disabled{{/if}}>
-										Rename
-										</button>
+                                            Rename
+                                        </button>
                                     </div>
                                     <div class='col s3'>
-                                        <button type="submit" name="action" value='delete' class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
+                                        <button type="submit" name="action" value='delete'
+                                            class="cyan accent-3 white-text btn waves-effect waves-light full {{#if user}}{{else}}disabled{{/if}}"
                                             {{#if user}}{{else}}disabled{{/if}}>
-										<i class="large material-icons">delete</i>Delete
-										</button>
-                                    </div>
-                                </div>
-                                <textarea id="yayEditor" style="height: 100%; font-size: 20px; background-color: #272822" name='content'></textarea>
-                                <div class='row'>
-                                    <div class='col s12'>
-                                        <button type='button' class="cyan accent-3 white-text btn waves-effect waves-light full" onclick='exportFile()'>
-										Export
+                                            <i class="large material-icons">delete</i>Delete
                                         </button>
                                     </div>
                                 </div>
-                                {{!-- <script>
+                                <textarea id="yayEditor"
+                                    style="height: 100%; font-size: 20px; background-color: #272822"
+                                    name='content'></textarea>
+                                <div class='row'>
+                                    <div class='col s12'>
+                                        <button type='button'
+                                            class="cyan accent-3 white-text btn waves-effect waves-light full"
+                                            onclick='exportFile()'>
+                                            Export
+                                        </button>
+                                    </div>
+                                </div>
+                                {{!--
+                                <script>
                                     let teditor = document.getElementById('yayEditor');
-                                    let startText = {{{startText}}};
+                                    let startText = {{{ startText }}};
                                     teditor.value = startText || localStorage.content || '{//;Start by typing an opening brace.\nDocumentation is available here: https://blargbot.xyz/tags/ }';
-                                    
+
                                 </script> --}}
-                                <script> 
+                                <script>
                                     let teditor = document.getElementById('yayEditor');
-                                    let startText = {{{startText}}};
+                                    let startText = {{{ startText }}};
                                     teditor.value = startText || localStorage.content || '{//;Start by typing an opening brace.\nDocumentation is available here: https://blargbot.xyz/tags/ }';
-                                    var words = {{#tagseditor}}{{/tagseditor}};
-                                    words.length--;
+                                    var words = {{ #tagseditor}}{
+                                        {
+                                            /tagseditor}};
+                                            words.length--;
 
-                                    var editor = CodeMirror.fromTextArea(teditor, {
-                                        mode: 'cattag',
-                                        lineNumbers: true,
-                                        indentWithTabs: false,
-                                        styleActiveLine: true,
-                                        matchBrackets: true,
-                                        smartIndent: true,
-                                        autoCloseBrackets: false,
-                                        theme: 'monokai',
-                                        electricChars: true,
-                                        lineWrapping: true,
-                                        hintOptions: {
-                                            words: words
-                                        },
-                                        tabMode: 'indent'
-                                    });
-                                    editor.on("inputRead", function (editor, change) {
-                                        if (change.text[0] == '{') {
-                                            editor.showHint();
-                                        }
-                                        editor.save();
-                                        localStorage.content = editor.getValue();
-                                    });
+                                            var editor = CodeMirror.fromTextArea(teditor, {
+                                                mode: 'cattag',
+                                                lineNumbers: true,
+                                                indentWithTabs: false,
+                                                styleActiveLine: true,
+                                                matchBrackets: true,
+                                                smartIndent: true,
+                                                autoCloseBrackets: false,
+                                                theme: 'monokai',
+                                                electricChars: true,
+                                                lineWrapping: true,
+                                                hintOptions: {
+                                                    words: words
+                                                },
+                                                tabMode: 'indent'
+                                            });
+                                            editor.on("inputRead", function (editor, change) {
+                                                if (change.text[0] == '{') {
+                                                    editor.showHint();
+                                                }
+                                                editor.save();
+                                                localStorage.content = editor.getValue();
+                                            });
 
-                                    function setFontSize(val) {
-                                        var parsedVal = parseInt(val);
-                                        if (!isNaN(parsedVal)) {
-                                            document.getElementsByClassName("CodeMirror")[0].style.fontSize = parsedVal + 'px';
-                                        }
-                                        localStorage.fontSize = parsedVal;
-                                    }
-                                    function exportFile() {
-                                        console.log('exporting', editor.getValue())
-                                        var pom = document.createElement('a');
-                                        pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
-                                        encodeURIComponent(editor.getValue()));
-                                        pom.setAttribute('download', (document.getElementById('tagname').value || 'tag') + '.bbtag');
-                                        pom.style.display = 'none';
-                                        document.body.appendChild(pom);
-                                        pom.click();
-                                        document.body.removeChild(pom);
-                                    }
+                                            function setFontSize(val) {
+                                                var parsedVal = parseInt(val);
+                                                if (!isNaN(parsedVal)) {
+                                                    document.getElementsByClassName("CodeMirror")[0].style.fontSize = parsedVal + 'px';
+                                                }
+                                                localStorage.fontSize = parsedVal;
+                                            }
+                                            function exportFile() {
+                                                console.log('exporting', editor.getValue())
+                                                var pom = document.createElement('a');
+                                                pom.setAttribute('href', 'data:text/plain;charset=utf-8,' +
+                                                    encodeURIComponent(editor.getValue()));
+                                                pom.setAttribute('download', (document.getElementById('tagname').value || 'tag') + '.bbtag');
+                                                pom.style.display = 'none';
+                                                document.body.appendChild(pom);
+                                                pom.click();
+                                                document.body.removeChild(pom);
+                                            }
 
 
-                                    setFontSize(localStorage.fontSize || 20);
+                                            setFontSize(localStorage.fontSize || 20);
                                 </script>
                                 <br>
                                 <!--	<input type="submit" value="Load" class="cyan accent-3 white-text btn waves-effect waves-light">-->
@@ -277,10 +292,9 @@
 
         <!-- Menu Toggle Script -->
         <script>
-            init();
-             $(document).ready(function() {
-    $('select').material_select();
-  });
+                $(document).ready(function () {
+                    $('select').material_select();
+                });
         </script>
     </main>
     <footer class="page-footer blue-grey darken-2">

@@ -11,10 +11,7 @@ class ChangelogCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        let channelid = msg.channel.id;
-        if (msg.channelMentions.length > 0) channelid = msg.channelMentions[0];
-
+    async execute(msg) {
         let changelogs = await r.table('vars').get('changelog');
         if (!changelogs) {
             await r.table('vars').insert({

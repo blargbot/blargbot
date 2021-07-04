@@ -23,8 +23,8 @@ module.exports =
         ).resolveArgs(-1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            let rWith = await this.executeArg(subtag, args[args.length - 1], context),
-                regex;
+            let rWith = await this.executeArg(subtag, args[args.length - 1], context);
+            let regex;
             try {
                 regex = bu.createRegExp(args[args.length - 2].content);
             } catch (e) {

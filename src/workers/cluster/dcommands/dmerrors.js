@@ -11,7 +11,7 @@ class DmerrorsCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         let storedUser = await r.table('user').get(msg.author.id);
 
         await r.table('user').get(msg.author.id).update({

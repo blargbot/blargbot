@@ -9,12 +9,14 @@ class MuteCommand extends BaseCommand {
             category: commandTypes.ADMIN,
             usage: 'mute <user> [flags]',
             info: 'Gives the user a special muted role. On first run, this role will be created. The bot needs to be able to `manage roles` to create and assign the role, and `manage channels` to configure the role. You are able to manually configure the role without the bot, but the bot has to make it. Deleting the muted role causes it to be regenerated.\nIf the bot has permissions for it, this command will also voice-mute the user.\nIf mod-logging is enabled, the mute will be logged.\nYou can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
-            flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the mute.' },
+            flags: [
+                { flag: 'r', word: 'reason', desc: 'The reason for the mute.' },
                 {
                     flag: 't',
                     word: 'time',
                     desc: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
-                }]
+                }
+            ]
         });
     }
 
@@ -31,9 +33,9 @@ class MuteCommand extends BaseCommand {
                 });
                 await bu.guildSettings.set(msg.channel.guild.id, 'mutedrole', role.id);
                 if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageChannels) {
-                    var channels = msg.channel.guild.channels.map(m => m);
+                    let channels = msg.channel.guild.channels.map(m => m);
                     console.debug(channels.length);
-                    for (var i = 0; i < channels.length; i++) {
+                    for (let i = 0; i < channels.length; i++) {
                         bot.editChannelPermission(channels[i].id, role.id, 0, 2048, 'role', 'Automatic muted role configuration').catch(logError);
                     }
                     this.execute(msg, words, text);
@@ -44,30 +46,30 @@ class MuteCommand extends BaseCommand {
                 bu.send(msg, 'I don\'t have enough permissions to create a `muted` role! Make sure I have the `manage roles` permission and try again.');
             }
             return;
-        } else {
-            if (!msg.channel.guild.roles.get(mutedrole)) {
-                await bu.send(msg, 'Couldn\'t find the muted role! Attempting to regenerate it...');
-                await bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole');
-                await this.execute(msg, words, text);
-                return;
-            }
         }
+        if (!msg.channel.guild.roles.get(mutedrole)) {
+            await bu.send(msg, 'Couldn\'t find the muted role! Attempting to regenerate it...');
+            await bu.guildSettings.remove(msg.channel.guild.id, 'mutedrole');
+            await this.execute(msg, words, text);
+            return;
+        }
+
         if (words.length > 1) {
             if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageRoles) {
                 let role = msg.guild.roles.get(mutedrole);
                 //        if (msg.member.permissions.json.manageRoles) {
                 if (words[1]) {
-                    var user = await bu.getUser(msg, words[1]);
+                    let user = await bu.getUser(msg, words[1]);
                     if (!user) {
                         await bu.send(msg, 'I couldn\'t find that user!');
                         return;
                     }
-                    var member = msg.channel.guild.members.get(user.id);
+                    let member = msg.channel.guild.members.get(user.id);
                     if (!member) {
                         await bu.send(msg, 'I couldn\'t find that user!');
                         return;
                     }
-                    var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+                    let botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
                     console.debug(role.position, botPos);
                     if (role.position >= botPos) {
                         await bu.send(msg, 'I can\'t assign the muted role! (it\'s higher than or equal to my top role)');
@@ -90,7 +92,8 @@ class MuteCommand extends BaseCommand {
                         bu.send(msg, 'That user is already muted!');
                     } else {
                         try {
-                            let reason, fullReason;
+                            let reason;
+                            let fullReason;
                             let input = parse.flags(this.flags, words);
                             if (input.r) {
                                 reason = input.r.join(' ');

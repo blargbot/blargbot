@@ -12,7 +12,7 @@ class HackbanCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (!msg.channel.guild.members.get(bot.user.id).permissions.json.banMembers) {
             bu.send(msg, 'I don\'t have permission to ban users!');
             return;
@@ -44,8 +44,7 @@ class HackbanCommand extends BaseCommand {
         if (userList.length == 0) {
             bu.send(msg, 'You can\'t ban no one!');
             return;
-        }
-        else if (userList.length == 1)
+        } else if (userList.length == 1)
             bu.bans[msg.channel.guild.id][userList[0]] = {
                 mod: msg.author,
                 type: 'Hack-Ban',

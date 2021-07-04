@@ -11,7 +11,7 @@ class CatbotCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id == config.discord.users.owner) {
             await bot.sendChannelTyping(msg.channel.id);
             if (words[1]) {
@@ -39,16 +39,18 @@ class CatbotCommand extends BaseCommand {
                             bu.send(msg, 'Nope.');
                         }
                         break;
-                    case 'list':
+                    case 'list': {
                         let things = await r.db('blargdb').table('markovs').withFields('id');
                         bu.send(msg, things.map(t => t.id).join('\n'));
                         break;
-                    default:
+                    }
+                    default: {
                         let markov = await r.db('blargdb').table('markovs').get(words[1]);
                         if (markov) {
                             genlogs(msg, markov.userid, markov.id);
                         }
                         break;
+                    }
                 }
 
             } else {

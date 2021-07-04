@@ -34,7 +34,7 @@ class NamesCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         let user;
         if (input.r) {
@@ -43,7 +43,9 @@ class NamesCommand extends BaseCommand {
             if (!storedUser.usernames || storedUser.usernames.length == 0)
                 return bu.send(msg, 'You have no usernames to remove!');
             if (input.a || input.r.length > 0) {
-                let prompt, response, name;
+                let prompt;
+                let response;
+                let name;
                 if (!input.a)
                     name = input.r.join(' ');
                 let filteredUserNames = input.a ? [] : storedUser.usernames.filter(u => !(u.name.toLowerCase().includes(name)));
@@ -66,7 +68,7 @@ class NamesCommand extends BaseCommand {
                     await bot.deleteMessage(prompt.prompt.channel.id, prompt.prompt.id);
                 return;
             } else if (input.r.length === 0) {
-                let matches = storedUser.usernames.map((u, i) => { return { content: u.name, value: i }; });
+                let matches = storedUser.usernames.map((u, i) => ({ content: u.name, value: i }));
                 let lookup = await bu.createLookup(msg, 'username', matches);
                 if (!lookup)
                     return;

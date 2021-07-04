@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
-var events = [
+let events = [
     'memberban',
     'memberunban',
     'memberjoin',
@@ -36,10 +36,12 @@ class LogCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        let storedGuild = await bu.getGuild(msg.guild.id), args, users;
-        if (!storedGuild.hasOwnProperty('log')) storedGuild.log = {};
-        if (!storedGuild.hasOwnProperty('logIgnore')) storedGuild.logIgnore = [];
+    async execute(msg, words) {
+        let storedGuild = await bu.getGuild(msg.guild.id);
+        let args;
+        let users;
+        if (!Object.prototype.hasOwnProperty.call(storedGuild, 'log')) storedGuild.log = {};
+        if (!Object.prototype.hasOwnProperty.call(storedGuild, 'logIgnore')) storedGuild.logIgnore = [];
         if (words.length >= 2) {
             switch (words[1].toLowerCase()) {
                 case 'list':
@@ -92,9 +94,7 @@ class LogCommand extends BaseCommand {
                 case 'disable':
                     args = words.slice(2);
                     if (args.map(m => m.toLowerCase()).includes('all'))
-                        for (let event of args) {
-                            storedGuild.log = {};
-                        }
+                        storedGuild.log = {};
                     else
                         for (let event of args) {
                             delete storedGuild.log[event.toLowerCase()];

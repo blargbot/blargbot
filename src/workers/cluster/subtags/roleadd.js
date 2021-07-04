@@ -28,8 +28,8 @@ module.exports =
             if (topRole == 0)
                 return Builder.util.error(subtag, context, 'Author cannot add roles');
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
-                result = await userHasRole.checkRoles(context, args[0], args[1], quiet);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2];
+            let result = await userHasRole.checkRoles(context, args[0], args[1], quiet);
 
             if (result.user == null) {
                 if (quiet)

@@ -10,9 +10,9 @@ class ExecCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id === config.discord.users.owner) {
-            var commandToProcess = words.slice(1).join(' ');
+            let commandToProcess = words.slice(1).join(' ');
             console.debug(commandToProcess);
             if (commandToProcess.trim().toLowerCase().includes('pm2 restart') ||
                 commandToProcess.trim().toLowerCase().includes('pm2 reload') ||
@@ -28,7 +28,7 @@ ${err.stack}
 \`\`\``);
                     return;
                 }
-                var message = '```xl\n';
+                let message = '```xl\n';
                 if (stderr) {
                     message += stderr;
                     //  return;

@@ -8,7 +8,6 @@
  */
 
 const router = require('express').Router();
-const hbs = require('hbs');
 
 router.get('/', async function (req, res) {
     // if (!req.user) {

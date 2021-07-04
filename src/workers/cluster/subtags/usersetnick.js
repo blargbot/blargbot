@@ -20,8 +20,8 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
-            let nick = args[0],
-                user = context.user;
+            let nick = args[0];
+            let user = context.user;
 
             if (args[1])
                 user = await context.getUser(args[1], {
@@ -30,7 +30,7 @@ module.exports =
                 });
 
             if (user == null) return Builder.errors.noUserFound(subtag, context);
-            else user = context.guild.members.get(user.id);
+            user = context.guild.members.get(user.id);
 
             try {
                 if (user.id === bot.user.id)

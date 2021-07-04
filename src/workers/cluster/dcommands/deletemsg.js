@@ -9,11 +9,11 @@ class DeletemsgCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id == config.discord.users.owner) {
             let channel = '';
             let messages = [];
-            if (bot.channelGuildMap.hasOwnProperty(words[1])) {
+            if (Object.prototype.hasOwnProperty.call(bot.channelGuildMap, words[1])) {
                 channel = words[1];
                 messages = words.slice(2);
             } else {

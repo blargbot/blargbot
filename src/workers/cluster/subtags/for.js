@@ -7,15 +7,15 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    operators = {
-        '==': (a, b) => a === b,
-        '!=': (a, b) => a !== b,
-        '>=': (a, b) => a >= b,
-        '>': (a, b) => a > b,
-        '<=': (a, b) => a <= b,
-        '<': (a, b) => a < b
-    };
+const Builder = require('../structures/TagBuilder');
+const operators = {
+    '==': (a, b) => a === b,
+    '!=': (a, b) => a !== b,
+    '>=': (a, b) => a >= b,
+    '>': (a, b) => a > b,
+    '<=': (a, b) => a <= b,
+    '<': (a, b) => a < b
+};
 
 module.exports =
     Builder.AutoTag('for')
@@ -36,14 +36,14 @@ module.exports =
         ).resolveArgs(0, 1, 2, 3)
         .whenArgs('0-4', Builder.errors.notEnoughArguments)
         .whenArgs('5-6', async function (subtag, context, args) {
-            let errors = [],
-                varName = args[0],
-                initial = bu.parseFloat(args[1]),
-                operator = operators[args[2]],
-                limit = bu.parseFloat(args[3]),
-                code = args.length - 1,
-                result = '',
-                increment;
+            let errors = [];
+            let varName = args[0];
+            let initial = bu.parseFloat(args[1]);
+            let operator = operators[args[2]];
+            let limit = bu.parseFloat(args[3]);
+            let code = args.length - 1;
+            let result = '';
+            let increment;
 
             if (args.length == 5)
                 increment = 1;

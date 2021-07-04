@@ -229,8 +229,10 @@
                             {{#each messages}}
                             <li class='collection-item avatar log {{this.type.color}}'>
                                 <img src='{{this.avatar}}' alt='' class='circle backavatar z-depth-1'>
-                                <span class='title' style='padding-right: 5px'>{{this.username}}#{{this.userdiscrim}}</span>
-                                <span class='badge white-text text-lighten-1 time'>{{this.msgtime}}</span> {{#if this.bot}}
+                                <span class='title'
+                                    style='padding-right: 5px'>{{this.username}}#{{this.userdiscrim}}</span>
+                                <span class='badge white-text text-lighten-1 time'>{{this.msgtime}}</span> {{#if
+                                this.bot}}
                                 <div class='chip bot white-text z-depth-1'>BOT</div>
                                 {{/if}}
                                 <br>
@@ -240,17 +242,19 @@
                                 <p>{{this.content}}</p> {{#if this.attachment}}
                                 <a href='{{this.attachment}}'>Attachment</a> {{/if}} {{#each this.embeds}}
                                 <div class='discord-embed'>
-                                    <blockquote {{#if this.color}}style='border-left: 5px solid #{{this.color}}' {{/if}}>
+                                    <blockquote {{#if this.color}}style='border-left: 5px solid #{{this.color}}'
+                                        {{/if}}>
                                         {{#if this.thumbnail}}
                                         <img src='{{this.thumbnail.url}}' class='discord-embed-thumbnail'> {{/if}} {{#if
                                         this.author}}
                                         <div class='discord-embed-author'>
                                             <div class='valign-wrapper'>
                                                 {{#if this.author.icon_url}}
-                                                <img src='{{this.author.icon_url}}' class='discord-embed-author-icon' />{{/if}}
+                                                <img src='{{this.author.icon_url}}'
+                                                    class='discord-embed-author-icon' />{{/if}}
                                                 {{#if this.author.url}}
-                                                <a class='discord-embed-title' href='{{this.author.url}}'> 
-                                                    {{this.author.name}} 
+                                                <a class='discord-embed-title' href='{{this.author.url}}'>
+                                                    {{this.author.name}}
                                                 </a> {{else}}
                                                 <p class='discord-embed-title'> {{this.author.name}} </p>
                                                 {{/if}}
@@ -276,7 +280,8 @@
                                         <div class='discord-embed-footer'>
                                             <div class='valign-wrapper'>
                                                 {{#if this.footer}} {{#if this.footer.icon_url}}
-                                                <img src='{{this.footer.icon_url}}' class='discord-embed-footer-icon' />                                                {{/if}}
+                                                <img src='{{this.footer.icon_url}}' class='discord-embed-footer-icon' />
+                                                {{/if}}
                                                 <p class='discord-embed-footer-entry'>{{this.footer.text}}</p>
                                                 {{/if}} {{#if this.separateFooter}}
                                                 <p class='discord-embed-footer-separator'>|</p>
@@ -308,10 +313,9 @@
         </div>
     </footer>
     <script>
-        init();
-function unmakeSnowflake(snowflake) {
-    return (snowflake / 4194304) + 1420070400000;
-};
+        function unmakeSnowflake(snowflake) {
+            return (snowflake / 4194304) + 1420070400000;
+        };
         function doStuff() {
             var first = true;
             var elements = document.getElementsByClassName('time');

@@ -9,7 +9,7 @@ class ReloadCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         if (msg.author.id === config.discord.users.owner) {
             bu.emitter.emit('reloadConfig');
             bu.send(msg, ':ok_hand:');

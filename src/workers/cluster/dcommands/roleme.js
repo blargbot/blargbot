@@ -41,20 +41,27 @@ class RolemeCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined[0]) {
             let storedGuild = await bu.getGuild(msg.guild.id);
             let roleme = storedGuild.roleme;
-            let res, rolemeString, rolemeList, condensed = false;
+            let res;
+            let rolemeString;
+            let rolemeList;
+            let condensed = false;
             if (roleme == undefined) roleme = [];
-            let addList = [],
-                removeList = [],
-                channelList = [],
-                resList, activationMessage, caseSensitive, outputMessage, query;
+            let addList = [];
+            let removeList = [];
+            let channelList = [];
+            let resList;
+            let activationMessage;
+            let caseSensitive;
+            let outputMessage;
+            let query;
             switch (input.undefined[0].toLowerCase()) {
                 case 'create':
-                case 'add':
+                case 'add': {
                     let perms = msg.member.permission;
                     if (!perms.has('manageRoles') && !perms.has('administrator'))
                         return bu.send(msg, 'You do not have permission to manage roles.');
@@ -134,6 +141,7 @@ class RolemeCommand extends BaseCommand {
                     }).run();
                     bu.send(msg, 'Roleme added!');
                     break;
+                }
                 case 'remove':
                 case 'delete':
                     if (roleme.length == 0) {
@@ -170,7 +178,7 @@ class RolemeCommand extends BaseCommand {
                     await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
                     await bu.send(msg, 'Done! :ok_hand:');
                     break;
-                case 'edit':
+                case 'edit': {
                     if (roleme.length == 0) {
                         await bu.send(msg, 'You have no rolemes created!');
                         break;
@@ -243,6 +251,7 @@ class RolemeCommand extends BaseCommand {
 
                     await bu.send(msg, 'Done! :ok_hand:');
                     break;
+                }
                 case 'list':
                     if (roleme.length == 0) {
                         await bu.send(msg, 'You have no rolemes created!');

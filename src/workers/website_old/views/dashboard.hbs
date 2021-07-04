@@ -96,11 +96,6 @@
         </div> --}}
 
     </main>
-    <!-- Menu Toggle Script -->
-    <script>
-        init();
-
-    </script>
     <footer class="page-footer blue-grey darken-2">
         <div class="section">
             <div class="rows">
@@ -121,7 +116,7 @@
         $('select').material_select();
     });
 
-    var sid = '{{sessionId}}';  
+    var sid = '{{sessionId}}';
     var wss = new WebSocket('{{url}}');
 </script>
 <script src="/js/dashboard.js"></script>
@@ -135,26 +130,28 @@
             Greetings
             <div class='row'>
                 <div class='col s12 m9'><label for='greeting'>Greeting Message</label>
-                    <textarea placeholder='The message that will be outputted when somebody joins the guild. BBTag compatible.' id='greeting'
-                        class='materialize-textarea'></textarea>
+                    <textarea
+                        placeholder='The message that will be outputted when somebody joins the guild. BBTag compatible.'
+                        id='greeting' class='materialize-textarea'></textarea>
                 </div>
                 <div class='col s12 m3'>
                     <div class='input-field'>
                         <select id='greetingchan' class='channel-selector' data-default='default'>
-                                            </select> <label>Greeting Channel</label>
+                        </select> <label>Greeting Channel</label>
                     </div>
                 </div>
             </div>
             Farewells
             <div class='row'>
                 <div class='col s12 m9'><label for='farewell'>Farewell Message</label>
-                    <textarea placeholder='The message that will be outputted when somebody leaves the guild. BBTag compatible.' id='farewell'
-                        class='materialize-textarea'></textarea>
+                    <textarea
+                        placeholder='The message that will be outputted when somebody leaves the guild. BBTag compatible.'
+                        id='farewell' class='materialize-textarea'></textarea>
                 </div>
                 <div class='col s12 m3'>
                     <div class='input-field'>
                         <select id='farewellchan' class='channel-selector' data-default='default'>
-                                            </select> <label>Farewell Channel</label>
+                        </select> <label>Farewell Channel</label>
                     </div>
                 </div>
             </div>
@@ -164,7 +161,8 @@
                 <div class='col s12'>
                     <p class="range-field">
                         Anti-Mention Spam
-                        <label for='antimention'>The number of unique mentions allowed in a message before banning. 0 to disable.</label>
+                        <label for='antimention'>The number of unique mentions allowed in a message before banning. 0 to
+                            disable.</label>
                         <input type="range" id="antimention" min="0" max="50" />
                     </p>
                 </div>
@@ -174,22 +172,23 @@
                     Make Chatlogs
                     <div class="switch">
                         <label>
-      Off
-      <input type="checkbox" id='makelogs'>
-      <span class="lever"></span>
-      On
-    </label></div>
+                            Off
+                            <input type="checkbox" id='makelogs'>
+                            <span class="lever"></span>
+                            On
+                        </label>
+                    </div>
                 </div>
                 <div class='col s12 m4'>
                     <div class='input-field'>
                         <select id='modlog' class='channel-selector' data-default='none'>
-                                            </select> <label>Modlog Channel</label>
+                        </select> <label>Modlog Channel</label>
                     </div>
                 </div>
                 <div class='col s12 m4'>
                     <div class='input-field'>
                         <select id='mutedrole' class='role-selector' data-default='none'>
-                                            </select> <label>Muted Role</label>
+                        </select> <label>Muted Role</label>
                     </div>
                 </div>
             </div>
@@ -199,11 +198,12 @@
                     Permission Override
                     <div class="switch">
                         <label>
-      Off
-      <input type="checkbox" id='permoverride'>
-      <span class="lever"></span>
-      On
-    </label></div>
+                            Off
+                            <input type="checkbox" id='permoverride'>
+                            <span class="lever"></span>
+                            On
+                        </label>
+                    </div>
                 </div>
                 <div class='col s12 m4 input-field'>
                     <input id="staffperms" type="number" class="validate">
@@ -212,7 +212,8 @@
             </div>
             <div class='row'>
                 <div class='col s12 m4 centre'>
-                    <a class='waves-effect waves-light btn' href="https://discordapi.com/permissions.html" target="_blank">Calculator</a>
+                    <a class='waves-effect waves-light btn' href="https://discordapi.com/permissions.html"
+                        target="_blank">Calculator</a>
                 </div>
                 <div class='col s12 m4 offset input-field'>
                     <input id="kickoverride" type="number" class="validate">
@@ -229,43 +230,48 @@
                     Tableflips
                     <div class="switch">
                         <label>
-      Off
-      <input type="checkbox" id='tableflip'>
-      <span class="lever"></span>
-      On
-    </label></div>
+                            Off
+                            <input type="checkbox" id='tableflip'>
+                            <span class="lever"></span>
+                            On
+                        </label>
+                    </div>
                 </div>
                 <div class='col s12 m4 centre'>
                     CAH NSFW
                     <div class="switch">
                         <label>
-      Off
-      <input type="checkbox" id='cahnsfw'>
-      <span class="lever"></span>
-      On
-    </label></div>
+                            Off
+                            <input type="checkbox" id='cahnsfw'>
+                            <span class="lever"></span>
+                            On
+                        </label>
+                    </div>
                 </div>
                 <div class='col s12 m4 centre'>
                     DM Help
                     <div class="switch">
                         <label>
-      Off
-      <input type="checkbox" id='dmhelp'>
-      <span class="lever"></span>
-      On
-    </label></div>
+                            Off
+                            <input type="checkbox" id='dmhelp'>
+                            <span class="lever"></span>
+                            On
+                        </label>
+                    </div>
                 </div>
             </div>
             <div class='row'>
                 <div class='col s12'><label for='prefix'>Custom Prefix</label>
-                    <textarea placeholder='The custom prefix for your guild. Does not replace the original prefix.' id='prefix' class='materialize-textarea'></textarea>
+                    <textarea placeholder='The custom prefix for your guild. Does not replace the original prefix.'
+                        id='prefix' class='materialize-textarea'></textarea>
                 </div>
             </div>
         </form>
     </div>
     <div class="modal-footer blue-grey darken-4 ">
         <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat white-text ">Close</a>
-        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat white-text " onclick="save()">Save</a>
+        <a href="#!" class=" modal-action modal-close waves-effect waves-green btn-flat white-text "
+            id="save_btn">Save</a>
     </div>
 </div>
 

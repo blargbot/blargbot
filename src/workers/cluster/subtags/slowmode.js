@@ -18,8 +18,8 @@ module.exports =
             '(slowmode is enabled at a rate of 1 message per 5 seconds)'
         )
         .whenArgs('0-2', async function (subtag, context, args) {
-            let channel = bu.parseChannel(args[0], true),
-                time = parseInt(args[1]);
+            let channel = bu.parseChannel(args[0], true);
+            let time = parseInt(args[1]);
             if (channel === null) {
                 time = parseInt(args[0]);
                 channel = context.channel;
@@ -28,7 +28,6 @@ module.exports =
                 return Builder.errors.channelNotInGuild(subtag, context);
             if (isNaN(time)) time = 0;
 
-            let endpoint = Endpoints.CHANNEL(channel.id);
             time = Math.min(time, 120);
 
             try {

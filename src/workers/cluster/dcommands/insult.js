@@ -11,20 +11,20 @@ class InsultCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        var target = '';
+    async execute(msg, words) {
+        let target = '';
         if (words.length === 1) {
             target = 'Your';
         } else {
-            for (var i = 1; i < words.length; i++) {
+            for (let i = 1; i < words.length; i++) {
                 target += words[i] + ' ';
             }
             target = target.substring(0, target.length - 1);
         }
-        var chosenNoun = config.insult.nouns[(bu.getRandomInt(0, config.insult.nouns.length - 1))];
-        var chosenVerb = config.insult.verbs[(bu.getRandomInt(0, config.insult.verbs.length - 1))];
-        var chosenAdje = config.insult.adjectives[(bu.getRandomInt(0, config.insult.adjectives.length - 1))];
-        var message = `${target}${target == 'Your' ? '' : '\'s'} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
+        let chosenNoun = config.insult.nouns[(bu.getRandomInt(0, config.insult.nouns.length - 1))];
+        let chosenVerb = config.insult.verbs[(bu.getRandomInt(0, config.insult.verbs.length - 1))];
+        let chosenAdje = config.insult.adjectives[(bu.getRandomInt(0, config.insult.adjectives.length - 1))];
+        let message = `${target}${target == 'Your' ? '' : '\'s'} ${chosenNoun} ${chosenVerb} ${chosenAdje}!`;
         bu.send(msg, message);
     }
 }

@@ -1,9 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
-var confirmIrc = false;
-var confirmDiscord = false;
-
 class MigrateCommand extends BaseCommand {
     constructor() {
         super({
@@ -14,17 +11,17 @@ class MigrateCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         if (msg.author.id == config.discord.users.owner) {
             let tags = bu.vars.tags;
-            for (let tag in tags) {
+            for (let tag of Object.keys(tags)) {
                 await r.table('tag').get(tag).update({
                     vars: tags[tag]
                 }).run();
             }
 
             let authors = bu.vars.authorTags;
-            for (let author in authors) {
+            for (let author of Object.keys(tags)) {
                 await r.table('user').get(author).update({
                     vars: authors[author]
                 }).run();

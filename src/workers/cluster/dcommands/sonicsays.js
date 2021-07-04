@@ -14,7 +14,7 @@ class SonicsaysCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words.length === 1) {
             return bu.send(msg, 'You didn\'t provide any text!');
         }

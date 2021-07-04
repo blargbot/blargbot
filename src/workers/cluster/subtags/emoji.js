@@ -24,7 +24,7 @@ module.exports =
             let amount = bu.parseInt(args[1]) || bu.parseInt(context.scope.fallback);
             if (amount > 10) amount = 10;
             else if (amount < 1) amount = 1;
-            let emojis = await new Promise((resolve, reject) => {
+            let emojis = await new Promise((resolve) => {
                 request(`https://emoji.getdango.com/api/emoji?q=${q}`, (req, res, body) => {
                     body = JSON.parse(body);
                     resolve(body.results.map(result => result.text));

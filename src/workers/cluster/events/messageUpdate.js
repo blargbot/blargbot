@@ -55,7 +55,6 @@ bot.on('messageUpdate', async function (msg, oldmsg) {
         }
         if (storedGuild.settings.makelogs)
             if (msg.channel.id != '204404225914961920') { // TODO what channel is this?
-                var nsfw = await bu.isNsfwChannel(msg.channel.id);
                 if (msg.author)
                     bu.insertChatlog(msg, 1);
             }

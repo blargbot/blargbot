@@ -12,7 +12,7 @@ class ShardCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         try {
             let id = bigInteger(words[1] || msg.guild.id);
             let shard = id.shiftRight(22).mod(parseInt(process.env.SHARDS_MAX));

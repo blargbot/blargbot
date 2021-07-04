@@ -15,8 +15,7 @@ export class Timer {
     public get elapsed(): number {
         if (this.#start === undefined)
             return this.#elapsed;
-        else
-            return this.#elapsed + (Date.now() - this.#start);
+        return this.#elapsed + (Date.now() - this.#start);
     }
 
     public get duration(): Duration {

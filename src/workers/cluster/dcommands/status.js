@@ -12,7 +12,7 @@ class StatusCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (!words[1]) {
             bu.send(msg, '400 BAD REQUEST\nNot enough arguments provided!');
             return;
@@ -32,11 +32,11 @@ class StatusCommand extends BaseCommand {
         } else {
             urlStart = bu.getRandomInt(0, 1) == 0 ? 'https://http.cat/' : 'https://httpstatusdogs.com/img/';
         }
-        var url = urlStart + encodeURIComponent(code + '.jpg');
+        let url = urlStart + encodeURIComponent(code + '.jpg');
 
-        var i = url.lastIndexOf('/');
+        let i = url.lastIndexOf('/');
         if (i != -1) {
-            var filename = url.substring(i + 1, url.length);
+            let filename = url.substring(i + 1, url.length);
             request({
                 uri: url,
                 encoding: null

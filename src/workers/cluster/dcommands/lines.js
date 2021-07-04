@@ -15,9 +15,9 @@ class LinesCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         bot.sendChannelTyping(msg.channel.id);
-        exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout, stderr) => {
+        exec(`cloc ${path.join(__dirname, '..')} --exclude-dir=codemirror`, (err, stdout) => {
             if (err) {
                 console.error(err);
                 bu.send(msg, 'An error has occurred!');
@@ -30,7 +30,7 @@ class LinesCommand extends BaseCommand {
             }
             sections[1] = sections[1].replace(/\n/g, '');
             let head = sections[1].split(/\s\s+/);
-            var table = new Table({
+            let table = new Table({
                 chars: {
                     'top': '',
                     'top-mid': '',

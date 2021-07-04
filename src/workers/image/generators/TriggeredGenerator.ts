@@ -29,7 +29,9 @@ export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
         const overlay = await this.getLocalJimp('red.png');
 
 
-        let frame, x, y;
+        let frame;
+        let x;
+        let y;
         const base = new Jimp(256, 256);
         const gif = new JimpGifEncoder({ width: 256, height: 256 });
         for (let i = 0; i < frameCount; i++) {

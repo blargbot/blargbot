@@ -15,7 +15,8 @@ bot.on('guildMemberAdd', async function (guild, member) {
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
     if (chan && val) {
         let ccommandContent;
-        let author, authorizer;
+        let author;
+        let authorizer;
         if (typeof val == 'object') {
             ccommandContent = val.content;
             author = val.author;

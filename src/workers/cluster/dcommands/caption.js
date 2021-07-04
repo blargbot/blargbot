@@ -39,7 +39,7 @@ class CaptionCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         if (input.l) {
             let availFonts = Object.keys(fonts).sort().map(m => '**' + m.toUpperCase() + '**').join('\n - ');
@@ -61,8 +61,8 @@ class CaptionCommand extends BaseCommand {
             bu.send(msg, 'You must provide an image, either via url or attachment!');
             return;
         }
-        if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/.test(url)) {
-            url = url.match(/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*))/)[0];
+        if (/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/.test(url)) {
+            url = url.match(/(https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*))/)[0];
         } else {
             bu.send(msg, 'That\'s not a valid url!');
             return;

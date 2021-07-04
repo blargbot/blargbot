@@ -24,8 +24,8 @@ class BrainfuckCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        if (words[1] && /^-[-+<>\.,\[\]]/.test(words[1]))
+    async execute(msg, words) {
+        if (words[1] && /^-[-+<>.,[\]]/.test(words[1]))
             words[1] = '\\' + words[1];
         let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {

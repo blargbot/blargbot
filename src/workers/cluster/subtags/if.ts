@@ -53,12 +53,12 @@ export class IfSubtag extends BaseSubtag {
 
         if (actualBoolean) {
             return thenCode.wait();
-        } else {
-            if (elseCode !== undefined) {
-                return elseCode.wait();
-            }
-            return '';
         }
+        if (elseCode !== undefined) {
+            return elseCode.wait();
+        }
+        return '';
+
     }
 
     public async evaluatorCheck(
@@ -92,8 +92,8 @@ export class IfSubtag extends BaseSubtag {
 
         if (parse.boolean(result, false)) {
             return thenCode.wait();
-        } else {
-            return elseCode?.wait() ?? '';
         }
+        return elseCode?.wait() ?? '';
+
     }
 }

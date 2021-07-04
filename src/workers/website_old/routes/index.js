@@ -12,7 +12,7 @@ const router = require('express').Router();
 router.get('/', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = req.path;
-    let date = new Date(Date.now());
+    // let date = new Date(Date.now());
     // if (date.getMonth() === 6 && date.getDate() === 12)
     //     res.render('bsod-netneut')
     // else

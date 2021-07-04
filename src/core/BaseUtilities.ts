@@ -167,11 +167,22 @@ export class BaseUtilities {
     public async sendDM(context: AnyMessage | User | Member | string, message: SendPayload, files?: SendFiles): Promise<AnyMessage | undefined> {
         let userid: string;
         switch (typeof context) {
-            case 'string': userid = context; break;
+            case 'string':
+                userid = context;
+                break;
             case 'object':
-                if ('author' in context) { userid = context.author.id; break; }
-                if ('user' in context) { userid = context.user.id; break; }
-                if ('id' in context) { userid = context.id; break; }
+                if ('author' in context) {
+                    userid = context.author.id;
+                    break;
+                }
+                if ('user' in context) {
+                    userid = context.user.id;
+                    break;
+                }
+                if ('id' in context) {
+                    userid = context.id;
+                    break;
+                }
             // fallthrough
             default:
                 throw new Error('Not a user');
@@ -184,10 +195,17 @@ export class BaseUtilities {
 
     public async generateOutputPage(payload: SendPayload, channel?: Channel): Promise<Snowflake> {
         switch (typeof payload) {
-            case 'string': payload = { content: payload }; break;
-            case 'boolean': payload = { content: payload.toString() }; break;
-            case 'object': break;
-            default: payload = {}; break;
+            case 'string':
+                payload = { content: payload };
+                break;
+            case 'boolean':
+                payload = { content: payload.toString() };
+                break;
+            case 'object':
+                break;
+            default:
+                payload = {};
+                break;
         }
         const id = snowflake.create();
         await this.database.dumps.add({

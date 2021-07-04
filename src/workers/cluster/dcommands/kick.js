@@ -12,7 +12,7 @@ class KickCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (!words[1]) {
             bu.send(msg, 'You didn\'t tell me who to kick!');
             return;
@@ -56,9 +56,9 @@ class KickCommand extends BaseCommand {
         if (!noPerms && !bu.comparePerms(msg.member, kickPerms) && !msg.member.permissions.json.kickMembers)
             return 3;
 
-        var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-        var userPos = bu.getPosition(msg.member);
-        var targetPos = bu.getPosition(msg.channel.guild.members.get(target.id));
+        let botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+        let userPos = bu.getPosition(msg.member);
+        let targetPos = bu.getPosition(msg.channel.guild.members.get(target.id));
         if (targetPos >= botPos)
             return 2;
         if (!noPerms && targetPos >= userPos && msg.author.id != msg.guild.ownerID)
@@ -75,8 +75,7 @@ class KickCommand extends BaseCommand {
             );
 
             return 0;
-        }
-        catch (err) {
+        } catch (err) {
             console.error(err);
             return err;
         }

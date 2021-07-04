@@ -1,5 +1,4 @@
 const BaseCommand = require('../structures/BaseCommand');
-const util = require('util');
 const xml2js = require('xml2js');
 const snekfetch = require('snekfetch');
 const newbutils = require('../newbu');
@@ -14,10 +13,10 @@ class Rule34Command extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let nsfwChannel = msg.channel.nsfw;
 
-        var tagList = words.slice(1);
+        let tagList = words.slice(1);
 
         if (words.length > 1)
             for (let i = 1; i < tagList.length; i++) {
@@ -32,7 +31,7 @@ class Rule34Command extends BaseCommand {
             return;
         }
         const usedTags = [];
-        for (var tag of tagList) {
+        for (let tag of tagList) {
             if (!/(loli|shota|child|young)/i.test(tag)) {
                 usedTags.push(tag);
             }
@@ -50,12 +49,12 @@ class Rule34Command extends BaseCommand {
             }
             //    parsedXml = doc;
             //console.('result: ' + result);
-            var urlList = [];
+            let urlList = [];
             let message;
             //   console.(util.inspect(doc.posts.post[0]))
             if (doc.posts.post != null)
                 for (let i = 0; i < doc.posts.post.length; i++) {
-                    var imgUrl = doc.posts.post[i].$.file_url;
+                    let imgUrl = doc.posts.post[i].$.file_url;
                     if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg'))
                         urlList.push(doc.posts.post[i].$.file_url);
                 }
@@ -63,14 +62,14 @@ class Rule34Command extends BaseCommand {
             if (urlList.length == 0) {
                 bu.send(msg, 'No results found!');
                 return;
-            } else {
-                message = `Found **${urlList.length}/50** posts for tags \`${usedTags.join(' ')}\`\n`;
             }
+            message = `Found **${urlList.length}/50** posts for tags \`${usedTags.join(' ')}\`\n`;
+
             //   parsedUrlList = JSON.parse(JSON.stringify(urlList));
 
             for (let i = 0; i < 3; i++) {
                 if (urlList.length > 0) {
-                    var choice = bu.getRandomInt(0, urlList.length - 1);
+                    let choice = bu.getRandomInt(0, urlList.length - 1);
                     message += urlList[choice] + '\n';
                     urlList.splice(choice, 1);
                 }

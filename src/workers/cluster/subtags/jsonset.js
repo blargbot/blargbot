@@ -24,7 +24,9 @@ module.exports =
         .whenArgs('3-4', async function (subtag, context, args) {
             let create = args[3] !== undefined;
 
-            let obj = args[0], path = args[1], value = args[2];
+            let obj = args[0];
+            let path = args[1];
+            let value = args[2];
             if (!obj)
                 obj = '{}';
 
@@ -59,13 +61,15 @@ module.exports =
             if (create) {
                 for (let i = 0; i < comps.length - 1; i++) {
                     let p = comps[i];
-                    if (obj.hasOwnProperty(p)) {
+                    if (Object.prototype.hasOwnProperty.call(obj, p)) {
                         let _c = obj[p];
                         // first ensure that it's not json encoded
                         if (typeof _c === 'string') {
                             try {
                                 _c = JSON.parse(_c);
-                            } catch (err) { }
+                            } catch (err) {
+                                // NOOP
+                            }
                         }
                         // set to an object if it's a primative
                         if (typeof _c !== 'object' || _c === null)

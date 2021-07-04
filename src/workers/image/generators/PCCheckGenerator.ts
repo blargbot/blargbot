@@ -14,8 +14,7 @@ export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
                 container.push({ italic, text: temp });
                 temp = '';
                 italic = !italic;
-            }
-            else
+            } else
                 temp += t;
         }
         container.push({ italic, text: temp });

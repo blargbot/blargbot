@@ -11,14 +11,14 @@ class ModlogCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words[1]) {
             switch (words[1].toLowerCase()) {
                 case 'disable':
                     await bu.guildSettings.remove(msg.channel.guild.id, 'modlog');
                     bu.send(msg, 'Modlog disabled!');
                     break;
-                case 'clear':
+                case 'clear': {
                     let limit;
                     if (words[2]) {
                         limit = parseInt(words[2]);
@@ -59,6 +59,7 @@ class ModlogCommand extends BaseCommand {
                         await bu.send(msg, 'Cleared ' + (limit > 0 ? limit : 'all') + ' cases from the modlog.');
                     }
                     break;
+                }
             }
         } else {
             await bu.guildSettings.set(msg.channel.guild.id, 'modlog', msg.channel.id);

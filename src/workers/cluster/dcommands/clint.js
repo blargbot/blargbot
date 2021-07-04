@@ -12,7 +12,7 @@ class ClintCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         let user = msg.author;
         let url;
@@ -27,9 +27,6 @@ class ClintCommand extends BaseCommand {
         }
         if (!url) url = msg.author.avatarURL;
         bot.sendChannelTyping(msg.channel.id);
-
-
-        let code = bu.genEventCode();
 
         let buffer = await bu.awaitEvent({
             cmd: 'img',

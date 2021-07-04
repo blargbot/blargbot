@@ -23,9 +23,9 @@ module.exports =
             'That was sent at "10/06/2018 10:07:44"'
         )
         .whenArgs('0-3', async function (subtag, context, args) {
-            let channel = context.channel,
-                message = context.msg,
-                format = 'x';
+            let channel = context.channel;
+            let message = context.msg;
+            let format = 'x';
 
             switch (args.length) {
                 case 1:
@@ -34,7 +34,7 @@ module.exports =
                     else
                         format = args[0];
                     break;
-                case 2:
+                case 2: {
                     channel = Builder.util.parseChannel(context, args[0]);
                     let i = 1;
                     if (typeof channel == 'function') {
@@ -43,6 +43,7 @@ module.exports =
                     }
                     message = await bu.getMessage(channel.id, args[i]);
                     break;
+                }
                 case 3:
                     channel = Builder.util.parseChannel(context, args[0]);
                     if (typeof channel == 'function')

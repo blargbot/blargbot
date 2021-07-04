@@ -12,12 +12,12 @@ class UpdateCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id === config.discord.users.owner) {
 
             if (!config.general.isbeta) {
                 exec('git pull', async (err, stdout, stderr) => {
-                    var message = '```xl\n';
+                    let message = '```xl\n';
                     if (err) {
                         message += err + '\n';
                     }
@@ -30,7 +30,7 @@ class UpdateCommand extends BaseCommand {
 
                     message += '```';
                     if (stdout.indexOf('Already up-to-date.') == -1) {
-                        var type = 2;
+                        let type = 2;
                         if (words.length > 1) {
                             switch (words[1].toLowerCase()) {
                                 case 'major':
@@ -41,11 +41,17 @@ class UpdateCommand extends BaseCommand {
                                     break;
                             }
                         }
-                        var version = await bu.getVersion();
+                        let version = await bu.getVersion();
                         switch (type) {
-                            case 0: version.incrementMajor(); break;
-                            case 1: version.incrementMinor(); break;
-                            case 2: version.incrementPatch(); break;
+                            case 0:
+                                version.incrementMajor();
+                                break;
+                            case 1:
+                                version.incrementMinor();
+                                break;
+                            case 2:
+                                version.incrementPatch();
+                                break;
                         }
                         await version.save();
 

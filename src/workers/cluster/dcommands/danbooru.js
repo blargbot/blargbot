@@ -12,9 +12,9 @@ class DanbooruCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         bu.isNsfwChannel(msg.channel.id).then(nsfwChannel => {
-            var tagList = words.slice(1);
+            let tagList = words.slice(1);
 
             if (words.length > 1)
                 for (let i = 1; i < tagList.length; i++) {
@@ -32,26 +32,26 @@ class DanbooruCommand extends BaseCommand {
                     return;
                 } else {
                     tagList.sort((a, b) => {
-                        if (/rating\:s(afe)?/.test(a)) {
+                        if (/rating:s(afe)?/.test(a)) {
                             return 1000;
                         }
-                        if (/rating\:s(afe)?/.test(b)) {
+                        if (/rating:s(afe)?/.test(b)) {
                             return -1000;
                         }
                         return a - b;
                     });
                 }
             const usedTags = [];
-            for (var tag of tagList) {
+            for (let tag of tagList) {
                 if (!/(loli|shota|child|young)/i.test(tag)) {
                     usedTags.push(tag);
                 }
             }
-            var url = '/posts.json?limit=' + 50 + '&tags=' + usedTags.join('%20');
-            var message = '';
+            let url = '/posts.json?limit=' + 50 + '&tags=' + usedTags.join('%20');
+            let message = '';
 
             console.debug('url: ' + url);
-            var options = {
+            let options = {
                 hostname: 'danbooru.donmai.us',
                 method: 'GET',
                 port: 443,
@@ -61,22 +61,21 @@ class DanbooruCommand extends BaseCommand {
                 }
             };
 
-            var req = https.request(options, function (res) {
-                var body = '';
+            let req = https.request(options, function (res) {
+                let body = '';
                 res.on('data', function (chunk) {
                     body += chunk;
                 });
 
                 res.on('end', function () {
                     try {
-                        var doc = JSON.parse(body);
-                        var urlList = [];
-                        var ii = 0;
+                        let doc = JSON.parse(body);
+                        let urlList = [];
+                        let ii = 0;
                         if (doc.length > 0)
                             for (i = 0; i < doc.length; i++) {
-                                var imgUrl;
                                 if (doc[i].file_url) {
-                                    imgUrl = doc[i].file_url;
+                                    let imgUrl = doc[i].file_url;
                                     if (imgUrl.endsWith('.gif') || imgUrl.endsWith('.jpg') || imgUrl.endsWith('.png') || imgUrl.endsWith('.jpeg')) {
                                         urlList[ii] = imgUrl;
                                         ii++;
@@ -89,9 +88,9 @@ class DanbooruCommand extends BaseCommand {
                             return;
                         }
                         message += `Found **${urlList.length}/50** posts for tags \`${usedTags.join(' ')}\`\n`;
-                        for (var i = 0; i < 3; i++) {
+                        for (let i = 0; i < 3; i++) {
                             if (urlList.length > 0) {
-                                var choice = bu.getRandomInt(0, urlList.length - 1);
+                                let choice = bu.getRandomInt(0, urlList.length - 1);
                                 message += urlList[choice] + '\n';
                                 console.debug(`${choice} / ${urlList.length} - ${urlList[choice]}`);
                                 urlList.splice(choice, 1);

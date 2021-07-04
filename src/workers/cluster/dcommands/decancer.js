@@ -31,7 +31,9 @@ class DecancerCommand extends BaseCommand {
             try {
                 await member.edit({ nick: text }, 'Decancer');
                 nickChanged = true;
-            } catch (err) { }
+            } catch (err) {
+                // NOOP
+            }
         }
         if (nickChanged)
             output = `Successfully decancered **${bu.getFullName(member.user)}**'s name to: \`${text}\``;

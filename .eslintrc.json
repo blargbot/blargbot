@@ -1,20 +1,10 @@
 {
     "extends": [
-        "eslint:recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
-        "plugin:vue/essential"
+        "eslint:recommended"
     ],
-    "plugins": [
-        "@typescript-eslint",
-        "vue"
-    ],
-    "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 8,
         "sourceType": "module",
-        "project": "./tsconfig.json",
         "ecmaFeatures": {
             "arrowFunctions": true,
             "binaryLiterals": true,
@@ -54,7 +44,7 @@
             }
         ],
         "strict": "error",
-        "semi": "warn",
+        "semi": "error",
         "quotes": [
             "error",
             "single",
@@ -71,117 +61,65 @@
         ],
         "no-global-assign": "error",
         "no-console": "error",
+        "no-alert": "error",
+        "no-lone-blocks": "warn",
+        "no-new-func": "error",
+        "no-proto": "error",
+        "no-iterator": "error",
+        "no-lonely-if": "error",
+        "no-var": "error",
+        "max-statements-per-line": [
+            "error",
+            {
+                "max": 1
+            }
+        ],
+        "one-var-declaration-per-line": [
+            "error",
+            "always"
+        ],
+        "one-var": [
+            "error",
+            "never"
+        ],
+        "brace-style": [
+            "warn",
+            "1tbs",
+            {
+                "allowSingleLine": true
+            }
+        ],
         "comma-dangle": "warn",
-        "no-trailing-spaces": "warn",
-        "@typescript-eslint/no-unused-vars": [
-            "error",
-            {
-                "argsIgnorePattern": "^_"
-            }
-        ],
-        "@typescript-eslint/explicit-member-accessibility": "error",
-        "@typescript-eslint/restrict-template-expressions": [
-            "error",
-            {
-                "allowNumber": true,
-                "allowBoolean": true,
-                "allowAny": false,
-                "allowNullish": false
-            }
-        ],
-        "@typescript-eslint/naming-convention": [
-            "error",
-            {
-                "selector": "default",
-                "format": [
-                    "camelCase"
-                ],
-                "leadingUnderscore": "allow",
-                "trailingUnderscore": "allow"
-            },
-            {
-                "selector": "enumMember",
-                "format": [
-                    "UPPER_CASE"
-                ]
-            },
-            {
-                "selector": "default",
-                "format": null,
-                "filter": {
-                    "regex": "icon_url|ownerID|parentID|isCC",
-                    "match": true
-                }
-            },
-            {
-                "selector": "typeLike",
-                "format": [
-                    "PascalCase"
-                ]
-            }
-        ],
-        "@typescript-eslint/no-unnecessary-condition": "error",
-        "@typescript-eslint/no-extra-parens": "error",
-        "@typescript-eslint/no-implicit-any-catch": "error",
-        "@typescript-eslint/no-require-imports": "error",
-        "@typescript-eslint/prefer-for-of": "error",
-        "@typescript-eslint/prefer-includes": "warn",
-        "@typescript-eslint/prefer-nullish-coalescing": "warn",
-        "@typescript-eslint/prefer-optional-chain": "error",
-        "@typescript-eslint/prefer-readonly": "error",
-        "@typescript-eslint/prefer-reduce-type-parameter": "error",
-        "@typescript-eslint/prefer-string-starts-ends-with": "error",
-        "@typescript-eslint/prefer-ts-expect-error": "error",
-        "@typescript-eslint/strict-boolean-expressions": [
-            "error",
-            {
-                "allowString": false,
-                "allowNumber": false,
-                "allowNullableObject": false,
-                "allowNullableBoolean": false,
-                "allowNullableString": false,
-                "allowNullableNumber": false,
-                "allowAny": false,
-                "allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing": true
-            }
-        ],
-        "@typescript-eslint/no-unsafe-argument": "error",
-        "@typescript-eslint/unbound-method": "error",
-        "@typescript-eslint/array-type": [
-            "error",
-            {
-                "default": "array-simple",
-                "readonly": "array-simple"
-            }
-        ],
-        "@typescript-eslint/member-delimiter-style": [
-            "error",
-            {
-                "multiline": {
-                    "delimiter": "semi",
-                    "requireLast": true
-                },
-                "singleline": {
-                    "delimiter": "semi",
-                    "requireLast": true
-                }
-            }
-        ],
-        "@typescript-eslint/class-literal-property-style": [
-            "error",
-            "fields"
-        ],
-        "@typescript-eslint/explicit-function-return-type": [
-            "error",
-            {
-                "allowExpressions": true
-            }
-        ]
+        "no-sequences": "error",
+        "no-else-return": "error",
+        "guard-for-in": "warn",
+        "no-trailing-spaces": "warn"
     },
     "overrides": [
         {
             "files": [
-                "*.vue"
+                "*.js"
+            ],
+            "rules": {
+                "no-undef": "off",
+                "no-console": "off",
+                "eqeqeq": "off"
+            }
+        },
+        {
+            "files": [
+                "*.js"
+            ],
+            "excludedFiles": [
+                "**/website_old/public/**/*.js"
+            ],
+            "env": {
+                "node": true
+            }
+        },
+        {
+            "files": [
+                "**/website_old/public/**/*.js"
             ],
             "env": {
                 "browser": true
@@ -189,10 +127,142 @@
         },
         {
             "files": [
+                "*.vue"
+            ],
+            "env": {
+                "browser": true
+            },
+            "plugins": [
+                "vue"
+            ],
+            "extends": [
+                "plugin:vue/essential"
+            ]
+        },
+        {
+            "files": [
                 "*.ts"
             ],
             "env": {
                 "node": true
+            },
+            "parser": "@typescript-eslint/parser",
+            "parserOptions": {
+                "project": "./tsconfig.json"
+            },
+            "plugins": [
+                "@typescript-eslint"
+            ],
+            "extends": [
+                "plugin:@typescript-eslint/recommended",
+                "plugin:@typescript-eslint/eslint-recommended",
+                "plugin:@typescript-eslint/recommended-requiring-type-checking"
+            ],
+            "rules": {
+                "@typescript-eslint/no-unused-vars": [
+                    "error",
+                    {
+                        "argsIgnorePattern": "^_"
+                    }
+                ],
+                "@typescript-eslint/explicit-member-accessibility": "error",
+                "@typescript-eslint/restrict-template-expressions": [
+                    "error",
+                    {
+                        "allowNumber": true,
+                        "allowBoolean": true,
+                        "allowAny": false,
+                        "allowNullish": false
+                    }
+                ],
+                "@typescript-eslint/naming-convention": [
+                    "error",
+                    {
+                        "selector": "default",
+                        "format": [
+                            "camelCase"
+                        ],
+                        "leadingUnderscore": "allow",
+                        "trailingUnderscore": "allow"
+                    },
+                    {
+                        "selector": "enumMember",
+                        "format": [
+                            "UPPER_CASE"
+                        ]
+                    },
+                    {
+                        "selector": "default",
+                        "format": null,
+                        "filter": {
+                            "regex": "icon_url|ownerID|parentID|isCC",
+                            "match": true
+                        }
+                    },
+                    {
+                        "selector": "typeLike",
+                        "format": [
+                            "PascalCase"
+                        ]
+                    }
+                ],
+                "@typescript-eslint/no-unnecessary-condition": "error",
+                "@typescript-eslint/no-extra-parens": "error",
+                "@typescript-eslint/no-implicit-any-catch": "error",
+                "@typescript-eslint/no-require-imports": "error",
+                "@typescript-eslint/prefer-for-of": "error",
+                "@typescript-eslint/prefer-includes": "warn",
+                "@typescript-eslint/prefer-nullish-coalescing": "warn",
+                "@typescript-eslint/prefer-optional-chain": "error",
+                "@typescript-eslint/prefer-readonly": "error",
+                "@typescript-eslint/prefer-reduce-type-parameter": "error",
+                "@typescript-eslint/prefer-string-starts-ends-with": "error",
+                "@typescript-eslint/prefer-ts-expect-error": "error",
+                "@typescript-eslint/strict-boolean-expressions": [
+                    "error",
+                    {
+                        "allowString": false,
+                        "allowNumber": false,
+                        "allowNullableObject": false,
+                        "allowNullableBoolean": false,
+                        "allowNullableString": false,
+                        "allowNullableNumber": false,
+                        "allowAny": false,
+                        "allowRuleToRunWithoutStrictNullChecksIKnowWhatIAmDoing": true
+                    }
+                ],
+                "@typescript-eslint/no-unsafe-argument": "error",
+                "@typescript-eslint/unbound-method": "error",
+                "@typescript-eslint/array-type": [
+                    "error",
+                    {
+                        "default": "array-simple",
+                        "readonly": "array-simple"
+                    }
+                ],
+                "@typescript-eslint/member-delimiter-style": [
+                    "error",
+                    {
+                        "multiline": {
+                            "delimiter": "semi",
+                            "requireLast": true
+                        },
+                        "singleline": {
+                            "delimiter": "semi",
+                            "requireLast": true
+                        }
+                    }
+                ],
+                "@typescript-eslint/class-literal-property-style": [
+                    "error",
+                    "fields"
+                ],
+                "@typescript-eslint/explicit-function-return-type": [
+                    "error",
+                    {
+                        "allowExpressions": true
+                    }
+                ]
             }
         }
     ]

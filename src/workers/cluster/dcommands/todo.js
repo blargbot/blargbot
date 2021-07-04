@@ -1,10 +1,10 @@
 const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
-var defaultOption = async function (msg, storedUser) {
+let defaultOption = async function (msg, storedUser) {
     let todo = storedUser.todo.filter(m => m.active == 1);
     if (todo.length > 0) {
-        var list = 'Here\'s your to-do list!\n';
+        let list = 'Here\'s your to-do list!\n';
         for (let i = 0; i < todo.length; i++) {
             list += `**${i}**. ${todo[i].content}\n`;
         }
@@ -24,13 +24,12 @@ class TodoCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let storedUser = await r.table('user').get(msg.author.id).run();
         let todo = storedUser.todo;
         let modified = false;
 
         if (words.length > 1) {
-            var itemid;
             switch (words[1].toLowerCase()) {
                 case 'add':
                     console.debug('adding');

@@ -24,10 +24,10 @@ module.exports =
             '{reactremove;12345678901234;:thinking:}',
             '(removed the 🤔 reaction by the user)'
         ).whenDefault(async function (subtag, context, emotes) {
-            let channel = null,
-                message = null,
-                users = [],
-                parsed;
+            let channel = null;
+            let message = null;
+            let users = [];
+            let parsed;
 
             // Check if the first "emote" is actually a valid channel
             channel = bu.parseChannel(emotes[0], true);
@@ -42,11 +42,12 @@ module.exports =
             // Check that the current first "emote" is a message id
             try {
                 message = await bot.getMessage(channel.id, emotes[0]);
-            } catch (e) { }
-            finally {
-                if (message == null)
-                    return Builder.errors.noMessageFound(subtag, context);
+            } catch (e) {
+                // NOOP
             }
+
+            if (message == null)
+                return Builder.errors.noMessageFound(subtag, context);
 
             if (!(await context.isStaff || context.ownsMessage(message.id)))
                 return Builder.util.error(subtag, context, 'Author must be staff to modify unrelated messages');
@@ -55,7 +56,7 @@ module.exports =
 
             // Loop through the "emotes" and check if each is a user. If it is not, then break
             let emote;
-            while (emote = emotes.shift()) {
+            while ((emote = emotes.shift()) !== undefined) {
                 let deserialized = await bu.deserializeTagArray(emote);
                 let entries = deserialized && Array.isArray(deserialized.v)
                     ? deserialized.v

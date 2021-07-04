@@ -14,7 +14,7 @@ module.exports =
         .withAlias('removerole')
         .withArgs(a => [a.required('role'), a.optional('user'), a.optional('quiet')])
         .withDesc('Removes `role` from `user`, where `role` is a role ID or mention. ' +
-            'You can find a list of roles and their ids by doing \`b!roles\`. ' +
+            'You can find a list of roles and their ids by doing `b!roles`. ' +
             'Returns true if `role` was removed, and false otherwise.' +
             'If `quiet` is specified, if a user can\'t be found it will simply return `false`'
         ).withExample(
@@ -27,8 +27,8 @@ module.exports =
             if (topRole == 0)
                 return Builder.util.error(subtag, context, 'Author cannot remove roles');
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
-                result = await TagManager.list['userhasrole'].checkRoles(context, args[0], args[1], quiet);
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2];
+            let result = await TagManager.list['userhasrole'].checkRoles(context, args[0], args[1], quiet);
 
             if (result.user == null) {
                 if (quiet)

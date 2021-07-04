@@ -16,13 +16,13 @@ module.exports =
         .withDesc('Pretty-prints the provided JSON `input` with the provided `indent`, defaulting to 4.')
         .withExample(
             '{jsonstringify;["one","two","three"]}',
-            '[\n    \"one\",\n    \"two\",\n    \"three\"\n]'
+            '[\n    "one",\n    "two",\n    "three"\n]'
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
             if (!args[1]) args[1] = '4';
-            let obj = args[0],
-                indent = parseInt(args[1]);
+            let obj = args[0];
+            let indent = parseInt(args[1]);
 
             if (isNaN(indent))
                 return Builder.errors.notANumber(subtag, context);

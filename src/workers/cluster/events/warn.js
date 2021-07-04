@@ -9,7 +9,7 @@
 
 const warn = true;
 
-bot.on('warn', function (message, id) {
+bot.on('warn', function (message) {
     if (warn)
         console.warn(message);
 });

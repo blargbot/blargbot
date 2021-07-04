@@ -20,9 +20,9 @@ module.exports =
         ).resolveArgs(1)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
-            let fallback = bu.parseInt(context.scope.fallback),
-                amount = bu.parseInt(args[1]),
-                result = '';
+            let fallback = bu.parseInt(context.scope.fallback);
+            let amount = bu.parseInt(args[1]);
+            let result = '';
 
 
             if (isNaN(amount)) amount = fallback;

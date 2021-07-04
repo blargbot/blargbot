@@ -56,7 +56,7 @@ class CensorCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words, true);
         if (!msg.guild) return;
         if (input.undefined.length == 0) {
@@ -80,7 +80,12 @@ class CensorCommand extends BaseCommand {
             cases: {}
         };
         let changes = 0;
-        let censorList, suffix, response, addCensor, term, messages;
+        let censorList;
+        let suffix;
+        let response;
+        let addCensor;
+        let term;
+        let messages;
         switch (input.undefined[0].toLowerCase()) {
             case 'create':
             case 'add':
@@ -131,7 +136,7 @@ class CensorCommand extends BaseCommand {
 **Weight**: ${addCensor.weight}
 **Reason**: ${addCensor.reason || 'Default'}`);
                 break;
-            case 'edit':
+            case 'edit': {
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
                     bu.send(msg, 'There are no censors on this guild!');
                     return;
@@ -199,8 +204,9 @@ class CensorCommand extends BaseCommand {
 **Weight**: ${addCensor.weight}
 **Reason**: ${addCensor.reason || 'Default'}`);
                 break;
+            }
             case 'delete':
-            case 'remove':
+            case 'remove': {
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
                     bu.send(msg, 'There are no censors on this guild!');
                     return;
@@ -230,8 +236,9 @@ class CensorCommand extends BaseCommand {
                 await saveGuild();
                 bu.send(msg, `Censor \`${removed[0].term}\` removed!`);
                 break;
+            }
             case 'exceptions':
-            case 'exception':
+            case 'exception': {
                 if (!storedGuild.censor.exception) storedGuild.censor.exception = {
                     user: [],
                     role: [],
@@ -317,6 +324,7 @@ class CensorCommand extends BaseCommand {
                     }
                 }
                 break;
+            }
             case 'rules':
             case 'rule':
                 if (!storedGuild.censor.rule) storedGuild.censor.rule = {};
@@ -343,7 +351,7 @@ class CensorCommand extends BaseCommand {
                 await saveGuild();
                 bu.send(msg, `Updated ${changes} rules.`);
                 break;
-            case 'info':
+            case 'info': {
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
                     bu.send(msg, 'There are no censors on this guild!');
                     return;
@@ -379,19 +387,24 @@ class CensorCommand extends BaseCommand {
 **Weight**: ${censor.weight}
 **Reason**: ${censor.reason || 'Default'}`);
                 break;
-            default:
+            }
+            default: {
+                const userExceptions = storedGuild.censor.exception.user.map(u => {
+                    let user = bot.users.get(u);
+                    if (user)
+                        return bu.getFullName(user);
+                    return u;
+                }).join(', ');
+                const roleExceptions = storedGuild.censor.exception.role.map(r => {
+                    let role = msg.guild.roles.get(r);
+                    if (role)
+                        return role.name;
+                    return r;
+                }).join(', ');
                 let output = `There are currently ${storedGuild.censor.list.length} censors active.
 **__Exceptions__**
-User Exceptions: ${storedGuild.censor.exception.user.map(u => {
-        let user = bot.users.get(u);
-        if (user) return bu.getFullName(user);
-        else return u;
-    }).join(', ')}
-Role Exceptions: ${storedGuild.censor.exception.role.map(r => {
-        let role = msg.guild.roles.get(r);
-        if (role) return role.name;
-        else return r;
-    }).join(', ')}
+User Exceptions: ${userExceptions}
+Role Exceptions: ${roleExceptions}
 Channel Exceptions: ${storedGuild.censor.exception.channel.map(c => `<#${c}>`).join(', ')}
 
 **__Settings__**
@@ -403,6 +416,7 @@ Ban Message: ${storedGuild.censor.rule.banMessage || 'Default'}
 `;
                 bu.send(msg, output);
                 break;
+            }
         }
     }
 }

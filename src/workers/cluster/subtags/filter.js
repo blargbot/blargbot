@@ -7,9 +7,9 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    waitMessage = require('./waitmessage'),
-    bbengine = require('../structures/bbtag/Engine');
+const Builder = require('../structures/TagBuilder');
+const waitMessage = require('./waitmessage');
+const bbengine = require('../structures/bbtag/Engine');
 
 module.exports =
     Builder.ArrayTag('filter')
@@ -26,12 +26,12 @@ module.exports =
         ).resolveArgs(0, 1)
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
         .whenArgs(3, async function (subtag, context, args) {
-            let varName = args[0],
-                arr = await bu.getArray(context, args[1]) || { v: args[1].split('') },
-                result = [];
+            let varName = args[0];
+            let arr = await bu.getArray(context, args[1]) || { v: args[1].split('') };
+            let result = [];
             let array = Array.from(arr.v);
 
-            let checkFunc = waitMessage.createCheck(subtag, context, args[2], (msg, user, emoji) => {
+            let checkFunc = waitMessage.createCheck(subtag, context, args[2], (msg) => {
                 return context.makeChild({ msg });
             });
 
@@ -43,7 +43,7 @@ module.exports =
                 if (processed[stringifiedItem || item]) continue;
                 if (await bbengine.safeLoopIteration(context)) {
                     return Builder.errors.maxSafeLoops(subtag, context);
-                };
+                }
 
                 await context.variables.set(varName, item);
                 try {

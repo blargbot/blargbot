@@ -54,7 +54,7 @@ class SyntaxCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let command = 'syntax';
         if (words[1]) {
             command = words.slice(1).join(' ').replace(/\n/g, ' ').replace(/\s+/g, ' ');

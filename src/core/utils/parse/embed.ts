@@ -9,8 +9,7 @@ export function embed(embedText: string): EmbedOptions | MalformedEmbed | undefi
         const parsed = JSON.parse(embedText);
         if (typeof parsed !== 'object' || parsed === null || Array.isArray(parsed))
             return undefined;
-        else
-            return parsed;
+        return parsed;
     } catch (e: unknown) {
         return {
             fields: [

@@ -42,7 +42,7 @@ class PollCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let choices = ['👍', '👎'];
         let input = newbutils.parse.flags(this.flags, words, true);
         if (input.undefined.length >= 1) {
@@ -79,11 +79,12 @@ class PollCommand extends BaseCommand {
             if (input.d) {
                 message.embed.description = input.d.join(' ');
             }
-            let channel = msg.channel.id,
-                roleId, role;
+            let channel = msg.channel.id;
+            let roleId;
+            let role;
             if (input.a) {
                 let storedGuild = await bu.getGuild(msg.guild.id);
-                if (storedGuild.hasOwnProperty('announce')) {
+                if (Object.prototype.hasOwnProperty.call(storedGuild, 'announce')) {
                     if ((await bu.canExecuteCommand(msg, 'announce', true)).executable) {
                         channel = storedGuild.announce.channel;
                         roleId = storedGuild.announce.role;
@@ -153,26 +154,26 @@ class PollCommand extends BaseCommand {
         console.debug('poll has been triggered');
         let msg3 = await bot.getMessage(args.channel, args.msg);
         let reactions = [];
-        for (let key in msg3.reactions) {
-            msg3.reactions[key].emoji = key;
-            if (msg3.reactions[key].me) {
-                msg3.reactions[key].count--;
+        for (let [key, reaction] of Object.entries(msg3.reactions)) {
+            reaction.emoji = key;
+            if (reaction.me) {
+                reaction.count--;
             }
             if (args.strict == undefined || (args.strict.includes(key) ||
                 (/[0-9]{17,23}/.test(key) ?
                     args.strict.includes(key.match(/([0-9]{17,23})/)[0]) :
                     false)))
-                reactions.push(msg3.reactions[key]);
+                reactions.push(reaction);
         }
         if (reactions.length == 0) {
             bu.send(args.channel, 'No results were collected!');
             return;
         }
         let totalVotes = 0;
-        for (let key in reactions) {
-            if (/[0-9]{17,23}/.test(reactions[key].emoji))
-                reactions[key].emoji = `<:${reactions[key].emoji}>`;
-            totalVotes += reactions[key].count;
+        for (let reaction of Object.values(reactions)) {
+            if (/[0-9]{17,23}/.test(reaction.emoji))
+                reaction.emoji = `<:${reaction.emoji}>`;
+            totalVotes += reaction.count;
         }
         reactions.sort((a, b) => {
             return b.count - a.count;
@@ -215,7 +216,7 @@ class PollCommand extends BaseCommand {
             }
         }
         await bu.send(args.channel, output);
-    };
+    }
 }
 
 module.exports = PollCommand;

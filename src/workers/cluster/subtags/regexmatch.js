@@ -22,13 +22,12 @@ module.exports =
         ).resolveArgs(0)
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs(2, async function (subtag, context, args) {
-            let text = args[0],
-                regex;
+            let text = args[0];
+            let regex;
 
             try {
                 regex = bu.createRegExp(args[1].content);
-            }
-            catch (e) {
+            } catch (e) {
                 return Builder.util.error(subtag, context, e.message);
             }
 

@@ -12,7 +12,7 @@ class TimezoneCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let message;
         if (words.length > 1) {
             let code = words.slice(1).join(' ').toUpperCase();

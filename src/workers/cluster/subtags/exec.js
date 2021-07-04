@@ -7,8 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/bbtag/Engine');
+const Builder = require('../structures/TagBuilder');
+const bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
     Builder.BotTag('exec')
@@ -46,9 +46,10 @@ module.exports =
                     return await this.execTag(subtag, context, tag.content, '');
                 case 2:
                     return await this.execTag(subtag, context, tag.content, args[1]);
-                default:
+                default: {
                     let a = Builder.util.flattenArgArrays(args.slice(1));
                     return await this.execTag(subtag, context, tag.content, '"' + a.join('" "') + '"');
+                }
             }
         })
         .withProp('execTag', async function (subtag, context, tagContent, input) {

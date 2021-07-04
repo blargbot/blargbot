@@ -11,7 +11,7 @@ class DonateCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         bot.getDMChannel(msg.author.id).then(channel => {
             bu.send(channel.id, `Hi! This is stupid cat, creator of blargbot. I hope you're enjoying it!
 

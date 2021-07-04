@@ -18,8 +18,8 @@ export default {
         let retObj = {};
 
         let res = await app.$axios.$get('/commands');
-        for (const key in res) {
-            res[key].el = res[key].el.map(c => {
+        for (const re of Object.values(res)) {
+            re.el = re.el.map(c => {
                 let out = [];
                 out.push(`**Usage**: \`${c.usage}\``);
                 if (c.aliases.length > 0) {
@@ -40,7 +40,7 @@ export default {
                 return {
                     key: c.key,
                     title: c.name,
-                    category: { name: res[key].name },
+                    category: { name: re.name },
                     keywords: [c.name, ...c.aliases],
                     message: out.join('\n')
                 };

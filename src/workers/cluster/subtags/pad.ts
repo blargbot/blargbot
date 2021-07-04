@@ -23,9 +23,9 @@ export class PadSubtag extends BaseSubtag {
         args: string[],
         subtag: SubtagCall
     ): string {
-        const direction = args[0],
-            backing = args[1],
-            overlay = args[2];
+        const direction = args[0];
+        const backing = args[1];
+        const overlay = args[2];
 
         if (direction.toLowerCase() === 'left')
             return backing.substr(0, backing.length - overlay.length) + overlay;

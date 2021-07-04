@@ -3,7 +3,7 @@ const moment = require('moment-timezone');
 const request = require('request');
 const newbutils = require('../newbu');
 
-var part = {
+let part = {
     verb: 'v',
     noun: 'n',
     adjective: 'a',
@@ -20,9 +20,9 @@ class DefineCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         words.shift();
-        var args = words.join(' ');
+        let args = words.join(' ');
         let vars = await r.table('vars').get('wordapis');
         if (!vars)
             vars = {
@@ -34,7 +34,7 @@ class DefineCommand extends BaseCommand {
             vars.day = moment().format('D');
             vars.uses = 0;
         }
-        var max = config.general.isbeta ? 250 : 1500;
+        let max = config.general.isbeta ? 250 : 1500;
         if (vars.uses > max) {
             bu.send(msg, 'I have used up all of my api queries for today. Sorry!');
             return;
@@ -50,13 +50,13 @@ class DefineCommand extends BaseCommand {
         }, function (error, response, body) {
 
             if (!error && response.statusCode == 200) {
-                var res = JSON.parse(body);
-                var message = `Definitions for ${args}:\n`;
+                let res = JSON.parse(body);
+                let message = `Definitions for ${args}:\n`;
                 if (res.results) {
                     message += '```xl\n';
 
                     for (let i = 0; i < res.results.length; i++) {
-                        var type = res.results[i].partOfSpeech;
+                        let type = res.results[i].partOfSpeech;
                         message += `${res.results.length >= 10 ? (i + 1 < 10 ? ` ${i + 1}` : i + 1) : i + 1}: (${part[type] ? part[type] : type}) ${res.results[i].definition}\n`;
                     }
                     message += '```';

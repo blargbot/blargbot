@@ -7,8 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbengine = require('../structures/bbtag/Engine');
+const Builder = require('../structures/TagBuilder');
+const bbengine = require('../structures/bbtag/Engine');
 
 const overrideSubtags = [
     // API subtags
@@ -63,24 +63,25 @@ module.exports =
         )
         .resolveArgs(0, 1, 3)
         .whenArgs('0-4', async function (subtag, context, args) {
-            let channels, users, checkBBTag, timeout, failure;
+            let failure;
 
             // parse channels
+            let channels;
             if (args[0]) {
                 channels = Builder.util.flattenArgArrays([args[0]]);
                 channels = await Promise.all(channels.map(async input => await Builder.util.parseChannel(context, input)));
-                if (failure = channels.find(channel => typeof channel == 'function'))
+                if ((failure = channels.find(channel => typeof channel == 'function')))
                     return failure(subtag, context);
                 channels = channels.map(channel => channel);
-            }
-            else {
+            } else {
                 channels = [context.channel];
             }
-            if (failure = channels.find(channel => !Builder.util.canAccessChannel(context, channel))) {
+            if ((failure = channels.find(channel => !Builder.util.canAccessChannel(context, channel)))) {
                 return Builder.errors.cannotAccessChannel(subtag, context, failure.id);
             }
 
             // parse users
+            let users;
             if (args[1]) {
                 users = Builder.util.flattenArgArrays([args[1]]);
                 users = await Promise.all(users.map(async input => await context.getUser(input, { quiet: true, suppress: true })));
@@ -92,6 +93,7 @@ module.exports =
             }
 
             // parse check code
+            let checkBBTag;
             if (args[2]) {
                 checkBBTag = args[2];
             } else {
@@ -99,6 +101,7 @@ module.exports =
             }
 
             // parse timeout
+            let timeout;
             if (args[3]) {
                 timeout = bu.parseFloat(args[3]);
                 if (isNaN(timeout))
@@ -149,8 +152,7 @@ module.exports =
                             'Condition must return \'true\' or \'false\''
                         );
                     return bool;
-                }
-                finally {
+                } finally {
                     for (const override of overrides) {
                         override.revert();
                     }

@@ -13,7 +13,7 @@ class EditcommandCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words.length >= 2) {
             let commandName;
             let storedGuild;
@@ -25,25 +25,26 @@ class EditcommandCommand extends BaseCommand {
                     delete commandperms[key];
             }
             if (!commandperms) commandperms = {};
-            let commands, toSend, changedCommands = [];
+            let commands;
+            let toSend;
+            let changedCommands = [];
             switch (words[1].toLowerCase()) {
-                case 'list':
+                case 'list': {
                     let message = '__Modified Commands:__\n';
                     let commandList = [];
                     for (let key in commandperms) {
-                        if (commandperms[key].rolename || commandperms[key].permission || commandperms[key].disabled)
-                            commandList.push(`**${key}** ${commandperms[key].rolename
-                                ? '\n   __Role__: ' + commandperms[key].rolename
-                                : ''}${commandperms[key].permission
-                                ? '\n   __Perm__: ' + commandperms[key].permission
-                                : ''}${commandperms[key].disabled
-                                ? '\n   __DISABLED__'
-                                : ''}`);
+                        if (commandperms[key].rolename || commandperms[key].permission || commandperms[key].disabled) {
+                            const roleName = commandperms[key].rolename ? '\n   __Role__: ' + commandperms[key].rolename : '';
+                            const permName = commandperms[key].permission ? '\n   __Perm__: ' + commandperms[key].permission : '';
+                            const disabled = commandperms[key].disabled ? '\n   __DISABLED__' : '';
+                            commandList.push(`**${key}** ${roleName}${permName}${disabled}`);
+                        }
                     }
                     if (commandList.length > 0) message += commandList.join('\n');
                     else message += 'No modified commands found.';
                     bu.send(msg, message);
                     break;
+                }
                 case 'setrole':
                     if (!words[2]) {
                         bu.send(msg, 'Not enough arguments provided!');
@@ -57,27 +58,23 @@ class EditcommandCommand extends BaseCommand {
                         toSend += 'Added custom role requirement to command(s)\n```fix\n';
                     }
                     for (let i = 0; i < commands.length; i++) {
-                        if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        if (Object.prototype.hasOwnProperty.call(CommandManager.commandList, commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                             if (CommandManager.built[commandName].category == newbutils.commandTypes.CAT ||
                                 CommandManager.built[commandName].category == newbutils.commandTypes.MUSIC) {
                                 console.debug('no ur not allowed');
-                            } else {
-                                if (words.length == 3) {
-                                    if (commandperms.hasOwnProperty(commandName)) {
-                                        commandperms[commandName].rolename = null;
-                                    }
-                                } else if (words.length >= 4) {
-                                    if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
-                                    commandperms[commandName].rolename = words.slice(3);
-                                    changedCommands.push(commandName);
+                            } else if (words.length == 3) {
+                                if (Object.prototype.hasOwnProperty.call(commandperms, commandName)) {
+                                    commandperms[commandName].rolename = null;
                                 }
+                            } else if (words.length >= 4) {
+                                if (!Object.prototype.hasOwnProperty.call(commandperms, commandName)) commandperms[commandName] = {};
+                                commandperms[commandName].rolename = words.slice(3);
+                                changedCommands.push(commandName);
                             }
-                        } else {
-                            if (commands.length == 1) {
-                                bu.send(msg, 'That\'s not a command!');
-                                break;
-                            }
+                        } else if (commands.length == 1) {
+                            bu.send(msg, 'That\'s not a command!');
+                            break;
                         }
                     }
                     await r.table('guild').get(msg.channel.guild.id).update({
@@ -85,7 +82,7 @@ class EditcommandCommand extends BaseCommand {
                     }).run();
                     bu.send(msg, toSend + changedCommands.join(', ') + '\n```');
                     break;
-                case 'toggle':
+                case 'toggle': {
                     if (!words[2]) {
                         bu.send(msg, 'Not enough arguments provided!');
                         break;
@@ -94,7 +91,7 @@ class EditcommandCommand extends BaseCommand {
                     let disabledList = [];
                     let enabledList = [];
                     for (let i = 0; i < commands.length; i++) {
-                        if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        if (Object.prototype.hasOwnProperty.call(CommandManager.commandList, commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                             if (CommandManager.built[commandName].category == newbutils.commandTypes.CAT ||
                                 CommandManager.built[commandName].category == newbutils.commandTypes.MUSIC ||
@@ -102,7 +99,7 @@ class EditcommandCommand extends BaseCommand {
                                 console.debug('no ur not allowed');
                             } else {
                                 console.debug(commandperms[commandName]);
-                                if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
+                                if (!Object.prototype.hasOwnProperty.call(commandperms, commandName)) commandperms[commandName] = {};
                                 if (!commandperms[commandName].disabled) {
                                     commandperms[commandName].disabled = true;
                                     disabledList.push(commandName);
@@ -111,11 +108,9 @@ class EditcommandCommand extends BaseCommand {
                                     enabledList.push(commandName);
                                 }
                             }
-                        } else {
-                            if (commands.length == 1) {
-                                bu.send(msg, 'That\'s not a command!');
-                                break;
-                            }
+                        } else if (commands.length == 1) {
+                            bu.send(msg, 'That\'s not a command!');
+                            break;
                         }
                     }
                     await r.table('guild').get(msg.channel.guild.id).update({
@@ -123,6 +118,7 @@ class EditcommandCommand extends BaseCommand {
                     }).run();
                     bu.send(msg, util.format('Commands enabled:\n```\n%s \n```\nCommands disabled:\n```\n%s \n```', enabledList.join(', '), disabledList.join(', ')));
                     break;
+                }
                 case 'setperm':
                     if (!words[2]) {
                         bu.send(msg, 'Not enough arguments provided!');
@@ -136,33 +132,29 @@ class EditcommandCommand extends BaseCommand {
                         toSend += 'Added custom role requirement to command(s)\n```fix\n';
                     }
                     for (let i = 0; i < commands.length; i++) {
-                        if (CommandManager.commandList.hasOwnProperty(commands[i].toLowerCase())) {
+                        if (Object.prototype.hasOwnProperty.call(CommandManager.commandList, commands[i].toLowerCase())) {
                             commandName = CommandManager.commandList[commands[i].toLowerCase()].name;
                             if (CommandManager.built[commandName].category == newbutils.commandTypes.CAT ||
                                 CommandManager.built[commandName].category == newbutils.commandTypes.MUSIC) {
                                 console.debug('no ur not allowed');
-                            } else {
-                                if (words.length == 3) {
-                                    if (commandperms.hasOwnProperty(commandName)) {
-                                        commandperms[commandName].permission = null;
-                                    }
-                                } else if (words.length >= 4) {
-                                    if (!commandperms.hasOwnProperty(commandName)) commandperms[commandName] = {};
-                                    let allow = parseInt(words[3]);
-                                    if (!isNaN(allow)) {
-                                        commandperms[commandName].permission = allow;
-                                        changedCommands.push(commandName);
-                                    } else {
-                                        bu.send(msg, 'The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.');
-                                        return;
-                                    }
+                            } else if (words.length == 3) {
+                                if (Object.prototype.hasOwnProperty.call(commandperms, commandName)) {
+                                    commandperms[commandName].permission = null;
+                                }
+                            } else if (words.length >= 4) {
+                                if (!Object.prototype.hasOwnProperty.call(commandperms, commandName)) commandperms[commandName] = {};
+                                let allow = parseInt(words[3]);
+                                if (!isNaN(allow)) {
+                                    commandperms[commandName].permission = allow;
+                                    changedCommands.push(commandName);
+                                } else {
+                                    bu.send(msg, 'The permissions must be in a numeric format. See <https://discordapi.com/permissions.html> for more details.');
+                                    return;
                                 }
                             }
-                        } else {
-                            if (commands.length == 1) {
-                                bu.send(msg, 'That\'s not a command!');
-                                break;
-                            }
+                        } else if (commands.length == 1) {
+                            bu.send(msg, 'That\'s not a command!');
+                            break;
                         }
                     }
                     await r.table('guild').get(msg.channel.guild.id).update({

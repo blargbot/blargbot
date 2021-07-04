@@ -49,8 +49,7 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
                     }
                 }
                 /* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-            }
-            catch (err: unknown) {
+            } catch (err: unknown) {
                 this.logger.warn(`Error from changefeed for table '${this.table}', will try again in 10 seconds.`, err);
                 await sleep(10000);
             }

@@ -1,5 +1,4 @@
 const BaseCommand = require('../structures/BaseCommand');
-const sf = require('snekfetch');
 const newbutils = require('../newbu');
 
 class PccheckCommand extends BaseCommand {

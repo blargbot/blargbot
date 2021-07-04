@@ -17,9 +17,10 @@ class AnnounceCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
-        var changeChannel, roleId;
+        let changeChannel;
+        let roleId;
         let storedGuild = await bu.getGuild(msg.guild.id);
         if (input.r) {
             delete storedGuild.announce;
@@ -30,7 +31,7 @@ class AnnounceCommand extends BaseCommand {
         }
         if (words.length > 1) {
 
-            if (storedGuild.hasOwnProperty('announce')) {
+            if (Object.prototype.hasOwnProperty.call(storedGuild, 'announce')) {
                 changeChannel = storedGuild.announce.channel;
                 roleId = storedGuild.announce.role;
             } else {
@@ -39,7 +40,7 @@ class AnnounceCommand extends BaseCommand {
                     'This guild doesn\'t have announcements set up. Please mention the channel that announcements should be put in.',
                     m => {
                         if (m.channelMentions.length > 0) return true;
-                        else return false;
+                        return false;
                     });
                 changeChannel = msg2.channelMentions[0];
                 msg2 = await bu.awaitQuery(msg,
@@ -67,7 +68,7 @@ class AnnounceCommand extends BaseCommand {
                 return;
             }
             words.shift();
-            var message = words.join(' ');
+            let message = words.join(' ');
             let channel = bot.getChannel(changeChannel);
             let role = channel.guild.roles.get(roleId);
 
@@ -122,6 +123,6 @@ function getTopRole(member) {
         return thing;
     })[0]);
     return role;
-};
+}
 
 module.exports = AnnounceCommand;

@@ -214,12 +214,21 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         const overrides = this.state.overrides;
         if (!guard.hasProperty(overrides, subtag)) {
             overrides[subtag] = handler;
-            return { revert() { delete overrides[subtag]; } };
+            return {
+                revert() {
+                    delete overrides[subtag];
+                }
+            };
         }
 
         const previous = overrides[subtag];
         overrides[subtag] = handler;
-        return { previous, revert() { overrides[subtag] = previous; } };
+        return {
+            previous,
+            revert() {
+                overrides[subtag] = previous;
+            }
+        };
     }
 
     public getLock(key: string): ReadWriteLock {

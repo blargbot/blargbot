@@ -17,14 +17,16 @@ module.exports =
             '`object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
             '`path` is a dot-noted series of properties.'
         )
-        .withExample('{set;~json;{json;{"key": "value", "key2" : "value2"}}\n'
+        .withExample(
+            '{set;~json;{json;{"key": "value", "key2" : "value2"}}\n'
             + '{jsonvalues;~json}',
-        '["value","value2"]')
+            '["value","value2"]'
+        )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async (subtag, context, args) => {
-            let obj = args[0],
-                path = args[1],
-                varname;
+            let obj = args[0];
+            let path = args[1];
+            let varname;
 
             let arr = await bu.getArray(obj);
             if (arr && Array.isArray(arr.v)) obj = arr.v;
@@ -54,7 +56,9 @@ module.exports =
                         if (typeof obj === 'string') {
                             try {
                                 obj = JSON.parse(obj);
-                            } catch (err) { }
+                            } catch (err) {
+                                // NOOP
+                            }
                         }
 
                         if (typeof obj === 'object') {
@@ -65,7 +69,7 @@ module.exports =
                         }
 
                         // intentionally let it error if undefined
-                        if (obj === undefined || obj.hasOwnProperty(part))
+                        if (obj === undefined || Object.prototype.hasOwnProperty.call(obj, part))
                             obj = obj[part];
                         else obj = undefined;
                     }

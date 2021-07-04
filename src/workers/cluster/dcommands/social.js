@@ -151,8 +151,7 @@ let usage = {
 };
 
 
-for (const key in actions) {
-    let action = actions[key];
+for (const [key, action] of Object.entries(actions)) {
     let command = class SocialCommand extends BaseCommand {
         constructor(cluster) {
             super({
@@ -175,13 +174,13 @@ for (const key in actions) {
             return res.url;
         }
 
-        async execute(msg, words, text) {
+        async execute(msg, words) {
             let message;
             switch (action.type) {
                 case 1:
                     message = `**${bu.getFullName(msg.author)}**  ${action.text}!`;
                     break;
-                case 2:
+                case 2: {
                     let u2 = 'themself';
                     if (words.length > 1) {
                         let user = await bu.getUser(msg, words.slice(1).join(' '));
@@ -189,6 +188,7 @@ for (const key in actions) {
                     }
                     message = `**${bu.getFullName(msg.author)}** ${action.text} **${u2}**!`;
                     break;
+                }
             }
             await bu.send(msg, {
                 embed: {

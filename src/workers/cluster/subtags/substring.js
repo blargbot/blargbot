@@ -20,10 +20,10 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            let fallback = bu.parseInt(context.scope.fallback),
-                text = args[0],
-                start = bu.parseInt(args[1]),
-                end = bu.parseInt(args[2] || text.length);
+            let fallback = bu.parseInt(context.scope.fallback);
+            let text = args[0];
+            let start = bu.parseInt(args[1]);
+            let end = bu.parseInt(args[2] || text.length);
 
             if (isNaN(start)) start = fallback;
             if (isNaN(end)) end = fallback;

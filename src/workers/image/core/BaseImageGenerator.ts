@@ -209,7 +209,8 @@ function phantomGetrect(replacements: PhantomOptions['replacements']): { top: nu
 }
 
 function phantomResize(): void {
-    let el, i;
+    let el;
+    let i;
     const elements = document.getElementsByClassName('resize');
     const wrapper = document.getElementById('wrapper');
     if (elements.length < 0 || wrapper === null) {

@@ -16,7 +16,8 @@ bot.on('guildMemberRemove', async function (guild, member) {
     let chan = await bu.guildSettings.get(guild.id, 'farewellchan');
     if (chan && val) {
         let ccommandContent;
-        let author, authorizer;
+        let author;
+        let authorizer;
         if (typeof val == 'object') {
             ccommandContent = val.content;
             author = val.author;

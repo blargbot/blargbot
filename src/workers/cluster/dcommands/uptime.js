@@ -12,7 +12,7 @@ class UptimeCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         bu.send(msg, `Bot Uptime: ${bu.createTimeDiffString(moment(), bu.startTime)}`);
     }
 }

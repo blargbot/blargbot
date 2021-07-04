@@ -12,9 +12,6 @@ class ThesearchCommand extends BaseCommand {
     }
 
     async execute(msg, words) {
-        var text = 'I use betterdiscord';
-        if (words[1]) text = words.slice(1).join(' ');
-        text = await bu.filterMentions(text);
         bot.sendChannelTyping(msg.channel.id);
         try {
             let buffer = await bu.blargbotApi('color', {

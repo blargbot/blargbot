@@ -25,9 +25,9 @@ module.exports =
             '\n  "{\\"points\\":10,\\"name\\":\\"Blargbot\\"}",\n  "{\\"points\\":12,\\"name\\":\\"Winner\\"}"\n]'
         ).whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async (subtag, context, args) => {
-            let arr = await bu.getArray(context, args[0]),
-                path = args[1] ? args[1].split('.') : undefined,
-                descending = bu.parseBoolean(args[2]);
+            let arr = await bu.getArray(context, args[0]);
+            let path = args[1] ? args[1].split('.') : undefined;
+            let descending = bu.parseBoolean(args[2]);
 
             if (!bu.isBoolean(descending))
                 descending = !!args[2];
@@ -47,7 +47,9 @@ module.exports =
                     if (typeof item === 'string') {
                         try {
                             item = JSON.parse(item);
-                        } catch (err) { }
+                        } catch (err) {
+                            // NOOP
+                        }
                     }
 
                     if (typeof item === 'object') {
@@ -56,7 +58,7 @@ module.exports =
                             item = item.v;
                         }
                     }
-                    if (item && item.hasOwnProperty(part)) {
+                    if (item && Object.prototype.hasOwnProperty.call(item, part)) {
                         item = item[part];
                     } else item = undefined;
                 }
@@ -66,7 +68,7 @@ module.exports =
             let undefinedItems = mappedArray.filter(v => v === undefined);
             if (undefinedItems.length !== 0) {
                 return Builder.errors.customError(subtag, context, 'Cannot read property ' + path + ' at index ' + mappedArray.indexOf(undefined) + ', ' + undefinedItems.length + ' total failures');
-            };
+            }
             //Sort the array
             arr.v = arr.v.sort((a, b) => {
                 if (typeof a !== 'object')
@@ -78,7 +80,9 @@ module.exports =
                     if (typeof a === 'string') {
                         try {
                             a = JSON.parse(a);
-                        } catch (err) { }
+                        } catch (err) {
+                            // NOOP
+                        }
                     }
 
                     if (typeof a === 'object') {
@@ -87,14 +91,16 @@ module.exports =
                             a = a.v;
                         }
                     }
-                    if (a.hasOwnProperty(part)) a = a[part];
+                    if (Object.prototype.hasOwnProperty.call(a, part)) a = a[part];
                 }
                 //Value of path of b
                 for (const part of path) {
                     if (typeof b === 'string') {
                         try {
                             b = JSON.parse(b);
-                        } catch (err) { }
+                        } catch (err) {
+                            // NOOP
+                        }
                     }
 
                     if (typeof b === 'object') {
@@ -103,7 +109,7 @@ module.exports =
                             b = b.v;
                         }
                     }
-                    if (b.hasOwnProperty(part)) b = b[part];
+                    if (Object.prototype.hasOwnProperty.call(b, part)) b = b[part];
                 }
                 return bu.compare(a, b);
             });

@@ -8,12 +8,14 @@ class PatchCommand extends BaseCommand {
             category: newbutils.commandTypes.CAT,
             usage: 'patch [features] [flags]',
             info: 'Makes a patch note',
-            flags: [{ flag: 'f', word: 'fixes', desc: 'The bug fixes of the patch.' },
-                { flag: 'n', word: 'notes', desc: 'Other notes.' }]
+            flags: [
+                { flag: 'f', word: 'fixes', desc: 'The bug fixes of the patch.' },
+                { flag: 'n', word: 'notes', desc: 'Other notes.' }
+            ]
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id != config.discord.users.owner) {
             return;
         }
@@ -31,19 +33,19 @@ class PatchCommand extends BaseCommand {
         if (input.undefined.length > 0) {
             embed.title = 'New Features and Changes';
             embed.description = input.undefined.join(' ');
-        };
+        }
         if (input.f && input.f.length > 0) {
             embed.fields.push({
                 name: 'Bug Fixes',
                 value: input.f.join(' ')
             });
-        };
+        }
         if (input.n && input.n.length > 0) {
             embed.fields.push({
                 name: 'Other Notes',
                 value: input.n.join(' ')
             });
-        };
+        }
 
         let res = await bu.awaitQuery(msg, {
             embed, content: 'This is a preview of what the patch will look like. Say \'yes\' to continue, or anything else to cancel.'
@@ -62,7 +64,7 @@ class PatchCommand extends BaseCommand {
 
         let changelogs = await r.table('vars').get('changelog');
         if (changelogs) {
-            for (const guild in changelogs.guilds) {
+            for (const guild of Object.keys(changelogs.guilds)) {
                 const channel = changelogs.guilds[guild];
                 try {
                     await bu.send(channel, {

@@ -21,11 +21,11 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            let arr = await bu.getArray(context, args[0]),
-                start = bu.parseInt(args[1]),
-                delCount = bu.parseInt(args[2] || 0),
-                fallback = bu.parseInt(context.scope.fallback),
-                insert = Builder.util.flattenArgArrays(args.slice(3));
+            let arr = await bu.getArray(context, args[0]);
+            let start = bu.parseInt(args[1]);
+            let delCount = bu.parseInt(args[2] || 0);
+            let fallback = bu.parseInt(context.scope.fallback);
+            let insert = Builder.util.flattenArgArrays(args.slice(3));
 
             if (arr == null || !Array.isArray(arr.v))
                 return Builder.errors.notAnArray(subtag, context);

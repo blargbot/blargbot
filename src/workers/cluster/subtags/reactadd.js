@@ -13,8 +13,10 @@ module.exports =
     Builder.APITag('reactadd')
         .withAlias('addreact')
         .withArgs(a => [
-            a.optional([a.optional('channelId'),
-                a.required('messageId')]),
+            a.optional([
+                a.optional('channelId'),
+                a.required('messageId')
+            ]),
             a.required('reactions', true)
         ])
         .withDesc('Adds `reactions` to the given `messageId`. If the `messageId` is not supplied, ' +
@@ -27,8 +29,8 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, emotes) {
-            let channel = null,
-                message = null;
+            let channel = null;
+            let message = null;
 
             // Check if the first "emote" is actually a valid channel
             channel = bu.parseChannel(emotes[0], true);
@@ -44,7 +46,9 @@ module.exports =
             if (/^\d{17,23}$/.test(emotes[0])) {
                 try {
                     message = await bot.getMessage(channel.id, emotes[0]);
-                } catch (e) { }
+                } catch (e) {
+                    // NOOP
+                }
                 if (message == null)
                     return Builder.errors.noMessageFound(subtag, context);
                 emotes.shift();
@@ -60,7 +64,7 @@ module.exports =
 
             if (messageid != null) {
                 // Perform add of each reaction
-                var errors = await bu.addReactions(channel.id, messageid, parsed);
+                let errors = await bu.addReactions(channel.id, messageid, parsed);
                 if (errors[50013])
                     return Builder.util.error(subtag, context, 'I dont have permission to Add Reactions');
                 if (errors[10014])

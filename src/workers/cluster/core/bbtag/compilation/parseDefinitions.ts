@@ -39,10 +39,18 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
     let required = true;
     let greedy: number | false = false;
     switch (parameter[parameter.length - 1]) {
-        case '?': required = false; break;
-        case '*': required = false; greedy = 0; break;
-        case '+': greedy = 1; break;
-        case '!': break;
+        case '?':
+            required = false;
+            break;
+        case '*':
+            required = false;
+            greedy = 0;
+            break;
+        case '+':
+            greedy = 1;
+            break;
+        case '!':
+            break;
         default: {
             const match = /^(.*?)\+(\d)$/.exec(parameter);
             if (match !== null) {

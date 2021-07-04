@@ -12,7 +12,7 @@ class PersonalprefixCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let storedUser = await r.table('user').get(msg.author.id);
         if (!storedUser.prefixes) storedUser.prefixes = [];
         if (words.length > 2) {
@@ -37,12 +37,10 @@ class PersonalprefixCommand extends BaseCommand {
                     await bu.send(msg, 'Your prefix has been removed.');
                     break;
             }
-        } else {
-            if (storedUser.prefixes.length === 0)
-                await bu.send(msg, 'You have no personal prefixes.');
-            else
-                await bu.send(msg, `You have the following personal prefixes:\n${storedUser.prefixes.map(p => ' - ' + p).join('\n')}`);
-        }
+        } else if (storedUser.prefixes.length === 0)
+            await bu.send(msg, 'You have no personal prefixes.');
+        else
+            await bu.send(msg, `You have the following personal prefixes:\n${storedUser.prefixes.map(p => ' - ' + p).join('\n')}`);
         //   }
     }
 }

@@ -43,26 +43,26 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', M
                 discriminator: user.discriminator,
                 todo: []
             });
-        } else {
-            const update: Partial<MutableStoredUser> = {};
-            if (currentUser.username !== user.username) {
-                currentUser.username = update.username = user.username;
-                update.usernames = currentUser.usernames;
-                update.usernames.push({
-                    name: user.username,
-                    date: new Date()
-                });
-            }
-            if (currentUser.discriminator !== user.discriminator) {
-                currentUser.discriminator = update.discriminator = user.discriminator;
-            }
-            if (currentUser.avatarURL !== user.avatarURL) {
-                currentUser.avatarURL = update.avatarURL = user.avatarURL;
-            }
-
-            for (const _ in update)
-                return await this.rupdate(user.id, update);
         }
+        const update: Partial<MutableStoredUser> = {};
+        if (currentUser.username !== user.username) {
+            currentUser.username = update.username = user.username;
+            update.usernames = currentUser.usernames;
+            update.usernames.push({
+                name: user.username,
+                date: new Date()
+            });
+        }
+        if (currentUser.discriminator !== user.discriminator) {
+            currentUser.discriminator = update.discriminator = user.discriminator;
+        }
+        if (currentUser.avatarURL !== user.avatarURL) {
+            currentUser.avatarURL = update.avatarURL = user.avatarURL;
+        }
+
+        if (Object.keys(update).length > 0)
+            return await this.rupdate(user.id, update);
+
         return false;
     }
 

@@ -2,6 +2,9 @@
     "files.exclude": {
         "node_modules": true
     },
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": true
+    },
     "npm.packageManager": "yarn",
     "files.eol": "\n"
 }

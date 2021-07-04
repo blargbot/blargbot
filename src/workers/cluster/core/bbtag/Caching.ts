@@ -101,14 +101,14 @@ export class VariableCache {
                 v.persist();
             }
         }
-        for (const key in pools) {
+        for (const [key, pool] of Object.entries(pools)) {
             const timer = new Timer().start();
             const scope = tagVariableScopes.find(s => key === s.prefix);
             if (scope === undefined)
                 throw new Error('Missing default variable scope!');
-            const objectCount = Object.keys(pools[key]).length;
+            const objectCount = Object.keys(pool).length;
             this.context.logger.bbtag('Committing', objectCount, 'objects to the', key, 'pool.');
-            await scope.setter(this.context, subtag, pools[key]);
+            await scope.setter(this.context, subtag, pool);
             timer.end();
             this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', key, 'pool in', timer.elapsed, 'ms.');
             this.context.dbObjectsCommitted += objectCount;

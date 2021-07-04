@@ -17,10 +17,11 @@ const newbutils = require('../newbu');
 const converter = new showdown.Converter({ backslashEscapesHTMLTags: true });
 let e = module.exports = {};
 let TagManager = {
-        list: {}
-    }, CommandManager = {
-        list: {}
-    };
+    list: {}
+};
+let CommandManager = {
+    list: {}
+};
 
 async function updateManagers() {
     let s = spawner.get(0);
@@ -117,7 +118,7 @@ e.init = () => {
         for (let i = 0; i < keys.length; i++) {
             if (commands[keys[i]].category != newbutils.commandTypes.CAT && commands[keys[i]].category != newbutils.commandTypes.MUSIC && !commands[keys[i]].onlyOn) {
                 if (commands[keys[i]].category != lastType) {
-                    sidebar += `<li class=\"sidebar-header blue-grey darken-3\"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/commands/#${commands[keys[i]].category}'>${commandType[commands[keys[i]].category]}</a></li>`;
+                    sidebar += `<li class="sidebar-header blue-grey darken-3"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/commands/#${commands[keys[i]].category}'>${commandType[commands[keys[i]].category]}</a></li>`;
                     lastType = commands[keys[i]].category;
                 }
                 sidebar += `<li class='blue-grey darken-2'><a class='grey-text text-lighten-5 sidebar-dropdown waves-effect waves-light' href='/commands/#${keys[i]}'>${keys[i]}</a></li>`;
@@ -137,7 +138,7 @@ e.init = () => {
         for (let i = 0; i < keys.length; i++) {
             let key = keys[i];
             if (tags[key].category != lastType) {
-                sidebar += `<li class=\"sidebar-header blue-grey darken-3\"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/tags/#${tags[key].category}'>${tagType[tags[key].category]}</a></li>`;
+                sidebar += `<li class="sidebar-header blue-grey darken-3"><a class='grey-text text-lighten-5 waves-effect waves-light' href='/tags/#${tags[key].category}'>${tagType[tags[key].category]}</a></li>`;
                 lastType = tags[key].category;
             }
             sidebar += `<li class='blue-grey darken-2'><a class='grey-text text-lighten-5 sidebar-dropdown waves-effect waves-light' href='/tags/#${key}'>${key}</a></li>`;
@@ -145,7 +146,7 @@ e.init = () => {
         return sidebar;
     });
 
-    hbs.registerHelper('tags', function (text, url) {
+    hbs.registerHelper('tags', function () {
         let toReturn = '';
         let lastType = -10;
         let tags = TagManager.list;
@@ -161,7 +162,7 @@ e.init = () => {
                 if (lastType == 1) {
                     toReturn += `
                 <div class="row">
-                <div class=\"centre\" id=\"simple\">
+                <div class="centre" id="simple">
         <h2 id='${lastType}' class='white-text'>${tagType[lastType]}</h2>
     </div>
         <div class="col s10 offset-s1 m10 offset-m1 l10 offset-l1">
@@ -176,7 +177,7 @@ e.init = () => {
     </div>
 
     <div class="row">
-        <div class=\"centre\" id=\"complex\">
+        <div class="centre" id="complex">
             <h2 class='white-text'>Complex</h2>
         </div>
     <div class="col s10 offset-s1 m8 offset-m2 l6 offset-l3">
@@ -210,8 +211,7 @@ e.init = () => {
             let aliasBlock = subtag.aliases ? ` <small>(${subtag.aliases.join(', ')})</small>` : '';
             toReturn += `<h4 id='${keys[i]}'>${keys[i]}${aliasBlock}</h4>`;
             if (subtag.deprecated) {
-                toReturn += `<div class="tagdeprecated"><p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''
-                }</p></div>`;
+                toReturn += `<div class="tagdeprecated"><p>This tag is deprecated. Avoid using it, as it will eventually become unsupported. ${typeof subtag.deprecated === 'string' ? 'Please use ' + subtag.deprecated + ' instead' : ''}</p></div>`;
             }
             if (subtag.args) {
                 toReturn += `<div class="tagargs">${mdToHtml('`' + argumentFactory.toString(subtag.args) + '`')}</div>`;
@@ -222,9 +222,7 @@ e.init = () => {
             for (const key of Object.keys(bbtag.limits)) {
                 let text = bbtag.limitToSring(key, subtag.name);
                 if (text) {
-                    toReturn += `<div class="taglimit"><h5>Limits for ${bbtag.limits[key].instance._name
-                    }s</h5><blockquote>${text.replace(/\n/g, '<br />')
-                    }</blockquote></div>`;
+                    toReturn += `<div class="taglimit"><h5>Limits for ${bbtag.limits[key].instance._name}s</h5><blockquote>${text.replace(/\n/g, '<br />')}</blockquote></div>`;
                 }
             }
 
@@ -245,7 +243,7 @@ e.init = () => {
         return toReturn;
     });
 
-    hbs.registerHelper('tagseditor', (text, url) => {
+    hbs.registerHelper('tagseditor', () => {
         let tags = Object.keys(TagManager.list).map(m => {
             return {
                 text: m,
@@ -257,9 +255,7 @@ e.init = () => {
     });
 
 
-
-
-    hbs.registerHelper('commands', function (text, url) {
+    hbs.registerHelper('commands', function () {
         let toReturn = '';
         let lastType = -10;
         let commands = CommandManager.list;
@@ -273,10 +269,10 @@ e.init = () => {
                     toReturn += `<div class='centre white-text'><h2 id='${commands[keys[i]].category}' class='white-text'>${commandType[commands[keys[i]].category]}</h2></div>`;
                     lastType = commands[keys[i]].category;
                 }
-                toReturn += '<div class=\'row\'>';
-                toReturn += '<div class=\'col s12 m10 offset-m1 l10 offset-l1\'>';
-                toReturn += `<div class=\"card blue-grey darken-3\" id='${keys[i]}'>`;
-                toReturn += '<div class=\'card-content\'>';
+                toReturn += '<div class="row">';
+                toReturn += '<div class="col s12 m10 offset-m1 l10 offset-l1">';
+                toReturn += `<div class="card blue-grey darken-3" id='${keys[i]}'>`;
+                toReturn += '<div class="card-content">';
                 toReturn += `<span class='card-title'>${keys[i]}</span>`;
                 toReturn += `<p>Usage: <pre style="margin: 0" class="wrap"><code>${commands[keys[i]].usage.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre></p>`;
                 toReturn += `<p>Role Needed: ${commandType.perms[commands[keys[i]].category]}</p>`;

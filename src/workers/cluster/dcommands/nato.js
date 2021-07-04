@@ -40,7 +40,7 @@ class NatoCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words[1]) {
             let input = words.slice(1).join(' ');
             let output = [];

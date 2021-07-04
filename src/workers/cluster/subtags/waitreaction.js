@@ -7,9 +7,9 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbengine = require('../structures/bbtag/Engine'),
-    waitMessage = require('./waitmessage');
+const Builder = require('../structures/TagBuilder');
+const bbengine = require('../structures/bbtag/Engine');
+const waitMessage = require('./waitmessage');
 
 function padEmoji(emoji) {
     if (emoji.includes(':'))
@@ -47,12 +47,11 @@ module.exports =
         .resolveArgs(0, 1, 2, 4)
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-5', async function (subtag, context, args) {
-            let messages, users, reactions, checkBBTag, timeout, failure;
-
             // get messages
-            messages = Builder.util.flattenArgArrays([args[0]]);
+            let messages = Builder.util.flattenArgArrays([args[0]]);
 
             // parse users
+            let users;
             if (args[1]) {
                 users = Builder.util.flattenArgArrays([args[1]]);
                 users = await Promise.all(users.map(async input => await context.getUser(input, { quiet: true, suppress: true })));
@@ -64,9 +63,10 @@ module.exports =
             }
 
             // parse reactions
+            let reactions;
             if (args[2]) {
                 reactions = Builder.util.flattenArgArrays([args[2]]);
-                reactions = [...new Set(reactions.map(bu.findEmoji).reduce((p, c) => (p.push(...c), p), []))];
+                reactions = [...new Set(reactions.flatMap(bu.findEmoji))];
                 if (reactions.length == 0)
                     return Builder.util.error(subtag, context, 'Invalid Emojis');
             } else {
@@ -74,6 +74,7 @@ module.exports =
             }
 
             // parse check code
+            let checkBBTag;
             if (args[3]) {
                 checkBBTag = args[3];
             } else {
@@ -81,6 +82,7 @@ module.exports =
             }
 
             // parse timeout
+            let timeout;
             if (args[4]) {
                 timeout = bu.parseFloat(args[4]);
                 if (isNaN(timeout))

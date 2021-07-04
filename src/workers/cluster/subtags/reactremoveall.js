@@ -21,8 +21,8 @@ module.exports =
             '{reactremoveall;12345678901234;:thinking:}',
             '(removed all the reactions)'
         ).whenDefault(async function (subtag, context, args) {
-            let channel = null,
-                message = null;
+            let channel = null;
+            let message = null;
 
             // Check if the first "emote" is actually a valid channel
             channel = bu.parseChannel(args[0], true);
@@ -37,10 +37,12 @@ module.exports =
             // Check that the current first "emote" is a message id
             try {
                 message = await bot.getMessage(channel.id, args[0]);
-            } catch (e) { } finally {
-                if (message == null)
-                    return Builder.errors.noMessageFound(subtag, context);
+            } catch (e) {
+                // NOOP
             }
+
+            if (message == null)
+                return Builder.errors.noMessageFound(subtag, context);
 
             console.log(await context.isStaff, context.ownsMessage(message.id));
 

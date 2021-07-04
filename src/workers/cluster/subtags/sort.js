@@ -21,8 +21,8 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
-            let arr = await bu.getArray(context, args[0]),
-                descending = bu.parseBoolean(args[1]);
+            let arr = await bu.getArray(context, args[0]);
+            let descending = bu.parseBoolean(args[1]);
 
             if (!bu.isBoolean(descending))
                 descending = !!args[1];

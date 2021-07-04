@@ -9,10 +9,10 @@ class SayCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id == config.discord.users.owner) {
             let channel = '';
-            if (bot.channelGuildMap.hasOwnProperty(words[1])) {
+            if (Object.prototype.hasOwnProperty.call(bot.channelGuildMap, words[1])) {
                 channel = words[1];
                 bu.send(channel, words.slice(2).join(' '));
             } else {

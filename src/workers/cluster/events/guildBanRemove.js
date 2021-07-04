@@ -14,7 +14,9 @@ bot.on('guildBanRemove', async function (guild, user) {
     let storedGuild = await bu.getGuild(guild.id);
     let modlog = storedGuild.modlog || [];
     let lastCase = modlog[modlog.length - 1];
-    let mod, reason, type;
+    let mod;
+    let reason;
+    let type;
     if (bu.unbans[guild.id] && bu.unbans[guild.id][user.id]) {
         mod = bot.users.get(bu.unbans[guild.id][user.id].mod);
         reason = bu.unbans[guild.id][user.id].reason;

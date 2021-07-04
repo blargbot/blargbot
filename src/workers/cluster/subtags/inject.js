@@ -7,8 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    exec = require('./exec');
+const Builder = require('../structures/TagBuilder');
+const exec = require('./exec');
 
 module.exports =
     Builder.BotTag('inject')

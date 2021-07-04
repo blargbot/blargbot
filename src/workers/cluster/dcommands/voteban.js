@@ -12,14 +12,14 @@ class VotebanCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let storedGuild = await bu.getGuild(msg.guild.id);
         let votebans = storedGuild.votebans || {};
         if (words.length > 1) {
             if (words[1].toLowerCase() == 'info') {
                 let user = await bu.getUser(msg, words.slice(2).join(' '));
 
-                if (!votebans.hasOwnProperty(user.id))
+                if (!Object.prototype.hasOwnProperty.call(votebans, user.id))
                     bu.send(msg, `Nobody has signed to ban **${bu.getFullName(user)}**!`);
                 else {
                     let userList = [];
@@ -34,17 +34,15 @@ class VotebanCommand extends BaseCommand {
                             userList.push(`**${bu.getFullName(tempUser)}** ${userId.reason ? ' - ' + userId.reason : ''}`);
                         }
                     }
-                    bu.send(msg, `**${userList.length}** ${userList.length == 1 ? 'person has' : 'people have'} signed to ban **${bu.getFullName(user)}**.
-${userList.map(u => {
-        return ' - ' + u;
-    }).join('\n')}`);
+                    const userListStr = userList.map(u => ' - ' + u).join('\n');
+                    bu.send(msg, `**${userList.length}** ${userList.length == 1 ? 'person has' : 'people have'} signed to ban **${bu.getFullName(user)}**. ${userListStr}`);
                 }
             } else {
                 let user = await bu.getUser(msg, words[1]);
                 if (!user) return;
                 let reason = words[2] ? words.slice(2).join(' ') : undefined;
                 if (reason) reason = await bu.filterMentions(reason);
-                if (!votebans.hasOwnProperty(user.id))
+                if (!Object.prototype.hasOwnProperty.call(votebans, user.id))
                     votebans[user.id] = [];
 
                 let tempVotebans = votebans[user.id] != undefined ? votebans[user.id].map(u => u.id) : [];
@@ -70,7 +68,7 @@ ${reason ? '**Reason:** ' + reason : ''}`);
         } else {
             console.debug(votebans);
             let votebanStats = [];
-            for (let key in votebans) {
+            for (let key of Object.keys(votebans)) {
                 votebanStats.push({
                     id: key,
                     votes: votebans[key].length

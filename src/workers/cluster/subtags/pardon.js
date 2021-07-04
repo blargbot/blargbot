@@ -24,9 +24,9 @@ module.exports =
             'Be pardoned! 0'
         )
         .whenArgs('0-3', async function (subtag, context, args) {
-            let user = context.authorizer,
-                count = bu.parseInt(args[1] || 1),
-                reason = args[2];
+            let user = context.authorizer;
+            let count = bu.parseInt(args[1] || 1);
+            let reason = args[2];
 
             if (args[0])
                 user = await context.getUser(args[0], {

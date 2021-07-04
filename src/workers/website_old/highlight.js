@@ -13,16 +13,16 @@ showdown.extension('codehighlight', function () {
     return [
         {
             type: 'output',
-            filter: function (text, converter, options) {
+            filter: function (text) {
                 // use new shodown's regexp engine to conditionally parse codeblocks
-                var left = '<pre><code\\b[^>]*>',
-                    right = '</code></pre>',
-                    flags = 'g',
-                    replacement = function (wholeMatch, match, left, right) {
-                        // unescape match to prevent double escaping
-                        match = htmlunencode(match);
-                        return left + hljs.highlightAuto(match).value + right;
-                    };
+                let left = '<pre><code\\b[^>]*>';
+                let right = '</code></pre>';
+                let flags = 'g';
+                let replacement = function (wholeMatch, match, left, right) {
+                    // unescape match to prevent double escaping
+                    match = htmlunencode(match);
+                    return left + hljs.highlightAuto(match).value + right;
+                };
                 return showdown.helper.replaceRecursiveRegExp(text, replacement, left, right, flags);
             }
         }

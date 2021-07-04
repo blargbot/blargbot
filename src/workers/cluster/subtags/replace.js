@@ -21,8 +21,8 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            let phrase = args[args.length - 2],
-                replaceWith = args[args.length - 1];
+            let phrase = args[args.length - 2];
+            let replaceWith = args[args.length - 1];
 
             if (args.length == 3)
                 return args[0].replace(phrase, replaceWith);

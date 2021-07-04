@@ -40,11 +40,11 @@ export class ArtCommand extends BaseGlobalCommand {
         const buffer = await context.cluster.images.render('art', { avatar: url });
         if (buffer === undefined || buffer.length === 0) {
             return '❌ Something went wrong while trying to render that!';
-        } else {
-            return {
-                file: buffer,
-                name: 'sobeautifulstan.png'
-            };
         }
+        return {
+            file: buffer,
+            name: 'sobeautifulstan.png'
+        };
+
     }
 }

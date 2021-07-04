@@ -7,7 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-var e = module.exports = {};
+let e = module.exports = {};
 
 const express = require('express');
 const router = express.Router();
@@ -37,7 +37,7 @@ const server = app.server = http.createServer(app);
 enableDestroy(server);
 require('./websocket.js').init(server);
 
-var scopes = ['identify', 'guilds'];
+let scopes = ['identify', 'guilds'];
 
 function checkAuth(req, res, next) {
     if (req.isAuthenticated()) return next();
@@ -82,7 +82,7 @@ e.init = () => {
     app.use(passport.session());
     app.get('/login', passport.authenticate('discord', {
         scope: scopes
-    }), function (req, res) { });
+    }));
     app.get('/callback',
         passport.authenticate('discord', {
             failureRedirect: '/'

@@ -11,20 +11,23 @@
 })(function (CodeMirror) {
 
 
-
-
     CodeMirror.registerHelper('hint', 'cattag', function (cm, options) {
-        var words = options.words;
-        var cur = cm.getCursor(), token = cm.getTokenAt(cur);
-        var to = CodeMirror.Pos(cur.line, token.end);
+        let words = options.words;
+        let cur = cm.getCursor();
+        let token = cm.getTokenAt(cur);
+        let to = CodeMirror.Pos(cur.line, token.end);
+        let term;
+        let from;
         if (token.string && /\w/.test(token.string[token.string.length - 1])) {
-            var term = token.string, from = CodeMirror.Pos(cur.line, token.start);
+            term = token.string;
+            from = CodeMirror.Pos(cur.line, token.start);
         } else {
-            var term = '', from = to;
+            term = '';
+            from = to;
         }
-        var found = [];
-        for (var i = 0; i < words.length; i++) {
-            var word = words[i].text;
+        let found = [];
+        for (let i = 0; i < words.length; i++) {
+            let word = words[i].text;
             if (word.slice(0, term.length) == term)
                 found.push(words[i]);
         }

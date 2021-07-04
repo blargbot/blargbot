@@ -53,8 +53,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         const set = this.#rules[rootKey] ?? {};
         const rules = subKey !== undefined
             ? set[subKey] ?? []
-            : Object.keys(set).reduce<RuntimeLimitRule[]>((p, c) =>
-                (p.push(...set[c] ?? []), p), []);
+            : Object.keys(set).flatMap(k => set[k] ?? []);
         return rules.map(r => r.displayText(rootKey, this.scopeName));
     }
 

@@ -15,7 +15,7 @@ class RespondCommand extends BaseCommand {
         }).base(cluster.config.airtable.base);
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let support = (await r.table('vars').get('support')).value;
         if (support.includes(msg.author.id)) {
             if (words.length >= 3) {

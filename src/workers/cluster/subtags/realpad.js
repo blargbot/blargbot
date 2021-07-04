@@ -22,10 +22,10 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-4', async function (subtag, context, args) {
-            let text = args[0],
-                length = bu.parseInt(args[1]),
-                filler = args[2] || ' ',
-                direction = args[3] || 'right';
+            let text = args[0];
+            let length = bu.parseInt(args[1]);
+            let filler = args[2] || ' ';
+            let direction = args[3] || 'right';
 
             if (isNaN(length))
                 return Builder.errors.notANumber(subtag, context);

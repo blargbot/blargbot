@@ -13,8 +13,8 @@ class EmojifyCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        var options = {
+    async execute(msg, words) {
+        let options = {
             uri: 'https://emoji.getdango.com/api/emoji?q=' + encodeURIComponent(words.splice(1, words.length).join(' ')),
             headers: {
                 'User-Agent': 'blargbot/1.0 (ratismal)'
@@ -22,9 +22,9 @@ class EmojifyCommand extends BaseCommand {
         };
         request(options, (err, res, body) => {
             if (!err && res.statusCode == 200) {
-                var emojis = JSON.parse(body);
-                var toSend = '';
-                for (var i = 0; i < emojis.results.length && i < 8; i++) {
+                let emojis = JSON.parse(body);
+                let toSend = '';
+                for (let i = 0; i < emojis.results.length && i < 8; i++) {
                     toSend += emojis.results[i].text;
                 }
                 bu.send(msg, toSend);

@@ -11,14 +11,14 @@ class BlacklistCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         let channelids = [];
         if (msg.channelMentions.length === 0) channelids.push(msg.channel.id);
         else channelids = msg.channelMentions;
 
         let storedGuild = await bu.getGuild(msg.guild.id);
         for (let channelid of channelids) {
-            let channel = storedGuild.channels && storedGuild.channels.hasOwnProperty(channelid) ?
+            let channel = storedGuild.channels && Object.prototype.hasOwnProperty.call(storedGuild.channels, channelid) ?
                 storedGuild.channels[channelid] : {
                     nsfw: false
                 };

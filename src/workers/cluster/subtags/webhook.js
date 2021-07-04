@@ -32,14 +32,15 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-8', async function (subtag, context, args) {
-            let id = args[0],
-                token = args[1],
-                content = args[2],
-                embed = bu.parseEmbed(args[3]),
-                username = args[4] || undefined,
-                avatar = args[5] || undefined;
+            let id = args[0];
+            let token = args[1];
+            let content = args[2];
+            let embed = bu.parseEmbed(args[3]);
+            let username = args[4] || undefined;
+            let avatar = args[5] || undefined;
+            let file = args[6];
+            let filename = args[7];
 
-            let file = args[6], filename = args[7];
             if (file && !filename) filename = 'file.txt';
             if (file) {
                 if (!filename) filename = 'file.txt';
@@ -58,8 +59,7 @@ module.exports =
                     embeds: embed ? (Array.isArray(embed) ? embed : [embed]) : [],
                     file
                 });
-            }
-            catch (err) {
+            } catch (err) {
                 return Builder.util.error(subtag, context, 'Error executing webhook: ' + err.message);
             }
         })

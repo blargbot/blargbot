@@ -51,4 +51,3 @@ module.exports =
       })
       .whenDefault(Builder.errors.tooManyArguments)
       .build();
-

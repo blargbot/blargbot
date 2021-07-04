@@ -7,8 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    argsTag = require('./args');
+const Builder = require('../structures/TagBuilder');
+const argsTag = require('./args');
 
 function parameters(parameters) {
     return (async function (subtag, context) {

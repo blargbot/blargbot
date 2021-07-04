@@ -1,35 +1,36 @@
 const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
-const reload = require('require-reload')(require);
+// const reload = require('require-reload')(require);
 const newbutils = require('../newbu');
-let patrons, donators;
+// let patrons;
+// let donators;
 
 const startDate = 1444708800000;
-var patronStr, donatorStr, pgVal = '?';
-async function reloadStrings() {
-    ({ patrons, donators } = reload('../../res/donators.json'));
-    patronStr = (await Promise.map(patrons, async p => {
-        if (/^[0-9]{17,23}$/.test(p)) {
-            return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
-        } else return p;
-    })).join('\n - ');
-    donatorStr = (await Promise.map(donators, async p => {
-        if (/^[0-9]{17,23}$/.test(p)) {
-            return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
-        } else return p;
-    })).join('\n - ');
-    let pg = (await r.table('vars').get('pg'));
-    if (pg) pgVal = pg.value;
-    console.log('reloaded');
-}
+let patronStr;
+let donatorStr;
+let pgVal = '?';
+// async function reloadStrings() {
+//     ({ patrons, donators } = reload('../../res/donators.json'));
+//     patronStr = (await Promise.map(patrons, async p => {
+//         if (/^[0-9]{17,23}$/.test(p)) {
+//             return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
+//         }
+//         return p;
+//     })).join('\n - ');
+//     donatorStr = (await Promise.map(donators, async p => {
+//         if (/^[0-9]{17,23}$/.test(p)) {
+//             return bu.getFullName(bot.users.get(p) || (await bu.getCachedUser(p)) || { username: p });
+//         }
+//         return p;
+//     })).join('\n - ');
+//     let pg = (await r.table('vars').get('pg'));
+//     if (pg) pgVal = pg.value;
+//     console.log('reloaded');
+// }
 let titan;
 let pg;
 // setInterval(reloadStrings, 60 * 60 * 1000);
 // reloadStrings();
-
-function pad(value, length) {
-    return (value.toString().length < length) ? pad(' ' + value, length) : value;
-}
 
 class InfoCommand extends BaseCommand {
     constructor() {
@@ -41,7 +42,7 @@ class InfoCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         if (!titan) {
             let t = await bot.getRESTUser(config.discord.users.titansmasher);
             titan = bu.getFullName(t);

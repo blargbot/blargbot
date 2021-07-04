@@ -19,7 +19,9 @@ bot.on('guildCreate', async function (guild) {
             let pc = await owner.getDMChannel();
 
             await pc.createMessage(`Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
-        } catch (err) { }
+        } catch (err) {
+            // NOOP
+        }
         return await guild.leave();
     }
 
@@ -28,7 +30,7 @@ bot.on('guildCreate', async function (guild) {
 
     let storedGuild = await bu.getGuild(guild.id);
     if (!storedGuild || !storedGuild.active) {
-        var message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
+        let message2 = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!
 - 💻 For command information, please do \`${config.discord.defaultPrefix}help\`!
 - 🛠 For Admin commands, please make sure you have a role titled \`Admin\`.
 If you are the owner of this server, here are a few things to know.

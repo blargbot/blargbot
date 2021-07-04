@@ -31,10 +31,10 @@ module.exports =
         ).resolveArgs(0)
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            let value = args[0],
-                indexes = [...args.keys()].slice(1).reverse(),
-                cases = {},
-                elseDo = -1;
+            let value = args[0];
+            let indexes = [...args.keys()].slice(1).reverse();
+            let cases = {};
+            let elseDo = -1;
 
             if (indexes.length % 2 == 1) elseDo = indexes.shift();
 

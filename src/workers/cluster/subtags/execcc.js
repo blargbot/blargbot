@@ -37,7 +37,6 @@ module.exports =
                 let cdDate = cd[name] + (ccommand.cooldown || 0);
                 let diff = Date.now() - cdDate;
                 if (diff < 0) {
-                    let f = Math.floor(diff / 100) / 10;
                     return Builder.util.error(subtag, context, 'Cooldown: ' + (diff * -1));
                 }
             }
@@ -47,10 +46,10 @@ module.exports =
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '');
                 case 2:
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1]);
-                default:
+                default: {
                     let a = Builder.util.flattenArgArrays(args.slice(1));
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"' + a.join('" "') + '"');
+                }
             }
-            return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1] || '');
         })
         .build();

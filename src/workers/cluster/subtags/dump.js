@@ -21,10 +21,7 @@ module.exports =
         )
         .whenArgs('0', Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async function (subtag, context, args) {
-            let content = args[0],
-                embed = bu.parseEmbed(args[1]);
-            // if (embed) embed = [embed];
-
+            let content = args[0];
             let id = await bu.generateOutputPage({
                 content
             }, context.channel);

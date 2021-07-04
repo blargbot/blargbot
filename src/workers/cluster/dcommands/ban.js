@@ -9,20 +9,22 @@ class BanCommand extends BaseCommand {
             category: newbutils.commandTypes.ADMIN,
             usage: 'ban <user> [days] [flags]',
             info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.',
-            flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the ban.' },
+            flags: [
+                { flag: 'r', word: 'reason', desc: 'The reason for the ban.' },
                 {
                     flag: 't',
                     word: 'time',
                     desc: 'If provided, the user will be unbanned after the period of time. (softban)'
-                }]
+                }
+            ]
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (words[1]) {
             let input = newbutils.parse.flags(this.flags, words);
 
-            var user = await bu.getUser(msg, input.undefined[0]);
+            let user = await bu.getUser(msg, input.undefined[0]);
             if (!user) {
                 return await bu.send(msg, 'I couldn\'t find that user. Try again with their ID or a mention instead.');
                 // bu.send(msg, `I couldn't find that user. Try using \`hackban\` with their ID or a mention instead.`);
@@ -53,9 +55,9 @@ class BanCommand extends BaseCommand {
         let member = msg.guild.members.get(user.id);
 
         if (member) {
-            var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-            var userPos = bu.getPosition(msg.member);
-            var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
+            let botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+            let userPos = bu.getPosition(msg.member);
+            let targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
             if (targetPos >= botPos) {
                 return [`I don't have permission to ban ${user.username}!`, '`Bot has no permissions`'];
             }
@@ -75,7 +77,6 @@ class BanCommand extends BaseCommand {
         try {
             const fullReason = (tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : '');
             await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, encodeURIComponent(fullReason));
-            let suffix = '';
             if (duration) {
                 await bu.events.insert({
                     type: 'unban',
@@ -88,9 +89,9 @@ class BanCommand extends BaseCommand {
                     starttime: r.epochTime(moment().unix())
                 });
                 return [`:ok_hand: The user will be unbanned ${duration.humanize(true)}.`, duration.asMilliseconds()];
-            } else {
-                return [':ok_hand:', true];
             }
+            return [':ok_hand:', true];
+
         } catch (err) {
             return [`Failed to ban the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
         }

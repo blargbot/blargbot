@@ -190,9 +190,9 @@ module.exports =
 
                 if (splitAt == -1) return Builder.errors.invalidEmbed(subtag.children[i], context, 'Missing \':\'');
 
-                let key = entry.substring(0, splitAt),
-                    value = entry.substring(splitAt + 1),
-                    field = fields.filter(f => f.key == key.trim().toLowerCase())[0];
+                let key = entry.substring(0, splitAt);
+                let value = entry.substring(splitAt + 1);
+                let field = fields.filter(f => f.key == key.trim().toLowerCase())[0];
 
                 if (field == null) return Builder.errors.invalidEmbed(subtag.children[i], context, 'Unknown key \'' + key + '\'');
 

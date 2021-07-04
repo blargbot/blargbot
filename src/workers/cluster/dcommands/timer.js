@@ -13,7 +13,7 @@ class TimerCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let duration = moment.duration();
         if (words.length > 0) duration = bu.parseDuration(words.join(' '));
         if (duration.asMilliseconds() == 0) {
@@ -40,7 +40,7 @@ class TimerCommand extends BaseCommand {
                 users: [args.user]
             }
         });
-    };
+    }
 }
 
 module.exports = TimerCommand;

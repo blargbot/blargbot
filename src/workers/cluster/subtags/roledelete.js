@@ -23,11 +23,11 @@ module.exports =
             if (topRole == 0)
                 return Builder.util.error(subtag, context, 'Author cannot delete roles');
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
-                role = await context.getRole(args[0], {
-                    quiet, suppress: context.scope.suppressLookup,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
-                });
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            let role = await context.getRole(args[0], {
+                quiet, suppress: context.scope.suppressLookup,
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            });
             if (role) {
                 if (role.position >= topRole)
                     return Builder.util.error(subtag, context, 'Role above author');

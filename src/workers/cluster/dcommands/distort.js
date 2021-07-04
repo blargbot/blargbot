@@ -15,7 +15,7 @@ class DistortCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         let user = msg.author;
         let url;

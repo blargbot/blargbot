@@ -23,9 +23,9 @@ module.exports =
         ).resolveArgs(0, 1)
         .whenArgs('0-2', Builder.errors.notEnoughArguments)
         .whenArgs(3, async function (subtag, context, args) {
-            let varName = args[0],
-                arr = await bu.getArray(context, args[1]) || { v: args[1].split('') },
-                result = '';
+            let varName = args[0];
+            let arr = await bu.getArray(context, args[1]) || { v: args[1].split('') };
+            let result = '';
             let array = Array.from(arr.v);
 
             let remaining = context.state.limits.foreach || { loops: NaN };

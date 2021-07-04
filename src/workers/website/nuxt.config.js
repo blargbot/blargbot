@@ -23,11 +23,6 @@ module.exports = {
     env: {
         beta: config.general.isbeta
     },
-
-    /*
-    ** Global CSS
-    */
-    css: [],
     /*
     ** Customize the progress-bar color
     */
@@ -40,7 +35,6 @@ module.exports = {
             port: 8086
         }]
     ],
-    plugins: [{ src: '@/plugins/websocket.js', ssr: false }],
     proxy: {
         '/api/': config.origin || 'https://beta.blargbot.xyz'
     },
@@ -64,5 +58,7 @@ module.exports = {
         },
         vendor: ['axios', 'vue-markdown']
     },
-    plugins: ['~/plugins/vue-markdown']
+    plugins: [
+        '~/plugins/vue-markdown'
+    ]
 };

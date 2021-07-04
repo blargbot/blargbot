@@ -47,7 +47,10 @@ export class BBTagEngine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: context.variables.list.reduce<Record<string, JToken>>((v, c) => (v[c.key] = c.value, v), {})
+                values: context.variables.list.reduce<Record<string, JToken>>((v, c) => {
+                    v[c.key] = c.value;
+                    return v;
+                }, {})
             }
         };
     }

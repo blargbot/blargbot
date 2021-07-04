@@ -21,7 +21,7 @@ class WarnCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, 'Not enough input. Do `b!help warn` for usage instructions.');
@@ -54,16 +54,18 @@ class WarnCommand extends BaseCommand {
             }
         } else {
             switch (res.type) {
-                case 1: furtherAction = `**${user}** went over the warning limit for bans and so was banned from the server.`; break;
-                case 2: furtherAction = `**${user}** went over the warning limit for kicks and so was kicked from the server.`; break;
+                case 1:
+                    furtherAction = `**${user}** went over the warning limit for bans and so was banned from the server.`;
+                    break;
+                case 2:
+                    furtherAction = `**${user}** went over the warning limit for kicks and so was kicked from the server.`;
+                    break;
             }
         }
 
-        bu.send(msg, `:ok_hand: **${bu.getFullName(user)
-        }** has been given ${count == 1 ? 'a warning' : count + ' warnings'
-        }. They now have ${res.count
-        } warning${res.count == 1 ? '' : 's'
-        }.\n${furtherAction}`);
+        const warnCount = count == 1 ? 'a warning' : count + ' warnings';
+        const warnPlural = res.count == 1 ? 'warning' : 'warnings';
+        bu.send(msg, `:ok_hand: **${bu.getFullName(user)}** has been given ${warnCount}. They now have ${res.count} ${warnPlural}.\n${furtherAction}`);
     }
 }
 

@@ -308,8 +308,14 @@ function getParser(types: string | string[]): (value: string) => unknown {
         case undefined:
         case 'string': return str => str;
         case 'float':
-        case 'number': return str => { const res = parse.float(str); return isNaN(res) ? undefined : res; };
-        case 'integer': return str => { const res = parse.int(str); return isNaN(res) ? undefined : res; };
+        case 'number': return str => {
+            const res = parse.float(str);
+            return isNaN(res) ? undefined : res;
+        };
+        case 'integer': return str => {
+            const res = parse.int(str);
+            return isNaN(res) ? undefined : res;
+        };
         case 'bool':
         case 'boolean': return str => parse.boolean(str);
         case 'duration': return str => parse.duration(str);

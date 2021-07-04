@@ -27,12 +27,12 @@ module.exports =
             if (topRole == 0)
                 return Builder.util.error(subtag, context, 'Author cannot edit roles');
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2],
-                role = await context.getRole(args[0], {
-                    quiet, suppress: context.scope.suppressLookup,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
-                }),
-                perms = bu.parseInt(args[1]) || 0;
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2];
+            let role = await context.getRole(args[0], {
+                quiet, suppress: context.scope.suppressLookup,
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            });
+            let perms = bu.parseInt(args[1]) || 0;
 
             const allowedPerms = Builder.util.getPerms(context).allow;
             const mappedPerms = perms & allowedPerms;

@@ -7,8 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
-    bbEngine = require('../structures/bbtag/Engine');
+const Builder = require('../structures/TagBuilder');
+const bbEngine = require('../structures/bbtag/Engine');
 
 module.exports =
     Builder.AutoTag('while')
@@ -27,13 +27,9 @@ module.exports =
         ).resolveArgs(-1)
         .whenArgs('0,1,3', Builder.errors.notEnoughArguments)
         .whenArgs('2,4', async function (subtag, context, args) {
-            let val1Raw, operatorRaw, val2Raw, code,
-                val1, operator, val2,
-                bool = TagManager.list['bool'],
-                loopLimit = true,
-                result = '';
-
-            val1Raw = args.shift();
+            let val1Raw = args.shift();
+            let operatorRaw;
+            let val2Raw;
 
             if (args.length == 1) {
                 operatorRaw = bbEngine.parse('==').bbtag;
@@ -43,16 +39,18 @@ module.exports =
                 val2Raw = args.shift();
             }
 
-            code = args.shift();
-
+            let bool = TagManager.list['bool'];
+            let code = args.shift();
             let remaining = context.state.limits.for || { loops: NaN };
+            let loopLimit = true;
+            let result = '';
 
             while (!(remaining.loops < 0)) {
                 remaining.loops--;
 
-                val1 = await this.executeArg(subtag, val1Raw, context);
-                val2 = await this.executeArg(subtag, val2Raw, context);
-                operator = await this.executeArg(subtag, operatorRaw, context);
+                let val1 = await this.executeArg(subtag, val1Raw, context);
+                let val2 = await this.executeArg(subtag, val2Raw, context);
+                let operator = await this.executeArg(subtag, operatorRaw, context);
 
                 if (!bool.runCondition(subtag, context, val1, operator, val2)) {
                     loopLimit = false;

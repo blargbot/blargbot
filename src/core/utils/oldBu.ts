@@ -96,7 +96,7 @@ export const oldBu = {
             const match = SANITIZED.exec(r);
             if (match !== null)
                 return match[1];
-            else return r;
+            return r;
         }) : undefined;
 
         return await new Promise<{ message: GuildMessage; user: User; emoji: string; }>((resolve, reject) => {
@@ -189,11 +189,11 @@ export const oldBu = {
             const user = bot.users.get(match[0]);
             if (user !== undefined) {
                 return user;
-            } else {
-                try {
-                    return await bot.getRESTUser(match[0]);
-                } catch (err: unknown) { return undefined; }
             }
+            try {
+                return await bot.getRESTUser(match[0]);
+            } catch (err: unknown) { return undefined; }
+
         }
         return undefined;
     },
@@ -208,9 +208,9 @@ export const oldBu = {
         return memory.rss / 1024 / 1024;
     },
     shuffle(array: unknown[]): void {
-        let i = 0,
-            j = 0,
-            temp = null;
+        let i = 0;
+        let j = 0;
+        let temp = null;
 
         for (i = array.length - 1; i > 0; i -= 1) {
             j = Math.floor(Math.random() * (i + 1));
@@ -276,9 +276,9 @@ export const oldBu = {
         if (guard.hasValue(channel) && 'guild' in channel) {
             const permission = channel.permissionsOf(bot.user.id);
             return permission.json;
-        } else {
-            return undefined;
         }
+        return undefined;
+
     },
     genToken(length: number): string {
         if (length === 0)

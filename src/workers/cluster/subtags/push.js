@@ -19,9 +19,8 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            let arr = await bu.getArray(context, args[0]),
-                values = args.slice(1),
-                result;
+            let arr = await bu.getArray(context, args[0]);
+            let values = args.slice(1);
 
             if (arr == null || !Array.isArray(arr.v))
                 return Builder.errors.notAnArray(subtag, context);

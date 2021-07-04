@@ -25,33 +25,33 @@ export const compare = {
         const arr = getArray(a);
         if (arr !== false) {
             return arr[0] === b;
-        } else {
-            return a.startsWith(b);
         }
+        return a.startsWith(b);
+
     },
     endswith(a: string, b: string): boolean {
         const arr = getArray(a);
         if (arr !== false) {
             return arr.slice(-1)[0] === b;
-        } else {
-            return a.endsWith(b);
         }
+        return a.endsWith(b);
+
     },
     includes(a: string, b: string): boolean {
         const arr = getArray(a);
         if (arr !== false) {
             return arr.find((v) => v === b) !== null;
-        } else {
-            return a.includes(b);
         }
+        return a.includes(b);
+
     },
     contains(a: string, b: string): boolean {
         const arr = getArray(a);
         if (arr !== false) {
             return arr.find((v) => v === b) !== null;
-        } else {
-            return a.includes(b);
         }
+        return a.includes(b);
+
     }
 };
 
@@ -79,7 +79,7 @@ function getArray(text: string): JArray | false {
     const arr = deserialize(text);
     if (arr !== undefined && Array.isArray(arr.v)) {
         return arr.v;
-    } else {
-        return false;
     }
+    return false;
+
 }

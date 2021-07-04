@@ -39,7 +39,10 @@ export class DecrementSubtag extends BaseSubtag {
         if (isNaN(value))
             return this.notANumber(context, subtag, 'Value is not a number');
 
-        if (floor) value = Math.floor(value), amount = Math.floor(amount);
+        if (floor) {
+            value = Math.floor(value);
+            amount = Math.floor(amount);
+        }
 
         value += amount * -1;
         await context.variables.set(varName, value);

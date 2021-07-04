@@ -16,7 +16,7 @@ class PrefixCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
 
         let prefixes = await bu.guildSettings.get(msg.guild.id, 'prefix');
         let input = newbutils.parse.flags(this.flags, words, true);
@@ -45,12 +45,10 @@ class PrefixCommand extends BaseCommand {
                     await bu.send(msg, 'The prefix has been removed.');
                     break;
             }
-        } else {
-            if (prefixes.length === 0)
-                await bu.send(msg, `${msg.guild.name} has no custom prefixes.`);
-            else
-                await bu.send(msg, `${msg.guild.name} has the following prefixes:\n${prefixes.map(p => ' - ' + p).join('\n')}`);
-        }
+        } else if (prefixes.length === 0)
+            await bu.send(msg, `${msg.guild.name} has no custom prefixes.`);
+        else
+            await bu.send(msg, `${msg.guild.name} has the following prefixes:\n${prefixes.map(p => ' - ' + p).join('\n')}`);
         //   }
     }
 }

@@ -68,7 +68,7 @@ async function render(hash, req, res) {
         //     }).zip().run();
 
         let userCache = {};
-        async function getUser(id = '1') {
+        const getUser = async (id = '1') => {
             if (!id) id = '1';
             let temp = await r.db(db).table('user').get(id);
             if (temp) {
@@ -82,7 +82,7 @@ async function render(hash, req, res) {
                     };
                 }
             return userCache[id];
-        }
+        };
         if (messages.length > 0) {
             messages = messages.filter(m => logsSpecs.types.includes(m.type));
             let messages2 = [];

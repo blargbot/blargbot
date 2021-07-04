@@ -19,12 +19,12 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs(1, async function (subtag, context, args) {
-            let arr = await bu.getArray(context, args[0]), result;
+            let arr = await bu.getArray(context, args[0]);
 
             if (arr == null || !Array.isArray(arr.v))
                 return Builder.errors.notAnArray(subtag, context);
 
-            result = arr.v.pop();
+            let result = arr.v.pop();
             if (arr.n != null)
                 await context.variables.set(arr.n, arr.v);
 

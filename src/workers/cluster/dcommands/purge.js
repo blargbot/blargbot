@@ -11,17 +11,17 @@ class PurgeCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         //  if (await bu.hasPerm(msg, 'Bot Commander')) {
         bot.getMessages(msg.channel.id, 100)
             .then(function (messageArray) {
                 /**
                  * Checks if we have the permissions to remove them all at once
                  */
-                var i;
+                let i;
                 if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageMessages) {
                     console.debug('Purging all of my messages in one fell swoop-da-whoop!');
-                    var messageIdArray = [];
+                    let messageIdArray = [];
                     for (i = 0; i < messageArray.length; i++) {
                         if (messageArray[i].author.id === bot.user.id)
                             messageIdArray.push(messageArray[i].id);

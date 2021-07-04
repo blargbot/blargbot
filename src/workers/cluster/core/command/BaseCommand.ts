@@ -55,8 +55,7 @@ export abstract class BaseCommand implements CommandOptionsBase {
             const [payload, files] = splitResult(result.value);
             if (payload !== undefined || files !== undefined)
                 await context.reply(payload, files);
-        }
-        finally {
+        } finally {
             await this.postExecute(context);
         }
     }

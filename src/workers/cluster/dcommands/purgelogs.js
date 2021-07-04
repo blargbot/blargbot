@@ -19,7 +19,7 @@ class PurgelogsCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         if (msg.author.id === config.discord.users.owner) {
             await bu.send(msg, 'Ok, I\'ll purge all chat log records that are over a week old. This is going to take a while, so I\'ll ping you once I\'m done.');
             let start = moment();
@@ -37,7 +37,7 @@ The operation took:
         }
     }
 
-    async event(args) {
+    async event() {
         let tomorrow = moment(moment().format('YYYY-MM-DD')).add(1, 'd');
         await bu.events.insert({
             type: 'purgelogs',
@@ -59,7 +59,7 @@ The operation took:
         ${diff.milliseconds()} milliseconds
     
     The next operation will be ${moment.duration(tomorrow - moment()).humanize(true)}`);
-    };
+    }
 }
 
 module.exports = PurgelogsCommand;

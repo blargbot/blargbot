@@ -18,13 +18,14 @@ class RetardedCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         if (input.undefined.length == 0) {
             bu.send(msg, 'Not enough input!');
             return;
         }
-        let user, url;
+        let user;
+        let url;
         if (msg.attachments.length > 0) {
             url = msg.attachments[0].url;
         } else if (input.I) {

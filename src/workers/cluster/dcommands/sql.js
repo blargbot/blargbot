@@ -1,6 +1,6 @@
 const BaseCommand = require('../structures/BaseCommand');
-const moment = require('moment-timezone');
-const Table = require('cli-table');
+// const moment = require('moment-timezone');
+// const Table = require('cli-table');
 const newbutils = require('../newbu');
 
 class SqlCommand extends BaseCommand {
@@ -11,7 +11,7 @@ class SqlCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         if (msg.author.id === config.discord.users.owner) {
             bu.send(msg, 'no');
             /*

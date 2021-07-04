@@ -16,8 +16,8 @@ export class DistortGenerator extends BaseImageGenerator<'distort'> {
             { apply: 'hue', params: [randInt(10, 350)] }
         ];
         avatarImg.color(filters);
-        const horizRoll = randInt(0, avatarImg.bitmap.width),
-            vertiRoll = randInt(0, avatarImg.bitmap.height);
+        const horizRoll = randInt(0, avatarImg.bitmap.width);
+        const vertiRoll = randInt(0, avatarImg.bitmap.height);
 
         return await this.generate(avatarImg, x => {
             x.out('-implode').out(`-${randInt(3, 10)}`);

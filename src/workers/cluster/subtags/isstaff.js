@@ -23,11 +23,11 @@ module.exports =
             if (args.length == 0)
                 return await context.isStaff;
 
-            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1],
-                user = await context.getUser(args[0], {
-                    quiet, suppress: context.scope.suppressLookup,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
-                });
+            let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
+            let user = await context.getUser(args[0], {
+                quiet, suppress: context.scope.suppressLookup,
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+            });
 
             if (user == null) return false;
 

@@ -11,7 +11,8 @@ class SnippetCommand extends BaseCommand {
             usage: 'snippet <submit <code> <flags> | approve <id> | reject <id> <reason>>',
             info: 'submit a snippet and stuff',
             onlyOn: cluster.config.discord.guilds.home,
-            flags: [{ flag: 't', word: 'title', desc: 'The title of the snippet' },
+            flags: [
+                { flag: 't', word: 'title', desc: 'The title of the snippet' },
                 {
                     flag: 'd',
                     word: 'description',
@@ -21,7 +22,8 @@ class SnippetCommand extends BaseCommand {
                     flag: 'c',
                     word: 'command',
                     desc: 'Use this to designate it as a command instead of a snippet'
-                }]
+                }
+            ]
         });
     }
 
@@ -69,8 +71,6 @@ ${content}
                 await r.table('snippet').insert({ id: id++, title, desc, content, snippet, author: msg.author.id, channel: msg.channel.id, msgid: msg2.id });
                 await r.table('vars').get('snippetid').update({ value: id });
                 return await bu.send(msg, `Your snippet has been submitted with an ID of \`${id - 1}\`. Thank you!`);
-
-                break;
             }
             case 'approve': {
                 if (!isStaff) return await bu.send(msg, 'Sorry, only staff may approve snippets.');
@@ -96,7 +96,6 @@ ${snippet.content}
                 await r.table('snippet').get(snippet.id).update({ status: 'approved' });
                 await msg2.edit(content.join('\n'));
                 return await bu.send(msg, 'Snippet has been approved! 👌');
-                break;
             }
             case 'reject': {
                 if (!isStaff) return await bu.send(msg, 'Sorry, only staff may reject snippets.');
@@ -112,11 +111,9 @@ ${snippet.content}
                 await msg2.edit(content.join('\n'));
                 await bu.send(snippet.channel, `Hey <@${snippet.author}>, snippet \`${snippet.id}\` got rejected by **${bu.getFullName(msg.author)}** for the following reason:\n\n${reason}`);
                 return await bu.send(msg, 'Snippet has been rejected! 👌');
-                break;
             }
             default:
                 return await bu.send(msg, 'Invalid choice! Do either `submit`, `approve`, or `reject`.');
-                break;
         }
     }
 }

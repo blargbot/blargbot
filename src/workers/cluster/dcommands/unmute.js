@@ -13,7 +13,7 @@ class UnmuteCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let mutedrole = await bu.guildSettings.get(msg.channel.guild.id, 'mutedrole');
 
         if (!mutedrole) {
@@ -23,10 +23,9 @@ class UnmuteCommand extends BaseCommand {
 
             if (msg.channel.guild.members.get(bot.user.id).permissions.json.manageRoles) {
                 //     if (msg.member.permissions.json.manageRoles) {
-                let role = msg.guild.roles.get(mutedrole);
                 if (words[1]) {
-                    var user = await bu.getUser(msg, words[1]);
-                    var member = msg.channel.guild.members.get(user.id);
+                    let user = await bu.getUser(msg, words[1]);
+                    let member = msg.channel.guild.members.get(user.id);
                     if (!user)
                         return;
 
@@ -35,7 +34,8 @@ class UnmuteCommand extends BaseCommand {
                     } else {
                         let voiceMute = msg.guild.members.get(bot.user.id).permissions.json.voiceMuteMembers;
                         try {
-                            let reason, fullReason;
+                            let reason;
+                            let fullReason;
                             let input = parse.flags(this.flags, words);
                             if (input.r) {
                                 reason = input.r.join(' ');
@@ -73,7 +73,7 @@ class UnmuteCommand extends BaseCommand {
         if (!guild || !guild.members.get(args.user)) return;
         let member = guild.members.get(args.user);
 
-        var roles = member.roles;
+        let roles = member.roles;
         if (roles.indexOf(args.role) > -1) {
             const reason = `Automatically unmuted after ${moment.duration(args.duration).humanize()}.`;
 
@@ -94,7 +94,7 @@ class UnmuteCommand extends BaseCommand {
 
             bu.logAction(guild, member.user, bot.user, 'Auto-Unmute', reason, modlogColours.UNMUTE);
         }
-    };
+    }
 }
 
 module.exports = UnmuteCommand;

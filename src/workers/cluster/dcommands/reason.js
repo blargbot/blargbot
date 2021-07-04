@@ -12,16 +12,16 @@ class ReasonCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let val = await bu.guildSettings.get(msg.channel.guild.id, 'modlog');
         if (val) {
             if (words.length >= 3) {
-                var latest = false;
+                let latest = false;
                 if (words[1].toLowerCase() == 'latest' || words[1].toLowerCase() == 'l') {
                     latest = true;
                 }
                 words.shift();
-                var caseid = parseInt(words.shift());
+                let caseid = parseInt(words.shift());
                 console.debug(caseid);
 
 
@@ -31,7 +31,7 @@ class ReasonCommand extends BaseCommand {
                 if (modlog.length > 0 && modlog[index]) {
                     let msg2 = await bot.getMessage(val, modlog[index].msgid);
 
-                    var content = msg2.content;
+                    let content = msg2.content;
                     content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);
                     modlog[index].reason = words.join(' ');
                     content = content.replace(/\*\*Moderator:\*\*.+/, `**Moderator:** ${msg.author.username}#${msg.author.discriminator}`);

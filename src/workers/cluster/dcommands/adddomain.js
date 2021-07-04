@@ -10,7 +10,7 @@ class AddDomainCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         if (msg.author.id !== config.discord.users.owner) return;
         let whitelist = await r.table('vars').get('whitelistedDomains');
         let res = { a: [], r: [] };

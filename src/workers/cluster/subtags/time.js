@@ -27,11 +27,11 @@ module.exports =
             'It\'s currently 2016/01/01 01:00:00'
         )
         .whenArgs('0-4', async function (subtag, context, args) {
-            let format = args[0],
-                time = args[1],
-                parse = args[2],
-                timezone = args[3],
-                date = bu.parseTime(time, parse, timezone);
+            let format = args[0];
+            let time = args[1];
+            let parse = args[2];
+            let timezone = args[3];
+            let date = bu.parseTime(time, parse, timezone);
 
             if (!date.isValid()) return Builder.util.error(subtag, context, 'Invalid date');
 

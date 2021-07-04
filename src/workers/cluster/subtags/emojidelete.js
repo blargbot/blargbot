@@ -8,38 +8,36 @@
  */
 
 const Builder = require('../structures/TagBuilder');
-const snekfetch = require('snekfetch');
 
 module.exports =
-  Builder.APITag('emojidelete')
-      .withArgs(a => [
-          a.required('id')
-      ])
-      .withDesc('Deletes an emoji with the provided id.')
-      .withExample(
-          '{emojidelete;11111111111111111}',
-          ''
-      )
-      .whenArgs(0, Builder.errors.notEnoughArguments)
-      .whenArgs(1, async function (subtag, context, args) {
-          let permission = Builder.util.getPerms(context);
+    Builder.APITag('emojidelete')
+        .withArgs(a => [
+            a.required('id')
+        ])
+        .withDesc('Deletes an emoji with the provided id.')
+        .withExample(
+            '{emojidelete;11111111111111111}',
+            ''
+        )
+        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(1, async function (subtag, context, args) {
+            let permission = Builder.util.getPerms(context);
 
-          if (!permission.has('manageEmojis')) {
-              return Builder.util.error(subtag, context, 'Author cannot delete emojis');
-          }
+            if (!permission.has('manageEmojis')) {
+                return Builder.util.error(subtag, context, 'Author cannot delete emojis');
+            }
 
-          let id = args[0];
+            let id = args[0];
 
-          try {
+            try {
 
-              let fullReason = bu.formatAuditReason(context.user, context.scope.reason);
-              await context.guild.deleteEmoji(id, fullReason);
-          } catch (err) {
-              console.error(err.stack);
-              const parts = err.message.split('\n').map(m => m.trim());
-              return Builder.util.error(subtag, context, 'Failed to delete emoji: ' + (parts[1] || parts[0]));
-          }
-      })
-      .whenDefault(Builder.errors.tooManyArguments)
-      .build();
-
+                let fullReason = bu.formatAuditReason(context.user, context.scope.reason);
+                await context.guild.deleteEmoji(id, fullReason);
+            } catch (err) {
+                console.error(err.stack);
+                const parts = err.message.split('\n').map(m => m.trim());
+                return Builder.util.error(subtag, context, 'Failed to delete emoji: ' + (parts[1] || parts[0]));
+            }
+        })
+        .whenDefault(Builder.errors.tooManyArguments)
+        .build();

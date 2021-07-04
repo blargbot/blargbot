@@ -1,7 +1,7 @@
 const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
-var xkcdMax = 0;
+let xkcdMax = 0;
 
 async function getXkcd(channel, words) {
     if (xkcdMax === 0) {
@@ -10,7 +10,7 @@ async function getXkcd(channel, words) {
         getXkcd(channel, words);
         return;
     }
-    var choice;
+    let choice;
     if (words.length === 1) {
         choice = bu.getRandomInt(1, xkcdMax);
     } else {
@@ -19,7 +19,7 @@ async function getXkcd(channel, words) {
             bu.send(channel, `Comic #${choice} does not exist!`);
         }
     }
-    var url = '';
+    let url = '';
     if (choice === 0) {
         url = 'http://xkcd.com/info.0.json';
     } else {
@@ -44,7 +44,7 @@ class XkcdCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         getXkcd(msg.channel.id, words);
     }
 }

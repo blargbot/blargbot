@@ -12,8 +12,8 @@ class UserCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
-        var userToGet;
+    async execute(msg, words) {
+        let userToGet;
         let isMember = true;
         if (!words[1]) {
             userToGet = msg.member;
@@ -30,7 +30,7 @@ class UserCommand extends BaseCommand {
             return;
         }
         //  var avatarUrl = `https://cdn.discordapp.com/avatars/${userToGet.user.id}/${userToGet.user.avatar}.jpg`;
-        var message;
+        let message;
         if (isMember) {
             message = `\`\`\`prolog
 ${bu.padLeft('User', 19)} : ${userToGet.user.username}#${userToGet.user.discriminator}

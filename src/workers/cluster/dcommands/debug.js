@@ -9,7 +9,7 @@ class DebugCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         if (msg.author.id == config.discord.users.owner) {
             let debug = console.toggleDebug();
             if (debug) bu.send(msg, 'Debug logging is now enabled.');

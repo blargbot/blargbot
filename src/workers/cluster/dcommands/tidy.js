@@ -10,7 +10,8 @@ class TidyCommand extends BaseCommand {
             category: newbutils.commandTypes.ADMIN,
             usage: 'tidy [amount] [flags]',
             info: 'Clears messages from chat. Defaults to 100.',
-            flags: [{ flag: 'b', word: 'bots', desc: 'Remove messages from bots.' },
+            flags: [
+                { flag: 'b', word: 'bots', desc: 'Remove messages from bots.' },
                 {
                     flag: 'i',
                     word: 'invites',
@@ -49,7 +50,8 @@ class TidyCommand extends BaseCommand {
                     flag: 'y',
                     word: 'yes',
                     desc: 'Bypasses the confirmation'
-                }]
+                }
+            ]
         });
 
         this.executing = {};
@@ -72,7 +74,7 @@ class TidyCommand extends BaseCommand {
         }
     }
 
-    async perform(msg, words, text) {
+    async perform(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
         let userList = [];
         let query;
@@ -106,9 +108,9 @@ class TidyCommand extends BaseCommand {
             if (users.length == 0) {
                 await bu.send(msg, 'No users were found.');
                 return;
-            } else {
-                userList.push(...users);
             }
+            userList.push(...users);
+
         }
 
         if (input.undefined[0]) {
@@ -166,13 +168,14 @@ class TidyCommand extends BaseCommand {
             .map(entry => `${entry.user.username}#${entry.user.discriminator} - ${entry.count}`)
             .join('\n');
 
-        let response, prompt;
+        let response;
+        let prompt;
         if (!input.y) {
             prompt = await bu.createPrompt(msg,
                 `You are about to delete ${messages.length} messages by\n**${summary}**\n\n Type \`yes\` to confirm or anything else to cancel.`,
                 null, 60000);
             response = await prompt.response || {};
-        };
+        }
         if (!response || bu.parseBoolean(response.content)) {
             try {
                 messages.push(msg);

@@ -4,10 +4,9 @@ const { Collection } = require('eris');
 const newbutils = require('../newbu');
 
 const spells = new Collection(Object);
-for (let key in jsonSpells) {
-    let temp = jsonSpells[key];
-    temp.id = key;
-    spells.add(temp);
+for (let [key, spell] of Object.entries(jsonSpells)) {
+    spell.id = key;
+    spells.add(spell);
 }
 const components = {
     V: 'Verbal',
@@ -38,7 +37,7 @@ class SpellCommand extends BaseCommand {
         });
     }
 
-    async execute(msg, words, text) {
+    async execute(msg, words) {
         let spell;
         if (words.length == 1) {
             spell = spells.random();

@@ -19,10 +19,10 @@ module.exports =
         )
         .whenArgs('0-1', Builder.errors.notEnoughArguments)
         .whenArgs('2-3', async function (subtag, context, args) {
-            let arr = await bu.getArray(context, args[0]),
-                start = bu.parseInt(args[1]),
-                end = bu.parseInt(args[2]),
-                fallback = bu.parseInt(context.scope.fallback);
+            let arr = await bu.getArray(context, args[0]);
+            let start = bu.parseInt(args[1]);
+            let end = bu.parseInt(args[2]);
+            let fallback = bu.parseInt(context.scope.fallback);
 
             if (arr == null || !Array.isArray(arr.v))
                 return Builder.errors.notAnArray(subtag, context);

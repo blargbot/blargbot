@@ -14,7 +14,7 @@ class CatCommand extends BaseCommand {
         this.wolken = new Wolken(cluster.config.wolke, 'Wolke', 'blargbot/6.0.0');
     }
 
-    async execute(msg, words, text) {
+    async execute(msg) {
         let res = await this.wolken.getRandom({ type: 'animal_cat', allowNSFW: false });
         await bu.send(msg, {
             embed: {

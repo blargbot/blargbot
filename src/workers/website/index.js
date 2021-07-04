@@ -23,7 +23,7 @@ module.exports = class Frontend {
         const ApiRoute = require('./routes/api');
         new ApiRoute(this);
 
-        this.app.use(async (ctx, next) => {
+        this.app.use(async (ctx) => {
             ctx.status = 200;
             if (!ctx.path.startsWith('/api'))
                 return await (new Promise((resolve, reject) => {
