@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 
 export class CommandNameSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'commandname',
             category: SubtagType.BOT,
             desc: 'Gets the name of the current tag or custom command.',

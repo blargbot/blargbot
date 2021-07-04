@@ -1,13 +1,10 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext } from '../core';
 import moment from 'moment';
 import { SubtagCall } from '../core/types';
 
 export class UserJoineDatSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'userjoinedat',
             category: SubtagType.API,
             desc: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',

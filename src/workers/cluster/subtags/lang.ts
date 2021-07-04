@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 
 export class LangSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'lang',
             category: SubtagType.BOT,
             deprecated: true,

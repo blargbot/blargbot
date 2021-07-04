@@ -1,10 +1,9 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, SubtagArgumentValue, SubtagCall, tagVariableScopes } from '../core';
 import ReadWriteLock from 'rwlock';
 
 export class LockSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'lock',
             category: SubtagType.COMPLEX,
             desc: 'Provides read/write locking functionality for bbtag. This is a very advanced feature, ' +

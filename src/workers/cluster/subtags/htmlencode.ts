@@ -1,13 +1,10 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 import { AllHtmlEntities as Entities } from 'html-entities';
 const entities = new Entities();
 
 export class HtmlDecodeSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'htmlencode',
             category: SubtagType.COMPLEX,
             definition: [

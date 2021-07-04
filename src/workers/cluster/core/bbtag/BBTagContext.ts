@@ -2,13 +2,15 @@ import { ScopeCollection } from './ScopeCollection';
 import { VariableCache, CacheEntry } from './Caching';
 import ReadWriteLock from 'rwlock';
 import { Duration } from 'moment-timezone';
-import { AnyGuildChannel, GuildTextableChannel, Member, User, Guild, Role, Permission } from 'eris';
+import { AnyGuildChannel, GuildTextableChannel, Member, User, Guild, Role, Permission, Client as ErisClient } from 'eris';
 import { TagCooldownManager } from './TagCooldownManager';
 import { BBTagEngine } from './Engine';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '../types';
-import { Database, oldBu, StoredGuildCommand, StoredTag, Timer, Logger } from '../globalCore';
+import { Database, oldBu, StoredGuildCommand, StoredTag, Timer, Logger, ModuleLoader } from '../globalCore';
 import { bbtagUtil, guard, parse } from '../utils';
 import { limits } from './limits';
+import { ClusterUtilities } from '../../ClusterUtilities';
+import { BaseSubtag } from '.';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
     return { id: entity.id, serialized: JSON.stringify(entity) };
@@ -53,6 +55,10 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get logger(): Logger { return this.engine.logger; }
     public get permissions(): Permission { return (this.guild.members.get(this.authorizer) ?? { permissions: new Permission(0, 0) }).permissions; }
     public get perms(): Permission { return this.permissions; }
+    public get util(): ClusterUtilities { return this.engine.util; }
+    public get discord(): ErisClient { return this.engine.discord; }
+    public get subtags(): ModuleLoader<BaseSubtag> { return this.engine.subtags; }
+
     public constructor(
         public readonly engine: BBTagEngine,
         options: BBTagContextOptions

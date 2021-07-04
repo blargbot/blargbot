@@ -1,9 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 
 export class NsfwSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'nsfw',
             category: SubtagType.BOT,
             definition: [

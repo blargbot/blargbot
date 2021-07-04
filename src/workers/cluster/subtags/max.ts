@@ -1,9 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, bbtagUtil, parse, SubtagType } from '../core';
 
 export class MaxSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'max',
             category: SubtagType.COMPLEX,
             definition: [

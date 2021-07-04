@@ -1,9 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, between, parse, SubtagCall, SubtagType } from '../core';
 
 export class BaseNumberSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'base',
             aliases: ['radix'],
             category: SubtagType.COMPLEX,

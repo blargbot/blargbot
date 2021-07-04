@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, tagVariableScopes, parse, SubtagCall, bbtagUtil } from '../core';
 
 export class GetSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'get',
             category: SubtagType.COMPLEX,
             definition: [

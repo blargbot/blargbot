@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 
 export class RbSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'rb',
             category: SubtagType.SIMPLE,
             definition: [

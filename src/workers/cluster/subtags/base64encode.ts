@@ -1,9 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 
 export class Base64encodeSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'base64encode',
             aliases: ['btoa'],
             category: SubtagType.COMPLEX,

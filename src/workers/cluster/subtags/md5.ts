@@ -1,12 +1,9 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 import md5 from 'md5';
 
 export class Md5Subtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'md5',
             aliases: ['md5encode'],
             category: SubtagType.COMPLEX,

@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, SubtagCall, parse } from '../core';
 
 export class RandIntSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'randint',
             category: SubtagType.COMPLEX,
             aliases: ['absolute'],

@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext } from '../core';
 
 export class RolePosSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'rolepos',
             category: SubtagType.API,
             aliases: ['roleposition'],

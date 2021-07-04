@@ -1,18 +1,9 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, discordUtil, guard, mapping, SubtagCall, SubtagType } from '../core';
-import { CreateChannelOptions, AnyGuildChannel, Overwrite } from 'eris';
-
-const typeMap: Record<string, 0 | 2 | 4 | 5 | 6> = {
-    text: 0,
-    voice: 2,
-    category: 4,
-    news: 5,
-    store: 6
-};
+import { CreateChannelOptions, AnyGuildChannel, Overwrite, Constants } from 'eris';
 
 export class ChannelCreateSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'channelcreate',
             category: SubtagType.API,
             desc: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
@@ -55,7 +46,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
         if (!permissions.has('manageChannels'))
             return this.customError('Author cannot create channels', context, subtag);
 
-        const type = guard.hasProperty(typeMap, typeKey) ? typeMap[typeKey] : 0;
+        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : 0;
         let options: CreateChannelOptions;
         try {
             const mapped = mapOptions(optionsJson);
@@ -75,11 +66,19 @@ export class ChannelCreateSubtag extends BaseSubtag {
                 context.guild.channels.add(channel);
             return channel.id;
         } catch (err: unknown) {
-            this.logger.error(err);
+            context.logger.error(err);
             return this.customError('Failed to create channel: no perms', context, subtag);
         }
     }
 }
+
+const channelTypes = {
+    text: Constants.ChannelTypes.GUILD_TEXT,
+    voice: Constants.ChannelTypes.GUILD_VOICE,
+    category: Constants.ChannelTypes.GUILD_CATEGORY,
+    news: Constants.ChannelTypes.GUILD_NEWS,
+    store: Constants.ChannelTypes.GUILD_STORE
+} as const;
 
 const mapOptions = mapping.json(
     mapping.object<CreateChannelOptions>({

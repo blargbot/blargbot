@@ -1,12 +1,9 @@
 import { Role } from 'eris';
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext } from '../core';
 
 export class RolesSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'roles',
             category: SubtagType.API,
             definition: [

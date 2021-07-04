@@ -1,10 +1,9 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, discordUtil, mapping, SubtagCall, SubtagType } from '../core';
 import { EditChannelOptions } from 'eris';
 
 export class ChannelEditSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'channeledit',
             category: SubtagType.API,
             definition: [
@@ -64,7 +63,7 @@ export class ChannelEditSubtag extends BaseSubtag {
                 context.guild.channels.add(channel);
             return channel.id;
         } catch (err: unknown) {
-            this.logger.error(err);
+            context.logger.error(err);
             return this.customError('Failed to edit channel: no perms', context, subtag);
         }
     }

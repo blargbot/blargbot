@@ -1,9 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, parse, bbtagUtil } from '../core';
 
 export class MinSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'min',
             category: SubtagType.COMPLEX,
             definition: [

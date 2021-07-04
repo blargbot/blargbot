@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall } from '../core';
 
 export class SuppressLookupSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'suppresslookup',
             category: SubtagType.BOT,
             definition: [

@@ -1,13 +1,10 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, parse, SubtagCall } from '../core';
 
 const operators = bbtagUtil.operators.logic;
 
 export class LogicSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'logic',
             category: SubtagType.COMPLEX,
             definition: [

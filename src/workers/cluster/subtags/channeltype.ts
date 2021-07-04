@@ -1,13 +1,10 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
 
 const channelTypes = ['text', 'dm', 'voice', 'group-dm', 'category', 'news', 'store'];
 
 export class ChannelTypeSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'channeltype',
             category: SubtagType.API,
             desc: 'Possible results: ' + channelTypes.map(t => '`' + t + '`').join(', '),

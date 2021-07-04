@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, bbtagUtil, parse, SubtagType } from '../core';
 
 export class IndexOfSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'indexof',
             category: SubtagType.COMPLEX,
             definition: [

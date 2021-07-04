@@ -1,9 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, parse } from '../core';
 
 export class NewlineSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'newline',
             category: SubtagType.SIMPLE,
             definition: [

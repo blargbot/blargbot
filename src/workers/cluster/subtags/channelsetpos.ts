@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, parse, SubtagType } from '../core';
 
 export class ChannelSetPosSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'channelsetpos',
             aliases: ['channelsetposition'],
             category: SubtagType.API,
@@ -32,7 +29,7 @@ export class ChannelSetPosSubtag extends BaseSubtag {
                             await channel.editPosition(pos);
                             return; //TODO return something on success
                         } catch (err: unknown) {
-                            this.cluster.logger.error(err);
+                            context.logger.error(err);
                             return this.customError('Failed to move channel: no perms', context, subtag);
                         }
                     }

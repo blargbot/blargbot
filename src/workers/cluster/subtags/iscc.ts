@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 
 export class IsccSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'iscc',
             category: SubtagType.SIMPLE,
             desc: 'Checks if the tag is being run from within a cc. Returns a boolean (`true` or `false`)',

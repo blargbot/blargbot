@@ -1,10 +1,9 @@
 import { EmbedOptions, MessageFile } from 'eris';
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall, MalformedEmbed } from '../core';
 
 export class SendSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'send',
             category: SubtagType.API,
             definition: [
@@ -43,7 +42,7 @@ export class SendSubtag extends BaseSubtag {
                 ?? !context.state.allowedMentions.everybody);
 
         try {
-            const sent = await this.cluster.util.send(context.message, {
+            const sent = await context.util.send(context.message, {
                 content: message,
                 embed,
                 nsfw: context.state.nsfw,

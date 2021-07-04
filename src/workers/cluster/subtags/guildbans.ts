@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '../core';
 
 export class GuildBansSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'guildbans',
             category: SubtagType.API,
             desc: 'Returns an array of banned users in the current guild.',

@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, parse, SubtagType } from '../core';
 
 export class SpaceSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'space',
             category: SubtagType.COMPLEX,
             definition: [

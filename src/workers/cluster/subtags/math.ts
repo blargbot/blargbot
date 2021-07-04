@@ -1,13 +1,10 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, SubtagCall, parse } from '../core';
 
 const operators = bbtagUtil.operators.numeric;
 
 export class MathSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'math',
             category: SubtagType.COMPLEX,
             definition: [

@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
 
 export class ChannelNameSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'channelname',
             aliases: ['categoryname'],
             category: SubtagType.API,

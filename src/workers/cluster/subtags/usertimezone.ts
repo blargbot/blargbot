@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagType } from '../core';
 
 export class UserTimezoneSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'usertimezone',
             category: SubtagType.API,
             definition: [

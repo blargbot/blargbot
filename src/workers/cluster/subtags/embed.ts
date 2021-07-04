@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, discordUtil, SubtagType } from '../core';
 
 export class EmbedSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'embed',
             category: SubtagType.COMPLEX,
             definition: [

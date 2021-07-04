@@ -1,12 +1,11 @@
 import { EmbedOptions } from 'eris';
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, parse, SubtagArgumentValueArray, SubtagCall } from '../core';
 
 const { all: allOperators, logic, numeric, compare } = bbtagUtil.operators;
 
 export class OperatorSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'operator',
             aliases: Object.keys(allOperators),
             category: SubtagType.COMPLEX,

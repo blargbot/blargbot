@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, discordUtil, parse, SubtagCall, SubtagType } from '../core';
 
 export class ChannelSetPermsSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'channelsetperms',
             category: SubtagType.API,
             definition: [
@@ -99,7 +96,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
             }
             return channel.id;
         } catch (err: unknown) {
-            this.logger.error(err);
+            context.logger.error(err);
             return this.customError('Failed to edit channel: no perms', context, subtag);
         }
     }

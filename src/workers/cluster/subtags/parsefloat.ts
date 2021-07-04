@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, parse } from '../core';
 
 export class ParseFloattSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'parsefloat',
             category: SubtagType.COMPLEX,
             aliases: ['absolute'],

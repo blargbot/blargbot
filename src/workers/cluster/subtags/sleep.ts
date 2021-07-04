@@ -1,12 +1,11 @@
 import moment from 'moment';
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, parse, sleep, SubtagCall, SubtagType } from '../core';
 
 const maxSleep = moment.duration(5, 'minutes');
 
 export class SleepTag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'sleep',
             category: SubtagType.COMPLEX,
             definition: [

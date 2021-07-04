@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, parse, SubtagArgumentValue, SubtagCall, SubtagType } from '../core';
 
 export class ChooseSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'choose',
             category: SubtagType.COMPLEX,
             definition: [

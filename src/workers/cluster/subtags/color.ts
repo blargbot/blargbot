@@ -1,4 +1,3 @@
-// import { Cluster } from '../cluster';
 // import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
 // import { SubtagType, bbtagUtil } from '../utils';
 // import Color from 'color';
@@ -7,10 +6,8 @@
 // type InputFormat = 'hsl' | 'rgb' | 'hsv' | 'hwb' | 'cmyk' | 'xyz' | 'lab' | 'lch' | 'hex' | 'keyword' | 'ansi16' | 'ansi256' | 'hcg' | 'apple' | 'gray' | undefined;
 
 // export class ColorSubtag extends BaseSubtag {
-//     public constructor(
-//         cluster: Cluster
-//     ) {
-//         super(cluster, {
+//     public constructor() {
+//         super({
 //             name: 'color',
 //             category: SubtagType.COMPLEX,
 //             desc: 'If `inputFormat` is omitted or left empty, the format of `color` is automatically calculated, but might be innaccurate. For accuracy and known `color` formats use `inputFormat`. It converts all ways between `rgb`, `hsl`, `hsv`, `hwb`, `cmyk`, `ansi16`, `hex` strings, and CSS `keyword`s (will round to closest).',

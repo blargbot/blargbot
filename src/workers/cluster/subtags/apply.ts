@@ -1,10 +1,9 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, bbtagUtil, SubtagCall, SubtagType } from '../core';
 import { guard } from '../core/globalCore';
 
 export class ApplySubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'apply',
             category: SubtagType.ARRAY,
             definition: [
@@ -26,7 +25,7 @@ export class ApplySubtag extends BaseSubtag {
         args: string[],
         subtag: SubtagCall
     ): Promise<string> {
-        const subtagClass = this.cluster.subtags.get(args[0].toLowerCase());
+        const subtagClass = context.subtags.get(args[0].toLowerCase());
         if (subtagClass === undefined)
             return this.customError('No subtag found', context, subtag);
 

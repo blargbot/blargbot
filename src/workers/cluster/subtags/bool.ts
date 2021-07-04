@@ -1,11 +1,10 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, bbtagUtil, parse, SubtagCall, SubtagType } from '../core';
 
 const operators = bbtagUtil.operators.compare;
 
 export class BoolSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'bool',
             category: SubtagType.COMPLEX,
             definition: [

@@ -1,12 +1,9 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, discordUtil, SubtagCall, SubtagType } from '../core';
 
 const dmCache: DMCache = {};
 export class DMSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'dm',
             category: SubtagType.API,
             definition: [
@@ -55,14 +52,14 @@ export class DMSubtag extends BaseSubtag {
                 cache.user !== context.user.id ||
                 cache.guild !== context.guild.id) {
                 // Ew we're gonna send a message first? It was voted...
-                await this.cluster.util.send(dmChannel.id, 'The following message was sent from ' +
+                await context.util.send(dmChannel.id, 'The following message was sent from ' +
                     `**__${context.guild.name}__** (${context.guild.id}), ` +
                     'and was sent by ' +
                     `**__${context.user.username}#${context.user.discriminator}}__** (${context.user.id}):`
                 );
                 cache = dmCache[user.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
             }
-            await this.cluster.util.send(dmChannel.id, {
+            await context.util.send(dmChannel.id, {
                 content,
                 embed,
                 nsfw: context.state.nsfw

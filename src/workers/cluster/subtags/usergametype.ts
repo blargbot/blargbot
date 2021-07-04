@@ -1,4 +1,3 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType, BBTagContext } from '../core';
 
 const gameTypes = {
@@ -12,10 +11,8 @@ const gameTypes = {
 };
 
 export class UserGameTypeSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'usergametype',
             category: SubtagType.API,
             desc: 'Game types can be any of `' + Object.values(gameTypes).filter(type => type).join(', ') + '`',

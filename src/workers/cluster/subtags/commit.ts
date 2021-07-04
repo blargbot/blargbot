@@ -1,9 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, bbtagUtil, SubtagType } from '../core';
 
 export class CommitSubtag extends BaseSubtag {
-    public constructor(cluster: Cluster) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'commit',
             category: SubtagType.COMPLEX,
             desc:

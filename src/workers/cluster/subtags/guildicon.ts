@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 
 export class GuildIcon extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'guildicon',
             category: SubtagType.API,
             desc: 'Returns the icon of the current guild. If it doesn\'t exist returns nothing.',

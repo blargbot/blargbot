@@ -1,13 +1,10 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 import { default as Brainfuck } from 'brainfuck-node';
 const bfClient = new Brainfuck();
 
 export class BrainFuckSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'brainfuck',
             category: SubtagType.COMPLEX,
             definition: [

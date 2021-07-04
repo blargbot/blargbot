@@ -1,12 +1,9 @@
 import { Constants } from 'eris';
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
 
 export class ChannelIsCategorySubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'channeliscategory',
             aliases: ['iscategory'],
             category: SubtagType.API,

@@ -1,6 +1,5 @@
-import { Client as ErisClient, EmbedOptions } from 'eris';
-import { Cluster } from '../../Cluster';
-import { metrics, Timer, Logger } from '../globalCore';
+import { EmbedOptions } from 'eris';
+import { metrics, Timer } from '../globalCore';
 import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagOptions, SubtagResult } from '../types';
 import { SubtagType } from '../utils';
 import { BBTagContext } from './BBTagContext';
@@ -18,13 +17,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public readonly signatures: readonly SubtagHandlerCallSignature[];
     public readonly handler: SubtagHandler;
 
-    public get logger(): Logger { return this.cluster.logger; }
-    public get discord(): ErisClient { return this.cluster.discord; }
-
-    protected constructor(
-        public readonly cluster: Cluster,
-        options: SubtagOptions & { definition: readonly SubtagHandlerDefinition[]; }
-    ) {
+    protected constructor(options: SubtagOptions & { definition: readonly SubtagHandlerDefinition[]; }) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
@@ -83,6 +76,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public invalidEmbed(issue: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Invalid embed: ' + issue, subtag, debugMessage);//TODO move issue to debug perhaps?
     }
+
     public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError(errorText, subtag, debugMessage);
     }

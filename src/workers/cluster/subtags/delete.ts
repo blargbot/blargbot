@@ -1,13 +1,10 @@
 import { Message } from 'eris';
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
 import { guard } from '../core/globalCore';
 
 export class DeleteSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'delete',
             desc: 'Only ccommands can delete other messages.',
             category: SubtagType.COMPLEX,
@@ -52,7 +49,7 @@ export class DeleteSubtag extends BaseSubtag {
             return this.channelNotFound(context, subtag);
         if (messageId.length > 0 && guard.isTextableChannel(channel)) {
             try {
-                msg = await this.discord.getMessage(channel.id, messageId);
+                msg = await context.discord.getMessage(channel.id, messageId);
             } catch (err: unknown) {
                 return this.noMessageFound(context, subtag);
             }
@@ -69,7 +66,7 @@ export class DeleteSubtag extends BaseSubtag {
 
         //TODO return something like true/false
         try {
-            await this.discord.deleteMessage(msg.channel.id, msg.id);
+            await context.discord.deleteMessage(msg.channel.id, msg.id);
         } catch (e: unknown) {
             // NO-OP
         }

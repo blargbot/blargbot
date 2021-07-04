@@ -1,12 +1,9 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, SubtagType } from '../core';
 import moment from 'moment';
 
 export class GuildCreateDat extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'guildcreatedat',
             category: SubtagType.API,
             definition: [

@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, parse, SubtagType } from '../core';
 
 export class EveryoneMentionSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'everyonemention',
             aliases: ['everyone'],
             category: SubtagType.API,

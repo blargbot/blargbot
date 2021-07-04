@@ -1,11 +1,8 @@
-import { Cluster } from '../Cluster';
 import { BaseSubtag, BBTagContext, parse, SubtagCall, SubtagType } from '../core';
 
 export class DecrementSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
-        super(cluster, {
+    public constructor() {
+        super({
             name: 'decrement',
             category: SubtagType.COMPLEX,
             definition: [
