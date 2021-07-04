@@ -1,6 +1,5 @@
-import { TypeMapping } from '../../../workers/image/core';
 import { mappingResultNever } from './constants';
-
+import { TypeMapping } from './types';
 
 export function mapInstanceof<T>(type: new (...args: unknown[]) => T): TypeMapping<T> {
     return value => {

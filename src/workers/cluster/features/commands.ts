@@ -3,7 +3,6 @@ import { Cluster } from '../Cluster';
 import { tryHandleCleverbot } from './cleverbot';
 import { BaseCommand, CommandContext, commandTypes, CustomCommandLimit, FlagDefinition, guard, humanize, metrics, parse, Timer } from '../core';
 
-
 export async function tryHandleCommand(cluster: Cluster, msg: AnyMessage): Promise<boolean> {
     const prefix = await getPrefix(cluster, msg);
     if (prefix === undefined)

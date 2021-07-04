@@ -531,7 +531,6 @@ export class CustomCommand extends BaseGuildCommand {
             'If you decide to proceed, this will:'
         );
 
-
         const guildId = context.channel.guild.id;
         const { commands, autoResponses, everythingAutoResponse } = await getShrinkwrapData(context.cluster.database, guildId);
         const shrinkwrap = signedShrinkwrap.value.payload;

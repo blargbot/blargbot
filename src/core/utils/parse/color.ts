@@ -1,5 +1,5 @@
 import _colors from '../../../../res/colors.json';
-import { randInt } from '../random/randInt';
+import { randInt } from '../random';
 import { hex } from './hex';
 
 const colors = _colors as { readonly [name: string]: string; };

@@ -25,7 +25,6 @@ module.exports =
             if (tag == null)
                 return Builder.util.error(subtag, context, 'Tag not found: ' + args[0]);
 
-
             let name = args[0];
             if (!context._cooldowns[context.msg.guild.id][false])
                 context._cooldowns[context.msg.guild.id][false] = {};

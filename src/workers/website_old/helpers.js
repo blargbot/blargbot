@@ -254,7 +254,6 @@ e.init = () => {
         return JSON.stringify(tags);
     });
 
-
     hbs.registerHelper('commands', function () {
         let toReturn = '';
         let lastType = -10;

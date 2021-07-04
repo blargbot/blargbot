@@ -1,7 +1,6 @@
 import { Cluster } from '../Cluster';
 import { ClusterEventService, ProcessMessageHandler, guard } from '../core';
 
-
 export class LookupChannelHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster

@@ -86,7 +86,6 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
             return Promise.all(results).then(x => void x);
     }
 
-
     public reload(): Promise<void>
     public reload(fileNames: Iterable<string>): void
     public reload(fileNames?: Iterable<string>): void | Promise<void> {

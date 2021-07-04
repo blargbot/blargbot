@@ -1,7 +1,6 @@
 import { AnalysisResults } from '../../types';
 import { stringifyLocation } from './stringifyLocation';
 
-
 export function stringifyAnalysis(analysis: AnalysisResults): string {
     const lines = [];
     for (const error of analysis.errors)

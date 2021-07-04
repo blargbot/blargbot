@@ -28,7 +28,6 @@ export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
         triggered.opacity(0.8);
         const overlay = await this.getLocalJimp('red.png');
 
-
         let frame;
         let x;
         let y;
@@ -57,7 +56,6 @@ export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
         }
         return await gif.render();
     }
-
 
 }
 

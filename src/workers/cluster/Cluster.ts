@@ -1,5 +1,5 @@
 import moment, { Moment } from 'moment-timezone';
-import { ImageConnection } from '../image/ImageConnection';
+import { ImageConnection } from '../image';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 import { BaseClient, BaseCommand, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from './core';

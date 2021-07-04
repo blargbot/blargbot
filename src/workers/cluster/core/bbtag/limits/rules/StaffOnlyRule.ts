@@ -1,7 +1,6 @@
 import { RuntimeLimitRule } from '../../../types';
 import { BBTagContext } from '../../BBTagContext';
 
-
 export class StaffOnlyRule implements RuntimeLimitRule {
     public static readonly instance: StaffOnlyRule = new StaffOnlyRule();
 

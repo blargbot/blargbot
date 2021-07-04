@@ -1,7 +1,7 @@
 import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '../Logger';
 import { guard } from '../utils';
-import { PostgresDb } from './core/PostgresDb';
+import { PostgresDb } from './core';
 import { TagVariablesTable } from './types';
 
 export class PostgresDbTagVariablesTable implements TagVariablesTable {
@@ -12,10 +12,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
     }
 
     public async upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void> {
-        const model = this.postgres.models.BBTagVariableModel;
-        if (model === undefined)
-            throw new Error('The postgres models havent been configured!');
-
+        const model = this.postgres.models.bbtagVariables;
         const trans = await this.postgres.sequelize.transaction();
         for (const [key, value] of Object.entries(values)) {
             const query = {
@@ -36,7 +33,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
     }
 
     public async get(name: string, type: SubtagVariableType, scope: string): Promise<JToken> {
-        const record = await this.postgres.models.BBTagVariableModel?.findOne({
+        const record = await this.postgres.models.bbtagVariables.findOne({
             where: {
                 name: name.substring(0, 255),
                 type: type,

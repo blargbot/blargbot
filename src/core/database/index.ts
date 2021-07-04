@@ -1,4 +1,4 @@
-import { RethinkDb } from './core/RethinkDb';
+import { RethinkDb, PostgresDb } from './core';
 import { Client as Cassandra, auth as CassandraAuth } from 'cassandra-driver';
 import { Client as ErisClient } from 'eris';
 import { DatabaseOptions, GuildTable, UserTable, VarsTable, EventsTable, TagsTable, ChatlogsTable, DumpsTable, TagVariablesTable } from './types';
@@ -10,7 +10,6 @@ import { RethinkDbTagTable } from './RethinkDbTagTable';
 import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
 import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
 import { PostgresDbTagVariablesTable } from './PostgresDbTagVariablesTable';
-import { PostgresDb } from './core/PostgresDb';
 import { Logger } from '../Logger';
 
 export * from './types';

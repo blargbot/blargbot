@@ -67,7 +67,6 @@ router.get('/tos', (req, res) => {
     res.render('tagtos');
 });
 
-
 router.get('/editor', (req, res) => {
     res.locals.user = req.user;
     req.session.returnTo = '/tags' + req.path;

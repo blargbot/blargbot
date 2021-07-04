@@ -22,7 +22,6 @@ export class BoolSubtag extends BaseSubtag {
         });
     }
 
-
     public runCondition(
         context: BBTagContext,
         subtag: SubtagCall,

@@ -2,7 +2,6 @@ import * as r from 'rethinkdb';
 import { Query, Expression, Cursor, Connection, Time } from 'rethinkdb';
 import { RethinkDbOptions } from '../types';
 
-
 export class RethinkDb {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #connectionPromise?: Promise<r.Connection>

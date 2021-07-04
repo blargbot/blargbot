@@ -201,7 +201,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         if (cached !== undefined)
             return this.engine.discord.guilds.get(this.guild.id)?.channels.get(cached) ?? undefined;
 
-
         const channel = await this.engine.util.getChannel(this.message, name, args);
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
             return undefined;

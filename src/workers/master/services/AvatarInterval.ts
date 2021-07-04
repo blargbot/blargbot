@@ -1,8 +1,6 @@
 import moment from 'moment';
-import { CronService } from '../core';
+import { CronService, MasterOptions } from '../core';
 import { Master } from '../Master';
-import { MasterOptions } from '../core/types';
-
 
 export class AvatarInterval extends CronService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

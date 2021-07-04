@@ -1,5 +1,4 @@
-import { BaseSubtag, BBTagContext, bbtagUtil, SubtagCall, SubtagType } from '../core';
-import { guard } from '../core/globalCore';
+import { BaseSubtag, BBTagContext, bbtagUtil, SubtagCall, SubtagType, guard } from '../core';
 
 export class ApplySubtag extends BaseSubtag {
     public constructor() {

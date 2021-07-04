@@ -3,8 +3,7 @@ import { metrics, Timer } from '../globalCore';
 import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagOptions, SubtagResult } from '../types';
 import { SubtagType } from '../utils';
 import { BBTagContext } from './BBTagContext';
-import { compileSignatures } from './compilation/compileSignatures';
-import { parseDefinitions } from './compilation/parseDefinitions';
+import { compileSignatures, parseDefinitions } from './compilation';
 
 export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public readonly name: string;

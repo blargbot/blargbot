@@ -24,7 +24,6 @@ module.exports =
             let amount = bu.parseInt(args[1]);
             let result = '';
 
-
             if (isNaN(amount)) amount = fallback;
             if (isNaN(amount)) return Builder.errors.notANumber(subtag, context);
 

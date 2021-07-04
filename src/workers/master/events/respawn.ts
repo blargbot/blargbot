@@ -1,5 +1,4 @@
-import { ClusterConnection } from '../../cluster';
-import { ClusterRespawnRequest } from '../../cluster/core';
+import { ClusterConnection, ClusterRespawnRequest } from '../../cluster';
 import { WorkerPoolEventService, Timer } from '../core';
 import { Master } from '../Master';
 

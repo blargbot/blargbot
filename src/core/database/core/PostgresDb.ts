@@ -1,32 +1,24 @@
 import pg from 'pg';
 import sequelize from 'sequelize';
 import { sleep } from '../../utils';
-import * as models from './postgresModels';
-import { BaseModel } from './postgresModels/Base';
+import { models } from './postgresModels';
 import { PostgresDbOptions } from '../types';
 import { Logger } from '../../Logger';
 
 delete (<Record<string, unknown>>pg).native; // TODO Do we need to do this?
 
-type Models = typeof models;
-type ModelType<T> = T extends BaseModel<infer T1, infer T2, infer T3> ? sequelize.Model<T1, T2, T3> : unknown
-
+type PostgresModels = {
+    [P in keyof typeof models]: ReturnType<typeof models[P]>
+};
 
 export class PostgresDb {
     public readonly sequelize: sequelize.Sequelize;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #clientModels: { [P in keyof Models]?: ModelType<InstanceType<Models[P]>> };
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #models: { [P in keyof Models]?: InstanceType<Models[P]> };
-
-    public get models(): { [P in keyof Models]?: ModelType<InstanceType<Models[P]>> } { return this.#clientModels; }
+    public readonly models: PostgresModels;
 
     public constructor(
         public readonly logger: Logger,
         options: PostgresDbOptions
     ) {
-        this.#clientModels = {};
-        this.#models = {};
         this.sequelize = new sequelize.Sequelize(
             options.database,
             options.user,
@@ -39,6 +31,9 @@ export class PostgresDb {
                 ...options.sequelize
             }
         );
+        this.models = {
+            bbtagVariables: models.bbtagVariables(this.sequelize, this.logger)
+        };
     }
 
     public async authenticate(): Promise<void> {
@@ -54,20 +49,8 @@ export class PostgresDb {
     }
 
     private async loadModels(): Promise<void> {
-        const keys = Object.keys(models);
-        this.#models = {};
-        this.#clientModels = {};
-        for (const key of keys) {
-            const modelType = models[key];
-            if (typeof modelType !== 'function')
-                continue;
-
-            const model = this.#models[key] = new modelType(this.sequelize, this.logger);
-            if ('model' in model) {
-                await model.model.sync({ force: false, alter: false });
-                this.#clientModels[key] = model.model;
-            }
-        }
+        for (const model of Object.values(this.models))
+            await model.sync();
         this.logger.init('Database models loaded.');
     }
 }

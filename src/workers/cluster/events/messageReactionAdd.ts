@@ -1,7 +1,6 @@
 import { PossiblyUncachedMessage, Emoji, Member, Message, User, TextableChannel } from 'eris';
 import { Cluster } from '../Cluster';
-import { DiscordEventService } from '../core';
-import { guard } from '../core/globalCore';
+import { DiscordEventService, guard } from '../core';
 
 export class MessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
     public constructor(public readonly cluster: Cluster) {

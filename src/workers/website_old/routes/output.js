@@ -17,7 +17,6 @@ converter.setOption('disableForced4SpacesIndentedSublists', true);
 const xss = require('xss');
 const moment = require('moment-timezone');
 
-
 async function getOutput(id) {
     if (!bu.cclient) {
         return {
@@ -51,7 +50,6 @@ whiteList.link = ['rel', 'href']; // Allow link tags for external CSS.
 for (const key of Object.keys(whiteList)) {
     whiteList[key].push('class', 'id');
 }
-
 
 router.get('/:id', async function (req, res) {
     res.locals.user = req.user;

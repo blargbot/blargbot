@@ -3,7 +3,6 @@ import { CommandDefinition, CommandHandler, CommandParameter, CommandSignatureHa
 import { parse } from '../utils';
 import { CommandContext } from './CommandContext';
 
-
 export function compileHandler<TContext extends CommandContext>(definition: CommandDefinition<TContext>, flagDefinitions: readonly FlagDefinition[]): CommandHandler<TContext> {
     const tree = buildTree(definition, flagDefinitions);
     return {
@@ -141,7 +140,6 @@ function* buildUsage<TContext extends CommandContext>(tree: CommandTree<TContext
         res.push(...tree.handler.parameters);
         yield res;
     }
-
 
 }
 

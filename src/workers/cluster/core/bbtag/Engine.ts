@@ -71,7 +71,6 @@ export class BBTagEngine {
             return results.join('');
         }
 
-
         const name = (await this.eval(bbtag.name, context)).toLowerCase();
         const override = context.state.overrides[name];
         const native = this.cluster.subtags.get(name);

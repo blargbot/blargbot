@@ -1,7 +1,6 @@
 import { ClusterEventService, ProcessMessageHandler, SubtagListResult } from '../core';
 import { Cluster } from '../Cluster';
 
-
 export class TagListHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster

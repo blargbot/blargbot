@@ -3,8 +3,7 @@ import Jimp from 'jimp';
 import fetch from 'node-fetch';
 import path from 'path';
 import phantom from 'phantom';
-import { TypeMapping } from '../../cluster/core';
-import { Logger } from './globalCore';
+import { Logger, TypeMapping } from './globalCore';
 import { ImageGeneratorMap, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
 import { inspect } from 'util';
 
@@ -229,7 +228,6 @@ function phantomResize(): void {
         if (el instanceof HTMLElement) {
             if (el.style.fontSize === '')
                 el.style.fontSize = '65px';
-
 
             let ii = 0;
             while (el.scrollHeight > wrapper.clientHeight) {

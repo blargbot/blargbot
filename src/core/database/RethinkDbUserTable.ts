@@ -1,6 +1,5 @@
-import { RethinkDb } from './core/RethinkDb';
+import { RethinkDb, RethinkDbCachedTable } from './core';
 import { User } from 'eris';
-import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
 import { MutableStoredUser, StoredUser, StoredUserSettings, UserTable } from './types';
 import { Logger } from '../Logger';
 

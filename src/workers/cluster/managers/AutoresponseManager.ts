@@ -2,7 +2,6 @@ import { AnyMessage, Emoji, GuildMessage, User } from 'eris';
 import { Cluster } from '../Cluster';
 import { codeBlock, EverythingAutoResponseLimit, GeneralAutoResponseLimit, guard, humanize, mapping, RuntimeLimit, WhitelistResponse } from '../core';
 
-
 export class AutoresponseManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #guilds: Set<string>;
@@ -52,7 +51,6 @@ ${codeBlock(code, 'js')}`
                 values: [...this.#guilds]
             });
         }
-
 
         if (isChange) {
             await this.cluster.util.send(channelId, whitelisted

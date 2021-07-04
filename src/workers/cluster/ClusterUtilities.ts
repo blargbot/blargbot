@@ -470,7 +470,6 @@ export class ClusterUtilities extends BaseUtilities {
         return roles.some(r => member.roles.includes(r));
     }
 
-
     public isBotHigher(member: Member): boolean {
         const bot = member.guild.members.get(this.cluster.discord.user.id);
         if (bot === undefined)

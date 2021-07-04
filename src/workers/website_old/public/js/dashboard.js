@@ -91,7 +91,6 @@ wss.onmessage = function (event) {
                     }
                 }
 
-
                 for (let i = 0; i < keys.length; i++) {
                     let element = document.getElementById(keys[i]);
 

@@ -47,7 +47,6 @@ class VotebanCommand extends BaseCommand {
 
                 let tempVotebans = votebans[user.id] != undefined ? votebans[user.id].map(u => u.id) : [];
 
-
                 if (tempVotebans.indexOf(msg.author.id) > -1) {
                     votebans[user.id].splice(tempVotebans.indexOf(msg.author.id), 1);
                     bu.send(msg, `**${bu.getFullName(msg.author)}** no longer wants to ban **${bu.getFullName(user)}**! Total signatures: **${votebans[user.id].length}**`);

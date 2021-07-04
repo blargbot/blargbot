@@ -2,7 +2,6 @@ import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Cluster } from '../Cluster';
 import { guard, humanize, ModerationType, WarnResult } from '../core';
 
-
 export class ModerationManager {
     public constructor(public readonly cluster: Cluster) {
     }

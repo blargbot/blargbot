@@ -35,7 +35,6 @@ module.exports =
             if (isNaN(start) || isNaN(end))
                 return Builder.errors.notANumber(subtag, context);
 
-
             return bu.serializeTagArray(arr.v.slice(start, end));
         })
         .whenDefault(Builder.errors.tooManyArguments)

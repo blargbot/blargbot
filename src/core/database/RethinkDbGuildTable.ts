@@ -1,7 +1,6 @@
 import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, MutableStoredGuild, GuildAutoresponse, GuildFilteredAutoresponse } from './types';
 import { GuildTable } from './types';
-import { RethinkDbCachedTable } from './core/RethinkDbCachedTable';
-import { RethinkDb } from './core/RethinkDb';
+import { RethinkDbCachedTable, RethinkDb } from './core';
 import { guard } from '../utils';
 import { UpdateRequest } from 'rethinkdb';
 import { Logger } from '../Logger';

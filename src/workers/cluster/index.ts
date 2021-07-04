@@ -3,3 +3,4 @@ export * from './ClusterConnection';
 export * from './ClusterPool';
 export * from './ClusterUtilities';
 export * from './ClusterWorker';
+export * from './core/types';

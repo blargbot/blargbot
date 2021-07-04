@@ -17,7 +17,6 @@ const separators = [
     ' '
 ];
 
-
 function getToken(iteration) {
     iteration = iteration || 0;
     iteration++;

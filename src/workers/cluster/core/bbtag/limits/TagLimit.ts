@@ -51,5 +51,4 @@ export class TagLimit extends BaseRuntimeLimit {
             .addRules('dump', new UseCountRule(5));
     }
 
-
 }

@@ -18,7 +18,6 @@ class SlowmodeCommand extends BaseCommand {
     async execute(msg, words) {
         let input = newbutils.parse.flags(this.flags, words);
 
-
         let time = parseInt(input.undefined[0]);
         if (isNaN(time)) time = 0;
 

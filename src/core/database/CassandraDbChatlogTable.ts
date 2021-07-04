@@ -14,7 +14,6 @@ function stringifyType(type: ChatlogType): string {
     }
 }
 
-
 export class CassandraDbChatlogTable implements ChatlogsTable {
     public constructor(
         protected readonly cassandra: Cassandra,

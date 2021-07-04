@@ -150,7 +150,6 @@ let usage = {
     2: '[user]'
 };
 
-
 for (const [key, action] of Object.entries(actions)) {
     let command = class SocialCommand extends BaseCommand {
         constructor(cluster) {
@@ -167,7 +166,6 @@ for (const [key, action] of Object.entries(actions)) {
         static get name() {
             return key;
         }
-
 
         async request(type) {
             let res = await this.wolken.getRandom({ type, allowNSFW: false, filetype: 'gif' });

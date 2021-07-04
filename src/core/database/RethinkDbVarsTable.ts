@@ -1,6 +1,5 @@
-import { RethinkDb } from './core/RethinkDb';
+import { RethinkDb, RethinkDbTable } from './core';
 import { GetStoredVar, KnownStoredVars, VarsTable } from './types';
-import { RethinkDbTable } from './core/RethinkDbTable';
 import { Logger } from '../Logger';
 
 export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTable {

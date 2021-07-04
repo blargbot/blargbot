@@ -24,7 +24,6 @@ class ReasonCommand extends BaseCommand {
                 let caseid = parseInt(words.shift());
                 console.debug(caseid);
 
-
                 let storedGuild = await bu.getGuild(msg.guild.id);
                 let modlog = storedGuild.modlog;
                 let index = latest ? modlog.length - 1 : caseid;

@@ -106,7 +106,6 @@ export type MutableKnownStoredVars =
 
 export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownStoredVars, { varname: T; }>;
 
-
 export interface StoredEventOptionsBase {
     readonly source: string;
     readonly guild: string | undefined;

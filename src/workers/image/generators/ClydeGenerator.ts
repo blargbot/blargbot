@@ -26,7 +26,6 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
         return canvas.getBufferAsync(Jimp.MIME_PNG);
     }
 
-
 }
 
 const mapOptions = mapping.object<ClydeOptions>({

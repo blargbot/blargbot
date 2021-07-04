@@ -557,7 +557,6 @@ export class TagCommand extends BaseGuildCommand {
         if (analysis.errors.length > 0)
             return `❌ There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`;
 
-
         await context.database.tags.set({
             name: tagName,
             author: context.author.id,

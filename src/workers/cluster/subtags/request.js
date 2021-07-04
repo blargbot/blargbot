@@ -113,7 +113,6 @@ module.exports = Builder.AutoTag('request')
 
         console.log(res);
 
-
         let response = {
             body: res.body,
             text: res.text,

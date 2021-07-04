@@ -13,7 +13,6 @@ function getTotalCpuTime(): number {
     ) / cpus.length;
 }
 
-
 let lastTotalCpuTime = 0;
 let lastUserCpuTime = 0;
 let lastSystemCpuTime = 0;

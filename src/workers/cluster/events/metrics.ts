@@ -1,7 +1,6 @@
 import { ClusterEventService, ProcessMessageHandler, metrics } from '../core';
 import { Cluster } from '../Cluster';
 
-
 export class MetricsHandler extends ClusterEventService {
     public constructor(cluster: Cluster) {
         super(cluster, 'metrics');

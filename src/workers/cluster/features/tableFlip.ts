@@ -2,7 +2,6 @@ import { AnyMessage, GuildMessage } from 'eris';
 import { Cluster } from '../Cluster';
 import { guard, randInt } from '../core';
 
-
 export async function handleTableFlip(cluster: Cluster, msg: AnyMessage): Promise<void> {
     if (!guard.isGuildMessage(msg) || msg.author.bot)
         return;
@@ -14,7 +13,6 @@ export async function handleTableFlip(cluster: Cluster, msg: AnyMessage): Promis
         await flipTables(cluster, msg, true);
 
 }
-
 
 async function flipTables(cluster: Cluster, msg: GuildMessage, unflip: boolean): Promise<void> {
     const tableflip = await cluster.database.guilds.getSetting(msg.channel.guild.id, 'tableflip');

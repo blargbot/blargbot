@@ -1,1 +1,5 @@
-export { BBTagVariableModel } from './BBTagVariable';
+import { createBBTagVariableModel } from './BBTagVariable';
+
+export const models = {
+    bbtagVariables: createBBTagVariableModel
+} as const;

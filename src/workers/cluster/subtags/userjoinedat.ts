@@ -1,6 +1,5 @@
-import { BaseSubtag, SubtagType, BBTagContext } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '../core';
 import moment from 'moment';
-import { SubtagCall } from '../core/types';
 
 export class UserJoineDatSubtag extends BaseSubtag {
     public constructor() {

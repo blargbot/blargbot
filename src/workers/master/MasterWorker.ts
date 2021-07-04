@@ -1,6 +1,5 @@
-import { BaseWorker, Logger } from '../../core';
+import { BaseWorker, Logger, MasterOptions } from './core';
 import { Master } from './Master';
-import { MasterOptions } from './core/types';
 
 export class MasterWorker extends BaseWorker {
     public readonly master: Master;
@@ -18,7 +17,6 @@ export class MasterWorker extends BaseWorker {
 MAIN PROCESS INITIALIZED
 
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@`);
-
 
         this.master = new Master(logger, config, { ...options, worker: this });
     }

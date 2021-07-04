@@ -1,14 +1,11 @@
-import { ClusterConnection } from '../../cluster';
-import { ClusterStats } from '../../cluster/core';
+import { ClusterConnection, ClusterStats } from '../../cluster';
 import { WorkerPoolEventService } from '../core';
 import { Master } from '../Master';
 
 export class ClusterStatsHandler extends WorkerPoolEventService<ClusterConnection> {
     private readonly stats: { [clusterId: number]: ClusterStats | undefined; };
 
-    public constructor(
-        public readonly master: Master
-    ) {
+    public constructor(public readonly master: Master) {
         super(master.clusters, 'clusterStats');
         this.stats = {};
     }

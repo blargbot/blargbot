@@ -10,7 +10,6 @@ async function deleteLogs() {
         }).delete().run();
 }
 
-
 class PurgelogsCommand extends BaseCommand {
     constructor() {
         super({

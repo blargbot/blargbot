@@ -4,7 +4,6 @@ import { StoredGuildCommand, StoredTag, CommandType, CommandContext, SendPayload
 import { ClusterWorker } from '../ClusterWorker';
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from './bbtag';
 
-
 export type Statement = Array<string | SubtagCall>;
 
 export interface AnalysisResults {
@@ -220,7 +219,6 @@ export interface SubtagHandlerDefinitionParameterGroup {
     readonly parameters: ReadonlyArray<string | SubtagHandlerDefinitionParameterGroup>;
 }
 
-
 export type FlagDefinition = {
     readonly flag: string;
     readonly word: string;
@@ -264,7 +262,6 @@ export type CommandDefinition<TContext extends CommandContext> =
     | CommandHandlerDefinition<TContext>
     | SubcommandDefinitionHolder<TContext>
     | CommandHandlerDefinition<TContext> & SubcommandDefinitionHolder<TContext>;
-
 
 export type CommandParameter =
     | CommandVariableParameter
@@ -315,7 +312,6 @@ export interface CommandSignatureHandler<TContext extends CommandContext> {
     readonly parameters: readonly CommandParameter[];
     readonly execute: (context: TContext, args: readonly string[]) => Promise<CommandResult> | CommandResult;
 }
-
 
 export type CustomCommandShrinkwrap = {
     readonly [P in Exclude<keyof NamedStoredRawGuildCommand, 'author' | 'authorizer' | 'name'>]: NamedStoredRawGuildCommand[P]

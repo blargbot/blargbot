@@ -1,7 +1,6 @@
 import { mappingResultNever } from './constants';
 import { TypeMapping } from './types';
 
-
 export function mapBase64<T>(mapping: TypeMapping<T>): TypeMapping<T> {
     return value => {
         if (typeof value !== 'string')

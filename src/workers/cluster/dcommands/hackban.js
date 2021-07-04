@@ -68,7 +68,6 @@ class HackbanCommand extends BaseCommand {
 
         bu.send(msg, ':ok_hand:');
 
-
         //bot.ban
     }
 }

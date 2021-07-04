@@ -12,5 +12,4 @@ declare module 'better-cleverbot-io' {
         public ask(question: string): Promise<string>;
     }
 
-
 }

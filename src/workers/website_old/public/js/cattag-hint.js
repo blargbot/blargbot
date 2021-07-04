@@ -10,7 +10,6 @@
         mod(CodeMirror);
 })(function (CodeMirror) {
 
-
     CodeMirror.registerHelper('hint', 'cattag', function (cm, options) {
         let words = options.words;
         let cur = cm.getCursor();
