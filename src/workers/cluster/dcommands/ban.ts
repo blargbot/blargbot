@@ -15,10 +15,10 @@ export class BanCommand extends BaseGuildCommand {
                 }
             ],
             definition: {
-                parameters: '{user} [days:number]',
+                parameters: '{user+} [days:number]',
                 description: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\n' +
                     'If mod-logging is enabled, the ban will be logged.',
-                execute: (ctx, [user, days = 1], flags) => this.ban(ctx, user, days, flags)
+                execute: (ctx, [user, days = 1], flags) => this.ban(ctx, user.join(' '), days, flags)
             }
         });
     }

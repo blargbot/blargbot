@@ -10,9 +10,9 @@ export class KickCommand extends BaseGuildCommand {
                 { flag: 'r', word: 'reason', desc: 'The reason for the kick.' }
             ],
             definition: {
-                parameters: '{user}',
+                parameters: '{user+}',
                 description: 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.',
-                execute: (ctx, [user], flags) => this.kick(ctx, user, flags)
+                execute: (ctx, [user], flags) => this.kick(ctx, user.join(' '), flags)
             }
         });
     }

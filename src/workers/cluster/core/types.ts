@@ -561,7 +561,7 @@ export interface WarnDetails {
 export interface WarnResultBase<ModType extends ModerationType, TResult extends string> {
     readonly type: ModType;
     readonly count: number;
-    readonly result: TResult;
+    readonly state: TResult;
 }
 
 export type WarnResult =

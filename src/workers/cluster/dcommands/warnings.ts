@@ -11,10 +11,10 @@ export class WarningsCommand extends BaseGuildCommand {
                 description: 'Gets how many warnings you have',
                 execute: (ctx) => this.warnings(ctx, ctx.message.member),
                 subcommands: {
-                    '{user}': {
+                    '{user+}': {
                         parameters: '',
                         description: 'Gets how many warnings the user has',
-                        execute: (ctx, [user]) => this.warnings(ctx, user)
+                        execute: (ctx, [user]) => this.warnings(ctx, user.join(' '))
                     }
                 }
             }

@@ -9,10 +9,10 @@ export class UnmuteCommand extends BaseGuildCommand {
                 { flag: 'r', word: 'reason', desc: 'The reason for the unmute.' }
             ],
             definition: {
-                parameters: '{user}',
+                parameters: '{user+}',
                 description: 'Removes the special muted role from the user. \n' +
                     'If mod-logging is enabled, the mute will be logged.',
-                execute: (ctx, [user], flags) => this.unmute(ctx, user, flags)
+                execute: (ctx, [user], flags) => this.unmute(ctx, user.join(' '), flags)
             }
         });
     }

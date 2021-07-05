@@ -10,11 +10,11 @@ export class WarnManager extends ModerationManagerBase {
 
     public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<WarnResult> {
         if (count === 0)
-            return { type: ModerationType.WARN, count: 0, result: 'countZero' };
+            return { type: ModerationType.WARN, count: 0, state: 'countZero' };
         if (count < 0)
-            return { type: ModerationType.WARN, count: 0, result: 'countNegative' };
+            return { type: ModerationType.WARN, count: 0, state: 'countNegative' };
         if (isNaN(count))
-            return { type: ModerationType.WARN, count: 0, result: 'countNaN' };
+            return { type: ModerationType.WARN, count: 0, state: 'countNaN' };
 
         const warnings = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat') ?? Infinity;
@@ -23,25 +23,25 @@ export class WarnManager extends ModerationManagerBase {
         let result: WarnResult = {
             type: ModerationType.WARN,
             count: newCount,
-            result: 'success'
+            state: 'success'
         };
 
         await this.modlog.logWarn(member.guild, member.user, count, newCount, moderator, reason);
 
-        if (this.cluster.util.isBotHigher(member)) {
-            if (banAt > 0 && newCount >= banAt) {
-                result = {
-                    type: ModerationType.BAN,
-                    result: await this.manager.bans.ban(member.guild, member.user, this.cluster.discord.user, true, undefined, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`),
-                    count: newCount = 0
-                };
-            } else if (kickAt > 0 && newCount >= kickAt) {
-                result = {
-                    type: ModerationType.KICK,
-                    result: await this.manager.bans.kick(member, this.cluster.discord.user, true, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
-                    count: newCount
-                };
-            }
+        if (banAt > 0 && newCount >= banAt) {
+            result = {
+                type: ModerationType.BAN,
+                state: await this.manager.bans.ban(member.guild, member.user, moderator, true, undefined, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`),
+                count: newCount
+            };
+            if (result.state === 'success')
+                newCount = 0;
+        } else if (kickAt > 0 && newCount >= kickAt) {
+            result = {
+                type: ModerationType.KICK,
+                state: await this.manager.bans.kick(member, moderator, true, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
+                count: newCount
+            };
         }
 
         await this.cluster.database.guilds.setWarnings(member.guild.id, member.id, newCount <= 0 ? undefined : newCount);

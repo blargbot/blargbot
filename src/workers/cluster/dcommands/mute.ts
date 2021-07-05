@@ -15,7 +15,7 @@ export class MuteCommand extends BaseGuildCommand {
                 }
             ],
             definition: {
-                parameters: '{user}',
+                parameters: '{user+}',
                 description: 'Gives the user a special muted role. On first run, this role will be created. ' +
                     'The bot needs to be able to `manage roles` to create and assign the role, and `manage channels` to configure the role. ' +
                     'You are able to manually configure the role without the bot, but the bot has to make it. ' +
@@ -23,7 +23,7 @@ export class MuteCommand extends BaseGuildCommand {
                     'If the bot has permissions for it, this command will also voice-mute the user.\n' +
                     'If mod-logging is enabled, the mute will be logged.\n' +
                     'You can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
-                execute: (ctx, [user], flags) => this.mute(ctx, user, flags)
+                execute: (ctx, [user], flags) => this.mute(ctx, user.join(' '), flags)
             }
         });
     }
