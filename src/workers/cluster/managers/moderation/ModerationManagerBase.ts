@@ -1,4 +1,4 @@
-import { Guild, Member, User } from 'eris';
+import { Guild } from 'eris';
 import { Cluster } from '../../Cluster';
 import { defaultStaff, Modlog, StoredGuildSettings } from '../../core';
 import { ModerationManager } from '../ModerationManager';
@@ -10,27 +10,45 @@ export abstract class ModerationManagerBase {
     public constructor(public readonly manager: ModerationManager) {
     }
 
-    protected async checkModerator(target: undefined, guild: Guild, moderator: User, permission: string, overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | undefined>;
-    protected async checkModerator(target: Member | undefined, guild: Guild, moderator: User, permission: string, overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined>;
-    protected async checkModerator(target: Member | undefined, guild: Guild, moderator: User, permission: string, overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined> {
-        const member = guild.members.get(moderator.id);
-        if (member === undefined)
-            return 'moderatorNoPerms';
-
-        if (guild.ownerID === member.id)
+    protected async checkModerator(guild: Guild, targetId: undefined, moderatorId: string, permission: string, overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | undefined>;
+    protected async checkModerator(guild: Guild, targetId: string | undefined, moderatorId: string, permission: string, overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined>;
+    protected async checkModerator(guild: Guild, targetId: string | undefined, moderatorId: string, permission: string, overrideKey?: keyof StoredGuildSettings): Promise<'moderatorNoPerms' | 'moderatorTooLow' | undefined> {
+        if (guild.ownerID === moderatorId)
             return undefined;
 
-        if (target !== undefined && this.cluster.util.getPosition(target) > this.cluster.util.getPosition(member))
+        const moderatorMember = guild.members.get(moderatorId);
+        if (moderatorMember === undefined)
+            return 'moderatorNoPerms';
+
+        if (targetId !== undefined && !this.isModeratorHigher(guild, targetId, moderatorId))
             return 'moderatorTooLow';
 
-        if (member.permissions.has(permission))
+        if (moderatorMember.permissions.has(permission))
             return undefined;
 
         const staff = await this.getStaffPerms(guild, overrideKey);
-        if ((staff & member.permissions.allow & ~member.permissions.deny) === 0)
+        if ((staff & moderatorMember.permissions.allow & ~moderatorMember.permissions.deny) === 0)
             return 'moderatorNoPerms';
 
         return undefined;
+    }
+
+    protected isModeratorHigher(guild: Guild, targetId: string, moderatorId: string): boolean {
+        if (guild.ownerID === moderatorId)
+            return true;
+
+        if (guild.ownerID === targetId)
+            return false;
+
+        const moderatorMember = guild.members.get(moderatorId);
+        if (moderatorMember === undefined)
+            return false;
+
+        const targetMember = guild.members.get(targetId);
+        if (targetMember === undefined)
+            return true;
+
+        return this.cluster.util.getPosition(targetMember) < this.cluster.util.getPosition(moderatorMember);
     }
 
     private async getStaffPerms(guild: Guild, overrideKey?: keyof StoredGuildSettings): Promise<number> {

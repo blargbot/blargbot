@@ -26,10 +26,10 @@ export class UnbanCommand extends BaseGuildCommand {
         const reason = flags.r?.join(' ');
 
         switch (await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, true, reason)) {
-            case 'notBanned': return `❌ ${humanize.fullName(user)} is not currently banned!`;
-            case 'noPerms': return `❌ I don't have permission to unban ${humanize.fullName(user)}! Make sure I have the \`ban members\` permission and try again.`;
-            case 'moderatorNoPerms': return `❌ You don't have permission to unban ${humanize.fullName(user)}! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`;
-            case 'success': return `✅ ${humanize.fullName(user)} has been unbanned.`;
+            case 'notBanned': return `❌ **${humanize.fullName(user)}** is not currently banned!`;
+            case 'noPerms': return `❌ I don't have permission to unban **${humanize.fullName(user)}**! Make sure I have the \`ban members\` permission and try again.`;
+            case 'moderatorNoPerms': return `❌ You don't have permission to unban **${humanize.fullName(user)}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`;
+            case 'success': return `✅ **${humanize.fullName(user)}** has been unbanned.`;
         }
     }
 }

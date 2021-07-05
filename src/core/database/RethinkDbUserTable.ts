@@ -2,8 +2,9 @@ import { RethinkDb, RethinkDbCachedTable } from './core';
 import { User } from 'eris';
 import { MutableStoredUser, StoredUser, StoredUserSettings, UserTable } from './types';
 import { Logger } from '../Logger';
+import { guard } from '../utils';
 
-export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', MutableStoredUser> implements UserTable {
+export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> implements UserTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger
@@ -20,7 +21,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', M
         return await this.rget(userId, skipCache);
     }
 
-    public async add(user: StoredUser): Promise<boolean> {
+    public async add(user: MutableStoredUser): Promise<boolean> {
         return await this.rinsert(user);
     }
 
@@ -59,7 +60,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', M
             currentUser.avatarURL = update.avatarURL = user.avatarURL;
         }
 
-        if (Object.keys(update).length > 0)
+        if (Object.values(update).some(guard.hasValue))
             return await this.rupdate(user.id, update);
 
         return false;
@@ -70,16 +71,15 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid', M
         if (user === undefined)
             return false;
 
+        if (!await this.rupdate(userId, { reports: { [tagName]: this.setExpr(reason) } }))
+            return false;
+
         const reports = user.reports ??= {};
         if (reason !== undefined)
             reports[tagName] = reason;
         else
             delete reports[tagName];
 
-        return await this.rupdate(userId, r => ({
-            reports: {
-                [tagName]: reason === undefined ? r.literal() : reason
-            }
-        }));
+        return true;
     }
 }

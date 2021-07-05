@@ -108,6 +108,9 @@ export const oldBu = {
         }
 
         if (event in log) {
+            const channel = log[event];
+            if (channel === undefined)
+                return;
             let color;
             let eventName;
             switch (event) {
@@ -157,7 +160,6 @@ export const oldBu = {
                     }
                     break;
             }
-            const channel = log[event];
             embed ??= {};
             embed.title = `ℹ ${eventName ?? ''}`;
             embed.timestamp = new Date();

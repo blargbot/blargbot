@@ -50,10 +50,10 @@ export class MuteCommand extends BaseGuildCommand {
             case 'moderatorTooLow': return '❌ You can\'t assign the muted role! (it\'s higher than or equal to your top role)';
             case 'success':
                 if (flags.t === undefined)
-                    return `✅ ${humanize.fullName(member)} has been muted`;
+                    return `✅ **${humanize.fullName(member)}** has been muted`;
                 if (duration === undefined)
-                    return `⚠️ ${humanize.fullName(member)} has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`;
-                return `✅ ${humanize.fullName(member)} has been muted and will be unmuted after ${humanize.duration(duration)}`;
+                    return `⚠️ **${humanize.fullName(member)}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`;
+                return `✅ **${humanize.fullName(member)}** has been muted and will be unmuted after **${humanize.duration(duration)}**`;
         }
     }
 

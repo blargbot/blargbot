@@ -41,7 +41,7 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
         const expr = partialName.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
         return await this.rqueryAll((t, r) =>
             t.orderBy({ index: 'name' })
-                .filter(r.row<string>('name').match(`(?i)${expr}`))
+                .filter(r.row('name').match(`(?i)${expr}`))
                 .getField('name')
                 .skip(skip)
                 .limit(take));
@@ -50,7 +50,7 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
     public async searchCount(partialName: string): Promise<number> {
         const expr = partialName.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
         return await this.rquery((t, r) =>
-            t.filter(r.row<string>('name').match(`(?i)${expr}`))
+            t.filter(r.row('name').match(`(?i)${expr}`))
                 .count());
     }
 
@@ -77,26 +77,26 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
     }
 
     public async disable(tagName: string, userId: string, reason: string): Promise<boolean> {
-        return await this.rupdate(tagName, r => ({
+        return await this.rupdate(tagName, this.setExpr({
             content: '',
             deleted: true,
             deleter: userId,
             reason: reason,
             uses: 0,
-            favourites: r.literal({})
+            favourites: {}
         }));
     }
 
     public async incrementUses(tagName: string, count = 1): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            uses: r.row<number>('uses').default(0).add(count),
+            uses: r.row('uses').default(0).add(count),
             lastuse: new Date()
         }));
     }
 
     public async incrementReports(tagName: string, count = 1): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            reports: r.row<number>('reports').default(0).add(count)
+            reports: r.row('reports').default(0).add(count)
         }));
     }
 
@@ -110,14 +110,12 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
     public async setFavourite(tagName: string, userId: string, favourite: boolean): Promise<boolean> {
         return await this.rupdate(tagName, {
             favourites: {
-                [userId]: favourite
+                [userId]: this.updateExpr(favourite ? true : undefined)
             }
         });
     }
 
     public async setProp<K extends keyof StoredTag>(tagName: string, key: K, value: StoredTag[K]): Promise<boolean> {
-        return await this.rupdate(tagName, r => ({
-            [key]: r.literal(...value === undefined ? [] : [value])
-        }));
+        return await this.rupdate(tagName, { [key]: this.setExpr(value) });
     }
 }

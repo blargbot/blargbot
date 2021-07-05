@@ -1,6 +1,6 @@
 import { Guild, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
-import { BanResult, humanize, KickResult, mapping, UnbanEventOptions, UnbanResult } from '../../core';
+import { BanResult, humanize, KickResult, mapping, MassBanResult, UnbanEventOptions, UnbanResult } from '../../core';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -21,26 +21,13 @@ export class BanManager extends ModerationManagerBase {
     }
 
     public async ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string, duration?: Duration): Promise<BanResult> {
-        const self = guild.members.get(this.cluster.discord.user.id);
-        if (self?.permissions.has('banMembers') !== true)
-            return 'noPerms';
-
-        const member = guild.members.get(user.id);
-        if (checkModerator) {
-            const permMessage = await this.checkModerator(member, guild, moderator, 'banMembers', 'banoverride');
-            if (permMessage !== undefined)
-                return permMessage;
+        const result = await this.tryBanUser(guild, user.id, moderator, checkModerator, undefined, deleteDays, reason);
+        if (result !== 'success') {
+            if (typeof result === 'string')
+                return result;
+            throw result.error;
         }
 
-        if (member !== undefined && !this.cluster.util.isBotHigher(member))
-            return 'memberTooHigh';
-
-        const bans = await guild.getBans();
-        if (bans.some(b => b.user.id === user.id))
-            return 'alreadyBanned';
-
-        this.ignoreBans.add(`${guild.id}:${user.id}`);
-        await guild.banMember(user.id, deleteDays, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         if (duration === undefined) {
             await this.modlog.logBan(guild, user, moderator, reason);
         } else {
@@ -53,6 +40,69 @@ export class BanManager extends ModerationManagerBase {
                 endtime: moment().add(duration).toDate()
             });
         }
+
+        return 'success';
+    }
+
+    public async massBan(guild: Guild, userIds: string[], moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string): Promise<MassBanResult> {
+        if (userIds.length === 0)
+            return 'noUsers';
+
+        const self = guild.members.get(this.cluster.discord.user.id);
+        if (self?.permissions.has('banMembers') !== true)
+            return 'noPerms';
+
+        if (checkModerator) {
+            const permMessage = await this.checkModerator(guild, undefined, moderator.id, 'banMembers', 'banoverride');
+            if (permMessage !== undefined)
+                return permMessage;
+        }
+
+        const guildBans = new Set((await guild.getBans()).map(b => b.user.id));
+        const banResults = await Promise.all(userIds.map(async userId => ({ userId, result: await this.tryBanUser(guild, userId, moderator, checkModerator, guildBans, deleteDays, reason) })));
+
+        const bannedIds = new Set(banResults.filter(r => r.result === 'success').map(r => r.userId));
+        if (bannedIds.size === 0) {
+            const { result } = banResults[0];
+            if (result === 'success')
+                throw new Error('Filter failed to find a successful ban, yet here we are. Curious.');
+            if (typeof result === 'string')
+                return result;
+            throw result;
+        }
+        const newBans = await guild.getBans();
+        const banned = newBans.filter(b => !guildBans.has(b.user.id) && bannedIds.has(b.user.id)).map(b => b.user);
+
+        await this.modlog.logMassBan(guild, banned, moderator);
+        return banned;
+    }
+
+    private async tryBanUser(guild: Guild, userId: string, moderator: User, checkModerator: boolean, alreadyBanned?: Set<string>, deleteDays = 1, reason?: string): Promise<BanResult | { error: unknown; }> {
+        const self = guild.members.get(this.cluster.discord.user.id);
+        if (self?.permissions.has('banMembers') !== true)
+            return 'noPerms';
+
+        if (checkModerator) {
+            const permMessage = await this.checkModerator(guild, userId, moderator.id, 'banMembers', 'banoverride');
+            if (permMessage !== undefined)
+                return permMessage;
+        }
+
+        const member = guild.members.get(userId);
+        if (member !== undefined && !this.cluster.util.isBotHigher(member))
+            return 'memberTooHigh';
+
+        alreadyBanned ??= new Set((await guild.getBans()).map(b => b.user.id));
+        if (alreadyBanned.has(userId))
+            return 'alreadyBanned';
+
+        this.ignoreBans.add(`${guild.id}:${userId}`);
+        try {
+            await guild.banMember(userId, deleteDays, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        } catch (err: unknown) {
+            this.ignoreBans.delete(`${guild.id}:${userId}`);
+            return { error: err };
+        }
         return 'success';
     }
 
@@ -62,7 +112,7 @@ export class BanManager extends ModerationManagerBase {
             return 'noPerms';
 
         if (checkModerator) {
-            const permMessage = await this.checkModerator(undefined, guild, moderator, 'banMembers', 'banoverride');
+            const permMessage = await this.checkModerator(guild, undefined, moderator.id, 'banMembers', 'banoverride');
             if (permMessage !== undefined)
                 return permMessage;
         }
@@ -84,7 +134,7 @@ export class BanManager extends ModerationManagerBase {
             return 'noPerms';
 
         if (checkModerator) {
-            const permMessage = await this.checkModerator(member, member.guild, moderator, 'kickMembers', 'kickoverride');
+            const permMessage = await this.checkModerator(member.guild, member.id, moderator.id, 'kickMembers', 'kickoverride');
             if (permMessage !== undefined)
                 return permMessage;
         }

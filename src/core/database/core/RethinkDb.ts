@@ -1,4 +1,6 @@
 import * as r from 'rethinkdb';
+import { BetterExpression } from 'rethinkdb';
+import { Sanitized } from 'rethinkdb';
 import { Query, Expression, Cursor, Connection, Time } from 'rethinkdb';
 import { RethinkDbOptions } from '../types';
 
@@ -77,4 +79,43 @@ export class RethinkDb {
     public epochTime(time: number): Expression<Time> {
         return r.epochTime(time);
     }
+
+    public updateExpr<T>(value: T): Sanitized<T> {
+        return <Sanitized<T>>hackySanitize(value, false);
+    }
+
+    public addExpr<T>(value: T): Sanitized<T> {
+        return <Sanitized<T>>hackySanitize(value, true);
+    }
+
+    public setExpr<T>(value: T): BetterExpression<Sanitized<T>> {
+        return r.literal(this.addExpr(value));
+    }
+}
+
+function hackySanitize(value: unknown, removeUndef: boolean): unknown {
+    switch (typeof value) {
+        case 'undefined':
+            return r.literal();
+        case 'string':
+        case 'bigint':
+        case 'boolean':
+        case 'function':
+        case 'number':
+        case 'symbol':
+            return value;
+        case 'object':
+            if (value === null)
+                return value;
+            if (Array.isArray(value)) {
+                return value.filter(v => v !== undefined)
+                    .map(v => hackySanitize(v, removeUndef));
+            }
+            return Object.fromEntries(
+                Object.entries(value)
+                    .filter(([, e]) => !removeUndef || e !== undefined)
+                    .map(([k, e]) => [k, hackySanitize(e, removeUndef)])
+            );
+    }
+
 }

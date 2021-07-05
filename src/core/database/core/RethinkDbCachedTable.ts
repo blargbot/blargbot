@@ -6,12 +6,12 @@ import { Cache } from '../../Cache';
 import { guard, sleep } from '../../utils';
 import { Logger } from '../../Logger';
 
-export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K extends string & keyof RethinkTableMap[T], M extends RethinkTableMap[T]> extends RethinkDbTable<T> {
-    protected readonly cache: Cache<string & RethinkTableMap[T][K], M>;
+export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableMap, Key extends string & keyof RethinkTableMap[TableName]> extends RethinkDbTable<TableName> {
+    protected readonly cache: Cache<string & RethinkTableMap[TableName][Key], RethinkTableMap[TableName]>;
 
     protected constructor(
-        table: T,
-        protected readonly keyName: K,
+        table: TableName,
+        protected readonly keyName: Key,
         rethinkDb: RethinkDb,
         logger: Logger
     ) {
@@ -20,18 +20,18 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
     }
 
     protected async rget(
-        key: string & RethinkTableMap[T][K],
+        key: string & RethinkTableMap[TableName][Key],
         skipCache = false
-    ): Promise<M | undefined> {
+    ): Promise<RethinkTableMap[TableName] | undefined> {
         if (skipCache || !this.cache.has(key)) {
             const result = await super.rget(key);
             if (result !== undefined)
-                this.cache.set(key, <M>result);
+                this.cache.set(key, result);
         }
         return this.cache.get(key, true);
     }
 
-    public async watchChanges(shouldCache: (id: RethinkTableMap[T][K]) => boolean = () => true): Promise<void> {
+    public async watchChanges(shouldCache: (id: RethinkTableMap[TableName][Key]) => boolean = () => true): Promise<void> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
         while (true) {
@@ -42,7 +42,7 @@ export abstract class RethinkDbCachedTable<T extends keyof RethinkTableMap, K ex
                     if (!guard.hasValue(data.new_val))
                         this.cache.delete(data.old_val[this.keyName]);
                     else {
-                        const id = data.new_val[this.keyName] as string & RethinkTableMap[T][K];
+                        const id = data.new_val[this.keyName] as string & RethinkTableMap[TableName][Key];
                         if (this.cache.has(id) || shouldCache(id))
                             this.cache.set(id, data.new_val);
                     }

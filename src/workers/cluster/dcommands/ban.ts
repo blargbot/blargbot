@@ -33,17 +33,17 @@ export class BanCommand extends BaseGuildCommand {
         const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;
 
         switch (await context.cluster.moderation.bans.ban(context.channel.guild, user, context.author, true, days, reason, duration)) {
-            case 'alreadyBanned': return `❌ ${humanize.fullName(user)} is already banned!`;
-            case 'memberTooHigh': return `❌ I don't have permission to ban ${humanize.fullName(user)}! Their highest role is above my highest role.`;
-            case 'moderatorTooLow': return `❌ You don't have permission to ban ${humanize.fullName(user)}! Their highest role is above your highest role.`;
-            case 'noPerms': return `❌ I don't have permission to ban ${humanize.fullName(user)}! Make sure I have the \`ban members\` permission and try again.`;
-            case 'moderatorNoPerms': return `❌ You don't have permission to ban ${humanize.fullName(user)}! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`;
+            case 'alreadyBanned': return `❌ **${humanize.fullName(user)}** is already banned!`;
+            case 'memberTooHigh': return `❌ I don't have permission to ban **${humanize.fullName(user)}**! Their highest role is above my highest role.`;
+            case 'moderatorTooLow': return `❌ You don't have permission to ban **${humanize.fullName(user)}**! Their highest role is above your highest role.`;
+            case 'noPerms': return `❌ I don't have permission to ban **${humanize.fullName(user)}**! Make sure I have the \`ban members\` permission and try again.`;
+            case 'moderatorNoPerms': return `❌ You don't have permission to ban **${humanize.fullName(user)}**! Make sure you have the \`ban members\` permission or one of the permissions specified in the \`ban override\` setting and try again.`;
             case 'success':
                 if (flags.t === undefined)
-                    return `✅ ${humanize.fullName(user)} has been banned.`;
+                    return `✅ **${humanize.fullName(user)}** has been banned.`;
                 if (duration === undefined)
-                    return `⚠️ ${humanize.fullName(user)} has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`;
-                return `✅ ${humanize.fullName(user)} has been banned and will be unbanned after ${humanize.duration(duration)}`;
+                    return `⚠️ **${humanize.fullName(user)}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`;
+                return `✅ **${humanize.fullName(user)}** has been banned and will be unbanned after **${humanize.duration(duration)}**`;
         }
     }
 }

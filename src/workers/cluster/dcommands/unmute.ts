@@ -30,7 +30,7 @@ export class UnmuteCommand extends BaseGuildCommand {
             case 'moderatorNoPerms': return '❌ You don\'t have permission to unmute users! Make sure you have the `manage roles` permission and try again.';
             case 'roleTooHigh': return '❌ I can\'t revoke the muted role! (it\'s higher than or equal to my top role)';
             case 'moderatorTooLow': return '❌ You can\'t revoke the muted role! (it\'s higher than or equal to your top role)';
-            case 'success': return `✅ ${humanize.fullName(member)} has been muted`;
+            case 'success': return `✅ **${humanize.fullName(member)}** has been muted`;
         }
     }
 }

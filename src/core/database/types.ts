@@ -6,10 +6,10 @@ import { FlagDefinition, SerializedBBTagContext } from '../../workers/cluster/co
 import { Logger } from '../Logger';
 
 export type RethinkTableMap = {
-    'guild': StoredGuild;
+    'guild': MutableStoredGuild;
     'tag': StoredTag;
-    'user': StoredUser;
-    'vars': KnownStoredVars;
+    'user': MutableStoredUser;
+    'vars': MutableKnownStoredVars;
     'events': Omit<StoredEventOptions, 'id'>;
 }
 
@@ -171,7 +171,7 @@ export interface StoredGuild {
     readonly modlog?: readonly GuildModlogEntry[];
     readonly roleme?: readonly GuildRolemeEntry[];
     readonly autoresponse?: GuildAutoresponses;
-    readonly log?: { readonly [key: string]: string; };
+    readonly log?: { readonly [key: string]: string | undefined; };
     readonly logIgnore?: readonly string[];
 }
 
@@ -179,7 +179,7 @@ export interface MutableStoredGuild extends StoredGuild {
     ccommands: { [key: string]: StoredGuildCommand | undefined; };
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
-    log?: { [key: string]: string; };
+    log?: { [key: string]: string | undefined; };
     autoresponse?: MutableGuildAutoresponses;
 }
 
@@ -354,7 +354,7 @@ export interface StoredUser extends StoredUserSettings {
     readonly lastcommanddate?: Date;
     readonly todo: readonly UserTodo[];
     readonly reportblock?: string;
-    readonly reports?: { readonly [key: string]: string; };
+    readonly reports?: { readonly [key: string]: string | undefined; };
 }
 
 export interface MutableStoredUser extends StoredUser {
@@ -362,7 +362,7 @@ export interface MutableStoredUser extends StoredUser {
     username?: string;
     discriminator?: string;
     avatarURL?: string;
-    reports?: { [key: string]: string; };
+    reports?: { [key: string]: string | undefined; };
 }
 
 export interface StoredUserSettings {
@@ -459,7 +459,7 @@ export interface GuildTable {
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
     listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedStoredGuildCommand[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
-    add(guild: StoredGuild): Promise<boolean>;
+    add(guild: MutableStoredGuild): Promise<boolean>;
     getIds(skipCache?: boolean): Promise<readonly string[]>;
     getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<StoredGuildSettings[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
@@ -482,7 +482,7 @@ export interface GuildTable {
 export interface UserTable {
     getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<StoredUserSettings[K] | undefined>;
     get(userId: string, skipCache?: boolean): Promise<StoredUser | undefined>;
-    add(user: StoredUser): Promise<boolean>;
+    add(user: MutableStoredUser): Promise<boolean>;
     upsert(user: User): Promise<boolean>;
     setTagReport(userId: string, tagName: string, reason: string | undefined): Promise<boolean>;
 }

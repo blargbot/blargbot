@@ -44,6 +44,22 @@ export class Modlog {
         });
     }
 
+    public async logMassBan(guild: Guild, users: User[], moderator?: User, reason?: string): Promise<void> {
+        switch (users.length) {
+            case 0: return;
+            case 1: return await this.logBan(guild, users[0], moderator, reason);
+            default: return await this.logAction({
+                type: 'Mass Ban',
+                guildId: guild.id,
+                user: users,
+                color: ModlogColour.BAN,
+                moderator: moderator,
+                reason: reason
+            });
+        }
+
+    }
+
     public async logUnban(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         await this.logAction({
             type: 'Unban',
@@ -160,7 +176,7 @@ export class Modlog {
         await this.cluster.database.guilds.addModlog(guildId, {
             caseid: caseId,
             modid: moderator?.id,
-            msgid: modlogMessage?.id ?? '',
+            msgid: modlogMessage?.id,
             reason: reason,
             type: type,
             userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id

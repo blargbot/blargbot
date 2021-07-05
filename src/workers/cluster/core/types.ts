@@ -548,6 +548,7 @@ export type EnsureMutedRoleResult = 'success' | 'unconfigured' | 'noPerms';
 export type MuteResult = 'success' | 'alreadyMuted' | 'noPerms' | 'roleMissing' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnmuteResult = 'success' | 'notMuted' | 'noPerms' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type BanResult = 'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
+export type MassBanResult = User[] | Exclude<BanResult, 'success'> | 'noUsers';
 export type KickResult = 'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnbanResult = 'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms';
 

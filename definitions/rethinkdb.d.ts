@@ -1,6 +1,7 @@
 declare module 'rethinkdb' {
-    export function epochTime(time: number): Expression<Time>;
-    export function literal<T>(value?: T): Expression<T>;
+    export function epochTime(time: number): BetterExpression<Time>;
+    export function literal<T>(): BetterExpression<T>;
+    export function literal<T>(value: T): BetterExpression<T>;
 
     interface WriteResult {
         changes?: WriteChange[];
@@ -16,17 +17,33 @@ declare module 'rethinkdb' {
     interface Sequence {
         changes(opts?: Partial<ChangesOptions>): Sequence;
     }
-    interface Expression<T> {
-        append<E>(prop: E): Expression<E[]>;
-        match: T extends string ? (re2: string) => Expression<string> : never;
+
+    type Sanitized<T> = T extends Array<infer R | undefined> ? R[] : T;
+    type AppendValue<T> = T extends Array<infer R> ? R : never;
+    type SpliceReplacement<T> = T extends Array<infer R> ? R[] : never;
+    interface BetterExpression<T> extends Expression<T> {
+        append(prop: string): BetterExpression<T>;
+        append(prop: AppendValue<T>): BetterExpression<T>;
+        spliceAt(index: number, replacement: SpliceReplacement<T>): BetterExpression<T>;
+        match: T extends string ? (re2: string) => BetterExpression<string> : never;
+        getField<K extends keyof T>(name: K): BetterExpression<T[K]>;
+        <K extends keyof T>(name: K): BetterExpression<T[K]>;
+        default(value: Exclude<T, undefined | null>): BetterExpression<Exclude<T, undefined | null>>;
+        add(value: number): BetterExpression<number>;
+        add(value: Expression<number>): BetterExpression<number>;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    interface Row extends Expression<any> {
-        <T>(name: string): Expression<T>;
+    interface BetterRow<T> extends BetterExpression<T> {
+        <R extends keyof T>(name: R): BetterExpression<T[R]>;
     }
 
-    type Query<T> = (rethink: typeof import('rethinkdb')) => Operation<T>;
-    type TableQuery<T> = (table: Table, rethink: typeof import('rethinkdb')) => Operation<T>;
-    type UpdateRequest<T> = { [P in keyof T]?: T[P] | Expression<T[P]> | UpdateRequest<T[P]> }
+    type RethinkDb = typeof import('rethinkdb');
+    interface BetterRethinkDb<T> extends RethinkDb {
+        readonly row: BetterRow<T>;
+    }
+
+    type Query<T> = (rethink: RethinkDb) => Operation<T>;
+    type TableQuery<T, R> = (table: Table, rethink: BetterRethinkDb<R>) => Operation<T>;
+    type UpdateRequest<T> = { [P in keyof T]?: T[P] | BetterExpression<T[P]> | UpdateRequest<T[P]> } | BetterExpression<T>;
+    type UpdateData<T> = UpdateRequest<T> | ((r: BetterRethinkDb<T>) => UpdateRequest<T>);
 }
