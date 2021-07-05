@@ -89,6 +89,8 @@ export class RethinkDb {
     }
 
     public setExpr<T>(value: T): BetterExpression<Sanitized<T>> {
+        if (value === undefined)
+            return r.literal();
         return r.literal(this.addExpr(value));
     }
 }

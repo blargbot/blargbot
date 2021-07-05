@@ -1,5 +1,5 @@
 import { Member, User } from 'eris';
-import { ModerationType, WarnResult } from '../../core';
+import { ModerationType, WarnDetails, WarnResult } from '../../core';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -9,10 +9,17 @@ export class WarnManager extends ModerationManagerBase {
     }
 
     public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<WarnResult> {
+        if (count === 0)
+            return { type: ModerationType.WARN, count: 0, result: 'countZero' };
+        if (count < 0)
+            return { type: ModerationType.WARN, count: 0, result: 'countNegative' };
+        if (isNaN(count))
+            return { type: ModerationType.WARN, count: 0, result: 'countNaN' };
+
         const warnings = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat') ?? Infinity;
         const kickAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'kickat') ?? Infinity;
-        let newCount = Math.max(0, warnings + count);
+        let newCount = Math.max(0, warnings + Math.max(count, 0));
         let result: WarnResult = {
             type: ModerationType.WARN,
             count: newCount,
@@ -22,13 +29,13 @@ export class WarnManager extends ModerationManagerBase {
         await this.modlog.logWarn(member.guild, member.user, count, newCount, moderator, reason);
 
         if (this.cluster.util.isBotHigher(member)) {
-            if (banAt > 0 && count >= banAt) {
+            if (banAt > 0 && newCount >= banAt) {
                 result = {
                     type: ModerationType.BAN,
                     result: await this.manager.bans.ban(member.guild, member.user, this.cluster.discord.user, true, undefined, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`),
                     count: newCount = 0
                 };
-            } else if (kickAt > 0 && count >= kickAt) {
+            } else if (kickAt > 0 && newCount >= kickAt) {
                 result = {
                     type: ModerationType.KICK,
                     result: await this.manager.bans.kick(member, this.cluster.discord.user, true, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
@@ -37,18 +44,36 @@ export class WarnManager extends ModerationManagerBase {
             }
         }
 
-        await this.cluster.database.guilds.setWarnings(member.guild.id, member.id, count <= 0 ? undefined : count);
+        await this.cluster.database.guilds.setWarnings(member.guild.id, member.id, newCount <= 0 ? undefined : newCount);
         return result;
     }
 
-    public async pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number> {
+    public async pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number | 'countNaN' | 'countNegative' | 'countZero'> {
+        if (count === 0)
+            return 'countZero';
+        if (count < 0)
+            return 'countNegative';
+        if (isNaN(count))
+            return 'countNaN';
+
         const oldWarnings = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
-        const newCount = Math.max(0, oldWarnings - count);
+        const newCount = Math.max(0, oldWarnings - Math.max(count, 0));
 
         await this.modlog.logPardon(member.guild, member.user, count, newCount, moderator, reason);
-        await this.cluster.database.guilds.setWarnings(member.guild.id, member.id, newCount <= 0 ? undefined : newCount);
+        await this.cluster.database.guilds.setWarnings(member.guild.id, member.id, newCount === 0 ? undefined : newCount);
 
-        return count;
+        return newCount;
     }
 
+    public async details(member: Member): Promise<WarnDetails> {
+        const count = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
+        const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat');
+        const kickAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'kickat');
+
+        return {
+            count: count,
+            banAt: banAt === undefined || banAt <= 0 ? undefined : banAt,
+            kickAt: kickAt === undefined || kickAt <= 0 ? undefined : kickAt
+        };
+    }
 }

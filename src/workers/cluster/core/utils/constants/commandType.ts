@@ -1,3 +1,4 @@
+import { defaultStaff } from './defaultStaff';
 import { CommandContext } from '../../command';
 import { CommandPropertiesSet } from '../../types';
 import { guard } from '../guard';
@@ -43,7 +44,7 @@ export const properties: CommandPropertiesSet = {
     [CommandType.ADMIN]: {
         name: 'Admin',
         requirement: () => true,
-        perm: 'Admin',
+        defaultPerms: defaultStaff,
         description: 'Powerful commands that require an `admin` role or special permissions.',
         color: 0xff0000
     },

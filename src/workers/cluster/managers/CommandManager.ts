@@ -46,42 +46,51 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
     }
 
     public async canExecuteDefaultCommand(context: CommandContext, command: BaseCommand, options: CanExecuteDefaultCommandOptions = {}): Promise<boolean> {
+        if (command.onlyOn !== undefined && (!guard.isGuildCommandContext(context) || command.onlyOn !== context.channel.guild.id))
+            return false; // Command only works on the specific guild
+
         if (context.author.id === this.cluster.config.discord.users.owner)
-            return true;
+            return true; // The owner can execute any command anywhere
 
         const category = commandTypes.properties[command.category];
-        if (!guard.isGuildCommandContext(context))
-            return category.perm === undefined;
-
         if (!await category.requirement(context))
-            return false;
+            return false; // Context doesnt meet the category requirements
+
+        if (!guard.isGuildCommandContext(context))
+            return true; // No configurable restrictions outside of guilds
 
         const commandPerms = await this.cluster.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
         if (commandPerms?.disabled === true && !command.cannotDisable)
-            return false;
+            return false; // Command is disabled
 
         const permOverride = options.permOverride ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'permoverride');
         if (permOverride === true) {
             const staffPerms = options.staffPerms ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
             const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
             if (!isNaN(allow) && this.cluster.util.hasPerms(context.message.member, allow))
-                return true;
+                return true; // User has any of the permissions that identify them as a staff member
         }
 
         if (commandPerms !== undefined) {
             if (commandPerms.permission !== undefined && this.cluster.util.hasPerms(context.message.member, commandPerms.permission))
-                return true;
+                return true; // User has any of the permissions for this command
 
             switch (typeof commandPerms.rolename) {
                 case 'undefined': break;
+                // User has one of the roles this command is linked to?
                 case 'string': return await this.cluster.util.hasRoles(context.message, [commandPerms.rolename], options.quiet ?? false);
                 case 'object': return await this.cluster.util.hasRoles(context.message, commandPerms.rolename, options.quiet ?? false);
             }
         }
 
         const adminrole = await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'adminrole');
-        if (category.perm !== undefined && !await this.cluster.util.hasRoles(context.message, [adminrole ?? category.perm], options.quiet ?? false))
-            return false;
+        if (adminrole !== undefined)
+            // User has the configured admin role?
+            return await this.cluster.util.hasRoles(context.message, [adminrole], options.quiet ?? false);
+
+        if (category.defaultPerms !== undefined)
+            // User has any of the permissions declared by the category?
+            return this.cluster.util.hasPerms(context.message.member, category.defaultPerms);
 
         return true;
     }

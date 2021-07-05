@@ -514,7 +514,7 @@ export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
 export interface CommandProperties {
     readonly name: string;
     readonly description: string;
-    readonly perm?: string;
+    readonly defaultPerms?: number;
     readonly requirement: (context: CommandContext) => boolean | Promise<boolean>;
     readonly color: number;
 }
@@ -552,16 +552,19 @@ export type MassBanResult = User[] | Exclude<BanResult, 'success'> | 'noUsers';
 export type KickResult = 'success' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';
 export type UnbanResult = 'success' | 'notBanned' | 'noPerms' | 'moderatorNoPerms';
 
-export type WarnResult = {
-    type: ModerationType.BAN;
-    count: number;
-    result: BanResult;
-} | {
-    type: ModerationType.KICK;
-    count: number;
-    result: KickResult;
-} | {
-    type: ModerationType.WARN;
-    count: number;
-    result: 'success';
+export interface WarnDetails {
+    readonly count: number;
+    readonly banAt?: number;
+    readonly kickAt?: number;
 }
+
+export interface WarnResultBase<ModType extends ModerationType, TResult extends string> {
+    readonly type: ModType;
+    readonly count: number;
+    readonly result: TResult;
+}
+
+export type WarnResult =
+    | WarnResultBase<ModerationType.BAN, BanResult>
+    | WarnResultBase<ModerationType.KICK, KickResult>
+    | WarnResultBase<ModerationType.WARN, 'success' | 'countNaN' | 'countNegative' | 'countZero'>;
