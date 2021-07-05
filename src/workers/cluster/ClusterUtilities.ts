@@ -11,7 +11,14 @@ export class ClusterUtilities extends BaseUtilities {
         super(cluster);
     }
 
-    public async getUser(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<User | undefined> {
+    public async getMember(msg: UserChannelInteraction<GuildChannel>, name: string, args?: FindEntityOptions): Promise<Member | undefined> {
+        const user = await this.getUser(msg, name, args);
+        if (user === undefined)
+            return undefined;
+        return msg.channel.guild.members.get(user.id);
+    }
+
+    public async getUser(msg: UserChannelInteraction, name: string, args: FindEntityOptions = {}): Promise<User | undefined> {
         if (name.length === 0)
             return undefined;
 
@@ -26,9 +33,6 @@ export class ClusterUtilities extends BaseUtilities {
             if (user.normNick.includes(normName)) score += 1;
             return score;
         };
-
-        if (typeof args !== 'object')
-            args = { quiet: args };
 
         const user = await this.getUserById(name);
         if (user !== undefined)

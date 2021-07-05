@@ -14,6 +14,7 @@ export class MuteManager {
     public init(): void {
         this.cluster.timeouts.on('unmute', event => void this.handleUnmuteTimeout(event));
         // TODO listen to guild join/leave to make bypassing mutes harder
+        // TODO listen to channel creates to update them with the muted role by default
     }
 
     public async mute(member: Member, moderator: User, reason?: string, duration?: Duration): Promise<MuteResult> {
@@ -65,14 +66,14 @@ export class MuteManager {
     public async ensureMutedRole(guild: Guild): Promise<EnsureMutedRoleResult> {
         const currentRole = await this.getMuteRole(guild);
         if (currentRole !== undefined)
-            return { state: 'success', role: currentRole };
+            return 'success';
 
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self === undefined)
             throw new Error('Cannot manage a server I am not a member of');
 
         if (!self.permissions.has('manageRoles'))
-            return { state: 'noPerms', role: undefined };
+            return 'noPerms';
 
         const newRole = await guild.createRole({
             color: 16711680,
@@ -83,12 +84,12 @@ export class MuteManager {
         await this.cluster.database.guilds.setSetting(guild.id, 'mutedrole', newRole.id);
 
         if (!self.permissions.has('manageChannels'))
-            return { state: 'unconfigured', role: newRole };
+            return 'unconfigured';
 
         for (const channel of guild.channels.values()) {
             await this.configureChannel(channel, newRole);
         }
-        return { state: 'success', role: newRole };
+        return 'success';
     }
 
     private async configureChannel(channel: AnyGuildChannel, mutedRole: Role): Promise<void> {
