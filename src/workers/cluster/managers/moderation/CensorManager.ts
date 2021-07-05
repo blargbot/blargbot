@@ -1,12 +1,11 @@
 import { GuildMessage } from 'eris';
-import { Cluster } from '../../Cluster';
 import { CustomCommandLimit, guard, GuildCensorExceptions, humanize, ModerationType } from '../../core';
 import { ModerationManager } from '../ModerationManager';
+import { ModerationManagerBase } from './ModerationManagerBase';
 
-export class CensorManager {
-    private get cluster(): Cluster { return this.manager.cluster; }
-
-    public constructor(public readonly manager: ModerationManager) {
+export class CensorManager extends ModerationManagerBase {
+    public constructor(manager: ModerationManager) {
+        super(manager);
     }
 
     public async censor(message: GuildMessage): Promise<boolean> {
@@ -64,12 +63,14 @@ export class CensorManager {
         if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.length < parsedAntiMention)
             return false;
 
-        switch (await this.manager.bans.ban(message.member, this.cluster.discord.user, 1, 'Mention spam')) {
+        switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, false, 1, 'Mention spam')) {
             case 'success':
             case 'memberTooHigh':
+            case 'alreadyBanned':
                 return true;
             case 'noPerms':
             case 'moderatorNoPerms':
+            case 'moderatorTooLow':
                 await this.cluster.util.send(message, `${message.author.username} is mention spamming, but I lack the permissions to ban them!`);
                 return true;
         }

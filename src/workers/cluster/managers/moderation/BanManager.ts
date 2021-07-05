@@ -1,17 +1,15 @@
 import { Guild, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
-import { Cluster } from '../../Cluster';
-import { BanResult, humanize, KickResult, Modlog, UnbanEventOptions, UnbanResult } from '../../core';
+import { BanResult, humanize, KickResult, mapping, UnbanEventOptions, UnbanResult } from '../../core';
 import { ModerationManager } from '../ModerationManager';
+import { ModerationManagerBase } from './ModerationManagerBase';
 
-export class BanManager {
+export class BanManager extends ModerationManagerBase {
     private readonly ignoreBans: Set<`${string}:${string}`>;
     private readonly ignoreUnbans: Set<`${string}:${string}`>;
 
-    private get cluster(): Cluster { return this.manager.cluster; }
-    private get modlog(): Modlog { return this.manager.modlog; }
-
-    public constructor(public readonly manager: ModerationManager) {
+    public constructor(manager: ModerationManager) {
+        super(manager);
         this.ignoreBans = new Set();
         this.ignoreUnbans = new Set();
     }
@@ -22,24 +20,35 @@ export class BanManager {
         this.cluster.discord.on('guildBanRemove', (guild, user) => void this.handleUnbanEvent(guild, user));
     }
 
-    public async ban(member: Member, moderator: User, deleteDays = 1, reason?: string, duration?: Duration): Promise<BanResult> {
-        const self = member.guild.members.get(this.cluster.discord.user.id);
+    public async ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string, duration?: Duration): Promise<BanResult> {
+        const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
 
-        if (!this.cluster.util.isBotHigher(member))
+        const member = guild.members.get(user.id);
+        if (checkModerator) {
+            const permMessage = await this.checkModerator(member, guild, moderator, 'banMembers', 'banoverride');
+            if (permMessage !== undefined)
+                return permMessage;
+        }
+
+        if (member !== undefined && !this.cluster.util.isBotHigher(member))
             return 'memberTooHigh';
 
-        this.ignoreBans.add(`${member.guild.id}:${member.id}`);
-        await member.guild.banMember(member.id, deleteDays, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        const bans = await guild.getBans();
+        if (bans.some(b => b.user.id === user.id))
+            return 'alreadyBanned';
+
+        this.ignoreBans.add(`${guild.id}:${user.id}`);
+        await guild.banMember(user.id, deleteDays, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         if (duration === undefined) {
-            await this.modlog.logBan(member.guild, member.user, moderator, reason);
+            await this.modlog.logBan(guild, user, moderator, reason);
         } else {
-            await this.modlog.logSoftban(member.guild, member.user, duration, moderator, reason);
+            await this.modlog.logSoftban(guild, user, duration, moderator, reason);
             await this.cluster.timeouts.insert('unban', {
-                source: member.guild.id,
-                guild: member.guild.id,
-                user: member.id,
+                source: guild.id,
+                guild: guild.id,
+                user: user.id,
                 duration: JSON.stringify(duration),
                 endtime: moment().add(duration).toDate()
             });
@@ -47,28 +56,44 @@ export class BanManager {
         return 'success';
     }
 
-    public async kick(member: Member, moderator: User, reason?: string): Promise<KickResult> {
+    public async unban(guild: Guild, user: User, moderator: User, checkModerator: boolean, reason?: string): Promise<UnbanResult> {
+        const self = guild.members.get(this.cluster.discord.user.id);
+        if (self?.permissions.has('banMembers') !== true)
+            return 'noPerms';
+
+        if (checkModerator) {
+            const permMessage = await this.checkModerator(undefined, guild, moderator, 'banMembers', 'banoverride');
+            if (permMessage !== undefined)
+                return permMessage;
+        }
+
+        const bans = await guild.getBans();
+        if (bans.every(b => b.user.id !== user.id))
+            return 'notBanned';
+
+        this.ignoreUnbans.add(`${guild.id}:${user.id}`);
+        await guild.unbanMember(user.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        await this.modlog.logUnban(guild, user, moderator, reason);
+
+        return 'success';
+    }
+
+    public async kick(member: Member, moderator: User, checkModerator: boolean, reason?: string): Promise<KickResult> {
         const self = member.guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('kickMembers') !== true)
             return 'noPerms';
+
+        if (checkModerator) {
+            const permMessage = await this.checkModerator(member, member.guild, moderator, 'kickMembers', 'kickoverride');
+            if (permMessage !== undefined)
+                return permMessage;
+        }
 
         if (!this.cluster.util.isBotHigher(member))
             return 'memberTooHigh';
 
         await member.guild.kickMember(member.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         await this.modlog.logKick(member.guild, member.user, moderator, reason);
-        return 'success';
-    }
-
-    public async unban(guild: Guild, user: User, moderator: User, reason?: string): Promise<UnbanResult> {
-        const self = guild.members.get(this.cluster.discord.user.id);
-        if (self?.permissions.has('banMembers') !== true)
-            return 'noPerms';
-
-        this.ignoreUnbans.add(`${guild.id}:${user.id}`);
-        await guild.unbanMember(user.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
-        await this.modlog.logUnban(guild, user, moderator, reason);
-
         return 'success';
     }
 
@@ -81,9 +106,10 @@ export class BanManager {
         if (user === undefined)
             return;
 
-        const duration = moment.duration(event.duration);
+        const mapResult = mapDuration(event.duration);
+        const duration = mapResult.valid ? humanize.duration(mapResult.value) : 'some time';
 
-        await this.unban(guild, user, this.cluster.discord.user, `Automatically unbanned after ${humanize.duration(duration)}.`);
+        await this.unban(guild, user, this.cluster.discord.user, false, `Automatically unbanned after ${duration}.`);
     }
 
     private async handleBanEvent(guild: Guild, user: User): Promise<void> {
@@ -96,3 +122,5 @@ export class BanManager {
             await this.modlog.logUnban(guild, user);
     }
 }
+
+const mapDuration = mapping.json(mapping.duration);

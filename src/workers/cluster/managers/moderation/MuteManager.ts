@@ -1,14 +1,12 @@
 import { AnyGuildChannel, Constants, Guild, Member, Role, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
-import { Cluster } from '../../Cluster';
-import { EnsureMutedRoleResult, guard, humanize, mapping, Modlog, MuteResult, UnmuteEventOptions, UnmuteResult } from '../../core';
+import { EnsureMutedRoleResult, guard, humanize, mapping, MuteResult, UnmuteEventOptions, UnmuteResult } from '../../core';
 import { ModerationManager } from '../ModerationManager';
+import { ModerationManagerBase } from './ModerationManagerBase';
 
-export class MuteManager {
-    private get cluster(): Cluster { return this.manager.cluster; }
-    private get modlog(): Modlog { return this.manager.modlog; }
-
-    public constructor(public readonly manager: ModerationManager) {
+export class MuteManager extends ModerationManagerBase {
+    public constructor(manager: ModerationManager) {
+        super(manager);
     }
 
     public init(): void {
@@ -129,6 +127,7 @@ export class MuteManager {
 
         const mapResult = mapDuration(event.duration);
         const duration = mapResult.valid ? humanize.duration(mapResult.value) : 'some time';
+
         await this.unmute(member, this.cluster.discord.user, `Automatically unmuted after ${duration}.`);
     }
 }

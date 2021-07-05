@@ -467,6 +467,9 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public getPosition(member: Member): number {
+        if (member.guild.ownerID === member.id)
+            return Infinity;
+
         const roles = member.roles.map(r => member.guild.roles.get(r)).filter(guard.hasValue);
         if (roles.length === 0)
             return 0;

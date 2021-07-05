@@ -44,8 +44,10 @@ export class MuteCommand extends BaseGuildCommand {
         switch (await context.cluster.moderation.mutes.mute(member, context.author, reason, duration)) {
             case 'alreadyMuted': return `❌ ${humanize.fullName(member)} is already muted`;
             case 'noPerms': return '❌ I don\'t have permission to mute users! Make sure I have the `manage roles` permission and try again.';
+            case 'moderatorNoPerms': return '❌ You don\'t have permission to mute users! Make sure you have the `manage roles` permission and try again.';
             case 'roleMissing': return '❌ The muted role has been deleted! Please re-run this command to create a new one.';
             case 'roleTooHigh': return '❌ I can\'t assign the muted role! (it\'s higher than or equal to my top role)';
+            case 'moderatorTooLow': return '❌ You can\'t assign the muted role! (it\'s higher than or equal to your top role)';
             case 'success':
                 if (flags.t === undefined)
                     return `✅ ${humanize.fullName(member)} has been muted`;

@@ -1,13 +1,11 @@
 import { Member, User } from 'eris';
-import { Cluster } from '../../Cluster';
-import { ModerationType, Modlog, WarnResult } from '../../core';
+import { ModerationType, WarnResult } from '../../core';
 import { ModerationManager } from '../ModerationManager';
+import { ModerationManagerBase } from './ModerationManagerBase';
 
-export class WarnManager {
-    private get cluster(): Cluster { return this.manager.cluster; }
-    private get modlog(): Modlog { return this.manager.modlog; }
-
-    public constructor(public readonly manager: ModerationManager) {
+export class WarnManager extends ModerationManagerBase {
+    public constructor(manager: ModerationManager) {
+        super(manager);
     }
 
     public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<WarnResult> {
@@ -27,13 +25,13 @@ export class WarnManager {
             if (banAt > 0 && count >= banAt) {
                 result = {
                     type: ModerationType.BAN,
-                    result: await this.manager.bans.ban(member, this.cluster.discord.user, undefined, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`),
+                    result: await this.manager.bans.ban(member.guild, member.user, this.cluster.discord.user, true, undefined, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`),
                     count: newCount = 0
                 };
             } else if (kickAt > 0 && count >= kickAt) {
                 result = {
                     type: ModerationType.KICK,
-                    result: await this.manager.bans.kick(member, this.cluster.discord.user, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
+                    result: await this.manager.bans.kick(member, this.cluster.discord.user, true, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
                     count: newCount
                 };
             }

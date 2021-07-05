@@ -57,7 +57,11 @@ export class TimeoutManager {
             }
 
             const type = event.type;
-            this.#emitter.emit(type, event);
+            try {
+                this.#emitter.emit(type, event);
+            } catch (err: unknown) {
+                this.cluster.logger.error('Error while processing timeout', event.type, event.id, err);
+            }
             await this.delete(event.id);
         }
     }

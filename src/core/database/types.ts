@@ -324,12 +324,12 @@ export interface StoredGuildSettings {
 }
 
 export interface GuildModlogEntry {
-    readonly caseid?: number;
+    readonly caseid: number;
     readonly modid?: string;
     readonly msgid?: string;
     readonly reason?: string;
-    readonly type?: string;
-    readonly userid?: string;
+    readonly type: string;
+    readonly userid: string;
 }
 
 export interface ChannelSettings {
