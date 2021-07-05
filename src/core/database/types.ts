@@ -108,9 +108,8 @@ export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownSt
 
 export interface StoredEventOptionsBase {
     readonly source: string;
-    readonly guild: string | undefined;
-    readonly channel: string | undefined;
-    readonly user: string | undefined;
+    readonly channel?: string;
+    readonly guild?: string;
     readonly endtime: Date;
 }
 

@@ -40,7 +40,6 @@ export class BanManager {
                 source: member.guild.id,
                 guild: member.guild.id,
                 user: member.id,
-                channel: undefined,
                 duration: JSON.stringify(duration),
                 endtime: moment().add(duration).toDate()
             });

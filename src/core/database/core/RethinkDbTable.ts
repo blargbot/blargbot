@@ -38,7 +38,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         const result = await this.rquery(t => t.insert(value, { returnChanges: applyChanges }));
         if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            Object.apply(value, result.changes?.[0].new_val);
+            Object.assign(value, result.changes?.[0].new_val);
         throwIfErrored(result);
         return result.inserted > 0;
     }
@@ -47,7 +47,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
         const result = await this.rquery(t => t.get(key).replace(value, { returnChanges: applyChanges }));
         if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            Object.apply(value, result.changes?.[0].new_val);
+            Object.assign(value, result.changes?.[0].new_val);
         throwIfErrored(result);
         return result.inserted + result.replaced > 0;
     }
@@ -64,7 +64,7 @@ export abstract class RethinkDbTable<T extends keyof RethinkTableMap> {
     ): Promise<boolean> {
         const result = typeof key === 'string'
             ? await this.rquery(t => t.get(key).delete())
-            : await this.rquery(t => t.delete(key));
+            : await this.rquery(t => t.filter(key).delete());
         throwIfErrored(result);
         return result.deleted > 0;
     }

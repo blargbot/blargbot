@@ -513,8 +513,6 @@ export class ClusterUtilities extends BaseUtilities {
         } else {
             if (!guard.isGuildMessage(msg))
                 return true;
-            if (msg.member === null)
-                return false;
             member = msg.member;
             channel = msg.channel;
         }

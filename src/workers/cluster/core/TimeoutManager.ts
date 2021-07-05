@@ -1,21 +1,24 @@
-import moment from 'moment';
 import EventEmitter from 'eventemitter3';
-import { Duration } from 'moment-timezone';
+import { duration, Duration } from 'moment-timezone';
 import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from './globalCore';
 import { Cluster } from '../Cluster';
 import { guard } from './utils';
+import moment from 'moment';
 
 export class TimeoutManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #events: Map<string, StoredEvent>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #emitter: EventEmitter;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    #lastDuration: Duration;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
         this.#events = new Map();
         this.#emitter = new EventEmitter();
+        this.#lastDuration = duration(5, 'minutes');
     }
 
     public on<E extends EventType>(event: E, handler: (event: EventTypeMap[E]) => void): this {
@@ -38,17 +41,17 @@ export class TimeoutManager {
         if (storedEvent === undefined)
             return;
 
-        if (moment().add(5, 'minutes').diff(event.endtime) < 0)
+        if (moment().add(this.#lastDuration).isAfter(event.endtime))
             this.#events.set(storedEvent.id, storedEvent);
     }
 
     public async process(): Promise<void> {
         for (const event of this.#events.values()) {
-            if (moment().diff(event.endtime) > 0)
+            if (moment().isBefore(event.endtime))
                 continue;
 
             const shardId = this.getShardId(event);
-            if (this.cluster.discord.shards.has(shardId)) {
+            if (!this.cluster.discord.shards.has(shardId)) {
                 this.#events.delete(event.id);
                 continue;
             }
@@ -86,6 +89,7 @@ export class TimeoutManager {
     }
 
     public async obtain(duration: Duration): Promise<void> {
+        this.#lastDuration = duration;
         const events = await this.cluster.database.events.between(0, moment().add(duration));
         this.#events = new Map(events.map(e => [e.id, e]));
     }

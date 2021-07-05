@@ -1,7 +1,7 @@
 import { AnyGuildChannel, Constants, Guild, Member, Role, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import { Cluster } from '../../Cluster';
-import { guard, humanize, Modlog, MuteResult, UnmuteEventOptions, UnmuteResult } from '../../core';
+import { EnsureMutedRoleResult, guard, humanize, mapping, Modlog, MuteResult, UnmuteEventOptions, UnmuteResult } from '../../core';
 import { ModerationManager } from '../ModerationManager';
 
 export class MuteManager {
@@ -13,6 +13,7 @@ export class MuteManager {
 
     public init(): void {
         this.cluster.timeouts.on('unmute', event => void this.handleUnmuteTimeout(event));
+        // TODO listen to guild join/leave to make bypassing mutes harder
     }
 
     public async mute(member: Member, moderator: User, reason?: string, duration?: Duration): Promise<MuteResult> {
@@ -25,7 +26,7 @@ export class MuteManager {
 
         const self = member.guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('manageRoles') !== true)
-            return 'noPermissions';
+            return 'noPerms';
 
         if (role.position >= this.cluster.util.getPosition(self))
             return 'roleTooHigh';
@@ -37,7 +38,6 @@ export class MuteManager {
                 source: member.guild.id,
                 guild: member.guild.id,
                 user: member.id,
-                channel: undefined,
                 duration: JSON.stringify(duration),
                 endtime: moment().add(duration).toDate()
             });
@@ -51,7 +51,7 @@ export class MuteManager {
 
         const self = member.guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('manageRoles') !== true)
-            return 'noPermissions';
+            return 'noPerms';
 
         if (role.position >= this.cluster.util.getPosition(self))
             return 'roleTooHigh';
@@ -62,17 +62,17 @@ export class MuteManager {
         return 'success';
     }
 
-    public async ensureMutedRole(guild: Guild): Promise<Role | 'noPermissions' | 'unconfigured'> {
+    public async ensureMutedRole(guild: Guild): Promise<EnsureMutedRoleResult> {
         const currentRole = await this.getMuteRole(guild);
         if (currentRole !== undefined)
-            return currentRole;
+            return { state: 'success', role: currentRole };
 
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self === undefined)
             throw new Error('Cannot manage a server I am not a member of');
 
         if (!self.permissions.has('manageRoles'))
-            return 'noPermissions';
+            return { state: 'noPerms', role: undefined };
 
         const newRole = await guild.createRole({
             color: 16711680,
@@ -80,15 +80,15 @@ export class MuteManager {
             permissions: 0
         });
 
-        if (!self.permissions.has('manageChannels'))
-            return 'unconfigured';
+        await this.cluster.database.guilds.setSetting(guild.id, 'mutedrole', newRole.id);
 
-        const promises = [];
+        if (!self.permissions.has('manageChannels'))
+            return { state: 'unconfigured', role: newRole };
+
         for (const channel of guild.channels.values()) {
-            promises.push(this.configureChannel(channel, newRole));
+            await this.configureChannel(channel, newRole);
         }
-        await Promise.all(promises);
-        return newRole;
+        return { state: 'success', role: newRole };
     }
 
     private async configureChannel(channel: AnyGuildChannel, mutedRole: Role): Promise<void> {
@@ -126,8 +126,10 @@ export class MuteManager {
         if (member === undefined)
             return;
 
-        const duration = moment.duration(event.duration);
-
-        await this.unmute(member, this.cluster.discord.user, `Automatically unmuted after ${humanize.duration(duration)}.`);
+        const mapResult = mapDuration(event.duration);
+        const duration = mapResult.valid ? humanize.duration(mapResult.value) : 'some time';
+        await this.unmute(member, this.cluster.discord.user, `Automatically unmuted after ${duration}.`);
     }
 }
+
+const mapDuration = mapping.json(mapping.duration);

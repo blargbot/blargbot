@@ -137,9 +137,6 @@ export const oldBu = {
         override = true
     ): boolean {
         const member = msg instanceof Member ? msg : msg.member;
-        if (member === null)
-            return false;
-
         if (override && (member.id === config.discord.users.owner ||
             member.guild.ownerID === member.id ||
             member.permissions.json.administrator)) {

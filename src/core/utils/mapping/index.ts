@@ -17,6 +17,7 @@ import { mapOptionalString } from './mapOptionalString';
 import { mapRecord } from './mapRecord';
 import { mapString } from './mapString';
 import { mapUnknown } from './mapUnknown';
+import { mapDuration } from './mapDuration';
 
 export const mapping = {
     result: {
@@ -40,5 +41,6 @@ export const mapping = {
     unknown: mapUnknown,
     jToken: mapJToken,
     jObject: mapJObject,
-    instanceof: mapInstanceof
+    instanceof: mapInstanceof,
+    duration: mapDuration
 };

@@ -69,6 +69,7 @@ export class CensorManager {
             case 'memberTooHigh':
                 return true;
             case 'noPerms':
+            case 'moderatorNoPerms':
                 await this.cluster.util.send(message, `${message.author.username} is mention spamming, but I lack the permissions to ban them!`);
                 return true;
         }

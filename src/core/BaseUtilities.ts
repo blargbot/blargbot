@@ -108,7 +108,7 @@ export class BaseUtilities {
             throw new Error('No content');
         }
 
-        if (payload.content.length > 2000 || !guard.checkEmbedSize(payload.embed)) {
+        if (!guard.checkEmbedSize(payload.embed)) {
             const id = await this.generateOutputPage(payload, channel);
             const output = this.websiteLink('/output');
             payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n' +
@@ -116,6 +116,13 @@ export class BaseUtilities {
                 `To see what I would have said, please visit ${output}${id.toString()}`;
             if (payload.embed !== undefined)
                 delete payload.embed;
+        } else if (payload.content.length > 2000) {
+            files ??= [];
+            files.unshift({
+                file: payload.content,
+                name: 'message.txt'
+            });
+            payload.content = undefined;
         }
 
         this.logger.debug('Sending content: ', JSON.stringify(payload));

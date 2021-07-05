@@ -1,4 +1,4 @@
-import { AnyMessage, Attachment, Embed, EmbedOptions, GuildChannel, Member, MessageFile, PrivateChannel, Shard, Textable, User } from 'eris';
+import { AnyMessage, Attachment, Embed, EmbedOptions, GuildChannel, Member, MessageFile, PrivateChannel, Role, Shard, Textable, User } from 'eris';
 import ReadWriteLock from 'rwlock';
 import { StoredGuildCommand, StoredTag, CommandType, CommandContext, SendPayload, NamedStoredRawGuildCommand, GuildAutoresponse, GuildFilteredAutoresponse, SubtagType, StoredGuild, StoredGuildSettings, SubtagVariableType, ModerationType } from '.';
 import { ClusterWorker } from '../ClusterWorker';
@@ -544,10 +544,10 @@ export interface SubtagVariableProperties {
 
 export type WhitelistResponse = 'approved' | 'rejected' | 'requested' | 'alreadyApproved' | 'alreadyRejected';
 
-export type MuteResult = 'success' | 'alreadyMuted' | 'noPermissions' | 'roleMissing' | 'roleTooHigh';
-export type UnmuteResult = 'success' | 'notMuted' | 'noPermissions' | 'roleTooHigh';
-export type BanResult = 'success' | 'noPerms' | 'memberTooHigh';
-export type KickResult = 'success' | 'noPerms' | 'memberTooHigh';
+export type MuteResult = 'success' | 'alreadyMuted' | 'noPerms' | 'roleMissing' | 'roleTooHigh';
+export type UnmuteResult = 'success' | 'notMuted' | 'noPerms' | 'roleTooHigh';
+export type BanResult = 'success' | 'noPerms' | 'moderatorNoPerms' | 'memberTooHigh';
+export type KickResult = 'success' | 'noPerms' | 'moderatorNoPerms' | 'memberTooHigh';
 export type UnbanResult = 'success' | 'noPerms';
 
 export type WarnResult = {
@@ -563,3 +563,11 @@ export type WarnResult = {
     count: number;
     result: 'success';
 }
+
+export type EnsureMutedRoleResult = {
+    state: 'success' | 'unconfigured';
+    role: Role;
+} | {
+    state: 'noPerms';
+    role: undefined;
+};
