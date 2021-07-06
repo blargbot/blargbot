@@ -42,12 +42,11 @@ export class CommandContext<TChannel extends Channel = Channel> {
     public argRange(start: number, end: number, raw?: false): string[];
     public argRange(start: number, end: number, raw: true): string;
     public argRange(start: number, end: number, raw: boolean): string | string[];
-    public argRange(start: number, arg2?: number | boolean, arg3?: boolean): string | string[] {
-        const [end, raw] =
-            arg2 === undefined ? [this.args.length - 1, false]
-                : typeof arg2 === 'number' ? [arg2, arg3 ?? false]
-                    : [this.args.length - 1, arg2];
-
+    public argRange(...args:
+        | [start: number, raw?: boolean]
+        | [start: number, end: number, raw?: boolean]
+    ): string | string[] {
+        const [start, end, raw] = splitArgRangeArgs(args);
         if (this.args.length <= start)
             return raw ? '' : [];
 
@@ -66,5 +65,20 @@ export class CommandContext<TChannel extends Channel = Channel> {
 
     public async send(context: SendContext, content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | undefined> {
         return await this.cluster.util.send(context, content, files);
+    }
+}
+
+function splitArgRangeArgs(args:
+    | [start: number, raw?: boolean]
+    | [start: number, end: number, raw?: boolean]
+): [start: number, end: number, raw: boolean] {
+    switch (args.length) {
+        case 1: return [args[0], args[0] + 1, false];
+        case 3: return [args[0], args[1], args[2] ?? false];
+        case 2: switch (typeof args[1]) {
+            case 'number': return [args[0], args[1], false];
+            case 'undefined': return [args[0], args[0] + 1, false];
+            case 'boolean': return [args[0], args[0] + 1, args[1]];
+        }
     }
 }
