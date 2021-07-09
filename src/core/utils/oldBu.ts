@@ -12,7 +12,6 @@ import { humanize, fafo, randInt } from '../utils';
 import { StoredTag } from '../database';
 import { Logger } from '../Logger';
 import { guard } from './guard';
-import fetch from 'node-fetch';
 
 const tagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {
@@ -341,26 +340,6 @@ export const oldBu = {
         return [...keys]
             .map(k => groups[k])
             .filter((i): i is T[] & { key: K; } => i !== undefined);
-    },
-
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    async blargbotApi(endpoint: string, args: string | Buffer | object = {}): Promise<Buffer | undefined> {
-        try {
-            if (typeof args !== 'string' && !(args instanceof Buffer))
-                args = JSON.stringify(args);
-
-            const response = await fetch(config.blargbot_api.base + endpoint, {
-                method: 'POST',
-                headers: {
-                    Authorization: config.blargbot_api.token
-                },
-                body: args
-            });
-            return await response.buffer();
-        } catch (err: unknown) {
-            console.error(err);
-            return undefined;
-        }
     },
     decancer(text: string): string {
         text = nfkd(text);

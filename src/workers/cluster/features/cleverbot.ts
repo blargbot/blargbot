@@ -39,7 +39,7 @@ async function queryCleverbot(cluster: Cluster, input: string): Promise<string> 
     const form = new FormData();
     form.append('input', input);
 
-    const result = await fetch(cluster.config.cleverbot.endpoint, {
+    const result = await fetch(cluster.config.general.cleverbotApi, {
         method: 'POST',
         body: form,
         headers: form.getHeaders()

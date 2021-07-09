@@ -25,18 +25,9 @@ export class BaseClient {
         this.database = new Database({
             logger: this.logger,
             discord: this.discord,
-            rethinkDb: {
-                database: this.config.db.database,
-                password: this.config.db.password,
-                user: this.config.db.user,
-                host: this.config.db.host,
-                port: this.config.db.port
-            },
+            rethinkDb: this.config.rethink,
             cassandra: this.config.cassandra,
-            postgres: {
-                ...this.config.postgres,
-                sequelize: this.config.sequelize
-            }
+            postgres: this.config.postgres
         });
     }
 

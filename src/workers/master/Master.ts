@@ -17,7 +17,7 @@ export class Master extends BaseClient {
     ) {
         super(logger, config, {});
         this.worker = options.worker;
-        this.clusters = new ClusterPool(this.config.shards, this.logger);
+        this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
         this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
         // TODO Add websites

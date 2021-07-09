@@ -3,7 +3,7 @@ import { ClusterConnection } from './ClusterConnection';
 
 export class ClusterPool extends WorkerPool<ClusterConnection> {
     public constructor(
-        public readonly config: Configuration['shards'],
+        public readonly config: Configuration['discord']['shards'],
         logger: Logger
     ) {
         super('Cluster',
