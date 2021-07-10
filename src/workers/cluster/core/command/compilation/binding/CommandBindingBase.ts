@@ -25,7 +25,8 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
         state: CommandBinderState<TContext>,
         next: ReadonlyArray<Binding<CommandBinderState<TContext>>>,
         argCount: number,
-        value?: Exclude<CommandBinderParseResult<unknown>, { success: false; }> | CommandResult
+        value?: Exclude<CommandBinderParseResult<unknown>, { success: false; }> | CommandResult,
+        checkNext = true
     ): BindingSuccess<CommandBinderState<TContext>> {
         let args = state.arguments;
         let result = state.result;
@@ -39,6 +40,7 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
         return {
             success: true,
             next: next,
+            checkNext,
             state: {
                 ...state,
                 argIndex: state.argIndex + argCount,

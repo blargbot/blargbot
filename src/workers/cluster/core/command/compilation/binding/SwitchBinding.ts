@@ -42,11 +42,11 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
         const nextRequired = typeof key === 'string' ? this.options[key] : key.flatMap(k => this.options[k] ?? []);
 
         if (nextRequired !== undefined && nextRequired.length > 0)
-            return this.bindingSuccess(state, nextRequired, 1);
+            return this.bindingSuccess(state, nextRequired, 1, undefined, false);
 
         const nextOptional = this.options[''];
         if (nextOptional !== undefined)
-            return this.bindingSuccess(state, nextOptional, 0);
+            return this.bindingSuccess(state, nextOptional, 0, undefined, false);
 
         return this.bindingError(state, `❌ Expected ${this.expected} but got \`${arg}\``);
     }

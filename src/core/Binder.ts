@@ -25,6 +25,7 @@ interface AsyncEnumerator<TResult> {
 
 async function bind<TState>(state: TState, bindings: Iterable<Binding<TState>>, selector: (current: TState, next: TState) => TState): Promise<BinderResult<TState>> {
     let bestState = state;
+    forLoop:
     for (const binding of bindings) {
         const iterator = getEnumerator(state, binding);
         while (await iterator.moveNext()) {
@@ -41,6 +42,9 @@ async function bind<TState>(state: TState, bindings: Iterable<Binding<TState>>, 
                 return result;
 
             bestState = selector(bestState, result.state);
+
+            if (!iterator.current.checkNext)
+                break forLoop;
         }
     }
 

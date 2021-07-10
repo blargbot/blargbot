@@ -48,6 +48,7 @@ export interface BindingSuccess<TState> {
     readonly success: true;
     readonly state: TState;
     readonly next: ReadonlyArray<Binding<TState>>;
+    readonly checkNext: boolean;
 }
 
 export interface BindingFailure<TState> {
