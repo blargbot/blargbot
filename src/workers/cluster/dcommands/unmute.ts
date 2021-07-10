@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, FlagResult, GuildCommandContext, humanize } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, FlagResult } from '../core';
 
 export class UnmuteCommand extends BaseGuildCommand {
     public constructor() {
@@ -6,7 +6,7 @@ export class UnmuteCommand extends BaseGuildCommand {
             name: 'unmute',
             category: commandTypes.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', desc: 'The reason for the unmute.' }
+                { flag: 'r', word: 'reason', description: 'The reason for the unmute.' }
             ],
             definition: {
                 parameters: '{user+}',
@@ -22,7 +22,7 @@ export class UnmuteCommand extends BaseGuildCommand {
         if (member === undefined)
             return '❌ I couldn\'t find that user!';
 
-        const reason = flags.r?.join(' ');
+        const reason = flags.r?.merge().value;
 
         switch (await context.cluster.moderation.mutes.unmute(member, context.author, reason)) {
             case 'notMuted': return `❌ ${humanize.fullName(member)} is not currently muted`;

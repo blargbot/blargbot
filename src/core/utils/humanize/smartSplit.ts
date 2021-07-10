@@ -2,9 +2,9 @@ export function smartSplit(source: string, limit = 0): string[] {
     return [...smartSplitIterLimit(source, limit)];
 }
 
-export function* smartSplitRanges(source: string): Generator<{ start: number; end: number; }> {
-    for (const { start, end } of smartSplitIter(source)) {
-        yield { start, end };
+export function* smartSplitRanges(source: string): Generator<{ start: number; end: number; value: string; }> {
+    for (const { start, end, content } of smartSplitIter(source)) {
+        yield { start, end, value: content };
     }
 }
 
@@ -61,7 +61,7 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
                 if (quote !== undefined)
                     builder.push(i);
                 else if (start !== undefined) {
-                    yield createSplitItem(source, builder, start, i - 1);
+                    yield createSplitItem(source, builder, start, i);
                     start = undefined;
                     builder = [];
                 }
@@ -75,7 +75,7 @@ function* smartSplitIter(source: string): Generator<SmartSplitItem> {
         }
     }
     if (start !== undefined)
-        yield createSplitItem(source, builder, start, source.length - 1);
+        yield createSplitItem(source, builder, start, source.length);
 }
 
 function createSplitItem(source: string, charIndexes: number[], start: number, end: number): SmartSplitItem {

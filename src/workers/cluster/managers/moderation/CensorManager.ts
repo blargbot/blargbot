@@ -1,5 +1,5 @@
 import { GuildMessage } from 'eris';
-import { CustomCommandLimit, guard, GuildCensorExceptions, humanize, ModerationType } from '../../core';
+import { CustomCommandLimit, guard, GuildCensorExceptions, ModerationType } from '../../core';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -45,7 +45,7 @@ export class CensorManager extends ModerationManagerBase {
                 message: message,
                 tagName: 'censor',
                 limit: new CustomCommandLimit(),
-                input: humanize.smartSplit(message.content),
+                inputRaw: message.content,
                 isCC: true,
                 author: message.channel.guild.id
             });

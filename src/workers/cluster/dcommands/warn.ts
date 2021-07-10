@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, FlagResult, GuildCommandContext, humanize, ModerationType, parse } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, ModerationType, parse, FlagResult } from '../core';
 
 export class WarnCommand extends BaseGuildCommand {
     public constructor() {
@@ -6,11 +6,11 @@ export class WarnCommand extends BaseGuildCommand {
             name: 'warn',
             category: commandTypes.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', desc: 'The reason for the warning.' },
+                { flag: 'r', word: 'reason', description: 'The reason for the warning.' },
                 {
                     flag: 'c',
                     word: 'count',
-                    desc: 'The number of warnings that will be issued.'
+                    description: 'The number of warnings that will be issued.'
                 }
             ],
             definition: {
@@ -28,14 +28,14 @@ export class WarnCommand extends BaseGuildCommand {
         if (member === undefined)
             return '❌ I couldn\'t find that user!';
 
-        const reason = flags.r?.join(' ');
-        const count = parse.int(flags.c?.join(' ') ?? 1);
+        const reason = flags.r?.merge().value;
+        const count = parse.int(flags.c?.merge().value ?? 1);
 
         const result = await context.cluster.moderation.warns.warn(member, context.author, count, reason);
         const preamble = `**${humanize.fullName(member)}** has been given ${count === 1 ? 'a warning' : `${count} warnings`}.`;
         const actionStr = getActionString(result.type);
         switch (result.state) {
-            case 'countNaN': return `❌ ${flags.c?.join(' ') ?? ''} isnt a number!`;
+            case 'countNaN': return `❌ ${flags.c?.merge().value ?? ''} isnt a number!`;
             case 'countNegative': return '❌ I cant give a negative amount of warnings!';
             case 'countZero': return '❌ I cant give zero warnings!';
             case 'alreadyBanned': return `⚠️ ${preamble}\n⛔ They went over the limit for bans, but they were already banned.`;

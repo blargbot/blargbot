@@ -1,4 +1,5 @@
 import { AdvancedMessageContent, Channel, ChannelInteraction, EmbedField, EmbedOptions, MessageFile, Textable, UserChannelInteraction } from 'eris';
+import { Binder } from './Binder';
 import { WorkerConnection } from './worker';
 
 export type MalformedEmbed = { fields: [EmbedField]; malformed: boolean; };
@@ -24,3 +25,37 @@ export type MasterEvalRequest = EvalRequest & { type: EvalType; };
 export type MasterEvalResult<T = unknown> = Record<string, EvalResult<T>>;
 export type EvalResult<T = unknown> = { success: false; error: unknown; } | { success: true; result: T; };
 export type EvalType = 'master' | 'global' | `cluster${number}`
+
+export interface Binding<TState> {
+    [Binder.binder](state: TState): BindingResult<TState>;
+    debugView(): Iterable<string>;
+}
+
+export type BindingResult<TState> =
+    | BindingResultAsyncIterator<TState>
+    | BindingResultIterator<TState>
+    | Promise<BindingResultValue<TState>>
+    | BindingResultValue<TState>
+
+export type BindingResultIterator<TState> = Iterator<BindingResultValue<TState>, void, void>;
+export type BindingResultAsyncIterator<TState> = AsyncIterator<BindingResultValue<TState>, void, void>;
+
+export type BindingResultValue<TState> =
+    | BindingSuccess<TState>
+    | BindingFailure<TState>
+
+export interface BindingSuccess<TState> {
+    readonly success: true;
+    readonly state: TState;
+    readonly next: ReadonlyArray<Binding<TState>>;
+}
+
+export interface BindingFailure<TState> {
+    readonly success: false;
+    readonly state: TState;
+}
+
+export interface BinderResult<TState> {
+    readonly success: boolean;
+    readonly state: TState;
+}

@@ -35,7 +35,7 @@ export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<v
                 message: msg,
                 tagName: 'roleme',
                 limit: new CustomCommandLimit(),
-                input: [],
+                inputRaw: '',
                 isCC: true,
                 author: ''
             });

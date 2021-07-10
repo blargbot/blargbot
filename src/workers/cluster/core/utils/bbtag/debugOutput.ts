@@ -3,7 +3,7 @@ import moment from 'moment';
 import { codeBlock, humanize } from '../../globalCore';
 import { ExecutionResult } from '../../types';
 
-export function createDebugOutput(name: string, code: string, args: string[], result: ExecutionResult): { content: string; files: MessageFile; } {
+export function createDebugOutput(name: string, code: string, args: string, result: ExecutionResult): { content: string; files: MessageFile; } {
     const performance: Record<string, unknown> = {};
     for (const key of Object.keys(result.duration.subtag)) {
         const times = result.duration.subtag[key];

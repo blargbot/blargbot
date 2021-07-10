@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, FlagResult, guard, GuildCommandContext, humanize, parse } from '../core';
+import { BaseGuildCommand, commandTypes, guard, GuildCommandContext, humanize, parse, FlagResult } from '../core';
 
 export class MassBanCommand extends BaseGuildCommand {
     public constructor() {
@@ -7,14 +7,14 @@ export class MassBanCommand extends BaseGuildCommand {
             aliases: ['hackban'],
             category: commandTypes.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', desc: 'The reason for the ban.' }
+                { flag: 'r', word: 'reason', description: 'The reason for the ban.' }
             ],
             definition: {
-                parameters: '{userIds+} [deleteDays:number]',
+                parameters: '{userIds[]} {deleteDays:number=1}',
                 description: 'Bans a user who isn\'t currently on your guild, where `<userIds...>` is a list of user IDs ' +
-                    'or mentions (separated by spaces) and `days` is the number of days to delete messages for (defaults to 0).\n' +
+                    'or mentions (separated by spaces) and `days` is the number of days to delete messages for.\n' +
                     'If mod-logging is enabled, the ban will be logged.',
-                execute: (ctx, [users, deleteDays = 1], flags) => this.massBan(ctx, users, deleteDays, flags)
+                execute: (ctx, [users, deleteDays], flags) => this.massBan(ctx, users, deleteDays, flags)
             }
         });
     }
@@ -22,7 +22,7 @@ export class MassBanCommand extends BaseGuildCommand {
     public async massBan(context: GuildCommandContext, userIds: string[], deleteDays: number, flags: FlagResult): Promise<string> {
         userIds = userIds.flatMap(u => parse.entityId(u)).filter(guard.hasValue);
 
-        const reason = flags.r?.join(' ');
+        const reason = flags.r?.merge().value;
 
         const result = await context.cluster.moderation.bans.massBan(context.channel.guild, userIds, context.author, true, deleteDays, reason);
         if (Array.isArray(result))

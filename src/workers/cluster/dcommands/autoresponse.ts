@@ -11,37 +11,35 @@ export class AutoResponseCommand extends BaseGuildCommand {
                 {
                     flag: 'R',
                     word: 'regex',
-                    desc: 'If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
+                    description: 'If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
                 }, {
                     flag: 'e',
                     word: 'everything',
-                    desc: 'Makes the added autoresponse respond to everything. Only one is allowed.'
+                    description: 'Makes the added autoresponse respond to everything. Only one is allowed.'
                 }
             ],
             definition: {
                 subcommands: {
                     'whitelist': {
-                        parameters: '{reason*}',
+                        parameters: '{~reason+}',
                         description: 'Requests for the current server to have autoresponses whitelisted',
-                        execute: ctx => this.requestWhitelist(ctx, ctx.argRange(1, true))
+                        execute: (ctx, [reason]) => this.requestWhitelist(ctx, reason)
                     },
                     'list|info': {
-                        parameters: '',
                         description: 'Displays information about autoresponses',
                         execute: ctx => this.listAutoresponses(ctx)
                     },
                     'add|create': {
-                        parameters: '{pattern}',
+                        parameters: '{~pattern+}',
                         description: 'Adds a autoresponse which matches the given pattern',
                         execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.addAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
                     },
                     'delete|remove': {
-                        parameters: '',
                         description: 'Brings up a menu to remove an autoresponse',
                         execute: ctx => this.removeAutoresponse(ctx)
                     },
                     'edit': {
-                        parameters: '{pattern}',
+                        parameters: '{~pattern+}',
                         description: 'Brings up a menu to edit an autoresponse',
                         execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.editAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
                     }

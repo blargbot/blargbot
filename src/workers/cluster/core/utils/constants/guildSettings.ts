@@ -1,6 +1,7 @@
 import { StoredGuildSettings } from '../../globalCore';
 import { GuildSettingDescriptor } from '../../types';
 
+// prefix excluded as it is an array of strings
 export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix'>]-?: GuildSettingDescriptor<P> } = {
     makelogs: {
         key: 'makelogs',

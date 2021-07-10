@@ -9,6 +9,6 @@ export abstract class BasePrivateCommand extends ScopedCommandBase<PrivateComman
     }
 
     protected handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult {
-        return `❌ \`${context.prefix}${context.commandName}\` can only be used in private messages.`;
+        return this.error(` \`${context.prefix}${context.commandName}\` can only be used in private messages.`);
     }
 }

@@ -6,7 +6,7 @@ export class RestartCommand extends BaseGlobalCommand {
         super({
             name: 'restart',
             category: commandTypes.DEVELOPER,
-            info: 'Restarts blargbot, or one of its components',
+            description: 'Restarts blargbot, or one of its components',
             definition: {
                 execute: (ctx) => this.respawnClusters(ctx),
                 description: 'Restarts all the clusters',

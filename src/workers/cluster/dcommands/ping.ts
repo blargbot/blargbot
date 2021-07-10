@@ -5,7 +5,7 @@ export class PingCommand extends BaseGlobalCommand {
         super({
             name: 'ping',
             category: commandTypes.GENERAL,
-            info: 'Pong!\nFind the command latency.',
+            description: 'Pong!\nFind the command latency.',
             definition: {
                 parameters: '',
                 execute: ctx => this.ping(ctx),

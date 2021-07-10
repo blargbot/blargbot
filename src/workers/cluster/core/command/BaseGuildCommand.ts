@@ -9,6 +9,6 @@ export abstract class BaseGuildCommand extends ScopedCommandBase<GuildCommandCon
     }
 
     protected handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult {
-        return `❌ \`${context.prefix}${context.commandName}\` can only be used on guilds.`;
+        return this.error(`\`${context.prefix}${context.commandName}\` can only be used on guilds.`);
     }
 }

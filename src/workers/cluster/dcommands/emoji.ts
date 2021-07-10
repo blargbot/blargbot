@@ -2,7 +2,7 @@ import fs from 'fs';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
 import { MessageFile } from 'eris';
-import { BaseGlobalCommand, commandTypes, FlagResult, SendPayload, parse } from '../core';
+import { BaseGlobalCommand, commandTypes, SendPayload, parse, FlagResult } from '../core';
 
 export class EmojiCommand extends BaseGlobalCommand {
     public constructor() {
@@ -10,15 +10,15 @@ export class EmojiCommand extends BaseGlobalCommand {
             name: 'emoji',
             aliases: ['e'],
             category: commandTypes.GENERAL,
-            info: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.',
+            description: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.',
             flags: [{
                 flag: 's',
                 word: 'svg',
-                desc: 'Get the emote as an svg instead of a png.'
+                description: 'Get the emote as an svg instead of a png.'
             }],
             definition: {
-                parameters: '{emoji} {size?:number}',
-                execute: (_, [emoji, size = 668], flags) => this.emoji(emoji, size, flags),
+                parameters: '{emoji} {size:number=668}',
+                execute: (_, [emoji, size], flags) => this.emoji(emoji, size, flags),
                 description: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.'
             }
         });

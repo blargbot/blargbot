@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, guard, SubtagType } from '../core';
 
 export class FlagSetSubtag extends BaseSubtag {
     public constructor() {
@@ -7,14 +7,22 @@ export class FlagSetSubtag extends BaseSubtag {
             category: SubtagType.BOT,
             definition: [
                 {
-                    parameters: ['code'],
+                    parameters: ['flagName'],
                     description: 'Returns `true` or `false`, depending on whether the specified case-sensitive flag code has been set or not.',
                     exampleCode: '{flagset;a} {flagset;_}',
                     exampleIn: 'Hello, -a world!',
                     exampleOut: 'true false',
-                    execute: (ctx, [{ value: flagName }]) => (ctx.flaggedInput[flagName] !== undefined).toString()
+                    execute: (ctx, [{ value: flagName }]) => this.isFlagSet(ctx, flagName)
                 }
             ]
         });
+    }
+
+    public isFlagSet(context: BBTagContext, flagName: string): 'true' | 'false' {
+        if (guard.isLetter(flagName))
+            return (context.flaggedInput[flagName] !== undefined).toString();
+        if (flagName === '_')
+            return (context.flaggedInput['_'] !== undefined).toString();
+        return 'false';
     }
 }

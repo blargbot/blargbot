@@ -80,7 +80,7 @@ ${codeBlock(code, 'js')}`
                     message: msg,
                     limit,
                     author: command.author,
-                    input: humanize.smartSplit(msg.content),
+                    inputRaw: msg.content,
                     isCC: true,
                     tagName: commandName,
                     silent

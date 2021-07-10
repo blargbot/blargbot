@@ -17,13 +17,14 @@ export abstract class BaseCommand implements CommandOptionsBase {
     public readonly aliases: readonly string[];
     public readonly category: CommandType;
     public readonly cannotDisable: boolean;
-    public readonly info: string;
+    public readonly description: string;
     public readonly flags: readonly FlagDefinition[];
     public readonly onlyOn: string | undefined;
     public readonly cooldown: number;
     public readonly usage: string;
 
     public get names(): readonly string[] { return [this.name, ...this.aliases]; }
+    public get debugView(): string { return this.#handler.debugView; }
 
     protected constructor(
         options: CommandOptionsBase,
@@ -33,7 +34,7 @@ export abstract class BaseCommand implements CommandOptionsBase {
         this.aliases = options.aliases ?? [];
         this.category = options.category;
         this.cannotDisable = options.cannotDisable ?? true;
-        this.info = options.info ?? 'WIP';
+        this.description = options.description ?? 'WIP';
         this.flags = options.flags ?? [];
         this.onlyOn = options.onlyOn;
         this.cooldown = options.cooldown ?? 0;
@@ -42,7 +43,7 @@ export abstract class BaseCommand implements CommandOptionsBase {
         this.#cooldowns = {};
 
         this.#handler = handler;
-        this.usage = handler.signatures.map(u => u.map(p => p.display).join(' ')).join('\n');
+        this.usage = '';//handler.signatures.map(u => u.map(p => p.display).join(' ')).join('\n');
     }
 
     public abstract checkContext(context: CommandContext): boolean;
@@ -65,7 +66,7 @@ export abstract class BaseCommand implements CommandOptionsBase {
             const lock = this.#locks[getKey(context)] ??= { times: 0 };
             lock.times++;
             if (lock.times === 2)
-                return { continue: false, value: '❌ Sorry, this command is already running! Please wait and try again.' };
+                return { continue: false, value: this.error('Sorry, this command is already running! Please wait and try again.') };
             if (lock.times > 1)
                 return { continue: false, value: undefined };
         }
@@ -76,7 +77,7 @@ export abstract class BaseCommand implements CommandOptionsBase {
             const remaining = cd.lasttime + this.cooldown - Date.now();
             if (remaining > 0) {
                 return cd.times === 2
-                    ? { continue: false, value: `❌ Sorry, you ran this command too recently! Please wait ${Math.round(remaining / 100) / 10}s and try again.` }
+                    ? { continue: false, value: this.error(`Sorry, you ran this command too recently! Please wait ${Math.round(remaining / 100) / 10}s and try again.`) }
                     : { continue: false, value: undefined };
             }
             cd.lasttime = Date.now() + 999999;
@@ -97,6 +98,22 @@ export abstract class BaseCommand implements CommandOptionsBase {
                     delete this.#cooldowns[context.author.id];
             }, this.cooldown);
         }
+    }
+
+    protected error(message: string): string {
+        return `❌ ${message}`;
+    }
+
+    protected warning(message: string, ...reasons: string[]): string {
+        return `⚠️ ${message}${reasons.map(r => `\n⛔ ${r}`).join('')}`;
+    }
+
+    protected success(message: string): string {
+        return `✅ ${message}`;
+    }
+
+    protected info(message: string): string {
+        return `ℹ️ ${message}`;
     }
 }
 

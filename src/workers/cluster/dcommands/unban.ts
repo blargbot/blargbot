@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, FlagResult, GuildCommandContext } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, FlagResult } from '../core';
 import { humanize } from '../core/globalCore';
 
 export class UnbanCommand extends BaseGuildCommand {
@@ -7,7 +7,7 @@ export class UnbanCommand extends BaseGuildCommand {
             name: 'unban',
             category: commandTypes.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', desc: 'The reason for the ban.' }
+                { flag: 'r', word: 'reason', description: 'The reason for the ban.' }
             ],
             definition: {
                 parameters: '{userId}',
@@ -23,7 +23,7 @@ export class UnbanCommand extends BaseGuildCommand {
         if (user === undefined)
             return '❌ I couldn\'t find that user!';
 
-        const reason = flags.r?.join(' ');
+        const reason = flags.r?.merge().value;
 
         switch (await context.cluster.moderation.bans.unban(context.channel.guild, user, context.author, true, reason)) {
             case 'notBanned': return `❌ **${humanize.fullName(user)}** is not currently banned!`;

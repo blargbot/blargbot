@@ -5,7 +5,7 @@ export class RespawnCommand extends BaseGlobalCommand {
         super({
             name: 'respawn',
             category: commandTypes.STAFF,
-            info: 'Cluster respawning only for staff.',
+            description: 'Cluster respawning only for staff.',
             definition: {
                 parameters: '{clusterId:integer}',
                 execute: (ctx, [clusterId]) => this.respawn(ctx, clusterId),

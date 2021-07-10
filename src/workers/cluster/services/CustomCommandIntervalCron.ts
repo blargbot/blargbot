@@ -52,7 +52,7 @@ export class CustomCommandIntervalCron extends CronService {
                         id: snowflake.create().toString()
                     },
                     limit: new CustomCommandLimit(),
-                    input: [],
+                    inputRaw: '',
                     isCC: true,
                     tagName: '_interval',
                     author: interval.author,

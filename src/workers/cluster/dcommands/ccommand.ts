@@ -12,7 +12,7 @@ export class CustomCommand extends BaseGuildCommand {
             name: 'ccommand',
             aliases: ['cc'],
             category: commandTypes.ADMIN,
-            info: 'Creates a custom command, using the BBTag language.\n\n'
+            description: 'Creates a custom command, using the BBTag language.\n\n'
                 + 'Custom commands take precedent over all other commands. As such, you can use it to overwrite commands, or '
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
                 + 'whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. '
@@ -22,33 +22,40 @@ export class CustomCommand extends BaseGuildCommand {
             definition: {
                 subcommands: {
                     'test|eval|exec|vtest': {
-                        parameters: 'debug? {code+}',
-                        execute: (ctx, [debug]) => this.runRaw(ctx, ctx.argRange(debug === undefined ? 1 : 2, true), '', debug !== undefined),
-                        description: 'Uses the BBTag engine to execute the content as if it was a custom command'
+                        parameters: '{~code+}',
+                        execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
+                        description: 'Uses the BBTag engine to execute the content as if it was a custom command',
+                        subcommands: {
+                            'debug': {
+                                parameters: '{~code+}',
+                                execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
+                                description: 'Uses the BBTag engine to execute the content as if it was a custom command and will return the debug output'
+                            }
+                        }
                     },
                     'docs': {
-                        parameters: '{topic*}',
+                        parameters: '{topic+?}',
                         execute: (ctx, [topic]) => this.showDocs(ctx, topic),
                         description: 'Returns helpful information about the specified topic.'
                     },
                     'debug': {
-                        parameters: '{commandName} {args*}',
-                        execute: (ctx, [commandName]) => this.runCommand(ctx, commandName, ctx.argRange(2, true), true),
+                        parameters: '{commandName} {~args+?}',
+                        execute: (ctx, [commandName, args]) => this.runCommand(ctx, commandName, args, true),
                         description: 'Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.'
                     },
                     'create|add': {
-                        parameters: '{commandName?} {content*}',
-                        execute: (ctx, [commandName]) => this.createCommand(ctx, commandName, ctx.argRange(2, true)),
+                        parameters: '{commandName?} {~content+?}',
+                        execute: (ctx, [commandName, content]) => this.createCommand(ctx, commandName, content),
                         description: 'Creates a new custom command with the content you give'
                     },
                     'edit': {
-                        parameters: '{commandName?} {content*}',
-                        execute: (ctx, [commandName]) => this.editCommand(ctx, commandName, ctx.argRange(2, true)),
+                        parameters: '{commandName?} {~content+?}',
+                        execute: (ctx, [commandName, content]) => this.editCommand(ctx, commandName, content),
                         description: 'Edits an existing custom command to have the content you specify'
                     },
                     'set': {
-                        parameters: '{commandName?} {content*}',
-                        execute: (ctx, [commandName]) => this.setCommand(ctx, commandName, ctx.argRange(2, true)),
+                        parameters: '{commandName?} {~content+?}',
+                        execute: (ctx, [commandName, content]) => this.setCommand(ctx, commandName, content),
                         description: 'Sets the custom command to have the content you specify. If the custom command doesnt exist it will be created.'
                     },
                     'delete|remove': {
@@ -72,7 +79,7 @@ export class CustomCommand extends BaseGuildCommand {
                         description: 'Lists all custom commands on this server'
                     },
                     'cooldown': {
-                        parameters: '{commandName} {duration?:duration}',
+                        parameters: '{commandName} {duration:duration+=0ms}',
                         execute: (ctx, [commandName, duration]) => this.setCommandCooldown(ctx, commandName, duration),
                         description: 'Sets the cooldown of a custom command, in milliseconds'
                     },
@@ -87,13 +94,13 @@ export class CustomCommand extends BaseGuildCommand {
                         description: 'Lists the flags the custom command accepts',
                         subcommands: {
                             'create|add': {
-                                parameters: '{commandName} {flags+}',
+                                parameters: '{commandName} {~flags+?}',
                                 execute: (ctx, [commandName, flags]) => this.addCommandFlags(ctx, commandName, flags),
                                 description: 'Adds multiple flags to your custom command. Flags should be of the form `-<f> <flag> [flag description]`\n' +
                                     'e.g. `b!cc flags add myCommand -c category The category you want to use -n name Your name`'
                             },
                             'delete|remove': {
-                                parameters: '{commandName} {flags+}',
+                                parameters: '{commandName} {~flags+?}',
                                 execute: (ctx, [commandName, flags]) => this.removeCommandFlags(ctx, commandName, flags),
                                 description: 'Removes multiple flags from your custom command. Flags should be of the form `-<f>`\n' +
                                     'e.g. `b!cc flags remove myCommand -c -n`'
@@ -106,8 +113,8 @@ export class CustomCommand extends BaseGuildCommand {
                         description: 'Sets the language to use when returning the raw text of your custom command'
                     },
                     'sethelp': {
-                        parameters: '{commandName} {helpText*}',
-                        execute: (ctx, [commandName]) => this.setCommandHelp(ctx, commandName, ctx.argRange(2, true)),
+                        parameters: '{commandName} {~helpText+?}',
+                        execute: (ctx, [commandName, helpText]) => this.setCommandHelp(ctx, commandName, helpText),
                         description: 'Sets the help text to show for the command'
                     },
                     'hide': {
@@ -116,12 +123,12 @@ export class CustomCommand extends BaseGuildCommand {
                         description: 'Toggles whether the command is hidden from the command list or not'
                     },
                     'setRole': {
-                        parameters: '{commandName} {roles*}',
+                        parameters: '{commandName} {roles[0]}',
                         execute: (ctx, [commandName, roles]) => this.setCommandRoles(ctx, commandName, roles),
                         description: 'Sets the roles that are allowed to use the command'
                     },
                     'shrinkwrap': {
-                        parameters: '{commandNames+}',
+                        parameters: '{commandNames[]}',
                         execute: (ctx, [commandNames]) => this.shrinkwrapCommands(ctx, commandNames),
                         description: 'Bundles up the given commands into a single file that you can download and install into another server'
                     },
@@ -146,17 +153,16 @@ export class CustomCommand extends BaseGuildCommand {
         input: string,
         debug: boolean
     ): Promise<string | { content: string; files: MessageFile; } | undefined> {
-        const args = humanize.smartSplit(input);
         const result = await context.bbtag.execute(content, {
             message: context.message,
-            input: args,
+            inputRaw: input,
             isCC: true,
             limit: new CustomCommandLimit(),
             tagName: 'test',
             author: context.author.id
         });
 
-        return debug ? bbtagUtil.createDebugOutput('test', content, args, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput('test', content, input, result) : undefined;
     }
 
     public showDocs(context: GuildCommandContext, topic: readonly string[]): SendPayload | string {
@@ -183,10 +189,9 @@ export class CustomCommand extends BaseGuildCommand {
         if (guard.isAliasedCustomCommand(match))
             return `❌ The command \`${commandName}\` is an alias to the tag \`${match.alias}\``;
 
-        const args = humanize.smartSplit(input);
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            input: args,
+            inputRaw: input,
             isCC: true,
             limit: new CustomCommandLimit(),
             tagName: match.name,
@@ -196,7 +201,7 @@ export class CustomCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, args, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input, result) : undefined;
     }
 
     public async createCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -339,7 +344,7 @@ export class CustomCommand extends BaseGuildCommand {
         return `✅ The \`${match.name}\` custom command has the following flags:\n\n${flags.join('\n')}`;
     }
 
-    public async addCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string[]): Promise<string | undefined> {
+    public async addCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -348,7 +353,7 @@ export class CustomCommand extends BaseGuildCommand {
             return `❌ The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { undefined: _, ...addFlags } = parse.flags([], flagsRaw);
+        const { _, ...addFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const flag of Object.keys(addFlags)) {
             const args = addFlags[flag];
@@ -358,19 +363,19 @@ export class CustomCommand extends BaseGuildCommand {
             if (flags.some(f => f.flag === flag))
                 return `❌ The flag \`${flag}\` already exists!`;
 
-            const word = args[0].replace(/[^a-z]/g, '').toLowerCase();
+            const word = args.get(0)?.value.replace(/[^a-z]/g, '').toLowerCase() ?? '';
             if (flags.some(f => f.word === word))
                 return `❌ A flag with the word \`${word}\` already exists!`;
 
-            const desc = args.slice(1).join(' ').replace(/\n/g, ' ');
-            flags.push({ flag, word, desc });
+            const description = args.slice(1).merge().value.replace(/\n/g, ' ');
+            flags.push({ flag, word, description });
         }
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async removeCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string[]): Promise<string | undefined> {
+    public async removeCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -379,7 +384,7 @@ export class CustomCommand extends BaseGuildCommand {
             return `❌ The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { undefined: _, ...removeFlags } = parse.flags([], flagsRaw);
+        const { _, ...removeFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 
@@ -817,14 +822,21 @@ async function getShrinkwrapData(
     };
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
+const flagKeys = Object.keys<{ [P in Letter]: 0 }>({
+    'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0, 'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0,
+    'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0
+});
+/* eslint-enable @typescript-eslint/naming-convention */
+
 const mapCustomCommandShrinkwrap = mapping.object<CustomCommandShrinkwrap>({
     content: mapping.string,
     cooldown: mapping.optionalNumber,
     flags: mapping.array(
         mapping.object<FlagDefinition>({
-            desc: mapping.string,
+            description: mapping.string,
             word: mapping.string,
-            flag: mapping.string
+            flag: mapping.in(...flagKeys)
         }),
         { ifUndefined: mapping.result.undefined }
     ),

@@ -1,8 +1,11 @@
 import { AnyMessage, Attachment, Embed, EmbedOptions, GuildChannel, Member, MessageFile, PrivateChannel, Shard, Textable, User } from 'eris';
 import ReadWriteLock from 'rwlock';
-import { StoredGuildCommand, StoredTag, CommandType, CommandContext, SendPayload, NamedStoredRawGuildCommand, GuildAutoresponse, GuildFilteredAutoresponse, SubtagType, StoredGuild, StoredGuildSettings, SubtagVariableType, ModerationType } from '.';
 import { ClusterWorker } from '../ClusterWorker';
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from './bbtag';
+import { CommandContext, ScopedCommandBase } from './command';
+import { CommandVariableType } from './command/compilation/parameterType';
+import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildCommand, StoredGuildSettings, StoredTag } from './globalCore';
+import { CommandType, ModerationType, SubtagType, SubtagVariableType } from './utils';
 
 export type Statement = Array<string | SubtagCall>;
 
@@ -68,7 +71,7 @@ export interface SerializedBBTagContext {
     isCC: boolean;
     state: Omit<BBTagContextState, 'cache' | 'overrides'>;
     scope: BBTagRuntimeScope;
-    input: readonly string[];
+    inputRaw: string;
     flaggedInput: FlagResult;
     tagName: string;
     author: string;
@@ -147,7 +150,7 @@ export const enum RuntimeReturnState {
 
 export interface BBTagContextOptions {
     readonly message: BBTagContextMessage;
-    readonly input: readonly string[];
+    readonly inputRaw: string;
     readonly flags?: readonly FlagDefinition[];
     readonly isCC: boolean;
     readonly tagVars?: boolean;
@@ -219,20 +222,28 @@ export interface SubtagHandlerDefinitionParameterGroup {
     readonly parameters: ReadonlyArray<string | SubtagHandlerDefinitionParameterGroup>;
 }
 
-export type FlagDefinition = {
-    readonly flag: string;
+export interface FlagDefinition {
+    readonly flag: Letter;
     readonly word: string;
-    readonly desc: string;
-};
-
-export interface FlagResult {
-    readonly undefined: readonly string[];
-    readonly [flag: string]: readonly string[] | undefined;
+    readonly description: string;
 }
 
-export interface MutableFlagResult extends FlagResult {
-    readonly undefined: string[];
-    [flag: string]: string[] | undefined;
+export interface FlagResultValue {
+    get value(): string;
+    get raw(): string;
+}
+
+export interface FlagResultValueSet {
+    merge(): FlagResultValue;
+    merge(start: number, end?: number): FlagResultValue;
+    length: number;
+    get(index: number): FlagResultValue | undefined;
+    slice(start: number, end?: number): FlagResultValueSet;
+}
+
+export type FlagResultBase = { readonly [P in Letter | '_']?: FlagResultValueSet }
+export interface FlagResult extends FlagResultBase {
+    readonly _: FlagResultValueSet;
 }
 
 export interface CommandOptionsBase {
@@ -240,7 +251,7 @@ export interface CommandOptionsBase {
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly info?: string;
+    readonly description?: string;
     readonly flags?: readonly FlagDefinition[];
     readonly onlyOn?: string | undefined;
     readonly cooldown?: number;
@@ -256,6 +267,7 @@ export type CommandResult =
     | MessageFile[]
     | { readonly content: SendPayload; readonly files: MessageFile | MessageFile[]; }
     | string
+    | undefined
     | void;
 
 export type CommandDefinition<TContext extends CommandContext> =
@@ -264,7 +276,9 @@ export type CommandDefinition<TContext extends CommandContext> =
     | CommandHandlerDefinition<TContext> & SubcommandDefinitionHolder<TContext>;
 
 export type CommandParameter =
-    | CommandVariableParameter
+    | CommandSingleParameter
+    | CommandConcatParameter
+    | CommandGreedyParameter
     | CommandLiteralParameter;
 
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
@@ -272,45 +286,54 @@ export interface CommandHandlerDefinition<TContext extends CommandContext> {
     readonly parameters?: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly execute: (context: TContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
-    readonly allowOverflow?: boolean;
-    readonly dontBind?: boolean;
-    readonly useFlags?: boolean;
-    readonly strictFlags?: boolean;
-
 }
 
 export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
     readonly subcommands: { readonly [name: string]: CommandDefinition<TContext>; };
 }
 
-export interface CommandVariableParameter {
-    readonly type: 'variable';
+export interface CommandSingleParameter {
+    readonly kind: 'singleVar';
     readonly name: string;
-    readonly valueType: string;
-    readonly required: boolean;
-    readonly rest: boolean;
-    readonly display: string;
-    readonly parse: (value: string) => unknown;
+    readonly raw: boolean;
+    readonly fallback: undefined | string;
+    readonly type: CommandVariableType;
+}
+
+export interface CommandGreedyParameter {
+    readonly kind: 'greedyVar';
+    readonly name: string;
+    readonly raw: boolean;
+    readonly type: CommandVariableType;
+    readonly minLength: number;
+}
+
+export interface CommandConcatParameter {
+    readonly kind: 'concatVar';
+    readonly name: string;
+    readonly raw: boolean;
+    readonly type: CommandVariableType;
+    readonly fallback: undefined | string;
 }
 
 export interface CommandLiteralParameter {
-    readonly type: 'literal';
+    readonly kind: 'literal';
     readonly name: string;
     readonly alias: string[];
-    readonly required: boolean;
-    readonly display: string;
-    readonly parse: (value: string) => unknown;
 }
 
 export interface CommandHandler<TContext extends CommandContext> {
-    readonly signatures: ReadonlyArray<readonly CommandParameter[]>;
+    get debugView(): string;
     readonly execute: (context: TContext) => Promise<CommandResult> | CommandResult;
 }
 
-export interface CommandSignatureHandler<TContext extends CommandContext> {
+export interface CommandSignature {
     readonly description: string;
     readonly parameters: readonly CommandParameter[];
-    readonly execute: (context: TContext, args: readonly string[]) => Promise<CommandResult> | CommandResult;
+}
+
+export interface CommandSignatureHandler<TContext extends CommandContext> extends CommandSignature {
+    readonly execute: (context: TContext, args: readonly unknown[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
 }
 
 export type CustomCommandShrinkwrap = {
@@ -568,3 +591,21 @@ export type WarnResult =
     | WarnResultBase<ModerationType.BAN, BanResult>
     | WarnResultBase<ModerationType.KICK, KickResult>
     | WarnResultBase<ModerationType.WARN, 'success' | 'countNaN' | 'countNegative' | 'countZero'>;
+
+export type CommandBinderParseResult<TResult> =
+    | CommandBinderValue<TResult>
+    | { success: 'deferred'; getValue(): CommandBinderValue<TResult> | Promise<CommandBinderValue<TResult>>; }
+
+export type CommandBinderValue<TResult> =
+    | { success: true; value: TResult; }
+    | { success: false; error: CommandResult; }
+
+export interface CommandBinderState<TContext extends CommandContext> {
+    readonly context: TContext;
+    readonly command: ScopedCommandBase<TContext>;
+    readonly arguments: ReadonlyArray<Exclude<CommandBinderParseResult<unknown>, { success: false; }>>;
+    readonly flags: FlagResult;
+    readonly argIndex: number;
+    readonly bindIndex: number;
+    readonly result: CommandResult;
+}

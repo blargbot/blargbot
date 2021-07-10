@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, FlagResult, GuildCommandContext, parse } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, parse, FlagResult } from '../core';
 import { humanize } from '../core/globalCore';
 
 export class MuteCommand extends BaseGuildCommand {
@@ -7,11 +7,11 @@ export class MuteCommand extends BaseGuildCommand {
             name: 'mute',
             category: commandTypes.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', desc: 'The reason for the mute.' },
+                { flag: 'r', word: 'reason', description: 'The reason for the mute.' },
                 {
                     flag: 't',
                     word: 'time',
-                    desc: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
+                    description: 'The amount of time to mute for, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.'
                 }
             ],
             definition: {
@@ -23,7 +23,7 @@ export class MuteCommand extends BaseGuildCommand {
                     'If the bot has permissions for it, this command will also voice-mute the user.\n' +
                     'If mod-logging is enabled, the mute will be logged.\n' +
                     'You can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
-                execute: (ctx, [user], flags) => this.mute(ctx, user.join(' '), flags)
+                execute: (ctx, [user], flags) => this.mute(ctx, user, flags)
             }
         });
     }
@@ -37,8 +37,8 @@ export class MuteCommand extends BaseGuildCommand {
         if (member === undefined)
             return '❌ I couldn\'t find that user!';
 
-        const reason = flags.r?.join(' ');
-        const rawDuration = flags.t !== undefined ? parse.duration(flags.t.join(' ')) : undefined;
+        const reason = flags.r?.merge().value;
+        const rawDuration = flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined;
         const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;
 
         switch (await context.cluster.moderation.mutes.mute(member, context.author, reason, duration)) {

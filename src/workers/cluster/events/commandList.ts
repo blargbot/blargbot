@@ -14,7 +14,7 @@ export class CommandListHandler extends ClusterEventService {
             commands[c.name] = {
                 name: c.name,
                 usage: c.usage,
-                info: c.info,
+                info: c.description,
                 category: c.category,
                 aliases: c.aliases,
                 flags: c.flags,

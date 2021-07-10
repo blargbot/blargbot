@@ -168,7 +168,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
             message: context.message,
             tagName: context.commandName,
             isCC: true,
-            input: context.args,
+            inputRaw: context.argsString,
             limit: new CustomCommandLimit(),
             flags: commandDetails.flags,
             tagVars: commandDetails.tagVars,

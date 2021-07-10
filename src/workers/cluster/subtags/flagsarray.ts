@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, SubtagType } from '../core';
 
 export class FlagsArraySubtag extends BaseSubtag {
     public constructor() {
@@ -12,9 +12,13 @@ export class FlagsArraySubtag extends BaseSubtag {
                     exampleCode: '{flagsarray}',
                     exampleIn: 'Hello -dc world',
                     exampleOut: '["_","d","c"]',
-                    execute: (ctx) => JSON.stringify(Object.keys(ctx.flaggedInput).filter(key => key !== 'undefined'))
+                    execute: (ctx) => this.flagKeys(ctx)
                 }
             ]
         });
+    }
+
+    public flagKeys(context: BBTagContext): string {
+        return JSON.stringify(Object.keys(context.flaggedInput));
     }
 }

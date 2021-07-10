@@ -11,6 +11,7 @@ import { bbtagUtil, guard, parse } from '../utils';
 import { limits } from './limits';
 import { ClusterUtilities } from '../../ClusterUtilities';
 import { BaseSubtag } from '.';
+import { humanize } from '../../../image/core';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
     return { id: entity.id, serialized: JSON.stringify(entity) };
@@ -21,6 +22,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     #isStaffPromise?: Promise<boolean>;
 
     public readonly message: BBTagContextMessage;
+    public readonly inputRaw: string;
     public readonly input: readonly string[];
     public readonly flags: readonly FlagDefinition[];
     public readonly isCC: boolean;
@@ -64,7 +66,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         options: BBTagContextOptions
     ) {
         this.message = options.message;
-        this.input = options.input;
+        this.inputRaw = options.inputRaw;
+        this.input = humanize.smartSplit(options.inputRaw);
         this.flags = options.flags ?? [];
         this.isCC = options.isCC;
         this.tagVars = options.tagVars ?? !this.isCC;
@@ -77,7 +80,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.limit = options.limit;
         // this.outputModify = options.outputModify ?? ((_, r) => r);
         this.silent = options.silent ?? false;
-        this.flaggedInput = parse.flags(this.flags, this.input);
+        this.flaggedInput = parse.flags(this.flags, this.inputRaw);
         this.errors = [];
         this.debug = [];
         this.scopes = options.scopes ?? new ScopeCollection();
@@ -316,7 +319,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         const limit = new limits[obj.limit.type]();
         limit.load(obj.limit);
         const result = new BBTagContext(engine, {
-            input: obj.input,
+            inputRaw: obj.inputRaw,
             message: message,
             isCC: obj.isCC,
             tagName: obj.tagName,
@@ -352,7 +355,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             isCC: this.isCC,
             state: newState,
             scope: newScope,
-            input: this.input,
+            inputRaw: this.inputRaw,
             flaggedInput: this.flaggedInput,
             tagName: this.tagName,
             tagVars: this.tagVars,

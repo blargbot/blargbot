@@ -13,6 +13,7 @@ import { checkEmbedSize } from './checkEmbedSize';
 import { isClass } from './isClass';
 import { testMessageFilter } from './testMessageFilter';
 import { hasProperty } from './hasProperty';
+import { isLetter } from './isLetter';
 
 export const guard = {
     isGuildChannel,
@@ -29,5 +30,6 @@ export const guard = {
     checkEmbedSize,
     isClass,
     testMessageFilter,
-    hasProperty
+    hasProperty,
+    isLetter
 };

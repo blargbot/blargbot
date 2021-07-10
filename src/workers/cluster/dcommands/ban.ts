@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, FlagResult, GuildCommandContext, parse } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, parse, FlagResult } from '../core';
 import { humanize } from '../core/globalCore';
 
 export class BanCommand extends BaseGuildCommand {
@@ -7,18 +7,18 @@ export class BanCommand extends BaseGuildCommand {
             name: 'ban',
             category: commandTypes.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', desc: 'The reason for the ban.' },
+                { flag: 'r', word: 'reason', description: 'The reason for the ban.' },
                 {
                     flag: 't',
                     word: 'time',
-                    desc: 'If provided, the user will be unbanned after the period of time. (softban)'
+                    description: 'If provided, the user will be unbanned after the period of time. (softban)'
                 }
             ],
             definition: {
-                parameters: '{user+} [days:number]',
-                description: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\n' +
+                parameters: '{user+} {days:number=1}',
+                description: 'Bans a user, where `days` is the number of days to delete messages for.\n' +
                     'If mod-logging is enabled, the ban will be logged.',
-                execute: (ctx, [user, days = 1], flags) => this.ban(ctx, user.join(' '), days, flags)
+                execute: (ctx, [user, days], flags) => this.ban(ctx, user, days, flags)
             }
         });
     }
@@ -28,8 +28,8 @@ export class BanCommand extends BaseGuildCommand {
         if (user === undefined)
             return '❌ I couldn\'t find that user!';
 
-        const reason = flags.r?.join(' ');
-        const rawDuration = flags.t !== undefined ? parse.duration(flags.t.join(' ')) : undefined;
+        const reason = flags.r?.merge().value;
+        const rawDuration = flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined;
         const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;
 
         switch (await context.cluster.moderation.bans.ban(context.channel.guild, user, context.author, true, days, reason, duration)) {

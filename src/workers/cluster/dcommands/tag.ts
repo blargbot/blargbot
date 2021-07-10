@@ -11,42 +11,49 @@ export class TagCommand extends BaseGuildCommand {
             name: 'tag',
             aliases: ['t'],
             category: commandTypes.GENERAL,
-            info: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
+            description: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
                 + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
                 + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
             definition: {
-                parameters: '{tagName} {args*}',
-                execute: (ctx, [tagName]) => this.runTag(ctx, tagName, ctx.argRange(1, true), false),
+                parameters: '{tagName} {~args+?}',
+                execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, false),
                 description: 'Runs a user created tag with some arguments',
                 subcommands: {
                     'test|eval|exec|vtest': {
-                        parameters: 'debug? {code+}',
-                        execute: (ctx, [debug]) => this.runRaw(ctx, ctx.argRange(debug === undefined ? 1 : 2, true), '', debug !== undefined),
-                        description: 'Uses the BBTag engine to execute the content as if it was a tag'
+                        parameters: '{~code+}',
+                        execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
+                        description: 'Uses the BBTag engine to execute the content as if it was a tag',
+                        subcommands: {
+                            'debug': {
+                                parameters: '{~code+}',
+                                execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
+                                description: 'Uses the BBTag engine to execute the content as if it was a tag and will return the debug output'
+                            }
+                        }
                     },
                     'docs': {
-                        parameters: '{topic*}',
+                        parameters: '{topic+?}',
                         execute: (ctx, [topic]) => this.showDocs(ctx, topic),
                         description: 'Returns helpful information about the specified topic.'
                     },
                     'debug': {
-                        parameters: '{tagName} {args*}',
-                        execute: (ctx, [tagName]) => this.runTag(ctx, tagName, ctx.argRange(2, true), true),
+                        parameters: '{tagName} {~args+?}',
+                        execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, true),
                         description: 'Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.'
                     },
                     'create|add': {
-                        parameters: '{tagName?} {content*}',
-                        execute: (ctx, [tagName]) => this.createTag(ctx, tagName, ctx.argRange(2, true)),
+                        parameters: '{tagName?} {~content+?}',
+                        execute: (ctx, [tagName, content]) => this.createTag(ctx, tagName, content),
                         description: 'Creates a new tag with the content you give'
                     },
                     'edit': {
-                        parameters: '{tagName?} {content*}',
-                        execute: (ctx, [tagName]) => this.editTag(ctx, tagName, ctx.argRange(2, true)),
+                        parameters: '{tagName?} {~content+?}',
+                        execute: (ctx, [tagName, content]) => this.editTag(ctx, tagName, content),
                         description: 'Edits an existing tag to have the content you specify'
                     },
                     'set': {
-                        parameters: '{tagName?} {content*}',
-                        execute: (ctx, [tagName]) => this.setTag(ctx, tagName, ctx.argRange(2, true)),
+                        parameters: '{tagName?} {~content+?}',
+                        execute: (ctx, [tagName, content]) => this.setTag(ctx, tagName, content),
                         description: 'Sets the tag to have the content you specify. If the tag doesnt exist it will be created.'
                     },
                     'delete|remove': {
@@ -65,7 +72,7 @@ export class TagCommand extends BaseGuildCommand {
                         description: 'Uses the BBTag engine to execute the content as it was a tag'
                     },
                     'list': {
-                        parameters: '{author*}',
+                        parameters: '{author+?}',
                         execute: (ctx, [author]) => this.listTags(ctx, author.join('')),
                         description: 'Lists all tags, or tags made by a specific author'
                     },
@@ -80,7 +87,7 @@ export class TagCommand extends BaseGuildCommand {
                         description: 'Marks the tag name as deleted forever, so no one can ever use it'
                     },
                     'cooldown': {
-                        parameters: '{tagName} {duration?:duration}',
+                        parameters: '{tagName} {duration:duration+=0ms}',
                         execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName, duration),
                         description: 'Sets the cooldown of a tag, in milliseconds'
                     },
@@ -107,7 +114,7 @@ export class TagCommand extends BaseGuildCommand {
                         description: 'Adds a tag to your favourite list, or displays your favourite tags'
                     },
                     'report': {
-                        parameters: '{tagName} {reason*}',
+                        parameters: '{tagName} {reason+?}',
                         execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName, reason.join(' ')),
                         description: 'Reports a tag as violating the ToS'
                     },
@@ -117,13 +124,13 @@ export class TagCommand extends BaseGuildCommand {
                         description: 'Lists the flags the tag accepts',
                         subcommands: {
                             'create|add': {
-                                parameters: '{tagName} {flags+}',
+                                parameters: '{tagName} {~flags+}',
                                 execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName, flags),
                                 description: 'Adds multiple flags to your tag. Flags should be of the form `-<f> <flag> [flag description]`\n' +
                                     'e.g. `b!t flags add mytag -c category The category you want to use -n name Your name`'
                             },
                             'delete|remove': {
-                                parameters: '{tagName} {flags+}',
+                                parameters: '{tagName} {~flags+}',
                                 execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName, flags),
                                 description: 'Removes multiple flags from your tag. Flags should be of the form `-<f>`\n' +
                                     'e.g. `b!t flags remove mytag -c -n`'
@@ -166,10 +173,9 @@ export class TagCommand extends BaseGuildCommand {
 
         await context.database.tags.incrementUses(match.name, 1);
 
-        const args = humanize.smartSplit(input);
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            input: args,
+            inputRaw: input,
             isCC: false,
             limit: new TagLimit(),
             tagName: match.name,
@@ -179,7 +185,7 @@ export class TagCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, args, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input, result) : undefined;
     }
 
     public async runRaw(
@@ -188,17 +194,16 @@ export class TagCommand extends BaseGuildCommand {
         input: string,
         debug: boolean
     ): Promise<string | { content: string; files: MessageFile; } | undefined> {
-        const args = humanize.smartSplit(input);
         const result = await context.bbtag.execute(content, {
             message: context.message,
-            input: args,
+            inputRaw: input,
             isCC: false,
             limit: new TagLimit(),
             tagName: 'test',
             author: context.author.id
         });
 
-        return debug ? bbtagUtil.createDebugOutput('test', content, args, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput('test', content, input, result) : undefined;
     }
 
     public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -497,13 +502,13 @@ export class TagCommand extends BaseGuildCommand {
         return `The \`${match.name}\` tag has the following flags:\n\n${flags.join('\n')}`;
     }
 
-    public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+    public async addTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<string | undefined> {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { undefined: _, ...addFlags } = parse.flags([], flagsRaw);
+        const { _, ...addFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const flag of Object.keys(addFlags)) {
             const args = addFlags[flag];
@@ -513,25 +518,25 @@ export class TagCommand extends BaseGuildCommand {
             if (flags.some(f => f.flag === flag))
                 return `❌ The flag \`${flag}\` already exists!`;
 
-            const word = args[0].replace(/[^a-z]/g, '').toLowerCase();
+            const word = args.get(0)?.value.replace(/[^a-z]/gi, '').toLowerCase() ?? '';
             if (flags.some(f => f.word === word))
                 return `❌ A flag with the word \`${word}\` already exists!`;
 
-            const desc = args.slice(1).join(' ').replace(/\n/g, ' ');
-            flags.push({ flag, word, desc });
+            const description = args.slice(1).merge().value.replace(/\n/g, ' ');
+            flags.push({ flag, word, description });
         }
 
         await context.database.tags.setProp(match.name, 'flags', flags);
         return `✅ The flags for \`${match.name}\` have been updated.`;
     }
 
-    public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string[]): Promise<string | undefined> {
+    public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<string | undefined> {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { undefined: _, ...removeFlags } = parse.flags([], flagsRaw);
+        const { _, ...removeFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);
 

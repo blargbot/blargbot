@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, FlagResult, GuildCommandContext } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, FlagResult } from '../core';
 import { humanize } from '../core/globalCore';
 
 export class KickCommand extends BaseGuildCommand {
@@ -7,12 +7,12 @@ export class KickCommand extends BaseGuildCommand {
             name: 'kick',
             category: commandTypes.ADMIN,
             flags: [
-                { flag: 'r', word: 'reason', desc: 'The reason for the kick.' }
+                { flag: 'r', word: 'reason', description: 'The reason for the kick.' }
             ],
             definition: {
                 parameters: '{user+}',
                 description: 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.',
-                execute: (ctx, [user], flags) => this.kick(ctx, user.join(' '), flags)
+                execute: (ctx, [user], flags) => this.kick(ctx, user, flags)
             }
         });
     }
@@ -22,7 +22,7 @@ export class KickCommand extends BaseGuildCommand {
         if (member === undefined)
             return '❌ I couldn\'t find that user!';
 
-        const reason = flags.r?.join(' ');
+        const reason = flags.r?.merge().value;
 
         switch (await context.cluster.moderation.bans.kick(member, context.author, true, reason)) {
             case 'memberTooHigh': return `❌ I don't have permission to kick **${humanize.fullName(member)}**! Their highest role is above my highest role.`;

@@ -7,7 +7,7 @@ export class SettingsCommand extends BaseGuildCommand {
         super({
             name: 'settings',
             category: CommandType.ADMIN,
-            info: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/commands/settings')} for key documentation.`,
+            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/commands/settings')} for key documentation.`,
             definition: {
                 subcommands: {
                     'list': {
@@ -21,9 +21,9 @@ export class SettingsCommand extends BaseGuildCommand {
                         execute: () => this.keys()
                     },
                     'set': {
-                        parameters: '{key} {value*}',
+                        parameters: '{key} {~value+?}',
                         description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
-                        execute: (ctx, [setting, value]) => this.set(ctx, setting, value.join(' '))
+                        execute: (ctx, [setting, value]) => this.set(ctx, setting, value)
                     }
                 }
             }
