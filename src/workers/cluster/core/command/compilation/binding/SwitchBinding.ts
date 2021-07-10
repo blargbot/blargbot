@@ -36,7 +36,7 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
     public [Binder.binder](state: CommandBinderState<TContext>): BindingResult<CommandBinderState<TContext>> {
         const arg = state.flags._.get(state.argIndex)?.value;
         if (arg === undefined)
-            return this.bindingError(state, `❌ Not enough arguments! Expected ${this.expected} but got nothing`);
+            return this.bindingError(state, state.command.error(`Not enough arguments! Expected ${this.expected} but got nothing`));
 
         const key = this.aliases[arg] ?? arg;
         const nextRequired = typeof key === 'string' ? this.options[key] : key.flatMap(k => this.options[k] ?? []);
@@ -48,6 +48,6 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
         if (nextOptional !== undefined)
             return this.bindingSuccess(state, nextOptional, 0, undefined, false);
 
-        return this.bindingError(state, `❌ Expected ${this.expected} but got \`${arg}\``);
+        return this.bindingError(state, state.command.error(`Expected ${this.expected} but got \`${arg}\``));
     }
 }

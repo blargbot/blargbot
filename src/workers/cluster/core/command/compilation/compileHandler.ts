@@ -39,7 +39,7 @@ export function compileHandler<TContext extends CommandContext>(
                 case true:
                     return result.state.result;
                 case false:
-                    return result.state.result ?? '❌ I wasnt able to understand those arguments!';
+                    return result.state.result ?? command.error('I wasnt able to understand those arguments!');
             }
         }
     };
@@ -244,28 +244,28 @@ const typeParsers: {
     string(value) {
         return { success: true, value };
     },
-    integer(value) {
+    integer(value, context) {
         const result = parse.int(value);
         if (isNaN(result))
-            return { success: false, error: `❌ \`${value}\` is not an integer` };
+            return { success: false, error: context.command.error(`\`${value}\` is not an integer`) };
         return { success: true, value: result };
     },
-    number(value) {
+    number(value, context) {
         const result = parse.float(value);
         if (isNaN(result))
-            return { success: false, error: `❌ \`${value}\` is not a number` };
+            return { success: false, error: context.command.error(`\`${value}\` is not a number`) };
         return { success: true, value: result };
     },
-    boolean(value) {
+    boolean(value, context) {
         const result = parse.boolean(value);
         if (result === undefined)
-            return { success: false, error: `❌ \`${value}\` is not a boolean` };
+            return { success: false, error: context.command.error(`\`${value}\` is not a boolean`) };
         return { success: true, value: result };
     },
-    duration(value) {
+    duration(value, context) {
         const result = parse.duration(value);
         if (result === undefined)
-            return { success: false, error: `❌ \`${value}\` is not a valid duration` };
+            return { success: false, error: context.command.error(`\`${value}\` is not a valid duration`) };
         return { success: true, value: result };
     }
 };

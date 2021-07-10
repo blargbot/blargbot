@@ -32,6 +32,6 @@ export class SingleBinding<TContext extends CommandContext, TResult> extends Com
             const result = this.parse(this.fallback, state);
             yield this.getBindingResult(state, this.next, 0, result);
         } else
-            yield this.bindingError(state, `❌ Not enough arguments! \`${this.name}\` is required`);
+            yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
     }
 }

@@ -33,7 +33,7 @@ export class SettingsCommand extends BaseGuildCommand {
     private async list(context: GuildCommandContext): Promise<string | { embed: EmbedOptions; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
-            return '❌ Your guild is not correctly configured yet! Please try again later';
+            return this.error('Your guild is not correctly configured yet! Please try again later');
 
         const settings = storedGuild.settings;
         const guild = context.channel.guild;
@@ -101,16 +101,16 @@ export class SettingsCommand extends BaseGuildCommand {
     private async set(context: GuildCommandContext, setting: string, value: string): Promise<string> {
         const key = setting.toLowerCase();
         if (!guard.hasProperty(guildSettings, key))
-            return '❌ Invalid key!';
+            return this.error('Invalid key!');
 
         const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
-            return `❌ '${value}' is not a ${guildSettings[key].type}`;
+            return this.error(`'${value}' is not a ${guildSettings[key].type}`);
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
-            return '❌ Failed to set';
+            return this.error('Failed to set');
 
-        return `✅ ${guildSettings[key].name} is set to ${parsed.display ?? 'nothing'}`;
+        return this.success(`${guildSettings[key].name} is set to ${parsed.display ?? 'nothing'}`);
     }
 
     private keys(): string {

@@ -26,7 +26,7 @@ export class ConcatBinding<TContext extends CommandContext, TResult> extends Com
             if (this.fallback !== undefined)
                 yield this.getBindingResult(state, this.next, 0, this.parse(this.fallback, state));
             else
-                yield this.bindingError(state, `❌ Not enough arguments! \`${this.name}\` is required`);
+                yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
             return;
         }
 

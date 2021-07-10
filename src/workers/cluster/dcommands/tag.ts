@@ -169,7 +169,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         if (debug && match.author !== context.author.id)
-            return '❌ You cannot debug someone elses tag.';
+            return this.error('You cannot debug someone elses tag.');
 
         await context.database.tags.incrementUses(match.name, 1);
 
@@ -233,7 +233,7 @@ export class TagCommand extends BaseGuildCommand {
             tag: match.name,
             content: match.content
         });
-        return `✅ The \`${match.name}\` tag is gone forever!`;
+        return this.success(`The \`${match.name}\` tag is gone forever!`);
     }
 
     public async setTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -263,7 +263,7 @@ export class TagCommand extends BaseGuildCommand {
             oldName: from.name,
             newName: to.name
         });
-        return `✅ The \`${from.name}\` tag has been renamed to \`${to.name}\`.`;
+        return this.success(`The \`${from.name}\` tag has been renamed to \`${to.name}\`.`);
     }
 
     public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: MessageFile; } | undefined> {
@@ -305,8 +305,8 @@ export class TagCommand extends BaseGuildCommand {
         }
 
         switch (await context.util.displayPaged(...args)) {
-            case false: return '❌ No results found!';
-            case true: return '✅ I hope you found what you were looking for!';
+            case false: return this.error('No results found!');
+            case true: return this.success('I hope you found what you were looking for!');
             case undefined: return undefined;
         }
     }
@@ -328,8 +328,8 @@ export class TagCommand extends BaseGuildCommand {
             ', ');
 
         switch (result) {
-            case false: return '❌ No results found!';
-            case true: return '✅ I hope you found what you were looking for!';
+            case false: return this.error('No results found!');
+            case true: return this.success('I hope you found what you were looking for!');
             case undefined: return undefined;
         }
     }
@@ -337,13 +337,13 @@ export class TagCommand extends BaseGuildCommand {
     public async disableTag(context: GuildCommandContext, tagName: string, reason: string): Promise<string | undefined> {
         tagName = normalizeName(tagName);
         if (!await context.database.tags.disable(tagName, context.author.id, reason))
-            return `❌ The \`${tagName}\` tag doesn't exist!`;
-        return `✅ The \`${tagName}\` tag has been deleted`;
+            return this.error(`The \`${tagName}\` tag doesn't exist!`);
+        return this.success(`The \`${tagName}\` tag has been deleted`);
     }
 
     public async setTagCooldown(context: GuildCommandContext, tagName: string, cooldown?: Duration): Promise<string | undefined> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
-            return '❌ The cooldown must be greater than 0ms';
+            return this.error('The cooldown must be greater than 0ms');
 
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
@@ -351,7 +351,7 @@ export class TagCommand extends BaseGuildCommand {
 
         await context.database.tags.setProp(match.name, 'cooldown', cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
-        return `✅ The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
+        return this.success(`The tag \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`);
     }
 
     public async getTagAuthor(context: GuildCommandContext, tagName: string | undefined): Promise<string | undefined> {
@@ -361,7 +361,7 @@ export class TagCommand extends BaseGuildCommand {
 
         const response = [];
         const author = await context.database.users.get(match.author);
-        response.push(`✅ The tag \`${match.name}\` was made by **${humanize.fullName(author)}**`);
+        response.push(this.success(`The tag \`${match.name}\` was made by **${humanize.fullName(author)}**`));
         if (match.authorizer !== undefined && match.authorizer !== match.author) {
             const authorizer = await context.database.users.get(match.authorizer);
             response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
@@ -417,7 +417,7 @@ export class TagCommand extends BaseGuildCommand {
         fields.push({ name: 'Favourited', value: `${favouriteCount} time${favouriteCount === 1 ? '' : 's'}`, inline: true });
 
         if (match.reports !== undefined && match.reports > 0)
-            fields.push({ name: '⚠️ Reported ⚠️', value: `${match.reports} time${match.reports === 1 ? '' : 's'}`, inline: true });
+            fields.push({ name: this.warning('Reported'), value: `${match.reports} time${match.reports === 1 ? '' : 's'}`, inline: true });
 
         const flags = humanize.flags(match.flags ?? []);
         if (flags.length > 0)
@@ -445,10 +445,10 @@ export class TagCommand extends BaseGuildCommand {
         const isFavourited = match.favourites?.[context.author.id] === true;
         await context.database.tags.setFavourite(match.name, context.author.id, isFavourited);
         return isFavourited
-            ? `✅ The \`${match.name}\` tag is now on your favourites list!\n\n` +
+            ? this.success(`The \`${match.name}\` tag is now on your favourites list!\n\n`) +
             'Note: there is no way for a tag to tell if you\'ve favourited it, and thus it\'s impossible to give rewards for favouriting.\n' +
             'Any tag that claims otherwise is lying, and should be reported.'
-            : `✅ The \`${match.name}\` tag is no longer on your favourites list!`;
+            : this.success(`The \`${match.name}\` tag is no longer on your favourites list!`);
     }
 
     public async listFavouriteTags(context: GuildCommandContext): Promise<string> {
@@ -465,7 +465,7 @@ export class TagCommand extends BaseGuildCommand {
 
         const user = await context.database.users.get(context.author.id);
         if (user === undefined)
-            return '❌ Sorry, you cannot report tags at this time. Please try again later!';
+            return this.error('Sorry, you cannot report tags at this time. Please try again later!');
 
         if (user.reportblock !== undefined)
             return user.reportblock;
@@ -475,7 +475,7 @@ export class TagCommand extends BaseGuildCommand {
             if (user.reports?.[match.name] !== undefined) {
                 await context.database.tags.incrementReports(match.name, -1);
                 await context.database.users.setTagReport(context.author.id, match.name, undefined);
-                return `✅ The \`${match.name}\` tag is no longer being reported by you.`;
+                return this.success(`The \`${match.name}\` tag is no longer being reported by you.`);
             }
             reason = (await context.util.awaitQuery(context.channel, context.author, 'Please provide a reason for your report or type `c` to cancel:'))?.content;
             if (reason === undefined || reason === 'c')
@@ -487,7 +487,7 @@ export class TagCommand extends BaseGuildCommand {
         await context.database.users.setTagReport(context.author.id, match.name, reason);
         await context.util.send(context.config.discord.channels.tagreports,
             `**${humanize.fullName(context.author)}** has reported the tag: ${match.name}\n\n${reason}`);
-        return `✅ The \`${match.name}\` tag has been reported.`;
+        return this.success(`The \`${match.name}\` tag has been reported.`);
     }
 
     public async getTagFlags(context: GuildCommandContext, tagName: string): Promise<string | undefined> {
@@ -513,21 +513,21 @@ export class TagCommand extends BaseGuildCommand {
         for (const flag of Object.keys(addFlags)) {
             const args = addFlags[flag];
             if (args === undefined || args.length === 0)
-                return `❌ No word was specified for the \`${flag}\` flag`;
+                return this.error(`No word was specified for the \`${flag}\` flag`);
 
             if (flags.some(f => f.flag === flag))
-                return `❌ The flag \`${flag}\` already exists!`;
+                return this.error(`The flag \`${flag}\` already exists!`);
 
             const word = args.get(0)?.value.replace(/[^a-z]/gi, '').toLowerCase() ?? '';
             if (flags.some(f => f.word === word))
-                return `❌ A flag with the word \`${word}\` already exists!`;
+                return this.error(`A flag with the word \`${word}\` already exists!`);
 
             const description = args.slice(1).merge().value.replace(/\n/g, ' ');
             flags.push({ flag, word, description });
         }
 
         await context.database.tags.setProp(match.name, 'flags', flags);
-        return `✅ The flags for \`${match.name}\` have been updated.`;
+        return this.success(`The flags for \`${match.name}\` have been updated.`);
     }
 
     public async removeTagFlags(context: GuildCommandContext, tagName: string, flagsRaw: string): Promise<string | undefined> {
@@ -541,7 +541,7 @@ export class TagCommand extends BaseGuildCommand {
             .filter(f => removeFlags[f.flag] === undefined);
 
         await context.database.tags.setProp(match.name, 'flags', flags);
-        return `✅ The flags for \`${match.name}\` have been updated.`;
+        return this.success(`The flags for \`${match.name}\` have been updated.`);
     }
 
     public async setTagLanguage(context: GuildCommandContext, tagName: string, language: string): Promise<string | undefined> {
@@ -550,7 +550,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         await context.database.tags.setProp(match.name, 'lang', language);
-        return `✅ Lang for tag \`${match.name}\` set.`;
+        return this.success(`Lang for tag \`${match.name}\` set.`);
     }
 
     private async saveTag(context: GuildCommandContext, operation: string, tagName: string, content: string | undefined, oldTag?: StoredTag): Promise<string | undefined> {
@@ -560,7 +560,7 @@ export class TagCommand extends BaseGuildCommand {
 
         const analysis = context.bbtag.check(content);
         if (analysis.errors.length > 0)
-            return `❌ There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`;
+            return this.error(`There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`);
 
         await context.database.tags.set({
             name: tagName,
@@ -578,7 +578,7 @@ export class TagCommand extends BaseGuildCommand {
             content
         });
 
-        return `✅ Tag \`${tagName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`;
+        return this.success(`Tag \`${tagName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`);
     }
 
     private async requestTagName(context: GuildCommandContext, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {
@@ -622,7 +622,7 @@ export class TagCommand extends BaseGuildCommand {
         if (context.author.id !== context.config.discord.users.owner
             && match.tag !== undefined
             && match.tag.author !== context.author.id) {
-            return `❌ You don't own the \`${match.name}\` tag!`;
+            return this.error(`You don't own the \`${match.name}\` tag!`);
         }
 
         return { name: match.name, tag: match.tag };
@@ -638,7 +638,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         if (match.tag === undefined)
-            return `❌ The \`${match.name}\` tag doesn't exist!`;
+            return this.error(`The \`${match.name}\` tag doesn't exist!`);
 
         return match.tag;
     }
@@ -653,7 +653,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         if (match.tag === undefined)
-            return `❌ The \`${match.name}\` tag doesn't exist!`;
+            return this.error(`The \`${match.name}\` tag doesn't exist!`);
 
         return match.tag;
     }
@@ -668,7 +668,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         if (match.tag !== undefined)
-            return `❌ The \`${match.name}\` tag already exists!`;
+            return this.error(`The \`${match.name}\` tag already exists!`);
 
         return { name: match.name };
     }
@@ -686,7 +686,7 @@ export class TagCommand extends BaseGuildCommand {
         if (tag === undefined)
             return { name: tagName };
         if (tag.deleted === true) {
-            let result = `❌ The \`${tag.name}\` tag has been permanently deleted`;
+            let result = this.error(`The \`${tag.name}\` tag has been permanently deleted`);
             if (tag.deleter !== undefined) {
                 const deleter = await context.database.users.get(tag.deleter);
                 if (deleter !== undefined)
@@ -703,7 +703,7 @@ export class TagCommand extends BaseGuildCommand {
     private showDocs(ctx: GuildCommandContext, topic: readonly string[]): SendPayload | string {
         const embed = getDocsEmbed(ctx, topic);
         if (embed === undefined)
-            return `❌ Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`;
+            return this.error(`Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`);
 
         return { embed: embed, isHelp: true };
     }

@@ -49,7 +49,7 @@ export class GreedyBinding<TContext extends CommandContext, TResult> extends Com
         }
 
         if (next.length === 0)
-            yield this.bindingError(state, `❌ Not enough arguments! \`${this.name}\` is required`);
+            yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
     }
 }
 

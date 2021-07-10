@@ -100,20 +100,24 @@ export abstract class BaseCommand implements CommandOptionsBase {
         }
     }
 
-    protected error(message: string): string {
+    public error(message: string): string {
         return `❌ ${message}`;
     }
 
-    protected warning(message: string, ...reasons: string[]): string {
+    public warning(message: string, ...reasons: string[]): string {
         return `⚠️ ${message}${reasons.map(r => `\n⛔ ${r}`).join('')}`;
     }
 
-    protected success(message: string): string {
+    public success(message: string): string {
         return `✅ ${message}`;
     }
 
-    protected info(message: string): string {
+    public info(message: string): string {
         return `ℹ️ ${message}`;
+    }
+
+    public congrats(message: string): string {
+        return `🎉 ${message}`;
     }
 }
 

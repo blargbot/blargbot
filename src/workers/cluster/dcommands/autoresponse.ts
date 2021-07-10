@@ -50,8 +50,8 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
     public async requestWhitelist(context: GuildCommandContext, reason: string): Promise<string | undefined> {
         switch (await context.cluster.autoresponses.whitelist(context.channel.guild.id, context.channel.id, context.author.id, reason)) {
-            case 'alreadyApproved': return '❌ This server is already whitelisted!';
-            case 'requested': return '✅ Your request has been sent. Please don\'t spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.';
+            case 'alreadyApproved': return this.error('This server is already whitelisted!');
+            case 'requested': return this.success('Your request has been sent. Please don\'t spam this command.\n\nYou will hear back in this channel if you were accepted or rejected.');
             default: return undefined;
         }
     }
@@ -84,7 +84,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
         }
 
         if (embed.fields.length === 0)
-            return '❌ There are no autoresponses configured for this server!';
+            return this.error('There are no autoresponses configured for this server!');
 
         return { embed };
     }
@@ -101,16 +101,16 @@ export class AutoResponseCommand extends BaseGuildCommand {
         let commandIndex = 0;
         if (isEverything) {
             if (ars.everything?.executes !== undefined)
-                return `❌ An autoresponse that responds to everything already exists! It executes the following ccommand: \`${ars.everything.executes}\``;
+                return this.error(`An autoresponse that responds to everything already exists! It executes the following ccommand: \`${ars.everything.executes}\``);
             if (pattern !== '')
-                return '❌ Autoresponses that respond to everything cannot have a pattern';
+                return this.error('Autoresponses that respond to everything cannot have a pattern');
             while (commandNames.has(commandName = `_autoresponse_${commandIndex++}`));
             await context.database.guilds.setAutoresponse(context.channel.guild.id, 'everything', { executes: commandName });
         } else {
             if ((ars.list?.length ?? 0) >= 20)
-                return '❌ You already have 20 autoresponses!';
+                return this.error('You already have 20 autoresponses!');
             if (pattern === '')
-                return '❌ If you want to respond to everything, you need to use the `-e` flag.';
+                return this.error('If you want to respond to everything, you need to use the `-e` flag.');
             if (isRegex) {
                 const regexError = this.validateRegex(context, pattern);
                 if (regexError !== undefined)
@@ -127,7 +127,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
             managed: true
         });
 
-        return `✅ Your autoresponse has been added! It will execute the hidden ccommand: \`${commandName}\``;
+        return this.success(`Your autoresponse has been added! It will execute the hidden ccommand: \`${commandName}\``);
     }
 
     public async removeAutoresponse(context: GuildCommandContext): Promise<string | undefined> {
@@ -143,9 +143,9 @@ export class AutoResponseCommand extends BaseGuildCommand {
         await context.database.guilds.setAutoresponse(context.channel.guild.id, ar.index, undefined);
         await context.database.guilds.setCommand(context.channel.guild.id, ar.executes, undefined);
 
-        return match === undefined ? '✅ Autoresponse removed!'
-            : 'term' in match ? `✅ Autoresponse \`${match.term}\` removed!`
-                : '✅ The everything autoresponse has been removed!';
+        return match === undefined ? this.success('Autoresponse removed!')
+            : 'term' in match ? this.success(`Autoresponse \`${match.term}\` removed!`)
+                : this.success('The everything autoresponse has been removed!');
     }
 
     public async editAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string | undefined> {
@@ -154,9 +154,9 @@ export class AutoResponseCommand extends BaseGuildCommand {
             return accessError;
 
         if (isEverything)
-            return '❌ You can\'t edit the everything autoresponse.';
+            return this.error('You can\'t edit the everything autoresponse.');
         if (pattern === '')
-            return '❌ The pattern cannot be empty';
+            return this.error('The pattern cannot be empty');
         if (isRegex) {
             const regexError = this.validateRegex(context, pattern);
             if (regexError !== undefined)
@@ -173,12 +173,12 @@ export class AutoResponseCommand extends BaseGuildCommand {
             term: pattern
         });
 
-        return `✅ Autoresponse \`${pattern}\` has been edited!`;
+        return this.success(`Autoresponse \`${pattern}\` has been edited!`);
     }
 
     private checkArAccess(context: GuildCommandContext): string | undefined {
         if (!context.cluster.autoresponses.guilds.has(context.channel.guild.id))
-            return '❌ Sorry, autoresponses are currently whitelisted. To request access, do `b!ar whitelist [reason]`';
+            return this.error('Sorry, autoresponses are currently whitelisted. To request access, do `b!ar whitelist [reason]`');
 
         return undefined;
     }
@@ -187,9 +187,9 @@ export class AutoResponseCommand extends BaseGuildCommand {
         const result = createSafeRegExp(pattern);
         if (!result.success) {
             switch (result.reason) {
-                case 'tooLong': return '❌ Regex is too long!';
-                case 'invalid': return '❌ Regex is invalid!';
-                case 'unsafe': return '❌ Regex is unsafe!\n' +
+                case 'tooLong': return this.error('Regex is too long!');
+                case 'invalid': return this.error('Regex is invalid!');
+                case 'unsafe': return this.error('Regex is unsafe!\n') +
                     'If you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\n' +
                     'You can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>';
             }
@@ -204,7 +204,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
         const res = testPhrases.map(p => result.regex.test(p)).filter(p => p === true).length;
         return res !== testPhrases.length
             ? undefined
-            : '❌ Your regex cannot match everything!';
+            : this.error('Your regex cannot match everything!');
     }
 
     private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: false): Promise<string | undefined | { index: number; executes: string; }>;
@@ -221,7 +221,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
             }
         }
         if (indexes.length === 0)
-            return '❌ There are no autoresponses on this guild!';
+            return this.error('There are no autoresponses on this guild!');
 
         const result = await context.util.awaitQuery(
             context.channel,

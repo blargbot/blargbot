@@ -26,7 +26,7 @@ export class WarnCommand extends BaseGuildCommand {
     public async warn(context: GuildCommandContext, user: string, flags: FlagResult): Promise<string> {
         const member = await context.util.getMember(context.message, user);
         if (member === undefined)
-            return '❌ I couldn\'t find that user!';
+            return this.error('I couldn\'t find that user!');
 
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1);
@@ -35,19 +35,19 @@ export class WarnCommand extends BaseGuildCommand {
         const preamble = `**${humanize.fullName(member)}** has been given ${count === 1 ? 'a warning' : `${count} warnings`}.`;
         const actionStr = getActionString(result.type);
         switch (result.state) {
-            case 'countNaN': return `❌ ${flags.c?.merge().value ?? ''} isnt a number!`;
-            case 'countNegative': return '❌ I cant give a negative amount of warnings!';
-            case 'countZero': return '❌ I cant give zero warnings!';
-            case 'alreadyBanned': return `⚠️ ${preamble}\n⛔ They went over the limit for bans, but they were already banned.`;
-            case 'memberTooHigh': return `⚠️ ${preamble}\n⛔ They went over the limit for ${actionStr}s but they are above me so I couldnt ${actionStr} them.`;
-            case 'moderatorTooLow': return `⚠️ ${preamble}\n⛔ They went over the limit for ${actionStr}s but they are above you so I didnt ${actionStr} them.`;
-            case 'noPerms': return `⚠️ ${preamble}\n⛔ They went over the limit for ${actionStr}s but I dont have permission to ${actionStr} them.`;
-            case 'moderatorNoPerms': return `⚠️ ${preamble}\n⛔ They went over the limit for ${actionStr}s but you dont have permission to ${actionStr} them.`;
+            case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);
+            case 'countNegative': return this.error('I cant give a negative amount of warnings!');
+            case 'countZero': return this.error('I cant give zero warnings!');
+            case 'alreadyBanned': return this.warning(preamble, 'They went over the limit for bans, but they were already banned.');
+            case 'memberTooHigh': return this.warning(preamble, `They went over the limit for ${actionStr}s but they are above me so I couldnt ${actionStr} them.`);
+            case 'moderatorTooLow': return this.warning(preamble, `They went over the limit for ${actionStr}s but they are above you so I didnt ${actionStr} them.`);
+            case 'noPerms': return this.warning(preamble, `They went over the limit for ${actionStr}s but I dont have permission to ${actionStr} them.`);
+            case 'moderatorNoPerms': return this.warning(preamble, `They went over the limit for ${actionStr}s but you dont have permission to ${actionStr} them.`);
             case 'success': {
                 switch (result.type) {
-                    case ModerationType.WARN: return `✅ ${preamble} They now have ${result.count} warnings.`;
-                    case ModerationType.BAN: return `✅ ${preamble} They went over the limit for bans and so have been banned.`;
-                    case ModerationType.KICK: return `✅ ${preamble} They went over the limit for kicks and so have been kicked.`;
+                    case ModerationType.WARN: return this.success(`${preamble} They now have ${result.count} warnings.`);
+                    case ModerationType.BAN: return this.success(`${preamble} They went over the limit for bans and so have been banned.`);
+                    case ModerationType.KICK: return this.success(`${preamble} They went over the limit for kicks and so have been kicked.`);
                 }
             }
         }

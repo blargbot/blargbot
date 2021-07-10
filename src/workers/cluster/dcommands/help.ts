@@ -110,12 +110,12 @@ export class HelpCommand extends BaseGlobalCommand {
         if (command !== undefined)
             return this.viewDefaultCommand(context, command, subcommand);
 
-        return { content: `❌ The command \`${commandName}\` could not be found` };
+        return this.error(`The command \`${commandName}\` could not be found`);
     }
 
     public async viewCustomCommand(context: GuildCommandContext, commandName: string, command: StoredGuildCommand): Promise<SendPayload> {
         if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
-            return { content: `❌ You dont have permission to run the \`${commandName}\` command` };
+            return this.error(`You dont have permission to run the \`${commandName}\` command`);
 
         return {
             embed: {
@@ -129,7 +129,7 @@ export class HelpCommand extends BaseGlobalCommand {
 
     public async viewDefaultCommand(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
         if (!await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
-            return { content: `❌ You dont have permission to run the \`${command.name}\` command` };
+            return this.error(`You dont have permission to run the \`${command.name}\` command`);
 
         const fields: EmbedField[] = [];
 

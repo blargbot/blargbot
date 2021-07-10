@@ -35,32 +35,32 @@ export class MuteCommand extends BaseGuildCommand {
 
         const member = await context.cluster.util.getMember(context.message, userStr);
         if (member === undefined)
-            return '❌ I couldn\'t find that user!';
+            return this.error('I couldn\'t find that user!');
 
         const reason = flags.r?.merge().value;
         const rawDuration = flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined;
         const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;
 
         switch (await context.cluster.moderation.mutes.mute(member, context.author, reason, duration)) {
-            case 'alreadyMuted': return `❌ ${humanize.fullName(member)} is already muted`;
-            case 'noPerms': return '❌ I don\'t have permission to mute users! Make sure I have the `manage roles` permission and try again.';
-            case 'moderatorNoPerms': return '❌ You don\'t have permission to mute users! Make sure you have the `manage roles` permission and try again.';
-            case 'roleMissing': return '❌ The muted role has been deleted! Please re-run this command to create a new one.';
-            case 'roleTooHigh': return '❌ I can\'t assign the muted role! (it\'s higher than or equal to my top role)';
-            case 'moderatorTooLow': return '❌ You can\'t assign the muted role! (it\'s higher than or equal to your top role)';
+            case 'alreadyMuted': return this.error(`${humanize.fullName(member)} is already muted`);
+            case 'noPerms': return this.error('I don\'t have permission to mute users! Make sure I have the `manage roles` permission and try again.');
+            case 'moderatorNoPerms': return this.error('You don\'t have permission to mute users! Make sure you have the `manage roles` permission and try again.');
+            case 'roleMissing': return this.error('The muted role has been deleted! Please re-run this command to create a new one.');
+            case 'roleTooHigh': return this.error('I can\'t assign the muted role! (it\'s higher than or equal to my top role)');
+            case 'moderatorTooLow': return this.error('You can\'t assign the muted role! (it\'s higher than or equal to your top role)');
             case 'success':
                 if (flags.t === undefined)
-                    return `✅ **${humanize.fullName(member)}** has been muted`;
+                    return this.success(`**${humanize.fullName(member)}** has been muted`);
                 if (duration === undefined)
-                    return `⚠️ **${humanize.fullName(member)}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`;
-                return `✅ **${humanize.fullName(member)}** has been muted and will be unmuted after **${humanize.duration(duration)}**`;
+                    return this.warning(`**${humanize.fullName(member)}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`);
+                return this.success(`**${humanize.fullName(member)}** has been muted and will be unmuted after **${humanize.duration(duration)}**`);
         }
     }
 
     private async checkMuteAvailable(context: GuildCommandContext): Promise<string | true> {
         switch (await context.cluster.moderation.mutes.ensureMutedRole(context.channel.guild)) {
-            case 'noPerms': return '❌ I don\'t have enough permissions to create a `muted` role! Make sure I have the `manage roles` permission and try again.';
-            case 'unconfigured': return '❌ I created a `muted` role, but don\'t have permissions to configure it! Either configure it yourself, or make sure I have the `manage channel` permission, delete the `muted` role, and try again.';
+            case 'noPerms': return this.error('I don\'t have enough permissions to create a `muted` role! Make sure I have the `manage roles` permission and try again.');
+            case 'unconfigured': return this.error('I created a `muted` role, but don\'t have permissions to configure it! Either configure it yourself, or make sure I have the `manage channel` permission, delete the `muted` role, and try again.');
             case 'success': return true;
         }
     }

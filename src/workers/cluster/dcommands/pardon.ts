@@ -26,17 +26,17 @@ export class PardonCommand extends BaseGuildCommand {
     public async pardon(context: GuildCommandContext, user: string, flags: FlagResult): Promise<string> {
         const member = await context.util.getMember(context.message, user);
         if (member === undefined)
-            return '❌ I couldn\'t find that user!';
+            return this.error('I couldn\'t find that user!');
 
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1);
 
         const result = await context.cluster.moderation.warns.pardon(member, context.author, count, reason);
         switch (result) {
-            case 'countNaN': return `❌ ${flags.c?.merge().value ?? ''} isnt a number!`;
-            case 'countNegative': return '❌ I cant give a negative amount of pardons!';
-            case 'countZero': return '❌ I cant give zero pardons!';
-            default: return `✅ **${humanize.fullName(member)}** has been given ${count === 1 ? 'a pardon' : `${count} pardons`}. They now have ${result} warnings.`;
+            case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);
+            case 'countNegative': return this.error('I cant give a negative amount of pardons!');
+            case 'countZero': return this.error('I cant give zero pardons!');
+            default: return this.success(`**${humanize.fullName(member)}** has been given ${count === 1 ? 'a pardon' : `${count} pardons`}. They now have ${result} warnings.`);
         }
     }
 }

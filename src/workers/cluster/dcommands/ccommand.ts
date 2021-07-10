@@ -168,7 +168,7 @@ export class CustomCommand extends BaseGuildCommand {
     public showDocs(context: GuildCommandContext, topic: readonly string[]): SendPayload | string {
         const embed = getDocsEmbed(context, topic);
         if (embed === undefined)
-            return `❌ Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`;
+            return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`);
 
         return { embed: embed, isHelp: true };
     }
@@ -184,10 +184,10 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (debug && match.author !== context.author.id)
-            return '❌ You cannot debug someone elses custom command.';
+            return this.error('You cannot debug someone elses custom command.');
 
         if (guard.isAliasedCustomCommand(match))
-            return `❌ The command \`${commandName}\` is an alias to the tag \`${match.alias}\``;
+            return this.error(`The command \`${commandName}\` is an alias to the tag \`${match.alias}\``);
 
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
@@ -218,7 +218,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match))
-            return `❌ The \`${match.name}\` custom command is an alias to the tag \`${match.alias}\``;
+            return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.alias}\``);
 
         return await this.saveCommand(context, 'edited', match.name, content, match);
     }
@@ -229,7 +229,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         await context.database.guilds.setCommand(context.channel.guild.id, match.name, undefined);
-        return `✅ The \`${match.name}\` custom command is gone forever!`;
+        return this.success(`The \`${match.name}\` custom command is gone forever!`);
     }
 
     public async setCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -238,7 +238,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match.command))
-            return `❌ The \`${match.name}\` custom command is an alias to the tag \`${match.command.alias}\``;
+            return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.command.alias}\``);
 
         return await this.saveCommand(context, 'set', match.name, content, match.command);
     }
@@ -254,7 +254,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         await context.database.guilds.renameCommand(context.channel.guild.id, from.name, to.name);
 
-        return `✅ The \`${from.name}\` custom command has been renamed to \`${to.name}\`.`;
+        return this.success(`The \`${from.name}\` custom command has been renamed to \`${to.name}\`.`);
     }
 
     public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string; files: MessageFile; } | undefined> {
@@ -263,13 +263,13 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match))
-            return `❌ The command \`${match.name}\` is an alias to the tag \`${match.alias}\``;
+            return this.error(`The command \`${match.name}\` is an alias to the tag \`${match.alias}\``);
 
-        const response = `✅ The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``;
+        const response = this.success(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
         return response.length < 2000
             ? response
             : {
-                content: `✅ The raw code for \`${match.name}\` is attached`,
+                content: this.success(`The raw code for \`${match.name}\` is attached`),
                 files: {
                     name: match.name + '.bbtag',
                     file: match.content
@@ -301,7 +301,7 @@ export class CustomCommand extends BaseGuildCommand {
 
     public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: Duration): Promise<string | undefined> {
         if (cooldown !== undefined && cooldown.asMilliseconds() < 0)
-            return '❌ The cooldown must be greater than 0ms';
+            return this.error('The cooldown must be greater than 0ms');
 
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
@@ -309,7 +309,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'cooldown', cooldown?.asMilliseconds());
         cooldown ??= moment.duration();
-        return `✅ The custom command \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`;
+        return this.success(`The custom command \`${match.name}\` now has a cooldown of \`${humanize.duration(cooldown)}\`.`);
     }
 
     public async getCommandAuthor(context: GuildCommandContext, commandName: string | undefined): Promise<string | undefined> {
@@ -319,7 +319,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const response = [];
         const author = await context.database.users.get(match.author);
-        response.push(`✅ The custom command \`${match.name}\` was made by **${humanize.fullName(author)}**`);
+        response.push(this.success(`The custom command \`${match.name}\` was made by **${humanize.fullName(author)}**`));
         if (match.authorizer !== undefined && match.authorizer !== match.author) {
             const authorizer = await context.database.users.get(match.authorizer);
             response.push(`and is authorized by **${humanize.fullName(authorizer)}**`);
@@ -339,9 +339,9 @@ export class CustomCommand extends BaseGuildCommand {
 
         const flags = humanize.flags(flagDefinitions);
         if (flags.length === 0)
-            return `❌ The \`${match.name}\` custom command has no flags.`;
+            return this.error(`The \`${match.name}\` custom command has no flags.`);
 
-        return `✅ The \`${match.name}\` custom command has the following flags:\n\n${flags.join('\n')}`;
+        return this.success(`The \`${match.name}\` custom command has the following flags:\n\n${flags.join('\n')}`);
     }
 
     public async addCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string): Promise<string | undefined> {
@@ -350,7 +350,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match))
-            return `❌ The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``;
+            return this.error(`The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``);
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...addFlags } = parse.flags([], flagsRaw);
@@ -358,21 +358,21 @@ export class CustomCommand extends BaseGuildCommand {
         for (const flag of Object.keys(addFlags)) {
             const args = addFlags[flag];
             if (args === undefined || args.length === 0)
-                return `❌ No word was specified for the \`${flag}\` flag`;
+                return this.error(`No word was specified for the \`${flag}\` flag`);
 
             if (flags.some(f => f.flag === flag))
-                return `❌ The flag \`${flag}\` already exists!`;
+                return this.error(`The flag \`${flag}\` already exists!`);
 
             const word = args.get(0)?.value.replace(/[^a-z]/g, '').toLowerCase() ?? '';
             if (flags.some(f => f.word === word))
-                return `❌ A flag with the word \`${word}\` already exists!`;
+                return this.error(`A flag with the word \`${word}\` already exists!`);
 
             const description = args.slice(1).merge().value.replace(/\n/g, ' ');
             flags.push({ flag, word, description });
         }
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
-        return `✅ The flags for \`${match.name}\` have been updated.`;
+        return this.success(`The flags for \`${match.name}\` have been updated.`);
     }
 
     public async removeCommandFlags(context: GuildCommandContext, commandName: string, flagsRaw: string): Promise<string | undefined> {
@@ -381,7 +381,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (guard.isAliasedCustomCommand(match))
-            return `❌ The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``;
+            return this.error(`The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``);
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...removeFlags } = parse.flags([], flagsRaw);
@@ -389,7 +389,7 @@ export class CustomCommand extends BaseGuildCommand {
             .filter(f => removeFlags[f.flag] === undefined);
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
-        return `✅ The flags for \`${match.name}\` have been updated.`;
+        return this.success(`The flags for \`${match.name}\` have been updated.`);
     }
 
     public async setCommandLanguage(context: GuildCommandContext, commandName: string, language: string): Promise<string | undefined> {
@@ -398,7 +398,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'lang', language);
-        return `✅ Lang for custom command \`${match.name}\` set.`;
+        return this.success(`Lang for custom command \`${match.name}\` set.`);
     }
 
     public async setCommandHelp(context: GuildCommandContext, commandName: string, helpText: string): Promise<string | undefined> {
@@ -407,7 +407,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'help', helpText);
-        return `✅ Help text for custom command \`${match.name}\` set.`;
+        return this.success(`Help text for custom command \`${match.name}\` set.`);
     }
 
     public async toggleCommandHidden(context: GuildCommandContext, commandName: string): Promise<string | undefined> {
@@ -417,7 +417,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const isNowHidden = match.hidden !== true;
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'hidden', isNowHidden);
-        return `✅ Custom command \`${match.name}\` is now ${isNowHidden ? 'hidden' : 'visible'}.`;
+        return this.success(`Custom command \`${match.name}\` is now ${isNowHidden ? 'hidden' : 'visible'}.`);
     }
 
     public async setCommandRoles(context: GuildCommandContext, commandName: string, roleNames: string[]): Promise<string | undefined> {
@@ -434,17 +434,17 @@ export class CustomCommand extends BaseGuildCommand {
         }
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'roles', roles.map(r => r.id));
-        return `✅ Roles for custom command \`${match.name}\` set to ${humanize.smartJoin(roles.map(r => `\`${r.name}\``), ', ', ' and ')}.`;
+        return this.success(`Roles for custom command \`${match.name}\` set to ${humanize.smartJoin(roles.map(r => `\`${r.name}\``), ', ', ' and ')}.`);
     }
 
     public async importCommand(context: GuildCommandContext, tagName: string, commandName: string): Promise<string> {
         commandName = normalizeName(commandName);
         if (await context.database.guilds.getCommand(context.channel.guild.id, commandName) !== undefined)
-            return `❌ The \`${commandName}\` custom command already exists!`;
+            return this.error(`The \`${commandName}\` custom command already exists!`);
 
         const tag = await context.database.tags.get(tagName);
         if (tag === undefined)
-            return `❌ The \`${tagName}\` tag doesnt exist!`;
+            return this.error(`The \`${tagName}\` tag doesnt exist!`);
 
         const author = await context.database.users.get(tag.author);
         await context.database.guilds.setCommand(context.channel.guild.id, commandName, {
@@ -452,7 +452,7 @@ export class CustomCommand extends BaseGuildCommand {
             alias: tagName,
             authorizer: context.author.id
         });
-        return `✅ The tag \`${tag.name}\` by **${humanize.fullName(author)}** has been imported as \`${commandName}\` and is authorized by **${humanize.fullName(context.author)}**. ✅`;
+        return this.success(`The tag \`${tag.name}\` by **${humanize.fullName(author)}** has been imported as \`${commandName}\` and is authorized by **${humanize.fullName(context.author)}**`);
     }
 
     public async shrinkwrapCommands(context: GuildCommandContext, commandNames: string[]): Promise<CommandResult> {
@@ -498,10 +498,10 @@ export class CustomCommand extends BaseGuildCommand {
 
         const response = await context.cluster.util.awaitQuery(context.channel, context.author, confirm.join('\n'));
         if (response?.content !== key)
-            return '✅ Maybe next time then.';
+            return this.success('Maybe next time then.');
 
         return {
-            content: '✅ No problem, my job here is done.',
+            content: this.success('No problem, my job here is done.'),
             files: {
                 file: JSON.stringify(<SignedGuildShrinkwrap>{
                     signature: signShrinkwrap(shrinkwrap, context.config),
@@ -515,20 +515,20 @@ export class CustomCommand extends BaseGuildCommand {
     public async installCommands(context: GuildCommandContext, shrinkwrapUrl?: string): Promise<string> {
         shrinkwrapUrl ??= context.message.attachments[0]?.url;
         if (shrinkwrapUrl === undefined)
-            return '❌ You have to upload the installation file, or give me a URL to one.';
+            return this.error('You have to upload the installation file, or give me a URL to one.');
 
         const content = await requestSafe(shrinkwrapUrl);
         const signedShrinkwrap = mapSignedGuildShrinkwrap(content);
         if (!signedShrinkwrap.valid)
-            return '❌ Your installation file was malformed.';
+            return this.error('Your installation file was malformed.');
 
         const confirm = [];
         const importSteps: Array<() => Promise<unknown>> = [];
 
         if (signedShrinkwrap.value.signature === undefined)
-            confirm.push('⚠ **Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.', '');
+            confirm.push(this.warning('**Warning**: This installation file is **unsigned**. It did not come from me. Please double check to make sure you want to go through with this.'), '');
         else if (signedShrinkwrap.value.signature !== signShrinkwrap(signedShrinkwrap.value.payload, context.config)) {
-            confirm.push('🛑 **Warning**: This installation file\'s signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.', '');
+            confirm.push(this.warning('**Warning**: This installation file\'s signature is **incorrect**. There is a 100% chance that it has been tampered with. Please double check to make sure you want to go through with this.'), '');
         }
         confirm.push(
             'Salutations! You have discovered the super handy CommandInstaller9000!',
@@ -541,12 +541,12 @@ export class CustomCommand extends BaseGuildCommand {
         const shrinkwrap = signedShrinkwrap.value.payload;
         for (const commandName of Object.keys(shrinkwrap.cc)) {
             if (guard.hasProperty(commands, commandName.toLowerCase())) {
-                confirm.push(`❌ Ignore the command \`${commandName}\` as a command with that name already exists`);
+                confirm.push(this.error(`Ignore the command \`${commandName}\` as a command with that name already exists`));
                 continue;
             }
 
             const command = shrinkwrap.cc[commandName];
-            confirm.push(`✅ Import the command \`${commandName}\``);
+            confirm.push(this.success(`Import the command \`${commandName}\``));
             importSteps.push(async () => {
                 await context.cluster.database.guilds.setCommand(guildId, commandName, {
                     ...command,
@@ -559,11 +559,11 @@ export class CustomCommand extends BaseGuildCommand {
         for (const autoresponse of shrinkwrap.ar) {
             const arName = `\`${autoresponse.term}\`${autoresponse.regex ? ' (regex)' : ''}`;
             if (arCount++ >= 20) {
-                confirm.push(`❌ Ignore the autoresponse to ${arName} as the limit has been reached.`);
+                confirm.push(this.error(`Ignore the autoresponse to ${arName} as the limit has been reached.`));
                 continue;
             }
 
-            confirm.push(`✅ Import the autoresponse ${arName}`);
+            confirm.push(this.success(`Import the autoresponse ${arName}`));
             importSteps.push(async () => {
                 let commandName;
                 while (commands[commandName = `_autoresponse_${++arIndex}`] !== undefined);
@@ -579,9 +579,9 @@ export class CustomCommand extends BaseGuildCommand {
         if (shrinkwrap.are !== null) {
             const are = shrinkwrap.are;
             if (everythingAutoResponse !== undefined) {
-                confirm.push('❌ Ignore everything autoresponse as one already exists');
+                confirm.push(this.error('Ignore everything autoresponse as one already exists'));
             } else {
-                confirm.push('✅ Import the autoresponse to everything');
+                confirm.push(this.success('Import the autoresponse to everything'));
                 importSteps.push(async () => {
                     let commandName;
                     while (commands[commandName = `_autoresponse_${++arIndex}`] !== undefined);
@@ -606,12 +606,12 @@ export class CustomCommand extends BaseGuildCommand {
 
         const response = await context.cluster.util.awaitQuery(context.channel, context.author, confirm.join('\n'));
         if (response?.content !== key)
-            return '✅ Maybe next time then.';
+            return this.success('Maybe next time then.');
 
         for (const step of importSteps)
             await step();
 
-        return '✅ No problem, my job here is done.';
+        return this.success('No problem, my job here is done.');
     }
 
     private async saveCommand(
@@ -627,7 +627,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const analysis = context.bbtag.check(content);
         if (analysis.errors.length > 0)
-            return `❌ There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`;
+            return this.error(`There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`);
 
         const command = {
             content: content,
@@ -644,7 +644,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         await context.database.guilds.setCommand(context.channel.guild.id, commandName, command);
 
-        return `✅ Custom command \`${commandName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`;
+        return this.success(`Custom command \`${commandName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`);
     }
     private async requestCommandName(
         context: GuildCommandContext,
@@ -704,13 +704,13 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (match.command === undefined)
-            return `❌ The \`${match.name}\` custom command doesn't exist!`;
+            return this.error(`The \`${match.name}\` custom command doesn't exist!`);
 
         if (!managed && !guard.isAliasedCustomCommand(match.command) && match.command.managed === true)
-            return `❌ The \`${match.name}\` custom command is a managed command`;
+            return this.error(`The \`${match.name}\` custom command is a managed command`);
 
         if (!hidden && match.command.hidden === true)
-            return `❌ The \`${match.name}\` custom command is a hidden command`;
+            return this.error(`The \`${match.name}\` custom command is a hidden command`);
 
         return match.command;
     }
@@ -725,7 +725,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (match.command === undefined)
-            return `❌ The \`${match.name}\` custom command doesn't exist!`;
+            return this.error(`The \`${match.name}\` custom command doesn't exist!`);
 
         return match.command;
     }
@@ -740,7 +740,7 @@ export class CustomCommand extends BaseGuildCommand {
             return match;
 
         if (match.command !== undefined)
-            return `❌ The \`${match.name}\` custom command already exists!`;
+            return this.error(`The \`${match.name}\` custom command already exists!`);
 
         return { name: match.name };
     }
