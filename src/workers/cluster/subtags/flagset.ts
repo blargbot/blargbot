@@ -19,10 +19,8 @@ export class FlagSetSubtag extends BaseSubtag {
     }
 
     public isFlagSet(context: BBTagContext, flagName: string): 'true' | 'false' {
-        if (guard.isLetter(flagName))
+        if (guard.isLetter(flagName) || flagName === '_')
             return (context.flaggedInput[flagName] !== undefined).toString();
-        if (flagName === '_')
-            return (context.flaggedInput['_'] !== undefined).toString();
         return 'false';
     }
 }

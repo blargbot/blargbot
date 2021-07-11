@@ -19,7 +19,7 @@ export class WarnCommand extends BaseGuildCommand {
                     description: 'Issues a warning.\n' +
                         'If mod-logging is enabled, the warning will be logged.\n' +
                         'If `kickat` and `banat` have been set using the `settings` command, the target could potentially get banned or kicked.',
-                    execute: (ctx, [user], flags) => this.warn(ctx, user.join(' '), flags)
+                    execute: (ctx, [user], flags) => this.warn(ctx, user, flags)
                 }
             ]
         });

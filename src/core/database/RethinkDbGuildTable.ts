@@ -58,7 +58,8 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             }
             case 'number': {
                 const [, index, autoresponse] = <Extract<typeof args, { 1: number; }>>args;
-                const success = await this.rupdate(guildId, r => ({ autoresponse: { list: r.row('autoresponse').default({})('list').default([]).spliceAt(index, this.addExpr([autoresponse])) } }));
+                const replacement = autoresponse === undefined ? [] : [autoresponse];
+                const success = await this.rupdate(guildId, r => ({ autoresponse: { list: r.getField('autoresponse').default({})('list').default([]).spliceAt(index, this.addExpr(replacement)) } }));
                 if (!success)
                     return false;
                 guild.autoresponse.list ??= [];
@@ -76,7 +77,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, r => ({ autoresponse: { list: r.row('autoresponse').default({})('list').default([]).append(this.addExpr(autoresponse)) } })))
+        if (!await this.rupdate(guildId, r => ({ autoresponse: { list: r.getField('autoresponse').default({})('list').default([]).append(this.addExpr(autoresponse)) } })))
             return false;
 
         guild.autoresponse ??= { list: [] };
@@ -218,7 +219,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         newName = newName.toLowerCase();
         if (guild.ccommands[oldName] === undefined
             || guild.ccommands[newName] !== undefined
-            || !await this.rupdate(guildId, r => ({ ccommands: { [newName]: r.row('ccommands')(oldName), [oldName]: this.setExpr(undefined) } })))
+            || !await this.rupdate(guildId, r => ({ ccommands: { [newName]: r.getField('ccommands')(oldName), [oldName]: this.setExpr(undefined) } })))
             return false;
 
         guild.ccommands[newName] = guild.ccommands[oldName];
@@ -236,9 +237,8 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, r => ({ modlog: r.row('modlog').default([]).append(this.updateExpr(modlog)) }))) {
+        if (!await this.rupdate(guildId, r => ({ modlog: r.getField('modlog').default([]).append(this.addExpr(modlog)) })))
             return false;
-        }
 
         guild.modlog ??= [];
         guild.modlog.push(modlog);
@@ -286,7 +286,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     public async migrate(): Promise<void> {
         const indexes = await this.rquery(t => t.indexList());
         if (!indexes.includes('interval')) {
-            await this.rquery((t, r) => t.indexCreate('interval', r.row('ccommands').hasFields('_interval')));
+            await this.rquery(t => t.indexCreate('interval', r => r.getField('ccommands').hasFields('_interval')));
         }
     }
 }

@@ -1,6 +1,4 @@
-import { BetterCursor, UpdateData } from 'rethinkdb';
-import { BetterExpression, BetterRethinkDb, Sanitized } from 'rethinkdb';
-import { TableQuery, WriteResult } from 'rethinkdb';
+import { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
 import { Logger } from '../../Logger';
 import { guard } from '../../utils';
 import { RethinkTableMap } from '../types';
@@ -21,15 +19,15 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
     protected async rquery<T>(query: TableQuery<T, RethinkTableMap[TableName]>): Promise<T>;
     protected async rquery<T>(query: TableQuery<T | undefined, RethinkTableMap[TableName]>): Promise<T | undefined>;
     protected async rquery<T>(query: TableQuery<T | undefined, RethinkTableMap[TableName]>): Promise<T | undefined> {
-        return await this.#rethinkDb.query(r => query(r.table(this.table), <BetterRethinkDb<RethinkTableMap[TableName]>>r));
+        return await this.#rethinkDb.query(r => query(r.table(this.table), r));
     }
 
-    protected async rqueryAll<T>(query: TableQuery<BetterCursor<T>, RethinkTableMap[TableName]>): Promise<T[]> {
-        return await this.#rethinkDb.queryAll(r => query(r.table(this.table), <BetterRethinkDb<RethinkTableMap[TableName]>>r));
+    protected async rqueryAll<T>(query: TableQuery<Cursor<T>, RethinkTableMap[TableName]>): Promise<T[]> {
+        return await this.#rethinkDb.queryAll(r => query(r.table(this.table), r));
     }
 
-    protected rstream<T>(query: TableQuery<BetterCursor<T>, RethinkTableMap[TableName]>): AsyncIterableIterator<T> {
-        return this.#rethinkDb.stream(r => query(r.table(this.table), <BetterRethinkDb<RethinkTableMap[TableName]>>r));
+    protected rstream<T>(query: TableQuery<Cursor<T>, RethinkTableMap[TableName]>): AsyncIterableIterator<T> {
+        return this.#rethinkDb.stream(r => query(r.table(this.table), r));
     }
 
     protected async rget(key: string): Promise<RethinkTableMap[TableName] | undefined> {
@@ -54,9 +52,9 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return result.inserted + result.replaced > 0;
     }
 
-    protected async rupdate(key: string, value: UpdateData<RethinkTableMap[TableName]>, applyChanges = false): Promise<boolean> {
-        const getter = typeof value === 'object' ? () => value : value;
-        const result = await this.rquery((t, r) => t.get(key).update(getter(r), { returnChanges: applyChanges }));
+    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, applyChanges = false): Promise<boolean> {
+        const updater = 'eq' in value || typeof value === 'object' ? () => value : value;
+        const result = await this.rquery(t => t.get(key).update(r => updater(r), { returnChanges: applyChanges }));
         if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
             // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
             Object.assign(value, result.changes?.[0].new_val);
@@ -74,15 +72,17 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return result.deleted > 0;
     }
 
-    protected updateExpr<T>(value: T): Sanitized<T> {
+    protected updateExpr<T>(value: T): T {
         return this.#rethinkDb.updateExpr(value);
     }
 
-    protected addExpr<T>(value: T): Sanitized<T> {
+    protected addExpr<T>(value: T): T {
         return this.#rethinkDb.addExpr(value);
     }
 
-    protected setExpr<T>(value: T): BetterExpression<Sanitized<T>> {
+    protected setExpr(value?: undefined): Expression<undefined>;
+    protected setExpr<T>(value: T): Expression<T>;
+    protected setExpr<T>(value: T | undefined): Expression<T | undefined> {
         return this.#rethinkDb.setExpr(value);
     }
 
@@ -91,7 +91,7 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
     }
 }
 
-function throwIfErrored(result: WriteResult): void | never {
+function throwIfErrored<T>(result: WriteResult<T>): void | never {
     if (result.errors === 0)
         return;
 

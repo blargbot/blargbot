@@ -15,7 +15,7 @@ export class WarningsCommand extends BaseGuildCommand {
                 {
                     parameters: '{user+}',
                     description: 'Gets how many warnings the user has',
-                    execute: (ctx, [user]) => this.warnings(ctx, user.join(' '))
+                    execute: (ctx, [user]) => this.warnings(ctx, user)
                 }
             ]
         });

@@ -34,6 +34,6 @@ export class RandStrSubtag extends BaseSubtag {
         if (chars.length === 0) return this.customError('Not enough characters', context, subtag);
 
         const numberArray = [...Array(count).keys()];
-        return numberArray.map(_ => chars[Math.floor(Math.random() * chars.length)]).join('');
+        return numberArray.map(() => chars[Math.floor(Math.random() * chars.length)]).join('');
     }
 }

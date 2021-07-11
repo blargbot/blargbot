@@ -87,13 +87,9 @@ export class IfSubtag extends BaseSubtag {
         const rightBool = parse.boolean(value2, undefined, false);
         if (rightBool !== undefined) value2 = rightBool.toString();
 
-        const result = operators[operator](value1, value2).toString();
-        if (result !== 'false' && result !== 'true') return result;
-
-        if (parse.boolean(result, false)) {
-            return thenCode.wait();
+        switch (operators[operator](value1, value2)) {
+            case true: return await thenCode.wait();
+            case false: return await elseCode?.wait() ?? '';
         }
-        return elseCode?.wait() ?? '';
-
     }
 }

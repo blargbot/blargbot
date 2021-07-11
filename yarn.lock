@@ -534,13 +534,6 @@
   resolved "https://registry.yarnpkg.com/@types/phantom/-/phantom-3.2.5.tgz#5165e6129bb2c292cfd9b972086d4a101539bf16"
   integrity sha512-7m36DoKSvZgBGWp0xiJ74eHnuotyrpDyQ6m+lers5iMvW4QX+RvBENn7PCjNix7OVqPWlBM+7AqzYVIQ7NrKrA==
 
-"@types/rethinkdb@^2.3.16":
-  version "2.3.16"
-  resolved "https://registry.yarnpkg.com/@types/rethinkdb/-/rethinkdb-2.3.16.tgz#fcac2dc0ca6e39921b086526a681d8369470c788"
-  integrity sha512-eswAHpyI5+xhyYxu3NK2IrFlBjJV4/5uJl+oHZ2HV07RcJTr9cDYkwzZ22riAsO9jrIPLMSIn0752PL8sBSkUw==
-  dependencies:
-    "@types/node" "*"
-
 "@types/rwlock@^5.0.2":
   version "5.0.2"
   resolved "https://registry.yarnpkg.com/@types/rwlock/-/rwlock-5.0.2.tgz#9be929e951b5a45cfe8f98a478848ff7e06b9006"

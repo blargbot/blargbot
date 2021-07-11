@@ -1,5 +1,5 @@
 import * as r from 'rethinkdb';
-import { Query, Expression, Connection, Time, BetterCursor, Sanitized, BetterExpression, BetterRethinkDb } from 'rethinkdb';
+import { Query, Expression, Connection, Time, Cursor } from 'rethinkdb';
 import { RethinkDbOptions } from '../types';
 
 export class RethinkDb {
@@ -18,10 +18,10 @@ export class RethinkDb {
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined>
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined> {
         const connection = this.#connection ?? await this.connect();
-        return await query(<BetterRethinkDb<unknown>>r).run(connection);
+        return await query(r).run(connection);
     }
 
-    public async queryAll<T>(query: Query<BetterCursor<T>>): Promise<T[]> {
+    public async queryAll<T>(query: Query<Cursor<T>>): Promise<T[]> {
         const stream = this.stream<T>(query);
         const result = [];
         for await (const item of stream)
@@ -29,7 +29,7 @@ export class RethinkDb {
         return result;
     }
 
-    public async * stream<T>(query: Query<BetterCursor<T>>): AsyncIterableIterator<T> {
+    public async * stream<T>(query: Query<Cursor<T>>): AsyncIterableIterator<T> {
         const cursor = await this.query(query);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         while (true) {
@@ -78,15 +78,17 @@ export class RethinkDb {
         return r.epochTime(time);
     }
 
-    public updateExpr<T>(value: T): Sanitized<T> {
-        return <Sanitized<T>>hackySanitize(value, false);
+    public updateExpr<T>(value: T): T {
+        return <T>hackySanitize(value, false);
     }
 
-    public addExpr<T>(value: T): Sanitized<T> {
-        return <Sanitized<T>>hackySanitize(value, true);
+    public addExpr<T>(value: T): T {
+        return <T>hackySanitize(value, true);
     }
 
-    public setExpr<T>(value: T): BetterExpression<Sanitized<T>> {
+    public setExpr(value?: undefined): Expression<undefined>
+    public setExpr<T>(value: T): Expression<T>
+    public setExpr<T>(value?: T | undefined): Expression<T | undefined> {
         if (value === undefined)
             return r.literal();
         return r.literal(this.addExpr(value));

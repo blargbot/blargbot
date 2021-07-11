@@ -78,7 +78,6 @@
         "@types/node-fetch": "^2.5.10",
         "@types/pg": "^7.5.0",
         "@types/phantom": "^3.2.5",
-        "@types/rethinkdb": "^2.3.16",
         "@types/rwlock": "^5.0.2",
         "@types/safe-regex": "^1.1.2",
         "@types/sequelize": "^4.28.9",

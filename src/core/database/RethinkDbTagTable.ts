@@ -77,26 +77,26 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
     }
 
     public async disable(tagName: string, userId: string, reason: string): Promise<boolean> {
-        return await this.rupdate(tagName, this.setExpr({
+        return await this.rupdate(tagName, {
             content: '',
             deleted: true,
             deleter: userId,
             reason: reason,
             uses: 0,
             favourites: {}
-        }));
+        });
     }
 
     public async incrementUses(tagName: string, count = 1): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            uses: r.row('uses').default(0).add(count),
+            uses: r.getField('uses').default(0).add(count),
             lastuse: new Date()
         }));
     }
 
     public async incrementReports(tagName: string, count = 1): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            reports: r.row('reports').default(0).add(count)
+            reports: r.getField('reports').default(0).add(count)
         }));
     }
 
