@@ -8,12 +8,12 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
     protected readonly lookup: Readonly<Record<Lowercase<string>, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>;
 
     public constructor(
-        protected readonly options: Readonly<Record<string, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>,
-        protected readonly aliases: Readonly<Record<string, readonly string[] | undefined>>
+        options: Readonly<Record<string, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>,
+        aliases: Readonly<Record<string, readonly string[] | undefined>>
     ) {
         super();
 
-        this.expected = humanize.smartJoin(Object.keys(this.options).map(opt => `\`${opt}\``), ', ', ' or ');
+        this.expected = humanize.smartJoin(Object.keys(options).map(opt => `\`${opt}\``), ', ', ' or ');
 
         this.lookup = Object.fromEntries([
             ...Object.entries(aliases).map(entry => [entry[0].toLowerCase(), entry[1]?.flatMap(k => options[k]).filter(guard.hasValue)] as const),
@@ -25,9 +25,9 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
 
     public * debugView(): Generator<string> {
         yield 'Switch value';
-        for (const option of Object.keys(this.options)) {
-            yield `    case ${option}`;
-            for (const binding of this.options[option] ?? []) {
+        for (const option of Object.keys(this.lookup)) {
+            yield `    case '${option}'`;
+            for (const binding of this.lookup[option] ?? []) {
                 for (const line of binding.debugView()) {
                     yield `        ${line}`;
                 }
