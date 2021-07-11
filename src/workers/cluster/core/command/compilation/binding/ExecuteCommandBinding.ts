@@ -27,10 +27,9 @@ export class ExecuteCommandBinding<TContext extends CommandContext> extends Comm
                     break;
                 case 'deferred': {
                     const result = await arg.getValue();
-                    if (!result.success) {
+                    if (!result.success)
                         return this.bindingError(state, result.error);
-                    }
-                    args.push(result);
+                    args.push(result.value);
                     break;
                 }
 

@@ -154,10 +154,11 @@ function createExecuteBindingBuilder<TContext extends CommandContext>(): Binding
 
 function createLiteralBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
     const signatureMap = {} as Record<string, Set<CommandSignatureHandler<TContext>> | undefined>;
-    const aliases = {} as Record<string, string[] | undefined>;
+    const aliasMap = {} as Record<string, Set<string> | undefined>;
     return {
         create() {
             const options = mapKeys(signatureMap, (value) => buildBindings(value, depth + 1));
+            const aliases = mapKeys(aliasMap, value => [...value]);
             return new bindings.SwitchBinding(options, aliases);
         },
         add(parameter, signature) {
@@ -167,7 +168,7 @@ function createLiteralBindingBuilder<TContext extends CommandContext>(depth: num
                 throw new Error('Cannot merge a variable with a literal');
             (signatureMap[parameter.name] ??= new Set()).add(signature);
             for (const alias of parameter.alias)
-                (aliases[alias] ??= []).push(parameter.name);
+                (aliasMap[alias] ??= new Set()).add(parameter.name);
         }
     };
 }

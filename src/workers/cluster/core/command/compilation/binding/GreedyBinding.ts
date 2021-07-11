@@ -114,7 +114,7 @@ function aggregateResults<TResult>(
         }
     }
 
-    if (deferred.length === 0)
+    if (deferred.length === successful.length)
         return { success: true, value: successful };
 
     return {

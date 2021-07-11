@@ -1,24 +1,26 @@
-import { Binder, Binding, BindingResult, humanize } from '../../../globalCore';
+import { Binder, Binding, BindingResult, guard, humanize } from '../../../globalCore';
 import { CommandBinderState } from '../../../types';
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
 
 export class SwitchBinding<TContext extends CommandContext> extends CommandBindingBase<TContext, never> {
-    protected readonly caseInsensitiveOptions: Readonly<Record<Lowercase<string>, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>;
     protected readonly expected: string;
+    protected readonly lookup: Readonly<Record<Lowercase<string>, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>;
 
     public constructor(
         protected readonly options: Readonly<Record<string, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>,
         protected readonly aliases: Readonly<Record<string, readonly string[] | undefined>>
     ) {
         super();
-        this.caseInsensitiveOptions = Object.keys(this.options)
-            .reduce<Record<Lowercase<string>, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>((r, key) => {
-                if (this.options[key.toLowerCase()] === undefined)
-                    r[key.toLowerCase()] = this.options[key];
-                return r;
-            }, {});
+
         this.expected = humanize.smartJoin(Object.keys(this.options).map(opt => `\`${opt}\``), ', ', ' or ');
+
+        this.lookup = Object.fromEntries([
+            ...Object.entries(aliases).map(entry => [entry[0].toLowerCase(), entry[1]?.flatMap(k => options[k]).filter(guard.hasValue)] as const),
+            ...Object.entries(options).map(entry => [entry[0].toLowerCase(), entry[1]] as const),
+            ...Object.entries(aliases).map(entry => [entry[0], entry[1]?.flatMap(k => options[k]).filter(guard.hasValue)] as const),
+            ...Object.entries(options).map(entry => [entry[0], entry[1]] as const)
+        ]);
     }
 
     public * debugView(): Generator<string> {
@@ -38,13 +40,11 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
         if (arg === undefined)
             return this.bindingError(state, state.command.error(`Not enough arguments! Expected ${this.expected} but got nothing`));
 
-        const key = this.aliases[arg] ?? arg;
-        const nextRequired = typeof key === 'string' ? this.options[key] : key.flatMap(k => this.options[k] ?? []);
-
+        const nextRequired = this.lookup[arg] ?? this.lookup[arg.toLowerCase()];
         if (nextRequired !== undefined && nextRequired.length > 0)
             return this.bindingSuccess(state, nextRequired, 1, undefined, false);
 
-        const nextOptional = this.options[''];
+        const nextOptional = this.lookup[''];
         if (nextOptional !== undefined)
             return this.bindingSuccess(state, nextOptional, 0, undefined, false);
 
