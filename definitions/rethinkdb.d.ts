@@ -42,6 +42,10 @@ declare module 'rethinkdb' {
         readonly row: BetterRow<T>;
     }
 
+    interface Table {
+        getAll(...args: [...unknown[], { index: string; }]): Sequence;
+    }
+
     type Query<T> = (rethink: RethinkDb) => Operation<T>;
     type TableQuery<T, R> = (table: Table, rethink: BetterRethinkDb<R>) => Operation<T>;
     type UpdateRequest<T> = { [P in keyof T]?: T[P] | BetterExpression<T[P]> | UpdateRequest<T[P]> } | BetterExpression<T>;

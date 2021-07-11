@@ -338,6 +338,6 @@ const sendErrors = {
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
     [DiscordErrorCodes.INVALID_FORM_BODY]: (util: BaseUtilities, channel: Channel, payload: SendPayload) => {
-        util.logger.warn('%s|%s: %o', channel.id, guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL', payload);
+        util.logger.warn(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`);
     }
 } as const;

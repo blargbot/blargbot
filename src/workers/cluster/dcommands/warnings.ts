@@ -26,13 +26,13 @@ export class WarningsCommand extends BaseGuildCommand {
             member = await context.util.getMember(context.message, member, { quiet: true }) ?? '';
 
         if (typeof member === 'string')
-            return `❌ I couldnt find the user ${member}!`;
+            return this.error(`I couldnt find the user ${member}!`);
 
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
         const result = [
             count > 0
-                ? `⚠️ **${humanize.fullName(member)}** has accumulated ${count === 1 ? '1 warning' : `${count} warnings`}.`
-                : `🎉 **${humanize.fullName(member)}** doesn't have any warnings!`
+                ? this.warning(`**${humanize.fullName(member)}** has accumulated ${count === 1 ? '1 warning' : `${count} warnings`}.`)
+                : this.congrats(`**${humanize.fullName(member)}** doesn't have any warnings!`)
         ];
 
         if (kickAt !== undefined)

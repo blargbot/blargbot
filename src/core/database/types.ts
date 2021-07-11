@@ -464,7 +464,7 @@ export interface GuildTable {
     getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<StoredGuildSettings[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
     getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<NamedStoredGuildCommand | undefined>;
-    withIntervalCommand(skipCache?: boolean): Promise<readonly StoredGuild[] | undefined>;
+    withIntervalCommand(skipCache?: boolean): Promise<readonly string[]>;
     updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;
     setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean>;
     setCommandProp<K extends keyof StoredRawGuildCommand>(guildId: string, commandName: string, key: K, value: StoredRawGuildCommand[K]): Promise<boolean>;

@@ -156,8 +156,8 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return command === undefined ? undefined : { ...command, name: commandName };
     }
 
-    public async withIntervalCommand(): Promise<readonly StoredGuild[] | undefined> {
-        return await this.rqueryAll(t => t.getAll('interval'));
+    public async withIntervalCommand(): Promise<readonly string[]> {
+        return await this.rqueryAll(t => t.getAll(true, { index: 'interval' }).getField('guildid'));
     }
 
     public async updateCommand(guildId: string, commandName: string, partialCommand: Partial<StoredGuildCommand>): Promise<boolean> {

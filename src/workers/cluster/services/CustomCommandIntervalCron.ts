@@ -14,29 +14,28 @@ export class CustomCommandIntervalCron extends CronService {
         const nonce = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0').toUpperCase();
 
         const guilds = (await this.cluster.database.guilds.withIntervalCommand())
-            ?.filter(g => this.cluster.discord.guilds.get(g.guildid))
-            ?? [];
+            .filter(guild => this.cluster.discord.guilds.has(guild));
 
-        this.logger.info('[%s] Running intervals on %i guilds', nonce, guilds.length);
+        this.logger.info(`[${nonce}] Running intervals on ${guilds.length} guilds`);
 
         let count = 0;
         let failures = 0;
         const promises: Array<Promise<string | undefined>> = [];
         for (const guild of guilds) {
-            this.logger.debug('[%s] Performing interval on %s', nonce, guild.guildid);
-            const interval = guild.ccommands._interval;
+            this.logger.debug(`[${nonce}] Performing interval on ${guild}`);
+            const interval = await this.cluster.database.guilds.getCommand(guild, '_interval');
             if (interval === undefined || guard.isAliasedCustomCommand(interval))
                 continue;
 
             try {
-                const g = this.cluster.discord.guilds.get(guild.guildid);
+                const g = this.cluster.discord.guilds.get(guild);
                 if (g === undefined) continue;
                 const id = interval.authorizer ?? interval.author;
                 if (id.length === 0) continue;
                 const m = g.members.get(id);
                 if (m === undefined) continue;
-                const u = this.cluster.util.getGlobalUser(id);
-                if (guard.hasValue(u)) continue;
+                const u = await this.cluster.util.getGlobalUser(id);
+                if (u === undefined) continue;
                 const c = g.channels.find(guard.isTextableChannel);
                 if (c === undefined || !guard.isTextableChannel(c)) continue;
 
@@ -64,14 +63,14 @@ export class CustomCommandIntervalCron extends CronService {
                         return undefined;
                     },
                     err => {
-                        this.logger.error('Issue with interval:', guild.guildid, err);
+                        this.logger.error('Issue with interval:', guild, err);
                         failures++;
                         return undefined;
                     });
 
-                promises.push(Promise.race([promise, sleep(10000).then(() => guild.guildid)]));
+                promises.push(Promise.race([promise, sleep(10000).then(() => guild)]));
             } catch (err: unknown) {
-                this.logger.error('Issue with interval:', guild.guildid, err);
+                this.logger.error('Issue with interval:', guild, err);
                 failures++;
             }
         }
@@ -81,9 +80,9 @@ export class CustomCommandIntervalCron extends CronService {
 
         const unresolved = resolutions.filter(guard.hasValue);
 
-        this.logger.info('[%s] Intervals complete. %i success | %i fail | %i unresolved', nonce, count, failures, unresolved.length);
+        this.logger.info(`[${nonce}] Intervals complete. ${count} success | ${failures} fail | ${unresolved.length} unresolved`);
         if (unresolved.length > 0) {
-            this.logger.info('[%s] Unresolved in:\n%s', nonce, unresolved.map(m => '- ' + m).join('\n'));
+            this.logger.info(`[${nonce}] Unresolved in:\n${unresolved.map(m => '- ' + m).join('\n')}`);
         }
     }
 }
