@@ -6,18 +6,18 @@ export class WarningsCommand extends BaseGuildCommand {
         super({
             name: 'warnings',
             category: CommandType.GENERAL,
-            definition: {
-                parameters: '',
-                description: 'Gets how many warnings you have',
-                execute: (ctx) => this.warnings(ctx, ctx.message.member),
-                subcommands: {
-                    '{user+}': {
-                        parameters: '',
-                        description: 'Gets how many warnings the user has',
-                        execute: (ctx, [user]) => this.warnings(ctx, user.join(' '))
-                    }
+            definitions: [
+                {
+                    parameters: '',
+                    description: 'Gets how many warnings you have',
+                    execute: (ctx) => this.warnings(ctx, ctx.message.member)
+                },
+                {
+                    parameters: '{user+}',
+                    description: 'Gets how many warnings the user has',
+                    execute: (ctx, [user]) => this.warnings(ctx, user.join(' '))
                 }
-            }
+            ]
         });
     }
 

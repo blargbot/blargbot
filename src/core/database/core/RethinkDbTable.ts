@@ -1,6 +1,6 @@
-import { UpdateData } from 'rethinkdb';
+import { BetterCursor, UpdateData } from 'rethinkdb';
 import { BetterExpression, BetterRethinkDb, Sanitized } from 'rethinkdb';
-import { TableQuery, Cursor, WriteResult } from 'rethinkdb';
+import { TableQuery, WriteResult } from 'rethinkdb';
 import { Logger } from '../../Logger';
 import { guard } from '../../utils';
 import { RethinkTableMap } from '../types';
@@ -24,16 +24,16 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return await this.#rethinkDb.query(r => query(r.table(this.table), <BetterRethinkDb<RethinkTableMap[TableName]>>r));
     }
 
-    protected async rqueryAll<T>(query: TableQuery<Cursor, RethinkTableMap[TableName]>): Promise<T[]> {
+    protected async rqueryAll<T>(query: TableQuery<BetterCursor<T>, RethinkTableMap[TableName]>): Promise<T[]> {
         return await this.#rethinkDb.queryAll(r => query(r.table(this.table), <BetterRethinkDb<RethinkTableMap[TableName]>>r));
     }
 
-    protected rstream<T>(query: TableQuery<Cursor, RethinkTableMap[TableName]>): AsyncIterableIterator<T> {
+    protected rstream<T>(query: TableQuery<BetterCursor<T>, RethinkTableMap[TableName]>): AsyncIterableIterator<T> {
         return this.#rethinkDb.stream(r => query(r.table(this.table), <BetterRethinkDb<RethinkTableMap[TableName]>>r));
     }
 
     protected async rget(key: string): Promise<RethinkTableMap[TableName] | undefined> {
-        return await this.rquery(t => t.get<RethinkTableMap[TableName]>(key)) ?? undefined;
+        return await this.rquery(t => t.get(key)) ?? undefined;
     }
 
     protected async rinsert(value: RethinkTableMap[TableName], applyChanges = false): Promise<boolean> {

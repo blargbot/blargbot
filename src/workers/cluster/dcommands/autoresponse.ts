@@ -18,33 +18,33 @@ export class AutoResponseCommand extends BaseGuildCommand {
                     description: 'Makes the added autoresponse respond to everything. Only one is allowed.'
                 }
             ],
-            definition: {
-                subcommands: {
-                    'whitelist': {
-                        parameters: '{~reason+}',
-                        description: 'Requests for the current server to have autoresponses whitelisted',
-                        execute: (ctx, [reason]) => this.requestWhitelist(ctx, reason)
-                    },
-                    'list|info': {
-                        description: 'Displays information about autoresponses',
-                        execute: ctx => this.listAutoresponses(ctx)
-                    },
-                    'add|create': {
-                        parameters: '{~pattern+}',
-                        description: 'Adds a autoresponse which matches the given pattern',
-                        execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.addAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
-                    },
-                    'delete|remove': {
-                        description: 'Brings up a menu to remove an autoresponse',
-                        execute: ctx => this.removeAutoresponse(ctx)
-                    },
-                    'edit': {
-                        parameters: '{~pattern+}',
-                        description: 'Brings up a menu to edit an autoresponse',
-                        execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.editAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
-                    }
+            definitions: [
+                {
+                    parameters: 'whitelist {~reason+}',
+                    description: 'Requests for the current server to have autoresponses whitelisted',
+                    execute: (ctx, [reason]) => this.requestWhitelist(ctx, reason)
+                },
+                {
+                    parameters: 'list|info',
+                    description: 'Displays information about autoresponses',
+                    execute: ctx => this.listAutoresponses(ctx)
+                },
+                {
+                    parameters: 'add|create {~pattern+}',
+                    description: 'Adds a autoresponse which matches the given pattern',
+                    execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.addAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
+                },
+                {
+                    parameters: 'delete|remove',
+                    description: 'Brings up a menu to remove an autoresponse',
+                    execute: ctx => this.removeAutoresponse(ctx)
+                },
+                {
+                    parameters: 'edit {~pattern+}',
+                    description: 'Brings up a menu to edit an autoresponse',
+                    execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.editAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
                 }
-            }
+            ]
         });
     }
 

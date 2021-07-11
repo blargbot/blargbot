@@ -258,7 +258,7 @@ export interface CommandOptionsBase {
 }
 
 export interface CommandOptions<TContext extends CommandContext> extends CommandOptionsBase {
-    readonly definition: CommandDefinition<TContext>;
+    readonly definitions: ReadonlyArray<CommandDefinition<TContext>>;
 }
 
 export type CommandResult =
@@ -283,13 +283,14 @@ export type CommandParameter =
 
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
     readonly description: string;
-    readonly parameters?: string;
+    readonly parameters: string;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly execute: (context: TContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
 }
 
 export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
-    readonly subcommands: { readonly [name: string]: CommandDefinition<TContext>; };
+    readonly parameters: string;
+    readonly subcommands: ReadonlyArray<CommandDefinition<TContext>>;
 }
 
 export interface CommandSingleParameter {

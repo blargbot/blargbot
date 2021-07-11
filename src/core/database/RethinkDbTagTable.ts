@@ -39,9 +39,9 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
 
     public async search(partialName: string, skip: number, take: number): Promise<readonly string[]> {
         const expr = partialName.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
-        return await this.rqueryAll((t, r) =>
+        return await this.rqueryAll(t =>
             t.orderBy({ index: 'name' })
-                .filter(r.row('name').match(`(?i)${expr}`))
+                .filter(r => r.getField('name').match(`(?i)${expr}`).ne(null))
                 .getField('name')
                 .skip(skip)
                 .limit(take));
@@ -49,8 +49,8 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
 
     public async searchCount(partialName: string): Promise<number> {
         const expr = partialName.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
-        return await this.rquery((t, r) =>
-            t.filter(r.row('name').match(`(?i)${expr}`))
+        return await this.rquery(t =>
+            t.filter(r => r.getField('name').match(`(?i)${expr}`).ne(null))
                 .count());
     }
 

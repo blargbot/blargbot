@@ -10,7 +10,7 @@ export type RethinkTableMap = {
     'tag': StoredTag;
     'user': MutableStoredUser;
     'vars': MutableKnownStoredVars;
-    'events': Omit<StoredEventOptions, 'id'>;
+    'events': StoredEvent;
 }
 
 export interface MessageFilter {
@@ -110,7 +110,7 @@ export interface StoredEventOptionsBase {
     readonly source: string;
     readonly channel?: string;
     readonly guild?: string;
-    readonly endtime: Date;
+    readonly endtime: number;
 }
 
 export interface UnmuteEventOptions extends StoredEventOptionsBase {
@@ -123,6 +123,17 @@ export interface UnbanEventOptions extends StoredEventOptionsBase {
     readonly guild: string;
     readonly user: string;
     readonly duration: string;
+}
+
+export interface TimerEventOptions extends StoredEventOptionsBase {
+    readonly channel: string;
+    readonly user: string;
+}
+
+export interface RemindEventOptions extends StoredEventOptionsBase {
+    readonly channel: string;
+    readonly user: string;
+    readonly content: string;
 }
 
 export interface TagStoredEventOptionsBase<Version> extends StoredEventOptionsBase {
@@ -147,10 +158,16 @@ export type EventOptionsTypeMap = {
     'tag': TagStoredEventOptions;
     'unmute': UnmuteEventOptions;
     'unban': UnbanEventOptions;
+    'timer': TimerEventOptions;
+    'remind': RemindEventOptions;
 }
 
 export type EventTypeMap = {
-    [K in keyof EventOptionsTypeMap]: EventOptionsTypeMap[K] & { id: string; type: K; };
+    [K in EventType]: EventOptionsTypeMap[K] & {
+        readonly id: string;
+        readonly type: K;
+        readonly starttime: number;
+    };
 }
 
 export type EventType = keyof EventOptionsTypeMap;
@@ -494,10 +511,13 @@ export interface VarsTable {
 }
 
 export interface EventsTable {
-    between(from: Date | Moment | number, to: Date | Moment | number): Promise<StoredEvent[]>;
+    list(source: string, pageNumber: number, pageSize: number): Promise<{ events: readonly StoredEvent[]; total: number; }>;
+    between(from: Date | Moment | number, to: Date | Moment | number): Promise<readonly StoredEvent[]>;
     add<K extends EventType>(type: K, event: StoredEventOptions<K>): Promise<StoredEvent<K> | undefined>;
     delete(eventId: string): Promise<boolean>;
     delete(filter: Partial<StoredEventOptions>): Promise<boolean>;
+    getIds(source: string): Promise<readonly string[]>;
+    get(id: string): Promise<StoredEvent | undefined>;
 }
 
 export interface TagsTable {

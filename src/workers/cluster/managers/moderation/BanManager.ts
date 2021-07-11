@@ -37,7 +37,7 @@ export class BanManager extends ModerationManagerBase {
                 guild: guild.id,
                 user: user.id,
                 duration: JSON.stringify(duration),
-                endtime: moment().add(duration).toDate()
+                endtime: moment().add(duration).valueOf()
             });
         }
 

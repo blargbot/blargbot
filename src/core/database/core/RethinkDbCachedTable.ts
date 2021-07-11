@@ -1,13 +1,12 @@
 import { RethinkDb } from './RethinkDb';
 import { RethinkTableMap } from '../types';
 import { RethinkDbTable } from './RethinkDbTable';
-import { WriteChange } from 'rethinkdb';
 import { Cache } from '../../Cache';
 import { guard, sleep } from '../../utils';
 import { Logger } from '../../Logger';
 
 export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableMap, Key extends string & keyof RethinkTableMap[TableName]> extends RethinkDbTable<TableName> {
-    protected readonly cache: Cache<string & RethinkTableMap[TableName][Key], RethinkTableMap[TableName]>;
+    protected readonly cache: Cache<RethinkTableMap[TableName][Key], RethinkTableMap[TableName]>;
 
     protected constructor(
         table: TableName,
@@ -36,13 +35,13 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
         while (true) {
             try {
-                /* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
-                const changefeed = this.rstream<WriteChange>(t => t.changes({ squash: true }));
+                const changefeed = this.rstream(t => t.changes({ squash: true }));
                 for await (const data of changefeed) {
-                    if (!guard.hasValue(data.new_val))
-                        this.cache.delete(data.old_val[this.keyName]);
-                    else {
-                        const id = data.new_val[this.keyName] as string & RethinkTableMap[TableName][Key];
+                    if (!guard.hasValue(data.new_val)) {
+                        if (guard.hasValue(data.old_val))
+                            this.cache.delete(data.old_val[this.keyName]);
+                    } else {
+                        const id = data.new_val[this.keyName];
                         if (this.cache.has(id) || shouldCache(id))
                             this.cache.set(id, data.new_val);
                     }

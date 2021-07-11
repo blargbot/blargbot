@@ -5,23 +5,23 @@ export class PrefixCommand extends BaseGuildCommand {
         super({
             name: 'prefix',
             category: commandTypes.ADMIN,
-            definition: {
-                parameters: '',
-                description: 'Lists all the current prefixes on this server',
-                execute: ctx => this.listPrefixes(ctx),
-                subcommands: {
-                    'add|set|create': {
-                        parameters: '{prefix}',
-                        description: 'Adds a command prefix to this server',
-                        execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix)
-                    },
-                    'remove|delete': {
-                        parameters: '{prefix}',
-                        description: 'Removes a command prefix from this server',
-                        execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix)
-                    }
+            definitions: [
+                {
+                    parameters: '',
+                    description: 'Lists all the current prefixes on this server',
+                    execute: ctx => this.listPrefixes(ctx)
+                },
+                {
+                    parameters: 'add|set|create {prefix}',
+                    description: 'Adds a command prefix to this server',
+                    execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix)
+                },
+                {
+                    parameters: 'remove|delete {prefix}',
+                    description: 'Removes a command prefix from this server',
+                    execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix)
                 }
-            }
+            ]
         });
     }
 

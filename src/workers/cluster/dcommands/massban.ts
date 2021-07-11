@@ -9,13 +9,15 @@ export class MassBanCommand extends BaseGuildCommand {
             flags: [
                 { flag: 'r', word: 'reason', description: 'The reason for the ban.' }
             ],
-            definition: {
-                parameters: '{userIds[]} {deleteDays:number=1}',
-                description: 'Bans a user who isn\'t currently on your guild, where `<userIds...>` is a list of user IDs ' +
-                    'or mentions (separated by spaces) and `days` is the number of days to delete messages for.\n' +
-                    'If mod-logging is enabled, the ban will be logged.',
-                execute: (ctx, [users, deleteDays], flags) => this.massBan(ctx, users, deleteDays, flags)
-            }
+            definitions: [
+                {
+                    parameters: '{userIds[]} {deleteDays:number=1}',
+                    description: 'Bans a user who isn\'t currently on your guild, where `<userIds...>` is a list of user IDs ' +
+                        'or mentions (separated by spaces) and `days` is the number of days to delete messages for.\n' +
+                        'If mod-logging is enabled, the ban will be logged.',
+                    execute: (ctx, [users, deleteDays], flags) => this.massBan(ctx, users, deleteDays, flags)
+                }
+            ]
         });
     }
 

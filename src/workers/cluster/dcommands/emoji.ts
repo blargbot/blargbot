@@ -16,11 +16,13 @@ export class EmojiCommand extends BaseGlobalCommand {
                 word: 'svg',
                 description: 'Get the emote as an svg instead of a png.'
             }],
-            definition: {
-                parameters: '{emoji} {size:number=668}',
-                execute: (_, [emoji, size], flags) => this.emoji(emoji, size, flags),
-                description: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.'
-            }
+            definitions: [
+                {
+                    parameters: '{emoji} {size:number=668}',
+                    execute: (_, [emoji, size], flags) => this.emoji(emoji, size, flags),
+                    description: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.'
+                }
+            ]
         });
     }
 

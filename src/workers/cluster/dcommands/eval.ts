@@ -5,28 +5,28 @@ export class EvalCommand extends BaseGlobalCommand {
         super({
             name: 'eval',
             category: commandTypes.OWNER,
-            definition: {
-                parameters: '{code+}',
-                execute: (ctx) => this.eval(ctx, ctx.author.id, ctx.argsString),
-                description: 'Runs the code you enter on the current cluster',
-                subcommands: {
-                    'master': {
-                        parameters: '{~code+}',
-                        execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code),
-                        description: 'Runs the code you enter on the master process'
-                    },
-                    'global': {
-                        parameters: '{~code+}',
-                        execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code),
-                        description: 'Runs the code you enter on all the clusters and aggregates the result'
-                    },
-                    'cluster': {
-                        parameters: '{clusterId:number} {~code+}',
-                        execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId, ctx.author.id, code),
-                        description: 'Runs the code you enter on all the clusters and aggregates the result'
-                    }
+            definitions: [
+                {
+                    parameters: '{code+}',
+                    execute: (ctx) => this.eval(ctx, ctx.author.id, ctx.argsString),
+                    description: 'Runs the code you enter on the current cluster'
+                },
+                {
+                    parameters: 'master {~code+}',
+                    execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code),
+                    description: 'Runs the code you enter on the master process'
+                },
+                {
+                    parameters: 'global {~code+}',
+                    execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code),
+                    description: 'Runs the code you enter on all the clusters and aggregates the result'
+                },
+                {
+                    parameters: 'cluster {clusterId:number} {~code+}',
+                    execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId, ctx.author.id, code),
+                    description: 'Runs the code you enter on all the clusters and aggregates the result'
                 }
-            }
+            ]
         });
     }
 

@@ -9,12 +9,14 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
 
     protected bindingError(
         state: CommandBinderState<TContext>,
-        error: CommandResult
+        error: CommandResult,
+        argCount = 0
     ): BindingFailure<CommandBinderState<TContext>> {
         return {
             success: false,
             state: {
                 ...state,
+                argIndex: state.argIndex + argCount,
                 bindIndex: state.bindIndex + 1,
                 result: error
             }
@@ -59,7 +61,7 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
     ): BindingResultValue<CommandBinderState<TContext>> {
         switch (result.success) {
             case false:
-                return this.bindingError(state, result.error);
+                return this.bindingError(state, result.error, argCount);
             case true:
             case 'deferred':
                 return this.bindingSuccess(state, next, argCount, result);

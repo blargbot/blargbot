@@ -13,13 +13,15 @@ export class WarnCommand extends BaseGuildCommand {
                     description: 'The number of warnings that will be issued.'
                 }
             ],
-            definition: {
-                parameters: '{user+}',
-                description: 'Issues a warning.\n' +
-                    'If mod-logging is enabled, the warning will be logged.\n' +
-                    'If `kickat` and `banat` have been set using the `settings` command, the target could potentially get banned or kicked.',
-                execute: (ctx, [user], flags) => this.warn(ctx, user.join(' '), flags)
-            }
+            definitions: [
+                {
+                    parameters: '{user+}',
+                    description: 'Issues a warning.\n' +
+                        'If mod-logging is enabled, the warning will be logged.\n' +
+                        'If `kickat` and `banat` have been set using the `settings` command, the target could potentially get banned or kicked.',
+                    execute: (ctx, [user], flags) => this.warn(ctx, user.join(' '), flags)
+                }
+            ]
         });
     }
 

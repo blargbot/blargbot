@@ -7,20 +7,23 @@ export class RestartCommand extends BaseGlobalCommand {
             name: 'restart',
             category: commandTypes.DEVELOPER,
             description: 'Restarts blargbot, or one of its components',
-            definition: {
-                execute: (ctx) => this.respawnClusters(ctx),
-                description: 'Restarts all the clusters',
-                subcommands: {
-                    'kill': {
-                        execute: (ctx) => this.restart(ctx),
-                        description: 'Restarts all the clusters'
-                    },
-                    'frontend': {
-                        execute: (ctx) => this.restartWebsites(ctx),
-                        description: 'Restarts all the clusters'
-                    }
+            definitions: [
+                {
+                    parameters: '',
+                    execute: (ctx) => this.respawnClusters(ctx),
+                    description: 'Restarts all the clusters'
+                },
+                {
+                    parameters: 'kill',
+                    execute: (ctx) => this.restart(ctx),
+                    description: 'Restarts all the clusters'
+                },
+                {
+                    parameters: 'frontend',
+                    execute: (ctx) => this.restartWebsites(ctx),
+                    description: 'Restarts all the clusters'
                 }
-            }
+            ]
         });
     }
 

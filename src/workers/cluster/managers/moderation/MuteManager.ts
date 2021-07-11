@@ -38,7 +38,7 @@ export class MuteManager extends ModerationManagerBase {
                 guild: member.guild.id,
                 user: member.id,
                 duration: JSON.stringify(duration),
-                endtime: moment().add(duration).toDate()
+                endtime: moment().add(duration).valueOf()
             });
         return 'success';
     }

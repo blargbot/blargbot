@@ -13,13 +13,15 @@ export class PardonCommand extends BaseGuildCommand {
                     description: 'The number of warnings that will be removed.'
                 }
             ],
-            definition: {
-                parameters: '{user+}',
-                description: 'Pardons a user.\n' +
-                    'If mod-logging is enabled, the pardon will be logged.\n' +
-                    'This will not unban users.',
-                execute: (ctx, [user], flags) => this.pardon(ctx, user, flags)
-            }
+            definitions: [
+                {
+                    parameters: '{user+}',
+                    description: 'Pardons a user.\n' +
+                        'If mod-logging is enabled, the pardon will be logged.\n' +
+                        'This will not unban users.',
+                    execute: (ctx, [user], flags) => this.pardon(ctx, user, flags)
+                }
+            ]
         });
     }
 

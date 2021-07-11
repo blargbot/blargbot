@@ -14,137 +14,152 @@ export class TagCommand extends BaseGuildCommand {
             description: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
                 + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
                 + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
-            definition: {
-                parameters: '{tagName} {~args+?}',
-                execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, false),
-                description: 'Runs a user created tag with some arguments',
-                subcommands: {
-                    'test|eval|exec|vtest': {
-                        parameters: '{~code+}',
-                        execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
-                        description: 'Uses the BBTag engine to execute the content as if it was a tag',
-                        subcommands: {
-                            'debug': {
-                                parameters: '{~code+}',
-                                execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
-                                description: 'Uses the BBTag engine to execute the content as if it was a tag and will return the debug output'
-                            }
+            definitions: [
+                {
+                    parameters: '{tagName} {~args+?}',
+                    execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, false),
+                    description: 'Runs a user created tag with some arguments'
+                },
+                {
+                    parameters: 'test|eval|exec|vtest',
+                    subcommands: [
+                        {
+                            parameters: '{~code+}',
+                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
+                            description: 'Uses the BBTag engine to execute the content as if it was a tag'
+                        },
+                        {
+                            parameters: 'debug {~code+}',
+                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
+                            description: 'Uses the BBTag engine to execute the content as if it was a tag and will return the debug output'
                         }
-                    },
-                    'docs': {
-                        parameters: '{topic+?}',
-                        execute: (ctx, [topic]) => this.showDocs(ctx, topic),
-                        description: 'Returns helpful information about the specified topic.'
-                    },
-                    'debug': {
-                        parameters: '{tagName} {~args+?}',
-                        execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, true),
-                        description: 'Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.'
-                    },
-                    'create|add': {
-                        parameters: '{tagName?} {~content+?}',
-                        execute: (ctx, [tagName, content]) => this.createTag(ctx, tagName, content),
-                        description: 'Creates a new tag with the content you give'
-                    },
-                    'edit': {
-                        parameters: '{tagName?} {~content+?}',
-                        execute: (ctx, [tagName, content]) => this.editTag(ctx, tagName, content),
-                        description: 'Edits an existing tag to have the content you specify'
-                    },
-                    'set': {
-                        parameters: '{tagName?} {~content+?}',
-                        execute: (ctx, [tagName, content]) => this.setTag(ctx, tagName, content),
-                        description: 'Sets the tag to have the content you specify. If the tag doesnt exist it will be created.'
-                    },
-                    'delete|remove': {
-                        parameters: '{tagName?}',
-                        execute: (ctx, [tagName]) => this.deleteTag(ctx, tagName),
-                        description: 'Deletes an existing tag'
-                    },
-                    'rename': {
-                        parameters: '{oldName?} {newName?}',
-                        execute: (ctx, [oldName, newName]) => this.renameTag(ctx, oldName, newName),
-                        description: 'Renames the tag'
-                    },
-                    'raw': {
-                        parameters: '{tagName?}',
-                        execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName),
-                        description: 'Uses the BBTag engine to execute the content as it was a tag'
-                    },
-                    'list': {
-                        parameters: '{author+?}',
-                        execute: (ctx, [author]) => this.listTags(ctx, author.join('')),
-                        description: 'Lists all tags, or tags made by a specific author'
-                    },
-                    'search': {
-                        parameters: '{tagName?}',
-                        execute: (ctx, [tagName]) => this.searchTags(ctx, tagName),
-                        description: 'Searches for a tag based on the provided name'
-                    },
-                    'permdelete': {
-                        parameters: '{tagName} {reason+}',
-                        execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName, reason.join(' ')),
-                        description: 'Marks the tag name as deleted forever, so no one can ever use it'
-                    },
-                    'cooldown': {
-                        parameters: '{tagName} {duration:duration+=0ms}',
-                        execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName, duration),
-                        description: 'Sets the cooldown of a tag, in milliseconds'
-                    },
-                    'author': {
-                        parameters: '{tagName?}',
-                        execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName),
-                        description: 'Displays the name of the tag\'s author'
-                    },
-                    'info': {
-                        parameters: '{tagName?}',
-                        execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName),
-                        description: 'Displays information about a tag'
-                    },
-                    'top': {
-                        parameters: '',
-                        execute: (ctx) => this.getTopTags(ctx),
-                        description: 'Displays the top 5 tags'
-                    },
-                    'favourite|favorite|favourites|favorites': {
-                        parameters: '{tagName?}',
-                        execute: (ctx, [tagName]) => typeof tagName === 'string'
-                            ? this.toggleFavouriteTag(ctx, tagName)
-                            : this.listFavouriteTags(ctx),
-                        description: 'Adds a tag to your favourite list, or displays your favourite tags'
-                    },
-                    'report': {
-                        parameters: '{tagName} {reason+?}',
-                        execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName, reason.join(' ')),
-                        description: 'Reports a tag as violating the ToS'
-                    },
-                    'flag|flags': {
-                        parameters: '{tagName}',
-                        execute: (ctx, [tagName]) => this.getTagFlags(ctx, tagName),
-                        description: 'Lists the flags the tag accepts',
-                        subcommands: {
-                            'create|add': {
-                                parameters: '{tagName} {~flags+}',
-                                execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName, flags),
-                                description: 'Adds multiple flags to your tag. Flags should be of the form `-<f> <flag> [flag description]`\n' +
-                                    'e.g. `b!t flags add mytag -c category The category you want to use -n name Your name`'
-                            },
-                            'delete|remove': {
-                                parameters: '{tagName} {~flags+}',
-                                execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName, flags),
-                                description: 'Removes multiple flags from your tag. Flags should be of the form `-<f>`\n' +
-                                    'e.g. `b!t flags remove mytag -c -n`'
-                            }
+                    ]
+                },
+                {
+                    parameters: 'docs {topic+?}',
+                    execute: (ctx, [topic]) => this.showDocs(ctx, topic),
+                    description: 'Returns helpful information about the specified topic.'
+                },
+                {
+                    parameters: 'debug {tagName} {~args+?}',
+                    execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, true),
+                    description: 'Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.'
+                },
+                {
+                    parameters: 'create|add {tagName?} {~content+?}',
+                    execute: (ctx, [tagName, content]) => this.createTag(ctx, tagName, content),
+                    description: 'Creates a new tag with the content you give'
+                },
+                {
+                    parameters: 'edit {tagName?} {~content+?}',
+                    execute: (ctx, [tagName, content]) => this.editTag(ctx, tagName, content),
+                    description: 'Edits an existing tag to have the content you specify'
+                },
+                {
+                    parameters: 'set {tagName?} {~content+?}',
+                    execute: (ctx, [tagName, content]) => this.setTag(ctx, tagName, content),
+                    description: 'Sets the tag to have the content you specify. If the tag doesnt exist it will be created.'
+                },
+                {
+                    parameters: 'delete|remove {tagName?}',
+                    execute: (ctx, [tagName]) => this.deleteTag(ctx, tagName),
+                    description: 'Deletes an existing tag'
+                },
+                {
+                    parameters: 'rename {oldName?} {newName?}',
+                    execute: (ctx, [oldName, newName]) => this.renameTag(ctx, oldName, newName),
+                    description: 'Renames the tag'
+                },
+                {
+                    parameters: 'raw {tagName?}',
+                    execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName),
+                    description: 'Uses the BBTag engine to execute the content as it was a tag'
+                },
+                {
+                    parameters: 'list {author+?}',
+                    execute: (ctx, [author]) => this.listTags(ctx, author.join('')),
+                    description: 'Lists all tags, or tags made by a specific author'
+                },
+                {
+                    parameters: 'search {tagName?}',
+                    execute: (ctx, [tagName]) => this.searchTags(ctx, tagName),
+                    description: 'Searches for a tag based on the provided name'
+                },
+                {
+                    parameters: 'permdelete {tagName} {reason+}',
+                    execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName, reason.join(' ')),
+                    description: 'Marks the tag name as deleted forever, so no one can ever use it'
+                },
+                {
+                    parameters: 'cooldown {tagName} {duration:duration+=0ms}',
+                    execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName, duration),
+                    description: 'Sets the cooldown of a tag, in milliseconds'
+                },
+                {
+                    parameters: 'author {tagName?}',
+                    execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName),
+                    description: 'Displays the name of the tag\'s author'
+                },
+                {
+                    parameters: 'info {tagName?}',
+                    execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName),
+                    description: 'Displays information about a tag'
+                },
+                {
+                    parameters: 'top ',
+                    execute: (ctx) => this.getTopTags(ctx),
+                    description: 'Displays the top 5 tags'
+                },
+                {
+                    parameters: 'report {tagName} {reason+?}',
+                    execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName, reason.join(' ')),
+                    description: 'Reports a tag as violating the ToS'
+                },
+                {
+                    parameters: 'setlang {tagName} {language}',
+                    execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName, language),
+                    description: 'Sets the language to use when returning the raw text of your tag'
+                },
+                {
+                    parameters: 'favourite|favorite|favourites|favorites',
+                    subcommands: [
+                        {
+                            parameters: '',
+                            execute: (ctx) => this.listFavouriteTags(ctx),
+                            description: 'Displays a list of the tags you have favourited'
+                        },
+                        {
+                            parameters: '{tagName}',
+                            execute: (ctx, [tagName]) => this.toggleFavouriteTag(ctx, tagName),
+                            description: 'Adds or removes a tag from your list of favourites'
                         }
-                    },
-                    'setlang': {
-                        parameters: '{tagName} {language}',
-                        execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName, language),
-                        description: 'Sets the language to use when returning the raw text of your tag'
-                    }
+                    ]
+                },
+                {
+                    parameters: 'flag|flags',
+                    subcommands: [
+                        {
+                            parameters: '{tagName}',
+                            execute: (ctx, [tagName]) => this.getTagFlags(ctx, tagName),
+                            description: 'Lists the flags the tag accepts'
+                        },
+                        {
+                            parameters: 'create|add {tagName} {~flags+}',
+                            execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName, flags),
+                            description: 'Adds multiple flags to your tag. Flags should be of the form `-<f> <flag> [flag description]`\n' +
+                                'e.g. `b!t flags add mytag -c category The category you want to use -n name Your name`'
+                        },
+                        {
+                            parameters: 'delete|remove {tagName} {~flags+}',
+                            execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName, flags),
+                            description: 'Removes multiple flags from your tag. Flags should be of the form `-<f>`\n' +
+                                'e.g. `b!t flags remove mytag -c -n`'
+                        }
+                    ]
                 }
-            }
+            ]
         });
+
         cluster.timeouts.on('tag', fafo(async event => {
             const migratedEvent = migrateEvent(event);
             if (migratedEvent === undefined)

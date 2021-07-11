@@ -1,7 +1,5 @@
 import * as r from 'rethinkdb';
-import { BetterExpression } from 'rethinkdb';
-import { Sanitized } from 'rethinkdb';
-import { Query, Expression, Cursor, Connection, Time } from 'rethinkdb';
+import { Query, Expression, Connection, Time, BetterCursor, Sanitized, BetterExpression, BetterRethinkDb } from 'rethinkdb';
 import { RethinkDbOptions } from '../types';
 
 export class RethinkDb {
@@ -20,10 +18,10 @@ export class RethinkDb {
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined>
     public async query<T>(query: Query<T | undefined>): Promise<T | undefined> {
         const connection = this.#connection ?? await this.connect();
-        return await query(r).run(connection);
+        return await query(<BetterRethinkDb<unknown>>r).run(connection);
     }
 
-    public async queryAll<T>(query: Query<Cursor>): Promise<T[]> {
+    public async queryAll<T>(query: Query<BetterCursor<T>>): Promise<T[]> {
         const stream = this.stream<T>(query);
         const result = [];
         for await (const item of stream)
@@ -31,12 +29,12 @@ export class RethinkDb {
         return result;
     }
 
-    public async * stream<T>(query: Query<Cursor>): AsyncIterableIterator<T> {
+    public async * stream<T>(query: Query<BetterCursor<T>>): AsyncIterableIterator<T> {
         const cursor = await this.query(query);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         while (true) {
             try {
-                yield <T>await cursor.next();
+                yield await cursor.next();
             } catch (err: unknown) {
                 if (err instanceof Error && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
                     break;

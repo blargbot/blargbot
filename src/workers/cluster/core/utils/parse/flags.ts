@@ -104,7 +104,7 @@ function* jaggedSlice<T>(source: T[][], start: number, end = Infinity): Generato
         if (j + group.length < start) {
             j += group.length;
         } else {
-            yield group.slice(start - j, end - j);
+            yield group.slice(Math.max(start - j, 0), Math.max(end - j, 0));
             j += group.length;
         }
 

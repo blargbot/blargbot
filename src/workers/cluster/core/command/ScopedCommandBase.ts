@@ -21,20 +21,17 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             }
         });
 
-        const definition: CommandDefinition<TContext> = noHelp ? options.definition : {
-            ...options.definition,
-            subcommands: {
-                'help': {
-                    parameters: '{subcommand?}',
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    execute: (context, [subcommand]) => this.showHelp(context, this, subcommand),
-                    description: 'Gets the help message for this command'
-                },
-                ...'subcommands' in options.definition ? options.definition.subcommands : {}
-            }
-        };
+        const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
+            {
+                parameters: 'help {subcommand?}',
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+                execute: (context, [subcommand]) => this.showHelp(context, this, subcommand),
+                description: 'Gets the help message for this command'
+            },
+            ...options.definitions
+        ];
 
-        const signatures = this.signatures = compileSignatures(definition);
+        const signatures = this.signatures = compileSignatures(definitions);
 
         const handler = compileHandler(signatures, this);
     }

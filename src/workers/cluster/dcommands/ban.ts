@@ -14,12 +14,14 @@ export class BanCommand extends BaseGuildCommand {
                     description: 'If provided, the user will be unbanned after the period of time. (softban)'
                 }
             ],
-            definition: {
-                parameters: '{user+} {days:number=1}',
-                description: 'Bans a user, where `days` is the number of days to delete messages for.\n' +
-                    'If mod-logging is enabled, the ban will be logged.',
-                execute: (ctx, [user, days], flags) => this.ban(ctx, user, days, flags)
-            }
+            definitions: [
+                {
+                    parameters: '{user+} {days:number=1}',
+                    description: 'Bans a user, where `days` is the number of days to delete messages for.\n' +
+                        'If mod-logging is enabled, the ban will be logged.',
+                    execute: (ctx, [user, days], flags) => this.ban(ctx, user, days, flags)
+                }
+            ]
         });
     }
 

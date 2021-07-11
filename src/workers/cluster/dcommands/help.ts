@@ -6,16 +6,18 @@ export class HelpCommand extends BaseGlobalCommand {
         super({
             name: 'help',
             category: CommandType.GENERAL,
-            definition: {
-                description: 'Shows a list of all the available commands',
-                execute: (ctx) => this.listCommands(ctx),
-                subcommands: {
-                    '{commandName} {subcommand?}': {
-                        description: 'Shows the help text for the given command',
-                        execute: (msg, [commandName, subcommand]) => this.viewCommand(msg, commandName, subcommand)
-                    }
+            definitions: [
+                {
+                    parameters: '',
+                    description: 'Shows a list of all the available commands',
+                    execute: (ctx) => this.listCommands(ctx)
+                },
+                {
+                    parameters: '{commandName} {subcommand?}',
+                    description: 'Shows the help text for the given command',
+                    execute: (msg, [commandName, subcommand]) => this.viewCommand(msg, commandName, subcommand)
                 }
-            }
+            ]
         }, true);
     }
 

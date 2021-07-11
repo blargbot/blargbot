@@ -46,9 +46,9 @@
             ],
             "env": {
                 "CLUSTER_ID": "0",
-                "SHARDS_MAX": "1",
-                "SHARDS_FIRST": "1",
-                "SHARDS_LAST": "1"
+                "SHARDS_MAX": "0",
+                "SHARDS_FIRST": "0",
+                "SHARDS_LAST": "0"
             }
         },
         {
@@ -67,9 +67,9 @@
             ],
             "env": {
                 "CLUSTER_ID": "0",
-                "SHARDS_MAX": "1",
-                "SHARDS_FIRST": "1",
-                "SHARDS_LAST": "1"
+                "SHARDS_MAX": "0",
+                "SHARDS_FIRST": "0",
+                "SHARDS_LAST": "0"
             }
         },
         {

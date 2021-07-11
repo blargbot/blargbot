@@ -8,25 +8,23 @@ export class SettingsCommand extends BaseGuildCommand {
             name: 'settings',
             category: CommandType.ADMIN,
             description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/commands/settings')} for key documentation.`,
-            definition: {
-                subcommands: {
-                    'list': {
-                        parameters: '',
-                        execute: ctx => this.list(ctx),
-                        description: 'Gets the current settings for this guild'
-                    },
-                    'keys': {
-                        parameters: '',
-                        description: 'Lists all the setting keys and their types',
-                        execute: () => this.keys()
-                    },
-                    'set': {
-                        parameters: '{key} {~value+?}',
-                        description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
-                        execute: (ctx, [setting, value]) => this.set(ctx, setting, value)
-                    }
+            definitions: [
+                {
+                    parameters: 'list',
+                    execute: ctx => this.list(ctx),
+                    description: 'Gets the current settings for this guild'
+                },
+                {
+                    parameters: 'keys',
+                    description: 'Lists all the setting keys and their types',
+                    execute: () => this.keys()
+                },
+                {
+                    parameters: 'set {key} {~value+?}',
+                    description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
+                    execute: (ctx, [setting, value]) => this.set(ctx, setting, value)
                 }
-            }
+            ]
         });
     }
 

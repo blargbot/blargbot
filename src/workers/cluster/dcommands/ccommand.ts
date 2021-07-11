@@ -19,131 +19,135 @@ export class CustomCommand extends BaseGuildCommand {
                 + 'For more in-depth command customization, see the `editcommand` command.\n'
                 + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
                 + `By creating a custom command, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
-            definition: {
-                subcommands: {
-                    'test|eval|exec|vtest': {
-                        parameters: '{~code+}',
-                        execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
-                        description: 'Uses the BBTag engine to execute the content as if it was a custom command',
-                        subcommands: {
-                            'debug': {
-                                parameters: '{~code+}',
-                                execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
-                                description: 'Uses the BBTag engine to execute the content as if it was a custom command and will return the debug output'
-                            }
+            definitions: [
+                {
+                    parameters: 'test|eval|exec|vtest',
+                    subcommands: [
+                        {
+                            parameters: '{~code+}',
+                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
+                            description: 'Uses the BBTag engine to execute the content as if it was a custom command'
+                        },
+                        {
+                            parameters: 'debug {~code+}',
+                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
+                            description: 'Uses the BBTag engine to execute the content as if it was a custom command and will return the debug output'
                         }
-                    },
-                    'docs': {
-                        parameters: '{topic+?}',
-                        execute: (ctx, [topic]) => this.showDocs(ctx, topic),
-                        description: 'Returns helpful information about the specified topic.'
-                    },
-                    'debug': {
-                        parameters: '{commandName} {~args+?}',
-                        execute: (ctx, [commandName, args]) => this.runCommand(ctx, commandName, args, true),
-                        description: 'Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.'
-                    },
-                    'create|add': {
-                        parameters: '{commandName?} {~content+?}',
-                        execute: (ctx, [commandName, content]) => this.createCommand(ctx, commandName, content),
-                        description: 'Creates a new custom command with the content you give'
-                    },
-                    'edit': {
-                        parameters: '{commandName?} {~content+?}',
-                        execute: (ctx, [commandName, content]) => this.editCommand(ctx, commandName, content),
-                        description: 'Edits an existing custom command to have the content you specify'
-                    },
-                    'set': {
-                        parameters: '{commandName?} {~content+?}',
-                        execute: (ctx, [commandName, content]) => this.setCommand(ctx, commandName, content),
-                        description: 'Sets the custom command to have the content you specify. If the custom command doesnt exist it will be created.'
-                    },
-                    'delete|remove': {
-                        parameters: '{commandName?}',
-                        execute: (ctx, [commandName]) => this.deleteCommand(ctx, commandName),
-                        description: 'Deletes an existing custom command'
-                    },
-                    'rename': {
-                        parameters: '{oldName?} {newName?}',
-                        execute: (ctx, [oldName, newName]) => this.renameCommand(ctx, oldName, newName),
-                        description: 'Renames the custom command'
-                    },
-                    'raw': {
-                        parameters: '{commandName?}',
-                        execute: (ctx, [commandName]) => this.getRawCommand(ctx, commandName),
-                        description: 'Gets the raw content of the custom command'
-                    },
-                    'list': {
-                        parameters: '',
-                        execute: (ctx) => this.listCommands(ctx),
-                        description: 'Lists all custom commands on this server'
-                    },
-                    'cooldown': {
-                        parameters: '{commandName} {duration:duration+=0ms}',
-                        execute: (ctx, [commandName, duration]) => this.setCommandCooldown(ctx, commandName, duration),
-                        description: 'Sets the cooldown of a custom command, in milliseconds'
-                    },
-                    'author': {
-                        parameters: '{commandName?}',
-                        execute: (ctx, [commandName]) => this.getCommandAuthor(ctx, commandName),
-                        description: 'Displays the name of the custom command\'s author'
-                    },
-                    'flag|flags': {
-                        parameters: '{commandName}',
-                        execute: (ctx, [commandName]) => this.getCommandFlags(ctx, commandName),
-                        description: 'Lists the flags the custom command accepts',
-                        subcommands: {
-                            'create|add': {
-                                parameters: '{commandName} {~flags+?}',
-                                execute: (ctx, [commandName, flags]) => this.addCommandFlags(ctx, commandName, flags),
-                                description: 'Adds multiple flags to your custom command. Flags should be of the form `-<f> <flag> [flag description]`\n' +
-                                    'e.g. `b!cc flags add myCommand -c category The category you want to use -n name Your name`'
-                            },
-                            'delete|remove': {
-                                parameters: '{commandName} {~flags+?}',
-                                execute: (ctx, [commandName, flags]) => this.removeCommandFlags(ctx, commandName, flags),
-                                description: 'Removes multiple flags from your custom command. Flags should be of the form `-<f>`\n' +
-                                    'e.g. `b!cc flags remove myCommand -c -n`'
-                            }
+                    ]
+                },
+                {
+                    parameters: 'docs {topic+?}',
+                    execute: (ctx, [topic]) => this.showDocs(ctx, topic),
+                    description: 'Returns helpful information about the specified topic.'
+                },
+                {
+                    parameters: 'debug {commandName} {~args+?}',
+                    execute: (ctx, [commandName, args]) => this.runCommand(ctx, commandName, args, true),
+                    description: 'Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.'
+                },
+                {
+                    parameters: 'create|add {commandName?} {~content+?}',
+                    execute: (ctx, [commandName, content]) => this.createCommand(ctx, commandName, content),
+                    description: 'Creates a new custom command with the content you give'
+                },
+                {
+                    parameters: 'edit {commandName?} {~content+?}',
+                    execute: (ctx, [commandName, content]) => this.editCommand(ctx, commandName, content),
+                    description: 'Edits an existing custom command to have the content you specify'
+                },
+                {
+                    parameters: 'set {commandName?} {~content+?}',
+                    execute: (ctx, [commandName, content]) => this.setCommand(ctx, commandName, content),
+                    description: 'Sets the custom command to have the content you specify. If the custom command doesnt exist it will be created.'
+                },
+                {
+                    parameters: 'delete|remove {commandName?}',
+                    execute: (ctx, [commandName]) => this.deleteCommand(ctx, commandName),
+                    description: 'Deletes an existing custom command'
+                },
+                {
+                    parameters: 'rename {oldName?} {newName?}',
+                    execute: (ctx, [oldName, newName]) => this.renameCommand(ctx, oldName, newName),
+                    description: 'Renames the custom command'
+                },
+                {
+                    parameters: 'raw {commandName?}',
+                    execute: (ctx, [commandName]) => this.getRawCommand(ctx, commandName),
+                    description: 'Gets the raw content of the custom command'
+                },
+                {
+                    parameters: 'list ',
+                    execute: (ctx) => this.listCommands(ctx),
+                    description: 'Lists all custom commands on this server'
+                },
+                {
+                    parameters: 'cooldown {commandName} {duration:duration+=0ms}',
+                    execute: (ctx, [commandName, duration]) => this.setCommandCooldown(ctx, commandName, duration),
+                    description: 'Sets the cooldown of a custom command, in milliseconds'
+                },
+                {
+                    parameters: 'author {commandName?}',
+                    execute: (ctx, [commandName]) => this.getCommandAuthor(ctx, commandName),
+                    description: 'Displays the name of the custom command\'s author'
+                },
+                {
+                    parameters: 'flag|flags',
+                    subcommands: [
+                        {
+                            parameters: '{commandName}',
+                            execute: (ctx, [commandName]) => this.getCommandFlags(ctx, commandName),
+                            description: 'Lists the flags the custom command accepts'
+                        },
+                        {
+                            parameters: 'create|add {commandName} {~flags+?}',
+                            execute: (ctx, [commandName, flags]) => this.addCommandFlags(ctx, commandName, flags),
+                            description: 'Adds multiple flags to your custom command. Flags should be of the form `-<f> <flag> [flag description]`\n' +
+                                'e.g. `b!cc flags add myCommand -c category The category you want to use -n name Your name`'
+                        },
+                        {
+                            parameters: 'delete|remove {commandName} {~flags+?}',
+                            execute: (ctx, [commandName, flags]) => this.removeCommandFlags(ctx, commandName, flags),
+                            description: 'Removes multiple flags from your custom command. Flags should be of the form `-<f>`\n' +
+                                'e.g. `b!cc flags remove myCommand -c -n`'
                         }
-                    },
-                    'setlang': {
-                        parameters: '{commandName} {language}',
-                        execute: (ctx, [commandName, language]) => this.setCommandLanguage(ctx, commandName, language),
-                        description: 'Sets the language to use when returning the raw text of your custom command'
-                    },
-                    'sethelp': {
-                        parameters: '{commandName} {~helpText+?}',
-                        execute: (ctx, [commandName, helpText]) => this.setCommandHelp(ctx, commandName, helpText),
-                        description: 'Sets the help text to show for the command'
-                    },
-                    'hide': {
-                        parameters: '{commandName}',
-                        execute: (ctx, [commandName]) => this.toggleCommandHidden(ctx, commandName),
-                        description: 'Toggles whether the command is hidden from the command list or not'
-                    },
-                    'setRole': {
-                        parameters: '{commandName} {roles[0]}',
-                        execute: (ctx, [commandName, roles]) => this.setCommandRoles(ctx, commandName, roles),
-                        description: 'Sets the roles that are allowed to use the command'
-                    },
-                    'shrinkwrap': {
-                        parameters: '{commandNames[]}',
-                        execute: (ctx, [commandNames]) => this.shrinkwrapCommands(ctx, commandNames),
-                        description: 'Bundles up the given commands into a single file that you can download and install into another server'
-                    },
-                    'install': {
-                        parameters: '{shrinkwrapUrl?}',
-                        execute: (ctx, [shrinkwrapUrl]) => this.installCommands(ctx, shrinkwrapUrl),
-                        description: 'Bundles up the given commands into a single file that you can download and install into another server'
-                    },
-                    'import': {
-                        parameters: '{tagName} {commandName?}',
-                        execute: (ctx, [tagName, commandName]) => this.importCommand(ctx, tagName, commandName ?? tagName),
-                        description: 'Imports a tag as a ccommand, retaining all data such as author variables'
-                    }
+                    ]
+                },
+                {
+                    parameters: 'setlang {commandName} {language}',
+                    execute: (ctx, [commandName, language]) => this.setCommandLanguage(ctx, commandName, language),
+                    description: 'Sets the language to use when returning the raw text of your custom command'
+                },
+                {
+                    parameters: 'sethelp {commandName} {~helpText+?}',
+                    execute: (ctx, [commandName, helpText]) => this.setCommandHelp(ctx, commandName, helpText),
+                    description: 'Sets the help text to show for the command'
+                },
+                {
+                    parameters: 'hide {commandName}',
+                    execute: (ctx, [commandName]) => this.toggleCommandHidden(ctx, commandName),
+                    description: 'Toggles whether the command is hidden from the command list or not'
+                },
+                {
+                    parameters: 'setRole {commandName} {roles[0]}',
+                    execute: (ctx, [commandName, roles]) => this.setCommandRoles(ctx, commandName, roles),
+                    description: 'Sets the roles that are allowed to use the command'
+                },
+                {
+                    parameters: 'shrinkwrap {commandNames[]}',
+                    execute: (ctx, [commandNames]) => this.shrinkwrapCommands(ctx, commandNames),
+                    description: 'Bundles up the given commands into a single file that you can download and install into another server'
+                },
+                {
+                    parameters: 'install {shrinkwrapUrl?}',
+                    execute: (ctx, [shrinkwrapUrl]) => this.installCommands(ctx, shrinkwrapUrl),
+                    description: 'Bundles up the given commands into a single file that you can download and install into another server'
+                },
+                {
+                    parameters: 'import {tagName} {commandName?}',
+                    execute: (ctx, [tagName, commandName]) => this.importCommand(ctx, tagName, commandName ?? tagName),
+                    description: 'Imports a tag as a ccommand, retaining all data such as author variables'
                 }
-            }
+            ]
         });
     }
 

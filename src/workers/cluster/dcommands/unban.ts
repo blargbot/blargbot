@@ -9,12 +9,14 @@ export class UnbanCommand extends BaseGuildCommand {
             flags: [
                 { flag: 'r', word: 'reason', description: 'The reason for the ban.' }
             ],
-            definition: {
-                parameters: '{userId}',
-                description: 'Unbans a user.\n' +
-                    'If mod-logging is enabled, the ban will be logged.',
-                execute: (ctx, [user], flags) => this.unban(ctx, user, flags)
-            }
+            definitions: [
+                {
+                    parameters: '{userId}',
+                    description: 'Unbans a user.\n' +
+                        'If mod-logging is enabled, the ban will be logged.',
+                    execute: (ctx, [user], flags) => this.unban(ctx, user, flags)
+                }
+            ]
         });
     }
 

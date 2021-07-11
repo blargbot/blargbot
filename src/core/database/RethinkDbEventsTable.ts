@@ -13,17 +13,16 @@ export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements Ev
     }
 
     public async between(from: Date | Moment | number, to: Date | Moment | number): Promise<StoredEvent[]> {
-        const after = moment(from).toDate();
-        const before = moment(to).toDate();
+        const after = moment(from).valueOf();
+        const before = moment(to).valueOf();
         return await this.rqueryAll(t => t.between(after, before, { index: 'endtime' }));
     }
 
     public async add<K extends EventType>(type: K, event: StoredEventOptions<K>): Promise<StoredEvent<K> | undefined> {
-        const insert = { ...event, type };
+        const insert = populateEvent(type, event);
         if (!await this.rinsert(insert, true))
             return undefined;
-
-        return <StoredEvent<K>><unknown>insert;
+        return insert;
     }
 
     public async delete(eventId: string): Promise<boolean>;
@@ -32,4 +31,27 @@ export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements Ev
         return await this.rdelete(filter);
     }
 
+    public async list(source: string, pageNumber: number, pageSize: number): Promise<{ events: StoredEvent[]; total: number; }> {
+        const events = await this.rqueryAll(t => t.filter({ source }).slice(pageNumber * pageSize, (pageNumber + 1) * pageSize));
+        const total = await this.rquery(t => t.filter({ source }).count());
+        return { events, total };
+    }
+
+    public async getIds(source: string): Promise<string[]> {
+        return await this.rqueryAll(t => t.filter({ source }).getField('id'));
+    }
+
+    public async get(eventId: string): Promise<StoredEvent | undefined> {
+        return await this.rquery(t => t.get(eventId)) ?? undefined;
+    }
+
+}
+
+function populateEvent<K extends EventType>(type: K, event: StoredEventOptions<K>): StoredEvent<K> {
+    return {
+        ...event,
+        starttime: moment().valueOf(),
+        type: type,
+        id: undefined
+    } as never;
 }

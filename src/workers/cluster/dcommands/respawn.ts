@@ -6,11 +6,13 @@ export class RespawnCommand extends BaseGlobalCommand {
             name: 'respawn',
             category: commandTypes.STAFF,
             description: 'Cluster respawning only for staff.',
-            definition: {
-                parameters: '{clusterId:integer}',
-                execute: (ctx, [clusterId]) => this.respawn(ctx, clusterId),
-                description: 'Respawns the cluster specified'
-            }
+            definitions: [
+                {
+                    parameters: '{clusterId:integer}',
+                    execute: (ctx, [clusterId]) => this.respawn(ctx, clusterId),
+                    description: 'Respawns the cluster specified'
+                }
+            ]
         });
     }
 

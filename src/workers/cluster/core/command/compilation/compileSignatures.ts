@@ -3,9 +3,8 @@ import { CommandDefinition, CommandSignatureHandler, CommandHandlerDefinition, C
 import { CommandContext } from '../CommandContext';
 import { CommandVariableType, isCommandVariableType } from './parameterType';
 
-export function compileSignatures<TContext extends CommandContext>(definition: CommandDefinition<TContext>): ReadonlyArray<CommandSignatureHandler<TContext>> {
-    return [...flattenSubCommands(definition, '')]
-        .map(v => compileSignature(v));
+export function compileSignatures<TContext extends CommandContext>(definitions: ReadonlyArray<CommandDefinition<TContext>>): ReadonlyArray<CommandSignatureHandler<TContext>> {
+    return [...compileSignaturesIter(definitions, '')];
 }
 
 interface FlatCommandHandlerDefinition<TContext extends CommandContext> {
@@ -13,21 +12,21 @@ interface FlatCommandHandlerDefinition<TContext extends CommandContext> {
     definition: CommandHandlerDefinition<TContext>;
 }
 
-function* flattenSubCommands<TContext extends CommandContext>(
-    definition: CommandDefinition<TContext>,
+function* compileSignaturesIter<TContext extends CommandContext>(
+    definitions: Iterable<CommandDefinition<TContext>>,
     subCommands: string
-): Generator<FlatCommandHandlerDefinition<TContext>> {
-    if ('subcommands' in definition) {
-        for (const key of Object.keys(definition.subcommands)) {
-            yield* flattenSubCommands(definition.subcommands[key], `${subCommands} ${key}`.trim());
+): Generator<CommandSignatureHandler<TContext>> {
+    for (const definition of definitions) {
+        if ('execute' in definition) {
+            yield compileSignature({
+                parameters: `${subCommands} ${definition.parameters}`.trim(),
+                definition: definition
+            });
         }
-    }
 
-    if ('execute' in definition) {
-        yield {
-            parameters: `${subCommands} ${definition.parameters ?? ''}`.trim(),
-            definition: definition
-        };
+        if ('subcommands' in definition) {
+            yield* compileSignaturesIter(definition.subcommands, `${subCommands} ${definition.parameters}`.trim());
+        }
     }
 }
 
@@ -279,8 +278,7 @@ function readLiteral(parameters: string, i: number): { parameter: CommandLiteral
         }
     }
 
-    if (current.length > 0)
-        results.push(current);
+    results.push(current);
 
     const [name, ...alias] = results;
 

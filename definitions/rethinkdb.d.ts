@@ -7,15 +7,13 @@ declare module 'rethinkdb' {
         changes?: WriteChange[];
     }
 
-    interface WriteChange {
-        /* eslint-disable @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any */
-        new_val?: any;
-        old_val?: any;
-        /* eslint-enable @typescript-eslint/naming-convention, @typescript-eslint/no-explicit-any */
-    }
-
-    interface Sequence {
-        changes(opts?: Partial<ChangesOptions>): Sequence;
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+    interface WriteChange<T = any> {
+        /* eslint-enable @typescript-eslint/no-explicit-any */
+        /* eslint-disable @typescript-eslint/naming-convention */
+        new_val?: T;
+        old_val?: T;
+        /* eslint-enable @typescript-eslint/naming-convention */
     }
 
     type Sanitized<T> = T extends Array<infer R | undefined> ? R[] : T;
@@ -33,6 +31,10 @@ declare module 'rethinkdb' {
         add(value: Expression<number>): BetterExpression<number>;
     }
 
+    interface BetterExpressionFunction<T, R> {
+        (doc: BetterExpression<T>): Expression<R>;
+    }
+
     interface BetterRow<T> extends BetterExpression<T> {
         <R extends keyof T>(name: R): BetterExpression<T[R]>;
     }
@@ -40,14 +42,46 @@ declare module 'rethinkdb' {
     type RethinkDb = typeof import('rethinkdb');
     interface BetterRethinkDb<T> extends RethinkDb {
         readonly row: BetterRow<T>;
+        table<T>(tableName: string): BetterTable<T>;
     }
 
-    interface Table {
-        getAll(...args: [...unknown[], { index: string; }]): Sequence;
+    interface BetterCursor<T> extends Cursor {
+        toArray(): Promise<T[]>;
+        next(): Promise<T>;
     }
 
-    type Query<T> = (rethink: RethinkDb) => Operation<T>;
-    type TableQuery<T, R> = (table: Table, rethink: BetterRethinkDb<R>) => Operation<T>;
+    interface BetterSequence<T> extends Operation<BetterCursor<T>>, Omit<Sequence, keyof Operation<BetterCursor<T>>> {
+        between(lower: unknown, upper: unknown, index?: Index): BetterSequence<T>;
+        coerceTo(key: 'array'): Expression<T[]>;
+        coerceTo(key: 'object'): Expression<T>;
+        filter(rql: BetterExpressionFunction<T, boolean>): BetterSequence<T>;
+        filter(rql: BetterExpression<boolean>): BetterSequence<T>;
+        filter(obj: { [key: string]: unknown; }): BetterSequence<T>;
+        changes(opts?: Partial<ChangesOptions>): BetterSequence<WriteChange<T>>;
+        orderBy(...keys: string[]): BetterSequence<T>;
+        orderBy(...sorts: Sort[]): BetterSequence<T>;
+        skip(n: number): BetterSequence<T>;
+        limit(n: number): BetterSequence<T>;
+        slice(start: number, end?: number): BetterSequence<T>;
+        nth(n: number): Expression<T>;
+        isEmpty(): Expression<boolean>;
+        sample(n: number): BetterSequence<T>;
+        getField<K extends string & keyof T>(prop: K): BetterSequence<K>;
+        count(): Expression<number>;
+        distinct(opts?: { index: string; }): BetterSequence<T>;
+        contains(prop: string & keyof T): Expression<boolean>;
+        pluck<K extends string & keyof T>(...props: K[]): BetterSequence<Pick<T, K>>;
+        without<K extends string & keyof T>(...props: K[]): BetterSequence<Omit<T, K>>;
+    }
+
+    interface BetterTable<T> extends BetterSequence<T>, Omit<Table, keyof BetterSequence<T> | 'getAll' | 'get'> {
+        getAll(...args: unknown[]): BetterSequence<T>;
+        getAll(...args: [...unknown[], Index]): BetterSequence<T>;
+        get(key: string): Operation<T | null> & Writeable;
+    }
+
+    type Query<T, R = unknown> = (rethink: BetterRethinkDb<R>) => Operation<T>;
+    type TableQuery<T, R> = (table: BetterTable<R>, rethink: BetterRethinkDb<R>) => Operation<T>;
     type UpdateRequest<T> = { [P in keyof T]?: T[P] | BetterExpression<T[P]> | UpdateRequest<T[P]> } | BetterExpression<T>;
     type UpdateData<T> = UpdateRequest<T> | ((r: BetterRethinkDb<T>) => UpdateRequest<T>);
 }

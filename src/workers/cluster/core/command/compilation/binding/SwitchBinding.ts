@@ -46,7 +46,7 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
 
         const nextOptional = this.lookup[''];
         if (nextOptional !== undefined)
-            return this.bindingSuccess(state, nextOptional, 0, undefined, false);
+            return this.bindingSuccess(state, nextOptional, 0, undefined);
 
         return this.bindingError(state, state.command.error(`Expected ${this.expected} but got \`${arg}\``));
     }

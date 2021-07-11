@@ -47,7 +47,8 @@ export class TimeoutManager {
 
     public async process(): Promise<void> {
         for (const event of this.#events.values()) {
-            if (moment().isBefore(event.endtime))
+            const now = moment();
+            if (now.isBefore(event.endtime))
                 continue;
 
             const shardId = this.getShardId(event);
@@ -80,12 +81,12 @@ export class TimeoutManager {
         return 0;
     }
 
-    public async delete(event: string): Promise<void> {
+    public async delete(event: string): Promise<boolean> {
         this.#events.delete(event);
-        await this.cluster.database.events.delete(event);
+        return await this.cluster.database.events.delete(event);
     }
 
-    public async deleteFilter(source: string): Promise<void> {
+    public async deleteAll(source: string): Promise<void> {
         await this.cluster.database.events.delete({ source });
         for (const event of this.#events.values())
             if (event.source === source)

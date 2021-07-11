@@ -9,11 +9,13 @@ export class ArtCommand extends BaseGlobalCommand {
             description: 'Shows everyone a work of art.',
             flags: [{ flag: 'I', word: 'image', description: 'A custom image.' }],
             cooldown: 5000,
-            definition: {
-                parameters: '{user+?}',
-                execute: (ctx, [user], flags) => this.art(ctx, user, flags),
-                description: 'Shows everyone a work of art.'
-            }
+            definitions: [
+                {
+                    parameters: '{user+?}',
+                    execute: (ctx, [user], flags) => this.art(ctx, user, flags),
+                    description: 'Shows everyone a work of art.'
+                }
+            ]
         });
         this.ratelimit.push(m => m.author.id);
         this.ratelimit.push(m => m.channel.id);
