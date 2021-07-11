@@ -22,18 +22,15 @@ export class ConcatBinding<TContext extends CommandContext, TResult> extends Com
     }
 
     public *[Binder.binder](state: CommandBinderState<TContext>): BindingResultIterator<CommandBinderState<TContext>> {
-        if (state.flags._.length === state.argIndex) {
-            if (this.fallback !== undefined)
-                yield this.getBindingResult(state, this.next, 0, this.parse(this.fallback, state));
-            else
-                yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
-            return;
-        }
-
-        for (let i = 0; i <= state.flags._.length - state.argIndex; i++) {
-            const args = state.flags._.merge(state.argIndex, state.argIndex + i + 1);
+        for (let i = 1; i <= state.flags._.length - state.argIndex; i++) {
+            const args = state.flags._.merge(state.argIndex, state.argIndex + i);
             const arg = this.raw ? args.raw : args.value;
             yield this.getBindingResult(state, this.next, i, this.parse(arg, state));
         }
+
+        if (this.fallback !== undefined)
+            yield this.getBindingResult(state, this.next, 0, this.parse(this.fallback, state));
+        else if (state.flags._.length === state.argIndex)
+            yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
     }
 }

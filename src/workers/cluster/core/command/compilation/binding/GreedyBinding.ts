@@ -29,26 +29,36 @@ export class GreedyBinding<TContext extends CommandContext, TResult> extends Com
     }
 
     public *[Binder.binder](state: CommandBinderState<TContext>): BindingResultIterator<CommandBinderState<TContext>> {
-        const next = [...this.next[0] ?? []];
-        if (next.length > 0)
-            yield this.getBindingResult(state, next, 0, { success: true, value: [] });
 
-        const results = [];
+        const results: Array<CommandBinderParseResult<TResult>> = [];
+        const next = [...this.next[0] ?? []];
+        const optional = next.length > 0;
         let i = 0;
         let arg;
+        let parsed: CommandBinderParseResult<TResult> | undefined = undefined;
+        let aggregated: CommandBinderParseResult<TResult[]> | undefined = undefined;
         while ((arg = state.flags._.get(state.argIndex + i++)) !== undefined) {
-            const result = this.parse(this.raw ? arg.raw : arg.value, state);
-            if (result.success === false) {
-                yield this.bindingError(state, result.error);
-                return;
-            }
-            results.push(memoize(result));
+            parsed = memoize(this.parse(this.raw ? arg.raw : arg.value, state));
+            if (parsed.success === false)
+                break;
+            results.push(parsed);
             next.push(...this.next[results.length] ?? []);
-            if (next.length > 0)
+            if (next.length > 0) {
                 yield this.getBindingResult(state, next, results.length, aggregateResults(results));
+                aggregated = aggregateResults(results);
+                if (aggregated.success === false)
+                    break;
+            }
         }
 
-        if (next.length === 0)
+        if (optional)
+            yield this.getBindingResult(state, next, 0, { success: true, value: [] });
+
+        if (parsed?.success === false)
+            yield this.bindingError(state, parsed.error);
+        else if (aggregated?.success === false)
+            yield this.bindingError(state, aggregated.error);
+        else if (next.length === 0)
             yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
     }
 }

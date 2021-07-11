@@ -16,7 +16,7 @@ export class HelpCommand extends BaseGlobalCommand {
                     }
                 }
             }
-        });
+        }, true);
     }
 
     public async listCommands(context: CommandContext): Promise<SendPayload> {

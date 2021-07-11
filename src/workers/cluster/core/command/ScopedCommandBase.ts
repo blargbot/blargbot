@@ -1,6 +1,6 @@
 import { CommandContext, BaseCommand } from '../command';
 import { SendPayload } from '../globalCore';
-import { CommandOptions, CommandResult, CommandSignature } from '../types';
+import { CommandDefinition, CommandOptions, CommandResult, CommandSignature } from '../types';
 import { compileHandler, compileSignatures } from './compilation';
 
 // Circular reference means this needs to be resolved asyncronously;
@@ -9,7 +9,7 @@ const helpCommandPromise = import('../../dcommands/help');
 export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
     public readonly signatures: readonly CommandSignature[];
 
-    public constructor(options: CommandOptions<TContext>) {
+    public constructor(options: CommandOptions<TContext>, noHelp = false) {
         super(options, {
             get debugView() {
                 return handler.debugView;
@@ -21,7 +21,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             }
         });
 
-        const signatures = this.signatures = compileSignatures({
+        const definition: CommandDefinition<TContext> = noHelp ? options.definition : {
             ...options.definition,
             subcommands: {
                 'help': {
@@ -32,7 +32,9 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
                 },
                 ...'subcommands' in options.definition ? options.definition.subcommands : {}
             }
-        });
+        };
+
+        const signatures = this.signatures = compileSignatures(definition);
 
         const handler = compileHandler(signatures, this);
     }
