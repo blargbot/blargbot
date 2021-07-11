@@ -1,5 +1,5 @@
 import { EmbedOptions, MessageFile } from 'eris';
-import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall, MalformedEmbed } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall, MalformedEmbed, guard } from '../core';
 
 export class SendSubtag extends BaseSubtag {
     public constructor() {
@@ -32,7 +32,7 @@ export class SendSubtag extends BaseSubtag {
 
     public async send(context: BBTagContext, subtag: SubtagCall, channelId: string, message?: string, embed?: EmbedOptions | MalformedEmbed, file?: MessageFile): Promise<string> {
         const channel = await context.getChannel(channelId, { quiet: true, suppress: context.scope.suppressLookup });
-        if (channel === undefined)
+        if (channel === undefined || !guard.isTextableChannel(channel))
             return this.channelNotFound(context, subtag, `Unable to read ${channelId} as a valid channel`);
         if (typeof file?.file === 'string' && file.file.startsWith('buffer:'))
             file.file = Buffer.from(file.file.slice(7), 'base64');
@@ -42,7 +42,7 @@ export class SendSubtag extends BaseSubtag {
                 ?? !context.state.allowedMentions.everybody);
 
         try {
-            const sent = await context.util.send(context.message, {
+            const sent = await context.util.send(channel, {
                 content: message,
                 embed,
                 nsfw: context.state.nsfw,
