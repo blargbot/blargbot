@@ -254,7 +254,10 @@ export interface CommandOptionsBase {
     readonly description?: string;
     readonly flags?: readonly FlagDefinition[];
     readonly onlyOn?: string | undefined;
-    readonly cooldown?: number;
+}
+
+export interface CommandBaseOptions extends CommandOptionsBase {
+    readonly signatures: readonly CommandSignature[];
 }
 
 export interface CommandOptions<TContext extends CommandContext> extends CommandOptionsBase {
@@ -407,12 +410,12 @@ export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentVa
 
 export interface CommandDetails {
     readonly name: string;
-    readonly usage: string;
     readonly info: string;
     readonly category: CommandType;
     readonly aliases: readonly string[];
     readonly flags: readonly FlagDefinition[];
     readonly onlyOn: string | undefined;
+    readonly signatures: readonly CommandSignature[];
 }
 
 export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
@@ -609,4 +612,8 @@ export interface CommandBinderState<TContext extends CommandContext> {
     readonly argIndex: number;
     readonly bindIndex: number;
     readonly result: CommandResult;
+}
+
+export interface CommandMiddleware<TContext extends CommandContext> {
+    execute(context: TContext, next: () => Promise<void>): Promise<void>;
 }

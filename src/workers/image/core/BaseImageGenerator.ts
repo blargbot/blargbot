@@ -63,7 +63,6 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
     }
 
     protected async getRemote(url: string): Promise<Buffer> {
-
         url = url.trim();
         if (url.startsWith('<') && url.endsWith('>')) {
             url = url.substring(1, url.length - 1);

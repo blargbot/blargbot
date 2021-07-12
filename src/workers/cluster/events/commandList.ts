@@ -13,12 +13,12 @@ export class CommandListHandler extends ClusterEventService {
         for (const c of this.cluster.commands.list()) {
             commands[c.name] = {
                 name: c.name,
-                usage: c.usage,
                 info: c.description,
                 category: c.category,
                 aliases: c.aliases,
                 flags: c.flags,
-                onlyOn: c.onlyOn
+                onlyOn: c.onlyOn,
+                signatures: c.signatures
             };
         }
         reply(commands);

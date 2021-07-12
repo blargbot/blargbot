@@ -4,3 +4,5 @@ export * from './BaseGuildCommand';
 export * from './BasePrivateCommand';
 export * from './ScopedCommandBase';
 export * from './CommandContext';
+export * from './middleware';
+export * from './compilation';

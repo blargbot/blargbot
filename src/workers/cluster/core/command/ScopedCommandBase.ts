@@ -1,26 +1,19 @@
 import { CommandContext, BaseCommand } from '../command';
 import { SendPayload } from '../globalCore';
-import { CommandDefinition, CommandOptions, CommandResult, CommandSignature } from '../types';
-import { compileHandler, compileSignatures } from './compilation';
+import { CommandDefinition, CommandMiddleware, CommandOptions, CommandResult } from '../types';
+import { compileSignatures } from './compilation';
+import { HandlerMiddleware } from './middleware';
 
 // Circular reference means this needs to be resolved asyncronously;
 const helpCommandPromise = import('../../dcommands/help');
 
 export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
-    public readonly signatures: readonly CommandSignature[];
+    private readonly handler: HandlerMiddleware<TContext>;
+    protected readonly middleware: Array<CommandMiddleware<TContext>>;
+
+    public get debugView(): string { return this.handler.debugView; }
 
     public constructor(options: CommandOptions<TContext>, noHelp = false) {
-        super(options, {
-            get debugView() {
-                return handler.debugView;
-            },
-            execute: async (context) => {
-                return this.checkContext(context)
-                    ? await handler.execute(context)
-                    : await this.handleInvalidContext(context);
-            }
-        });
-
         const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
             {
                 parameters: 'help {subcommand?}',
@@ -31,13 +24,32 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             ...options.definitions
         ];
 
-        const signatures = this.signatures = compileSignatures(definitions);
+        const signatures = compileSignatures(definitions);
 
-        const handler = compileHandler(signatures, this);
+        super({ ...options, signatures });
+
+        this.middleware = [];
+        this.handler = new HandlerMiddleware(signatures, this);
     }
 
     public abstract checkContext(context: CommandContext): context is TContext;
     protected abstract handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult;
+
+    public async execute(context: CommandContext): Promise<void> {
+        if (!this.checkContext(context)) {
+            const result = await this.handleInvalidContext(context);
+            await HandlerMiddleware.send(context, result);
+            return;
+        }
+
+        const runMiddleware = (index: number): Promise<void> => {
+            if (index < this.middleware.length)
+                return this.middleware[index].execute(context, () => runMiddleware(index + 1));
+            return this.handler.execute(context);
+        };
+
+        await runMiddleware(0);
+    }
 
     protected async showHelp(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
         const { HelpCommand: helpCommandClass } = await helpCommandPromise;
