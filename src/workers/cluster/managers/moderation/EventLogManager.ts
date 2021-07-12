@@ -90,17 +90,17 @@ export class EventLogManager {
         switch (content) {
             case undefined: {
                 if (await this.cluster.database.guilds.getSetting(guildId, 'makelogs') !== true)
-                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging is currently turned off', inline: true };
+                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging is currently turned off' };
                 if (timestamp === undefined)
-                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging was off when it was sent, or it is older than 2 weeks', inline: true };
+                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging was off when it was sent, or it is older than 2 weeks' };
                 if (timestamp.add(2, 'weeks').isAfter(moment()))
-                    return { name: name + ' (Unavailable)', value: 'This message is no longer logged as it is older than 2 weeks', inline: true };
-                return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging was off when it was sent.', inline: true };
+                    return { name: name + ' (Unavailable)', value: 'This message is no longer logged as it is older than 2 weeks' };
+                return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging was off when it was sent.' };
             }
             case '':
-                return { name: name + ' (Empty)', value: 'This message has no content. It had either an attachment or an embed', inline: true };
+                return { name: name + ' (Empty)', value: 'This message has no content. It had either an attachment or an embed' };
             default:
-                return { name, value: discordUtil.overflowText('embed.field.value', content, '... (too long to display)', l => l / contentCount), inline: true };
+                return { name, value: discordUtil.overflowText('embed.field.value', content, '... (too long to display)', l => l / contentCount) };
         }
     }
 
@@ -185,10 +185,10 @@ function toEmbedAuthor(user: string | User | undefined): EmbedAuthorOptions | un
     switch (typeof user) {
         case 'undefined': return undefined;
         case 'string': return {
-            name: `<@${user}> (${user})`
+            name: `${humanize.fullName({})} (${user})`
         };
         case 'object': return {
-            name: `<@${user.id}> ${humanize.fullName(user)} (${user.id})`,
+            name: `${humanize.fullName(user)} (${user.id})`,
             icon_url: user.avatarURL
         };
     }
