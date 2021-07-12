@@ -83,4 +83,8 @@ declare module 'eris' {
         off: ClientEvents<this>;
         getChannel(channelId: string): AnyChannel | undefined;
     }
+
+    interface Collection<T> {
+        find<R>(func: (i: T) => i is T & R): (T & R) | undefined;
+    }
 }

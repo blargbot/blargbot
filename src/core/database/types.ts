@@ -1,4 +1,4 @@
-import { AnyMessage, Client as ErisClient, User } from 'eris';
+import { Client as ErisClient, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
@@ -188,11 +188,26 @@ export interface StoredGuild {
     readonly modlog?: readonly GuildModlogEntry[];
     readonly roleme?: readonly GuildRolemeEntry[];
     readonly autoresponse?: GuildAutoresponses;
-    readonly log?: { readonly [key: string]: string | undefined; };
+    readonly log?: { [K in StoredGuildEventLogType]?: string };
     readonly logIgnore?: readonly string[];
+    readonly votebans?: { readonly [userId: string]: readonly string[] | undefined; };
 }
 
+export type StoredGuildEventLogType =
+    | `role:${number}`
+    | 'messagedelete'
+    | 'messageupdate'
+    | 'nameupdate'
+    | 'avatarupdate'
+    | 'nickupdate'
+    | 'memberjoin'
+    | 'memberleave'
+    | 'memberunban'
+    | 'memberban'
+    | 'kick';
+
 export interface MutableStoredGuild extends StoredGuild {
+    votebans?: { [userId: string]: string[] | undefined; };
     ccommands: { [key: string]: StoredGuildCommand | undefined; };
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
@@ -407,17 +422,20 @@ export const enum ChatlogType {
     DELETE = 2
 }
 
-export interface Chatlog {
-    readonly id: Snowflake;
+export interface ChatlogMessage {
     readonly content: string;
-    readonly attachment?: string;
+    readonly attachment: string | undefined;
     readonly userid: string;
     readonly msgid: string;
     readonly channelid: string;
     readonly guildid: string;
-    readonly msgtime: number | Date;
+    readonly embeds: string;
+}
+
+export interface Chatlog extends ChatlogMessage {
+    readonly id: Snowflake;
+    readonly msgtime: Date;
     readonly type: ChatlogType;
-    readonly embeds: string | JObject;
 }
 
 export interface BBTagVariableReference {
@@ -463,6 +481,9 @@ export interface PostgresDbOptions {
 }
 
 export interface GuildTable {
+    clearVoteBans(guildId: string, userId: string): Promise<void>;
+    getLogIgnores(guildId: string, skipCache?: boolean): Promise<ReadonlySet<string>>;
+    getLogChannel(guildId: string, type: StoredGuildEventLogType, skipCache?: boolean): Promise<string | undefined>;
     getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined>;
@@ -490,7 +511,7 @@ export interface GuildTable {
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     getNewModlogCaseId(guildId: string, skipCache?: boolean): Promise<number | undefined>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
-    setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean>;
+    setLogChannel(guildId: string, event: StoredGuildEventLogType, channel: string | undefined): Promise<boolean>;
     getWarnings(guildId: string, userId: string, skipCache?: boolean): Promise<number | undefined>;
     setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
     getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<CommandPermissions | undefined>;
@@ -515,7 +536,7 @@ export interface EventsTable {
     between(from: Date | Moment | number, to: Date | Moment | number): Promise<readonly StoredEvent[]>;
     add<K extends EventType>(type: K, event: StoredEventOptions<K>): Promise<StoredEvent<K> | undefined>;
     delete(eventId: string): Promise<boolean>;
-    delete(filter: Partial<StoredEventOptions>): Promise<boolean>;
+    delete(filter: Partial<StoredEventOptions>): Promise<readonly string[]>;
     getIds(source: string): Promise<readonly string[]>;
     get(id: string): Promise<StoredEvent | undefined>;
 }
@@ -541,7 +562,7 @@ export interface TagsTable {
 }
 
 export interface ChatlogsTable {
-    add(message: AnyMessage, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
+    add(message: ChatlogMessage, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
     get(messageId: string): Promise<Chatlog | undefined>;
 }
 

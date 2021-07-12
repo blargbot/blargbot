@@ -10,6 +10,7 @@ import { notUndefined } from './notUndefined';
 import { notNull } from './notNull';
 import { hasValue } from './hasValue';
 import { checkEmbedSize } from './checkEmbedSize';
+import { checkMessageSize } from './checkMessageSize';
 import { isClass } from './isClass';
 import { testMessageFilter } from './testMessageFilter';
 import { hasProperty } from './hasProperty';
@@ -28,6 +29,7 @@ export const guard = {
     notNull,
     hasValue,
     checkEmbedSize,
+    checkMessageSize,
     isClass,
     testMessageFilter,
     hasProperty,

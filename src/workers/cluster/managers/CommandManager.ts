@@ -14,11 +14,6 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         this.#commandMessages = new MessageIdQueue(100);
     }
 
-    public init(): Promise<void> {
-        this.cluster.discord.on('messageDelete', message => void this.handleMessageDelete(message));
-        return super.init();
-    }
-
     public async tryExecute(message: AnyMessage): Promise<boolean> {
         const prefix = await this.getPrefix(message);
         if (prefix === undefined)
@@ -244,7 +239,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         };
     }
 
-    private async handleMessageDelete(message: PossiblyUncachedMessage): Promise<void> {
+    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
         const guildId = 'guild' in message.channel ? message.channel.guild.id : undefined;
         if (guildId === undefined
             || !this.#commandMessages.has(guildId, message.id)

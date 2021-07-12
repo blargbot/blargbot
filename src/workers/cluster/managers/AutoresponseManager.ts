@@ -11,10 +11,6 @@ export class AutoresponseManager {
         this.#guilds = new Set();
     }
 
-    public init(): void {
-        this.cluster.reactionAwaiter.onAny((message, emoji, user) => void this.handleWhitelistApproval(message, emoji, user));
-    }
-
     public async refresh(): Promise<void> {
         const whitelist = await this.cluster.database.vars.get('arwhitelist');
         this.#guilds.clear();
@@ -89,7 +85,7 @@ ${codeBlock(code, 'js')}`
         }
     }
 
-    private async handleWhitelistApproval(message: AnyMessage, emoji: Emoji, user: User): Promise<void> {
+    public async handleWhitelistApproval(message: AnyMessage, emoji: Emoji, user: User): Promise<void> {
         if (message.channel.id !== this.cluster.config.discord.channels.autoresponse
             || !guard.hasProperty(emojiValues, emoji.name)
             || !this.cluster.util.isStaff(user.id))

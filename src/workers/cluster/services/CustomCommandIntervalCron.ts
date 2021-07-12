@@ -37,7 +37,7 @@ export class CustomCommandIntervalCron extends CronService {
                 const u = await this.cluster.util.getGlobalUser(id);
                 if (u === undefined) continue;
                 const c = g.channels.find(guard.isTextableChannel);
-                if (c === undefined || !guard.isTextableChannel(c)) continue;
+                if (c === undefined) continue;
 
                 const promise = this.cluster.bbtag.execute(interval.content, {
                     message: {

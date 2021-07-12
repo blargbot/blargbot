@@ -1,4 +1,4 @@
-import { GuildMessage, Client as ErisClient, Member, EmbedAuthorOptions, EmbedField, EmbedOptions, Permission, User } from 'eris';
+import { GuildMessage, Client as ErisClient, Member, EmbedAuthorOptions, Permission, User } from 'eris';
 import { ClusterUtilities } from '../ClusterUtilities';
 import { humanize, oldBu as globalOldBu } from './globalCore';
 import { defaultStaff } from './utils';
@@ -80,98 +80,6 @@ export const oldBu = {
             }
         }
         return false;
-    },
-    async logEvent(
-        guildid: string,
-        userids: string | string[],
-        event: string,
-        fields: EmbedField[],
-        embed: EmbedOptions
-    ): Promise<void> {
-        const storedGuild = await util.database.guilds.get(guildid);
-        if (storedGuild === undefined) throw new Error('Cannot find guild');
-        const log = storedGuild.log ?? {};
-        const logIgnore = storedGuild.logIgnore ?? [];
-        if (!Array.isArray(userids)) userids = [userids];
-        // If there are not any userId's that are not contained in the ignore, then return
-        // I.e. if all the users are contained in the ignore list
-        if (!userids.some(id => !logIgnore.includes(id)))
-            return;
-        event = event.toLowerCase();
-
-        let roleAdd = false;
-        if (event.startsWith('role:')) {
-            const c = event.split(':');
-            // const roleId = c[1];
-            roleAdd = c[2] === 'add';
-            event = c.slice(0, 2).join(':');
-        }
-
-        if (event in log) {
-            const channel = log[event];
-            if (channel === undefined)
-                return;
-            let color;
-            let eventName;
-            switch (event) {
-                case 'messagedelete':
-                    color = 0xaf1d1d;
-                    eventName = 'Message Deleted';
-                    break;
-                case 'messageupdate':
-                    color = 0x771daf;
-                    eventName = 'Message Updated';
-                    break;
-                case 'nameupdate':
-                    color = 0xd8af1a;
-                    eventName = 'Username Updated';
-                    break;
-                case 'avatarupdate':
-                    color = 0xd8af1a;
-                    eventName = 'Avatar Updated';
-                    break;
-                case 'nickupdate':
-                    color = 0xd8af1a;
-                    eventName = 'Nickname Updated';
-                    break;
-                case 'memberjoin':
-                    color = 0x1ad8bc;
-                    eventName = 'User Joined';
-                    break;
-                case 'memberleave':
-                    color = 0xd8761a;
-                    eventName = 'User Left';
-                    break;
-                case 'memberunban':
-                    color = 0x17c914;
-                    eventName = 'User Was Unbanned';
-                    break;
-                case 'memberban':
-                    color = 0xcc0c1c;
-                    eventName = 'User Was Banned';
-                    break;
-                case 'kick':
-                    color = 0xe8b022;
-                    eventName = 'User Was Kicked';
-                    break;
-                default:
-                    if (event.startsWith('role:')) {
-                        eventName = `Special Role ${roleAdd ? 'Added' : 'Removed'}`;
-                    }
-                    break;
-            }
-            embed ??= {};
-            embed.title = `ℹ ${eventName ?? ''}`;
-            embed.timestamp = new Date();
-            embed.fields = fields;
-            embed.color = color;
-            try {
-                await util.send(channel, { embed });
-            } catch (err: unknown) {
-                await util.database.guilds.setLogChannel(guildid, event, undefined);
-                await util.send(guildid, `Disabled event \`${event}\` because either output channel doesn't exist, or I don't have permission to post messages in it.`);
-            }
-        }
     },
     getAuthor(user: User): EmbedAuthorOptions {
         return {

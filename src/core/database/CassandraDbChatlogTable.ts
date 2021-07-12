@@ -2,9 +2,9 @@ import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
 import { Chatlog, ChatlogsTable, ChatlogType } from './types';
 import { metrics } from '../Metrics';
-import { AnyMessage } from 'eris';
-import { guard, mapping, snowflake } from '../utils';
+import { mapping, snowflake } from '../utils';
 import { Logger } from '../Logger';
+import { ChatlogMessage } from '../../workers/image/core';
 
 function stringifyType(type: ChatlogType): string {
     switch (type) {
@@ -43,20 +43,14 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
         return mapped.valid ? mapped.value : undefined;
     }
 
-    public async add(message: AnyMessage, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {
+    public async add(message: ChatlogMessage, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {
         metrics.chatlogCounter.labels(stringifyType(type)).inc();
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
         const chatlog: Chatlog = {
+            ...message,
             id: snowflake.create().toString(),
-            content: message.content,
-            attachment: message.attachments[0]?.url,
-            userid: message.author.id,
-            msgid: message.id,
-            channelid: message.channel.id,
-            guildid: guard.isGuildMessage(message) ? message.channel.guild.id : 'DM',
-            msgtime: Date.now(),
-            type: type,
-            embeds: JSON.stringify(message.embeds)
+            msgtime: new Date(),
+            type: type
         };
         await this.cassandra.execute(
             'INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\n' +
@@ -108,17 +102,11 @@ const mapChatlog = mapping.object<Chatlog>({
     attachment: mapping.optionalString,
     channelid: mapping.string,
     content: mapping.string,
-    embeds: mapping.choose(
-        mapping.jObject,
-        mapping.json(mapping.jObject)
-    ),
+    embeds: mapping.string,
     guildid: mapping.string,
     id: mapping.string,
     msgid: mapping.string,
-    msgtime: mapping.choose<number | Date>(
-        mapping.number,
-        mapping.instanceof(Date)
-    ),
+    msgtime: mapping.instanceof(Date),
     type: mapping.in(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
     userid: mapping.string
 });

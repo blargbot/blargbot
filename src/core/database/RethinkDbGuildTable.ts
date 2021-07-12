@@ -1,4 +1,4 @@
-import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, MutableStoredGuild, GuildAutoresponse, GuildFilteredAutoresponse } from './types';
+import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, MutableStoredGuild, GuildAutoresponse, GuildFilteredAutoresponse, StoredGuildEventLogType } from './types';
 import { GuildTable } from './types';
 import { RethinkDbCachedTable, RethinkDb } from './core';
 import { guard } from '../utils';
@@ -10,6 +10,37 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         logger: Logger
     ) {
         super('guild', 'guildid', rethinkDb, logger);
+    }
+
+    public async clearVoteBans(guildId: string, userId?: string): Promise<void> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return;
+
+        const success = userId === undefined
+            ? await this.rupdate(guildId, this.updateExpr({ votebans: undefined }))
+            : await this.rupdate(guildId, this.updateExpr({ votebans: { [userId]: undefined } }));
+
+        if (!success)
+            return;
+
+        if (guild.votebans === undefined)
+            return;
+
+        if (userId === undefined)
+            delete guild.votebans;
+        else
+            delete guild.votebans[userId];
+    }
+
+    public async getLogIgnores(guildId: string, skipCache?: boolean): Promise<ReadonlySet<string>> {
+        const guild = await this.rget(guildId, skipCache);
+        return new Set(guild?.logIgnore);
+    }
+
+    public async getLogChannel(guildId: string, type: StoredGuildEventLogType, skipCache?: boolean): Promise<string | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.log?.[type];
     }
 
     public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses> {
@@ -245,7 +276,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return true;
     }
 
-    public async setLogChannel(guildId: string, event: string, channel: string | undefined): Promise<boolean> {
+    public async setLogChannel(guildId: string, event: StoredGuildEventLogType, channel: string | undefined): Promise<boolean> {
         const guild = await this.rget(guildId);
         if (guild === undefined)
             return false;

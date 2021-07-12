@@ -1,9 +1,8 @@
 import moment, { Duration } from 'moment-timezone';
-import { Cluster } from '../Cluster';
-import { BaseGlobalCommand, CommandContext, commandTypes, fafo, guard } from '../core';
+import { BaseGlobalCommand, CommandContext, commandTypes, guard } from '../core';
 
 export class TimerCommand extends BaseGlobalCommand {
-    public constructor(cluster: Cluster) {
+    public constructor() {
         super({
             name: 'timer',
             aliases: ['stopwatch'],
@@ -19,14 +18,6 @@ export class TimerCommand extends BaseGlobalCommand {
                 }
             ]
         });
-
-        cluster.timeouts.on('timer', fafo(async event => {
-            const duration = moment(event.starttime).fromNow();
-            await cluster.util.send(event.channel, {
-                content: `⏰ *Bzzt!* <@${event.user}>, the timer you set ${duration} has gone off! *Bzzt!* ⏰`,
-                allowedMentions: { users: [event.user] }
-            });
-        }));
     }
 
     public async addTimer(context: CommandContext, duration: Duration, inChannel: boolean): Promise<string> {

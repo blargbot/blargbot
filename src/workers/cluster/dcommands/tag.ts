@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster } from '../Cluster';
 import { ClusterUtilities } from '../ClusterUtilities';
-import { BaseGuildCommand, commandTypes, fafo, BBTagContext, bbtagUtil, GuildCommandContext, humanize, SendPayload, codeBlock, parse, StoredTag, getDocsEmbed, CommandContext, TagStoredEventOptions, TagV4StoredEventOptions, rules, TagLimit } from '../core';
+import { BaseGuildCommand, commandTypes, bbtagUtil, GuildCommandContext, humanize, SendPayload, codeBlock, parse, StoredTag, getDocsEmbed, CommandContext, TagLimit, guard } from '../core';
 
 export class TagCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
@@ -159,18 +159,6 @@ export class TagCommand extends BaseGuildCommand {
                 }
             ]
         });
-
-        cluster.timeouts.on('tag', fafo(async event => {
-            const migratedEvent = migrateEvent(event);
-            if (migratedEvent === undefined)
-                return;
-
-            const context = await BBTagContext.deserialize(cluster.bbtag, migratedEvent.context);
-            const source = bbtagUtil.parse(migratedEvent.content);
-            context.limit.addRules(['timer', 'output'], rules.DisabledRule.instance);
-
-            await cluster.bbtag.eval(source, context);
-        }));
     }
 
     public async runTag(
@@ -287,7 +275,7 @@ export class TagCommand extends BaseGuildCommand {
             return match;
 
         const response = `The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``;
-        return response.length < 2000
+        return guard.checkMessageSize(response)
             ? response
             : {
                 content: `The raw code for \`${match.name}\` is attached`,
@@ -778,14 +766,3 @@ const tagChangeActionColour: { [P in TagChangeAction]: number } = {
     [TagChangeAction.EDIT]: 0xf20212,
     [TagChangeAction.DELETE]: 0x02f2ee
 };
-
-function migrateEvent<T extends TagStoredEventOptions>(event: T): TagV4StoredEventOptions | undefined {
-    switch (event.version) {
-        case undefined: // TODO actual migration
-        case 0: return undefined;
-        case 1: return undefined;
-        case 2: return undefined;
-        case 3: return undefined;
-        case 4: return event;
-    }
-}

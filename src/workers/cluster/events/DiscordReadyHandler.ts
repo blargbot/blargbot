@@ -1,7 +1,7 @@
 import { DiscordEventService, metrics } from '../core';
 import { Cluster } from '../Cluster';
 
-export class ReadyHandler extends DiscordEventService<'ready'> {
+export class DiscordReadyHandler extends DiscordEventService<'ready'> {
     public constructor(
         public readonly cluster: Cluster
     ) {
@@ -22,8 +22,7 @@ export class ReadyHandler extends DiscordEventService<'ready'> {
             const users = guild.members.filter(m => !m.user.bot).length;
             const bots = guild.members.filter(m => m.user.bot).length;
             const percent = Math.floor(bots / members * 10000) / 100;
-            const message =
-                `:ballot_box_with_check: Guild: \`${guild.name}\` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n` +
+            const message = `:ballot_box_with_check: Guild: \`${guild.name}\` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n` +
                 `    Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
             void this.cluster.util.send(this.cluster.config.discord.channels.joinlog, message);
 

@@ -1,9 +1,9 @@
 import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
-import { ModlogColour, humanize, guard } from './utils';
-import { Cluster } from '../Cluster';
+import { ModlogColour, humanize, guard } from '../../core/utils';
+import { Cluster } from '../../Cluster';
 
-export class Modlog {
+export class ModLogManager {
     public constructor(public readonly cluster: Cluster) {
 
     }

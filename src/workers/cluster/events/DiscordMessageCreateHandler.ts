@@ -1,9 +1,9 @@
 import { AnyMessage, Channel, User } from 'eris';
 import { Cluster } from '../Cluster';
 import { DiscordEventService, metrics, guard } from '../core';
-import { addChatlog, handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
+import { handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
 
-export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
+export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
     public constructor(
         public readonly cluster: Cluster
     ) {
@@ -11,14 +11,14 @@ export class MessageCreateHandler extends DiscordEventService<'messageCreate'> {
     }
 
     protected async execute(message: AnyMessage): Promise<void> {
-        void this.cluster.database.users.upsert(message.author);
-        void addChatlog(this.cluster, message);
-        metrics.messageCounter.inc();
-
         if (message.author.id === this.cluster.discord.user.id) {
             this.logMessage(message);
             return;
         }
+
+        metrics.messageCounter.inc();
+        void this.cluster.database.users.upsert(message.author);
+        void this.cluster.moderation.chatLog.messageCreated(message);
 
         if (guard.isGuildMessage(message) && await this.cluster.moderation.censors.censor(message))
             return;

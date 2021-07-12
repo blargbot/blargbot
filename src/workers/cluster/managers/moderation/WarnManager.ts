@@ -26,7 +26,7 @@ export class WarnManager extends ModerationManagerBase {
             state: 'success'
         };
 
-        await this.modlog.logWarn(member.guild, member.user, count, newCount, moderator, reason);
+        await this.modLog.logWarn(member.guild, member.user, count, newCount, moderator, reason);
 
         if (banAt > 0 && newCount >= banAt) {
             result = {
@@ -59,7 +59,7 @@ export class WarnManager extends ModerationManagerBase {
         const oldWarnings = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const newCount = Math.max(0, oldWarnings - Math.max(count, 0));
 
-        await this.modlog.logPardon(member.guild, member.user, count, newCount, moderator, reason);
+        await this.modLog.logPardon(member.guild, member.user, count, newCount, moderator, reason);
         await this.cluster.database.guilds.setWarnings(member.guild.id, member.id, newCount === 0 ? undefined : newCount);
 
         return newCount;

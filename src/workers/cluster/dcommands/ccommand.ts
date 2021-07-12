@@ -270,7 +270,7 @@ export class CustomCommand extends BaseGuildCommand {
             return this.error(`The command \`${match.name}\` is an alias to the tag \`${match.alias}\``);
 
         const response = this.success(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
-        return response.length < 2000
+        return guard.checkMessageSize(response)
             ? response
             : {
                 content: this.success(`The raw code for \`${match.name}\` is attached`),

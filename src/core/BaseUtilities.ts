@@ -116,7 +116,7 @@ export class BaseUtilities {
                 `To see what I would have said, please visit ${output}${id.toString()}`;
             if (payload.embed !== undefined)
                 delete payload.embed;
-        } else if (payload.content.length > 2000) {
+        } else if (!guard.checkMessageSize(payload.content)) {
             files ??= [];
             files.unshift({
                 file: payload.content,

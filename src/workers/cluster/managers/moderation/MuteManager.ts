@@ -9,12 +9,6 @@ export class MuteManager extends ModerationManagerBase {
         super(manager);
     }
 
-    public init(): void {
-        this.cluster.timeouts.on('unmute', event => void this.handleUnmuteTimeout(event));
-        // TODO listen to guild join/leave to make bypassing mutes harder
-        // TODO listen to channel creates to update them with the muted role by default
-    }
-
     public async mute(member: Member, moderator: User, reason?: string, duration?: Duration): Promise<MuteResult> {
         const role = await this.getMuteRole(member.guild);
         if (role === undefined)
@@ -31,7 +25,7 @@ export class MuteManager extends ModerationManagerBase {
             return 'roleTooHigh';
 
         await member.addRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
-        await this.modlog.logMute(member.guild, member.user, moderator, reason);
+        await this.modLog.logMute(member.guild, member.user, moderator, reason);
         if (duration !== undefined && duration.asMilliseconds() > 0)
             await this.cluster.timeouts.insert('unmute', {
                 source: member.guild.id,
@@ -56,7 +50,7 @@ export class MuteManager extends ModerationManagerBase {
             return 'roleTooHigh';
 
         await member.removeRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
-        await this.modlog.logUnmute(member.guild, member.user, moderator, reason);
+        await this.modLog.logUnmute(member.guild, member.user, moderator, reason);
 
         return 'success';
     }
@@ -116,7 +110,7 @@ export class MuteManager extends ModerationManagerBase {
         return guild.roles.get(role);
     }
 
-    private async handleUnmuteTimeout(event: UnmuteEventOptions): Promise<void> {
+    public async muteExpired(event: UnmuteEventOptions): Promise<void> {
         const guild = this.cluster.discord.guilds.get(event.guild);
         if (guild === undefined)
             return;

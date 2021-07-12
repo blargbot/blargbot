@@ -1,7 +1,7 @@
 import { Cluster } from '../Cluster';
 import { DiscordEventService } from '../core';
 
-export class ShardResumeHandler extends DiscordEventService<'shardResume'> {
+export class DiscordShardResumeHandler extends DiscordEventService<'shardResume'> {
     public constructor(cluster: Cluster) {
         super(cluster.discord, 'shardResume', cluster.logger);
     }

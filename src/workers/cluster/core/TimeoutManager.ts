@@ -86,11 +86,16 @@ export class TimeoutManager {
         return await this.cluster.database.events.delete(event);
     }
 
+    public async deleteType<T extends EventType>(source: string, type: T, details: Partial<StoredEventOptions<T>> = {}): Promise<void> {
+        const deleted = await this.cluster.database.events.delete({ source, type, ...details });
+        for (const id of deleted)
+            this.#events.delete(id);
+    }
+
     public async deleteAll(source: string): Promise<void> {
-        await this.cluster.database.events.delete({ source });
-        for (const event of this.#events.values())
-            if (event.source === source)
-                this.#events.delete(event.id);
+        const deleted = await this.cluster.database.events.delete({ source });
+        for (const id of deleted)
+            this.#events.delete(id);
     }
 
     public async obtain(duration: Duration): Promise<void> {

@@ -62,14 +62,17 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return result.replaced + result.unchanged > 0;
     }
 
-    protected async rdelete(
-        key: string | Partial<RethinkTableMap[TableName]>
-    ): Promise<boolean> {
+    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges?: false): Promise<boolean>
+    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges: true): Promise<Array<RethinkTableMap[TableName]>>
+    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges = false): Promise<boolean | Array<RethinkTableMap[TableName]>> {
         const result = typeof key === 'string'
-            ? await this.rquery(t => t.get(key).delete())
-            : await this.rquery(t => t.filter(key).delete());
+            ? await this.rquery(t => t.get(key).delete({ returnChanges }))
+            : await this.rquery(t => t.filter(key).delete({ returnChanges }));
         throwIfErrored(result);
-        return result.deleted > 0;
+        if (!returnChanges)
+            return result.deleted > 0;
+
+        return result.changes?.map(c => c.old_val).filter((v): v is RethinkTableMap[TableName] => v !== undefined) ?? [];
     }
 
     protected updateExpr<T>(value: T): T {

@@ -2,7 +2,9 @@ import { mappingResultNever } from './constants';
 import { TypeMappingResult } from './types';
 
 export function mapOptionalNumber(value: unknown): TypeMappingResult<number | undefined> {
-    return typeof value === 'number' || value === undefined
+    return typeof value === 'number'
         ? { valid: true, value }
-        : mappingResultNever;
+        : value === null || value === undefined
+            ? { valid: true, value: undefined }
+            : mappingResultNever;
 }

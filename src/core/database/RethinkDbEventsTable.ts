@@ -26,9 +26,12 @@ export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements Ev
     }
 
     public async delete(eventId: string): Promise<boolean>;
-    public async delete(filter: Partial<StoredEventOptions>): Promise<boolean>;
-    public async delete(filter: string | Partial<StoredEventOptions>): Promise<boolean> {
-        return await this.rdelete(filter);
+    public async delete(filter: Partial<StoredEventOptions>): Promise<readonly string[]>;
+    public async delete(filter: string | Partial<StoredEventOptions>): Promise<readonly string[] | boolean> {
+        if (typeof filter === 'string')
+            return await this.rdelete(filter);
+        const result = await this.rdelete(filter, true);
+        return result.map(r => r.id);
     }
 
     public async list(source: string, pageNumber: number, pageSize: number): Promise<{ events: StoredEvent[]; total: number; }> {

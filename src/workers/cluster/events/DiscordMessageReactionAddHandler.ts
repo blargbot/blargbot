@@ -2,18 +2,22 @@ import { PossiblyUncachedMessage, Emoji, Member, Message, User, TextableChannel 
 import { Cluster } from '../Cluster';
 import { DiscordEventService, guard } from '../core';
 
-export class MessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
+export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
     public constructor(public readonly cluster: Cluster) {
         super(cluster.discord, 'messageReactionAdd', cluster.logger);
     }
 
     protected async execute(maybeMessage: PossiblyUncachedMessage, emoji: Emoji, maybeUser: Member | { id: string; }): Promise<void> {
         const message = await this.resolveMessage(maybeMessage);
-        if (message === undefined) return;
+        if (message === undefined)
+            return;
+
         const user = this.resolveUser(maybeUser);
-        if (user === undefined) return;
+        if (user === undefined)
+            return;
 
         this.cluster.reactionAwaiter.emit(message, emoji, user);
+        await this.cluster.autoresponses.handleWhitelistApproval(message, emoji, user);
     }
 
     protected async resolveMessage(message: PossiblyUncachedMessage): Promise<Message | undefined> {
@@ -21,7 +25,8 @@ export class MessageReactionAddHandler extends DiscordEventService<'messageReact
             return message;
 
         const channel = this.resolveChannel(message.channel);
-        if (channel === undefined) return;
+        if (channel === undefined)
+            return;
         try {
             return await channel.getMessage(message.id);
         } catch (err: unknown) {

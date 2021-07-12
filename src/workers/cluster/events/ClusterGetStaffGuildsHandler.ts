@@ -1,7 +1,7 @@
 import { Cluster } from '../Cluster';
 import { ClusterEventService, mapping, ProcessMessageHandler } from '../core';
 
-export class GetStaffGuildsHandler extends ClusterEventService {
+export class ClusterGetStaffGuildsHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster
     ) {

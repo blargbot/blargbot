@@ -14,12 +14,6 @@ export class BanManager extends ModerationManagerBase {
         this.ignoreUnbans = new Set();
     }
 
-    public init(): void {
-        this.cluster.timeouts.on('unban', event => void this.handleUnbanTimeout(event));
-        this.cluster.discord.on('guildBanAdd', (guild, user) => void this.handleBanEvent(guild, user));
-        this.cluster.discord.on('guildBanRemove', (guild, user) => void this.handleUnbanEvent(guild, user));
-    }
-
     public async ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string, duration?: Duration): Promise<BanResult> {
         const result = await this.tryBanUser(guild, user.id, moderator, checkModerator, undefined, deleteDays, reason);
         if (result !== 'success') {
@@ -29,9 +23,9 @@ export class BanManager extends ModerationManagerBase {
         }
 
         if (duration === undefined) {
-            await this.modlog.logBan(guild, user, moderator, reason);
+            await this.modLog.logBan(guild, user, moderator, reason);
         } else {
-            await this.modlog.logSoftban(guild, user, duration, moderator, reason);
+            await this.modLog.logSoftban(guild, user, duration, moderator, reason);
             await this.cluster.timeouts.insert('unban', {
                 source: guild.id,
                 guild: guild.id,
@@ -73,7 +67,7 @@ export class BanManager extends ModerationManagerBase {
         const newBans = await guild.getBans();
         const banned = newBans.filter(b => !guildBans.has(b.user.id) && bannedIds.has(b.user.id)).map(b => b.user);
 
-        await this.modlog.logMassBan(guild, banned, moderator);
+        await this.modLog.logMassBan(guild, banned, moderator);
         return banned;
     }
 
@@ -123,7 +117,7 @@ export class BanManager extends ModerationManagerBase {
 
         this.ignoreUnbans.add(`${guild.id}:${user.id}`);
         await guild.unbanMember(user.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
-        await this.modlog.logUnban(guild, user, moderator, reason);
+        await this.modLog.logUnban(guild, user, moderator, reason);
 
         return 'success';
     }
@@ -143,11 +137,11 @@ export class BanManager extends ModerationManagerBase {
             return 'memberTooHigh';
 
         await member.guild.kickMember(member.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
-        await this.modlog.logKick(member.guild, member.user, moderator, reason);
+        await this.modLog.logKick(member.guild, member.user, moderator, reason);
         return 'success';
     }
 
-    private async handleUnbanTimeout(event: UnbanEventOptions): Promise<void> {
+    public async banExpired(event: UnbanEventOptions): Promise<void> {
         const guild = this.cluster.discord.guilds.get(event.guild);
         if (guild === undefined)
             return;
@@ -162,14 +156,14 @@ export class BanManager extends ModerationManagerBase {
         await this.unban(guild, user, this.cluster.discord.user, false, `Automatically unbanned after ${duration}.`);
     }
 
-    private async handleBanEvent(guild: Guild, user: User): Promise<void> {
+    public async userBanned(guild: Guild, user: User): Promise<void> {
         if (!this.ignoreBans.delete(`${guild.id}:${user.id}`))
-            await this.modlog.logBan(guild, user);
+            await this.modLog.logBan(guild, user);
     }
 
-    private async handleUnbanEvent(guild: Guild, user: User): Promise<void> {
+    public async userUnbanned(guild: Guild, user: User): Promise<void> {
         if (!this.ignoreUnbans.delete(`${guild.id}:${user.id}`))
-            await this.modlog.logUnban(guild, user);
+            await this.modLog.logUnban(guild, user);
     }
 }
 

@@ -1,11 +1,12 @@
 import { Guild } from 'eris';
 import { Cluster } from '../../Cluster';
-import { defaultStaff, Modlog, StoredGuildSettings } from '../../core';
+import { defaultStaff, StoredGuildSettings } from '../../core';
 import { ModerationManager } from '../ModerationManager';
+import { ModLogManager } from './ModLogManager';
 
 export abstract class ModerationManagerBase {
     protected get cluster(): Cluster { return this.manager.cluster; }
-    protected get modlog(): Modlog { return this.manager.modlog; }
+    protected get modLog(): ModLogManager { return this.manager.modLog; }
 
     public constructor(public readonly manager: ModerationManager) {
     }

@@ -1,9 +1,8 @@
 import moment, { Duration } from 'moment-timezone';
-import { Cluster } from '../Cluster';
-import { BaseGlobalCommand, CommandContext, commandTypes, fafo, guard } from '../core';
+import { BaseGlobalCommand, CommandContext, commandTypes, guard } from '../core';
 
 export class TimerCommand extends BaseGlobalCommand {
-    public constructor(cluster: Cluster) {
+    public constructor() {
         super({
             name: 'remind',
             aliases: ['remindme'],
@@ -19,14 +18,6 @@ export class TimerCommand extends BaseGlobalCommand {
                 }
             ]
         });
-
-        cluster.timeouts.on('remind', fafo(async event => {
-            const duration = moment(event.starttime).fromNow();
-            await cluster.util.send(event.channel, {
-                content: `⏰ Hi, <@${event.user}>! You asked me to remind you about this ${duration}:\n${event.content}`,
-                allowedMentions: { users: [event.user] }
-            });
-        }));
     }
 
     public async addTimer(context: CommandContext, duration: Duration, message: string, inChannel: boolean): Promise<string> {
