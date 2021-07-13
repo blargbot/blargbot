@@ -50,8 +50,6 @@ export class SettingsCommand extends BaseGuildCommand {
                     {
                         name: 'Messages',
                         value: settingGroup([
-                            ['greeting', settings.greeting],
-                            ['farewell', settings.farewell],
                             ['tableflip', parse.boolean(settings.tableflip, false, true)],
                             ['nocleverbot', settings.nocleverbot ?? false],
                             ['disableeveryone', settings.disableeveryone ?? false]

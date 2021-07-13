@@ -11,34 +11,44 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
     }
 
     protected async execute(message: AnyMessage): Promise<void> {
+        await Promise.all(await this.executeIter(message));
+    }
+
+    protected async executeIter(message: AnyMessage): Promise<Array<Promise<unknown>>> {
+        const result: Array<Promise<unknown>> = [];
         if (message.author.id === this.cluster.discord.user.id) {
             this.logMessage(message);
-            return;
+            return result;
         }
 
         metrics.messageCounter.inc();
-        void this.cluster.database.users.upsert(message.author);
-        void this.cluster.moderation.chatLog.messageCreated(message);
+        result.push(
+            this.cluster.database.users.upsert(message.author),
+            this.cluster.moderation.chatLog.messageCreated(message)
+        );
 
         if (guard.isGuildMessage(message) && await this.cluster.moderation.censors.censor(message))
-            return;
+            return result;
 
         if (await this.isBlacklisted(message.channel, message.author))
-            return;
+            return result;
 
-        void handleRoleme(this.cluster, message);
-        void this.cluster.autoresponses.execute(this.cluster, message, true);
-        void handleTableFlip(this.cluster, message);
+        result.push(
+            handleRoleme(this.cluster, message),
+            this.cluster.autoresponses.execute(this.cluster, message, true),
+            handleTableFlip(this.cluster, message)
+        );
 
         if (message.author.bot) {
-            //
+            // NOOP
         } else if (await this.cluster.commands.tryExecute(message) || await tryHandleCleverbot(this.cluster, message)) {
-            return;
+            return result;
         } else {
             this.cluster.messageAwaiter.emit(message);
         }
 
-        void this.cluster.autoresponses.execute(this.cluster, message, false);
+        result.push(this.cluster.autoresponses.execute(this.cluster, message, false));
+        return result;
     }
 
     private logMessage(msg: AnyMessage): void {

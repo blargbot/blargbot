@@ -7,11 +7,13 @@ import { ModerationManagerBase } from './ModerationManagerBase';
 export class BanManager extends ModerationManagerBase {
     private readonly ignoreBans: Set<`${string}:${string}`>;
     private readonly ignoreUnbans: Set<`${string}:${string}`>;
+    private readonly ignoreLeaves: Set<`${string}:${string}`>;
 
     public constructor(manager: ModerationManager) {
         super(manager);
         this.ignoreBans = new Set();
         this.ignoreUnbans = new Set();
+        this.ignoreLeaves = new Set();
     }
 
     public async ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string, duration?: Duration): Promise<BanResult> {
@@ -136,7 +138,13 @@ export class BanManager extends ModerationManagerBase {
         if (!this.cluster.util.isBotHigher(member))
             return 'memberTooHigh';
 
-        await member.guild.kickMember(member.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        this.ignoreLeaves.add(`${member.guild.id}:${member.id}`);
+        try {
+            await member.guild.kickMember(member.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        } catch (err: unknown) {
+            this.ignoreLeaves.delete(`${member.guild.id}:${member.id}`);
+            throw err;
+        }
         await this.modLog.logKick(member.guild, member.user, moderator, reason);
         return 'success';
     }
@@ -164,6 +172,20 @@ export class BanManager extends ModerationManagerBase {
     public async userUnbanned(guild: Guild, user: User): Promise<void> {
         if (!this.ignoreUnbans.delete(`${guild.id}:${user.id}`))
             await this.modLog.logUnban(guild, user);
+    }
+
+    public async userLeft(member: Member): Promise<void> {
+        if (this.ignoreLeaves.delete(`${member.guild.id}:${member.id}`))
+            return;
+
+        const now = moment();
+        const auditLogs = await member.guild.getAuditLogs(50, undefined, 20 /* Kick */);
+        for (const log of auditLogs.entries) {
+            if (log.targetID === member.id && moment(log.createdAt).isAfter(now.add(-1, 'second'))) {
+                await this.modLog.logKick(member.guild, member.user, log.user, log.reason ?? undefined);
+                break;
+            }
+        }
     }
 }
 

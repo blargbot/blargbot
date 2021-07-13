@@ -4,3 +4,4 @@ export * from './ModerationManager';
 export * from './MessageAwaiter';
 export * from './ReactionAwaiter';
 export * from './CommandManager';
+export * from './GreetingManager';

@@ -5,7 +5,7 @@ import { guildSettings } from '../constants';
 import { guard } from '../guard';
 import { parse } from '../parse';
 
-export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 'prefix'>>(
+export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 'prefix' | 'farewell' | 'greeting'>>(
     msg: UserChannelInteraction,
     util: ClusterUtilities,
     key: T,

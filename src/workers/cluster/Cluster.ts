@@ -3,7 +3,7 @@ import { ImageConnection } from '../image';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 import { BaseClient, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from './core';
-import { AutoresponseManager, BotStaffManager, CommandManager, MessageAwaiter, ModerationManager, ReactionAwaiter } from './managers';
+import { AutoresponseManager, BotStaffManager, CommandManager, GreetingManager, MessageAwaiter, ModerationManager, ReactionAwaiter } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -22,6 +22,7 @@ export class Cluster extends BaseClient {
     public readonly reactionAwaiter: ReactionAwaiter;
     public readonly moderation: ModerationManager;
     public readonly commands: CommandManager;
+    public readonly greetings: GreetingManager;
 
     public constructor(
         logger: Logger,
@@ -74,6 +75,7 @@ export class Cluster extends BaseClient {
         this.autoresponses = new AutoresponseManager(this);
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
+        this.greetings = new GreetingManager(this);
         this.bbtag = new BBTagEngine(this);
 
         this.services.on('add', (module: BaseService) => void module.start());

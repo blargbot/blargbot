@@ -1,4 +1,4 @@
-import { EmbedAuthorOptions, EmbedField, EmbedOptions, Guild, GuildTextableChannel, Message, OldMessage, PossiblyUncachedMessage, User } from 'eris';
+import { EmbedAuthorOptions, EmbedField, EmbedOptions, Guild, GuildTextableChannel, Member, Message, OldMessage, PossiblyUncachedMessage, User } from 'eris';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 import { Cluster } from '../../Cluster';
@@ -18,6 +18,23 @@ export class EventLogManager {
         const channel = await this.getLogChannel('memberunban', guild.id);
         if (channel !== undefined && !await this.isExempt(guild.id, user.id))
             await this.logEvent('memberunban', channel, this.eventLogEmbed('User Was Unbanned', user, 0x17c914));
+    }
+
+    public async userJoined(member: Member): Promise<void> {
+        const channel = await this.getLogChannel('memberjoin', member.guild.id);
+        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id)) {
+            await this.logEvent('memberjoin', channel, this.eventLogEmbed('User Joined', member.user, 0x1ad8bc, {
+                fields: [
+                    { name: 'Created', value: `<t:${member.user.createdAt}>`, inline: true }
+                ]
+            }));
+        }
+    }
+
+    public async userLeft(member: Member): Promise<void> {
+        const channel = await this.getLogChannel('memberleave', member.guild.id);
+        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id))
+            await this.logEvent('memberleave', channel, this.eventLogEmbed('User Left', member.user, 0xd8761a));
     }
 
     public async messagesDeleted(messages: readonly PossiblyUncachedMessage[]): Promise<void> {

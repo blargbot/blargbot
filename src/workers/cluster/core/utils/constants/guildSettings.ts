@@ -2,35 +2,18 @@ import { StoredGuildSettings } from '../../globalCore';
 import { GuildSettingDescriptor } from '../../types';
 
 // prefix excluded as it is an array of strings
-export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix'>]-?: GuildSettingDescriptor<P> } = {
+export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix' | 'greeting' | 'farewell'>]-?: GuildSettingDescriptor<P> } = {
     makelogs: {
         key: 'makelogs',
         name: 'Make Chatlogs',
         desc: 'Whether to record chat logs or not.',
         type: 'bool'
     },
-    // cahnsfw: {
-    //     name: 'Is CAH NSFW',
-    //     desc: `Whether 'cah' can only be done in nsfw channels or not.`,
-    //     type: 'bool'
-    // },
     deletenotif: {
         key: 'deletenotif',
         name: 'Delete notifications',
         desc: 'If enabled, notifies you if a user deleted their command.',
         type: 'bool'
-    },
-    greeting: {
-        key: 'greeting',
-        name: 'Greeting message',
-        desc: 'What to say to new users when they join. You can also use the <code>greet</code> command',
-        type: 'string'
-    },
-    farewell: {
-        key: 'farewell',
-        name: 'Farewell message',
-        desc: 'What to say when a user leaves. You can also use the <code>farewell</code> command',
-        type: 'string'
     },
     modlog: {
         key: 'modlog',

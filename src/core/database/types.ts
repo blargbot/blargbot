@@ -345,9 +345,9 @@ export interface StoredGuildSettings {
     readonly modlog?: string;
     readonly deletenotif?: boolean;
     readonly disableeveryone?: boolean;
-    readonly greeting?: string;
+    readonly greeting?: StoredRawGuildCommand;
     readonly greetChan?: string;
-    readonly farewell?: string;
+    readonly farewell?: StoredRawGuildCommand;
     readonly farewellchan?: string;
     readonly mutedrole?: string;
     readonly dmhelp?: boolean;
