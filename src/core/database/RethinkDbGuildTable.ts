@@ -1,4 +1,4 @@
-import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, MutableStoredGuild, GuildAutoresponse, GuildFilteredAutoresponse, StoredGuildEventLogType } from './types';
+import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, GuildAutoresponse, GuildFilteredAutoresponse, StoredGuildEventLogType } from './types';
 import { GuildTable } from './types';
 import { RethinkDbCachedTable, RethinkDb } from './core';
 import { guard } from '../utils';
@@ -152,8 +152,30 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rget(guildId, skipCache);
     }
 
-    public async add(guild: MutableStoredGuild): Promise<boolean> {
-        return await this.rinsert(guild);
+    public async add(guildId: string, name: string): Promise<boolean> {
+        return await this.rinsert({
+            guildid: guildId,
+            active: true,
+            name: name,
+            settings: {},
+            channels: {},
+            commandperms: {},
+            ccommands: {},
+            modlog: []
+        });
+    }
+
+    public async exists(guildId: string, skipCache = false): Promise<boolean> {
+        return await this.rget(guildId, skipCache) !== undefined;
+    }
+
+    public async isActive(guildId: string, skipCache = false): Promise<boolean> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.active ?? false;
+    }
+
+    public async setActive(guildId: string, active = true): Promise<boolean> {
+        return await this.rupdate(guildId, this.updateExpr({ active }));
     }
 
     public async getIds(): Promise<string[]> {

@@ -86,5 +86,6 @@ declare module 'eris' {
 
     interface Collection<T> {
         find<R>(func: (i: T) => i is T & R): (T & R) | undefined;
+        filter<R>(func: (i: T) => i is T & R): Array<T & R>;
     }
 }

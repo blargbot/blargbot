@@ -27,16 +27,7 @@ export class DiscordReadyHandler extends DiscordEventService<'ready'> {
             void this.cluster.util.send(this.cluster.config.discord.channels.joinlog, message);
 
             this.logger.log('Inserting a missing guild ' + guild.id);
-            void this.cluster.database.guilds.add({
-                guildid: guild.id,
-                active: true,
-                name: guild.name,
-                settings: {},
-                channels: {},
-                commandperms: {},
-                ccommands: {},
-                modlog: []
-            });
+            void this.cluster.database.guilds.add(guild.id, guild.name);
         }
 
         void this.cluster.util.postStats();

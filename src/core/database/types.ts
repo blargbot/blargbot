@@ -497,7 +497,10 @@ export interface GuildTable {
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
     listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedStoredGuildCommand[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
-    add(guild: MutableStoredGuild): Promise<boolean>;
+    add(guildId: string, name: string): Promise<boolean>;
+    exists(guildId: string, skipCache?: boolean): Promise<boolean>;
+    isActive(guildId: string, skipCache?: boolean): Promise<boolean>;
+    setActive(guildId: string, active?: boolean): Promise<boolean>;
     getIds(skipCache?: boolean): Promise<readonly string[]>;
     getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<StoredGuildSettings[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
