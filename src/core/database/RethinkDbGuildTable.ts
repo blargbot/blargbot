@@ -3,6 +3,8 @@ import { GuildTable } from './types';
 import { RethinkDbCachedTable, RethinkDb } from './core';
 import { guard } from '../utils';
 import { Logger } from '../Logger';
+import { Guild } from 'eris';
+import { MutableStoredGuild, MutableStoredGuildEventLogConfig, StoredGuildEventLogConfig } from '../../workers/image/core';
 
 export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'> implements GuildTable {
     public constructor(
@@ -41,6 +43,21 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     public async getLogChannel(guildId: string, type: StoredGuildEventLogType, skipCache?: boolean): Promise<string | undefined> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.log?.[type];
+    }
+
+    public async getLogChannels(guildId: string, skipCache?: boolean): Promise<StoredGuildEventLogConfig> {
+        const guild = await this.rget(guildId, skipCache);
+
+        const result: MutableStoredGuildEventLogConfig = { events: {}, roles: {} };
+        for (const [key, value] of Object.entries(guild?.log ?? {})) {
+            if (value === undefined)
+                continue;
+            if (key.startsWith('role:'))
+                result.roles[key.slice(5)] = value;
+            else
+                result.events[key as Exclude<StoredGuildEventLogType, `role:${string}`>] = value;
+        }
+        return result;
     }
 
     public async getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses> {
@@ -152,17 +169,33 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return await this.rget(guildId, skipCache);
     }
 
-    public async add(guildId: string, name: string): Promise<boolean> {
-        return await this.rinsert({
-            guildid: guildId,
-            active: true,
-            name: name,
-            settings: {},
-            channels: {},
-            commandperms: {},
-            ccommands: {},
-            modlog: []
-        });
+    public async upsert(guild: Guild): Promise<'inserted' | 'updated' | false> {
+        const current = await this.rget(guild.id, true);
+        if (current === undefined) {
+            if (await this.rinsert({
+                guildid: guild.id,
+                active: true,
+                name: guild.name,
+                settings: {},
+                channels: {},
+                commandperms: {},
+                ccommands: {},
+                modlog: []
+            })) {
+                return 'inserted';
+            }
+        } else {
+            const update: Partial<MutableStoredGuild> = {};
+            if (!current.active)
+                update.active = true;
+            if (current.name !== guild.name)
+                update.name = guild.name;
+
+            if (Object.values(update).some(guard.hasValue) && await this.rupdate(guild.id, update))
+                return 'updated';
+        }
+
+        return false;
     }
 
     public async exists(guildId: string, skipCache = false): Promise<boolean> {
@@ -298,19 +331,41 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return true;
     }
 
-    public async setLogChannel(guildId: string, event: StoredGuildEventLogType, channel: string | undefined): Promise<boolean> {
+    public async setLogIgnores(guildId: string, userIds: string[]): Promise<boolean> {
         const guild = await this.rget(guildId);
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, { log: { [event]: this.setExpr(channel) } }))
+        if (!await this.rupdate(guildId, r => ({ logIgnore: r.getField('logIgnore').default([]).setUnion(userIds) })))
+            return false;
+
+        guild.logIgnore = [...new Set([...guild.logIgnore ?? [], ...userIds])];
+        return true;
+    }
+
+    public async setLogChannel(guildId: string, events: StoredGuildEventLogType | StoredGuildEventLogType[], channel: string | undefined): Promise<boolean> {
+        if (typeof events === 'string')
+            events = [events];
+
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        const logUpdate = events.reduce<{ [key: string]: string | undefined; }>((p, c) => {
+            p[c] = channel;
+            return p;
+        }, {});
+
+        if (!await this.rupdate(guildId, { log: this.updateExpr(logUpdate) }))
             return false;
 
         guild.log ??= {};
-        if (channel === undefined)
-            delete guild.log[event];
-        else
-            guild.log[event] = channel;
+        for (const event of events) {
+            if (channel === undefined)
+                delete guild.log[event];
+            else
+                guild.log[event] = channel;
+        }
         return true;
     }
 

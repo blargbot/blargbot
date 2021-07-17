@@ -4,6 +4,7 @@ import { parse } from '../../utils';
 import { CommandContext } from '../CommandContext';
 import { ScopedCommandBase } from '../ScopedCommandBase';
 import * as bindings from './binding';
+import { getLookupCache } from './lookupCache';
 import { CommandVariableType, getSortOrder } from './parameterType';
 
 export function compileHandler<TContext extends CommandContext>(
@@ -33,7 +34,8 @@ export function compileHandler<TContext extends CommandContext>(
                 result: undefined,
                 flags: parse.flags(command.flags, context.argsString),
                 context,
-                command
+                command,
+                lookupCache: getLookupCache(context, command)
             });
             switch (result.success) {
                 case true:
@@ -245,28 +247,40 @@ const typeParsers: {
     string(value) {
         return { success: true, value };
     },
-    integer(value, context) {
+    integer(value, state) {
         const result = parse.int(value);
         if (isNaN(result))
-            return { success: false, error: context.command.error(`\`${value}\` is not an integer`) };
+            return { success: false, error: state.command.error(`\`${value}\` is not an integer`) };
         return { success: true, value: result };
     },
-    number(value, context) {
+    number(value, state) {
         const result = parse.float(value);
         if (isNaN(result))
-            return { success: false, error: context.command.error(`\`${value}\` is not a number`) };
+            return { success: false, error: state.command.error(`\`${value}\` is not a number`) };
         return { success: true, value: result };
     },
-    boolean(value, context) {
+    boolean(value, state) {
         const result = parse.boolean(value);
         if (result === undefined)
-            return { success: false, error: context.command.error(`\`${value}\` is not a boolean`) };
+            return { success: false, error: state.command.error(`\`${value}\` is not a boolean`) };
         return { success: true, value: result };
     },
-    duration(value, context) {
+    duration(value, state) {
         const result = parse.duration(value);
         if (result === undefined)
-            return { success: false, error: context.command.error(`\`${value}\` is not a valid duration`) };
+            return { success: false, error: state.command.error(`\`${value}\` is not a valid duration`) };
         return { success: true, value: result };
+    },
+    channel(value, state) {
+        return state.lookupCache.findChannel(value);
+    },
+    user(value, state) {
+        return state.lookupCache.findUser(value);
+    },
+    member(value, state) {
+        return state.lookupCache.findMember(value);
+    },
+    role(value, state) {
+        return state.lookupCache.findRole(value);
     }
 };

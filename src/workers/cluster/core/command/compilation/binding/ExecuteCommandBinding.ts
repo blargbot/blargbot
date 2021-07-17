@@ -16,7 +16,7 @@ export class ExecuteCommandBinding<TContext extends CommandContext> extends Comm
 
     public async [Binder.binder](state: CommandBinderState<TContext>): Promise<BindingResultValue<CommandBinderState<TContext>>> {
         if (state.flags._.length !== state.argIndex) {
-            return this.bindingError(state, state.command.error(`Too many arguments! Expected at most ${state.bindIndex} but got ${state.flags._.length}`));
+            return this.bindingError(state, state.command.error(`Too many arguments! Expected at most ${state.argIndex} but got ${state.flags._.length}`));
         }
 
         const args = [];
@@ -28,7 +28,7 @@ export class ExecuteCommandBinding<TContext extends CommandContext> extends Comm
                 case 'deferred': {
                     const result = await arg.getValue();
                     if (!result.success)
-                        return this.bindingError(state, result.error);
+                        return this.bindingSuccess(state, [], 0, result.error);
                     args.push(result.value);
                     break;
                 }

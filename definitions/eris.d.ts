@@ -6,6 +6,7 @@ declare module 'eris' {
     export type AnyMessage = Message<Textable & Channel>
     export type GuildMessage = Message<Textable & GuildChannel> & { member: Member; }
     export type PrivateMessage = Message<Textable & PrivateChannel>
+    export type OldMember = { nick?: string; premiumSince: number; roles: string[]; };
 
     export type ClientEventTypes = EventListenerEventTypes & {
         'shardResume': [id: number];
@@ -39,7 +40,7 @@ declare module 'eris' {
         'guildMemberAdd': [guild: Guild, member: Member];
         'guildMemberChunk': [guild: Guild, members: Member[]];
         'guildMemberRemove': [guild: Guild, member: Member | MemberPartial];
-        'guildMemberUpdate': [guild: Guild, member: Member, oldMember: { nick?: string; premiumSince: number; roles: string[]; } | null];
+        'guildMemberUpdate': [guild: Guild, member: Member, oldMember: OldMember | null];
         'guildRoleDelete': [guild: Guild, role: Role];
         'guildRoleCreate': [guild: Guild, role: Role];
         'guildRoleUpdate': [guild: Guild, role: Role, oldRole: OldRole];

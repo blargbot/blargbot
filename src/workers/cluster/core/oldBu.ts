@@ -16,6 +16,7 @@ export const oldBu = {
             //console.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
             return false;
         }
+        
         const guild = await util.database.guilds.get(guildid);
 
         return guild?.channels[channelid]?.blacklisted ?? false;

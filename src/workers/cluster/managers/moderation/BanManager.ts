@@ -1,4 +1,4 @@
-import { Guild, Member, User } from 'eris';
+import { DiscordRESTError, Guild, GuildAuditLog, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import { BanResult, humanize, KickResult, mapping, MassBanResult, UnbanEventOptions, UnbanResult } from '../../core';
 import { ModerationManager } from '../ModerationManager';
@@ -179,13 +179,23 @@ export class BanManager extends ModerationManagerBase {
             return;
 
         const now = moment();
-        const auditLogs = await member.guild.getAuditLogs(50, undefined, 20 /* Kick */);
-        for (const log of auditLogs.entries) {
+        const auditLogs = await tryGetAuditLogs(member.guild, 50, undefined, 20 /* Kick */);
+        for (const log of auditLogs?.entries ?? []) {
             if (log.targetID === member.id && moment(log.createdAt).isAfter(now.add(-1, 'second'))) {
                 await this.modLog.logKick(member.guild, member.user, log.user, log.reason ?? undefined);
                 break;
             }
         }
+    }
+}
+
+async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, actionType?: number): Promise<GuildAuditLog | undefined> {
+    try {
+        return await guild.getAuditLogs(limit, before, actionType);
+    } catch (err: unknown) {
+        if (err instanceof DiscordRESTError && err.code === 50013 /* Missing Permissions */)
+            return undefined;
+        throw err;
     }
 }
 

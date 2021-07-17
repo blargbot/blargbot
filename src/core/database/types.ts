@@ -1,4 +1,4 @@
-import { Client as ErisClient, User } from 'eris';
+import { Client as ErisClient, Guild, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
@@ -188,13 +188,13 @@ export interface StoredGuild {
     readonly modlog?: readonly GuildModlogEntry[];
     readonly roleme?: readonly GuildRolemeEntry[];
     readonly autoresponse?: GuildAutoresponses;
-    readonly log?: { [K in StoredGuildEventLogType]?: string };
+    readonly log?: { readonly [key: string]: string | undefined; };
     readonly logIgnore?: readonly string[];
     readonly votebans?: { readonly [userId: string]: readonly string[] | undefined; };
 }
 
 export type StoredGuildEventLogType =
-    | `role:${number}`
+    | `role:${string}`
     | 'messagedelete'
     | 'messageupdate'
     | 'nameupdate'
@@ -212,7 +212,10 @@ export interface MutableStoredGuild extends StoredGuild {
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
     log?: { [key: string]: string | undefined; };
+    logIgnore?: string[];
     autoresponse?: MutableGuildAutoresponses;
+    active: boolean;
+    name: string;
 }
 
 export interface GuildAutoresponses {
@@ -480,10 +483,18 @@ export interface PostgresDbOptions {
     readonly sequelize: SequelizeOptions;
 }
 
+export interface StoredGuildEventLogConfig {
+    readonly events: { readonly [P in StoredGuildEventLogType]?: string | undefined; };
+    readonly roles: { readonly [roleId: string]: string | undefined; };
+}
+
+export interface MutableStoredGuildEventLogConfig extends StoredGuildEventLogConfig {
+    events: { [P in StoredGuildEventLogType]?: string | undefined; };
+    roles: { [roleId: string]: string | undefined; };
+}
+
 export interface GuildTable {
     clearVoteBans(guildId: string, userId: string): Promise<void>;
-    getLogIgnores(guildId: string, skipCache?: boolean): Promise<ReadonlySet<string>>;
-    getLogChannel(guildId: string, type: StoredGuildEventLogType, skipCache?: boolean): Promise<string | undefined>;
     getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined>;
@@ -497,7 +508,7 @@ export interface GuildTable {
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
     listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedStoredGuildCommand[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
-    add(guildId: string, name: string): Promise<boolean>;
+    upsert(guild: Guild): Promise<'inserted' | 'updated' | false>;
     exists(guildId: string, skipCache?: boolean): Promise<boolean>;
     isActive(guildId: string, skipCache?: boolean): Promise<boolean>;
     setActive(guildId: string, active?: boolean): Promise<boolean>;
@@ -514,7 +525,12 @@ export interface GuildTable {
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     getNewModlogCaseId(guildId: string, skipCache?: boolean): Promise<number | undefined>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
+    getLogIgnores(guildId: string, skipCache?: boolean): Promise<ReadonlySet<string>>;
+    getLogChannel(guildId: string, type: StoredGuildEventLogType, skipCache?: boolean): Promise<string | undefined>;
+    getLogChannels(guildId: string, skipCache?: boolean): Promise<StoredGuildEventLogConfig>;
     setLogChannel(guildId: string, event: StoredGuildEventLogType, channel: string | undefined): Promise<boolean>;
+    setLogChannel(guildId: string, events: StoredGuildEventLogType[], channel: string | undefined): Promise<boolean>;
+    setLogIgnores(guildId: string, userIds: readonly string[], ignore: boolean): Promise<boolean>;
     getWarnings(guildId: string, userId: string, skipCache?: boolean): Promise<number | undefined>;
     setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
     getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<CommandPermissions | undefined>;
@@ -523,8 +539,7 @@ export interface GuildTable {
 export interface UserTable {
     getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<StoredUserSettings[K] | undefined>;
     get(userId: string, skipCache?: boolean): Promise<StoredUser | undefined>;
-    add(user: MutableStoredUser): Promise<boolean>;
-    upsert(user: User): Promise<boolean>;
+    upsert(user: User): Promise<'inserted' | 'updated' | false>;
     setTagReport(userId: string, tagName: string, reason: string | undefined): Promise<boolean>;
 }
 

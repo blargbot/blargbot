@@ -488,9 +488,8 @@ export class ClusterUtilities extends BaseUtilities {
         if (guild.ownerID === userId) return true;
         if (member.permissions.has('administrator')) return true;
 
-        const storedGuild = await this.database.guilds.get(guildId);
-        if (storedGuild?.settings.permoverride === true) {
-            let allow = storedGuild.settings.staffperms ?? defaultStaff;
+        if (await this.database.guilds.getSetting(guildId, 'permoverride') === true) {
+            let allow = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
             if (typeof allow === 'string')
                 allow = parseInt(allow);
             const member = this.discord.guilds.get(guildId)?.members.get(userId);
@@ -540,8 +539,7 @@ export class ClusterUtilities extends BaseUtilities {
             return true;
 
         if (channel !== undefined && !quiet) {
-            const guild = await this.database.guilds.get(member.guild.id);
-            if (guild?.settings.disablenoperms !== true) {
+            if (await this.database.guilds.getSetting(member.guild.id, 'disablenoperms') !== true) {
                 const permString = roles.map(m => '`' + m + '`').join(', or ');
                 void this.send(channel, `You need the role ${permString} in order to use this command!`);
             }

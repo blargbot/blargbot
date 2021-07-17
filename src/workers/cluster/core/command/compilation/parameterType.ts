@@ -9,6 +9,10 @@ export function isCommandVariableType(type: string): type is CommandVariableType
 export type CommandVariableType = typeof typeOrder[number];
 
 const typeOrder = [
+    'role',
+    'channel',
+    'user',
+    'member',
     'duration',
     'integer',
     'number',

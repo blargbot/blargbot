@@ -13,10 +13,9 @@ export class DiscordReadyHandler extends DiscordEventService<'ready'> {
 
         metrics.guildGauge.set(this.cluster.discord.guilds.size);
 
-        const guildIds = new Set(await this.cluster.database.guilds.getIds());
         for (const guild of this.cluster.discord.guilds.values()) {
-            if (guildIds.has(guild.id))
-                return;
+            if (await this.cluster.database.guilds.upsert(guild) !== 'inserted')
+                continue;
 
             const members = guild.memberCount;
             const users = guild.members.filter(m => !m.user.bot).length;
@@ -25,9 +24,6 @@ export class DiscordReadyHandler extends DiscordEventService<'ready'> {
             const message = `:ballot_box_with_check: Guild: \`${guild.name}\` (\`${guild.id}\`)! ${percent >= 80 ? '- ***BOT GUILD***' : ''}\n` +
                 `    Total: **${members}** | Users: **${users}** | Bots: **${bots}** | Percent: **${percent}**`;
             void this.cluster.util.send(this.cluster.config.discord.channels.joinlog, message);
-
-            this.logger.log('Inserting a missing guild ' + guild.id);
-            void this.cluster.database.guilds.add(guild.id, guild.name);
         }
 
         void this.cluster.util.postStats();

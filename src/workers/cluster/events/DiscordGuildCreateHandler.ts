@@ -24,10 +24,7 @@ export class DiscordGuildCreateHandler extends DiscordEventService<'guildCreate'
         if (await this.cluster.database.guilds.isActive(guild.id))
             return;
 
-        if (!await this.cluster.database.guilds.exists(guild.id))
-            await this.cluster.database.guilds.add(guild.id, guild.name);
-        else
-            await this.cluster.database.guilds.setActive(guild.id, true);
+        await this.cluster.database.guilds.upsert(guild);
 
         const prefix = this.cluster.config.discord.defaultPrefix;
         const welcomeMessage = `Hi! My name is blargbot, a multifunctional discord bot here to serve you!

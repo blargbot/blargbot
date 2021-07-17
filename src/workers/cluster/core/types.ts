@@ -1,4 +1,4 @@
-import { AnyMessage, Attachment, Embed, EmbedOptions, GuildChannel, Member, MessageFile, PrivateChannel, Shard, Textable, User } from 'eris';
+import { AnyMessage, Attachment, Channel, Embed, EmbedOptions, GuildChannel, Member, MessageFile, PrivateChannel, Role, Shard, Textable, User } from 'eris';
 import ReadWriteLock from 'rwlock';
 import { ClusterWorker } from '../ClusterWorker';
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from './bbtag';
@@ -598,20 +598,43 @@ export type WarnResult =
 
 export type CommandBinderParseResult<TResult> =
     | CommandBinderValue<TResult>
-    | { success: 'deferred'; getValue(): CommandBinderValue<TResult> | Promise<CommandBinderValue<TResult>>; }
+    | CommandBinderDeferred<TResult>
 
 export type CommandBinderValue<TResult> =
-    | { success: true; value: TResult; }
-    | { success: false; error: CommandResult; }
+    | CommandBinderSuccess<TResult>
+    | CommandBinderFailure
+
+export interface CommandBinderSuccess<TResult> {
+    success: true;
+    value: TResult;
+}
+
+export interface CommandBinderFailure {
+    success: false;
+    error: CommandResult;
+}
+
+export interface CommandBinderDeferred<TResult> {
+    success: 'deferred';
+    getValue(): CommandBinderValue<TResult> | Promise<CommandBinderValue<TResult>>;
+}
+
+export interface CommandBinderStateLookupCache {
+    findUser(userString: string): CommandBinderParseResult<User>;
+    findMember(memberString: string): CommandBinderParseResult<Member>;
+    findRole(roleString: string): CommandBinderParseResult<Role>;
+    findChannel(channelString: string): CommandBinderParseResult<Channel>;
+}
 
 export interface CommandBinderState<TContext extends CommandContext> {
     readonly context: TContext;
     readonly command: ScopedCommandBase<TContext>;
-    readonly arguments: ReadonlyArray<Exclude<CommandBinderParseResult<unknown>, { success: false; }>>;
+    readonly arguments: ReadonlyArray<CommandBinderDeferred<unknown> | CommandBinderSuccess<unknown>>;
     readonly flags: FlagResult;
     readonly argIndex: number;
     readonly bindIndex: number;
     readonly result: CommandResult;
+    readonly lookupCache: CommandBinderStateLookupCache;
 }
 
 export interface CommandMiddleware<TContext extends CommandContext> {

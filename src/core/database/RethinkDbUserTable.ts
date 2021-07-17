@@ -21,17 +21,12 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         return await this.rget(userId, skipCache);
     }
 
-    public async add(user: MutableStoredUser): Promise<boolean> {
-        return await this.rinsert(user);
-    }
-
-    public async upsert(user: User): Promise<boolean> {
+    public async upsert(user: User): Promise<'inserted' | 'updated' | false> {
         if (user.discriminator === '0000')
             return false;
         const currentUser = await this.rget(user.id, true);
         if (currentUser === undefined) {
-            this.logger.debug(`inserting user ${user.id} (${user.username})`);
-            return await this.add({
+            if (await this.rinsert({
                 userid: user.id,
                 username: user.username,
                 usernames: [{
@@ -42,26 +37,29 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
                 lastspoke: new Date(),
                 discriminator: user.discriminator,
                 todo: []
-            });
-        }
-        const update: Partial<MutableStoredUser> = {};
-        if (currentUser.username !== user.username) {
-            currentUser.username = update.username = user.username;
-            update.usernames = currentUser.usernames;
-            update.usernames.push({
-                name: user.username,
-                date: new Date()
-            });
-        }
-        if (currentUser.discriminator !== user.discriminator) {
-            currentUser.discriminator = update.discriminator = user.discriminator;
-        }
-        if (currentUser.avatarURL !== user.avatarURL) {
-            currentUser.avatarURL = update.avatarURL = user.avatarURL;
-        }
+            })) {
+                return 'inserted';
+            }
+        } else {
+            const update: Partial<MutableStoredUser> = {};
+            if (currentUser.username !== user.username) {
+                currentUser.username = update.username = user.username;
+                update.usernames = currentUser.usernames;
+                update.usernames.push({
+                    name: user.username,
+                    date: new Date()
+                });
+            }
+            if (currentUser.discriminator !== user.discriminator) {
+                currentUser.discriminator = update.discriminator = user.discriminator;
+            }
+            if (currentUser.avatarURL !== user.avatarURL) {
+                currentUser.avatarURL = update.avatarURL = user.avatarURL;
+            }
 
-        if (Object.values(update).some(guard.hasValue))
-            return await this.rupdate(user.id, update);
+            if (Object.values(update).some(guard.hasValue) && await this.rupdate(user.id, update))
+                return 'updated';
+        }
 
         return false;
     }

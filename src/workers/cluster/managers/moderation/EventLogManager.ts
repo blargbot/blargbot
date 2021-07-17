@@ -1,4 +1,4 @@
-import { EmbedAuthorOptions, EmbedField, EmbedOptions, Guild, GuildTextableChannel, Member, Message, OldMessage, PossiblyUncachedMessage, User } from 'eris';
+import { DiscordRESTError, EmbedAuthorOptions, EmbedField, EmbedOptions, Guild, GuildAuditLog, GuildTextableChannel, Member, Message, OldMessage, PartialUser, PossiblyUncachedMessage, User } from 'eris';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 import { Cluster } from '../../Cluster';
@@ -25,7 +25,7 @@ export class EventLogManager {
         if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id)) {
             await this.logEvent('memberjoin', channel, this.eventLogEmbed('User Joined', member.user, 0x1ad8bc, {
                 fields: [
-                    { name: 'Created', value: `<t:${member.user.createdAt}>`, inline: true }
+                    { name: 'Created', value: `<t:${moment(member.user.createdAt).unix()}>`, inline: true }
                 ]
             }));
         }
@@ -101,6 +101,94 @@ export class EventLogManager {
             ]
         });
         await this.logEvent('messageupdate', logChannel, embed);
+    }
+
+    public async roleRemoved(member: Member, roleId: string): Promise<void> {
+        const channel = await this.getLogChannel(`role:${roleId}`, member.guild.id);
+        if (channel === undefined || await this.isExempt(member.guild.id, member.user.id))
+            return;
+
+        const now = moment();
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, 25 /* Role updated */);
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
+        const reason = audit?.reason ?? undefined;
+        const moderator = audit?.user;
+        await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Removed', member.user, 0, {
+            fields: [
+                { name: 'Role', value: `<@&${roleId}> (${roleId})`, inline: true },
+                ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})`, inline: true }] : [],
+                ...reason !== undefined ? [{ name: 'Reason', value: reason, inline: true }] : []
+            ]
+        }));
+    }
+
+    public async roleAdded(member: Member, roleId: string): Promise<void> {
+        const channel = await this.getLogChannel(`role:${roleId}`, member.guild.id);
+        if (channel === undefined || await this.isExempt(member.guild.id, member.user.id))
+            return;
+
+        const now = moment();
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, 25 /* Role updated */);
+        const audit = auditEvents?.entries.find(e => e.targetID === member.id && moment(e.createdAt).isAfter(now.add(-1, 'second')));
+        const reason = audit?.reason ?? undefined;
+        const moderator = audit?.user;
+        await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Added', member.user, 0, {
+            fields: [
+                { name: 'Role', value: `<@&${roleId}> (${roleId})`, inline: true },
+                ...moderator !== undefined ? [{ name: 'Updated By', value: `<@${moderator.id}> (${moderator.id})`, inline: true }] : [],
+                ...reason !== undefined ? [{ name: 'Reason', value: reason, inline: true }] : []
+            ]
+        }));
+    }
+
+    public async nicknameUpdated(member: Member, oldNickname: string | undefined): Promise<void> {
+        const channel = await this.getLogChannel('nickupdate', member.guild.id);
+        if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id)) {
+            await this.logEvent('nickupdate', channel, this.eventLogEmbed('Nickname Updated', member.user, 0xd8af1a, {
+                fields: [
+                    { name: 'Old Nickname', value: oldNickname ?? member.username, inline: true },
+                    { name: 'New Nickname', value: member.nick ?? member.username, inline: true }
+                ]
+            }));
+        }
+    }
+
+    public async userTagUpdated(user: User, oldUser: PartialUser): Promise<void> {
+        const embed = this.eventLogEmbed('Username Updated', user, 0xd8af1a, {
+            fields: [
+                { name: 'Old Name', value: humanize.fullName(oldUser), inline: true },
+                { name: 'New Name', value: humanize.fullName(user), inline: true }
+            ]
+        });
+
+        await Promise.all(
+            this.cluster.discord.guilds.filter(g => g.members.has(user.id))
+                .map(async guild => {
+                    const channel = await this.getLogChannel('nameupdate', guild.id);
+                    if (channel !== undefined && !await this.isExempt(guild.id, user.id))
+                        await this.logEvent('nameupdate', channel, embed);
+                })
+        );
+    }
+
+    public async userAvatarUpdated(user: User, oldUser: PartialUser): Promise<void> {
+        const oldUserInstance = new User({ id: user.id, avatar: oldUser.avatar, discriminator: oldUser.discriminator }, this.cluster.discord);
+
+        const embed = this.eventLogEmbed('Avatar Updated', user, 0xd8af1a, {
+            image: { url: user.avatarURL },
+            thumbnail: { url: oldUserInstance.avatarURL },
+            description: '➡️ Old avatar\n⬇️ New avatar'
+        });
+
+        await Promise.all(
+            this.cluster.discord.guilds.filter(g => g.members.has(user.id))
+                .map(async guild => {
+                    const channel = await this.getLogChannel('avatarupdate', guild.id);
+                    if (channel !== undefined && !await this.isExempt(guild.id, user.id))
+                        await this.logEvent('avatarupdate', channel, embed);
+                })
+        );
+
     }
 
     private async getContentEmbedField(guildId: string, name: string, content: string | undefined, timestamp: Moment | undefined, contentCount = 1): Promise<EmbedField> {
@@ -208,6 +296,16 @@ function toEmbedAuthor(user: string | User | undefined): EmbedAuthorOptions | un
             name: `${humanize.fullName(user)} (${user.id})`,
             icon_url: user.avatarURL
         };
+    }
+}
+
+async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, actionType?: number): Promise<GuildAuditLog | undefined> {
+    try {
+        return await guild.getAuditLogs(limit, before, actionType);
+    } catch (err: unknown) {
+        if (err instanceof DiscordRESTError && err.code === 50013 /* Missing Permissions */)
+            return undefined;
+        throw err;
     }
 }
 
