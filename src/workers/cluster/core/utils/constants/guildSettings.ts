@@ -1,4 +1,4 @@
-import { StoredGuildSettings } from '../../globalCore';
+import { StoredGuildSettings } from '@core';
 import { GuildSettingDescriptor } from '../../types';
 
 // prefix excluded as it is an array of strings

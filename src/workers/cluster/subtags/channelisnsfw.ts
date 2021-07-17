@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '@cluster/core';
 
 export class ChannelIsNsfw extends BaseSubtag {
     public constructor() {

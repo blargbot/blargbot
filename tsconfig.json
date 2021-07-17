@@ -18,6 +18,49 @@
         "noUnusedParameters": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
+        "moduleResolution": "node",
+        "baseUrl": "./",
+        "paths": {
+            "~/*": [
+                "./*"
+            ],
+            "@core": [
+                "./src/core"
+            ],
+            "@core/*": [
+                "./src/core/*"
+            ],
+            "@cluster": [
+                "./src/workers/cluster",
+            ],
+            "@cluster/*": [
+                "./src/workers/cluster/*"
+            ],
+            "@master": [
+                "./src/workers/master"
+            ],
+            "@master/*": [
+                "./src/workers/master/*"
+            ],
+            "@image": [
+                "./src/workers/image"
+            ],
+            "@image/*": [
+                "./src/workers/image/*"
+            ],
+            "@website": [
+                "./src/workers/website"
+            ],
+            "@website/*": [
+                "./src/workers/website/*"
+            ],
+            "@website-old": [
+                "./src/workers/website_old"
+            ],
+            "@website-old/*": [
+                "./src/workers/website_old/*"
+            ]
+        }
         // "noUncheckedIndexedAccess": true
     }
 }

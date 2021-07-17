@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, FlagResult } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, FlagResult } from '@cluster/core';
 
 export class UnmuteCommand extends BaseGuildCommand {
     public constructor() {

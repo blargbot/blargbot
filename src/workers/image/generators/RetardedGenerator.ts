@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, RetardedOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, RetardedOptions } from '@image/core';
 
 export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
     public constructor(logger: Logger) {

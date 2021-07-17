@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext } from '@cluster/core';
 
 export class PrefixCommand extends BaseGuildCommand {
     public constructor() {

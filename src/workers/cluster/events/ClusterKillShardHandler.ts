@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { ClusterEventService } from '../core';
+import { ClusterEventService } from '@cluster/core';
 
 export class ClusterKillShardHandler extends ClusterEventService {
     public constructor(

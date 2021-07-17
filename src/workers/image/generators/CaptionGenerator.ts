@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, CaptionOptions, Logger, mapping } from '../core';
+import { BaseImageGenerator, CaptionOptions, Logger, mapping } from '@image/core';
 
 export class CaptionGenerator extends BaseImageGenerator<'caption'> {
     public constructor(logger: Logger) {

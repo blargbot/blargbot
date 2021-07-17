@@ -1,4 +1,4 @@
-import { BaseGlobalCommand, commandTypes, CommandContext, randInt } from '../core';
+import { BaseGlobalCommand, commandTypes, CommandContext, randInt } from '@cluster/core';
 
 export class PingCommand extends BaseGlobalCommand {
     public constructor() {

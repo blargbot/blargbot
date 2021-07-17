@@ -1,4 +1,4 @@
-import { BaseSubtag, parse, SubtagType } from '../core';
+import { BaseSubtag, parse, SubtagType } from '@cluster/core';
 
 export class ParseIntSubtag extends BaseSubtag {
     public constructor() {

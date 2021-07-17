@@ -1,6 +1,6 @@
 import { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
-import { Logger } from '../../Logger';
-import { guard } from '../../utils';
+import { Logger } from '@core/Logger';
+import { guard } from '@core/utils';
 import { RethinkTableMap } from '../types';
 import { RethinkDb } from './RethinkDb';
 

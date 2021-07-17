@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { BaseClient, ModuleLoader, BaseService, EvalResult, Logger, MasterOptions } from './core';
+import { BaseClient, ModuleLoader, BaseService, EvalResult, Logger, MasterOptions } from '@master/core';
 import { MasterWorker } from './MasterWorker';
 import fetch from 'node-fetch';
 import { ClusterPool } from '../cluster';

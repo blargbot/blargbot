@@ -1,5 +1,5 @@
 import { EmbedField, Role, User } from 'eris';
-import { BaseGuildCommand, commandTypes, guard, GuildCommandContext, humanize, SendPayloadContent, StoredGuildEventLogType } from '../core';
+import { BaseGuildCommand, commandTypes, guard, GuildCommandContext, humanize, SendPayloadContent, StoredGuildEventLogType } from '@cluster/core';
 
 export class LogCommand extends BaseGuildCommand {
     public constructor() {

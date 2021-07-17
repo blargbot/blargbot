@@ -1,6 +1,6 @@
 import { UserChannelInteraction } from 'eris';
 import { ClusterUtilities } from '../../../ClusterUtilities';
-import { StoredGuildSettings } from '../../globalCore';
+import { StoredGuildSettings } from '@core';
 import { guildSettings } from '../constants';
 import { guard } from '../guard';
 import { parse } from '../parse';

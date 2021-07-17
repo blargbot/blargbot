@@ -1,5 +1,5 @@
 import { EmbedOptions } from 'eris';
-import { BaseGuildCommand, commandTypes, GuildCommandContext, SendPayload, createSafeRegExp, randChoose, randInt, between, getRange, parse } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, SendPayload, createSafeRegExp, randChoose, randInt, between, getRange, parse } from '@cluster/core';
 
 export class AutoResponseCommand extends BaseGuildCommand {
     public constructor() {

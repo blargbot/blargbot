@@ -1,4 +1,4 @@
-import { Binder, Binding, BindingResult, guard, humanize } from '../../../globalCore';
+import { Binder, Binding, BindingResult, guard, humanize } from '@core';
 import { CommandBinderState } from '../../../types';
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';

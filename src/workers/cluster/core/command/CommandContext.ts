@@ -2,7 +2,7 @@ import { Channel, Textable, User, Message, MessageFile, AnyMessage, Client as Er
 import { Cluster } from '../../Cluster';
 import { ClusterUtilities } from '../../ClusterUtilities';
 import { BBTagEngine } from '../bbtag';
-import { Database, humanize, SendContext, SendPayload, Logger } from '../globalCore';
+import { Database, humanize, SendContext, SendPayload, Logger } from '@core';
 
 export class CommandContext<TChannel extends Channel = Channel> {
     public readonly commandText: string;

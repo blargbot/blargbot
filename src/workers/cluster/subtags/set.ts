@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, tagVariableScopes, bbtagUtil } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, tagVariableScopes, bbtagUtil } from '@cluster/core';
 
 export class SetSubtag extends BaseSubtag {
     public constructor() {

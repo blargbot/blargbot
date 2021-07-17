@@ -1,4 +1,4 @@
-import { BaseImageGenerator, Logger, mapping, PCCheckOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, PCCheckOptions } from '@image/core';
 
 export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
     public constructor(logger: Logger) {

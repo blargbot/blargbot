@@ -1,4 +1,4 @@
-import { CronService, CustomCommandLimit, guard, sleep, snowflake } from '../core';
+import { CronService, CustomCommandLimit, guard, sleep, snowflake } from '@cluster/core';
 import { Cluster } from '../Cluster';
 import moment from 'moment';
 

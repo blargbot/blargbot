@@ -1,6 +1,6 @@
 import { MessageFile } from 'eris';
 import moment from 'moment';
-import { codeBlock, humanize } from '../../globalCore';
+import { codeBlock, humanize } from '@core';
 import { ExecutionResult } from '../../types';
 
 export function createDebugOutput(name: string, code: string, args: string, result: ExecutionResult): { content: string; files: MessageFile; } {

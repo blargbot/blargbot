@@ -1,6 +1,6 @@
 import { Message, OldMessage } from 'eris';
 import { Cluster } from '../Cluster';
-import { DiscordEventService } from '../core';
+import { DiscordEventService } from '@cluster/core';
 
 export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpdate'> {
     public constructor(

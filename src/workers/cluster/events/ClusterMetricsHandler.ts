@@ -1,4 +1,4 @@
-import { ClusterEventService, ProcessMessageHandler, metrics } from '../core';
+import { ClusterEventService, ProcessMessageHandler, metrics } from '@cluster/core';
 import { Cluster } from '../Cluster';
 
 export class ClusterMetricsHandler extends ClusterEventService {

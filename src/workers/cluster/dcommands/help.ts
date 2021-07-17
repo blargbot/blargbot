@@ -1,5 +1,5 @@
 import { EmbedField } from 'eris';
-import { BaseGlobalCommand, CommandType, CommandContext, SendPayload, BaseCommand, commandTypes, StoredGuildCommand, guard, codeBlock, humanize, GuildCommandContext } from '../core';
+import { BaseGlobalCommand, CommandType, CommandContext, SendPayload, BaseCommand, commandTypes, StoredGuildCommand, guard, codeBlock, humanize, GuildCommandContext } from '@cluster/core';
 
 export class HelpCommand extends BaseGlobalCommand {
     public constructor() {

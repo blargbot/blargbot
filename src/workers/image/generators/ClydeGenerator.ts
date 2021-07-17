@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, ClydeOptions, Logger, mapping } from '../core';
+import { BaseImageGenerator, ClydeOptions, Logger, mapping } from '@image/core';
 
 export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
     public constructor(logger: Logger) {

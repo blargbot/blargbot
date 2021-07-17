@@ -1,6 +1,6 @@
 import { AnyMessage, Emoji, GuildMessage, User } from 'eris';
 import { Cluster } from '../Cluster';
-import { codeBlock, EverythingAutoResponseLimit, GeneralAutoResponseLimit, guard, humanize, mapping, RuntimeLimit, WhitelistResponse } from '../core';
+import { codeBlock, EverythingAutoResponseLimit, GeneralAutoResponseLimit, guard, humanize, mapping, RuntimeLimit, WhitelistResponse } from '@cluster/core';
 
 export class AutoresponseManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

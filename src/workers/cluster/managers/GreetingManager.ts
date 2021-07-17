@@ -1,7 +1,7 @@
 import { Constants, Guild, Member, TextChannel } from 'eris';
 import moment from 'moment';
 import { Cluster } from '../Cluster';
-import { limits, snowflake, StoredRawGuildCommand } from '../core';
+import { limits, snowflake, StoredRawGuildCommand } from '@cluster/core';
 
 export class GreetingManager {
     public constructor(protected readonly cluster: Cluster) {

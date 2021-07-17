@@ -1,6 +1,6 @@
 import { AnyMessage, Channel, User } from 'eris';
 import { Cluster } from '../Cluster';
-import { DiscordEventService, metrics, guard } from '../core';
+import { DiscordEventService, metrics, guard } from '@cluster/core';
 import { handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {

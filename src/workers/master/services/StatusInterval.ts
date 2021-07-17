@@ -1,6 +1,6 @@
 import { BotActivityType } from 'eris';
 import moment from 'moment';
-import { CronService, guard, MasterOptions } from '../core';
+import { CronService, guard, MasterOptions } from '@master/core';
 import { Master } from '../Master';
 
 export class StatusInterval extends CronService {

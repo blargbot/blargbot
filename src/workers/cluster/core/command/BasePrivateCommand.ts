@@ -1,5 +1,5 @@
 import { CommandResult, PrivateCommandContext } from '../types';
-import { guard } from '../utils';
+import { guard } from '@cluster/core';
 import { CommandContext } from './CommandContext';
 import { ScopedCommandBase } from './ScopedCommandBase';
 

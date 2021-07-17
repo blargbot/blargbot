@@ -1,4 +1,4 @@
-import { BaseImageGenerator, randInt, Logger, DistortOptions, mapping } from '../core';
+import { BaseImageGenerator, randInt, Logger, DistortOptions, mapping } from '@image/core';
 import { BetterColorAction } from '@jimp/plugin-color';
 
 export class DistortGenerator extends BaseImageGenerator<'distort'> {

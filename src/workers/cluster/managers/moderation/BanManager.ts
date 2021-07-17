@@ -1,6 +1,6 @@
 import { DiscordRESTError, Guild, GuildAuditLog, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
-import { BanResult, humanize, KickResult, mapping, MassBanResult, UnbanEventOptions, UnbanResult } from '../../core';
+import { BanResult, humanize, KickResult, mapping, MassBanResult, UnbanEventOptions, UnbanResult } from '@cluster/core';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 

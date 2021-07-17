@@ -1,4 +1,4 @@
-export * from './globalCore';
+export * from '@core';
 export * from './utils';
 export * from './ClusterEventService';
 export * from './TimeoutEventService';

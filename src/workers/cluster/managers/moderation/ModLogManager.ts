@@ -1,6 +1,6 @@
 import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
-import { ModlogColour, humanize, guard } from '../../core/utils';
+import { ModlogColour, humanize, guard } from '@cluster/core';
 import { Cluster } from '../../Cluster';
 
 export class ModLogManager {

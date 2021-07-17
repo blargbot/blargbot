@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '@cluster/core';
 
 export class JsonSubtag extends BaseSubtag {
     public constructor() {

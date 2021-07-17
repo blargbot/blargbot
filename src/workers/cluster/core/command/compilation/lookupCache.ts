@@ -1,6 +1,6 @@
 import { Member, Role } from 'eris';
 import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandBinderValue, GuildCommandContext, PrivateCommandContext } from '../../types';
-import { guard, parse } from '../../utils';
+import { guard, parse } from '@cluster/core';
 import { BaseCommand } from '../BaseCommand';
 import { CommandContext } from '../CommandContext';
 

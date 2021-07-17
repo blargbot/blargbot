@@ -1,9 +1,9 @@
 import pg from 'pg';
 import sequelize from 'sequelize';
-import { sleep } from '../../utils';
+import { sleep } from '@core/utils';
 import { models } from './postgresModels';
 import { PostgresDbOptions } from '../types';
-import { Logger } from '../../Logger';
+import { Logger } from '@core/Logger';
 
 delete (<Record<string, unknown>>pg).native; // TODO Do we need to do this?
 

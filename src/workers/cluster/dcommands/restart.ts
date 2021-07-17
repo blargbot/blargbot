@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { BaseGlobalCommand, CommandContext, commandTypes } from '../core';
+import { BaseGlobalCommand, CommandContext, commandTypes } from '@cluster/core';
 
 export class RestartCommand extends BaseGlobalCommand {
     public constructor() {

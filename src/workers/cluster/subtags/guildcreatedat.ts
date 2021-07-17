@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType } from '../core';
+import { BaseSubtag, SubtagType } from '@cluster/core';
 import moment from 'moment';
 
 export class GuildCreateDat extends BaseSubtag {

@@ -2,7 +2,7 @@ import { DiscordRESTError, EmbedAuthorOptions, EmbedField, EmbedOptions, Guild, 
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 import { Cluster } from '../../Cluster';
-import { discordUtil, guard, humanize, StoredGuildEventLogType } from '../../core';
+import { discordUtil, guard, humanize, StoredGuildEventLogType } from '@cluster/core';
 
 export class EventLogManager {
     public constructor(private readonly cluster: Cluster) {

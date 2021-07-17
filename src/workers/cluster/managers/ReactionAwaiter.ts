@@ -1,6 +1,6 @@
 import { AnyMessage, Emoji, User } from 'eris';
 import EventEmitter from 'eventemitter3';
-import { Logger } from '../core';
+import { Logger } from '@cluster/core';
 
 export class ReactionAwaiter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

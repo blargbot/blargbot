@@ -1,4 +1,4 @@
-import _colors from '../../../../res/colors.json';
+import _colors from '~/res/colors.json';
 import { randInt } from '../random';
 import { hex } from './hex';
 

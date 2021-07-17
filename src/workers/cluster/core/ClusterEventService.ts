@@ -1,6 +1,6 @@
 import { Cluster } from '../Cluster';
 import { inspect } from 'util';
-import { BaseService, ProcessMessageHandler } from './globalCore';
+import { BaseService, ProcessMessageHandler } from '@core';
 
 export abstract class ClusterEventService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

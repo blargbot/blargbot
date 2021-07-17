@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext, discordUtil, parse, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, discordUtil, parse, SubtagCall, SubtagType } from '@cluster/core';
 
 export class ChannelSetPermsSubtag extends BaseSubtag {
     public constructor() {

@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil } from '@cluster/core';
 
 export class RollbackSubtag extends BaseSubtag {
     public constructor() {

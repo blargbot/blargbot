@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, DeleteOptions, Logger, mapping } from '../core';
+import { BaseImageGenerator, DeleteOptions, Logger, mapping } from '@image/core';
 
 export class DeleteGenerator extends BaseImageGenerator<'delete'> {
     public constructor(logger: Logger) {

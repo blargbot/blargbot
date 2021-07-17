@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import { Cluster } from '../Cluster';
 import { ClusterUtilities } from '../ClusterUtilities';
-import { BaseGuildCommand, commandTypes, bbtagUtil, GuildCommandContext, humanize, SendPayload, codeBlock, parse, StoredTag, getDocsEmbed, CommandContext, TagLimit, guard } from '../core';
+import { BaseGuildCommand, commandTypes, bbtagUtil, GuildCommandContext, humanize, SendPayload, codeBlock, parse, StoredTag, getDocsEmbed, CommandContext, TagLimit, guard } from '@cluster/core';
 
 export class TagCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {

@@ -1,9 +1,9 @@
 import { Client as ErisClient, Guild, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
-import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
-import { FlagDefinition, SerializedBBTagContext } from '../../workers/cluster/core/types'; // TODO Core shouldnt reference cluster
-import { Logger } from '../Logger';
+import { SubtagVariableType } from '@cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
+import { FlagDefinition, SerializedBBTagContext } from '@cluster/core/types'; // TODO Core shouldnt reference cluster
+import { Logger } from '@core/Logger';
 
 export type RethinkTableMap = {
     'guild': MutableStoredGuild;

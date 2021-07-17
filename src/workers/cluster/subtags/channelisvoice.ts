@@ -1,5 +1,5 @@
 import { Constants } from 'eris';
-import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '@cluster/core';
 
 export class ChannelIsVoice extends BaseSubtag {
     public constructor() {

@@ -2,7 +2,7 @@ import fs from 'fs';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
 import { MessageFile } from 'eris';
-import { BaseGlobalCommand, commandTypes, SendPayload, parse, FlagResult } from '../core';
+import { BaseGlobalCommand, commandTypes, SendPayload, parse, FlagResult } from '@cluster/core';
 
 export class EmojiCommand extends BaseGlobalCommand {
     public constructor() {

@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, SubtagCall, parse } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, SubtagCall, parse } from '@cluster/core';
 
 export class RandIntSubtag extends BaseSubtag {
     public constructor() {

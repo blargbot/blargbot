@@ -1,4 +1,4 @@
-import { Logger } from '../Logger';
+import { Logger } from '@core/Logger';
 import { LogEntry } from '../types';
 import { IPCEvents } from './IPCEvents';
 

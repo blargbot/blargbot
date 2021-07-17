@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, TruthOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, TruthOptions } from '@image/core';
 
 export class TruthGenerator extends BaseImageGenerator<'truth'> {
     public constructor(logger: Logger) {

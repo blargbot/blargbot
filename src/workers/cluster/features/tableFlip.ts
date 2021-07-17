@@ -1,6 +1,6 @@
 import { AnyMessage, GuildMessage } from 'eris';
 import { Cluster } from '../Cluster';
-import { guard, randInt } from '../core';
+import { guard, randInt } from '@cluster/core';
 
 export async function handleTableFlip(cluster: Cluster, msg: AnyMessage): Promise<void> {
     if (!guard.isGuildMessage(msg) || msg.author.bot)

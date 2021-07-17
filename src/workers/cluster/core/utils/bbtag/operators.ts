@@ -1,4 +1,4 @@
-import { compare as comp } from '../../globalCore';
+import { compare as comp } from '@core';
 import { guard } from '../guard';
 import { deserialize } from './tagArray';
 

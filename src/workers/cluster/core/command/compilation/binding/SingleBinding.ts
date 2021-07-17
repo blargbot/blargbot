@@ -1,4 +1,4 @@
-import { Binder, Binding, BindingResultIterator } from '../../../globalCore';
+import { Binder, Binding, BindingResultIterator } from '@core';
 import { CommandBinderParseResult, CommandBinderState } from '../../../types';
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';

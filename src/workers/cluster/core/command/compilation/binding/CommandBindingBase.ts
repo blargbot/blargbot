@@ -1,4 +1,4 @@
-import { Binder, Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '../../../globalCore';
+import { Binder, Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '@core';
 import { CommandBinderParseResult, CommandBinderState, CommandResult } from '../../../types';
 import { CommandContext } from '../../CommandContext';
 

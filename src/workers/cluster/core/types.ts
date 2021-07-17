@@ -4,7 +4,7 @@ import { ClusterWorker } from '../ClusterWorker';
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from './bbtag';
 import { CommandContext, ScopedCommandBase } from './command';
 import { CommandVariableType } from './command/compilation/parameterType';
-import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildCommand, StoredGuildSettings, StoredTag } from './globalCore';
+import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildCommand, StoredGuildSettings, StoredTag } from '@core';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from './utils';
 
 export type Statement = Array<string | SubtagCall>;

@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { ArtOptions, BaseImageGenerator, Logger, mapping } from '../core';
+import { ArtOptions, BaseImageGenerator, Logger, mapping } from '@image/core';
 
 export class ArtGenerator extends BaseImageGenerator<'art'> {
     public constructor(logger: Logger) {

@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType } from '../core';
+import { BaseSubtag, SubtagType } from '@cluster/core';
 import { default as Brainfuck } from 'brainfuck-node';
 const bfClient = new Brainfuck();
 

@@ -1,4 +1,4 @@
-import { RollingArray } from './globalCore';
+import { RollingArray } from '@core';
 
 export class MessageIdQueue {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

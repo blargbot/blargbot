@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext, discordUtil, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, discordUtil, SubtagCall, SubtagType } from '@cluster/core';
 
 const dmCache: DMCache = {};
 export class DMSubtag extends BaseSubtag {

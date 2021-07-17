@@ -1,4 +1,4 @@
-import { BaseImageGenerator, Logger, mapping, SonicSaysOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, SonicSaysOptions } from '@image/core';
 
 export class SonicSaysGenerator extends BaseImageGenerator<'sonicSays'> {
     public constructor(logger: Logger) {

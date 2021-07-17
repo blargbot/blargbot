@@ -1,5 +1,5 @@
 import { EmbedOptions, Guild } from 'eris';
-import { BaseGuildCommand, CommandType, GuildCommandContext, parse, defaultStaff, guard, guildSettings, codeBlock } from '../core';
+import { BaseGuildCommand, CommandType, GuildCommandContext, parse, defaultStaff, guard, guildSettings, codeBlock } from '@cluster/core';
 import { Cluster } from '../Cluster';
 
 export class SettingsCommand extends BaseGuildCommand {

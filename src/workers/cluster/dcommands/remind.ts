@@ -1,5 +1,5 @@
 import moment, { Duration } from 'moment-timezone';
-import { BaseGlobalCommand, CommandContext, commandTypes, guard } from '../core';
+import { BaseGlobalCommand, CommandContext, commandTypes, guard } from '@cluster/core';
 
 export class TimerCommand extends BaseGlobalCommand {
     public constructor() {

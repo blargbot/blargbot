@@ -1,5 +1,5 @@
 import { ClusterConnection } from '../../cluster';
-import { parse, WorkerPoolEventHandler, WorkerPoolEventService, EvalResult, MasterEvalResult, EvalRequest, MasterEvalRequest } from '../core';
+import { parse, WorkerPoolEventHandler, WorkerPoolEventService, EvalResult, MasterEvalResult, EvalRequest, MasterEvalRequest } from '@master/core';
 import { Master } from '../Master';
 
 export class MasterEval extends WorkerPoolEventService<ClusterConnection> {

@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { ClusterConnection } from '../../cluster';
-import { IntervalService, WorkerState } from '../core';
+import { IntervalService, WorkerState } from '@master/core';
 import { ClusterStatsHandler } from '../events/clusterStats';
 import { Master } from '../Master';
 

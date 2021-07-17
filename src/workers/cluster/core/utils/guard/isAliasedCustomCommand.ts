@@ -1,4 +1,4 @@
-import { guard, StoredGuildCommand } from '../../globalCore';
+import { guard, StoredGuildCommand } from '@core';
 
 export function isAliasedCustomCommand<T extends StoredGuildCommand>(command: T | undefined): command is Extract<T, { alias: string; }> {
     return command !== undefined

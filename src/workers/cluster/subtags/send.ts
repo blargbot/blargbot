@@ -1,5 +1,5 @@
 import { EmbedOptions, MessageFile } from 'eris';
-import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall, MalformedEmbed, guard } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall, MalformedEmbed, guard } from '@cluster/core';
 
 export class SendSubtag extends BaseSubtag {
     public constructor() {

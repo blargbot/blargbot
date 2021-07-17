@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { CronService, MasterOptions } from '../core';
+import { CronService, MasterOptions } from '@master/core';
 import { Master } from '../Master';
 
 export class AvatarInterval extends CronService {

@@ -1,5 +1,5 @@
 import { Member } from 'eris';
-import { BaseGuildCommand, CommandType, GuildCommandContext, humanize } from '../core';
+import { BaseGuildCommand, CommandType, GuildCommandContext, humanize } from '@cluster/core';
 
 export class WarningsCommand extends BaseGuildCommand {
     public constructor() {

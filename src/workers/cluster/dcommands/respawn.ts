@@ -1,4 +1,4 @@
-import { BaseGlobalCommand, commandTypes, CommandContext, humanize, ClusterRespawnRequest } from '../core';
+import { BaseGlobalCommand, commandTypes, CommandContext, humanize, ClusterRespawnRequest } from '@cluster/core';
 
 export class RespawnCommand extends BaseGlobalCommand {
     public constructor() {

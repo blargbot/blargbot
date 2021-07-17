@@ -1,8 +1,8 @@
 import { EmbedField, EmbedOptions } from 'eris';
 import { CommandContext } from '../command';
-import { codeBlock, quote } from '../globalCore';
+import { codeBlock, quote } from '@core';
 import { SubtagHandlerCallSignature } from '../types';
-import { bbtagUtil, SubtagType, tagTypes } from '../utils';
+import { bbtagUtil, SubtagType, tagTypes } from '@cluster/core';
 import { BaseSubtag } from './BaseSubtag';
 import { limits } from './limits';
 

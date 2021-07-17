@@ -1,7 +1,7 @@
 import { EmbedOptions } from 'eris';
-import { metrics, Timer } from '../globalCore';
+import { metrics, Timer } from '@core';
 import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagOptions, SubtagResult } from '../types';
-import { SubtagType } from '../utils';
+import { SubtagType } from '@cluster/core';
 import { BBTagContext } from './BBTagContext';
 import { compileSignatures, parseDefinitions } from './compilation';
 

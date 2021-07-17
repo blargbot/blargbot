@@ -1,4 +1,4 @@
-import { BaseSubtag, bbtagUtil, parse, SubtagType } from '../core';
+import { BaseSubtag, bbtagUtil, parse, SubtagType } from '@cluster/core';
 
 export class MaxSubtag extends BaseSubtag {
     public constructor() {

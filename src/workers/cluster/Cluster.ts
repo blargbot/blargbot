@@ -1,8 +1,8 @@
 import moment, { Moment } from 'moment-timezone';
-import { ImageConnection } from '../image';
+import { ImageConnection } from '@image';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { BaseClient, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from './core';
+import { BaseClient, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from '@cluster/core';
 import { AutoresponseManager, BotStaffManager, CommandManager, GreetingManager, MessageAwaiter, ModerationManager, ReactionAwaiter } from './managers';
 
 export class Cluster extends BaseClient {

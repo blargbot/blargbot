@@ -1,7 +1,6 @@
 import { inspect } from 'util';
-import { BaseService, EventOptionsTypeMap, StoredEvent } from './globalCore';
+import { BaseService, EventOptionsTypeMap, Logger, StoredEvent } from '@core';
 import { TimeoutManager } from './TimeoutManager';
-import { Logger } from '../../image/core';
 
 export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeMap> extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

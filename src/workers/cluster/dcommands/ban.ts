@@ -1,5 +1,4 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, parse, FlagResult } from '../core';
-import { humanize } from '../core/globalCore';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, parse, FlagResult, humanize } from '@cluster/core';
 
 export class BanCommand extends BaseGuildCommand {
     public constructor() {

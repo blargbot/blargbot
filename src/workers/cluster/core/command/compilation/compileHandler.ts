@@ -1,6 +1,6 @@
-import { Binder, Binding } from '../../globalCore';
+import { Binder, Binding } from '@core';
 import { CommandBinderParseResult, CommandBinderState, CommandConcatParameter, CommandGreedyParameter, CommandHandler, CommandParameter, CommandSignatureHandler, CommandSingleParameter } from '../../types';
-import { parse } from '../../utils';
+import { parse } from '@cluster/core';
 import { CommandContext } from '../CommandContext';
 import { ScopedCommandBase } from '../ScopedCommandBase';
 import * as bindings from './binding';

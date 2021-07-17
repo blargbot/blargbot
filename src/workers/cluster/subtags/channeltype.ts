@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '@cluster/core';
 
 const channelTypes = ['text', 'dm', 'voice', 'group-dm', 'category', 'news', 'store'];
 

@@ -1,5 +1,5 @@
 import { CommandBinderState, CommandSignatureHandler } from '../../../types';
-import { Binder, BindingResultValue } from '../../../globalCore';
+import { Binder, BindingResultValue } from '@core';
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
 

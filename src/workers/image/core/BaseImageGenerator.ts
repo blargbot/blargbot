@@ -3,9 +3,10 @@ import Jimp from 'jimp';
 import fetch from 'node-fetch';
 import path from 'path';
 import phantom from 'phantom';
-import { Logger, TypeMapping } from './globalCore';
+import { Logger, TypeMapping } from '@core';
 import { ImageGeneratorMap, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
 import { inspect } from 'util';
+import { directory } from '~/res';
 
 const im = gm.subClass({ imageMagick: true });
 
@@ -32,7 +33,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
     protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<Buffer | undefined>;
 
     protected getLocalResourcePath(...segments: string[]): string {
-        return path.join(__dirname, '../../../../res/img', ...segments);
+        return path.join(directory, 'img', ...segments);
     }
 
     protected getLocalJimp(...segments: string[]): Promise<Jimp> {

@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, ModerationType, parse, FlagResult } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, ModerationType, parse, FlagResult } from '@cluster/core';
 
 export class WarnCommand extends BaseGuildCommand {
     public constructor() {

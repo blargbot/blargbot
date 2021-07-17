@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
-import { IntervalService, ClusterStats, cpuLoad } from '../core';
+import { IntervalService, ClusterStats, cpuLoad } from '@cluster/core';
 import { Cluster } from '../Cluster';
 
 export class ClusterStatsInterval extends IntervalService {

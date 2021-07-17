@@ -1,4 +1,4 @@
-import { ImageModuleLoader, BaseWorker, fafo, Logger, mapping, ImageGeneratorMap, ImageRequest } from './core';
+import { ImageModuleLoader, BaseWorker, fafo, Logger, mapping, ImageGeneratorMap, ImageRequest } from '@image/core';
 
 export class ImageWorker extends BaseWorker {
     public readonly renderers: ImageModuleLoader;

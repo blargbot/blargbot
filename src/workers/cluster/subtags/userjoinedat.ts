@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '@cluster/core';
 import moment from 'moment';
 
 export class UserJoineDatSubtag extends BaseSubtag {

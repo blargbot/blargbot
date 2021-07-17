@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { BBTagContext, bbtagUtil, rules, StoredEvent, TagStoredEventOptions, TagV4StoredEventOptions, TimeoutEventService } from '../core';
+import { BBTagContext, bbtagUtil, rules, StoredEvent, TagStoredEventOptions, TagV4StoredEventOptions, TimeoutEventService } from '@cluster/core';
 
 export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
     public constructor(protected readonly cluster: Cluster) {

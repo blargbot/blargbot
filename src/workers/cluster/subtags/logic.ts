@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, parse, SubtagCall } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, parse, SubtagCall } from '@cluster/core';
 
 const operators = bbtagUtil.operators.logic;
 

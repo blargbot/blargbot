@@ -1,4 +1,4 @@
-export * from './globalCore';
+export * from '@core';
 export * from './ImageModuleLoader';
 export * from './BaseImageGenerator';
 export * from './JimpGifEncoder';

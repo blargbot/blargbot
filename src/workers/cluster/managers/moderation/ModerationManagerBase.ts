@@ -1,6 +1,6 @@
 import { Guild } from 'eris';
 import { Cluster } from '../../Cluster';
-import { defaultStaff, StoredGuildSettings } from '../../core';
+import { defaultStaff, StoredGuildSettings } from '@cluster/core';
 import { ModerationManager } from '../ModerationManager';
 import { ModLogManager } from './ModLogManager';
 

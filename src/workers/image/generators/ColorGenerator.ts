@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, ColorOptions, Logger, mapping } from '../core';
+import { BaseImageGenerator, ColorOptions, Logger, mapping } from '@image/core';
 
 export class ColorGenerator extends BaseImageGenerator<'color'> {
     public constructor(logger: Logger) {

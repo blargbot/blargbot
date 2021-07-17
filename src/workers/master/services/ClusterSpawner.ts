@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { BaseService, humanize } from '../core';
+import { BaseService, humanize } from '@master/core';
 import { Master } from '../Master';
 
 export class ClusterSpawner extends BaseService {

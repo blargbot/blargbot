@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { ClusterConnection } from '../../cluster';
-import { codeBlock, WorkerPoolEventService, WorkerState } from '../core';
+import { codeBlock, WorkerPoolEventService, WorkerState } from '@master/core';
 import { Master } from '../Master';
 import { LogHandler } from './log';
 

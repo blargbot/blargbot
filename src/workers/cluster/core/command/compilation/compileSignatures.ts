@@ -1,4 +1,4 @@
-import { guard } from '../../globalCore';
+import { guard } from '@core';
 import { CommandDefinition, CommandSignatureHandler, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSingleParameter, CommandConcatParameter, CommandGreedyParameter } from '../../types';
 import { CommandContext } from '../CommandContext';
 import { CommandVariableType, isCommandVariableType } from './parameterType';

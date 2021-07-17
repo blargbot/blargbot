@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType } from '../core';
+import { BaseSubtag, SubtagType } from '@cluster/core';
 
 export class OutputSubtag extends BaseSubtag {
     public constructor() {

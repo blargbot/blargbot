@@ -1,6 +1,6 @@
-import { SubtagVariableType } from '../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
-import { Logger } from '../Logger';
-import { guard } from '../utils';
+import { SubtagVariableType } from '@cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
+import { Logger } from '@core/Logger';
+import { guard } from '@core/utils';
 import { PostgresDb } from './core';
 import { TagVariablesTable } from './types';
 

@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, CAHOptions, Logger, mapping } from '../core';
+import { BaseImageGenerator, CAHOptions, Logger, mapping } from '@image/core';
 
 export class CAHGenerator extends BaseImageGenerator<'cah'> {
     public constructor(logger: Logger) {

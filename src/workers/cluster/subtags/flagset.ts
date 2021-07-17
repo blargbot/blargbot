@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext, guard, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, guard, SubtagType } from '@cluster/core';
 
 export class FlagSetSubtag extends BaseSubtag {
     public constructor() {

@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, TheSearchOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, TheSearchOptions } from '@image/core';
 
 export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
     public constructor(logger: Logger) {

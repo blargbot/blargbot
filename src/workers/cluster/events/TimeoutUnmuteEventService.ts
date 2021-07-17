@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { StoredEvent, TimeoutEventService } from '../core';
+import { StoredEvent, TimeoutEventService } from '@cluster/core';
 
 export class TimeoutUnmuteEventService extends TimeoutEventService<'unmute'> {
     public constructor(protected readonly cluster: Cluster) {

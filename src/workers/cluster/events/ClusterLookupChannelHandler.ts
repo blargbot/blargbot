@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { ClusterEventService, ProcessMessageHandler, guard } from '../core';
+import { ClusterEventService, ProcessMessageHandler, guard } from '@cluster/core';
 
 export class ClusterLookupChannelHandler extends ClusterEventService {
     public constructor(

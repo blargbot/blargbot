@@ -1,5 +1,5 @@
-// import { BaseSubtag, BBTagContext, SubtagCall } from '../core/bbtag';
-// import { SubtagType, bbtagUtil } from '../utils';
+// import { BaseSubtag, BBTagContext, SubtagCall } from '@cluster/core/bbtag';
+// import { SubtagType, bbtagUtil } from '@cluster/core';
 // import Color from 'color';
 // const getArray = bbtagUtil.tagArray.getArray;
 

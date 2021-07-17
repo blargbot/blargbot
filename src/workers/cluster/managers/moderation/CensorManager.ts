@@ -1,5 +1,5 @@
 import { GuildMessage } from 'eris';
-import { CustomCommandLimit, guard, GuildCensorExceptions, ModerationType } from '../../core';
+import { CustomCommandLimit, guard, GuildCensorExceptions, ModerationType } from '@cluster/core';
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 

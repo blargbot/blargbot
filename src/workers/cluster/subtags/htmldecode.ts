@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType } from '../core';
+import { BaseSubtag, SubtagType } from '@cluster/core';
 import { AllHtmlEntities as Entities } from 'html-entities';
 const entities = new Entities();
 

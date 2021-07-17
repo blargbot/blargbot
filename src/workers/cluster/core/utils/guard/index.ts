@@ -1,4 +1,4 @@
-import { guard as globalGuard } from '../../globalCore';
+import { guard as globalGuard } from '@core';
 import { isGuildCommandContext } from './isGuildCommandContext';
 import { isPrivateCommandContext } from './isPrivateCommandContext';
 import { isAliasedCustomCommand } from './isAliasedCustomCommand';

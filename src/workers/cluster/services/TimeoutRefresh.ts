@@ -1,4 +1,4 @@
-import { IntervalService, TimeoutManager } from '../core';
+import { IntervalService, TimeoutManager } from '@cluster/core';
 import { Cluster } from '../Cluster';
 
 export class TimeoutRefresh extends IntervalService {

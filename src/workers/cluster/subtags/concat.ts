@@ -1,4 +1,4 @@
-import { BaseSubtag, bbtagUtil, SubtagType } from '../core';
+import { BaseSubtag, bbtagUtil, SubtagType } from '@cluster/core';
 
 export class ConcatSubtag extends BaseSubtag {
     public constructor() {

@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, ShitOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, ShitOptions } from '@image/core';
 
 export class ShitGenerator extends BaseImageGenerator<'shit'> {
     public constructor(logger: Logger) {

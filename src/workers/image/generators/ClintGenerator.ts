@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, ClintOptions, Logger, mapping } from '../core';
+import { BaseImageGenerator, ClintOptions, Logger, mapping } from '@image/core';
 
 export class ClintGenerator extends BaseImageGenerator<'clint'> {
     public constructor(logger: Logger) {

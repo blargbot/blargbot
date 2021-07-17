@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext, between, parse, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, between, parse, SubtagCall, SubtagType } from '@cluster/core';
 
 export class BaseNumberSubtag extends BaseSubtag {
     public constructor() {

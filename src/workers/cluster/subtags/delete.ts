@@ -1,5 +1,5 @@
 import { Message } from 'eris';
-import { BaseSubtag, BBTagContext, SubtagCall, SubtagType, guard } from '../core';
+import { BaseSubtag, BBTagContext, SubtagCall, SubtagType, guard } from '@cluster/core';
 
 export class DeleteSubtag extends BaseSubtag {
     public constructor() {

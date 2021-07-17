@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext, discordUtil, mapping, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, discordUtil, mapping, SubtagCall, SubtagType } from '@cluster/core';
 import { EditChannelOptions } from 'eris';
 
 export class ChannelEditSubtag extends BaseSubtag {

@@ -1,6 +1,6 @@
 import { AnyMessage } from 'eris';
 import { Cluster } from '../Cluster';
-import { guard, metrics, sleep } from '../core';
+import { guard, metrics, sleep } from '@cluster/core';
 import fetch from 'node-fetch';
 import FormData from 'form-data';
 

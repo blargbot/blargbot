@@ -1,5 +1,5 @@
 import Jimp from 'jimp';
-import { BaseImageGenerator, ClippyOptions, Logger, mapping } from '../core';
+import { BaseImageGenerator, ClippyOptions, Logger, mapping } from '@image/core';
 
 export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
     public constructor(logger: Logger) {

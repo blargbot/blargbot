@@ -1,5 +1,5 @@
 import colorThief from 'color-thief-jimp';
-import { BaseImageGenerator, Logger, mapping, StarVsTheForcesOfOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, StarVsTheForcesOfOptions } from '@image/core';
 import { BetterColorAction } from '@jimp/plugin-color';
 import Jimp from 'jimp';
 

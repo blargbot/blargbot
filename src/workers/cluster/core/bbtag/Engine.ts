@@ -1,9 +1,9 @@
 import { Client as ErisClient } from 'eris';
 import { Cluster } from '../../Cluster';
 import { ClusterUtilities } from '../../ClusterUtilities';
-import { Database, ModuleLoader, sleep, Timer, Logger } from '../globalCore';
+import { Database, ModuleLoader, sleep, Timer, Logger } from '@core';
 import { AnalysisResults, BBTagContextOptions, ExecutionResult, RuntimeReturnState, Statement, SubtagCall, SubtagHandler } from '../types';
-import { bbtagUtil, parse } from '../utils';
+import { bbtagUtil, parse } from '@cluster/core';
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagContext } from './BBTagContext';
 import { BBTagError } from './BBTagError';

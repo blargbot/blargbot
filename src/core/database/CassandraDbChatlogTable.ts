@@ -1,10 +1,9 @@
 import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
-import { Chatlog, ChatlogsTable, ChatlogType } from './types';
-import { metrics } from '../Metrics';
-import { mapping, snowflake } from '../utils';
-import { Logger } from '../Logger';
-import { ChatlogMessage } from '../../workers/image/core';
+import { Chatlog, ChatlogMessage, ChatlogsTable, ChatlogType } from './types';
+import { metrics } from '@core/Metrics';
+import { mapping, snowflake } from '@core/utils';
+import { Logger } from '@core/Logger';
 
 function stringifyType(type: ChatlogType): string {
     switch (type) {

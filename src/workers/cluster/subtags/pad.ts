@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '@cluster/core';
 
 export class PadSubtag extends BaseSubtag {
     public constructor() {

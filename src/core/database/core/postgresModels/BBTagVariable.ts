@@ -1,6 +1,6 @@
 import sequelize, { ENUM, STRING, TEXT } from 'sequelize';
-import { SubtagVariableType } from '../../../../workers/cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
-import { Logger } from '../../../Logger';
+import { SubtagVariableType } from '@cluster/core/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
+import { Logger } from '@core/Logger';
 
 type BBTagVariable = {
     name: string;

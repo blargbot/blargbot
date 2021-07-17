@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 import moment from 'moment';
-import config from '../../../config.json';
+import config from '~/config.json';
 import { EventEmitter } from 'eventemitter3';
 import ReadWriteLock from 'rwlock';
 import { Client as ErisClient, User, Member, DiscordRESTError, DiscordHTTPError, Guild, Permission, GuildAuditLogEntry, AnyChannel, GuildMessage, AnyMessage } from 'eris';
@@ -8,9 +8,9 @@ import isSafeRegex from 'safe-regex';
 import { parse } from './parse';
 import limax from 'limax';
 import { nfkd } from 'unorm';
-import { humanize, fafo, randInt } from '../utils';
+import { humanize, fafo, randInt } from '@core/utils';
 import { StoredTag } from '../database';
-import { Logger } from '../Logger';
+import { Logger } from '@core/Logger';
 import { guard } from './guard';
 
 const tagLock = Symbol('The key for a ReadWriteLock');

@@ -1,4 +1,4 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, parse, FlagResult } from '../core';
+import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, parse, FlagResult } from '@cluster/core';
 
 export class PardonCommand extends BaseGuildCommand {
     public constructor() {

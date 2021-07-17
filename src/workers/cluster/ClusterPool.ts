@@ -1,4 +1,4 @@
-import { Logger, ProcessMessageHandler, WorkerPool } from './core';
+import { Logger, ProcessMessageHandler, WorkerPool } from '@cluster/core';
 import { ClusterConnection } from './ClusterConnection';
 
 export class ClusterPool extends WorkerPool<ClusterConnection> {

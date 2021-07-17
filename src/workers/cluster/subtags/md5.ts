@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType } from '../core';
+import { BaseSubtag, SubtagType } from '@cluster/core';
 import md5 from 'md5';
 
 export class Md5Subtag extends BaseSubtag {

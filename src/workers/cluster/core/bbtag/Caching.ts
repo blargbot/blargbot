@@ -1,4 +1,4 @@
-import { Timer } from '../globalCore';
+import { Timer } from '@core';
 import { SubtagCall } from '../types';
 import { BBTagContext } from './BBTagContext';
 import { tagVariableScopes } from './tagVariables';

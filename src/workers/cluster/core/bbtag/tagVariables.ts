@@ -1,7 +1,7 @@
 import { BBTagContext } from './BBTagContext';
 import ReadWriteLock from 'rwlock';
 import { get as getLock } from './lock';
-import { SubtagVariableType } from '../utils';
+import { SubtagVariableType } from '@cluster/core';
 import { SubtagCall } from '../types';
 
 export const tagVariableScopes: readonly TagVariableScope[] = [

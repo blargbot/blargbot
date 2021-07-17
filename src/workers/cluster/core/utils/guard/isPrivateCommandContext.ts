@@ -1,5 +1,5 @@
 import { Channel, PrivateChannel } from 'eris';
-import { guard } from '../../globalCore';
+import { guard } from '@core';
 import { CommandContext } from '../../command';
 import { PrivateCommandContext } from '../../types';
 

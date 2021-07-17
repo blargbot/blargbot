@@ -1,4 +1,4 @@
-import { guard, humanize } from '../../globalCore';
+import { guard, humanize } from '@core';
 import { FlagDefinition, FlagResult, FlagResultValueSet } from '../../types';
 
 export function flags(definitions: Iterable<FlagDefinition>, text: string, strict = false): FlagResult {

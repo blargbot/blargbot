@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall } from '@cluster/core';
 
 export class IncrementSubtag extends BaseSubtag {
     public constructor() {

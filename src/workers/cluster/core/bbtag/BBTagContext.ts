@@ -6,12 +6,11 @@ import { AnyGuildChannel, Member, User, Guild, Role, Permission, Client as ErisC
 import { TagCooldownManager } from './TagCooldownManager';
 import { BBTagEngine } from './Engine';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '../types';
-import { Database, oldBu, StoredGuildCommand, StoredTag, Timer, Logger, ModuleLoader } from '../globalCore';
-import { bbtagUtil, guard, parse } from '../utils';
+import { Database, oldBu, StoredGuildCommand, StoredTag, Timer, Logger, ModuleLoader, humanize } from '@core';
+import { bbtagUtil, guard, parse } from '@cluster/core';
 import { limits } from './limits';
 import { ClusterUtilities } from '../../ClusterUtilities';
 import { BaseSubtag } from '.';
-import { humanize } from '../../../image/core';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
     return { id: entity.id, serialized: JSON.stringify(entity) };

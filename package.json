@@ -2,7 +2,7 @@
     "name": "blargbot",
     "version": "1.0.0",
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
-    "main": "build/index.js",
+    "main": "out/index.js",
     "dependencies": {
         "@nuxtjs/axios": "^5.3.3",
         "airtable": "^0.5.7",
@@ -39,6 +39,7 @@
         "limax": "^2.0.0",
         "md5": "^2.2.1",
         "mkdirp": "^0.5.1",
+        "module-alias": "^2.2.2",
         "moment-timezone": "^0.5.21",
         "node-emoji": "^1.4.1",
         "node-fetch": "^2.6.1",
@@ -115,5 +116,14 @@
     "bugs": {
         "url": "https://github.com/blargbot/blargbot/issues"
     },
-    "homepage": "https://github.com/blargbot/blargbot#readme"
+    "homepage": "https://github.com/blargbot/blargbot#readme",
+    "_moduleAliases": {
+        "~": "out",
+        "@core": "out/src/core",
+        "@cluster": "out/src/workers/cluster",
+        "@master": "out/src/workers/master",
+        "@image": "out/src/workers/image",
+        "@website": "out/src/workers/website",
+        "@website-old": "out/src/workers/website_old"
+    }
 }

@@ -1,4 +1,4 @@
-import { BaseImageGenerator, Logger, mapping, PixelateOptions } from '../core';
+import { BaseImageGenerator, Logger, mapping, PixelateOptions } from '@image/core';
 import Jimp from 'jimp';
 
 export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {

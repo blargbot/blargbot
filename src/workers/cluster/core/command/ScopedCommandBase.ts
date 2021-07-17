@@ -1,5 +1,5 @@
 import { CommandContext, BaseCommand } from '../command';
-import { SendPayload } from '../globalCore';
+import { SendPayload } from '@core';
 import { CommandDefinition, CommandMiddleware, CommandOptions, CommandResult } from '../types';
 import { compileSignatures } from './compilation';
 import { HandlerMiddleware } from './middleware';

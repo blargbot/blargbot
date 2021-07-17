@@ -1,5 +1,5 @@
 import { EmbedOptions } from 'eris';
-import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, parse, SubtagArgumentValueArray, SubtagCall } from '../core';
+import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, parse, SubtagArgumentValueArray, SubtagCall } from '@cluster/core';
 
 const { all: allOperators, logic, numeric, compare } = bbtagUtil.operators;
 

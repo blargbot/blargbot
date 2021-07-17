@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { BaseSubtag, BBTagContext, parse, sleep, SubtagCall, SubtagType } from '../core';
+import { BaseSubtag, BBTagContext, parse, sleep, SubtagCall, SubtagType } from '@cluster/core';
 
 const maxSleep = moment.duration(5, 'minutes');
 

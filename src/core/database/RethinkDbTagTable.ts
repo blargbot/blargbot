@@ -1,6 +1,6 @@
 import { RethinkDb, RethinkDbTable } from './core';
 import { StoredTag, TagsTable } from './types';
-import { Logger } from '../Logger';
+import { Logger } from '@core/Logger';
 
 export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTable {
     public constructor(

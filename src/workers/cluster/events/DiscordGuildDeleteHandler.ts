@@ -1,6 +1,6 @@
 import { Guild } from 'eris';
 import { Cluster } from '../Cluster';
-import { DiscordEventService, metrics } from '../core';
+import { DiscordEventService, metrics } from '@cluster/core';
 
 export class DiscordGuildDeleteHandler extends DiscordEventService<'guildDelete'> {
     public constructor(protected readonly cluster: Cluster) {

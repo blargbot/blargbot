@@ -10,7 +10,7 @@ import { RethinkDbTagTable } from './RethinkDbTagTable';
 import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
 import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
 import { PostgresDbTagVariablesTable } from './PostgresDbTagVariablesTable';
-import { Logger } from '../Logger';
+import { Logger } from '@core/Logger';
 
 export * from './types';
 

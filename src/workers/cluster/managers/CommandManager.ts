@@ -1,6 +1,6 @@
 import { AnyMessage, DiscordRESTError, PossiblyUncachedMessage } from 'eris';
 import { Cluster } from '../Cluster';
-import { BaseCommand, CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, CommandContext, commandTypes, CustomCommandLimit, defaultStaff, FlagDefinition, guard, GuildCommandContext, humanize, MessageIdQueue, metrics, ModuleLoader, StoredAliasedGuildCommand, StoredGuildCommand, StoredRawGuildCommand, Timer } from '../core';
+import { BaseCommand, CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, CommandContext, commandTypes, CustomCommandLimit, defaultStaff, FlagDefinition, guard, GuildCommandContext, humanize, MessageIdQueue, metrics, ModuleLoader, StoredAliasedGuildCommand, StoredGuildCommand, StoredRawGuildCommand, Timer } from '@cluster/core';
 
 export class CommandManager extends ModuleLoader<BaseCommand> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

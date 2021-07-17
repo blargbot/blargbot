@@ -1,5 +1,5 @@
 import { CommandBaseOptions, CommandSignature, FlagDefinition } from '../types';
-import { CommandType } from '../utils';
+import { CommandType } from '@cluster/core';
 import { CommandContext } from './CommandContext';
 
 export abstract class BaseCommand implements CommandBaseOptions {

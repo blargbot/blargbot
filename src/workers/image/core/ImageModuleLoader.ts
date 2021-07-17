@@ -1,5 +1,5 @@
 import { BaseImageGenerator } from './BaseImageGenerator';
-import { BaseModuleLoader, Logger, guard, ModuleResult } from './globalCore';
+import { BaseModuleLoader, Logger, guard, ModuleResult } from '@core';
 
 export class ImageModuleLoader extends BaseModuleLoader<BaseImageGenerator> {
     public constructor(

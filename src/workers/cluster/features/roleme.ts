@@ -1,6 +1,6 @@
 import { AnyMessage } from 'eris';
 import { Cluster } from '../Cluster';
-import { CustomCommandLimit, guard } from '../core';
+import { CustomCommandLimit, guard } from '@cluster/core';
 
 export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<void> {
     if (!guard.isGuildMessage(msg))

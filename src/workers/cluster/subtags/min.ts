@@ -1,4 +1,4 @@
-import { BaseSubtag, SubtagType, parse, bbtagUtil } from '../core';
+import { BaseSubtag, SubtagType, parse, bbtagUtil } from '@cluster/core';
 
 export class MinSubtag extends BaseSubtag {
     public constructor() {

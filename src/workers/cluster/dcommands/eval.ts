@@ -1,4 +1,4 @@
-import { BaseGlobalCommand, commandTypes, CommandContext, codeBlock, EvalResult, EvalType } from '../core';
+import { BaseGlobalCommand, commandTypes, CommandContext, codeBlock, EvalResult, EvalType } from '@cluster/core';
 
 export class EvalCommand extends BaseGlobalCommand {
     public constructor() {

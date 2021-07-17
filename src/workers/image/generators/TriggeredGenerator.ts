@@ -1,4 +1,4 @@
-import { BaseImageGenerator, randInt, JimpGifEncoder, Logger, mapping, TriggeredOptions } from '../core';
+import { BaseImageGenerator, randInt, JimpGifEncoder, Logger, mapping, TriggeredOptions } from '@image/core';
 import Jimp from 'jimp';
 
 export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {

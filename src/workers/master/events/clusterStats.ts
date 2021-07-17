@@ -1,5 +1,5 @@
 import { ClusterConnection, ClusterStats } from '../../cluster';
-import { WorkerPoolEventService } from '../core';
+import { WorkerPoolEventService } from '@master/core';
 import { Master } from '../Master';
 
 export class ClusterStatsHandler extends WorkerPoolEventService<ClusterConnection> {

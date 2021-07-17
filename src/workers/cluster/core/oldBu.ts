@@ -1,8 +1,8 @@
 import { GuildMessage, Client as ErisClient, Member, EmbedAuthorOptions, Permission, User } from 'eris';
 import { ClusterUtilities } from '../ClusterUtilities';
-import { humanize, oldBu as globalOldBu } from './globalCore';
+import { humanize, oldBu as globalOldBu } from '@core';
 import { defaultStaff } from './utils';
-import config from '../../../../config.json';
+import config from '~/config.json';
 
 const util = <ClusterUtilities><unknown>undefined;
 const bot = <ErisClient><unknown>undefined;
@@ -16,7 +16,7 @@ export const oldBu = {
             //console.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
             return false;
         }
-        
+
         const guild = await util.database.guilds.get(guildid);
 
         return guild?.channels[channelid]?.blacklisted ?? false;

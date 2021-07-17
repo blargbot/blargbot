@@ -1,7 +1,6 @@
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment';
-import { BaseGlobalCommand, CommandContext, commandTypes, guard, SendPayload } from '../core';
-import { codeBlock, humanize } from '../core/globalCore';
+import { BaseGlobalCommand, CommandContext, commandTypes, guard, SendPayload, humanize, codeBlock } from '@cluster/core';
 
 export class TimersCommand extends BaseGlobalCommand {
     public constructor() {

@@ -3,8 +3,8 @@ import { Timer } from '../Timer';
 import { Moment } from 'moment-timezone';
 import moment from 'moment';
 import { IPCEvents } from './IPCEvents';
-import { snowflake } from '../utils';
-import { Logger } from '../Logger';
+import { snowflake } from '@core/utils';
+import { Logger } from '@core/Logger';
 
 export const enum WorkerState {
     READY,
@@ -43,7 +43,7 @@ export abstract class WorkerConnection extends IPCEvents {
         this.created = moment();
         this.args = [...process.execArgv];
         this.env = { ...process.env };
-        this.file = require.resolve(`../../entrypoints/${this.worker}`);
+        this.file = require.resolve(`~/src/entrypoints/${this.worker}`);
         this.#killed = false;
         this.on('alive', () => this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive`));
         this.on('error', err => this.logger.error(`${this.worker} worker (ID: ${this.id}) error: `, err));

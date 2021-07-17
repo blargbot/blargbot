@@ -1,8 +1,8 @@
 import { RethinkDb, RethinkDbCachedTable } from './core';
 import { User } from 'eris';
 import { MutableStoredUser, StoredUser, StoredUserSettings, UserTable } from './types';
-import { Logger } from '../Logger';
-import { guard } from '../utils';
+import { Logger } from '@core/Logger';
+import { guard } from '@core/utils';
 
 export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> implements UserTable {
     public constructor(

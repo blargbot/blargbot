@@ -1,6 +1,6 @@
 import EventEmitter from 'eventemitter3';
-import { Logger } from '../Logger';
-import { getRange } from '../utils';
+import { Logger } from '@core/Logger';
+import { getRange } from '@core/utils';
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
 export abstract class WorkerPool<TWorker extends WorkerConnection> {

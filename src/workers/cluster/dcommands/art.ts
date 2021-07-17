@@ -1,6 +1,6 @@
 import { MessageFile } from 'eris';
 import { duration } from 'moment-timezone';
-import { BaseGlobalCommand, CommandContext, commandTypes, FlagResult, RatelimitMiddleware, SingleThreadMiddleware } from '../core';
+import { BaseGlobalCommand, CommandContext, commandTypes, FlagResult, RatelimitMiddleware, SingleThreadMiddleware } from '@cluster/core';
 
 export class ArtCommand extends BaseGlobalCommand {
     public constructor() {

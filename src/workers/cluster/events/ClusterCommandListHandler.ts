@@ -1,5 +1,5 @@
 import { Cluster } from '../Cluster';
-import { ClusterEventService, ProcessMessageHandler, CommandListResult } from '../core';
+import { ClusterEventService, ProcessMessageHandler, CommandListResult } from '@cluster/core';
 
 export class ClusterCommandListHandler extends ClusterEventService {
     public constructor(

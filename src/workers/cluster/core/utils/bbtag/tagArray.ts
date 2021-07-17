@@ -1,5 +1,5 @@
 import { BBTagContext } from '../../bbtag';
-import { getRange, mapping } from '../../globalCore';
+import { getRange, mapping } from '@core';
 import { BBTagArray, SubtagCall } from '../../types';
 import { parse } from '../parse';
 

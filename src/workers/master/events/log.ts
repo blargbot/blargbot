@@ -1,6 +1,6 @@
 import stripAnsi from 'strip-ansi';
 import { ClusterConnection } from '../../cluster';
-import { LogEntry, RollingArray, WorkerPoolEventService } from '../core';
+import { LogEntry, RollingArray, WorkerPoolEventService } from '@master/core';
 import { Master } from '../Master';
 
 export class LogHandler extends WorkerPoolEventService<ClusterConnection> {

@@ -1,6 +1,4 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, FlagResult } from '../core';
-import { humanize } from '../core/globalCore';
-
+import { BaseGuildCommand, commandTypes, GuildCommandContext, FlagResult, humanize } from '@cluster/core';
 export class KickCommand extends BaseGuildCommand {
     public constructor() {
         super({
