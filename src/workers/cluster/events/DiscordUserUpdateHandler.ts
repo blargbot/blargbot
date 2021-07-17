@@ -1,6 +1,7 @@
+import { Cluster } from '@cluster';
+import { guard } from '@cluster/utils';
+import { DiscordEventService } from '@core/serviceTypes';
 import { PartialUser, User } from 'eris';
-import { Cluster } from '../Cluster';
-import { DiscordEventService, guard } from '@cluster/core';
 
 export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> {
     public constructor(protected readonly cluster: Cluster) {

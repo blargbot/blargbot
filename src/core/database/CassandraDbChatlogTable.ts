@@ -1,9 +1,9 @@
+import { Logger } from '@core/Logger';
+import { metrics } from '@core/Metrics';
+import { Chatlog, ChatlogMessage, ChatlogsTable, ChatlogType } from '@core/types';
+import { mapping, snowflake } from '@core/utils';
 import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
-import { Chatlog, ChatlogMessage, ChatlogsTable, ChatlogType } from './types';
-import { metrics } from '@core/Metrics';
-import { mapping, snowflake } from '@core/utils';
-import { Logger } from '@core/Logger';
 
 function stringifyType(type: ChatlogType): string {
     switch (type) {
@@ -97,15 +97,15 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
     }
 }
 
-const mapChatlog = mapping.object<Chatlog>({
-    attachment: mapping.optionalString,
-    channelid: mapping.string,
-    content: mapping.string,
-    embeds: mapping.string,
-    guildid: mapping.string,
-    id: mapping.string,
-    msgid: mapping.string,
-    msgtime: mapping.instanceof(Date),
-    type: mapping.in(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
-    userid: mapping.string
+const mapChatlog = mapping.mapObject<Chatlog>({
+    attachment: mapping.mapOptionalString,
+    channelid: mapping.mapString,
+    content: mapping.mapString,
+    embeds: mapping.mapString,
+    guildid: mapping.mapString,
+    id: mapping.mapString,
+    msgid: mapping.mapString,
+    msgtime: mapping.mapInstanceof(Date),
+    type: mapping.mapIn(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
+    userid: mapping.mapString
 });

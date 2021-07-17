@@ -1,16 +1,19 @@
+import { Cluster, ClusterUtilities } from '@cluster';
+import { getDocsEmbed, TagLimit } from '@cluster/bbtag';
+import { BaseGuildCommand, CommandContext } from '@cluster/command';
+import { GuildCommandContext } from '@cluster/types';
+import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse } from '@cluster/utils';
+import { SendPayload, StoredTag } from '@core/types';
 import { EmbedField, EmbedOptions, MessageFile, User } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
-import { Cluster } from '../Cluster';
-import { ClusterUtilities } from '../ClusterUtilities';
-import { BaseGuildCommand, commandTypes, bbtagUtil, GuildCommandContext, humanize, SendPayload, codeBlock, parse, StoredTag, getDocsEmbed, CommandContext, TagLimit, guard } from '@cluster/core';
 
 export class TagCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
         super({
             name: 'tag',
             aliases: ['t'],
-            category: commandTypes.GENERAL,
+            category: CommandType.GENERAL,
             description: 'Tags are a system of public commands that anyone can create or run, using the BBTag language.\n\n'
                 + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
                 + `By creating a tag, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,

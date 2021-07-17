@@ -1,10 +1,12 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, FlagResult } from '@cluster/core';
+import { BaseGuildCommand } from '@cluster/command';
+import { FlagResult, GuildCommandContext } from '@cluster/types';
+import { CommandType, humanize } from '@cluster/utils';
 
 export class UnmuteCommand extends BaseGuildCommand {
     public constructor() {
         super({
             name: 'unmute',
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             flags: [
                 { flag: 'r', word: 'reason', description: 'The reason for the unmute.' }
             ],

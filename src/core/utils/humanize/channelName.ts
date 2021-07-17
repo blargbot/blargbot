@@ -1,4 +1,5 @@
 import { AnyChannel } from 'eris';
+
 import { fullName } from './fullName';
 
 export function channelName(channel: AnyChannel): string {

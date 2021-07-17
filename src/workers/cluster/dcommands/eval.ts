@@ -1,10 +1,12 @@
-import { BaseGlobalCommand, commandTypes, CommandContext, codeBlock, EvalResult, EvalType } from '@cluster/core';
+import { BaseGlobalCommand, CommandContext } from '@cluster/command';
+import { codeBlock, CommandType } from '@cluster/utils';
+import { EvalResult, EvalType } from '@core/types';
 
 export class EvalCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'eval',
-            category: commandTypes.OWNER,
+            category: CommandType.OWNER,
             definitions: [
                 {
                     parameters: '{code+}',

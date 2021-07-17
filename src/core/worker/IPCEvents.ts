@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import EventEmitter from 'eventemitter3';
-import { ChildProcess } from 'child_process';
+import { AnyProcessMessageHandler, ProcessMessage, ProcessMessageHandler } from '@core/types';
 import { snowflake } from '@core/utils';
-import { AnyProcessMessageHandler, ProcessMessage, ProcessMessageHandler } from '../types';
+import { ChildProcess } from 'child_process';
+import EventEmitter from 'eventemitter3';
 
 export class IPCEvents {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

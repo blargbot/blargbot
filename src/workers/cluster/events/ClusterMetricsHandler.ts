@@ -1,5 +1,7 @@
-import { ClusterEventService, ProcessMessageHandler, metrics } from '@cluster/core';
-import { Cluster } from '../Cluster';
+import { Cluster } from '@cluster';
+import { ClusterEventService } from '@cluster/serviceTypes';
+import { metrics } from '@core/Metrics';
+import { ProcessMessageHandler } from '@core/types';
 
 export class ClusterMetricsHandler extends ClusterEventService {
     public constructor(cluster: Cluster) {

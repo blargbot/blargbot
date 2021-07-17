@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ClintOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, ClintOptions, Logger, mapping } from '@image/core';
 
 export class ClintGenerator extends BaseImageGenerator<'clint'> {
     public constructor(logger: Logger) {
@@ -26,6 +29,6 @@ export class ClintGenerator extends BaseImageGenerator<'clint'> {
     }
 }
 
-const mapOptions = mapping.object<ClintOptions>({
-    image: mapping.string
+const mapOptions = mapping.mapObject<ClintOptions>({
+    image: mapping.mapString
 });

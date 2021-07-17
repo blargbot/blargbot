@@ -1,9 +1,9 @@
 const Koa = require('koa');
 const Router = require('koa-router');
 const { Nuxt, Builder } = require('nuxt');
-const config = require('../../config.json');
 const bodyParser = require('koa-bodyparser');
 const enableDestroy = require('server-destroy');
+const config = require('../../config.json');
 
 module.exports = class Frontend {
     constructor(client) {

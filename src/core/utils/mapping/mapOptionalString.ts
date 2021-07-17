@@ -1,10 +1,11 @@
-import { mappingResultNever } from './constants';
-import { TypeMappingResult } from './types';
+import { TypeMappingResult } from '@core/types';
+
+import { result } from './result';
 
 export function mapOptionalString(value: unknown): TypeMappingResult<string | undefined> {
     return typeof value === 'string'
         ? { valid: true, value }
         : value === null || value === undefined
-            ? { valid: true, value: undefined }
-            : mappingResultNever;
+            ? result.undefined
+            : result.never;
 }

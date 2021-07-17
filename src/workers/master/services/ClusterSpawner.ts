@@ -1,6 +1,7 @@
+import { BaseService } from '@core/serviceTypes';
+import { humanize } from '@core/utils';
+import { Master } from '@master';
 import moment from 'moment';
-import { BaseService, humanize } from '@master/core';
-import { Master } from '../Master';
 
 export class ClusterSpawner extends BaseService {
     public readonly type = 'cluster';

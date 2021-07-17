@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const sf = require('snekfetch');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 let total = 0;

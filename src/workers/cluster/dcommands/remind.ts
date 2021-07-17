@@ -1,12 +1,13 @@
+import { BaseGlobalCommand, CommandContext } from '@cluster/command';
+import { CommandType, guard } from '@cluster/utils';
 import moment, { Duration } from 'moment-timezone';
-import { BaseGlobalCommand, CommandContext, commandTypes, guard } from '@cluster/core';
 
 export class TimerCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'remind',
             aliases: ['remindme'],
-            category: commandTypes.GENERAL,
+            category: CommandType.GENERAL,
             flags: [
                 { flag: 'c', word: 'channel', description: 'Sets the reminder to appear in the current channel rather than a DM' }
             ],

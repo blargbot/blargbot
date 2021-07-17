@@ -1,5 +1,6 @@
 import { EmbedOptions } from 'eris';
-import { discordUtil } from '../discord';
+
+import * as discordUtil from '../discord';
 
 export function checkEmbedSize(embed: EmbedOptions | undefined): boolean {
     if (embed === undefined) return true;

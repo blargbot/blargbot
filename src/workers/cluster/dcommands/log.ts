@@ -1,11 +1,14 @@
+import { BaseGuildCommand } from '@cluster/command';
+import { GuildCommandContext } from '@cluster/types';
+import { CommandType, guard, humanize } from '@cluster/utils';
+import { SendPayloadContent, StoredGuildEventLogType } from '@core/types';
 import { EmbedField, Role, User } from 'eris';
-import { BaseGuildCommand, commandTypes, guard, GuildCommandContext, humanize, SendPayloadContent, StoredGuildEventLogType } from '@cluster/core';
 
 export class LogCommand extends BaseGuildCommand {
     public constructor() {
         super({
             name: 'log',
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             definitions: [
                 {
                     parameters: 'list',

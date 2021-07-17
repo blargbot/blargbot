@@ -1,5 +1,7 @@
+import { WarnDetails, WarnResult } from '@cluster/types';
+import { ModerationType } from '@cluster/utils';
 import { Member, User } from 'eris';
-import { ModerationType, WarnDetails, WarnResult } from '@cluster/core';
+
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 

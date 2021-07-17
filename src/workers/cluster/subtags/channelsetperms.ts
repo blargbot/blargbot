@@ -1,4 +1,6 @@
-import { BaseSubtag, BBTagContext, discordUtil, parse, SubtagCall, SubtagType } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { discordUtil, parse, SubtagType } from '@cluster/utils';
 
 export class ChannelSetPermsSubtag extends BaseSubtag {
     public constructor() {
@@ -7,7 +9,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
             category: SubtagType.API,
             definition: [
                 {
-                    parameters: ['channel', 'type', 'memberid|roleid'],//TODO allow member/role names
+                    parameters: ['channel', 'type', 'memberid|roleid'], //TODO allow member/role names
                     description: 'Deletes the permission overwrites of `memberid|roleid` in `channel`.\n' +
                         'Returns the channel\'s ID.',
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222}',
@@ -88,8 +90,8 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
             } else {
                 await channel.editPermission(
                     entityId,
-                    isNaN(allow) ? 0 : allow,//TODO feel like this should be set to the current permission value in the channel
-                    isNaN(deny) ? 0 : deny,//TODO idem
+                    isNaN(allow) ? 0 : allow, //TODO feel like this should be set to the current permission value in the channel
+                    isNaN(deny) ? 0 : deny, //TODO idem
                     type,
                     fullReason
                 );

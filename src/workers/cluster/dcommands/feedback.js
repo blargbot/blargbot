@@ -1,6 +1,6 @@
-const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const Airtable = require('airtable');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 let types = {

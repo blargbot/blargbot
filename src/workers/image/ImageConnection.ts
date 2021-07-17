@@ -1,4 +1,6 @@
-import { WorkerConnection, Logger, ImageGeneratorMap, ImageRequest } from '@image/core';
+import { Logger } from '@core/Logger';
+import { WorkerConnection } from '@core/worker';
+import { ImageGeneratorMap, ImageRequest } from '@image/types';
 
 export class ImageConnection extends WorkerConnection {
     public constructor(

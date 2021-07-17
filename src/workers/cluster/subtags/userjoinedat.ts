@@ -1,7 +1,9 @@
-import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { SubtagType } from '@cluster/utils';
 import moment from 'moment';
 
-export class UserJoineDatSubtag extends BaseSubtag {
+export class UserJoinedAtSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userjoinedat',

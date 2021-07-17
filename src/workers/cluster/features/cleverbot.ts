@@ -1,8 +1,9 @@
+import { Cluster } from '@cluster';
+import { guard, sleep } from '@cluster/utils';
+import { metrics } from '@core/Metrics';
 import { AnyMessage } from 'eris';
-import { Cluster } from '../Cluster';
-import { guard, metrics, sleep } from '@cluster/core';
-import fetch from 'node-fetch';
 import FormData from 'form-data';
+import fetch from 'node-fetch';
 
 export async function tryHandleCleverbot(cluster: Cluster, msg: AnyMessage): Promise<boolean> {
     if (!guard.isGuildMessage(msg)

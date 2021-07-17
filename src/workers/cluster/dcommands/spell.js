@@ -1,6 +1,6 @@
+const { Collection } = require('eris');
 const BaseCommand = require('../structures/BaseCommand');
 const jsonSpells = require('../../res/spells.json');
-const { Collection } = require('eris');
 const newbutils = require('../newbu');
 
 const spells = new Collection(Object);

@@ -1,5 +1,6 @@
+import { MessageFilter } from '@core/types';
 import { AnyMessage } from 'eris';
-import { MessageFilter } from '../../database';
+
 import { testRegexSafe } from '../createRegExp';
 
 export function testMessageFilter(filter: MessageFilter, message: AnyMessage): boolean {

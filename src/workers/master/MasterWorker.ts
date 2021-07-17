@@ -1,4 +1,7 @@
-import { BaseWorker, Logger, MasterOptions } from '@master/core';
+import { Logger } from '@core/Logger';
+import { BaseWorker } from '@core/worker';
+import { MasterOptions } from '@master/types';
+
 import { Master } from './Master';
 
 export class MasterWorker extends BaseWorker {

@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class ReasonCommand extends BaseCommand {

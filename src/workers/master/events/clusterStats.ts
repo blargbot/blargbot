@@ -1,6 +1,7 @@
-import { ClusterConnection, ClusterStats } from '../../cluster';
-import { WorkerPoolEventService } from '@master/core';
-import { Master } from '../Master';
+import { ClusterConnection } from '@cluster';
+import { ClusterStats } from '@cluster/types';
+import { WorkerPoolEventService } from '@core/serviceTypes';
+import { Master } from '@master';
 
 export class ClusterStatsHandler extends WorkerPoolEventService<ClusterConnection> {
     private readonly stats: { [clusterId: number]: ClusterStats | undefined; };

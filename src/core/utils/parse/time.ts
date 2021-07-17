@@ -1,5 +1,6 @@
 import moment, { Moment } from 'moment-timezone';
-import { guard } from '../guard';
+
+import * as guard from '../guard';
 
 export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
     const now = moment.tz(timezone);

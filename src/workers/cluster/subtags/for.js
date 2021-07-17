@@ -8,6 +8,7 @@
  */
 
 const Builder = require('../structures/TagBuilder');
+
 const operators = {
     '==': (a, b) => a === b,
     '!=': (a, b) => a !== b,

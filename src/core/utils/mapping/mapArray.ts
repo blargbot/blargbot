@@ -1,11 +1,12 @@
-import { mappingResultNever } from './constants';
-import { TypeMapping, TypeMappingResult } from './types';
+import { TypeMapping, TypeMappingResult } from '@core/types';
+
+import { result as _result } from './result';
 
 export function mapArray<T, R = T[]>(
     mapping: TypeMapping<T, [index: number]>,
     {
-        ifNull = mappingResultNever as TypeMappingResult<T[] | R>,
-        ifUndefined = mappingResultNever as TypeMappingResult<T[] | R>
+        ifNull = _result.never as TypeMappingResult<T[] | R>,
+        ifUndefined = _result.never as TypeMappingResult<T[] | R>
     } = {}
 ): TypeMapping<T[] | R> {
     return value => {
@@ -14,14 +15,14 @@ export function mapArray<T, R = T[]>(
         if (value === null)
             return ifNull;
         if (!Array.isArray(value))
-            return mappingResultNever;
+            return _result.never;
 
         const result = [];
         let i = 0;
         for (const v of value) {
             const m = mapping(v, i++);
             if (!m.valid)
-                return mappingResultNever;
+                return _result.never;
             result.push(m.value);
         }
         return { valid: true, value: result };

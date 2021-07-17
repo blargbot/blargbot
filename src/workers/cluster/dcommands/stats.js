@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const BaseCommand = require('../structures/BaseCommand');
 const { commandTypes, avatarColours } = require('../newbu');
 
 function compareStats(a, b) {

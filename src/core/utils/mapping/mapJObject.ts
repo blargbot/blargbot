@@ -1,5 +1,6 @@
-import { mappingResultNever } from './constants';
-import { TypeMappingResult } from './types';
+import { TypeMappingResult } from '@core/types';
+
+import { result } from './result';
 
 export function mapJObject(value: unknown): TypeMappingResult<JObject> {
     switch (typeof value) {
@@ -13,6 +14,6 @@ export function mapJObject(value: unknown): TypeMappingResult<JObject> {
         case 'number':
         case 'string':
         case 'symbol':
-        case 'undefined': return mappingResultNever;
+        case 'undefined': return result.never;
     }
 }

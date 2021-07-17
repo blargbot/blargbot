@@ -1,4 +1,8 @@
-import { BaseImageGenerator, randInt, JimpGifEncoder, Logger, mapping, TriggeredOptions } from '@image/core';
+import { Logger } from '@core/Logger';
+import { mapping, randInt } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { JimpGifEncoder } from '@image/JimpGifEncoder';
+import { TriggeredOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
@@ -59,12 +63,12 @@ export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
 
 }
 
-const mapOptions = mapping.object<TriggeredOptions>({
-    avatar: mapping.string,
-    inverted: mapping.boolean,
-    horizontal: mapping.boolean,
-    vertical: mapping.boolean,
-    sepia: mapping.boolean,
-    blur: mapping.boolean,
-    greyscale: mapping.boolean
+const mapOptions = mapping.mapObject<TriggeredOptions>({
+    avatar: mapping.mapString,
+    inverted: mapping.mapBoolean,
+    horizontal: mapping.mapBoolean,
+    vertical: mapping.mapBoolean,
+    sepia: mapping.mapBoolean,
+    blur: mapping.mapBoolean,
+    greyscale: mapping.mapBoolean
 });

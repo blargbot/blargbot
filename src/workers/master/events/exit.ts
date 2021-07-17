@@ -1,7 +1,10 @@
+import { ClusterConnection } from '@cluster';
+import { codeBlock } from '@cluster/utils';
+import { WorkerPoolEventService } from '@core/serviceTypes';
+import { WorkerState } from '@core/worker';
+import { Master } from '@master';
 import moment from 'moment';
-import { ClusterConnection } from '../../cluster';
-import { codeBlock, WorkerPoolEventService, WorkerState } from '@master/core';
-import { Master } from '../Master';
+
 import { LogHandler } from './log';
 
 export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {

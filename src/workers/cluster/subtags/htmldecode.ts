@@ -1,5 +1,7 @@
-import { BaseSubtag, SubtagType } from '@cluster/core';
+import { BaseSubtag } from '@cluster/bbtag';
+import { SubtagType } from '@cluster/utils';
 import { AllHtmlEntities as Entities } from 'html-entities';
+
 const entities = new Entities();
 
 export class HtmlDecodeSubtag extends BaseSubtag {

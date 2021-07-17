@@ -7,10 +7,10 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const path = require('path');
 const showdown = require('showdown');
 const hbs = require('hbs');
 const argumentFactory = require('../structures/ArgumentFactory');
-const path = require('path');
 const bbtag = require('../core/bbtag');
 const newbutils = require('../newbu');
 

@@ -1,4 +1,6 @@
-import { BaseSubtag, SubtagType, BBTagContext, parse, SubtagCall } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { parse, SubtagType } from '@cluster/utils';
 
 export class SuppressLookupSubtag extends BaseSubtag {
     public constructor() {

@@ -1,4 +1,5 @@
-import { BaseSubtag, SubtagType } from '@cluster/core';
+import { BaseSubtag } from '@cluster/bbtag';
+import { SubtagType } from '@cluster/utils';
 
 export class ChannelCategoriesSubtag extends BaseSubtag {
     public constructor() {

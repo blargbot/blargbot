@@ -1,18 +1,17 @@
-import { RethinkDb, PostgresDb } from './core';
-import { Client as Cassandra, auth as CassandraAuth } from 'cassandra-driver';
+import { Logger } from '@core/Logger';
+import { ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
+import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
 import { Client as ErisClient } from 'eris';
-import { DatabaseOptions, GuildTable, UserTable, VarsTable, EventsTable, TagsTable, ChatlogsTable, DumpsTable, TagVariablesTable } from './types';
-import { RethinkDbGuildTable } from './RethinkDbGuildTable';
-import { RethinkDbUserTable } from './RethinkDbUserTable';
-import { RethinkDbVarsTable } from './RethinkDbVarsTable';
-import { RethinkDbEventsTable } from './RethinkDbEventsTable';
-import { RethinkDbTagTable } from './RethinkDbTagTable';
+
+import { PostgresDb, RethinkDb } from './base';
 import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
 import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
 import { PostgresDbTagVariablesTable } from './PostgresDbTagVariablesTable';
-import { Logger } from '@core/Logger';
-
-export * from './types';
+import { RethinkDbEventsTable } from './RethinkDbEventsTable';
+import { RethinkDbGuildTable } from './RethinkDbGuildTable';
+import { RethinkDbTagTable } from './RethinkDbTagTable';
+import { RethinkDbUserTable } from './RethinkDbUserTable';
+import { RethinkDbVarsTable } from './RethinkDbVarsTable';
 
 export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

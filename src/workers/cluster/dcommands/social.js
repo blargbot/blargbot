@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const Wolken = require('wolken');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 const actions = {

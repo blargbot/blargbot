@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const config = require('../../config.json');
+
 const secret = config.auth.secret;
 let expiry = (60 * 60 * 24 * 2); // 48 hours
 

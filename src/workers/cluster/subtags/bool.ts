@@ -1,4 +1,6 @@
-import { BaseSubtag, BBTagContext, bbtagUtil, parse, SubtagCall, SubtagType } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.compare;
 

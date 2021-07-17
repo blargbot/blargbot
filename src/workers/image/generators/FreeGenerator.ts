@@ -1,4 +1,8 @@
-import { BaseImageGenerator, randInt, JimpGifEncoder, Logger, mapping, FreeOptions } from '@image/core';
+import { Logger } from '@core/Logger';
+import { mapping, randInt } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { JimpGifEncoder } from '@image/JimpGifEncoder';
+import { FreeOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class FreeGenerator extends BaseImageGenerator<'free'> {
@@ -41,7 +45,7 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
 
 }
 
-const mapOptions = mapping.object<FreeOptions>({
-    top: mapping.string,
-    bottom: mapping.optionalString
+const mapOptions = mapping.mapObject<FreeOptions>({
+    top: mapping.mapString,
+    bottom: mapping.mapOptionalString
 });

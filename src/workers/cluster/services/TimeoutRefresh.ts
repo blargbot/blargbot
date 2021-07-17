@@ -1,5 +1,6 @@
-import { IntervalService, TimeoutManager } from '@cluster/core';
-import { Cluster } from '../Cluster';
+import { Cluster } from '@cluster';
+import { TimeoutManager } from '@cluster/TimeoutManager';
+import { IntervalService } from '@core/serviceTypes';
 
 export class TimeoutRefresh extends IntervalService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

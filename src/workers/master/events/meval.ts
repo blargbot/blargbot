@@ -1,6 +1,8 @@
-import { ClusterConnection } from '../../cluster';
-import { parse, WorkerPoolEventHandler, WorkerPoolEventService, EvalResult, MasterEvalResult, EvalRequest, MasterEvalRequest } from '@master/core';
-import { Master } from '../Master';
+import { ClusterConnection } from '@cluster';
+import { parse } from '@cluster/utils';
+import { WorkerPoolEventService } from '@core/serviceTypes';
+import { EvalRequest, EvalResult, MasterEvalRequest, MasterEvalResult, WorkerPoolEventHandler } from '@core/types';
+import { Master } from '@master';
 
 export class MasterEval extends WorkerPoolEventService<ClusterConnection> {
     public constructor(private readonly master: Master) {

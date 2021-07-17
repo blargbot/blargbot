@@ -1,13 +1,15 @@
+import { BaseGlobalCommand, CommandContext } from '@cluster/command';
+import { codeBlock, CommandType, guard, humanize } from '@cluster/utils';
+import { SendPayload } from '@core/types';
 import { EmbedField, EmbedOptions } from 'eris';
 import moment from 'moment';
-import { BaseGlobalCommand, CommandContext, commandTypes, guard, SendPayload, humanize, codeBlock } from '@cluster/core';
 
 export class TimersCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'timers',
             aliases: ['reminders', 'events'],
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             definitions: [
                 {
                     parameters: '{page:number=1}',

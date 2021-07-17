@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const bigInteger = require('big-integer');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class ShardCommand extends BaseCommand {

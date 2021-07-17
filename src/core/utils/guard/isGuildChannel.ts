@@ -1,4 +1,5 @@
 import { Channel, GuildChannel } from 'eris';
+
 import { hasValue } from './hasValue';
 
 export function isGuildChannel<T extends Channel>(channel: T): channel is GuildChannel & T {

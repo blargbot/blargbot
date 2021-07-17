@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const { emojify } = require('node-emoji');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 let numMap = ['zero', 'one', 'two', 'three', 'four', 'five'];

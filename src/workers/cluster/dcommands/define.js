@@ -1,6 +1,6 @@
-const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
 const request = require('request');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 let part = {

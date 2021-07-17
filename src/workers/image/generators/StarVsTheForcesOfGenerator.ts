@@ -1,6 +1,9 @@
-import colorThief from 'color-thief-jimp';
-import { BaseImageGenerator, Logger, mapping, StarVsTheForcesOfOptions } from '@image/core';
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { StarVsTheForcesOfOptions } from '@image/types';
 import { BetterColorAction } from '@jimp/plugin-color';
+import colorThief from 'color-thief-jimp';
 import Jimp from 'jimp';
 
 export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheForcesOf'> {
@@ -45,6 +48,6 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
     }
 }
 
-const mapOptions = mapping.object<StarVsTheForcesOfOptions>({
-    avatar: mapping.string
+const mapOptions = mapping.mapObject<StarVsTheForcesOfOptions>({
+    avatar: mapping.mapString
 });

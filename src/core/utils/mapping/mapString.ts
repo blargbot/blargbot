@@ -1,6 +1,7 @@
+import { TypeMappingResult } from '@core/types';
 import Long from 'long';
-import { mappingResultNever } from './constants';
-import { TypeMappingResult } from './types';
+
+import { result } from './result';
 
 export function mapString(value: unknown): TypeMappingResult<string> {
     if (typeof value === 'string')
@@ -9,5 +10,5 @@ export function mapString(value: unknown): TypeMappingResult<string> {
     if (typeof value === 'object' && value instanceof Long)
         return { valid: true, value: value.toString() };
 
-    return mappingResultNever;
+    return result.never;
 }

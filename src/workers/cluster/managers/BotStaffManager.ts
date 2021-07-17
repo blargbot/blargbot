@@ -1,5 +1,5 @@
+import { Cluster } from '@cluster';
 import { Guild } from 'eris';
-import { Cluster } from '../Cluster';
 
 export class BotStaffManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

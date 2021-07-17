@@ -1,5 +1,7 @@
-import { CronService, CustomCommandLimit, guard, sleep, snowflake } from '@cluster/core';
-import { Cluster } from '../Cluster';
+import { Cluster } from '@cluster';
+import { CustomCommandLimit } from '@cluster/bbtag';
+import { guard, sleep, snowflake } from '@cluster/utils';
+import { CronService } from '@core/serviceTypes';
 import moment from 'moment';
 
 export class CustomCommandIntervalCron extends CronService {

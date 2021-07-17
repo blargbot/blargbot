@@ -1,11 +1,12 @@
-import { ExtendedUser, Textable, Channel, AnyMessage, User, Member, Client as ErisClient, DiscordRESTError, DiscordHTTPError, AnyChannel, Guild } from 'eris';
-import { metrics } from './Metrics';
+import { SendContext, SendFiles, SendPayload } from '@core/types';
+import { AnyChannel, AnyMessage, Channel, Client as ErisClient, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, Member, Textable, User } from 'eris';
+import fetch from 'node-fetch';
+
 import { BaseClient } from './BaseClient';
 import { Database } from './database';
-import { SendContext, SendFiles, SendPayload } from './types';
-import { guard, humanize, snowflake } from './utils';
 import { Logger } from './Logger';
-import fetch from 'node-fetch';
+import { metrics } from './Metrics';
+import { guard, humanize, snowflake } from './utils';
 
 export class BaseUtilities {
     public get user(): ExtendedUser { return this.client.discord.user; }

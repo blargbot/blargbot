@@ -1,21 +1,9 @@
-import { boolean } from './boolean';
-import { color } from './color';
-import { duration } from './duration';
-import { embed } from './embed';
-import { entityId } from './entityId';
-import { float } from './float';
-import { int } from './int';
-import { time } from './time';
-import { emoji } from './emoji';
-
-export const parse = {
-    boolean,
-    color,
-    duration,
-    embed,
-    entityId,
-    float,
-    int,
-    time,
-    emoji
-};
+export * from './boolean';
+export * from './color';
+export * from './duration';
+export * from './embed';
+export * from './emoji';
+export * from './entityId';
+export * from './float';
+export * from './int';
+export * from './time';

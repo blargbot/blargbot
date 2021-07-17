@@ -1,20 +1,21 @@
-import { guard } from '../guard';
-import { mappingResultNever } from './constants';
-import { TypeMapping, TypeMappingResult, TypeMappings } from './types';
+import { TypeMapping, TypeMappingResult, TypeMappings } from '@core/types';
+
+import * as guard from '../guard';
+import { result as _result } from './result';
 
 export function mapObject<T>(
     mappings: TypeMappings<T>,
     {
         initial = () => ({}) as Partial<T>,
-        ifNull = mappingResultNever as TypeMappingResult<T>,
-        ifUndefined = mappingResultNever as TypeMappingResult<T>
+        ifNull = _result.never as TypeMappingResult<T>,
+        ifUndefined = _result.never as TypeMappingResult<T>
     } = {}
 ): TypeMapping<T> {
     return value => {
         if (value === undefined)
             return ifUndefined;
         if (typeof value !== 'object')
-            return mappingResultNever;
+            return _result.never;
         if (value === null)
             return ifNull;
 
@@ -37,7 +38,7 @@ export function mapObject<T>(
         for (const key of Object.keys(mappings)) {
             const mapping = mappings[key];
             if (!checkKey(key, mapping))
-                return mappingResultNever;
+                return _result.never;
         }
 
         return { valid: true, value: <T>result };

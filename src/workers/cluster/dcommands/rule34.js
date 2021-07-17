@@ -1,6 +1,6 @@
-const BaseCommand = require('../structures/BaseCommand');
 const xml2js = require('xml2js');
 const snekfetch = require('snekfetch');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class Rule34Command extends BaseCommand {

@@ -1,13 +1,24 @@
-import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { SubtagType } from '@cluster/utils';
+import { Constants } from 'eris';
 
-const channelTypes = ['text', 'dm', 'voice', 'group-dm', 'category', 'news', 'store'];
+const channelTypes: { [key in Constants['ChannelTypes']['string']]: string } = {
+    [Constants.ChannelTypes.GUILD_TEXT]: 'text',
+    [Constants.ChannelTypes.DM]: 'dm',
+    [Constants.ChannelTypes.GUILD_VOICE]: 'voice',
+    [Constants.ChannelTypes.GROUP_DM]: 'group-dm',
+    [Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
+    [Constants.ChannelTypes.GUILD_NEWS]: 'news',
+    [Constants.ChannelTypes.GUILD_STORE]: 'store'
+};
 
 export class ChannelTypeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channeltype',
             category: SubtagType.API,
-            desc: 'Possible results: ' + channelTypes.map(t => '`' + t + '`').join(', '),
+            desc: 'Possible results: ' + Object.values(channelTypes).map(t => '`' + t + '`').join(', '),
             definition: [
                 {
                     parameters: [],

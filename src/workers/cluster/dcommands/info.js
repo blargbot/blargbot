@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const moment = require('moment-timezone');
+const BaseCommand = require('../structures/BaseCommand');
 // const reload = require('require-reload')(require);
 const newbutils = require('../newbu');
 // let patrons;

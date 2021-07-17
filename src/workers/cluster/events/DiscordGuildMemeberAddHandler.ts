@@ -1,6 +1,6 @@
+import { Cluster } from '@cluster';
+import { DiscordEventService } from '@core/serviceTypes';
 import { Guild, Member } from 'eris';
-import { Cluster } from '../Cluster';
-import { DiscordEventService } from '@cluster/core';
 
 export class DiscordGuildMemeberAddHandler extends DiscordEventService<'guildMemberAdd'> {
     public constructor(protected readonly cluster: Cluster) {

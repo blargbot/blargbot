@@ -1,5 +1,6 @@
-import { DiscordEventService, metrics } from '@cluster/core';
-import { Cluster } from '../Cluster';
+import { Cluster } from '@cluster';
+import { metrics } from '@core/Metrics';
+import { DiscordEventService } from '@core/serviceTypes';
 
 export class DiscordReadyHandler extends DiscordEventService<'ready'> {
     public constructor(

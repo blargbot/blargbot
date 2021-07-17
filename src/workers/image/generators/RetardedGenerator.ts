@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { RetardedOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, RetardedOptions } from '@image/core';
 
 export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
     public constructor(logger: Logger) {
@@ -31,7 +34,7 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
     }
 }
 
-const mapOptions = mapping.object<RetardedOptions>({
-    avatar: mapping.string,
-    text: mapping.string
+const mapOptions = mapping.mapObject<RetardedOptions>({
+    avatar: mapping.mapString,
+    text: mapping.mapString
 });

@@ -1,4 +1,6 @@
-import { BaseSubtag, SubtagType, BBTagContext, SubtagCall } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { SubtagType } from '@cluster/utils';
 
 export class GuildBansSubtag extends BaseSubtag {
     public constructor() {

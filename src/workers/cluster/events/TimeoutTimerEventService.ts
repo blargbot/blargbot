@@ -1,6 +1,7 @@
+import { Cluster } from '@cluster';
+import { TimeoutEventService } from '@cluster/serviceTypes';
+import { StoredEvent } from '@core/types';
 import moment from 'moment';
-import { Cluster } from '../Cluster';
-import { StoredEvent, TimeoutEventService } from '@cluster/core';
 
 export class TimeoutTimerEventService extends TimeoutEventService<'timer'> {
     public constructor(protected readonly cluster: Cluster) {

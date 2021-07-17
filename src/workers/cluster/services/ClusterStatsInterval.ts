@@ -1,7 +1,9 @@
+import { Cluster } from '@cluster';
+import { ClusterStats } from '@cluster/types';
+import { cpuLoad } from '@cluster/utils';
+import { IntervalService } from '@core/serviceTypes';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
-import { IntervalService, ClusterStats, cpuLoad } from '@cluster/core';
-import { Cluster } from '../Cluster';
 
 export class ClusterStatsInterval extends IntervalService {
     public readonly type = 'cluster';

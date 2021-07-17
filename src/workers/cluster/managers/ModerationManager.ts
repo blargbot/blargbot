@@ -1,4 +1,5 @@
-import { Cluster } from '../Cluster';
+import { Cluster } from '@cluster';
+
 import { BanManager, CensorManager, ChatLogManager, EventLogManager, ModLogManager, MuteManager, WarnManager } from './moderation';
 
 export class ModerationManager {

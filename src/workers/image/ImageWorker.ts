@@ -1,4 +1,9 @@
-import { ImageModuleLoader, BaseWorker, fafo, Logger, mapping, ImageGeneratorMap, ImageRequest } from '@image/core';
+import { Logger } from '@core/Logger';
+import { fafo, mapping } from '@core/utils';
+import { BaseWorker } from '@core/worker';
+import { ImageGeneratorMap, ImageRequest } from '@image/types';
+
+import { ImageModuleLoader } from './ImageModuleLoader';
 
 export class ImageWorker extends BaseWorker {
     public readonly renderers: ImageModuleLoader;
@@ -66,7 +71,7 @@ const commands = Object.keys<{ [P in keyof ImageGeneratorMap]: undefined }>({
     truth: undefined
 });
 
-const mapData = mapping.object<ImageRequest<keyof ImageGeneratorMap, JToken>>({
-    command: mapping.in(...commands),
-    data: mapping.jToken
+const mapData = mapping.mapObject<ImageRequest<keyof ImageGeneratorMap, JToken>>({
+    command: mapping.mapIn(...commands),
+    data: mapping.mapJToken
 });

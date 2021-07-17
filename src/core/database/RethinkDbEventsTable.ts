@@ -1,8 +1,9 @@
-import { RethinkDb, RethinkDbTable } from './core';
-import { EventsTable, EventType, StoredEvent, StoredEventOptions } from './types';
-import { Moment } from 'moment-timezone';
-import moment from 'moment';
 import { Logger } from '@core/Logger';
+import { EventsTable, EventType, StoredEvent, StoredEventOptions } from '@core/types';
+import moment from 'moment';
+import { Moment } from 'moment-timezone';
+
+import { RethinkDb, RethinkDbTable } from './base';
 
 export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements EventsTable {
     public constructor(

@@ -1,6 +1,9 @@
+import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@cluster/types';
+import { guard, humanize, mapping } from '@cluster/utils';
+import { UnmuteEventOptions } from '@core/types';
 import { AnyGuildChannel, Constants, Guild, Member, Role, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
-import { EnsureMutedRoleResult, guard, humanize, mapping, MuteResult, UnmuteEventOptions, UnmuteResult } from '@cluster/core';
+
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -126,4 +129,4 @@ export class MuteManager extends ModerationManagerBase {
     }
 }
 
-const mapDuration = mapping.json(mapping.duration);
+const mapDuration = mapping.mapJson(mapping.mapDuration);

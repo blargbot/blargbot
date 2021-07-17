@@ -1,6 +1,9 @@
+import { Cluster } from '@cluster';
+import { guard } from '@cluster/utils';
+import { metrics } from '@core/Metrics';
+import { DiscordEventService } from '@core/serviceTypes';
 import { AnyMessage, Channel, User } from 'eris';
-import { Cluster } from '../Cluster';
-import { DiscordEventService, metrics, guard } from '@cluster/core';
+
 import { handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {

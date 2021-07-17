@@ -1,5 +1,5 @@
-import { Cluster } from '../Cluster';
-import { DiscordEventService } from '@cluster/core';
+import { Cluster } from '@cluster';
+import { DiscordEventService } from '@core/serviceTypes';
 
 export class DiscordShardReadyHandler extends DiscordEventService<'shardReady'> {
     public constructor(private readonly cluster: Cluster) {

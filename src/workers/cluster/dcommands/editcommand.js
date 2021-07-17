@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const util = require('util');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class EditcommandCommand extends BaseCommand {

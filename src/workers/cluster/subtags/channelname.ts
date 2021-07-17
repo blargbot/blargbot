@@ -1,4 +1,6 @@
-import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { SubtagType } from '@cluster/utils';
 
 export class ChannelNameSubtag extends BaseSubtag {
     public constructor() {

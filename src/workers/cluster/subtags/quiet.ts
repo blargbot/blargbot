@@ -1,4 +1,5 @@
-import { BaseSubtag, SubtagType, parse } from '@cluster/core';
+import { BaseSubtag } from '@cluster/bbtag';
+import { parse, SubtagType } from '@cluster/utils';
 
 export class QuietSubtag extends BaseSubtag {
     public constructor() {

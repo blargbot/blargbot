@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const https = require('https');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class DanbooruCommand extends BaseCommand {

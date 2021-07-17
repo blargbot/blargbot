@@ -1,12 +1,13 @@
-import { duration, Duration } from 'moment-timezone';
-import { mappingResultNever } from './constants';
-import { TypeMappingResult } from './types';
+import { TypeMappingResult } from '@core/types';
+import { Duration, duration } from 'moment-timezone';
+
+import { result as _result } from './result';
 
 export function mapDuration(value: unknown): TypeMappingResult<Duration> {
     const result = lazyReadDuration(value);
     if (result?.isValid() === true)
         return { valid: true, value: result };
-    return mappingResultNever;
+    return _result.never;
 }
 
 function lazyReadDuration(value: unknown): Duration | undefined {

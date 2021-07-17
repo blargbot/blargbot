@@ -1,5 +1,6 @@
 import { EmbedAuthorOptions, EmbedField, EmbedFooterOptions, EmbedImageOptions, EmbedOptions } from 'eris';
-import { mapping } from '../mapping';
+
+import * as mapping from '../mapping';
 
 export function parseEmbed(embedText?: string): (EmbedOptions & { malformed?: true; }) | undefined {
     if (embedText === undefined || embedText.length === 0)
@@ -11,35 +12,35 @@ export function parseEmbed(embedText?: string): (EmbedOptions & { malformed?: tr
         : { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
 }
 
-const mapEmbed = mapping.json(
-    mapping.object<EmbedOptions>({
-        author: mapping.object<EmbedAuthorOptions | undefined>({
-            icon_url: mapping.optionalString,
-            name: mapping.string,
-            url: mapping.optionalString
+const mapEmbed = mapping.mapJson(
+    mapping.mapObject<EmbedOptions>({
+        author: mapping.mapObject<EmbedAuthorOptions | undefined>({
+            icon_url: mapping.mapOptionalString,
+            name: mapping.mapString,
+            url: mapping.mapOptionalString
         }, { ifUndefined: mapping.result.undefined }),
-        color: mapping.optionalNumber,
-        description: mapping.optionalString,
-        fields: mapping.array(
-            mapping.object<EmbedField>({
-                inline: mapping.optionalBoolean,
-                name: mapping.string,
-                value: mapping.string
+        color: mapping.mapOptionalNumber,
+        description: mapping.mapOptionalString,
+        fields: mapping.mapArray(
+            mapping.mapObject<EmbedField>({
+                inline: mapping.mapOptionalBoolean,
+                name: mapping.mapString,
+                value: mapping.mapString
             }),
             { ifUndefined: mapping.result.undefined }
         ),
-        footer: mapping.object<EmbedFooterOptions | undefined>({
-            icon_url: mapping.optionalString,
-            text: mapping.string
+        footer: mapping.mapObject<EmbedFooterOptions | undefined>({
+            icon_url: mapping.mapOptionalString,
+            text: mapping.mapString
         }, { ifUndefined: mapping.result.undefined }),
-        image: mapping.object<EmbedImageOptions | undefined>({
-            url: mapping.optionalString
+        image: mapping.mapObject<EmbedImageOptions | undefined>({
+            url: mapping.mapOptionalString
         }, { ifUndefined: mapping.result.undefined }),
-        thumbnail: mapping.object<EmbedImageOptions | undefined>({
-            url: mapping.optionalString
+        thumbnail: mapping.mapObject<EmbedImageOptions | undefined>({
+            url: mapping.mapOptionalString
         }, { ifUndefined: mapping.result.undefined }),
-        timestamp: mapping.optionalString,
-        title: mapping.optionalString,
-        url: mapping.optionalString
+        timestamp: mapping.mapOptionalString,
+        title: mapping.mapOptionalString,
+        url: mapping.mapOptionalString
     })
 );

@@ -1,8 +1,14 @@
+import { ClusterPool } from '@cluster';
+import { BaseClient } from '@core/BaseClient';
+import { Logger } from '@core/Logger';
+import { ModuleLoader } from '@core/modules';
+import { BaseService } from '@core/serviceTypes';
+import { EvalResult } from '@core/types';
+import { MasterOptions } from '@master/types';
 import moment from 'moment';
-import { BaseClient, ModuleLoader, BaseService, EvalResult, Logger, MasterOptions } from '@master/core';
-import { MasterWorker } from './MasterWorker';
 import fetch from 'node-fetch';
-import { ClusterPool } from '../cluster';
+
+import { MasterWorker } from './MasterWorker';
 
 export class Master extends BaseClient {
     public readonly clusters: ClusterPool;

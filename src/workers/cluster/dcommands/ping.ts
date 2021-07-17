@@ -1,10 +1,11 @@
-import { BaseGlobalCommand, commandTypes, CommandContext, randInt } from '@cluster/core';
+import { BaseGlobalCommand, CommandContext } from '@cluster/command';
+import { CommandType, randInt } from '@cluster/utils';
 
 export class PingCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'ping',
-            category: commandTypes.GENERAL,
+            category: CommandType.GENERAL,
             description: 'Pong!\nFind the command latency.',
             definitions: [
                 {

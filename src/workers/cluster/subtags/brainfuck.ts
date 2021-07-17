@@ -1,5 +1,7 @@
-import { BaseSubtag, SubtagType } from '@cluster/core';
+import { BaseSubtag } from '@cluster/bbtag';
+import { SubtagType } from '@cluster/utils';
 import { default as Brainfuck } from 'brainfuck-node';
+
 const bfClient = new Brainfuck();
 
 export class BrainFuckSubtag extends BaseSubtag {

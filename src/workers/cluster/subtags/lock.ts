@@ -1,4 +1,6 @@
-import { BaseSubtag, SubtagType, BBTagContext, SubtagArgumentValue, SubtagCall, tagVariableScopes } from '@cluster/core';
+import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
+import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { SubtagType } from '@cluster/utils';
 import ReadWriteLock from 'rwlock';
 
 export class LockSubtag extends BaseSubtag {

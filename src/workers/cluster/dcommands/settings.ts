@@ -1,6 +1,8 @@
+import { Cluster } from '@cluster';
+import { BaseGuildCommand } from '@cluster/command';
+import { GuildCommandContext } from '@cluster/types';
+import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@cluster/utils';
 import { EmbedOptions, Guild } from 'eris';
-import { BaseGuildCommand, CommandType, GuildCommandContext, parse, defaultStaff, guard, guildSettings, codeBlock } from '@cluster/core';
-import { Cluster } from '../Cluster';
 
 export class SettingsCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {

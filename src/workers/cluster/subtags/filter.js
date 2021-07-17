@@ -8,8 +8,8 @@
  */
 
 const Builder = require('../structures/TagBuilder');
-const waitMessage = require('./waitmessage');
 const bbengine = require('../structures/bbtag/Engine');
+const waitMessage = require('./waitmessage');
 
 module.exports =
     Builder.ArrayTag('filter')

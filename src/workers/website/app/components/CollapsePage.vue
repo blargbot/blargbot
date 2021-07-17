@@ -52,8 +52,9 @@
 </template>
 
 <script>
-import VueMarkdown from 'vue-markdown';
 import 'vue';
+
+import VueMarkdown from 'vue-markdown';
 
 export default {
     data: () => ({

@@ -1,6 +1,6 @@
+import { Logger } from '@core/Logger';
 import { AnyMessage } from 'eris';
 import EventEmitter from 'eventemitter3';
-import { Logger } from '@cluster/core';
 
 export class MessageAwaiter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

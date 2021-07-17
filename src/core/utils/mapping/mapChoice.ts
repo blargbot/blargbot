@@ -1,5 +1,6 @@
-import { mappingResultNever } from './constants';
-import { TypeMapping } from './types';
+import { TypeMapping } from '@core/types';
+
+import { result } from './result';
 
 export function mapChoice<T>(...mappings: Array<TypeMapping<T>>): TypeMapping<T> {
     return value => {
@@ -8,6 +9,6 @@ export function mapChoice<T>(...mappings: Array<TypeMapping<T>>): TypeMapping<T>
             if (mapped.valid)
                 return mapped;
         }
-        return mappingResultNever;
+        return result.never;
     };
 }

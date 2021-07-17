@@ -1,5 +1,7 @@
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { SubtagType } from '@cluster/utils';
 import { Constants } from 'eris';
-import { BaseSubtag, BBTagContext, SubtagCall, SubtagType } from '@cluster/core';
 
 export class ChannelIsCategorySubtag extends BaseSubtag {
     public constructor() {

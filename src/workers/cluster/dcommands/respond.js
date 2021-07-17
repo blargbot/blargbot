@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const Airtable = require('airtable');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class RespondCommand extends BaseCommand {

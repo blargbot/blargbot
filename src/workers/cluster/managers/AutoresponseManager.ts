@@ -1,6 +1,8 @@
+import { Cluster } from '@cluster';
+import { EverythingAutoResponseLimit, GeneralAutoResponseLimit } from '@cluster/bbtag';
+import { RuntimeLimit, WhitelistResponse } from '@cluster/types';
+import { codeBlock, guard, humanize, mapping } from '@cluster/utils';
 import { AnyMessage, Emoji, GuildMessage, User } from 'eris';
-import { Cluster } from '../Cluster';
-import { codeBlock, EverythingAutoResponseLimit, GeneralAutoResponseLimit, guard, humanize, mapping, RuntimeLimit, WhitelistResponse } from '@cluster/core';
 
 export class AutoresponseManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -142,7 +144,7 @@ interface ArData {
     channel: string;
 }
 
-const mapArData = mapping.base64(mapping.json(mapping.object<ArData>({
-    channel: mapping.string,
-    guild: mapping.string
+const mapArData = mapping.mapBase64(mapping.mapJson(mapping.mapObject<ArData>({
+    channel: mapping.mapString,
+    guild: mapping.mapString
 })));

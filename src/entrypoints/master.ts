@@ -1,9 +1,10 @@
 import 'module-alias/register';
-import config from '~/config.json';
-import avatars from '~/res/avatars.json';
-import holidays from '~/holidays.json';
-import { createLogger } from '@core';
+
+import config from '@config';
+import { createLogger } from '@core/Logger';
 import { MasterWorker } from '@master';
+import avatars from '@res/avatars.json';
+import holidays from '@res/holidays.json';
 
 const logger = createLogger(config, `MS (${process.pid})`);
 logger.setGlobal();

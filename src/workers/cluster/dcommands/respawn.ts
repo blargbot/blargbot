@@ -1,10 +1,12 @@
-import { BaseGlobalCommand, commandTypes, CommandContext, humanize, ClusterRespawnRequest } from '@cluster/core';
+import { BaseGlobalCommand, CommandContext } from '@cluster/command';
+import { ClusterRespawnRequest } from '@cluster/types';
+import { CommandType, humanize } from '@cluster/utils';
 
 export class RespawnCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'respawn',
-            category: commandTypes.STAFF,
+            category: CommandType.STAFF,
             description: 'Cluster respawning only for staff.',
             definitions: [
                 {

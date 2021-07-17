@@ -1,4 +1,7 @@
-import { BaseImageGenerator, Logger, mapping, PCCheckOptions } from '@image/core';
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { PCCheckOptions } from '@image/types';
 
 export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
     public constructor(logger: Logger) {
@@ -38,6 +41,6 @@ export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
     }
 }
 
-const mapOptions = mapping.object<PCCheckOptions>({
-    text: mapping.string
+const mapOptions = mapping.mapObject<PCCheckOptions>({
+    text: mapping.mapString
 });

@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const { exec } = require('child_process');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class ExecCommand extends BaseCommand {

@@ -1,4 +1,5 @@
-import { WorkerConnection, Logger } from '@cluster/core';
+import { Logger } from '@core/Logger';
+import { WorkerConnection } from '@core/worker';
 
 export class ClusterConnection extends WorkerConnection {
 

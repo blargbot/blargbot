@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { CAHOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, CAHOptions, Logger, mapping } from '@image/core';
 
 export class CAHGenerator extends BaseImageGenerator<'cah'> {
     public constructor(logger: Logger) {
@@ -39,7 +42,7 @@ export class CAHGenerator extends BaseImageGenerator<'cah'> {
     }
 }
 
-const mapOptions = mapping.object<CAHOptions>({
-    white: mapping.array(mapping.string),
-    black: mapping.string
+const mapOptions = mapping.mapObject<CAHOptions>({
+    white: mapping.mapArray(mapping.mapString),
+    black: mapping.mapString
 });

@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { DeleteOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, DeleteOptions, Logger, mapping } from '@image/core';
 
 export class DeleteGenerator extends BaseImageGenerator<'delete'> {
     public constructor(logger: Logger) {
@@ -37,6 +40,6 @@ export class DeleteGenerator extends BaseImageGenerator<'delete'> {
     }
 }
 
-const mapOptions = mapping.object<DeleteOptions>({
-    text: mapping.string
+const mapOptions = mapping.mapObject<DeleteOptions>({
+    text: mapping.mapString
 });

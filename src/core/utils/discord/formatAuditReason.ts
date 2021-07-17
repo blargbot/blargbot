@@ -1,5 +1,6 @@
 import { User } from 'eris';
-import { humanize } from '../humanize';
+
+import * as humanize from '../humanize';
 
 export function formatAuditReason(user: User, reason: string, ban = false): string {
     let fullReason = humanize.fullName(user);

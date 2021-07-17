@@ -1,8 +1,9 @@
+import { ClusterConnection } from '@cluster';
+import { IntervalService } from '@core/serviceTypes';
+import { WorkerState } from '@core/worker';
+import { Master } from '@master';
+import { ClusterStatsHandler } from '@master/events/clusterStats';
 import moment from 'moment';
-import { ClusterConnection } from '../../cluster';
-import { IntervalService, WorkerState } from '@master/core';
-import { ClusterStatsHandler } from '../events/clusterStats';
-import { Master } from '../Master';
 
 export class ClusterMonitor extends IntervalService {
     public readonly type = 'cluster';

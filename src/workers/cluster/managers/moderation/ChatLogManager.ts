@@ -1,6 +1,7 @@
+import { Cluster } from '@cluster';
+import { guard } from '@cluster/utils';
+import { ChatlogType } from '@core/types';
 import { AnyMessage, PossiblyUncachedMessage } from 'eris';
-import { Cluster } from '../../Cluster';
-import { ChatlogType, guard } from '@cluster/core';
 
 export class ChatLogManager {
     public constructor(

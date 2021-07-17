@@ -1,7 +1,8 @@
 import 'module-alias/register';
-import config from '~/config.json';
-import { createLogger } from '@core';
+
 import { ClusterWorker } from '@cluster';
+import config from '@config';
+import { createLogger } from '@core/Logger';
 
 const logger = createLogger(config, `CL${process.env.CLUSTER_ID ?? '??'}(${process.pid})`);
 logger.setGlobal();

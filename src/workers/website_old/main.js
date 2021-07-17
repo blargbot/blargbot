@@ -10,16 +10,17 @@
 let e = module.exports = {};
 
 const express = require('express');
+
 const router = express.Router();
 const app = express();
-const { Strategy } = require('passport-discord');
-const helpers = require('./helpers');
 const path = require('path');
 const passport = require('passport');
 const session = require('express-session');
 const http = require('http');
+const { Strategy } = require('passport-discord');
 const bodyParser = require('body-parser');
 const enableDestroy = require('server-destroy');
+const helpers = require('./helpers');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ // to support URL-encoded bodies

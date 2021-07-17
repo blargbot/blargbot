@@ -1,5 +1,8 @@
+import { CustomCommandLimit } from '@cluster/bbtag';
+import { guard, ModerationType } from '@cluster/utils';
+import { GuildCensorExceptions } from '@core/types';
 import { GuildMessage } from 'eris';
-import { CustomCommandLimit, guard, GuildCensorExceptions, ModerationType } from '@cluster/core';
+
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 

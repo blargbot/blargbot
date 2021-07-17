@@ -1,6 +1,9 @@
+import { BanResult, KickResult, MassBanResult, UnbanResult } from '@cluster/types';
+import { humanize, mapping } from '@cluster/utils';
+import { UnbanEventOptions } from '@core/types';
 import { DiscordRESTError, Guild, GuildAuditLog, Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
-import { BanResult, humanize, KickResult, mapping, MassBanResult, UnbanEventOptions, UnbanResult } from '@cluster/core';
+
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
@@ -199,4 +202,4 @@ async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, ac
     }
 }
 
-const mapDuration = mapping.json(mapping.duration);
+const mapDuration = mapping.mapJson(mapping.mapDuration);

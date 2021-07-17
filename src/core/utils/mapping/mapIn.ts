@@ -1,5 +1,6 @@
-import { mappingResultNever } from './constants';
-import { TypeMapping } from './types';
+import { TypeMapping } from '@core/types';
+
+import { result } from './result';
 
 export function mapIn<T>(...values: readonly T[]): TypeMapping<T> {
     const valueSet = new Set<unknown>(values);
@@ -7,6 +8,6 @@ export function mapIn<T>(...values: readonly T[]): TypeMapping<T> {
     return (value: unknown) => {
         if (valueSet.has(value))
             return { valid: true, value: <T>value };
-        return mappingResultNever;
+        return result.never;
     };
 }

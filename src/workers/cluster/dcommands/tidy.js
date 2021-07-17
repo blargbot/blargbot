@@ -1,6 +1,6 @@
-const BaseCommand = require('../structures/BaseCommand');
 const isSafeRegex = require('safe-regex');
 const moment = require('moment');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class TidyCommand extends BaseCommand {

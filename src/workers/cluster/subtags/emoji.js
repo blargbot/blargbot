@@ -7,8 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder');
 const request = require('request');
+const Builder = require('../structures/TagBuilder');
 
 module.exports =
     Builder.AutoTag('emoji')

@@ -1,7 +1,9 @@
+import { ClusterConnection } from '@cluster';
+import { RollingArray } from '@core/RollingArray';
+import { WorkerPoolEventService } from '@core/serviceTypes';
+import { LogEntry } from '@core/types';
+import { Master } from '@master';
 import stripAnsi from 'strip-ansi';
-import { ClusterConnection } from '../../cluster';
-import { LogEntry, RollingArray, WorkerPoolEventService } from '@master/core';
-import { Master } from '../Master';
 
 export class LogHandler extends WorkerPoolEventService<ClusterConnection> {
     private readonly logs: { [workerId: number]: RollingArray<LogEntry> | undefined; };

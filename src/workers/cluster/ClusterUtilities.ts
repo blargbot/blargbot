@@ -1,8 +1,12 @@
-import { Cluster } from './Cluster';
-import { AnyChannel, Channel, AnyMessage, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
+import { FindEntityOptions, LookupMatch, MessagePrompt } from '@cluster/types';
+import { codeBlock, defaultStaff, guard, humanize, parse } from '@cluster/utils';
+import { BaseUtilities } from '@core/BaseUtilities';
+import { SendPayload } from '@core/types';
+import { AnyChannel, AnyMessage, Channel, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
 import moment from 'moment';
-import { BaseUtilities, FindEntityOptions, guard, codeBlock, LookupMatch, humanize, SendPayload, MessagePrompt, defaultStaff, parse } from '@cluster/core';
 import fetch from 'node-fetch';
+
+import { Cluster } from './Cluster';
 
 export class ClusterUtilities extends BaseUtilities {
     public constructor(

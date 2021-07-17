@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ColorOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, ColorOptions, Logger, mapping } from '@image/core';
 
 export class ColorGenerator extends BaseImageGenerator<'color'> {
     public constructor(logger: Logger) {
@@ -12,6 +15,6 @@ export class ColorGenerator extends BaseImageGenerator<'color'> {
     }
 }
 
-const mapOptions = mapping.object<ColorOptions>({
-    hex: mapping.number
+const mapOptions = mapping.mapObject<ColorOptions>({
+    hex: mapping.mapNumber
 });

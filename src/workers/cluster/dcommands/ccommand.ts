@@ -1,17 +1,22 @@
+import { Cluster } from '@cluster';
+import { CustomCommandLimit, getDocsEmbed } from '@cluster/bbtag';
+import { BaseGuildCommand } from '@cluster/command';
+import { AutoresponseShrinkwrap, CommandResult, CustomCommandShrinkwrap, FilteredAutoresponseShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, SignedGuildShrinkwrap } from '@cluster/types';
+import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
+import { Database } from '@core/database';
+import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredGuildCommand, NamedStoredRawGuildCommand, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
 import { EmbedOptions, MessageFile } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
-import { Cluster } from '../Cluster';
-import { AutoresponseShrinkwrap, BaseGuildCommand, bbtagUtil, codeBlock, CommandResult, commandTypes, CustomCommandLimit, CustomCommandShrinkwrap, Database, FilteredAutoresponseShrinkwrap, FlagDefinition, getDocsEmbed, guard, GuildAutoresponse, GuildCommandContext, GuildFilteredAutoresponse, GuildShrinkwrap, humanize, mapping, NamedStoredGuildCommand, NamedStoredRawGuildCommand, parse, SendPayload, SignedGuildShrinkwrap } from '@cluster/core';
 
 export class CustomCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
         super({
             name: 'ccommand',
             aliases: ['cc'],
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             description: 'Creates a custom command, using the BBTag language.\n\n'
                 + 'Custom commands take precedent over all other commands. As such, you can use it to overwrite commands, or '
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
@@ -833,40 +838,40 @@ const flagKeys = Object.keys<{ [P in Letter]: 0 }>({
 });
 /* eslint-enable @typescript-eslint/naming-convention */
 
-const mapCustomCommandShrinkwrap = mapping.object<CustomCommandShrinkwrap>({
-    content: mapping.string,
-    cooldown: mapping.optionalNumber,
-    flags: mapping.array(
-        mapping.object<FlagDefinition>({
-            description: mapping.string,
-            word: mapping.string,
-            flag: mapping.in(...flagKeys)
+const mapCustomCommandShrinkwrap = mapping.mapObject<CustomCommandShrinkwrap>({
+    content: mapping.mapString,
+    cooldown: mapping.mapOptionalNumber,
+    flags: mapping.mapArray(
+        mapping.mapObject<FlagDefinition>({
+            description: mapping.mapString,
+            word: mapping.mapString,
+            flag: mapping.mapIn(...flagKeys)
         }),
         { ifUndefined: mapping.result.undefined }
     ),
-    help: mapping.optionalString,
-    hidden: mapping.optionalBoolean,
-    lang: mapping.optionalString,
-    managed: mapping.optionalBoolean,
-    roles: mapping.array(mapping.string, { ifUndefined: mapping.result.undefined }),
-    uses: mapping.optionalNumber
+    help: mapping.mapOptionalString,
+    hidden: mapping.mapOptionalBoolean,
+    lang: mapping.mapOptionalString,
+    managed: mapping.mapOptionalBoolean,
+    roles: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined }),
+    uses: mapping.mapOptionalNumber
 });
 
-const mapGuildShrinkwrap = mapping.object<GuildShrinkwrap>({
-    are: mapping.object<AutoresponseShrinkwrap | null>({
+const mapGuildShrinkwrap = mapping.mapObject<GuildShrinkwrap>({
+    are: mapping.mapObject<AutoresponseShrinkwrap | null>({
         executes: mapCustomCommandShrinkwrap
     }, { ifNull: mapping.result.null }),
-    ar: mapping.array(
-        mapping.object<FilteredAutoresponseShrinkwrap>({
+    ar: mapping.mapArray(
+        mapping.mapObject<FilteredAutoresponseShrinkwrap>({
             executes: mapCustomCommandShrinkwrap,
-            regex: mapping.boolean,
-            term: mapping.string
+            regex: mapping.mapBoolean,
+            term: mapping.mapString
         })
     ),
-    cc: mapping.record(mapCustomCommandShrinkwrap)
+    cc: mapping.mapRecord(mapCustomCommandShrinkwrap)
 });
 
-const mapSignedGuildShrinkwrap = mapping.object<SignedGuildShrinkwrap>({
-    signature: mapping.optionalString,
-    payload: mapping.choose(mapping.json(mapGuildShrinkwrap), mapGuildShrinkwrap)
+const mapSignedGuildShrinkwrap = mapping.mapObject<SignedGuildShrinkwrap>({
+    signature: mapping.mapOptionalString,
+    payload: mapping.mapChoice(mapping.mapJson(mapGuildShrinkwrap), mapGuildShrinkwrap)
 });

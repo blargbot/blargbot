@@ -1,7 +1,7 @@
-const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
-const Table = require('cli-table');
 const { exec } = require('child_process');
+const Table = require('cli-table');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class LinesCommand extends BaseCommand {

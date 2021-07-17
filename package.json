@@ -89,6 +89,8 @@
         "@typescript-eslint/eslint-plugin": "^4.14.2",
         "@typescript-eslint/parser": "^4.14.2",
         "eslint": "^7.19.0",
+        "eslint-plugin-import": "^2.23.4",
+        "eslint-plugin-simple-import-sort": "^7.0.0",
         "eslint-plugin-vue": "^7.5.0",
         "node-sass": "^4.9.3",
         "opusscript": "^0.0.7",
@@ -109,7 +111,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/blargbot/blargbot.git"
+        "url": "https://github.com/blargbot/blargbot"
     },
     "author": "stupid cat (ratismal)",
     "license": "ISC",
@@ -118,7 +120,8 @@
     },
     "homepage": "https://github.com/blargbot/blargbot#readme",
     "_moduleAliases": {
-        "~": "out",
+        "@config": "out/config.json",
+        "@res": "out/res",
         "@core": "out/src/core",
         "@cluster": "out/src/workers/cluster",
         "@master": "out/src/workers/master",

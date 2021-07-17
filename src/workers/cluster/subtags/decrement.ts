@@ -1,4 +1,6 @@
-import { BaseSubtag, BBTagContext, parse, SubtagCall, SubtagType } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { parse, SubtagType } from '@cluster/utils';
 
 export class DecrementSubtag extends BaseSubtag {
     public constructor() {

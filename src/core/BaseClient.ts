@@ -1,8 +1,8 @@
+import { BaseUtilities } from '@core/BaseUtilities';
+import { Database } from '@core/database';
+import { Logger } from '@core/Logger';
+import { BaseModuleLoader } from '@core/modules';
 import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
-import { BaseUtilities } from './BaseUtilities';
-import { BaseModuleLoader } from './BaseModuleLoader';
-import { Database } from './database';
-import { Logger } from './Logger';
 
 export class BaseClient {
     public readonly util: BaseUtilities;

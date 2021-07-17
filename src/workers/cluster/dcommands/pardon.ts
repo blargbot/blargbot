@@ -1,10 +1,12 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, parse, FlagResult } from '@cluster/core';
+import { BaseGuildCommand } from '@cluster/command';
+import { FlagResult, GuildCommandContext } from '@cluster/types';
+import { CommandType, humanize, parse } from '@cluster/utils';
 
 export class PardonCommand extends BaseGuildCommand {
     public constructor() {
         super({
             name: 'pardon',
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             flags: [
                 { flag: 'r', word: 'reason', description: 'The reason for the pardon.' },
                 {

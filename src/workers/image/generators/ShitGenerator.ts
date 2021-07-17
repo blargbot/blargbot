@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ShitOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, ShitOptions } from '@image/core';
 
 export class ShitGenerator extends BaseImageGenerator<'shit'> {
     public constructor(logger: Logger) {
@@ -19,7 +22,7 @@ export class ShitGenerator extends BaseImageGenerator<'shit'> {
     }
 }
 
-const mapOptions = mapping.object<ShitOptions>({
-    plural: mapping.boolean,
-    text: mapping.string
+const mapOptions = mapping.mapObject<ShitOptions>({
+    plural: mapping.mapBoolean,
+    text: mapping.mapString
 });

@@ -1,4 +1,4 @@
-import configJson from '~/config.json';
+import configJson from '@config';
 import { Snowflake as _Snowflake } from 'catflake';
 
 declare global {

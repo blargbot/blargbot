@@ -1,12 +1,14 @@
+import { BaseGlobalCommand, CommandContext, RatelimitMiddleware, SingleThreadMiddleware } from '@cluster/command';
+import { FlagResult } from '@cluster/types';
+import { CommandType } from '@cluster/utils';
 import { MessageFile } from 'eris';
 import { duration } from 'moment-timezone';
-import { BaseGlobalCommand, CommandContext, commandTypes, FlagResult, RatelimitMiddleware, SingleThreadMiddleware } from '@cluster/core';
 
 export class ArtCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'art',
-            category: commandTypes.IMAGE,
+            category: CommandType.IMAGE,
             description: 'Shows everyone a work of art.',
             flags: [{ flag: 'I', word: 'image', description: 'A custom image.' }],
             definitions: [

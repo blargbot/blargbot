@@ -1,5 +1,5 @@
+import { MalformedEmbed } from '@core/types';
 import { EmbedOptions } from 'eris';
-import { MalformedEmbed } from '../../types';
 
 export function embed(embedText: string): EmbedOptions | MalformedEmbed | undefined {
     if (embedText.trim().length === 0)

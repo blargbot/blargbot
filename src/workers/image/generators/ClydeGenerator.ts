@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ClydeOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, ClydeOptions, Logger, mapping } from '@image/core';
 
 export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
     public constructor(logger: Logger) {
@@ -28,6 +31,6 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
 
 }
 
-const mapOptions = mapping.object<ClydeOptions>({
-    text: mapping.string
+const mapOptions = mapping.mapObject<ClydeOptions>({
+    text: mapping.mapString
 });

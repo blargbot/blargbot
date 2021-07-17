@@ -1,4 +1,7 @@
-import { BaseImageGenerator, randInt, Logger, DistortOptions, mapping } from '@image/core';
+import { Logger } from '@core/Logger';
+import { mapping, randInt } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { DistortOptions } from '@image/types';
 import { BetterColorAction } from '@jimp/plugin-color';
 
 export class DistortGenerator extends BaseImageGenerator<'distort'> {
@@ -27,6 +30,6 @@ export class DistortGenerator extends BaseImageGenerator<'distort'> {
     }
 }
 
-const mapOptions = mapping.object<DistortOptions>({
-    avatar: mapping.string
+const mapOptions = mapping.mapObject<DistortOptions>({
+    avatar: mapping.mapString
 });

@@ -1,4 +1,7 @@
-import { BaseImageGenerator, Logger, mapping, PixelateOptions } from '@image/core';
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { PixelateOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
@@ -20,7 +23,7 @@ export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
     }
 }
 
-const mapOptions = mapping.object<PixelateOptions>({
-    scale: mapping.number,
-    url: mapping.string
+const mapOptions = mapping.mapObject<PixelateOptions>({
+    scale: mapping.mapNumber,
+    url: mapping.mapString
 });

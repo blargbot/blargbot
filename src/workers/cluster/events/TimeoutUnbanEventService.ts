@@ -1,5 +1,6 @@
-import { Cluster } from '../Cluster';
-import { StoredEvent, TimeoutEventService } from '@cluster/core';
+import { Cluster } from '@cluster';
+import { TimeoutEventService } from '@cluster/serviceTypes';
+import { StoredEvent } from '@core/types';
 
 export class TimeoutUnbanEventService extends TimeoutEventService<'unban'> {
     public constructor(protected readonly cluster: Cluster) {

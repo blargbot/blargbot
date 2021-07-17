@@ -1,6 +1,6 @@
+import { Cluster } from '@cluster';
+import { DiscordEventService } from '@core/serviceTypes';
 import { PossiblyUncachedMessage } from 'eris';
-import { Cluster } from '../Cluster';
-import { DiscordEventService } from '@cluster/core';
 
 export class DiscordMessageDeleteBulkHandler extends DiscordEventService<'messageDeleteBulk'> {
     public constructor(

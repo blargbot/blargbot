@@ -1,5 +1,7 @@
+import { Logger } from '@core/Logger';
+import { BaseWorker } from '@core/worker';
+
 import { Cluster } from './Cluster';
-import { BaseWorker, Logger } from '@cluster/core';
 
 export class ClusterWorker extends BaseWorker {
     public readonly cluster: Cluster;

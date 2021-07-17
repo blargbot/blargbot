@@ -1,5 +1,6 @@
 import { Logger } from '@core/Logger';
-import { LogEntry } from '../types';
+import { LogEntry } from '@core/types';
+
 import { IPCEvents } from './IPCEvents';
 
 export abstract class BaseWorker extends IPCEvents {

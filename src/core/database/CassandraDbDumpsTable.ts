@@ -1,7 +1,7 @@
+import { Logger } from '@core/Logger';
+import { Dump, DumpsTable } from '@core/types';
 import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
-import { Logger } from '@core/Logger';
-import { Dump, DumpsTable } from './types';
 
 export class CassandraDbDumpsTable implements DumpsTable {
     public constructor(

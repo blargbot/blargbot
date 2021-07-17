@@ -1,6 +1,14 @@
+import { Cluster } from '@cluster';
+import { CustomCommandLimit } from '@cluster/bbtag';
+import { BaseCommand, CommandContext } from '@cluster/command';
+import { MessageIdQueue } from '@cluster/MessageIdQueue';
+import { CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, FlagDefinition, GuildCommandContext } from '@cluster/types';
+import { commandTypeDetails, defaultStaff, guard, humanize } from '@cluster/utils';
+import { metrics } from '@core/Metrics';
+import { ModuleLoader } from '@core/modules';
+import { Timer } from '@core/Timer';
+import { StoredAliasedGuildCommand, StoredGuildCommand, StoredRawGuildCommand } from '@core/types';
 import { AnyMessage, DiscordRESTError, PossiblyUncachedMessage } from 'eris';
-import { Cluster } from '../Cluster';
-import { BaseCommand, CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, CommandContext, commandTypes, CustomCommandLimit, defaultStaff, FlagDefinition, guard, GuildCommandContext, humanize, MessageIdQueue, metrics, ModuleLoader, StoredAliasedGuildCommand, StoredGuildCommand, StoredRawGuildCommand, Timer } from '@cluster/core';
 
 export class CommandManager extends ModuleLoader<BaseCommand> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -47,7 +55,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         if (context.author.id === this.cluster.config.discord.users.owner)
             return true; // The owner can execute any command anywhere
 
-        const category = commandTypes.properties[command.category];
+        const category = commandTypeDetails[command.category];
         if (!await category.requirement(context))
             return false; // Context doesnt meet the category requirements
 
@@ -140,8 +148,8 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
             const timer = new Timer().start();
             await this.invokeDefaultCommand(command, context);
             timer.end();
-            metrics.commandLatency.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).observe(timer.elapsed);
-            metrics.commandCounter.labels(command.name, commandTypes.properties[command.category].name.toLowerCase()).inc();
+            metrics.commandLatency.labels(command.name, commandTypeDetails[command.category].name.toLowerCase()).observe(timer.elapsed);
+            metrics.commandCounter.labels(command.name, commandTypeDetails[command.category].name.toLowerCase()).inc();
         } catch (err: unknown) {
             this.cluster.logger.error(err);
             metrics.commandError.labels(command.name).inc();

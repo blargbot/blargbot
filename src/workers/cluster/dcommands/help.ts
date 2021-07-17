@@ -1,5 +1,8 @@
+import { BaseCommand, BaseGlobalCommand, CommandContext } from '@cluster/command';
+import { GuildCommandContext } from '@cluster/types';
+import { codeBlock, CommandType, commandTypeDetails, guard, humanize } from '@cluster/utils';
+import { SendPayload, StoredGuildCommand } from '@core/types';
 import { EmbedField } from 'eris';
-import { BaseGlobalCommand, CommandType, CommandContext, SendPayload, BaseCommand, commandTypes, StoredGuildCommand, guard, codeBlock, humanize, GuildCommandContext } from '@cluster/core';
 
 export class HelpCommand extends BaseGlobalCommand {
     public constructor() {
@@ -25,7 +28,7 @@ export class HelpCommand extends BaseGlobalCommand {
         const fields: EmbedField[] = [];
 
         let getCommandGroups = (command: BaseCommand): Promise<readonly string[]> =>
-            Promise.resolve([commandTypes.properties[command.category].name]);
+            Promise.resolve([commandTypeDetails[command.category].name]);
 
         let prefix = context.config.discord.defaultPrefix;
         const customCommands = new Map<string, StoredGuildCommand | undefined>();
@@ -47,7 +50,7 @@ export class HelpCommand extends BaseGlobalCommand {
                 const roles = perms?.rolename;
                 switch (typeof roles) {
                     case 'string': return [roles];
-                    case 'undefined': return [commandTypes.properties[command.category].name];
+                    case 'undefined': return [commandTypeDetails[command.category].name];
                     default: return roles;
                 }
             };
@@ -146,7 +149,7 @@ export class HelpCommand extends BaseGlobalCommand {
                 title: `Help for ${command.name} ${subcommand ?? ''}`,
                 url: context.util.websiteLink(`/commands#${command.name}`),
                 description: 'TODO',
-                color: commandTypes.properties[command.category].color,
+                color: commandTypeDetails[command.category].color,
                 fields: fields
             },
             isHelp: true

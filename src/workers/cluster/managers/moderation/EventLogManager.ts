@@ -1,8 +1,9 @@
+import { Cluster } from '@cluster';
+import { discordUtil, guard, humanize } from '@cluster/utils';
+import { StoredGuildEventLogType } from '@core/types';
 import { DiscordRESTError, EmbedAuthorOptions, EmbedField, EmbedOptions, Guild, GuildAuditLog, GuildTextableChannel, Member, Message, OldMessage, PartialUser, PossiblyUncachedMessage, User } from 'eris';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
-import { Cluster } from '../../Cluster';
-import { discordUtil, guard, humanize, StoredGuildEventLogType } from '@cluster/core';
 
 export class EventLogManager {
     public constructor(private readonly cluster: Cluster) {

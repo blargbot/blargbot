@@ -1,6 +1,7 @@
-import { RethinkDb, RethinkDbTable } from './core';
-import { GetStoredVar, KnownStoredVars, VarsTable } from './types';
 import { Logger } from '@core/Logger';
+import { GetStoredVar, KnownStoredVars, VarsTable } from '@core/types';
+
+import { RethinkDb, RethinkDbTable } from './base';
 
 export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTable {
     public constructor(

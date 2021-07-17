@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { TruthOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, TruthOptions } from '@image/core';
 
 export class TruthGenerator extends BaseImageGenerator<'truth'> {
     public constructor(logger: Logger) {
@@ -19,6 +22,6 @@ export class TruthGenerator extends BaseImageGenerator<'truth'> {
     }
 }
 
-const mapOptions = mapping.object<TruthOptions>({
-    text: mapping.string
+const mapOptions = mapping.mapObject<TruthOptions>({
+    text: mapping.mapString
 });

@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ClippyOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, ClippyOptions, Logger, mapping } from '@image/core';
 
 export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
     public constructor(logger: Logger) {
@@ -18,6 +21,6 @@ export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
     }
 }
 
-const mapOptions = mapping.object<ClippyOptions>({
-    text: mapping.string
+const mapOptions = mapping.mapObject<ClippyOptions>({
+    text: mapping.mapString
 });

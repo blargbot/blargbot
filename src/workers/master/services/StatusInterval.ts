@@ -1,7 +1,9 @@
+import { CronService } from '@core/serviceTypes';
+import { guard } from '@core/utils';
+import { Master } from '@master';
+import { MasterOptions } from '@master/types';
 import { BotActivityType } from 'eris';
 import moment from 'moment';
-import { CronService, guard, MasterOptions } from '@master/core';
-import { Master } from '../Master';
 
 export class StatusInterval extends CronService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

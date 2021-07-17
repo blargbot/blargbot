@@ -1,10 +1,12 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, humanize, ModerationType, parse, FlagResult } from '@cluster/core';
+import { BaseGuildCommand } from '@cluster/command';
+import { FlagResult, GuildCommandContext } from '@cluster/types';
+import { CommandType, humanize, ModerationType, parse } from '@cluster/utils';
 
 export class WarnCommand extends BaseGuildCommand {
     public constructor() {
         super({
             name: 'warn',
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             flags: [
                 { flag: 'r', word: 'reason', description: 'The reason for the warning.' },
                 {

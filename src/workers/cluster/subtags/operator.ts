@@ -1,5 +1,7 @@
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagArgumentValueArray, SubtagCall } from '@cluster/types';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { EmbedOptions } from 'eris';
-import { BaseSubtag, SubtagType, BBTagContext, bbtagUtil, parse, SubtagArgumentValueArray, SubtagCall } from '@cluster/core';
 
 const { all: allOperators, logic, numeric, compare } = bbtagUtil.operators;
 

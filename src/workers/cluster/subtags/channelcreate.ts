@@ -1,5 +1,7 @@
-import { BaseSubtag, BBTagContext, discordUtil, guard, mapping, SubtagCall, SubtagType } from '@cluster/core';
-import { CreateChannelOptions, AnyGuildChannel, Overwrite, Constants } from 'eris';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
+import { AnyGuildChannel, Constants, CreateChannelOptions, Overwrite } from 'eris';
 
 export class ChannelCreateSubtag extends BaseSubtag {
     public constructor() {
@@ -80,20 +82,20 @@ const channelTypes = {
     store: Constants.ChannelTypes.GUILD_STORE
 } as const;
 
-const mapOptions = mapping.json(
-    mapping.object<CreateChannelOptions>({
-        bitrate: mapping.optionalNumber,
-        nsfw: mapping.optionalBoolean,
-        parentID: mapping.optionalString,
-        rateLimitPerUser: mapping.optionalNumber,
-        topic: mapping.optionalString,
-        userLimit: mapping.optionalNumber,
-        permissionOverwrites: mapping.array<Overwrite, undefined>(mapping.object({
-            allow: mapping.number,
-            deny: mapping.number,
-            id: mapping.string,
-            type: mapping.in('role', 'member')
+const mapOptions = mapping.mapJson(
+    mapping.mapObject<CreateChannelOptions>({
+        bitrate: mapping.mapOptionalNumber,
+        nsfw: mapping.mapOptionalBoolean,
+        parentID: mapping.mapOptionalString,
+        rateLimitPerUser: mapping.mapOptionalNumber,
+        topic: mapping.mapOptionalString,
+        userLimit: mapping.mapOptionalNumber,
+        permissionOverwrites: mapping.mapArray<Overwrite, undefined>(mapping.mapObject({
+            allow: mapping.mapNumber,
+            deny: mapping.mapNumber,
+            id: mapping.mapString,
+            type: mapping.mapIn('role', 'member')
         }), { ifUndefined: mapping.result.undefined }),
-        reason: mapping.optionalString
+        reason: mapping.mapOptionalString
     })
 );

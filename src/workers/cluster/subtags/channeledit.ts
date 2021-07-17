@@ -1,4 +1,6 @@
-import { BaseSubtag, BBTagContext, discordUtil, mapping, SubtagCall, SubtagType } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
+import { discordUtil, mapping, SubtagType } from '@cluster/utils';
 import { EditChannelOptions } from 'eris';
 
 export class ChannelEditSubtag extends BaseSubtag {
@@ -69,16 +71,16 @@ export class ChannelEditSubtag extends BaseSubtag {
     }
 }
 
-const mapOptions = mapping.json(
-    mapping.object<EditChannelOptions>({
-        bitrate: mapping.optionalNumber,
-        icon: mapping.optionalString,
-        name: mapping.optionalString,
-        nsfw: mapping.optionalBoolean,
-        ownerID: mapping.optionalString,
-        parentID: mapping.optionalString,
-        rateLimitPerUser: mapping.optionalNumber,
-        topic: mapping.optionalString,
-        userLimit: mapping.optionalNumber
+const mapOptions = mapping.mapJson(
+    mapping.mapObject<EditChannelOptions>({
+        bitrate: mapping.mapOptionalNumber,
+        icon: mapping.mapOptionalString,
+        name: mapping.mapOptionalString,
+        nsfw: mapping.mapOptionalBoolean,
+        ownerID: mapping.mapOptionalString,
+        parentID: mapping.mapOptionalString,
+        rateLimitPerUser: mapping.mapOptionalNumber,
+        topic: mapping.mapOptionalString,
+        userLimit: mapping.mapOptionalNumber
     })
 );

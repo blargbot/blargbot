@@ -1,10 +1,12 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext, FlagResult, humanize } from '@cluster/core';
+import { BaseGuildCommand } from '@cluster/command';
+import { FlagResult, GuildCommandContext } from '@cluster/types';
+import { CommandType, humanize } from '@cluster/utils';
 
 export class UnbanCommand extends BaseGuildCommand {
     public constructor() {
         super({
             name: 'unban',
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             flags: [
                 { flag: 'r', word: 'reason', description: 'The reason for the ban.' }
             ],

@@ -1,4 +1,5 @@
 import moment, { Duration, Moment } from 'moment-timezone';
+
 import { smartJoin } from './smartJoin';
 
 export function duration(duration: Duration): string;

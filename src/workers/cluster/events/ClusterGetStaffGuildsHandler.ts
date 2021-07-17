@@ -1,5 +1,7 @@
-import { Cluster } from '../Cluster';
-import { ClusterEventService, mapping, ProcessMessageHandler } from '@cluster/core';
+import { Cluster } from '@cluster';
+import { ClusterEventService } from '@cluster/serviceTypes';
+import { mapping } from '@cluster/utils';
+import { ProcessMessageHandler } from '@core/types';
 
 export class ClusterGetStaffGuildsHandler extends ClusterEventService {
     public constructor(
@@ -23,7 +25,7 @@ export class ClusterGetStaffGuildsHandler extends ClusterEventService {
     }
 }
 
-const mapData = mapping.object<{ guilds: string[]; user: string; }>({
-    guilds: mapping.array(mapping.string),
-    user: mapping.string
+const mapData = mapping.mapObject<{ guilds: string[]; user: string; }>({
+    guilds: mapping.mapArray(mapping.mapString),
+    user: mapping.mapString
 });

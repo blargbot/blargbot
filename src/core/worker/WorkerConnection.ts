@@ -1,10 +1,11 @@
-import child_process, { ChildProcess } from 'child_process';
-import { Timer } from '../Timer';
-import { Moment } from 'moment-timezone';
-import moment from 'moment';
-import { IPCEvents } from './IPCEvents';
-import { snowflake } from '@core/utils';
 import { Logger } from '@core/Logger';
+import { Timer } from '@core/Timer';
+import { snowflake } from '@core/utils';
+import child_process, { ChildProcess } from 'child_process';
+import moment from 'moment';
+import { Moment } from 'moment-timezone';
+
+import { IPCEvents } from './IPCEvents';
 
 export const enum WorkerState {
     READY,

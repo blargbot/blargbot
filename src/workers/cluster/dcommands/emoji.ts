@@ -1,15 +1,18 @@
+import { BaseGlobalCommand } from '@cluster/command';
+import { FlagResult } from '@cluster/types';
+import { CommandType, parse } from '@cluster/utils';
+import { SendPayload } from '@core/types';
+import { MessageFile } from 'eris';
 import fs from 'fs';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
-import { MessageFile } from 'eris';
-import { BaseGlobalCommand, commandTypes, SendPayload, parse, FlagResult } from '@cluster/core';
 
 export class EmojiCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'emoji',
             aliases: ['e'],
-            category: commandTypes.GENERAL,
+            category: CommandType.GENERAL,
             description: 'Gives you a large version of an emoji. If size is specified and the emoji is not a custom emoji, the image will be that size.',
             flags: [{
                 flag: 's',

@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { CaptionOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, CaptionOptions, Logger, mapping } from '@image/core';
 
 export class CaptionGenerator extends BaseImageGenerator<'caption'> {
     public constructor(logger: Logger) {
@@ -39,11 +42,11 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
     }
 }
 
-const mapOptions = mapping.object<CaptionOptions>({
-    font: mapping.string,
-    url: mapping.string,
-    input: mapping.object({
-        t: mapping.array<string, undefined>(mapping.string, { ifUndefined: mapping.result.undefined }),
-        b: mapping.array<string, undefined>(mapping.string, { ifUndefined: mapping.result.undefined })
+const mapOptions = mapping.mapObject<CaptionOptions>({
+    font: mapping.mapString,
+    url: mapping.mapString,
+    input: mapping.mapObject({
+        t: mapping.mapArray<string, undefined>(mapping.mapString, { ifUndefined: mapping.result.undefined }),
+        b: mapping.mapArray<string, undefined>(mapping.mapString, { ifUndefined: mapping.result.undefined })
     })
 });

@@ -1,5 +1,8 @@
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { TheSearchOptions } from '@image/types';
 import Jimp from 'jimp';
-import { BaseImageGenerator, Logger, mapping, TheSearchOptions } from '@image/core';
 
 export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
     public constructor(logger: Logger) {
@@ -20,6 +23,6 @@ export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
     }
 }
 
-const mapOptions = mapping.object<TheSearchOptions>({
-    text: mapping.string
+const mapOptions = mapping.mapObject<TheSearchOptions>({
+    text: mapping.mapString
 });

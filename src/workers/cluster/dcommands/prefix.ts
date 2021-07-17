@@ -1,10 +1,12 @@
-import { BaseGuildCommand, commandTypes, GuildCommandContext } from '@cluster/core';
+import { BaseGuildCommand } from '@cluster/command';
+import { GuildCommandContext } from '@cluster/types';
+import { CommandType } from '@cluster/utils';
 
 export class PrefixCommand extends BaseGuildCommand {
     public constructor() {
         super({
             name: 'prefix',
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             definitions: [
                 {
                     parameters: '',

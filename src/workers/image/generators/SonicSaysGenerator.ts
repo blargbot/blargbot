@@ -1,4 +1,7 @@
-import { BaseImageGenerator, Logger, mapping, SonicSaysOptions } from '@image/core';
+import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
+import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { SonicSaysOptions } from '@image/types';
 
 export class SonicSaysGenerator extends BaseImageGenerator<'sonicSays'> {
     public constructor(logger: Logger) {
@@ -13,6 +16,6 @@ export class SonicSaysGenerator extends BaseImageGenerator<'sonicSays'> {
     }
 }
 
-const mapOptions = mapping.object<SonicSaysOptions>({
-    text: mapping.string
+const mapOptions = mapping.mapObject<SonicSaysOptions>({
+    text: mapping.mapString
 });

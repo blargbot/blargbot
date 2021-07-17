@@ -1,9 +1,9 @@
-import { GuildModlogEntry, StoredGuildSettings, StoredGuild, StoredGuildCommand, NamedStoredGuildCommand, CommandPermissions, ChannelSettings, GuildAutoresponses, GuildRolemeEntry, GuildCensors, GuildAutoresponse, GuildFilteredAutoresponse, StoredGuildEventLogType, StoredGuildEventLogConfig, MutableStoredGuildEventLogConfig, MutableStoredGuild } from './types';
-import { GuildTable } from './types';
-import { RethinkDbCachedTable, RethinkDb } from './core';
-import { guard } from '@core/utils';
 import { Logger } from '@core/Logger';
+import { ChannelSettings, CommandPermissions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, MutableStoredGuild, MutableStoredGuildEventLogConfig, NamedStoredGuildCommand, StoredGuild, StoredGuildCommand, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
+import { guard } from '@core/utils';
 import { Guild } from 'eris';
+
+import { RethinkDb, RethinkDbCachedTable } from './base';
 
 export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'> implements GuildTable {
     public constructor(

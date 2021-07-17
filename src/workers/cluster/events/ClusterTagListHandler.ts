@@ -1,5 +1,7 @@
-import { ClusterEventService, ProcessMessageHandler, SubtagListResult } from '@cluster/core';
-import { Cluster } from '../Cluster';
+import { Cluster } from '@cluster';
+import { ClusterEventService } from '@cluster/serviceTypes';
+import { SubtagListResult } from '@cluster/types';
+import { ProcessMessageHandler } from '@core/types';
 
 export class ClusterTagListHandler extends ClusterEventService {
     public constructor(

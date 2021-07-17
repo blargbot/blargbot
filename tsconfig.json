@@ -19,11 +19,8 @@
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "moduleResolution": "node",
-        "baseUrl": "./",
+        // "noUncheckedIndexedAccess": true
         "paths": {
-            "~/*": [
-                "./*"
-            ],
             "@core": [
                 "./src/core"
             ],
@@ -59,8 +56,16 @@
             ],
             "@website-old/*": [
                 "./src/workers/website_old/*"
+            ],
+            "@config": [
+                "./config.json"
+            ],
+            "@res/*": [
+                "./res/*"
+            ],
+            "@res": [
+                "./res"
             ]
         }
-        // "noUncheckedIndexedAccess": true
     }
 }

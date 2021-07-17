@@ -1,5 +1,5 @@
-const BaseCommand = require('../structures/BaseCommand');
 const request = require('request');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class StatusCommand extends BaseCommand {

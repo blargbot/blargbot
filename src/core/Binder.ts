@@ -1,4 +1,4 @@
-import { BinderResult, Binding, BindingResultAsyncIterator, BindingResultIterator, BindingResultValue } from './types';
+import { BinderResult, Binding, BindingResultAsyncIterator, BindingResultIterator, BindingResultValue } from '@core/types';
 
 export class Binder<TState> {
     public static readonly binder = Symbol('binder');

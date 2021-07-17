@@ -1,8 +1,16 @@
+import { BaseSubtag, BBTagEngine } from '@cluster/bbtag';
+import { TimeoutManager } from '@cluster/TimeoutManager';
+import { ClusterOptions } from '@cluster/types';
+import { commandTypeDetails, tagTypeDetails } from '@cluster/utils';
+import { BaseClient } from '@core/BaseClient';
+import { Logger } from '@core/Logger';
+import { ModuleLoader } from '@core/modules';
+import { BaseService } from '@core/serviceTypes';
+import { ImageConnection } from '@image/ImageConnection';
 import moment, { Moment } from 'moment-timezone';
-import { ImageConnection } from '@image';
+
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { BaseClient, BaseService, BaseSubtag, BBTagEngine, ClusterOptions, commandTypes, ModuleLoader, tagTypes, TimeoutManager, Logger } from '@cluster/core';
 import { AutoresponseManager, BotStaffManager, CommandManager, GreetingManager, MessageAwaiter, ModerationManager, ReactionAwaiter } from './managers';
 
 export class Cluster extends BaseClient {
@@ -95,8 +103,8 @@ export class Cluster extends BaseClient {
             this.images.connect(20000)
         ]);
 
-        this.logger.init(this.moduleStats(this.commands, 'Commands', c => c.category, c => commandTypes.properties[c].name));
-        this.logger.init(this.moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypes.properties[c].name));
+        this.logger.init(this.moduleStats(this.commands, 'Commands', c => c.category, c => commandTypeDetails[c].name));
+        this.logger.init(this.moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypeDetails[c].name));
 
         await this.services.init();
         this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));

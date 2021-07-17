@@ -1,4 +1,5 @@
-import { BaseSubtag, BBTagContext, bbtagUtil, SubtagType } from '@cluster/core';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { bbtagUtil, SubtagType } from '@cluster/utils';
 
 export class CommitSubtag extends BaseSubtag {
     public constructor() {

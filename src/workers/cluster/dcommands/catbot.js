@@ -1,6 +1,6 @@
-const BaseCommand = require('../structures/BaseCommand');
 const path = require('path');
 const fs = require('fs');
+const BaseCommand = require('../structures/BaseCommand');
 const newbutils = require('../newbu');
 
 class CatbotCommand extends BaseCommand {

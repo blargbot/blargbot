@@ -1,4 +1,5 @@
-import { BaseSubtag, discordUtil, SubtagType } from '@cluster/core';
+import { BaseSubtag } from '@cluster/bbtag';
+import { discordUtil, SubtagType } from '@cluster/utils';
 
 export class EmbedSubtag extends BaseSubtag {
     public constructor() {

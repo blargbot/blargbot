@@ -1,17 +1,20 @@
 /* eslint-disable @typescript-eslint/naming-convention */
-import moment from 'moment';
-import config from '~/config.json';
-import { EventEmitter } from 'eventemitter3';
-import ReadWriteLock from 'rwlock';
-import { Client as ErisClient, User, Member, DiscordRESTError, DiscordHTTPError, Guild, Permission, GuildAuditLogEntry, AnyChannel, GuildMessage, AnyMessage } from 'eris';
-import isSafeRegex from 'safe-regex';
-import { parse } from './parse';
-import limax from 'limax';
-import { nfkd } from 'unorm';
-import { humanize, fafo, randInt } from '@core/utils';
-import { StoredTag } from '../database';
+import config from '@config';
 import { Logger } from '@core/Logger';
-import { guard } from './guard';
+import { StoredTag } from '@core/types';
+import { AnyChannel, AnyMessage, Client as ErisClient, DiscordHTTPError, DiscordRESTError, Guild, GuildAuditLogEntry, GuildMessage, Member, Permission, User } from 'eris';
+import { EventEmitter } from 'eventemitter3';
+import limax from 'limax';
+import moment from 'moment';
+import ReadWriteLock from 'rwlock';
+import isSafeRegex from 'safe-regex';
+import { nfkd } from 'unorm';
+
+import { fafo } from './fafo';
+import * as guard from './guard';
+import * as humanize from './humanize';
+import * as parse from './parse';
+import { randInt } from './random';
 
 const tagLock = Symbol('The key for a ReadWriteLock');
 interface TagLocks {

@@ -1,5 +1,6 @@
-const BaseCommand = require('../structures/BaseCommand');
 const Brainfuck = require('brainfuck-node');
+const BaseCommand = require('../structures/BaseCommand');
+
 const bfClient = new Brainfuck();
 const newbutils = require('../newbu');
 

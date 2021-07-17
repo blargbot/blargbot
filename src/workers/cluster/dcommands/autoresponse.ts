@@ -1,12 +1,15 @@
+import { BaseGuildCommand } from '@cluster/command';
+import { GuildCommandContext } from '@cluster/types';
+import { between, CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
+import { SendPayload } from '@core/types';
 import { EmbedOptions } from 'eris';
-import { BaseGuildCommand, commandTypes, GuildCommandContext, SendPayload, createSafeRegExp, randChoose, randInt, between, getRange, parse } from '@cluster/core';
 
 export class AutoResponseCommand extends BaseGuildCommand {
     public constructor() {
         super({
             name: 'autoresponse',
             aliases: ['ar'],
-            category: commandTypes.ADMIN,
+            category: CommandType.ADMIN,
             flags: [
                 {
                     flag: 'R',
