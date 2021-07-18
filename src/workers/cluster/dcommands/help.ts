@@ -1,5 +1,5 @@
-import { BaseCommand, BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
+import { BaseCommand, BaseGlobalCommand, CommandContext, CommandVariableType } from '@cluster/command';
+import { CommandParameter, GuildCommandContext } from '@cluster/types';
 import { codeBlock, CommandType, commandTypeDetails, guard, humanize } from '@cluster/utils';
 import { SendPayload, StoredGuildCommand } from '@core/types';
 import { EmbedField } from 'eris';
@@ -16,9 +16,9 @@ export class HelpCommand extends BaseGlobalCommand {
                     execute: (ctx) => this.listCommands(ctx)
                 },
                 {
-                    parameters: '{commandName} {subcommand?}',
+                    parameters: '{commandName} {subcommand+?} {page:number=1}',
                     description: 'Shows the help text for the given command',
-                    execute: (msg, [commandName, subcommand]) => this.viewCommand(msg, commandName, subcommand)
+                    execute: (msg, [commandName, subcommand, page]) => this.viewCommand(msg, commandName, page - 1, subcommand)
                 }
             ]
         }, true);
@@ -103,7 +103,7 @@ export class HelpCommand extends BaseGlobalCommand {
         };
     }
 
-    public async viewCommand(context: CommandContext, commandName: string, subcommand?: string): Promise<SendPayload> {
+    public async viewCommand(context: CommandContext, commandName: string, page: number, subcommand: string): Promise<SendPayload> {
 
         if (guard.isGuildCommandContext(context)) {
             const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
@@ -113,7 +113,7 @@ export class HelpCommand extends BaseGlobalCommand {
 
         const command = context.cluster.commands.get(commandName);
         if (command !== undefined)
-            return this.viewDefaultCommand(context, command, subcommand);
+            return this.viewDefaultCommand(context, command, page, subcommand);
 
         return this.error(`The command \`${commandName}\` could not be found`);
     }
@@ -132,9 +132,12 @@ export class HelpCommand extends BaseGlobalCommand {
         };
     }
 
-    public async viewDefaultCommand(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
+    public async viewDefaultCommand(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {
         if (!await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
             return this.error(`You dont have permission to run the \`${command.name}\` command`);
+
+        if (page < 0)
+            return this.error('Page the page number must be 1 or higher');
 
         const fields: EmbedField[] = [];
 
@@ -144,222 +147,116 @@ export class HelpCommand extends BaseGlobalCommand {
         if (command.flags.length > 0)
             fields.push({ name: '**Flags**', value: humanize.flags(command.flags).join('\n') });
 
+        const allSignatures = command.signatures
+            .filter(c => !c.hidden)
+            .map(signature => ({
+                usage: stringifyParameters(signature.parameters),
+                description: signature.description,
+                notes: signature.parameters.flatMap(p => [...getParameterNotes(p)])
+            }));
+
+        const filteredSignatures = subcommand.length > 0
+            ? allSignatures.slice(page * 10)
+            : allSignatures.filter(s => s.usage.startsWith(subcommand.toLowerCase())).slice(page * 10);
+
+        const signatures = filteredSignatures.slice(0, 10);
+
+        if (signatures.length === 0) {
+            if (filteredSignatures.length === 0)
+                return this.error(`No subcommands for \`${command.name}\` matching \`${subcommand}\` were found`);
+            if (page !== 0)
+                return this.error(`Page ${page + 1} is empty for \`${command.name}\`!`);
+        }
+
+        for (const signature of signatures) {
+            fields.push({
+                name: `__\`${context.prefix}${command.name} ${signature.usage}\`__`,
+                value: `${signature.notes.join('\n')}\n\n${signature.description}`.trim()
+            });
+        }
+
+        if (filteredSignatures.length > signatures.length) {
+            fields.push({
+                name: `... and ${filteredSignatures.length - signatures.length} more`,
+                value: `Use \`${context.prefix}help ${command.name}${subcommand.length === 0 ? '' : ` ${subcommand}`} ${page + 2}\` for more`
+            });
+        }
+
         return {
             embed: {
-                title: `Help for ${command.name} ${subcommand ?? ''}`,
+                title: `Help for ${command.name} ${subcommand}`,
                 url: context.util.websiteLink(`/commands#${command.name}`),
-                description: 'TODO',
+                description: command.description,
                 color: commandTypeDetails[command.category].color,
                 fields: fields
             },
             isHelp: true
         };
     }
-
-    // getColor(category) {
-    //     switch (category) {
-    //         case newbutils.commandTypes.CAT:
-    //         case newbutils.commandTypes.ADMIN: return 0xff0000;
-    //         case newbutils.commandTypes.NSFW: return 0x010101;
-    //         case newbutils.commandTypes.IMAGE:
-    //         case newbutils.commandTypes.GENERAL: return 0xefff00;
-    //         default: return 0x7289da;
-    //     }
-    // }
-
-    // async execute(msg, words, text) {
-    //     if (words.length > 1) {
-    //         let embed = {
-    //             fields: [],
-    //             get asString() {
-    //                 return stringify(this);
-    //             }
-    //         };
-    //         if (CommandManager.commandList.hasOwnProperty(words[1]) && !CommandManager.commandList[words[1]].hidden
-    //             && (!CommandManager.commandList[words[1]].onlyOn || CommandManager.commandList[words[1]].onlyOn === msg.guild.id)) {
-    //             let instance = CommandManager.built[CommandManager.commandList[words[1]].name];
-    //             let definition = CommandManager.commandList[words[1]];
-    //             embed.title = `Help for ${definition.name}`;
-    //             embed.url = `https://blargbot.xyz/commands#${definition.name}`;
-    //             embed.description = `**__Usage__**:\`${definition.usage}\`\n${definition.info}`;
-    //             embed.color = this.getColor(instance.category);
-    //             if (instance.aliases && instance.aliases.length > 0)
-    //                 embed.fields.push({
-    //                     name: '**Aliases**',
-    //                     value: instance.aliases.join(', ')
-    //                 });
-    //             if (instance.flags && instance.flags.length > 0)
-    //                 embed.fields.push({
-    //                     name: '**Flags**',
-    //                     value: instance.flags.map(flag => `\`-${flag.flag}\` or \`--${flag.word}\` - ${flag.desc}`).join('\n')
-    //                 });
-    //         } else {
-    //             let helpText = await bu.ccommand.gethelp(msg.guild.id, words[1]);
-    //             if (helpText) {
-    //                 embed.color = this.getColor('CUSTOM');
-    //                 embed.title = `Help for ${words[1].toLowerCase()} (Custom Command)`;
-    //                 embed.description = helpText;
-    //             }
-    //         }
-    //         if (!embed.title)
-    //             bu.send(msg, `No description could be found for command \`${words[1]}\`.`);
-    //         else
-    //             bu.send(msg, { embed });
-    //     } else {
-    //         let embed = {
-    //             fields: [],
-    //             get asString() {
-    //                 return stringify(this);
-    //             }
-    //         };
-    //         embed.color = this.getColor('CUSTOM');
-    //         var generalCommands = [];
-    //         var otherCommands = {};
-    //         var modifiedCommands = [];
-    //         let storedGuild, permOverride, staffPerms, adminRole;
-    //         if (msg.channel.guild) {
-    //             storedGuild = await bu.getGuild(msg.guild.id);
-    //             permOverride = await bu.guildSettings.get(msg.channel.guild.id, 'permoverride');
-    //             staffPerms = await bu.guildSettings.get(msg.channel.guild.id, 'staffPerms');
-    //             adminRole = storedGuild.settings.adminrole;
-    //             let customizedCommands = storedGuild.commandperms;
-    //             //    console.debug(customizedCommands);
-    //             for (let key in customizedCommands) {
-    //                 if (!CommandManager.commandList.hasOwnProperty(key)) continue;
-    //                 if (customizedCommands[key].rolename !== null)
-    //                     for (let i = 0; i < customizedCommands[key].rolename.length; i++) {
-    //                         if (!otherCommands[customizedCommands[key].rolename[i].toLowerCase()]) {
-    //                             console.debug('creating an entry for', customizedCommands[key].rolename[i].toLowerCase());
-    //                             otherCommands[customizedCommands[key].rolename[i].toLowerCase()] = [];
-    //                         }
-    //                         otherCommands[customizedCommands[key].rolename[i].toLowerCase()]
-    //                             .push(key);
-    //                         modifiedCommands.push(key);
-    //                     }
-    //             }
-    //             console.debug(customizedCommands);
-    //         }
-    //         //    console.debug(modifiedCommands);
-    //         //   console.debug(otherCommands);
-    //         for (var command in CommandManager.built) {
-    //             if (modifiedCommands.indexOf(command) === -1)
-    //                 if (!CommandManager.built[command].hidden && (!CommandManager.built[command].onlyOn || (msg.guild && CommandManager.built[command].onlyOn === msg.guild.id))) {
-    //                     if (CommandManager.built[command].category === newbutils.commandTypes.GENERAL) {
-    //                         if ((await bu.canExecuteCommand(msg, command, true, { storedGuild, permOverride, staffPerms })).executable)
-    //                             generalCommands.push(command);
-    //                     } else {
-    //                         let category = CommandManager.built[command].category;
-    //                         if (!otherCommands[CommandManager.built[command].category])
-    //                             otherCommands[CommandManager.built[command].category] = [];
-    //                         otherCommands[CommandManager.built[command].category].push(command);
-    //                     }
-    //                 }
-    //         }
-    //         generalCommands.sort();
-    //         embed.fields.push({
-    //             name: 'General Commands',
-    //             value: '```\n' + generalCommands.join(', ') + '\n```'
-    //         });
-
-    //         var onComplete = async () => {
-    //             if (msg.channel.guild) {
-    //                 let ccommands = storedGuild.ccommands;
-    //                 //      console.debug(ccommands);
-    //                 if (ccommands && Object.keys(ccommands).length > 0) {
-    //                     var helpCommandList = [];
-    //                     for (var key in ccommands) {
-    //                         if (await bu.canExecuteCcommand(msg, key, true))
-    //                             helpCommandList.push(key);
-    //                     }
-    //                     helpCommandList.sort();
-    //                     embed.fields.push({
-    //                         name: 'Custom Commands',
-    //                         value: '```\n' + helpCommandList.join(', ') + '\n```'
-    //                     });
-    //                 }
-    //             }
-
-    //             let prefix = '';
-    //             let finalText = '';
-    //             if (!msg.channel.guild)
-    //                 finalText += 'Not all of these commands will work in DM\'s\n';
-    //             else {
-    //                 let prefixes = await bu.guildSettings.get(msg.channel.guild.id, 'prefix');
-    //                 prefix = prefixes ? prefixes[0] : config.discord.defaultPrefix;
-    //             }
-    //             finalText += 'For more information about commands, do `' + prefix + 'help <commandname>` or visit <https://blargbot.xyz/commands>.\nWant to support the bot? Consider donating to <https://patreon.com/blargbot> - all donations go directly towards recouping hosting costs.';
-
-    //             embed.fields.push({
-    //                 name: '\u200B',
-    //                 value: finalText
-    //             });
-
-    //             await this.sendHelp(msg, { embed }, 'commands');
-    //         };
-
-    //         function nextCommand(category, completeCommandList) {
-    //             if (!newbutils.commandTypes.properties.hasOwnProperty(category) ||
-    //                 newbutils.commandTypes.properties[category].requirement(msg, storedGuild)) {
-    //                 if (completeCommandList.length > 0) {
-    //                     completeCommandList.sort();
-    //                     let categoryString = '';
-    //                     if (newbutils.commandTypes.properties.hasOwnProperty(category)) {
-    //                         if (category === newbutils.commandTypes.ADMIN && adminRole)
-    //                             categoryString = adminRole;
-    //                         else categoryString = newbutils.commandTypes.properties[category].name;
-    //                     } else categoryString = category;
-    //                     embed.fields.push({
-    //                         name: `${categoryString.charAt(0).toUpperCase() + categoryString.slice(1)} Commands`,
-    //                         value: '```\n' + completeCommandList.join(', ') + '\n```'
-    //                     });
-    //                 }
-    //             }
-    //             i++;
-    //             completeCommandList.length = 0;
-    //             processCategory(i);
-    //         }
-    //         let completeCommandList = [],
-    //             category, counter, i = 0,
-    //             ii;
-
-    //         function doThing({ executable, name }) {
-    //             if (executable) {
-    //                 completeCommandList.push(name);
-    //             }
-    //             if (--counter === 0) {
-    //                 nextCommand(category, completeCommandList);
-    //             }
-    //         }
-
-    //         function processCategory() {
-    //             if (i === Object.keys(otherCommands).length) {
-    //                 onComplete();
-    //             } else {
-    //                 category = Object.keys(otherCommands)[i];
-    //                 //    if (!newbutils.commandTypes.properties.hasOwnProperty(category) || newbutils.commandTypes.properties[category].requirement(msg)) {
-    //                 //otherCommands[category].sort();
-    //                 counter = otherCommands[category].length;
-    //                 for (ii = 0; ii < otherCommands[category].length; ii++) {
-    //                     bu.canExecuteCommand(msg, otherCommands[category][ii], true, { storedGuild, permOverride, staffPerms }).then(doThing);
-    //                 }
-    //                 //    }
-    //             }
-    //         }
-    //         processCategory(i);
-    //     }
-    // }
-
-    // async sendHelp(msg, message, type, isPlural = false) {
-    //     if (typeof message !== 'object')
-    //         message = { content: message };
-
-    //     if (msg.channel.guild && await bu.guildSettings.get(msg.channel.guild.id, 'dmhelp')) {
-    //         let dmChannel = await bot.getDMChannel(msg.author.id);
-    //         await bu.send(msg, '📧 DMing you the ' + type + ' 📧');
-    //         message.content = 'Here ' + (isPlural ? 'are' : 'is') + ' the ' + type + ' you requested in <#' + msg.channel.id + '>\n' + (message.content || '');
-    //         await bu.send(dmChannel.id, message);
-    //     } else
-    //         await bu.send(msg, message);
-    // };
-
 }
+
+function stringifyParameters(parameters: readonly CommandParameter[]): string {
+    return parameters.map(stringifyParameter).join(' ');
+}
+
+function stringifyParameter(parameter: CommandParameter): string {
+    switch (parameter.kind) {
+        case 'literal': return parameter.name;
+        case 'singleVar':
+            if (parameter.fallback === undefined)
+                return `{${parameter.name}}`;
+            return `[${parameter.name}]`;
+        case 'concatVar':
+            if (parameter.fallback === undefined)
+                return `{...${parameter.name}}`;
+            return `[...${parameter.name}]`;
+        case 'greedyVar':
+            if (parameter.minLength === 0)
+                return `[...${parameter.name}]`;
+            return `{...${parameter.name}}`;
+    }
+}
+
+function* getParameterNotes(parameter: CommandParameter): Generator<string> {
+    switch (parameter.kind) {
+        case 'literal':
+            if (parameter.alias.length > 0)
+                yield `\`${parameter.name}\` can be replaced with ${humanize.smartJoin(parameter.alias.map(a => `\`${a}\``), ', ', ' or ')}`;
+            break;
+        case 'concatVar':
+        case 'singleVar': {
+            const result = [];
+            if (parameter.type !== 'string')
+                result.push(` should be ${typeStrings[parameter.type].single}`);
+            if (parameter.fallback !== undefined && parameter.fallback.length > 0)
+                result.push(`defaults to \`${parameter.fallback}\``);
+            if (result.length > 0)
+                yield `\`${parameter.name}\` ${result.join(' and ')}`;
+            break;
+        }
+        case 'greedyVar': {
+            const result = [];
+            if (parameter.minLength > 1)
+                result.push(`${parameter.minLength} or more`);
+            if (parameter.type !== 'string')
+                result.push(typeStrings[parameter.type].plural);
+            if (result.length > 0)
+                yield `\`${parameter.name}\` are ${result.join(' ')}`;
+            break;
+
+        }
+
+    }
+}
+
+const typeStrings: { [key in CommandVariableType]: { single: string; plural: string; } } = {
+    get string(): never { throw new Error('AAAAAA'); },
+    boolean: { single: 'true/false', plural: 'true/false' },
+    channel: { single: 'a channel id, mention or name', plural: 'channel ids, mentions or names' },
+    duration: { single: 'a duration', plural: 'durations' },
+    integer: { single: 'a whole number', plural: 'whole numbers' },
+    member: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' },
+    number: { single: 'a number', plural: 'numbers' },
+    role: { single: 'a role id, mention or name', plural: 'role ids, mentions or names' },
+    user: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' }
+};

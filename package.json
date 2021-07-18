@@ -127,6 +127,7 @@
         "@master": "out/src/workers/master",
         "@image": "out/src/workers/image",
         "@website": "out/src/workers/website",
-        "@website-old": "out/src/workers/website_old"
+        "@website-old": "out/src/workers/website_old",
+        "@entrypoints": "out/src/entrypoints"
     }
 }

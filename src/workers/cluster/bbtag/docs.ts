@@ -1,12 +1,13 @@
 import { CommandContext } from '@cluster/command';
 import { SubtagHandlerCallSignature } from '@cluster/types';
 import { bbtagUtil, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluster/utils';
+import { humanize } from '@core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
 import { BaseSubtag } from './BaseSubtag';
 import { limits } from './limits';
 
-export function getDocsEmbed(context: CommandContext, topic: readonly string[]): EmbedOptions | undefined {
+export function getDocsEmbed(context: CommandContext, topic: string): EmbedOptions | undefined {
     const embed = getTopicBody(context, topic);
     if (embed === undefined)
         return undefined;
@@ -17,8 +18,10 @@ export function getDocsEmbed(context: CommandContext, topic: readonly string[]):
     return embed;
 }
 
-function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedOptions | undefined {
-    switch (topic[0]?.toLowerCase()) {
+function getTopicBody(context: CommandContext, topic: string): EmbedOptions | undefined {
+    const words = humanize.smartSplit(topic);
+
+    switch (words[0]?.toLowerCase()) {
         case undefined:
         case 'index': return {
             description: `Please use \`${context.prefix}${context.commandName} docs [topic]\` to view available information on a topic.\n\n` +
@@ -34,7 +37,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
         case 'subtags': {
             const category = Object.values(SubtagType)
                 .filter((p): p is SubtagType => typeof p !== 'string')
-                .find(p => tagTypeDetails[p].name.toLowerCase() === topic[1]?.toLowerCase());
+                .find(p => tagTypeDetails[p].name.toLowerCase() === words[1]?.toLowerCase());
             if (category === undefined) {
                 return {
                     description: 'Available Subtag Categories:\n' +
@@ -148,7 +151,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                         `That is just there to allow ${context.cluster.discord.user.username} to modify the array in place within certain subtags.`
                 }
             ];
-            const term = terms.find(t => t.name.toLowerCase() === topic[1]?.toLowerCase());
+            const term = terms.find(t => t.name.toLowerCase() === words[1]?.toLowerCase());
             if (term !== undefined) {
                 return {
                     title: ` - Terminology - ${term.name}`,
@@ -174,7 +177,7 @@ function getTopicBody(context: CommandContext, topic: readonly string[]): EmbedO
                 'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.'
         };
         default: {
-            const subtagName = topic[0].replace(/[{}]/g, '').toLowerCase();
+            const subtagName = words[0].replace(/[{}]/g, '').toLowerCase();
             const subtag = context.cluster.subtags.get(subtagName);
             if (subtag === undefined)
                 return undefined;

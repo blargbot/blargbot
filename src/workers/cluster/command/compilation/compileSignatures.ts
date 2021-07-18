@@ -5,28 +5,31 @@ import { CommandContext } from '../CommandContext';
 import { CommandVariableType, isCommandVariableType } from './parameterType';
 
 export function compileSignatures<TContext extends CommandContext>(definitions: ReadonlyArray<CommandDefinition<TContext>>): ReadonlyArray<CommandSignatureHandler<TContext>> {
-    return [...compileSignaturesIter(definitions, '')];
+    return [...compileSignaturesIter(definitions, '', false)];
 }
 
 interface FlatCommandHandlerDefinition<TContext extends CommandContext> {
     parameters: string;
     definition: CommandHandlerDefinition<TContext>;
+    hidden: boolean;
 }
 
 function* compileSignaturesIter<TContext extends CommandContext>(
     definitions: Iterable<CommandDefinition<TContext>>,
-    subCommands: string
+    subCommands: string,
+    hidden: boolean
 ): Generator<CommandSignatureHandler<TContext>> {
     for (const definition of definitions) {
         if ('execute' in definition) {
             yield compileSignature({
                 parameters: `${subCommands} ${definition.parameters}`.trim(),
-                definition: definition
+                definition: definition,
+                hidden: definition.hidden ?? hidden
             });
         }
 
         if ('subcommands' in definition) {
-            yield* compileSignaturesIter(definition.subcommands, `${subCommands} ${definition.parameters}`.trim());
+            yield* compileSignaturesIter(definition.subcommands, `${subCommands} ${definition.parameters}`.trim(), definition.hidden ?? hidden);
         }
     }
 }
@@ -34,6 +37,7 @@ function* compileSignaturesIter<TContext extends CommandContext>(
 function compileSignature<TContext extends CommandContext>(signature: FlatCommandHandlerDefinition<TContext>): CommandSignatureHandler<TContext> {
     return {
         description: signature.definition.description,
+        hidden: signature.hidden,
         execute: signature.definition.execute,
         parameters: parseParameters(signature.parameters)
     };

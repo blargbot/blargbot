@@ -199,7 +199,7 @@ function createConcatVarBindingBuilder<TContext extends CommandContext>(name: st
 
     return {
         create() {
-            return new bindings.ConcatBinding(name, fallback, raw, buildBindings(next, depth + 1), typeParsers[type]);
+            return new bindings.ConcatBinding(name, fallback, raw, buildBindings(next, depth + 1), typeParsers[type], type);
         },
         add(parameter, signature) {
             if (parameter === undefined)
@@ -217,7 +217,7 @@ function createGreedyVarBindingBuilder<TContext extends CommandContext>(name: st
     return {
         create() {
             const next = mapKeys(nextMap, value => buildBindings(value, depth + 1));
-            return new bindings.GreedyBinding(name, raw, next, typeParsers[type]);
+            return new bindings.GreedyBinding(name, raw, next, typeParsers[type], type);
         },
         add(parameter, signature) {
             if (parameter === undefined)

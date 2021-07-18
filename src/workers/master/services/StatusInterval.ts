@@ -1,5 +1,5 @@
 import { CronService } from '@core/serviceTypes';
-import { guard } from '@core/utils';
+import { randChoose } from '@core/utils';
 import { Master } from '@master';
 import { MasterOptions } from '@master/types';
 import { BotActivityType } from 'eris';
@@ -19,17 +19,12 @@ export class StatusInterval extends CronService {
     }
 
     protected execute(): void {
-        let name = '';
         let type: BotActivityType = 0;
 
         const date = moment().format('MM-DD');
-        if (guard.hasProperty(this.#holidays, date)) {
-            name = this.#holidays[date];
-        } else {
-            const game = games[Math.floor(Math.random() * games.length)];
-            name = game.name;
-            type = game.type ?? 0;
-        }
+        let name = this.#holidays[date];
+        if (name === undefined)
+            ({ name, type = 0 } = randChoose(games));
 
         this.master.discord.editStatus('online', { name, type });
     }

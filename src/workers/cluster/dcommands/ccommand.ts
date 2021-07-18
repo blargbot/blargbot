@@ -174,7 +174,7 @@ export class CustomCommand extends BaseGuildCommand {
         return debug ? bbtagUtil.createDebugOutput('test', content, input, result) : undefined;
     }
 
-    public showDocs(context: GuildCommandContext, topic: readonly string[]): SendPayload | string {
+    public showDocs(context: GuildCommandContext, topic: string): SendPayload | string {
         const embed = getDocsEmbed(context, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`);

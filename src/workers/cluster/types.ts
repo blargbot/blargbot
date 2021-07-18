@@ -287,12 +287,14 @@ export type CommandParameter =
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
     readonly description: string;
     readonly parameters: string;
+    readonly hidden?: boolean;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     readonly execute: (context: TContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
 }
 
 export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
     readonly parameters: string;
+    readonly hidden?: boolean;
     readonly subcommands: ReadonlyArray<CommandDefinition<TContext>>;
 }
 
@@ -334,6 +336,7 @@ export interface CommandHandler<TContext extends CommandContext> {
 export interface CommandSignature {
     readonly description: string;
     readonly parameters: readonly CommandParameter[];
+    readonly hidden: boolean;
 }
 
 export interface CommandSignatureHandler<TContext extends CommandContext> extends CommandSignature {

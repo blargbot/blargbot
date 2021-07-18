@@ -40,17 +40,8 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
         }
     }
 
-    public get(name: string): TModule | undefined;
-    public get<T extends TModule>(name: string, type: ClassOf<T>): T | undefined;
-    public get(name: string, type?: ClassOf<unknown>): TModule | undefined {
-        const result = this.#modules.get(name);
-        if (type === undefined || result === undefined)
-            return result;
-        return typeof result === 'object'
-            && guard.hasValue(result)
-            && result instanceof type
-            ? result
-            : undefined;
+    public get(name: string): TModule | undefined {
+        return this.#modules.get(name);
     }
 
     public async init(): Promise<void> {

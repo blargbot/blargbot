@@ -5,8 +5,6 @@ import { WorkerState } from '@core/worker';
 import { Master } from '@master';
 import moment from 'moment';
 
-import { LogHandler } from './log';
-
 export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(
         public readonly master: Master
@@ -17,17 +15,15 @@ export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {
     protected async execute(worker: ClusterConnection): Promise<void> {
         if (worker.state !== WorkerState.EXITED)
             return;
-        const logTracker = this.master.eventHandlers.get(LogHandler.name, LogHandler);
-        if (logTracker !== undefined) {
-            const logs = logTracker.get(worker.id);
-            const logString = logs.slice(Math.max(logs.length - 5, 0))
-                .map(m => `[${m.timestamp}][${m.level}] ${m.text}`)
-                .join('\n');
-            void this.master.discord.createMessage(
-                this.master.config.discord.channels.shardlog,
-                `Cluster ${worker.id} has died.\n\nLast 5 console outputs:${codeBlock(logString, 'md')}`.slice(0, 2000));
-            logs.splice(0, logs.length);
-        }
+
+        const logs = this.master.logHistory.clear(worker.id);
+        const logString = logs.slice(Math.max(logs.length - 5, 0))
+            .map(m => `[${m.timestamp}][${m.level}] ${m.text}`)
+            .join('\n');
+        void this.master.discord.createMessage(
+            this.master.config.discord.channels.shardlog,
+            `Cluster ${worker.id} has died.\n\nLast 5 console outputs:${codeBlock(logString, 'md')}`.slice(0, 2000));
+
         const diedAt = moment();
         this.master.logger.cluster(`Cluster ${worker.id} has died, respawning...`);
         await this.master.clusters.spawn(worker.id);

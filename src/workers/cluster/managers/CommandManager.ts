@@ -1,9 +1,9 @@
 import { Cluster } from '@cluster';
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { BaseCommand, CommandContext } from '@cluster/command';
-import { MessageIdQueue } from '@cluster/MessageIdQueue';
 import { CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, FlagDefinition, GuildCommandContext } from '@cluster/types';
 import { commandTypeDetails, defaultStaff, guard, humanize } from '@cluster/utils';
+import { MessageIdQueue } from '@core/MessageIdQueue';
 import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';

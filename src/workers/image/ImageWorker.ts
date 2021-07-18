@@ -1,18 +1,19 @@
 import { Logger } from '@core/Logger';
+import { ModuleLoader } from '@core/modules';
 import { fafo, mapping } from '@core/utils';
 import { BaseWorker } from '@core/worker';
 import { ImageGeneratorMap, ImageRequest } from '@image/types';
 
-import { ImageModuleLoader } from './ImageModuleLoader';
+import { BaseImageGenerator } from './BaseImageGenerator';
 
 export class ImageWorker extends BaseWorker {
-    public readonly renderers: ImageModuleLoader;
+    public readonly renderers: ModuleLoader<BaseImageGenerator>;
 
     public constructor(logger: Logger) {
         super(logger);
         this.logger.init(`IMAGE WORKER (pid ${this.id}) PROCESS INITIALIZED`);
 
-        this.renderers = new ImageModuleLoader(`${__dirname}/generators`, this.logger);
+        this.renderers = new ModuleLoader<BaseImageGenerator>(`${__dirname}/generators`, BaseImageGenerator, [this.logger], this.logger, g => [g.key]);
 
         this.on('img', fafo(async (data, _, reply) => {
             const request = mapData(data);

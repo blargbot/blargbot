@@ -706,7 +706,7 @@ export class TagCommand extends BaseGuildCommand {
         return { name: tag.name, tag };
     }
 
-    private showDocs(ctx: GuildCommandContext, topic: readonly string[]): SendPayload | string {
+    private showDocs(ctx: GuildCommandContext, topic: string): SendPayload | string {
         const embed = getDocsEmbed(ctx, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`);

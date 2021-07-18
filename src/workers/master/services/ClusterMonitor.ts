@@ -2,7 +2,6 @@ import { ClusterConnection } from '@cluster';
 import { IntervalService } from '@core/serviceTypes';
 import { WorkerState } from '@core/worker';
 import { Master } from '@master';
-import { ClusterStatsHandler } from '@master/events/clusterStats';
 import moment from 'moment';
 
 export class ClusterMonitor extends IntervalService {
@@ -23,8 +22,7 @@ export class ClusterMonitor extends IntervalService {
         if (cluster.state !== WorkerState.RUNNING)
             return;
 
-        const statsTracker = this.master.eventHandlers.get(ClusterStatsHandler.name, ClusterStatsHandler);
-        const stats = statsTracker?.get(cluster.id);
+        const stats = this.master.clusterStats.get(cluster.id);
         const now = moment();
         const cutoff = moment().add(-1, 'minute');
         const alerts = [];
@@ -44,7 +42,7 @@ export class ClusterMonitor extends IntervalService {
         if (alerts.length === 0)
             return;
 
-        statsTracker?.clear(cluster.id);
+        this.master.clusterStats.set(cluster.id, undefined);
         void this.master.discord.createMessage(this.master.config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n${alerts.join('\n')}`);
         void this.master.clusters.spawn(cluster.id);
     }

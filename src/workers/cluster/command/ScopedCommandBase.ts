@@ -18,10 +18,11 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
     public constructor(options: CommandOptions<TContext>, noHelp = false) {
         const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
             {
-                parameters: 'help {subcommand?}',
+                parameters: 'help {subcommand+?} {page:number=1}',
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                execute: (context, [subcommand]) => this.showHelp(context, this, subcommand),
-                description: 'Gets the help message for this command'
+                execute: (context, [subcommand, page]) => this.showHelp(context, this, page - 1, subcommand),
+                description: 'Gets the help message for this command',
+                hidden: true
             },
             ...options.definitions
         ];
@@ -53,9 +54,11 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
         await runMiddleware(0);
     }
 
-    protected async showHelp(context: CommandContext, command: BaseCommand, subcommand?: string): Promise<SendPayload> {
+    protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {
         const { HelpCommand: helpCommandClass } = await helpCommandPromise;
-        const help = context.cluster.commands.get('help', helpCommandClass);
-        return await help?.viewDefaultCommand(context, command, subcommand) ?? this.error('Unable to load help, please try again later');
+        const help = context.cluster.commands.get('help');
+        if (help instanceof helpCommandClass)
+            return await help.viewDefaultCommand(context, command, page, subcommand);
+        return this.error('Unable to load help, please try again later');
     }
 }

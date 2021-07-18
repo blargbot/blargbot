@@ -1,6 +1,6 @@
 import { Logger } from '@core/Logger';
 import { TypeMapping } from '@core/types';
-import { directory } from '@res';
+import { directory as res } from '@res';
 import gm from 'gm';
 import Jimp from 'jimp';
 import fetch from 'node-fetch';
@@ -35,7 +35,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
     protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<Buffer | undefined>;
 
     protected getLocalResourcePath(...segments: string[]): string {
-        return path.join(directory, 'img', ...segments);
+        return path.join(res, 'img', ...segments);
     }
 
     protected getLocalJimp(...segments: string[]): Promise<Jimp> {
@@ -190,13 +190,10 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
 // This method is turned into a string and run on the phantom instance, not in node
 function phantomGetrect(replacements: PhantomOptions['replacements']): { top: number; left: number; width: number; height: number; } | undefined {
     if (replacements !== undefined) {
-        const keys = Object.keys(replacements);
-        // Phantom might not support the for-of syntax
-        // eslint-disable-next-line @typescript-eslint/prefer-for-of
-        for (let i = 0; i < keys.length; i++) {
-            const thing = document.getElementById(keys[i]);
+        for (const [key, value] of Object.entries(replacements)) {
+            const thing = document.getElementById(key);
             if (thing !== null)
-                thing.innerText = replacements[keys[i]];
+                thing.innerText = value;
         }
     }
     try {

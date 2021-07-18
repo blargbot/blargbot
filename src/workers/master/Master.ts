@@ -8,6 +8,7 @@ import { MasterOptions } from '@master/types';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
+import { ClusterLogManager, ClusterStatsManager } from './managers';
 import { MasterWorker } from './MasterWorker';
 
 export class Master extends BaseClient {
@@ -15,6 +16,8 @@ export class Master extends BaseClient {
     public readonly eventHandlers: ModuleLoader<BaseService>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly worker: MasterWorker;
+    public readonly logHistory: ClusterLogManager;
+    public readonly clusterStats: ClusterStatsManager;
 
     public constructor(
         logger: Logger,
@@ -23,6 +26,8 @@ export class Master extends BaseClient {
     ) {
         super(logger, config, {});
         this.worker = options.worker;
+        this.logHistory = new ClusterLogManager(30);
+        this.clusterStats = new ClusterStatsManager();
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
         this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
