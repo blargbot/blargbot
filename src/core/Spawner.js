@@ -89,23 +89,25 @@ class Spawner extends EventEmitter {
             if (oldShard)
                 oldShard.ready = false;
             let shard = await this.spawn(id, false);
-            shard.on('shardReady', async (data) => {
+            const shardReadyHandler = async (data) => {
                 if (this.shards.get(id) !== undefined) {
                     let oldShard = this.shards.get(id);
                     try {
-                        if (oldShard.process.connected)
+                        if (oldShard !== shard && oldShard.process.connected)
                             await oldShard.send('killShard', { id: data });
                     } catch (err) {
                         console.error('Wasn\'t able to send killShard message to shard ' + id, err);
                     }
                 }
-            });
-            shard.on('ready', async () => {
+            };
+            shard.on('shardReady', shardReadyHandler);
+            shard.once('ready', async () => {
                 if (this.shards.get(id) !== undefined) {
                     let oldShard = this.shards.get(id);
                     oldShard.kill();
                     this.shards.delete(id);
                 }
+                shard.off('shardReady', shardReadyHandler);
                 this.shards.set(id, shard);
                 res();
                 let output = `Cluster ${id} has been respawned.`;

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:30:08
- * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-10 7:08:15
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-19 17:53:19
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -21,9 +21,12 @@ module.exports =
         )
         .whenArgs(0, async (_, context) => context.channel.id)
         .whenArgs('1-2', async (subtag, context, args) => {
-            let channel = context.guild.channels.find(c => c.name.toLowerCase() == args[0].toLowerCase());
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
-            return channel ? channel.id : quiet ? '' : Builder.errors.noChannelFound(subtag, context);
+            let channel = await Builder.util.parseChannel(context, args[0], {quiet, suppress: context.scope.suppressLookup });
+            if (!channel)
+                return quiet ? '' : Builder.errors.noChannelFound(subtag, context);
+
+            return channel.id;
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();

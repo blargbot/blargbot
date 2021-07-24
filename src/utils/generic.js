@@ -530,12 +530,101 @@ bu.getUserById = async function (userId) {
 };
 
 /**
+ * Gets a channel from a name (smartly)
+ * @param msg - the message (Message)
+ * @param name - the name of the channel (String)
+ * @param args - additional arguments, if a bool is provided defaults to quiet (Boolean|Object)
+ * @param args.quiet - if true, won't respond with multiple channels found (Boolean)
+ * @param args.suppress - if true, won't output 'no channels found' or 'query cancelled' messages (Boolean)
+ * @returns {User|null}
+ */
+bu.getChannel = async function (msg, name, args = {}) {
+    if (typeof args !== 'object')
+        args = { quiet: args };
+    let channel = msg.channel.guild.channels.get(name);
+    if (channel) {
+        return channel;
+    }
+
+    let channelList = name ? msg.channel.guild.channels.filter(m => (m.name && m.name.toLowerCase().indexOf(name.toLowerCase()) > -1)) : [];
+
+    channelList.sort(function (a, b) {
+        let thingy = 0;
+        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.name.startsWith(name)) {
+            thingy += 100;
+        }
+        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.name.startsWith(name)) {
+            thingy -= 100;
+        }
+        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            a.name.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy += 10;
+        }
+        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
+            b.name.toLowerCase().startsWith(name.toLowerCase())) {
+            thingy -= 10;
+        }
+        if (a.name.indexOf(name) > -1) {
+            thingy++;
+        }
+        if (b.name.indexOf(name) > -1) {
+            thingy--;
+        }
+        return -thingy;
+    });
+    //  console.debug(channelList.map(m => m.name));
+
+    if (channelList.length == 1) {
+        return channelList[0];
+    } else if (channelList.length == 0) {
+        if (!args.quiet && !args.suppress) {
+            if (args.onSendCallback) args.onSendCallback();
+            bu.send(msg, `No channels found${args.label ? ' in ' + args.label : ''}.`);
+        }
+        return null;
+    } else {
+        if (!args.quiet) {
+            var channelListString = '';
+            let newChannelList = [];
+            for (let i = 0; i < channelList.length && i < 20; i++) {
+              newChannelList.push(channelList[i]);
+            }
+            for (let i = 0; i < newChannelList.length; i++) {
+                channelListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newChannelList[i].name} - ${newChannelList[i].id}\n`;
+            }
+            let moreChannelString = newChannelList.length < channelList.length ? `...and ${channelList.length - newChannelList.length} more.\n` : '';
+            
+            let query = await bu.createQuery(msg, `Multiple channels found! Please select one from the list.\`\`\`prolog
+${channelListString}${moreChannelString}--------------------
+C. cancel query
+\`\`\`
+**${bu.getFullName(msg.author)}**, please type the number of the channel you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`, (msg2) => {
+                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newChannelList.length + 1 && parseInt(msg2.content) >= 1)) {
+                    return true;
+                } else return false;
+            }, undefined, args.label, args.suppress);
+            let response = await query.response;
+            if (response.content.toLowerCase() == 'c') {
+                if (!args.suppress)
+                    bu.send(msg, 'Query canceled.');
+                return null;
+            } else {
+                await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
+                return newChannelList[parseInt(response.content) - 1];
+            }
+        } else {
+            return null;
+        }
+    }
+};
+
+/**
  * Gets a user from a name (smartly)
  * @param msg - the message (Message)
  * @param name - the name of the user (String)
  * @param args - additional arguments, if a bool is provided defaults to quiet (Boolean|Object)
  * @param args.quiet - if true, won't respond with multiple users found (Boolean)
- * @param args.suppress - if true, won't output 'no user found' or 'query cancelled' messages (Boolean)
+ * @param args.suppress - if true, won't output 'no users found' or 'query cancelled' messages (Boolean)
  * @returns {User|null}
  */
 bu.getUser = async function (msg, name, args = {}) {
@@ -554,14 +643,13 @@ bu.getUser = async function (msg, name, args = {}) {
         discrim = name.match(/^.*#(\d{4}$)/)[1];
         name = name.substring(0, name.length - 5);
     }
-    //userList =
+
     userList = msg.channel.guild.members.filter(m => (m.user.username &&
         m.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
         (discrim != undefined ? m.user.discriminator == discrim : true)) ||
         ((m.nick) &&
             m.nick.toLowerCase().indexOf(name) > -1 &&
             (discrim != undefined ? m.user.discriminator == discrim : true)));
-
     userList.sort(function (a, b) {
         let thingy = 0;
         if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.user.username.startsWith(name)) {
@@ -647,9 +735,9 @@ bu.getRole = async function (msg, name, args = {}) {
     if (msg.channel.guild.roles.get(name)) {
         return msg.channel.guild.roles.get(name);
     }
+  
     let roleList = msg.channel.guild.roles.filter(m => (m.name &&
         m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
-
     roleList.sort(function (a, b) {
         let thingy = 0;
         if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.name.startsWith(name)) {
@@ -674,13 +762,13 @@ bu.getRole = async function (msg, name, args = {}) {
         }
         return -thingy;
     });
-    //  console.debug(userList.map(m => m.user.username));
+    //  console.debug(roleList.map(m => m.name));
 
     if (roleList.length == 1) {
         return roleList[0];
     } else if (roleList.length == 0) {
         if (!args.quiet && !args.suppress)
-            bu.send(msg, `No roles found.`);
+            bu.send(msg, `No roles found${args.label ? ' in ' + args.label : ''}.`);
         return null;
     } else {
         if (!args.quiet) {

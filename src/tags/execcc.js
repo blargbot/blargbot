@@ -19,15 +19,15 @@ module.exports =
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
-            let ccommand = await context.getCached(args[0].toLowerCase(),
-                async key => (await bu.getGuild(context.guild.id)).ccommands[key]);
+            let name = args[0].toLowerCase();
+            let ccommand = await context.getCached(`cc_${name}`,
+                async () => (await bu.getGuild(context.guild.id)).ccommands[name]);
 
             if (ccommand == null)
                 return Builder.util.error(subtag, context, 'CCommand not found: ' + args[0]);
             if (ccommand.alias)
                 return Builder.util.error(subtag, context, 'Cannot execcc imported tag: ' + args[0]);
 
-            let name = args[0].toLowerCase();
             if (!context._cooldowns[context.msg.guild.id][true])
                 context._cooldowns[context.msg.guild.id][true] = {};
             if (!context._cooldowns[context.msg.guild.id][true][context.msg.author.id])

@@ -1,8 +1,8 @@
 /*
  * @Author: zoomah
  * @Date: 2018-07-10 7:08:15
- * @Last Modified by: zoomah
- * @Last Modified time: 2018-07-10 7:08:15
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-19 17:49:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -18,12 +18,13 @@ module.exports =
             '{if;{istext,123456789};yup;nope}',
             'nope'
         )
-        .whenArgs('0-2', async function (subtag, context, args) {
-            let channel = context.channel;
-            if (args[0]) channel = Builder.util.parseChannel(context, args[0]);
-
+        .whenArgs(0, (_, context) => context.channel.type == 2)
+        .whenArgs('1-2', async function (subtag, context, args) {
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
-            if (typeof channel === 'function') return quiet ? false : channel(subtag, context);
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet, suppress: context.scope.suppressLookup });
+
+            if (!channel)
+                return quiet ? false : Builder.errors.noChannelFound(subtag, context);
 
             return channel.type == 2;
         })

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 19:06:26
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-05-16 10:18:06
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-11 10:17:56
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -31,7 +31,7 @@ module.exports =
 
             if (user != null) {
                 let storedUser = await r.table('user').get(user.id);
-                return storedUser.timezone || 'UTC';
+                return (storedUser && storedUser.timezone) || 'UTC';
             }
 
             if (quiet)

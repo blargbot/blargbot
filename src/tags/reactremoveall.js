@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:51:35
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-08-22 17:09:03
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-06-13 15:03:10
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -25,21 +25,16 @@ module.exports =
                 message = null;
 
             // Check if the first "emote" is actually a valid channel
-            channel = bu.parseChannel(args[0], true);
-            if (channel == null)
-                channel = context.channel;
-            else
-                args.shift();
-
-            if (!channel.guild || !context.guild || channel.guild.id != context.guild.id)
-                return Builder.errors.channelNotInGuild(subtag, context);
+            channel = await Builder.util.parseChannel(context, args[0], { quiet: true, suppress: context.scope.suppressLookup });
+            if (!channel) channel = context.channel;
+            else args.shift();
 
             // Check that the current first "emote" is a message id
             try {
                 message = await bot.getMessage(channel.id, args[0]);
-            } catch (e) { } finally {
-                if (message == null)
-                    return Builder.errors.noMessageFound(subtag, context);
+            } catch (e) { }
+            finally {
+                if (!message) return Builder.errors.noMessageFound(subtag, context);
             }
 
             console.log(await context.isStaff, context.ownsMessage(message.id));

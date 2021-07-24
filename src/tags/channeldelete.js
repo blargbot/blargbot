@@ -17,12 +17,11 @@ module.exports =
       ''
     )
     .whenArgs(0, Builder.errors.notEnoughArguments)
-    .whenArgs('1-5', async function (subtag, context, args) {
-      let channel = Builder.util.parseChannel(context, args[0]);
+    .whenArgs('1', async function (subtag, context, args) {
+      let channel = await Builder.util.parseChannel(context, args[0], { suppress: context.scope.suppressLookup });
 
       if (!channel)
-        return Builder.util.error(subtag, context, 'Channel does not exist');
-
+        return Builder.errors.noChannelFound(subtag, context);
       const permission = channel.permissionsOf(context.authorizer);
 
       if (!permission.has('manageChannels'))

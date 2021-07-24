@@ -40,14 +40,15 @@ class GreetCommand extends BaseCommand {
         let suffix = '';
         let channelStr = input.c ? input.c.join(' ') : msg.channel.id;
         if (/[0-9]{17,23}/.test(channelStr)) {
-            let channel = channelStr.match(/([0-9]{17,23})/)[1];
-            if (!bot.getChannel(channel)) {
+            const channelId = channelStr.match(/([0-9]{17,23})/)[1];
+            const channel = await bu.getChannel(msg, channelId, { quiet: true });
+            if (!channel) {
                 suffix = `A channel could not be found from the channel input, so this message will go into the default channel. `;
-            } else if (bot.channelGuildMap[channel] != msg.guild.id) {
+            } else if (bot.channelGuildMap[channelId] != msg.guild.id) {
                 suffix = `The channel must be on this guild! `;
             } else {
-                await bu.guildSettings.set(msg.guild.id, 'greetchan', channel);
-                suffix = `This greeting will be outputted in <#${channel}>. `;
+                await bu.guildSettings.set(msg.guild.id, 'greetchan', channelId);
+                suffix = `This greeting will be outputted in ${channel.mention}. `;
             }
         }
         await bbEngine.runTag({

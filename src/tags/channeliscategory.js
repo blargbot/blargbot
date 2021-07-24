@@ -18,12 +18,13 @@ module.exports =
             '{if;{iscategory,123456789};yup;nope}',
             'nope'
         )
-        .whenArgs(0, Builder.errors.notEnoughArguments)
+        .whenArgs(0, (_, context) => context.channel.type == 4)
         .whenArgs('1-2', async function (subtag, context, args) {
-            let channel = Builder.util.parseChannel(context, args[0]);
-
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[1];
-            if (typeof channel === 'function') return quiet ? false : channel(subtag, context);
+            let channel = await Builder.util.parseChannel(context, args[0], { quiet, suppress: context.scope.suppressLookup });
+
+            if (!channel)
+                return quiet ? false : Builder.errors.noChannelFound(subtag, context);
 
             return channel.type == 4;
         })
