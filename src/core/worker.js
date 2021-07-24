@@ -552,7 +552,7 @@ const functions = {
         submitBuffer(msg.code, buffer);
     },
     sonicsays: async function (msg) {
-        let res = await renderPhantom('sonicsays.html', { replace1: msg.text }, 2, undefined, [resize], undefined);
+        let res = await renderPhantom('sonicsays.html', { replace1: msg.text }, 2, undefined, [], undefined);
         submitBuffer(msg.code, res);
     },
     pccheck: async function (msg) {

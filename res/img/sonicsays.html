@@ -3,8 +3,8 @@
 <head>
     <style>
         @font-face {
-            font-family: 'Muli';
-            src: url('fonts/Muli-Bold.ttf') format('truetype');
+            font-family: 'Block T';
+            src: url('fonts/block-t-heavy.ttf') format('truetype');
             font-weight: normal;
             font-style: normal;
         }
@@ -21,21 +21,21 @@
 
         body,
         html {
-            font-family: 'Muli';
+            font-family: 'Block T';
             margin: 0;
             padding: 0;
         }
 
         pre {
-            font-family: 'Muli';
+            font-family: 'Block T';
         }
 
         #wrapper {
             position: absolute;
-            left: 85px;
-            top: 70px;
-            height: 130px;
-            width: 190px;
+            left: 42px;
+            top: 140px;
+            height: 400px;
+            width: 700px;
             text-align: left;
         }
 
@@ -50,16 +50,22 @@
             font-size: 35px;
             color: #fff;
             font-style: normal !important;
+            -webkit-text-stroke: 8px black;
+            text-shadow:
+                -1px -1px 0 #000,
+                1px -1px 0 #000,
+                -1px 1px 0 #000,
+                1px 1px 0 #000;
         }
     </style>
 </head>
 
 <body>
     <div id='workspace'>
-        <img src='sonicsays.png'>
+        <img src='sonicsays2.png'>
         <div id='wrapper'>
             <div class='text-custom'>
-                <div class='resize' id='replace1'></div>
+                <div class='resize' id='replace1'>Wow! I'm Gay!</div>
             </div>
         </div>
     </div>
