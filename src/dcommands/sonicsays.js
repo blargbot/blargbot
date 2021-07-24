@@ -22,12 +22,7 @@ class SonicsaysCommand extends BaseCommand {
 
         let code = bu.genEventCode();
 
-        let buffer = await bu.awaitEvent({
-            cmd: 'img',
-            command: 'sonicsays',
-            code: code,
-            text: words.slice(1).join(' ')
-        });
+        let buffer = await bu.blargbotApi('sonicsays', { text: text });
 
         await bu.send(msg, undefined, {
             file: buffer,
