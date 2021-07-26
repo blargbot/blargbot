@@ -17,7 +17,7 @@ module.exports =
         '`object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
         '`path` is a dot-noted series of properties.'
         )
-        .withExample('{set;~json;{json;{"key": "value", "key2" : "value2"}}\n'
+        .withExample('{set;~json;{json;{"key": "value", "key2" : "value2"}}}\n'
             + '{jsonkeys;~json}', '["key","key2"]')
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenArgs('1-2', async (subtag, context, args) => {
