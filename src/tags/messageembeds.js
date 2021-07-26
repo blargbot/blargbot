@@ -16,8 +16,8 @@ module.exports =
             '\n`channel` defaults to the current channel' +
             '\n`messageid` defaults to the executing message id')
         .withExample(
-            'You sent an embed that looked like "{messageembed}"',
-            'You sent an embed that looked like "[{"title":"Hello!"}]"'
+            'You sent a message that had embeds looked like "{messageembeds}"',
+            'You sent a message that had embeds looked like "[{"title":"Hello!"}]"'
         )
         .whenArgs(0, async (_, context) => JSON.stringify(context.msg.embeds))
         .whenArgs(1, async function (subtag, context, args) {
