@@ -2,7 +2,7 @@ import { User } from 'eris';
 
 import * as humanize from '../humanize';
 
-export function formatAuditReason(user: User, reason: string, ban = false): string {
+export function formatAuditReason(user: User, reason = '', ban = false): string {
     let fullReason = humanize.fullName(user);
     if (reason.length > 0) {
         fullReason += `: ${reason}`;
