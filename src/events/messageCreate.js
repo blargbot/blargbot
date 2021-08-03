@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: RagingLink
- * @Last Modified time: 2021-08-02 18:34:43
+ * @Last Modified time: 2021-08-03 12:08:32
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -186,7 +186,7 @@ async function exceededRatelimit(msg) {
 
     if (commandUsage[msg.author.id].length >= maxExecutions) {
         timedOut[msg.author.id] = Date.now() + timeoutDuration;
-        await bu.send(msg, 'Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `' + timeoutDuration / 1000 + 's`.\n\nContinuing to spam commands will lengthen your timeout by `5s`! To prevent being timed out, please avoid using `' + maxExecutions + '` commands within `' + maxTime / 1000 + 's`');
+        await bu.send(msg, 'Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `' + timeoutDuration / 1000 + 's`.\n\nContinuing to spam commands will lengthen your timeout by `5s`!');
         return true;
     }
 
