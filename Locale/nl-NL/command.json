@@ -27,9 +27,9 @@
             "usage": "<code>",
             "flags": {
                 "p": "Toont een lijst van pointers na het uitvoeren.",
-                "i": "",
-                "pointers": "",
-                "input": ""
+                "i": "Specificeert de invoer voor de `,` operator.",
+                "pointers": "Specificeert dat de resulterende aanwijzingen moeten worden gegeven.",
+                "input": "Specificeert invoerparameters."
             }
         },
         "ship": {
