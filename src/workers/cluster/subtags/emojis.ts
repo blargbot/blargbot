@@ -12,7 +12,7 @@ export class EmojisSubtag extends BaseSubtag {
                 {
                     parameters: [],
                     description: 'Returns an array of emojis in the current guild.',
-                    exampleIn: 'This guild has {length;{emojis}} emojis.',
+                    exampleCode: 'This guild has {length;{emojis}} emojis.',
                     exampleOut: 'This guild has 23 emojis.',
                     execute: (context) => {
                         const emojis = context.guild.emojis.map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
@@ -22,8 +22,8 @@ export class EmojisSubtag extends BaseSubtag {
                 {
                     parameters: ['role'],
                     description: 'Returns an array of emojis whitelisted for the provided `role`',
-                    exampleIn: 'Cool gang has {length;{emojis;Cool gang}} emojis.',
-                    exampleOut: 'Cool gang has 6 emojis.', //@ts-expect-error Subtag and roleStr are used in the new code
+                    exampleCode: 'Cool gang has {length;{emojis;Cool gang}} emojis.',
+                    exampleOut: 'Cool gang has 6 emojis.', //@ts-expect-error Subtag and roleStr are    d used in the new code
                     execute: async (context, [{value: roleStr}], subtag) => { //eslint-disable-line
                         //! Doesn't work, but compatibility™
                         const emojis = context.guild.emojis.filter(e => e.roles.length > 0)
