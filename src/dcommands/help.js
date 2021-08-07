@@ -153,12 +153,9 @@ class HelpCommand extends BaseCommand {
                                     value: '```\n' + helpCommandList[i]
                                 };
                             }
-
-                            if (i === helpCommandList.length - 1) {
-                                section.value += '\n```';
-                                sections.push(section);
-                            }
                         }
+                        section.value += '\n```';
+                        sections.push(section);
                         embed.fields.push(...sections);
                     }
                 }
