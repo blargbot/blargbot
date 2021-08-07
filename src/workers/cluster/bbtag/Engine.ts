@@ -58,18 +58,21 @@ export class BBTagEngine {
         };
     }
 
-    public async eval(bbtag: SubtagCall | Statement, context: BBTagContext): Promise<string> {
+    public async eval(bbtag: SubtagCall | Statement | string, context: BBTagContext): Promise<string> {
         if (context.engine !== this)
             throw new Error('Cannot execute a context from another engine!');
 
         if (context.state.return !== RuntimeReturnState.NONE)
             return '';
 
+        if (typeof bbtag === 'string')
+            return bbtag;
+
         if (!('name' in bbtag)) {
             const results = [];
             context.scopes.beginScope();
             for (const elem of bbtag)
-                results.push(typeof elem === 'string' ? elem : await this.eval(elem, context));
+                results.push(await this.eval(elem, context));
             context.scopes.finishScope();
             return results.join('');
         }
