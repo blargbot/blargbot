@@ -57,14 +57,14 @@ Example: ${example}`);
     async event(args) {
         if (args.channel) {
             bu.send(args.channel, {
-                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${args.starttime}:> :
+                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${args.starttime}:R> :
 ${args.content}`,
                 allowedMentions: {
                     users: [args.user]
                 }
             });
         } else {
-            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this <t:${args.starttime}:> :
+            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this <t:${args.starttime}:R> :
     ${args.content}`);
         }
     };
