@@ -55,18 +55,16 @@ Example: ${example}`);
     }
 
     async event(args) {
-        let duration = moment.duration(moment() - moment(args.starttime));
-        duration.subtract(duration * 2);
         if (args.channel) {
             bu.send(args.channel, {
-                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this ${duration.humanize(true)}:
+                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${args.starttime}:> :
 ${args.content}`,
                 allowedMentions: {
                     users: [args.user]
                 }
             });
         } else {
-            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this ${duration.humanize(true)}:
+            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this <t:${args.starttime}:> :
     ${args.content}`);
         }
     };
