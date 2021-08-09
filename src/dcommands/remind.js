@@ -57,7 +57,7 @@ Example: ${example}`);
     async event(args) {
         if (args.channel) {
             bu.send(args.channel, {
-                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${args.starttime}:R> :
+                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${moment(args.starttime).unix()}:R> :
 ${args.content}`,
                 allowedMentions: {
                     users: [args.user]
