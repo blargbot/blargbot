@@ -51,7 +51,7 @@ Example: ${example}`);
             starttime: r.epochTime(moment().unix()),
             endtime: r.epochTime(moment().add(duration).unix())
         });
-        await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} ${duration.humanize(true)}! :alarm_clock: `);
+        await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} <t:${r.epochTime(moment().add(duration).unix())}:R>! :alarm_clock: `);
     }
 
     async event(args) {
