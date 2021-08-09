@@ -85,7 +85,8 @@ class BanCommand extends BaseCommand {
                     content: `${user.username}#${user.discriminator}`,
                     guild: msg.guild.id,
                     duration: duration.toJSON(),
-                    endtime: unban_at,
+                    endtime: r.epochTime(unban_at),
+
                     starttime: r.epochTime(moment().unix())
                 });
                 return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>)`, duration.asMilliseconds()];
