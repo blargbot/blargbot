@@ -112,6 +112,7 @@ class MuteCommand extends BaseCommand {
                             let suffix = '';
                             if (input.t) {
                                 let duration = bu.parseDuration(input.t.join(' '));
+                                let unmute_at = r.epochTime(moment().add(duration).unix());
                                 if (duration.asMilliseconds() > 0) {
                                     await bu.events.insert({
                                         type: 'unmute',
@@ -121,10 +122,10 @@ class MuteCommand extends BaseCommand {
                                         guild: msg.guild.id,
                                         duration: duration.toJSON(),
                                         role: mutedrole,
-                                        endtime: r.epochTime(moment().add(duration).unix()),
+                                        endtime: unmute_at,
                                         starttime: r.epochTime(moment().unix())
                                     });
-                                    suffix = `The user will be unmuted ${duration.humanize(true)}.`;
+                                    suffix = `The user will be unmuted <t:${unmute_at}:F> (<t:${unmute_at}:R>).`;
                                 } else {
                                     suffix = `The user was muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`;
                                 }
