@@ -112,7 +112,8 @@ class MuteCommand extends BaseCommand {
                             let suffix = '';
                             if (input.t) {
                                 let duration = bu.parseDuration(input.t.join(' '));
-                                let unmute_at = r.epochTime(moment().add(duration).unix());
+                                let unmute_at = moment().add(duration).unix();
+
                                 if (duration.asMilliseconds() > 0) {
                                     await bu.events.insert({
                                         type: 'unmute',
