@@ -123,7 +123,8 @@ class MuteCommand extends BaseCommand {
                                         guild: msg.guild.id,
                                         duration: duration.toJSON(),
                                         role: mutedrole,
-                                        endtime: unmute_at,
+                                        endtime: r.epochTime(unmute_at),
+
                                         starttime: r.epochTime(moment().unix())
                                     });
                                     suffix = `The user will be unmuted <t:${unmute_at}:F> (<t:${unmute_at}:R>).`;
