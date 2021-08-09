@@ -32,7 +32,7 @@ class TimerCommand extends BaseCommand {
 
     async event(args) {
         bu.send(args.channel, {
-            content: `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set <t:${args.starttime}:R> has gone off! *Bzzt!* :alarm_clock:`,
+            content: `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set <t:${moment(args.starttime).unix()}:R> has gone off! *Bzzt!* :alarm_clock:`,
             allowedMentions: {
                 users: [args.user]
             }
