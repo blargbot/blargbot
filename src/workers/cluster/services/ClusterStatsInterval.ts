@@ -39,7 +39,7 @@ export class ClusterStatsInterval extends IntervalService {
     }
 
     private getLastReady(shard: WebSocketShard): Moment {
-        if (shard.status === statuses.CONNECTING)
+        if (shard.status === statuses.READY)
             this.#lastReady.set(shard.id, moment());
 
         return this.#lastReady.get(shard.id)

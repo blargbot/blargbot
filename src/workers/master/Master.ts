@@ -6,7 +6,6 @@ import { BaseService } from '@core/serviceTypes';
 import { EvalResult } from '@core/types';
 import { MasterOptions } from '@master/types';
 import moment from 'moment';
-import fetch from 'node-fetch';
 
 import { ClusterLogManager, ClusterStatsManager } from './managers';
 import { MasterWorker } from './MasterWorker';
@@ -57,16 +56,7 @@ export class Master extends BaseClient {
 
     private async hello(): Promise<void> {
         try {
-            await fetch(`https://discordapp.com/api/channels/${this.config.discord.channels.botlog}/messages`, {
-                method: 'POST',
-                headers: {
-                    /* eslint-disable @typescript-eslint/naming-convention */
-                    'Authorization': this.config.discord.token,
-                    'Content-Type': 'application/json'
-                    /* eslint-enable @typescript-eslint/naming-convention */
-                },
-                body: JSON.stringify({ content: `My master process just initialized on \`${moment().format('MMMM Do, YYYY[` at `]hh:mm:ss.SS')}\`.` })
-            });
+            await this.util.send(this.config.discord.channels.botlog, `My master process just initialized on \`${moment().format('MMMM Do, YYYY[` at `]hh:mm:ss.SS')}\`.`);
         } catch (err: unknown) {
             this.logger.error('Could not post startup message', err);
         }

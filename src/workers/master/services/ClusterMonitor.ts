@@ -31,12 +31,16 @@ export class ClusterMonitor extends IntervalService {
             for (const shard of stats.shards) {
                 if (cutoff.isAfter(shard.time)) {
                     const diff = moment.duration(now.diff(shard.time));
-                    alerts.push(`⏰ shard ${shard.id} unresponsive for ${diff.asSeconds()} seconds`);
+                    const msg = `⏰ shard ${shard.id} unresponsive for ${diff.asSeconds()} seconds`;
+                    this.logger.cluster(msg);
+                    alerts.push(msg);
                 }
             }
         } else if (cluster.created.isBefore(cutoff)) {
             const diff = moment.duration(now.diff(cluster.created));
-            alerts.push(`⏰ Cluster ${cluster.id} was created ${diff.asSeconds()} seconds ago but hasnt posted stats yet`);
+            const msg = `⏰ Cluster ${cluster.id} was created ${diff.asSeconds()} seconds ago but hasnt posted stats yet`;
+            this.logger.cluster(msg);
+            alerts.push(msg);
         }
 
         if (alerts.length === 0)
