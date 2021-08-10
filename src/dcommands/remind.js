@@ -42,6 +42,7 @@ Example: ${example}`);
 
         let channel;
         if (input.c) channel = msg.channel.id;
+        let endUnix = moment().add(duration).unix();
         await bu.events.insert({
             type: 'remind',
             source: channel ? msg.guild.id : msg.author.id,
@@ -49,15 +50,15 @@ Example: ${example}`);
             content: input.undefined.join(' '),
             channel: channel,
             starttime: r.epochTime(moment().unix()),
-            endtime: r.epochTime(moment().add(duration).unix())
+            endtime: r.epochTime(endUnix)
         });
-        await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} <t:${moment().add(duration).unix()}:R>! :alarm_clock: `);
+        await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} <t:${endUnix}:R>! :alarm_clock: `);
     }
 
     async event(args) {
         if (args.channel) {
             bu.send(args.channel, {
-                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${moment(args.starttime).unix()}:R> :
+                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${endUnix}:R> :
 ${args.content}`,
                 allowedMentions: {
                     users: [args.user]
