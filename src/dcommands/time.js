@@ -34,7 +34,7 @@ class TimeCommand extends BaseCommand {
             }
         } else {
             let user = await bu.getUser(msg, words.length > 1 ? words.slice(1).join(' ') : msg.author.id);
-            if (user) {
+            if (user && !(user.id == msg.author.id)) {
                 let storedUser = await r.table('user').get(user.id);
                 if (storedUser && storedUser.timezone) {
                     message = `It is currently **${moment().tz(storedUser.timezone).format('LT')}** for **${bu.getFullName(user)}**.`;
