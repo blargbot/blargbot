@@ -49,8 +49,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
         inline: true
     }, {
         name: 'Created',
-        value: moment(member.user.createdAt).tz('Etc/GMT').format('llll') +
-            ` GMT\n(${moment.duration(-1 * (moment() - moment(member.user.createdAt))).humanize(true)})`,
+        value: `<t:${moment(member.user.createdAt).unix()}> (<t:${moment(member.user.createdAt).unix()}:R>)`, // we need to show there account age too right.
         inline: false
     }]);
 });
