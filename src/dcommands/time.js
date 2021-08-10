@@ -39,6 +39,8 @@ class TimeCommand extends BaseCommand {
                 if (storedUser && storedUser.timezone) {
                     message = `It is currently **${moment().tz(storedUser.timezone).format('LT')}** for **${bu.getFullName(user)}**.`;
                 } else message = `${bu.getFullName(user)} has not set their timezone in the \`timezone\` command yet.`;
+            } else if (user.id == msg.author.id) {
+                message = `It is currently <t:${moment().unix()}> for you.`;
             } else {
                 message = 'You either provided an invalid user or an invalid timezone code. See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
             }
