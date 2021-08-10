@@ -28,7 +28,7 @@ export class TimerCommand extends BaseGlobalCommand {
         if (message.length === 0)
             return this.error('You need to say what you need reminding of!');
 
-        const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : await context.discord.getDMChannel(context.author.id);
+        const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : context.author.dmChannel ?? await context.author.createDM();
         const source = inChannel && guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
 
         await context.cluster.timeouts.insert('remind', {

@@ -71,7 +71,7 @@ class LogsCommand extends BaseCommand {
             return;
         }
         let chan = bot.getChannel(channel);
-        let perms = chan.permissionsOf(msg.author.id);
+        let perms = chan.permissionsFor(msg.author.id);
         if (!perms.json.readMessages) {
             return await bu.send(msg, 'You do not have permissions to look in that channel!');
         }

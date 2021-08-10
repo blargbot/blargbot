@@ -1,9 +1,9 @@
 import { ExecutionResult } from '@cluster/types';
 import { codeBlock, humanize } from '@core/utils';
-import { MessageFile } from 'eris';
+import { FileOptions } from 'discord.js';
 import moment from 'moment';
 
-export function createDebugOutput(name: string, code: string, args: string, result: ExecutionResult): { content: string; files: MessageFile; } {
+export function createDebugOutput(name: string, code: string, args: string, result: ExecutionResult): { content: string; files: FileOptions[]; } {
     const performance: Record<string, unknown> = {};
     for (const key of Object.keys(result.duration.subtag)) {
         const times = result.duration.subtag[key];
@@ -25,17 +25,19 @@ export function createDebugOutput(name: string, code: string, args: string, resu
             `Database Execution Time: ${humanize.duration(moment.duration(result.duration.database, 'ms'))}\n` +
             `   Total Execution Time: ${humanize.duration(moment.duration(result.duration.total, 'ms'))}`,
             'js'),
-        files: {
-            name: 'bbtag.debug.json',
-            file: JSON.stringify({
-                tagName: name,
-                userInput: args,
-                code: code,
-                debug: result.debug,
-                errors: result.errors,
-                variables: result.database.values,
-                performance: performance
-            }, undefined, 2)
-        }
+        files: [
+            {
+                name: 'bbtag.debug.json',
+                attachment: JSON.stringify({
+                    tagName: name,
+                    userInput: args,
+                    code: code,
+                    debug: result.debug,
+                    errors: result.errors,
+                    variables: result.database.values,
+                    performance: performance
+                }, undefined, 2)
+            }
+        ]
     };
 }

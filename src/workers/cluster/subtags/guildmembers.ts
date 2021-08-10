@@ -12,7 +12,7 @@ export class GuildMembersSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'This guild has {length;{guildmembers}} members.',
                     exampleOut: 'This guild has 123 members.',
-                    execute: (ctx) => JSON.stringify(ctx.guild.members.map(m => m.user.id))
+                    execute: (ctx) => JSON.stringify(ctx.guild.members.cache.map(m => m.user.id))
                 }
             ]
         });

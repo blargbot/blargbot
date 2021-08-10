@@ -1,7 +1,7 @@
 import { ClusterUtilities } from '@cluster';
 import { StoredGuildSettings } from '@core/types';
 import { guard, parse } from '@core/utils';
-import { UserChannelInteraction } from 'eris';
+import { UserChannelInteraction } from 'discord.js';
 
 import { guildSettings } from '../constants';
 
@@ -42,7 +42,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             return {
                 success: channel !== undefined && guard.isTextableChannel(channel),
                 value: <StoredGuildSettings[T]>channel?.id,
-                display: channel?.mention
+                display: channel?.toString()
             };
         }
         case 'role': {

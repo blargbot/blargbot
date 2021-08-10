@@ -37,6 +37,6 @@ export class ChannelCategorySubtag extends BaseSubtag {
         const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
-        return channel.parentID ?? '';
+        return channel.parent?.id ?? '';
     }
 }

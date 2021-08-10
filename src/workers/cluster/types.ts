@@ -2,7 +2,7 @@ import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCach
 import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildCommand, StoredGuildSettings, StoredTag } from '@core/types';
-import { AnyMessage, Attachment, Channel, Embed, EmbedOptions, GuildChannel, Member, MessageFile, PrivateChannel, Role, Shard, Textable, User } from 'eris';
+import { AllChannels, Collection, ConstantsStatus, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterWorker } from './ClusterWorker';
@@ -65,8 +65,12 @@ export interface SerializedBBTagContext {
         content: string;
         channel: { id: string; serialized: string; };
         member: { id: string; serialized: string; };
-        attachments: Attachment[];
-        embeds: Embed[];
+        attachments: Array<{
+            id: string;
+            name: string;
+            url: string;
+        }>;
+        embeds: MessageEmbedOptions[];
     };
     isCC: boolean;
     state: Omit<BBTagContextState, 'cache' | 'overrides'>;
@@ -83,13 +87,13 @@ export interface SerializedBBTagContext {
 
 export interface BBTagContextMessage {
     id: string;
-    timestamp: number;
+    createdTimestamp: number;
     content: string;
-    channel: GuildChannel & Textable;
-    member: Member;
+    channel: GuildTextBasedChannels;
+    member: GuildMember;
     author: User;
-    attachments: Attachment[];
-    embeds: Embed[];
+    attachments: Collection<Snowflake, MessageAttachment>;
+    embeds: MessageEmbed[];
 }
 
 export interface BBTagContextState {
@@ -103,8 +107,8 @@ export interface BBTagContextState {
     ownedMsgs: string[];
     return: RuntimeReturnState;
     stackSize: number;
-    embed: undefined | EmbedOptions;
-    file: undefined | MessageFile;
+    embed: undefined | MessageEmbedOptions;
+    file: undefined | FileOptions;
     reactions: string[];
     nsfw: undefined | string;
     replace: undefined | { regex: RegExp | string; with: string; };
@@ -266,9 +270,8 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 
 export type CommandResult =
     | SendPayload
-    | MessageFile
-    | MessageFile[]
-    | { readonly content: SendPayload; readonly files: MessageFile | MessageFile[]; }
+    | FileOptions
+    | FileOptions[]
     | string
     | undefined
     | void;
@@ -461,7 +464,7 @@ export interface ClusterStats {
 
 export interface ShardStats {
     readonly id: number;
-    readonly status: Shard['status'];
+    readonly status: keyof ConstantsStatus;
     readonly latency: number;
     readonly guilds: number;
     readonly cluster: number;
@@ -503,8 +506,8 @@ export interface LookupMatch<T> {
 }
 
 export interface MessagePrompt {
-    prompt: AnyMessage | undefined;
-    response: Promise<AnyMessage | undefined>;
+    prompt: Message | undefined;
+    response: Promise<Message | undefined>;
 }
 
 export interface BanDetails {
@@ -537,14 +540,14 @@ export interface RuntimeLimitRule {
     load(state: JToken): void;
 }
 
-export type GuildCommandContext<TChannel extends GuildChannel = GuildChannel> = CommandContext<TChannel> & { message: { member: Member; guildID: string; }; };
-export type PrivateCommandContext<TChannel extends PrivateChannel = PrivateChannel> = CommandContext<TChannel>;
+export type GuildCommandContext<TChannel extends GuildTextBasedChannels = GuildTextBasedChannels> = CommandContext<TChannel> & { message: { member: GuildMember; guildID: string; }; };
+export type PrivateCommandContext<TChannel extends PrivateTextBasedChannels = PrivateTextBasedChannels> = CommandContext<TChannel>;
 
 export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
 export interface CommandProperties {
     readonly name: string;
     readonly description: string;
-    readonly defaultPerms?: number;
+    readonly defaultPerms?: readonly PermissionString[];
     readonly requirement: (context: CommandContext) => boolean | Promise<boolean>;
     readonly color: number;
 }
@@ -624,9 +627,9 @@ export interface CommandBinderDeferred<TResult> {
 
 export interface CommandBinderStateLookupCache {
     findUser(userString: string): CommandBinderParseResult<User>;
-    findMember(memberString: string): CommandBinderParseResult<Member>;
+    findMember(memberString: string): CommandBinderParseResult<GuildMember>;
     findRole(roleString: string): CommandBinderParseResult<Role>;
-    findChannel(channelString: string): CommandBinderParseResult<Channel>;
+    findChannel(channelString: string): CommandBinderParseResult<AllChannels>;
 }
 
 export interface CommandBinderState<TContext extends CommandContext> {

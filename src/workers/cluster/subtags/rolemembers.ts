@@ -30,8 +30,8 @@ export class RoleMembersSubtag extends BaseSubtag {
         });
 
         if (role !== undefined) {
-            const membersInRole = context.guild.members.filter(m => m.roles.includes(role.id));
-            return JSON.stringify(membersInRole.map(m => m.user.id));
+            const membersInRole = (await context.guild.roles.fetch(role.id))?.members;
+            return JSON.stringify(membersInRole?.map(m => m.user.id) ?? []);
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

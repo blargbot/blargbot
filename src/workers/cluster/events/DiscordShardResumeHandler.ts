@@ -7,8 +7,8 @@ export class DiscordShardResumeHandler extends DiscordEventService<'shardResume'
     }
 
     public execute(shardId: number): void {
-        const shard = this.discord.shards.get(shardId);
-        const guilds = this.discord.guilds.filter(g => g.shard.id === shardId);
-        this.logger.shardi(`shard [${shardId}] has resumed G:${guilds.length} P:${shard?.latency ?? Infinity}ms`);
+        const shard = this.discord.ws.shards.get(shardId);
+        const guilds = this.discord.guilds.cache.filter(g => g.shard.id === shardId);
+        this.logger.shardi(`shard [${shardId}] has resumed G:${guilds.size} P:${shard?.ping ?? Infinity}ms`);
     }
 }

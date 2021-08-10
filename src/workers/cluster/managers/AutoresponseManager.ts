@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { EverythingAutoResponseLimit, GeneralAutoResponseLimit } from '@cluster/bbtag';
 import { RuntimeLimit, WhitelistResponse } from '@cluster/types';
 import { codeBlock, guard, humanize, mapping } from '@cluster/utils';
-import { AnyMessage, Emoji, GuildMessage, User } from 'eris';
+import { GuildEmoji, GuildMessage, Message, ReactionEmoji, User } from 'discord.js';
 
 export class AutoresponseManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -26,7 +26,7 @@ export class AutoresponseManager {
         if (isChange) {
             if (!this.cluster.util.isStaff(userId)) {
                 const user = await this.cluster.util.getUserById(userId);
-                const guild = this.cluster.discord.guilds.get(guildId);
+                const guild = this.cluster.discord.guilds.cache.get(guildId);
                 const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
                 const message = await this.cluster.util.send(
                     this.cluster.config.discord.channels.autoresponse,
@@ -40,7 +40,7 @@ ${reason.length === 0 ? '*No reason given*' : reason}
 
 ${codeBlock(code, 'js')}`
                 );
-                await Promise.all(Object.keys(emojiValues).map(emoji => message?.addReaction(emoji)));
+                await Promise.all(Object.keys(emojiValues).map(emoji => message?.react(emoji)));
                 return 'requested';
             }
 
@@ -64,7 +64,7 @@ ${codeBlock(code, 'js')}`
             : isChange ? 'rejected' : 'alreadyRejected';
     }
 
-    public async execute(cluster: Cluster, msg: AnyMessage, everything: boolean): Promise<void> {
+    public async execute(cluster: Cluster, msg: Message, everything: boolean): Promise<void> {
         if (msg.author.discriminator === '0000' || !guard.isGuildMessage(msg))
             return;
 
@@ -87,8 +87,9 @@ ${codeBlock(code, 'js')}`
         }
     }
 
-    public async handleWhitelistApproval(message: AnyMessage, emoji: Emoji, user: User): Promise<void> {
+    public async handleWhitelistApproval(message: Message, emoji: GuildEmoji | ReactionEmoji, user: User): Promise<void> {
         if (message.channel.id !== this.cluster.config.discord.channels.autoresponse
+            || emoji.name === null
             || !guard.hasProperty(emojiValues, emoji.name)
             || !this.cluster.util.isStaff(user.id))
             return;
@@ -106,10 +107,10 @@ ${codeBlock(code, 'js')}`
 
         const promises: Array<Promise<unknown>> = [];
         promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user.id, reason, whitelist));
-        for (const m of await message.channel.getMessages()) {
+        for (const [, m] of await message.channel.messages.fetch()) {
             if (m.author.id === this.cluster.discord.user.id && m.content.includes(match[0])) {
                 promises.push(m.edit(`${emoji.name} ${m.content.replace(match[0], reason)}`));
-                promises.push(m.removeReactions());
+                promises.push(m.reactions.removeAll());
             }
         }
         await Promise.all(promises);

@@ -1,7 +1,7 @@
 import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@cluster/types';
 import { guard, humanize, mapping } from '@cluster/utils';
 import { UnmuteEventOptions } from '@core/types';
-import { AnyGuildChannel, Constants, Guild, Member, Role, User } from 'eris';
+import { Guild, GuildChannel, GuildMember, PermissionString, Role, User } from 'discord.js';
 import moment, { Duration } from 'moment-timezone';
 
 import { ModerationManager } from '../ModerationManager';
@@ -12,22 +12,22 @@ export class MuteManager extends ModerationManagerBase {
         super(manager);
     }
 
-    public async mute(member: Member, moderator: User, reason?: string, duration?: Duration): Promise<MuteResult> {
+    public async mute(member: GuildMember, moderator: User, reason?: string, duration?: Duration): Promise<MuteResult> {
         const role = await this.getMuteRole(member.guild);
         if (role === undefined)
             return 'roleMissing';
 
-        if (member.roles.includes(role.id))
+        if (member.roles.cache.has(role.id))
             return 'alreadyMuted';
 
-        const self = member.guild.members.get(this.cluster.discord.user.id);
-        if (self?.permissions.has('manageRoles') !== true)
+        const self = member.guild.me;
+        if (self?.permissions.has('MANAGE_ROLES') !== true)
             return 'noPerms';
 
         if (role.position >= this.cluster.util.getPosition(self))
             return 'roleTooHigh';
 
-        await member.addRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        await member.roles.add(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         await this.modLog.logMute(member.guild, member.user, moderator, reason);
         if (duration !== undefined && duration.asMilliseconds() > 0)
             await this.cluster.timeouts.insert('unmute', {
@@ -40,19 +40,19 @@ export class MuteManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async unmute(member: Member, moderator: User, reason?: string): Promise<UnmuteResult> {
+    public async unmute(member: GuildMember, moderator: User, reason?: string): Promise<UnmuteResult> {
         const role = await this.getMuteRole(member.guild);
-        if (role === undefined || !member.roles.includes(role.id))
+        if (role === undefined || !member.roles.cache.has(role.id))
             return 'notMuted';
 
-        const self = member.guild.members.get(this.cluster.discord.user.id);
-        if (self?.permissions.has('manageRoles') !== true)
+        const self = member.guild.me;
+        if (self?.permissions.has('MANAGE_ROLES') !== true)
             return 'noPerms';
 
         if (role.position >= this.cluster.util.getPosition(self))
             return 'roleTooHigh';
 
-        await member.removeRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+        await member.roles.remove(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
         await this.modLog.logUnmute(member.guild, member.user, moderator, reason);
 
         return 'success';
@@ -63,43 +63,48 @@ export class MuteManager extends ModerationManagerBase {
         if (currentRole !== undefined)
             return 'success';
 
-        const self = guild.members.get(this.cluster.discord.user.id);
-        if (self === undefined)
-            throw new Error('Cannot manage a server I am not a member of');
-
-        if (!self.permissions.has('manageRoles'))
+        const self = guild.me;
+        if (self?.permissions.has('MANAGE_ROLES') !== true)
             return 'noPerms';
 
-        const newRole = await guild.createRole({
+        const newRole = await guild.roles.create({
             color: 16711680,
             name: 'Muted',
-            permissions: 0
+            permissions: 0n
         });
 
         await this.cluster.database.guilds.setSetting(guild.id, 'mutedrole', newRole.id);
 
-        if (!self.permissions.has('manageChannels'))
+        if (!self.permissions.has('MANAGE_CHANNELS'))
             return 'unconfigured';
 
-        for (const channel of guild.channels.values()) {
-            await this.configureChannel(channel, newRole);
+        for (const channel of guild.channels.cache.values()) {
+            if (!guard.isThreadChannel(channel))
+                await this.configureChannel(channel, newRole);
         }
         return 'success';
     }
 
-    private async configureChannel(channel: AnyGuildChannel, mutedRole: Role): Promise<void> {
+    private async configureChannel(channel: GuildChannel, mutedRole: Role): Promise<void> {
         try {
-            let deny = 0;
+            const deny: PermissionString[] = [];
 
             if (guard.isTextableChannel(channel))
-                deny = Constants.Permissions.sendMessages;
+                deny.push('SEND_MESSAGES');
             else if (guard.isVoiceChannel(channel))
-                deny = Constants.Permissions.voiceSpeak;
+                deny.push('SPEAK');
             else if (guard.isCategoryChannel(channel))
-                deny = Constants.Permissions.sendMessages | Constants.Permissions.voiceSpeak;
+                deny.push('SEND_MESSAGES', 'SPEAK');
 
-            if (deny !== 0)
-                await channel.editPermission(mutedRole.id, 0, deny, 'role', 'Automatic muted role configuration');
+            if (deny.length > 0) {
+                await channel.permissionOverwrites.create(
+                    mutedRole,
+                    Object.fromEntries(deny.map(s => [s, false] as const)),
+                    {
+                        reason: 'Automatic muted role configuration'
+                    }
+                );
+            }
 
         } catch (err: unknown) {
             this.cluster.logger.error('Failed to set permissions for muted role', mutedRole.id, 'in channel', channel.id, err);
@@ -110,15 +115,15 @@ export class MuteManager extends ModerationManagerBase {
         const role = await this.cluster.database.guilds.getSetting(guild.id, 'mutedrole');
         if (role === undefined)
             return undefined;
-        return guild.roles.get(role);
+        return guild.roles.cache.get(role);
     }
 
     public async muteExpired(event: UnmuteEventOptions): Promise<void> {
-        const guild = this.cluster.discord.guilds.get(event.guild);
+        const guild = this.cluster.discord.guilds.cache.get(event.guild);
         if (guild === undefined)
             return;
 
-        const member = guild.members.get(event.user);
+        const member = await this.cluster.util.getMemberById(guild, event.user);
         if (member === undefined)
             return;
 

@@ -1,18 +1,19 @@
 import { defaultStaff, humanize } from '@cluster/utils';
 import config from '@config';
-import { oldBu as globalOldBu } from '@core/utils';
-import { Client as ErisClient, EmbedAuthorOptions, GuildMessage, Member, Permission, User } from 'eris';
+import { guard, oldBu as globalOldBu } from '@core/utils';
+import { Client as Discord, GuildMember, GuildMessage, MessageEmbedAuthor, Permissions, PermissionString, User } from 'discord.js';
 
 import { ClusterUtilities } from './ClusterUtilities';
 
 const util = <ClusterUtilities><unknown>undefined;
-const bot = <ErisClient><unknown>undefined;
+const bot = <Discord><unknown>undefined;
 
 export const oldBu = {
     ...globalOldBu,
 
     async isBlacklistedChannel(channelid: string): Promise<boolean> {
-        const guildid = bot.channelGuildMap[channelid] as string | undefined;
+        const channel = bot.channels.cache.get(channelid);
+        const guildid = channel !== undefined && guard.isGuildChannel(channel) ? channel.guild.id : undefined;
         if (guildid === undefined) {
             //console.warn('Couldn\'t find a guild that corresponds with channel ' + channelid + ' - isBlacklistedChannel');
             return false;
@@ -23,19 +24,19 @@ export const oldBu = {
         return guild?.channels[channelid]?.blacklisted ?? false;
     },
     async hasPerm(
-        msg: GuildMessage | Member,
+        msg: GuildMessage | GuildMember,
         perm: string | string[],
         quiet = false,
         override = true
     ): Promise<boolean> {
-        const member = msg instanceof Member ? msg : msg.member;
+        const member = msg instanceof GuildMember ? msg : msg.member;
         if (override && (member.id === config.discord.users.owner ||
-            member.guild.ownerID === member.id ||
-            member.permissions.json.administrator)) {
+            member.guild.ownerId === member.id ||
+            member.permissions.has('ADMINISTRATOR'))) {
             return true;
         }
 
-        const roles = member.guild.roles.filter(m => {
+        const roles = member.guild.roles.cache.filter(m => {
             if (Array.isArray(perm) ?
                 perm.map(q => q.toLowerCase()).includes(m.name.toLowerCase()) :
                 m.name.toLowerCase() === perm.toLowerCase()) {
@@ -53,10 +54,10 @@ export const oldBu = {
                 roles.push(getId(perm));
             }
             return roles.includes(m.id);
-
         });
-        for (const role of roles) {
-            if (member.roles.includes(role.id)) {
+
+        for (const [, role] of roles) {
+            if (member.roles.cache.has(role.id)) {
                 return true;
             }
         }
@@ -73,21 +74,21 @@ export const oldBu = {
         const storedUser = await util.database.users.get(userId, true);
         return storedUser?.dontdmerrors !== true;
     },
-    comparePerms(m: Member, allow: number): boolean {
+    comparePerms(m: GuildMember, allow: number | readonly PermissionString[]): boolean {
         if (allow === 0) allow = defaultStaff;
-        const newPerm = new Permission(allow, 0);
-        for (const key in newPerm.json) {
+        const newPerm = new Permissions(typeof allow === 'number' ? BigInt(Math.floor(allow)) : allow);
+        for (const key of newPerm.toArray()) {
             if (m.permissions.has(key)) {
                 return true;
             }
         }
         return false;
     },
-    getAuthor(user: User): EmbedAuthorOptions {
+    getAuthor(user: User): MessageEmbedAuthor {
         return {
             name: humanize.fullName(user),
             url: util.websiteLink(`/user/${user.id}`),
-            icon_url: user.avatarURL
+            iconURL: user.avatarURL() ?? user.defaultAvatarURL
         };
     }
 };

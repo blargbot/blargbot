@@ -1,7 +1,7 @@
 // CodeMirror, copyright (c) by Marijn Haverbeke and others
 // Distributed under an MIT license: http://codemirror.net/LICENSE
 
-(function(mod) {
+(function (mod) {
 
     if (typeof exports == 'object' && typeof module == 'object') // CommonJS
         mod(require('codemirror'));
@@ -9,10 +9,10 @@
         define(['codemirror'], mod);
     else // Plain browser env
         mod(window.CodeMirror);
-})(function(CodeMirror) {
+})(function (CodeMirror) {
 
 
-    CodeMirror.defineMode('powershell', function() {
+    CodeMirror.defineMode('powershell', function () {
         function buildRegexp(patterns, options) {
             options = options || {};
             var prefix = options.prefix !== undefined ? options.prefix : '^';
@@ -58,7 +58,7 @@
 
         var symbolBuiltins = /[A-Z]:|%|\?/i;
         var namedBuiltins = buildRegexp([
-            /Add-(Computer|Content|History|Member|PSSnapin|Type)/,
+            /Add-(Computer|Content|History|GuildMember|PSSnapin|Type)/,
             /Checkpoint-Computer/,
             /Clear-(Content|EventLog|History|Host|Item(Property)?|Variable)/,
             /Compare-Object/,
@@ -77,9 +77,9 @@
             /ForEach-Object/,
             /Format-(Custom|List|Table|Wide)/,
             new RegExp('Get-(Acl|Alias|AuthenticodeSignature|ChildItem|Command|ComputerRestorePoint|Content|ControlPanelItem|Counter|Credential'
-      + '|Culture|Date|Event|EventLog|EventSubscriber|ExecutionPolicy|FormatData|Help|History|Host|HotFix|Item|ItemProperty|Job'
-      + '|Location|Member|Module|PfxCertificate|Process|PSBreakpoint|PSCallStack|PSDrive|PSProvider|PSSession|PSSessionConfiguration'
-      + '|PSSnapin|Random|Service|TraceSource|Transaction|TypeData|UICulture|Unique|Variable|Verb|WinEvent|WmiObject)'),
+                + '|Culture|Date|Event|EventLog|EventSubscriber|ExecutionPolicy|FormatData|Help|History|Host|HotFix|Item|ItemProperty|Job'
+                + '|Location|GuildMember|Module|PfxCertificate|Process|PSBreakpoint|PSCallStack|PSDrive|PSProvider|PSSession|PSSessionConfiguration'
+                + '|PSSnapin|Random|Service|TraceSource|Transaction|TypeData|UICulture|Unique|Variable|Verb|WinEvent|WmiObject)'),
             /Group-Object/,
             /Import-(Alias|Clixml|Counter|Csv|LocalizedData|Module|PSSession)/,
             /ImportSystemModules/,
@@ -89,7 +89,7 @@
             /Measure-(Command|Object)/,
             /Move-Item(Property)?/,
             new RegExp('New-(Alias|Event|EventLog|Item(Property)?|Module|ModuleManifest|Object|PSDrive|PSSession|PSSessionConfigurationFile'
-      + '|PSSessionOption|PSTransportOption|Service|TimeSpan|Variable|WebServiceProxy|WinEvent)'),
+                + '|PSSessionOption|PSTransportOption|Service|TimeSpan|Variable|WebServiceProxy|WinEvent)'),
             /Out-(Default|File|GridView|Host|Null|Printer|String)/,
             /Pause/,
             /(Pop|Push)-Location/,
@@ -107,7 +107,7 @@
             /Select-(Object|String|Xml)/,
             /Send-MailMessage/,
             new RegExp('Set-(Acl|Alias|AuthenticodeSignature|Content|Date|ExecutionPolicy|Item(Property)?|Location|PSBreakpoint|PSDebug' +
-               '|PSSessionConfiguration|Service|StrictMode|TraceSource|Variable|WmiInstance)'),
+                '|PSSessionConfiguration|Service|StrictMode|TraceSource|Variable|WmiInstance)'),
             /Show-(Command|ControlPanelItem|EventLog)/,
             /Sort-Object/,
             /Split-Path/,
@@ -288,7 +288,7 @@
                 var savedBracketNesting = state.bracketNesting;
                 state.returnStack.push({
                     /*jshint loopfunc:true */
-                    shouldReturnFrom: function(state) {
+                    shouldReturnFrom: function (state) {
                         return state.bracketNesting === savedBracketNesting;
                     },
                     tokenize: parentTokenize
@@ -299,7 +299,7 @@
             } else {
                 stream.next();
                 state.returnStack.push({
-                    shouldReturnFrom: function() { return true; },
+                    shouldReturnFrom: function () { return true; },
                     tokenize: parentTokenize
                 });
                 state.tokenize = tokenVariable;
@@ -372,7 +372,7 @@
         }
 
         var external = {
-            startState: function() {
+            startState: function () {
                 return {
                     returnStack: [],
                     bracketNesting: 0,
@@ -380,7 +380,7 @@
                 };
             },
 
-            token: function(stream, state) {
+            token: function (stream, state) {
                 return state.tokenize(stream, state);
             },
 

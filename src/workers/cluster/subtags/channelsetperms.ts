@@ -1,6 +1,8 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { guard } from '@core/utils';
+import { Permissions } from 'discord.js';
 
 export class ChannelSetPermsSubtag extends BaseSubtag {
     public constructor() {
@@ -42,8 +44,11 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag); //TODO No channel found error
 
-        const permission = channel.permissionsOf(context.authorizer);
-        if (!permission.has('manageChannels'))
+        if (guard.isThreadChannel(channel))
+            return this.customError('Cannot set permissions for a thread channel', context, subtag);
+
+        const permission = channel.permissionsFor(context.authorizer);
+        if (permission?.has('MANAGE_CHANNELS') !== true)
             return this.customError('Author cannot edit this channel', context, subtag);
 
         if (!['member', 'role'].includes(type))
@@ -51,7 +56,9 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
 
         //TODO lookup for items, argumentsshould be allowed to be usernames / channelnames
         try {
-            await channel.deletePermission(item);
+            const override = channel.permissionOverwrites.cache.get(item);
+            if (override !== undefined && override.type === type)
+                await override.delete();
             return channel.id;
         } catch (e: unknown) {
             return this.customError('Failed to edit channel: no perms', context, subtag);
@@ -72,8 +79,11 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag); //TODO No channel found error
 
-        const permission = channel.permissionsOf(context.authorizer);
-        if (!permission.has('manageChannels'))
+        if (guard.isThreadChannel(channel))
+            return this.customError('Cannot set permissions for a thread channel', context, subtag);
+
+        const permission = channel.permissionsFor(context.authorizer);
+        if (permission?.has('MANAGE_CHANNELS') !== true)
             return this.customError('Author cannot edit this channel', context, subtag);
 
         if (!['member', 'role'].includes(typeStr))
@@ -85,16 +95,22 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
                 context.user,
                 context.scope.reason ?? ''
             );
-            if (isNaN(allow) && isNaN(deny)) {
-                await channel.deletePermission(entityId);//* Feel like this shouldn't be here but backwards compatibility
-            } else {
-                await channel.editPermission(
-                    entityId,
-                    isNaN(allow) ? 0 : allow, //TODO feel like this should be set to the current permission value in the channel
-                    isNaN(deny) ? 0 : deny, //TODO idem
-                    type,
-                    fullReason
-                );
+            const overwrite = channel.permissionOverwrites.cache.get(entityId);
+            if (overwrite !== undefined && overwrite.type === type) {
+                if (isNaN(allow) && isNaN(deny)) {
+                    await overwrite.edit({});//* Feel like this shouldn't be here but backwards compatibility
+                } else {
+                    const allowed = new Permissions(BigInt(isNaN(allow) ? 0 : Math.floor(allow))).toArray();
+                    const denied = new Permissions(BigInt(isNaN(deny) ? 0 : Math.floor(deny))).toArray();
+                    await overwrite.edit(
+                        Object.fromEntries([
+                            ...Object.keys(Permissions.FLAGS).map(k => [k, null] as const),
+                            ...allowed.map(str => [str, true] as const),
+                            ...denied.map(str => [str, false] as const)
+                        ]),
+                        fullReason
+                    );
+                }
             }
             return channel.id;
         } catch (err: unknown) {

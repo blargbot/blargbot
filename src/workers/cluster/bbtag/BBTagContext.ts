@@ -6,7 +6,7 @@ import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { StoredGuildCommand, StoredTag } from '@core/types';
-import { AnyGuildChannel, Client as ErisClient, Guild, GuildChannel, Member, Permission, Role, Textable, User } from 'eris';
+import { Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -51,18 +51,17 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public readonly state: BBTagContextState;
 
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
-    public get channel(): GuildChannel & Textable { return this.message.channel; }
-    public get member(): Member { return this.message.member; }
+    public get channel(): GuildTextBasedChannels { return this.message.channel; }
+    public get member(): GuildMember { return this.message.member; }
     public get guild(): Guild { return this.message.channel.guild; }
     public get user(): User { return this.message.author; }
     public get scope(): BBTagRuntimeScope { return this.scopes.local; }
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
     public get database(): Database { return this.engine.database; }
     public get logger(): Logger { return this.engine.logger; }
-    public get permissions(): Permission { return (this.guild.members.get(this.authorizer) ?? { permissions: new Permission(0, 0) }).permissions; }
-    public get perms(): Permission { return this.permissions; }
+    public get permissions(): Permissions { return (this.guild.members.cache.get(this.authorizer) ?? { permissions: new Permissions(undefined) }).permissions; }
     public get util(): ClusterUtilities { return this.engine.util; }
-    public get discord(): ErisClient { return this.engine.discord; }
+    public get discord(): Discord<true> { return this.engine.discord; }
     public get subtags(): ModuleLoader<BaseSubtag> { return this.engine.subtags; }
 
     public constructor(
@@ -160,13 +159,13 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
         const cached = this.state.query.user[name];
         if (cached !== undefined) {
-            const user = this.engine.discord.users.get(cached);
+            const user = await this.util.getUserById(cached);
             if (user !== undefined)
                 return user;
             name = cached;
         }
 
-        const user = await this.engine.util.getUser(this.message, name, args);
+        const user = await this.util.getUser(this.message, name, args);
         this.state.query.user[name] = user?.id;
         return user;
     }
@@ -184,14 +183,14 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
         const cached = this.state.query.role[name];
         if (cached !== undefined)
-            return this.engine.discord.guilds.get(this.guild.id)?.roles.get(cached) ?? undefined;
+            return await this.util.getRoleById(this.guild, cached) ?? undefined;
 
         const role = await this.engine.util.getRole(this.message, name, args);
         this.state.query.role[name] = role?.id;
         return role;
     }
 
-    public async getChannel(name: string, args: FindEntityOptions = {}): Promise<AnyGuildChannel | undefined> {
+    public async getChannel(name: string, args: FindEntityOptions = {}): Promise<GuildChannels | undefined> {
         if (this.state.query.count >= 5)
             args.quiet = args.suppress = true;
         if (args.onSendCallback !== undefined)
@@ -204,7 +203,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
         const cached = this.state.query.channel[name];
         if (cached !== undefined)
-            return this.engine.discord.guilds.get(this.guild.id)?.channels.get(cached) ?? undefined;
+            return await this.guild.channels.fetch(cached) ?? undefined;
 
         const channel = await this.engine.util.getChannel(this.message, name, args);
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
@@ -251,14 +250,15 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             const response = await this.engine.util.send(this.message,
                 {
                     content: text,
-                    embed: this.state.embed,
+                    embeds: this.state.embed !== undefined ? [this.state.embed] : undefined,
                     nsfw: this.state.nsfw,
                     allowedMentions: {
-                        everyone: !disableEveryone,
-                        roles: this.isCC ? this.state.allowedMentions.roles : false,
-                        users: this.isCC ? this.state.allowedMentions.users : false
-                    }
-                }, this.state.file);
+                        parse: disableEveryone ? [] : ['everyone'],
+                        roles: this.isCC ? this.state.allowedMentions.roles : undefined,
+                        users: this.isCC ? this.state.allowedMentions.users : undefined
+                    },
+                    files: this.state.file !== undefined ? [this.state.file] : undefined
+                });
 
             if (response !== undefined) {
                 await oldBu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
@@ -295,29 +295,29 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public static async deserialize(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContext> {
         let message: BBTagContextMessage | undefined;
         try {
-            const msg = await engine.discord.getMessage(obj.msg.channel.id, obj.msg.id);
-            if (!guard.isGuildMessage(msg))
+            const msg = await engine.util.getGlobalMessage(obj.msg.channel.id, obj.msg.id);
+            if (msg === undefined || !guard.isGuildMessage(msg))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             message = msg;
         } catch (err: unknown) {
-            const channel = engine.discord.getChannel(obj.msg.channel.id);
+            const channel = await engine.util.getGlobalChannel(obj.msg.channel.id);
             if (channel === undefined || !guard.isGuildChannel(channel))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             if (!guard.isTextableChannel(channel))
                 throw new Error('Channel must be able to send and receive messages to work with BBTag');
-            const member = channel.guild.members.get(obj.msg.member.id);
+            const member = await engine.util.getMemberById(channel.guild.id, obj.msg.member.id);
             if (member === undefined)
                 throw new Error(`User ${obj.msg.member.id} doesnt exist on ${channel.guild.id} any more`);
 
             message = {
                 id: obj.msg.id,
-                timestamp: obj.msg.timestamp,
+                createdTimestamp: obj.msg.timestamp,
                 content: obj.msg.content,
                 channel: channel,
                 member,
                 author: member.user,
-                attachments: obj.msg.attachments,
-                embeds: obj.msg.embeds
+                attachments: new Collection(obj.msg.attachments.map(att => [att.id, new MessageAttachment(att.url, att.name)])),
+                embeds: obj.msg.embeds.map(e => new MessageEmbed(e))
             };
         }
         const limit = new limits[obj.limit.type]();
@@ -349,12 +349,12 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return {
             msg: {
                 id: this.message.id,
-                timestamp: this.message.timestamp,
+                timestamp: this.message.createdTimestamp,
                 content: this.message.content,
                 channel: serializeEntity(this.channel),
                 member: serializeEntity(this.member),
-                attachments: this.message.attachments,
-                embeds: this.message.embeds
+                attachments: this.message.attachments.map(a => ({ id: a.id, name: a.name ?? 'file', url: a.url })),
+                embeds: this.message.embeds.map(e => <MessageEmbedOptions>e.toJSON())
             },
             isCC: this.isCC,
             state: newState,

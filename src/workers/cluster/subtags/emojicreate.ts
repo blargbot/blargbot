@@ -18,7 +18,7 @@ export class EmojiCreateSubtag extends BaseSubtag {
                 {
                     parameters: ['name', 'image'],
                     description: 'Creates a emoji with the given name and image. ' +
-                    '`image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.' + 'Returns the new emojis\'s ID.',
+                        '`image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.' + 'Returns the new emojis\'s ID.',
                     exampleCode: '{emojicreate;fancy_emote;https://some.cool/image.png}',
                     exampleOut: '11111111111111111',
                     execute: (ctx, args, subtag) => this.createEmoji(ctx, subtag, args[0].value, args[1].value, '')
@@ -26,9 +26,9 @@ export class EmojiCreateSubtag extends BaseSubtag {
                 {
                     parameters: ['name', 'image', 'roles'],
                     description: 'Creates a emoji with the given name and image. ' +
-                    '`image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.' +
-                    '`roles`, if provided, will restrict the emoji\'s usage to the specified roles. Must be an array of roles.' +
-                    'Returns the new emojis\'s ID.',
+                        '`image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.' +
+                        '`roles`, if provided, will restrict the emoji\'s usage to the specified roles. Must be an array of roles.' +
+                        'Returns the new emojis\'s ID.',
                     exampleCode: '{emojicreate;fancy_emote;https://some.cool/image.png;["Cool gang"]}',
                     exampleOut: '11111111111111111',
                     execute: (ctx, args, subtag) => this.createEmoji(ctx, subtag, args[0].value, args[1].value, args[2].value)
@@ -46,7 +46,7 @@ export class EmojiCreateSubtag extends BaseSubtag {
     ): Promise<string | void> {
         const permission = context.permissions;
 
-        if (!permission.has('manageEmojis')) {
+        if (!permission.has('MANAGE_EMOJIS_AND_STICKERS')) {
             return this.customError('Author cannot create emojis', context, subtag);
         }
 
@@ -81,7 +81,7 @@ export class EmojiCreateSubtag extends BaseSubtag {
 
         try {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason !== undefined ? context.scope.reason : '');
-            const emoji = await context.guild.createEmoji(options, fullReason);
+            const emoji = await context.guild.emojis.create(options.image, options.name, { reason: fullReason, roles: options.roles });
             return emoji.id;
         } catch (err: unknown) {
             context.logger.error(err);

@@ -1,13 +1,13 @@
 import { Cluster } from '@cluster';
 import { guard, sleep } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
-import { AnyMessage } from 'eris';
+import { Message } from 'discord.js';
 import FormData from 'form-data';
 import fetch from 'node-fetch';
 
-export async function tryHandleCleverbot(cluster: Cluster, msg: AnyMessage): Promise<boolean> {
+export async function tryHandleCleverbot(cluster: Cluster, msg: Message): Promise<boolean> {
     if (!guard.isGuildMessage(msg)
-        || !msg.content.startsWith(cluster.discord.user.mention)
+        || !msg.content.startsWith(cluster.discord.user.toString())
         || await cluster.database.guilds.getSetting(msg.channel.guild.id, 'nocleverbot') === true)
         return false;
 
@@ -15,13 +15,13 @@ export async function tryHandleCleverbot(cluster: Cluster, msg: AnyMessage): Pro
     return true;
 }
 
-async function handleCleverbot(cluster: Cluster, msg: AnyMessage): Promise<void> {
-    await cluster.discord.sendChannelTyping(msg.channel.id);
+async function handleCleverbot(cluster: Cluster, msg: Message): Promise<void> {
+    await msg.channel.sendTyping();
     let username = cluster.discord.user.username;
     if (guard.isGuildMessage(msg)) {
-        const member = msg.channel.guild.members.get(cluster.discord.user.id);
-        if (member !== undefined && guard.hasValue(member.nick))
-            username = member.nick;
+        const member = msg.channel.guild.me;
+        if (member !== null && guard.hasValue(member.nickname))
+            username = member.nickname;
     }
 
     const msgToSend = msg.content.replace(new RegExp('@' + '\u200b' + username + ',?'), '').trim();

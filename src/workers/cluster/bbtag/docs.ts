@@ -2,12 +2,12 @@ import { CommandContext } from '@cluster/command';
 import { SubtagHandlerCallSignature } from '@cluster/types';
 import { bbtagUtil, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluster/utils';
 import { humanize } from '@core/utils';
-import { EmbedField, EmbedOptions } from 'eris';
+import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 
 import { BaseSubtag } from './BaseSubtag';
 import { limits } from './limits';
 
-export function getDocsEmbed(context: CommandContext, topic: string): EmbedOptions | undefined {
+export function getDocsEmbed(context: CommandContext, topic: string): MessageEmbedOptions | undefined {
     const embed = getTopicBody(context, topic);
     if (embed === undefined)
         return undefined;
@@ -18,7 +18,7 @@ export function getDocsEmbed(context: CommandContext, topic: string): EmbedOptio
     return embed;
 }
 
-function getTopicBody(context: CommandContext, topic: string): EmbedOptions | undefined {
+function getTopicBody(context: CommandContext, topic: string): MessageEmbedOptions | undefined {
     const words = humanize.smartSplit(topic);
 
     switch (words[0]?.toLowerCase()) {
@@ -193,7 +193,7 @@ function getTopicBody(context: CommandContext, topic: string): EmbedOptions | un
                 description.push(subtag.desc);
 
             const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
-            const limitField: EmbedField = { name: '__Usage limits__', value: '' };
+            const limitField: EmbedFieldData = { name: '__Usage limits__', value: '' };
 
             for (const key of Object.keys(limits)) {
                 const limit = new limits[key]();
@@ -220,7 +220,7 @@ function getTopicBody(context: CommandContext, topic: string): EmbedOptions | un
     }
 }
 
-function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, index: number): EmbedField {
+function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, index: number): EmbedFieldData {
     let description = codeBlock(bbtagUtil.stringifyParameters(subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .filter(param => param.defaultValue !== '')

@@ -33,7 +33,7 @@ export class RoleMentionSubtag extends BaseSubtag {
             if (!context.state.allowedMentions.roles.includes(role.id)) {
                 context.state.allowedMentions.roles.push(role.id);
             }
-            return role.mention;
+            return role.toString();
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

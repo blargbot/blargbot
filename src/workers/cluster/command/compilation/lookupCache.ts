@@ -1,6 +1,6 @@
 import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandBinderValue, GuildCommandContext, PrivateCommandContext } from '@cluster/types';
 import { guard, parse } from '@cluster/utils';
-import { Member, Role } from 'eris';
+import { GuildMember, Role } from 'discord.js';
 
 import { BaseCommand } from '../BaseCommand';
 import { CommandContext } from '../CommandContext';
@@ -19,19 +19,19 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
     return {
         findChannel: createLookup(
             command, '#',
-            id => context.channel.guild.channels.get(id) ?? `A channel with id \`${id}\` doesnt exist`,
+            id => context.channel.guild.channels.cache.get(id) ?? `A channel with id \`${id}\` doesnt exist`,
             async search => await context.util.getChannel(context.message, search) ?? `I could not find the channel \`${search}\``),
         findUser: createLookup(
             command, '@!?',
-            id => context.channel.guild.members.get(id)?.user ?? `A user with id \`${id}\` doesnt exist`,
+            id => context.channel.guild.members.cache.get(id)?.user ?? `A user with id \`${id}\` doesnt exist`,
             async search => await context.util.getUser(context.message, search) ?? `I could not find the user \`${search}\``),
         findRole: createLookup(
             command, '@&',
-            id => context.channel.guild.roles.get(id) ?? `A role with id \`${id}\` doesnt exist`,
+            id => context.channel.guild.roles.cache.get(id) ?? `A role with id \`${id}\` doesnt exist`,
             async search => await context.util.getRole(context.message, search) ?? `I could not find the role \`${search}\``),
         findMember: createLookup(
             command, '@!?',
-            id => context.channel.guild.members.get(id) ?? `A user with id \`${id}\` doesnt exist`,
+            id => context.channel.guild.members.cache.get(id) ?? `A user with id \`${id}\` doesnt exist`,
             async search => await context.util.getMember(context.message, search) ?? `I could not find the user \`${search}\``)
     };
 }
@@ -50,7 +50,7 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
             command, '@&',
             id => `A role with id \`${id}\` doesnt exist`,
             search => `I could not find the role \`${search}\``),
-        findMember: createLookup<Member>(
+        findMember: createLookup<GuildMember>(
             command, '@!?',
             () => 'I cant find guild members in a private channel!',
             () => 'I cant find guild members in a private channel!')

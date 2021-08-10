@@ -1,7 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
-import { AnyGuildChannel, Constants, CreateChannelOptions, Overwrite } from 'eris';
+import { GuildChannelCreateOptions, OverwriteData } from 'discord.js';
 
 export class ChannelCreateSubtag extends BaseSubtag {
     public constructor() {
@@ -45,11 +45,10 @@ export class ChannelCreateSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): Promise<string> {
         const permissions = context.permissions;
-        if (!permissions.has('manageChannels'))
+        if (permissions.has('MANAGE_CHANNELS') !== true)
             return this.customError('Author cannot create channels', context, subtag);
 
-        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : 0;
-        let options: CreateChannelOptions;
+        let options: GuildChannelCreateOptions;
         try {
             const mapped = mapOptions(optionsJson);
             if (!mapped.valid)
@@ -59,13 +58,13 @@ export class ChannelCreateSubtag extends BaseSubtag {
             return this.customError('Invalid JSON', context, subtag);
         }
 
+        options.type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : undefined;
+
         try {
             options.reason = context.scope.reason !== undefined
                 ? discordUtil.formatAuditReason(context.user, context.scope.reason)
                 : options.reason;
-            const channel = await context.guild.createChannel(name, type, options) as AnyGuildChannel;
-            if (context.guild.channels.get(channel.id) === undefined)
-                context.guild.channels.add(channel);
+            const channel = await context.guild.channels.create(name, options);
             return channel.id;
         } catch (err: unknown) {
             context.logger.error(err);
@@ -75,27 +74,32 @@ export class ChannelCreateSubtag extends BaseSubtag {
 }
 
 const channelTypes = {
-    text: Constants.ChannelTypes.GUILD_TEXT,
-    voice: Constants.ChannelTypes.GUILD_VOICE,
-    category: Constants.ChannelTypes.GUILD_CATEGORY,
-    news: Constants.ChannelTypes.GUILD_NEWS,
-    store: Constants.ChannelTypes.GUILD_STORE
+    text: 'GUILD_TEXT',
+    voice: 'GUILD_VOICE',
+    category: 'GUILD_CATEGORY',
+    news: 'GUILD_NEWS',
+    store: 'GUILD_STORE'
 } as const;
 
 const mapOptions = mapping.mapJson(
-    mapping.mapObject<CreateChannelOptions>({
+    mapping.mapObject<GuildChannelCreateOptions>({
         bitrate: mapping.mapOptionalNumber,
         nsfw: mapping.mapOptionalBoolean,
-        parentID: mapping.mapOptionalString,
+        parent: ['parentID', mapping.mapOptionalString],
         rateLimitPerUser: mapping.mapOptionalNumber,
         topic: mapping.mapOptionalString,
         userLimit: mapping.mapOptionalNumber,
-        permissionOverwrites: mapping.mapArray<Overwrite, undefined>(mapping.mapObject({
-            allow: mapping.mapNumber,
-            deny: mapping.mapNumber,
-            id: mapping.mapString,
-            type: mapping.mapIn('role', 'member')
-        }), { ifUndefined: mapping.result.undefined }),
-        reason: mapping.mapOptionalString
+        permissionOverwrites: mapping.mapArray<OverwriteData, undefined>(
+            mapping.mapObject<OverwriteData>({
+                allow: mapping.mapOptionalBigInt,
+                deny: mapping.mapOptionalBigInt,
+                id: mapping.mapString,
+                type: mapping.mapIn('role', 'member')
+            }),
+            { ifUndefined: mapping.result.undefined }
+        ),
+        reason: mapping.mapOptionalString,
+        position: mapping.mapOptionalNumber,
+        type: [undefined]
     })
 );

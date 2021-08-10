@@ -205,7 +205,7 @@
                         "selector": "default",
                         "format": null,
                         "filter": {
-                            "regex": "icon_url|ownerID|parentID|isCC",
+                            "regex": "icon_url|proxy_url|ownerID|parentID|isCC",
                             "match": true
                         }
                     },

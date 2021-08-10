@@ -1,6 +1,8 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
+import { guard } from '@core/utils';
+import { GuildChannels } from 'discord.js';
 
 export class ChannelPosSubtag extends BaseSubtag {
     public constructor() {
@@ -15,7 +17,7 @@ export class ChannelPosSubtag extends BaseSubtag {
                     description: 'Returns the position of the current channel.',
                     exampleCode: 'This channel is in position {channelpos}',
                     exampleOut: 'This channel is in position 1',
-                    execute: (ctx) => ctx.channel.position.toString()
+                    execute: (ctx, _, subtag) => this.getChanelPositionCore(ctx, ctx.channel, subtag)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -38,6 +40,13 @@ export class ChannelPosSubtag extends BaseSubtag {
         const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
+        return this.getChanelPositionCore(context, channel, subtag);
+    }
+
+    private getChanelPositionCore(context: BBTagContext, channel: GuildChannels, subtag: SubtagCall): string {
+        if (guard.isThreadChannel(channel))
+            return this.customError('Threads dont have a position', context, subtag, `${channel.toString()} is a thread and doesnt have a position`);
+
         return channel.position.toString();
     }
 }

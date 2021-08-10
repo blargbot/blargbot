@@ -22,22 +22,29 @@ export function mapObject<T>(
         const objValue = <Record<string, unknown>>value;
         const result = initial();
 
-        function checkKey<K extends string & keyof T>(key: K, mapping: TypeMapping<T[K]>): boolean {
-            if (!guard.hasProperty(objValue, key)) {
-                return mapping(undefined).valid;
+        function checkKey<K extends string & keyof T>(resultKey: K, sourceKey: string | undefined, mapping: TypeMapping<T[K]>): boolean {
+            if (sourceKey !== undefined) {
+                if (!guard.hasProperty(objValue, sourceKey)) {
+                    return mapping(undefined).valid;
+                }
             }
-            const val = objValue[key];
+            const val = sourceKey === undefined ? undefined : objValue[sourceKey];
             const mapped = mapping(val);
             if (!mapped.valid)
                 return false;
             if (<unknown>mapped.value !== undefined)
-                result[key] = mapped.value;
+                result[resultKey] = mapped.value;
             return true;
         }
 
-        for (const key of Object.keys(mappings)) {
-            const mapping = mappings[key];
-            if (!checkKey(key, mapping))
+        for (const resultKey of Object.keys(mappings)) {
+            const mapping = mappings[resultKey];
+            const [sourceKey, mapFunc] = typeof mapping !== 'object'
+                ? [resultKey, mapping]
+                : mapping.length === 1
+                    ? [undefined, () => ({ valid: true, value: mapping[0] })]
+                    : mapping;
+            if (!checkKey(resultKey, sourceKey, mapFunc))
                 return _result.never;
         }
 

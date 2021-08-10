@@ -12,7 +12,7 @@ export class GuildOwnerIdSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'The owner\'s id is {guildownerid}.',
                     exampleOut: 'The owner\'s id is 1234567890123456.',
-                    execute: (ctx) => ctx.guild.ownerID
+                    execute: (ctx) => ctx.guild.ownerId
                 }
             ]
         });

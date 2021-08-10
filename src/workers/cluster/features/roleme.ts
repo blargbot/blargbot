@@ -1,9 +1,9 @@
 import { Cluster } from '@cluster';
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { guard } from '@cluster/utils';
-import { AnyMessage } from 'eris';
+import { Message } from 'discord.js';
 
-export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<void> {
+export async function handleRoleme(cluster: Cluster, msg: Message): Promise<void> {
     if (!guard.isGuildMessage(msg))
         return;
 
@@ -25,9 +25,9 @@ export async function handleRoleme(cluster: Cluster, msg: AnyMessage): Promise<v
         if (message !== content)
             continue;
 
-        const roleList = new Set(msg.member.roles);
+        const roleList = new Set(msg.member.roles.cache.keys());
         roleme.add?.forEach(r => roleList.add(r));
-        roleme.remove?.forEach(r => roleList.add(r));
+        roleme.remove?.forEach(r => roleList.delete(r));
 
         try {
             await msg.member.edit({ roles: [...roleList] });

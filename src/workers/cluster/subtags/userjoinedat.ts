@@ -42,7 +42,7 @@ export class UserJoinedAtSubtag extends BaseSubtag {
         });
 
         if (user !== undefined) {
-            const member = context.guild.members.get(user.id);
+            const member = await context.util.getMemberById(context.guild, user.id);
             if (member !== undefined)
                 return moment(member.joinedAt).utcOffset(0).format(format);
             return this.customError('User not in guild', context, subtag);

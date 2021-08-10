@@ -13,7 +13,7 @@ export class UserGameSubtag extends BaseSubtag {
                     description: 'Returns the game the executing user is playing. ',
                     exampleCode: 'You are playing {usergame}',
                     exampleOut: 'You are playing with bbtag',
-                    execute: (ctx) => (ctx.member.game ?? { name: 'nothing' }).name
+                    execute: (ctx) => ctx.member.presence?.activities[0]?.name ?? 'nothing'
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -38,9 +38,9 @@ export class UserGameSubtag extends BaseSubtag {
         });
 
         if (user !== undefined) {
-            const member = context.guild.members.get(user.id);
+            const member = await context.util.getMemberById(context.guild, user.id);
             if (member !== undefined)
-                return (member.game ?? { name: 'nothing' }).name;
+                return member.presence?.activities[0]?.name ?? 'nothing';
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

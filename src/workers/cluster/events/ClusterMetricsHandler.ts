@@ -9,7 +9,7 @@ export class ClusterMetricsHandler extends ClusterEventService {
     }
 
     protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
-        metrics.userGauge.set(this.cluster.discord.users.size);
+        metrics.userGauge.set(this.cluster.discord.users.cache.size);
         reply(metrics.aggregated.getMetricsAsJSON());
     }
 }

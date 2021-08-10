@@ -1,17 +1,18 @@
 import { BaseSubtag, BBTagEngine } from '@cluster/bbtag';
 import { TimeoutManager } from '@cluster/TimeoutManager';
 import { ClusterOptions } from '@cluster/types';
-import { commandTypeDetails, tagTypeDetails } from '@cluster/utils';
+import { commandTypeDetails, getRange, tagTypeDetails } from '@cluster/utils';
 import { BaseClient } from '@core/BaseClient';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
 import { ImageConnection } from '@image/ImageConnection';
+import { Options, Util } from 'discord.js';
 import moment, { Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AutoresponseManager, BotStaffManager, CommandManager, GreetingManager, MessageAwaiter, ModerationManager, ReactionAwaiter } from './managers';
+import { AutoresponseManager, BotStaffManager, CommandManager, GreetingManager, ModerationManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -26,8 +27,6 @@ export class Cluster extends BaseClient {
     public readonly images: ImageConnection;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
-    public readonly messageAwaiter: MessageAwaiter;
-    public readonly reactionAwaiter: ReactionAwaiter;
     public readonly moderation: ModerationManager;
     public readonly commands: CommandManager;
     public readonly greetings: GreetingManager;
@@ -38,41 +37,41 @@ export class Cluster extends BaseClient {
         options: ClusterOptions
     ) {
         super(logger, config, {
-            autoreconnect: true,
-            allowedMentions: {
-                everyone: false,
-                roles: false,
-                users: false
-            },
-            getAllUsers: false,
-            disableEvents: {
-                /* eslint-disable @typescript-eslint/naming-convention */
-                TYPING_START: true,
-                VOICE_STATE_UPDATE: true
-                /* eslint-enable @typescript-eslint/naming-convention */
-            },
-            maxShards: options.shardCount,
-            firstShardID: options.firstShardId,
-            lastShardID: options.lastShardId,
-            defaultImageSize: 512,
-            messageLimit: 5,
+            allowedMentions: { parse: [] },
+            shardCount: options.shardCount,
+            shards: getRange(options.firstShardId, options.lastShardId),
+            /* eslint-disable @typescript-eslint/naming-convention */
+            makeCache: Options.cacheWithLimits({
+                MessageManager: 5,
+                ChannelManager: {
+                    sweepInterval: 3600,
+                    sweepFilter: Util.archivedThreadSweepFilter()
+                },
+                GuildChannelManager: {
+                    sweepInterval: 3600,
+                    sweepFilter: Util.archivedThreadSweepFilter()
+                },
+                ThreadManager: {
+                    sweepInterval: 3600,
+                    sweepFilter: Util.archivedThreadSweepFilter()
+                }
+            }),
+            /* eslint-enable @typescript-eslint/naming-convention */
             intents: [
-                'guilds',
-                'guildMembers',
-                'guildBans',
-                'guildPresences',
-                'guildMessages',
-                'guildMessageReactions',
-                'guildEmojis',
-                'directMessages',
-                'directmessageReactions'
+                'GUILDS',
+                'GUILD_MEMBERS',
+                'GUILD_BANS',
+                'GUILD_PRESENCES',
+                'GUILD_MESSAGES',
+                'GUILD_MESSAGE_REACTIONS',
+                'GUILD_EMOJIS_AND_STICKERS',
+                'DIRECT_MESSAGES',
+                'DIRECT_MESSAGE_REACTIONS'
             ]
         });
         this.id = options.id;
         this.createdAt = moment();
         this.worker = options.worker;
-        this.messageAwaiter = new MessageAwaiter(this.logger);
-        this.reactionAwaiter = new ReactionAwaiter(this.logger);
         this.images = new ImageConnection(1, this.logger);
         this.commands = new CommandManager(`${__dirname}/dcommands`, this);
         this.subtags = new ModuleLoader(`${__dirname}/subtags`, BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);

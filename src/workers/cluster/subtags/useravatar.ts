@@ -13,7 +13,7 @@ export class UserAvatarSubtag extends BaseSubtag {
                     description: 'Returns the avatar of the executing user.',
                     exampleCode: 'Your avatar is {useravatar}',
                     exampleOut: 'Your discrim is (avatar url)',
-                    execute: (ctx) => ctx.user.avatarURL
+                    execute: (ctx) => ctx.user.avatarURL({ size: 512, format: 'png', dynamic: true }) ?? ctx.user.defaultAvatarURL
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -38,7 +38,7 @@ export class UserAvatarSubtag extends BaseSubtag {
         });
 
         if (user !== undefined)
-            return user.avatarURL;
+            return user.avatarURL({ size: 512, format: 'png', dynamic: true }) ?? user.defaultAvatarURL;
 
         return quiet ? '' : ''; //TODO add behaviour for this????
     }

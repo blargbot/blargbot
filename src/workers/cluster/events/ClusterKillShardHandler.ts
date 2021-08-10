@@ -10,10 +10,11 @@ export class ClusterKillShardHandler extends ClusterEventService {
 
     protected execute(shardId: number): void {
         this.cluster.logger.cluster('Killing shard', shardId, 'without a reconnect.');
-        const shard = this.cluster.discord.shards.get(shardId);
+        const shard = this.cluster.discord.ws.shards.get(shardId);
         if (shard === undefined)
             return;
-        shard.disconnect({ reconnect: false });
-        this.cluster.discord.shards.remove(shard);
+
+        this.cluster.discord.ws.shards.delete(shard.id);
+        shard['destroy']({ closeCode: 4010 });
     }
 }

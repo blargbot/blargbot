@@ -2,25 +2,21 @@ import { BaseUtilities } from '@core/BaseUtilities';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { BaseModuleLoader } from '@core/modules';
-import { Client as ErisClient, ClientOptions as ErisOptions } from 'eris';
+import { Client as Discord, ClientOptions as DiscordOptions } from 'discord.js';
 
 export class BaseClient {
     public readonly util: BaseUtilities;
     public readonly database: Database;
-    public readonly discord: ErisClient;
+    public readonly discord: Discord<true>;
 
     public constructor(
         public readonly logger: Logger,
         public readonly config: Configuration,
-        discordConfig: Omit<ErisOptions, 'restMode' | 'defaultImageFormat'>
+        discordConfig: DiscordOptions
     ) {
         this.util = new BaseUtilities(this);
 
-        this.discord = new ErisClient(this.config.discord.token, {
-            restMode: true,
-            defaultImageFormat: 'png',
-            ...discordConfig
-        });
+        this.discord = new Discord(discordConfig);
 
         this.database = new Database({
             logger: this.logger,
@@ -35,7 +31,7 @@ export class BaseClient {
         await Promise.all([
             this.database.connect().then(() => this.logger.init('database connected')),
             new Promise(resolve => this.discord.once('ready', resolve)),
-            this.discord.connect().then(() => this.logger.init('discord connected'))
+            this.discord.login(this.config.discord.token).then(() => this.logger.init('discord connected'))
         ]);
     }
 

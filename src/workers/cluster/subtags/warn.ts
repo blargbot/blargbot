@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
-import { User } from 'eris';
+import { User } from 'discord.js';
 
 export class WarnSubtag extends BaseSubtag {
     public constructor(
@@ -47,9 +47,8 @@ export class WarnSubtag extends BaseSubtag {
                 label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
             });
 
-        if (typeof user === 'string') {
-            user = context.discord.users.get(user);
-        }
+        if (typeof user === 'string')
+            user = await context.util.getUserById(user);
 
         if (user === undefined)
             return this.noUserFound(context, subtag);
@@ -57,7 +56,7 @@ export class WarnSubtag extends BaseSubtag {
         if (isNaN(count))
             return this.notANumber(context, subtag);
 
-        const member = context.guild.members.get(user.id);
+        const member = await context.util.getMemberById(context.guild, user.id);
 
         if (member === undefined)
             return this.noUserFound(context, subtag);

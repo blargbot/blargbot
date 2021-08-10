@@ -45,7 +45,7 @@ export class MuteCommand extends BaseGuildCommand {
         const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;
 
         switch (await context.cluster.moderation.mutes.mute(member, context.author, reason, duration)) {
-            case 'alreadyMuted': return this.error(`${humanize.fullName(member)} is already muted`);
+            case 'alreadyMuted': return this.error(`${humanize.fullName(member.user)} is already muted`);
             case 'noPerms': return this.error('I don\'t have permission to mute users! Make sure I have the `manage roles` permission and try again.');
             case 'moderatorNoPerms': return this.error('You don\'t have permission to mute users! Make sure you have the `manage roles` permission and try again.');
             case 'roleMissing': return this.error('The muted role has been deleted! Please re-run this command to create a new one.');
@@ -53,10 +53,10 @@ export class MuteCommand extends BaseGuildCommand {
             case 'moderatorTooLow': return this.error('You can\'t assign the muted role! (it\'s higher than or equal to your top role)');
             case 'success':
                 if (flags.t === undefined)
-                    return this.success(`**${humanize.fullName(member)}** has been muted`);
+                    return this.success(`**${humanize.fullName(member.user)}** has been muted`);
                 if (duration === undefined)
-                    return this.warning(`**${humanize.fullName(member)}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`);
-                return this.success(`**${humanize.fullName(member)}** has been muted and will be unmuted after **${humanize.duration(duration)}**`);
+                    return this.warning(`**${humanize.fullName(member.user)}** has been muted, but the duration was either 0 seconds or improperly formatted so they won't automatically be unmuted.`);
+                return this.success(`**${humanize.fullName(member.user)}** has been muted and will be unmuted after **${humanize.duration(duration)}**`);
         }
     }
 

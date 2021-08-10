@@ -1,7 +1,7 @@
 import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
-import { AdvancedMessageContent, Channel, ChannelInteraction, Client as ErisClient, EmbedField, EmbedOptions, Guild, MessageFile, Textable, User, UserChannelInteraction } from 'eris';
+import { ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, MessageEmbedOptions, MessageOptions, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 
@@ -10,12 +10,10 @@ import { WorkerConnection } from './worker';
 
 export type MalformedEmbed = { fields: [EmbedField]; malformed: boolean; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
-export type SendContext = UserChannelInteraction | ChannelInteraction | (Textable & Channel) | string
-export type SendEmbed = EmbedOptions & { asString?: string; }
-export type SendFiles = MessageFile | MessageFile[]
-export interface SendPayloadContent extends AdvancedMessageContent {
-    disableEveryone?: boolean;
-    embed?: SendEmbed;
+export type SendContext = UserChannelInteraction | ChannelInteraction | TextBasedChannels | string
+export type SendEmbed = MessageEmbedOptions & { asString?: string; }
+export type SendFiles = FileOptions | FileOptions[]
+export interface SendPayloadContent extends MessageOptions {
     nsfw?: string;
     isHelp?: boolean;
 }
@@ -516,7 +514,7 @@ export interface BBTagVariable extends BBTagVariableReference {
 
 export interface DatabaseOptions {
     readonly logger: Logger;
-    readonly discord: ErisClient;
+    readonly discord: Discord<true>;
     readonly rethinkDb: RethinkDbOptions;
     readonly cassandra: CassandraDbOptions;
     readonly postgres: PostgresDbOptions;
@@ -656,4 +654,4 @@ export interface TagVariablesTable {
 }
 export type TypeMappingResult<T> = { valid: false; } | { valid: true; value: T; };
 export type TypeMapping<T, TArgs extends unknown[] = []> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
-export type TypeMappings<T> = { readonly [P in keyof T]-?: TypeMapping<T[P]> };
+export type TypeMappings<T> = { readonly [P in keyof T]-?: TypeMapping<T[P]> | [string, TypeMapping<T[P]>] | [T[P]] };

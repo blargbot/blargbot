@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
 import { DiscordEventService } from '@core/serviceTypes';
-import { Message, OldMessage } from 'eris';
+import { Message, PartialMessage } from 'discord.js';
 
 export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpdate'> {
     public constructor(
@@ -9,10 +9,10 @@ export class DiscordMessageUpdateHandler extends DiscordEventService<'messageUpd
         super(cluster.discord, 'messageUpdate', cluster.logger);
     }
 
-    protected async execute(message: Message, oldMessage: OldMessage | null): Promise<void> {
+    protected async execute(oldMessage: Message | PartialMessage, newMessage: Message | PartialMessage): Promise<void> {
         await Promise.all([
-            this.cluster.moderation.eventLog.messageUpdated(message, oldMessage),
-            this.cluster.moderation.chatLog.messageUpdated(message)
+            this.cluster.moderation.eventLog.messageUpdated(newMessage, oldMessage),
+            this.cluster.moderation.chatLog.messageUpdated(newMessage)
         ]);
     }
 }

@@ -1,15 +1,15 @@
 import { Cluster } from '@cluster';
 import { guard } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
-import { PartialUser, User } from 'eris';
+import { PartialUser, User } from 'discord.js';
 
 export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> {
     public constructor(protected readonly cluster: Cluster) {
         super(cluster.discord, 'userUpdate', cluster.logger);
     }
 
-    protected async execute(user: User | undefined, oldUser: PartialUser | null): Promise<void> {
-        if (user === undefined || user.id === this.cluster.discord.user.id)
+    protected async execute(oldUser: PartialUser | User, user: User): Promise<void> {
+        if (user.id === this.cluster.discord.user.id)
             return;
 
         const promises: Array<Promise<unknown>> = [this.cluster.database.users.upsert(user)];

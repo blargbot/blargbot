@@ -19,15 +19,15 @@ export class ChannelSetPosSubtag extends BaseSubtag {
                         if (channel === undefined)
                             return this.customError('Channel does not exist', context, subtag);//TODO No channel found error
 
-                        const permission = channel.permissionsOf(context.authorizer);
+                        const permission = channel.permissionsFor(context.authorizer);
 
-                        if (!permission.has('manageChannels'))
+                        if (permission?.has('MANAGE_CHANNELS') !== true)
                             return this.customError('Author cannot move this channel', context, subtag);
 
                         const pos = parse.int(posStr);//TODO not a number error
                         //TODO maybe also check if the position doesn't exceed any bounds? Like amount of channels / greater than -1?
                         try {
-                            await channel.editPosition(pos);
+                            await channel.edit({ position: pos });
                             return; //TODO return something on success
                         } catch (err: unknown) {
                             context.logger.error(err);

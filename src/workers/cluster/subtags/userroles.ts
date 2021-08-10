@@ -37,9 +37,9 @@ export class UserRolesSubtag extends BaseSubtag {
         });
 
         if (user !== undefined) {
-            const member = context.guild.members.get(user.id);
+            const member = await context.util.getMemberById(context.guild, user.id);
             if (member !== undefined)
-                return JSON.stringify(member.roles);
+                return JSON.stringify([...member.roles.cache.keys()]);
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

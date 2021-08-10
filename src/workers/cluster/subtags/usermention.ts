@@ -39,7 +39,7 @@ export class UserMentionSubtag extends BaseSubtag {
         if (user !== undefined) {
             if (!context.state.allowedMentions.users.includes(user.id))
                 context.state.allowedMentions.users.push(user.id);
-            return user.mention;
+            return user.toString();
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

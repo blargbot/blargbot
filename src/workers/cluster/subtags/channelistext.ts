@@ -1,6 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
+import { guard } from '@core/utils';
 
 export class ChannelIsText extends BaseSubtag {
     public constructor() {
@@ -14,7 +15,7 @@ export class ChannelIsText extends BaseSubtag {
                     description: 'Checks if the current channel is a text channel.',
                     exampleCode: '{if;{istext};Yeah you can write stuff here;How did you even call the command?}',
                     exampleOut: 'Yeah you can write stuff here',
-                    execute: (ctx) => (ctx.channel.type === 0).toString()
+                    execute: (ctx) => guard.isTextableChannel(ctx.channel).toString()
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -37,6 +38,6 @@ export class ChannelIsText extends BaseSubtag {
         const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
-        return (channel.type === 0).toString();
+        return guard.isTextableChannel(channel).toString();
     }
 }

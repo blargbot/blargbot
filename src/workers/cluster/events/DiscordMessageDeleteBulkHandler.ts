@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
 import { DiscordEventService } from '@core/serviceTypes';
-import { PossiblyUncachedMessage } from 'eris';
+import { Collection, Message, PartialMessage } from 'discord.js';
 
 export class DiscordMessageDeleteBulkHandler extends DiscordEventService<'messageDeleteBulk'> {
     public constructor(
@@ -9,13 +9,13 @@ export class DiscordMessageDeleteBulkHandler extends DiscordEventService<'messag
         super(cluster.discord, 'messageDeleteBulk', cluster.logger);
     }
 
-    protected async execute(messages: PossiblyUncachedMessage[]): Promise<void> {
+    protected async execute(messages: Collection<string, Message | PartialMessage>): Promise<void> {
         await Promise.all([
-            ...messages.flatMap(message => [
+            ...messages.map(message => [
                 this.cluster.commands.messageDeleted(message),
                 this.cluster.moderation.chatLog.messageDeleted(message)
-            ]),
-            this.cluster.moderation.eventLog.messagesDeleted(messages)
+            ]).flat(),
+            this.cluster.moderation.eventLog.messagesDeleted(messages.map(m => m))
         ]);
     }
 }

@@ -39,7 +39,7 @@ class SnippetCommand extends BaseCommand {
             }
         }
 
-        let isStaff = msg.member.roles.includes(config.discord.roles.police) || msg.member.roles.includes(config.discord.roles.support);
+        let isStaff = msg.member.roles.cache.has(config.discord.roles.police) || msg.member.roles.cache.has(config.discord.roles.support);
         switch ((words[1] || '').toLowerCase()) {
             case 'submit': {
                 let eee = text.replace(/^.*?snippet\s+/i, '');

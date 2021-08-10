@@ -13,7 +13,7 @@ export class UserStatusSubtag extends BaseSubtag {
                     description: 'Returns the status of the user.',
                     exampleCode: 'You are currently {userstatus}',
                     exampleOut: 'You are currently online',
-                    execute: (ctx) => ctx.member.status
+                    execute: (ctx) => ctx.member.presence?.status ?? 'offline'
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -38,9 +38,9 @@ export class UserStatusSubtag extends BaseSubtag {
         });
 
         if (user !== undefined) {
-            const member = context.guild.members.get(user.id);
+            const member = await context.util.getMemberById(context.guild, user.id);
             if (member !== undefined)
-                return member.status ?? 'offline';
+                return member.presence?.status ?? 'offline';
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

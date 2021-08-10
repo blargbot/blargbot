@@ -1,7 +1,7 @@
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { guard, ModerationType } from '@cluster/utils';
 import { GuildCensorExceptions } from '@core/types';
-import { GuildMessage } from 'eris';
+import { GuildMessage } from 'discord.js';
 
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
@@ -63,7 +63,7 @@ export class CensorManager extends ModerationManagerBase {
             return false;
 
         const parsedAntiMention = typeof antimention === 'string' ? parseInt(antimention) : antimention;
-        if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.length < parsedAntiMention)
+        if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.users.size + message.mentions.roles.size < parsedAntiMention)
             return false;
 
         switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, false, 1, 'Mention spam')) {
@@ -88,6 +88,6 @@ export class CensorManager extends ModerationManagerBase {
         const roles = typeof exemptions.role === 'string' ? [exemptions.role] : exemptions.role;
         return channels.includes(message.channel.id)
             || users.includes(message.author.id)
-            || roles.some(r => message.member.roles.includes(r));
+            || roles.some(r => message.member.roles.cache.has(r));
     }
 }

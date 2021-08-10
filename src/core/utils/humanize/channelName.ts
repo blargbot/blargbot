@@ -1,9 +1,13 @@
-import { AnyChannel } from 'eris';
+import { guard } from '@core/utils';
+import { AllChannels } from 'discord.js';
 
 import { fullName } from './fullName';
 
-export function channelName(channel: AnyChannel): string {
-    if ('name' in channel)
+export function channelName(channel: AllChannels): string {
+    if (guard.isGuildChannel(channel))
         return channel.name;
-    return `${fullName(channel.recipient)} (DM)`;
+    if (guard.isPrivateChannel(channel) && 'recipient' in channel)
+        return `${fullName(channel.recipient)} (DM)`;
+
+    return `${channel.id} (UNKNOWN)`;
 }

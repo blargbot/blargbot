@@ -15,7 +15,7 @@ export class EmojisSubtag extends BaseSubtag {
                     exampleCode: 'This guild has {length;{emojis}} emojis.',
                     exampleOut: 'This guild has 23 emojis.',
                     execute: (context) => {
-                        const emojis = context.guild.emojis.map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
+                        const emojis = context.guild.emojis.cache.map(e => `<${e.animated ?? false ? 'a' : ''}:${e.name ?? ''}:${e.id}>`);
                         return JSON.stringify(emojis);
                     }
                 },
@@ -24,10 +24,10 @@ export class EmojisSubtag extends BaseSubtag {
                     description: 'Returns an array of emojis whitelisted for the provided `role`',
                     exampleCode: 'Cool gang has {length;{emojis;Cool gang}} emojis.',
                     exampleOut: 'Cool gang has 6 emojis.', //@ts-expect-error Subtag and roleStr are    d used in the new code
-                    execute: async (context, [{value: roleStr}], subtag) => { //eslint-disable-line
+                    execute: async (context, [{ value: roleStr }], subtag) => { //eslint-disable-line
                         //! Doesn't work, but compatibility™
-                        const emojis = context.guild.emojis.filter(e => e.roles.length > 0)
-                            .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
+                        const emojis = context.guild.emojis.cache.filter(e => e.roles.cache.size > 0)
+                            .map(e => `<${e.animated ?? false ? 'a' : ''}:${e.name ?? ''}:${e.id}>`);
                         return JSON.stringify(emojis);
 
                         //* The code commented below is the working code, however to keep compatibility the old code is still used
@@ -39,7 +39,7 @@ export class EmojisSubtag extends BaseSubtag {
                         // if (role === undefined) {
                         //     return this.noRoleFound(context, subtag) //TODO add this to other role subtags too, but when versioning is a thing to avoid incompatibilities
                         // }
-                        // const emojis = context.guild.emojis.filter(e => e.roles.includes(role.id))
+                        // const emojis = context.guild.emojis.filter(e => e.roles.cache.has(role.id))
                         //     .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
                         // return JSON.stringify(emojis);
                     }

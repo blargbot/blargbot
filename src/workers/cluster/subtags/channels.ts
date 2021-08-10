@@ -1,7 +1,6 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
-import { Constants } from 'eris';
 
 export class ChannelsSubtag extends BaseSubtag {
     public constructor() {
@@ -14,7 +13,7 @@ export class ChannelsSubtag extends BaseSubtag {
                     description: 'Returns an array of channel IDs in the current guild',
                     exampleCode: 'This guild has {length;{channels}} channels.',
                     exampleOut: 'This guild has {length;{channels}} channels.',
-                    execute: (ctx) => JSON.stringify(ctx.guild.channels.map(c => c.id))
+                    execute: (ctx) => JSON.stringify(ctx.guild.channels.cache.map(c => c.id))
                 },
                 {
                     parameters: ['category', 'quiet?'],
@@ -37,8 +36,8 @@ export class ChannelsSubtag extends BaseSubtag {
         const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
-        if (channel.type !== Constants.ChannelTypes.GUILD_CATEGORY)
+        if (channel.type !== 'GUILD_CATEGORY')
             return '[]';
-        return JSON.stringify(channel.channels.map(c => c.id));
+        return JSON.stringify(channel.children.map(c => c.id));
     }
 }

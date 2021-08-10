@@ -21,7 +21,7 @@ export class PingCommand extends BaseGlobalCommand {
         const content = messages[randInt(0, messages.length - 1)];
         const message = await context.reply(content);
         if (message !== undefined) {
-            await message.edit(`Pong! (${message.timestamp - context.timestamp}ms)`);
+            await message.edit(`Pong! (${message.createdTimestamp - context.timestamp}ms)`);
         }
     }
 }

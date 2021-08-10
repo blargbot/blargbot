@@ -1,7 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
-import { Constants } from 'eris';
+import { guard } from '@core/utils';
 
 export class ChannelIsCategorySubtag extends BaseSubtag {
     public constructor() {
@@ -32,6 +32,6 @@ export class ChannelIsCategorySubtag extends BaseSubtag {
         const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
-        return (channel.type === Constants.ChannelTypes.GUILD_CATEGORY).toString();
+        return guard.isCategoryChannel(channel).toString();
     }
 }

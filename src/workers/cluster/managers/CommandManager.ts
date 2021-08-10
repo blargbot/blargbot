@@ -8,7 +8,7 @@ import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { StoredAliasedGuildCommand, StoredGuildCommand, StoredRawGuildCommand } from '@core/types';
-import { AnyMessage, DiscordRESTError, PossiblyUncachedMessage } from 'eris';
+import { DiscordAPIError, Message, PartialMessage } from 'discord.js';
 
 export class CommandManager extends ModuleLoader<BaseCommand> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -22,7 +22,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         this.#commandMessages = new MessageIdQueue(100);
     }
 
-    public async tryExecute(message: AnyMessage): Promise<boolean> {
+    public async tryExecute(message: Message): Promise<boolean> {
         const prefix = await this.getPrefix(message);
         if (prefix === undefined)
             return false;
@@ -69,8 +69,8 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         const permOverride = options.permOverride ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'permoverride');
         if (permOverride === true) {
             const staffPerms = options.staffPerms ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
-            const allow = typeof staffPerms === 'number' ? staffPerms : parseInt(staffPerms);
-            if (!isNaN(allow) && this.cluster.util.hasPerms(context.message.member, allow))
+            const allow = typeof staffPerms === 'string' ? parseInt(staffPerms) : staffPerms;
+            if ((typeof allow === 'number' ? !isNaN(allow) : allow.length > 0) && this.cluster.util.hasPerms(context.message.member, allow))
                 return true; // User has any of the permissions that identify them as a staff member
         }
 
@@ -98,7 +98,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         return true;
     }
 
-    private async getPrefix(message: AnyMessage): Promise<undefined | string> {
+    private async getPrefix(message: Message): Promise<undefined | string> {
         const guildPrefixes = await this.getGuildPrefixes(message);
         const userPrefixes = await this.cluster.database.users.getSetting(message.author.id, 'prefixes') ?? [];
         const defaultPrefixes = [this.cluster.config.discord.defaultPrefix, this.cluster.discord.user.username];
@@ -109,7 +109,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
             .find(p => message.content.startsWith(p));
     }
 
-    private async getGuildPrefixes(message: AnyMessage): Promise<readonly string[]> {
+    private async getGuildPrefixes(message: Message): Promise<readonly string[]> {
         if (!guard.isGuildMessage(message))
             return [];
 
@@ -186,7 +186,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
             await command.execute(context);
         } catch (err: unknown) {
             this.cluster.logger.error(err);
-            if (err instanceof DiscordRESTError) {
+            if (err instanceof DiscordAPIError) {
                 if (err.code === 50001 && (await this.cluster.database.users.get(context.author.id))?.dontdmerrors !== true) {
                     if (!guard.isGuildChannel(context.channel))
                         void this.cluster.util.sendDM(context.author,
@@ -247,7 +247,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         };
     }
 
-    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
+    public async messageDeleted(message: Message | PartialMessage): Promise<void> {
         const guildId = 'guild' in message.channel ? message.channel.guild.id : undefined;
         if (guildId === undefined
             || !this.#commandMessages.has(guildId, message.id)
@@ -256,13 +256,12 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         }
 
         let author: string | undefined;
-        if ('author' in message)
+        if (!message.partial)
             author = humanize.fullName(message.author);
         else {
             const chatlog = await this.cluster.database.chatlogs.get(message.id);
             if (chatlog !== undefined) {
-                author = this.cluster.discord.users.get(chatlog.userid)?.username
-                    ?? (await this.cluster.database.users.get(chatlog.userid))?.username;
+                author = (await this.cluster.util.getUserById(chatlog.userid))?.username;
             }
         }
 

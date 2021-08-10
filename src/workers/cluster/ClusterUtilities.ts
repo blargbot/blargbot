@@ -2,7 +2,7 @@ import { FindEntityOptions, LookupMatch, MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { SendPayload } from '@core/types';
-import { AnyChannel, AnyMessage, Channel, Guild, GuildChannel, Member, Permission, Role, Textable, User, UserChannelInteraction } from 'eris';
+import { AllChannels, Constants, DiscordAPIError, Guild, GuildMember, GuildTextBasedChannels, Message, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -15,11 +15,33 @@ export class ClusterUtilities extends BaseUtilities {
         super(cluster);
     }
 
-    public async getMember(msg: UserChannelInteraction<GuildChannel>, name: string, args?: FindEntityOptions): Promise<Member | undefined> {
+    public async getMember(msg: UserChannelInteraction<GuildTextBasedChannels>, name: string, args?: FindEntityOptions): Promise<GuildMember | undefined> {
         const user = await this.getUser(msg, name, args);
         if (user === undefined)
             return undefined;
-        return msg.channel.guild.members.get(user.id);
+
+        return await this.getMemberById(msg.channel.guild, user.id);
+    }
+
+    public async getMemberById(guild: string | Guild, userId: string): Promise<GuildMember | undefined> {
+        if (typeof guild === 'string') {
+            guild = await this.getGuildById(guild) ?? guild;
+            if (typeof guild === 'string')
+                return undefined;
+        }
+
+        try {
+            return guild.members.fetch(userId);
+        } catch (error: unknown) {
+            if (error instanceof DiscordAPIError) {
+                switch (error.code) {
+                    case Constants.APIErrors.UNKNOWN_MEMBER:
+                    case Constants.APIErrors.UNKNOWN_USER:
+                        return undefined;
+                }
+            }
+            throw error;
+        }
     }
 
     public async getUser(msg: UserChannelInteraction, name: string, args: FindEntityOptions = {}): Promise<User | undefined> {
@@ -57,17 +79,17 @@ export class ClusterUtilities extends BaseUtilities {
             [, name, discrim] = nameMatch;
         }
 
-        const userList = msg.channel.guild.members
+        const userList = msg.channel.guild.members.cache
             .map(m => ({
                 member: m,
                 match: matchScore({
-                    name: m.username,
-                    nick: m.nick ?? m.username,
-                    normNick: m.nick?.toLowerCase() ?? m.username.toLowerCase(),
-                    normName: m.username.toLowerCase()
+                    name: m.user.username,
+                    nick: m.nickname ?? m.user.username,
+                    normNick: m.nickname?.toLowerCase() ?? m.user.username.toLowerCase(),
+                    normName: m.user.username.toLowerCase()
                 })
             }))
-            .filter(m => m.match > 0 && (discrim === undefined || discrim === m.member.discriminator))
+            .filter(m => m.match > 0 && (discrim === undefined || discrim === m.member.user.discriminator))
             .sort((a, b) => b.match - a.match)
             .map(m => m.member.user);
 
@@ -90,7 +112,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getRole(msg: UserChannelInteraction<GuildChannel>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | undefined> {
+    public async getRole(msg: UserChannelInteraction<GuildTextBasedChannels>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | undefined> {
         if (name.length === 0)
             return undefined;
 
@@ -110,7 +132,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (role !== undefined)
             return role;
 
-        const roleList = msg.channel.guild.roles
+        const roleList = msg.channel.guild.roles.cache
             .map(r => ({
                 role: r,
                 match: matchScore({
@@ -141,7 +163,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async getChannel(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<AnyChannel | undefined> {
+    public async getChannel(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<AllChannels | undefined> {
         if (name.length === 0)
             return undefined;
 
@@ -165,7 +187,7 @@ export class ClusterUtilities extends BaseUtilities {
             return channel?.id === msg.channel.id ? channel : undefined;
         }
 
-        const channelList = msg.channel.guild.channels
+        const channelList = msg.channel.guild.channels.cache
             .map(c => ({
                 channel: c,
                 match: matchScore({
@@ -197,7 +219,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async displayPaged(
-        channel: Textable & Channel,
+        channel: TextBasedChannels,
         user: User,
         filterText: string,
         getItems: (skip: number, take: number) => Promise<readonly string[]>,
@@ -257,7 +279,7 @@ export class ClusterUtilities extends BaseUtilities {
             );
             const response = await query.response;
             if (query.prompt !== undefined)
-                await this.discord.deleteMessage(query.prompt.channel.id, query.prompt.id);
+                await query.prompt.channel.messages.delete(query.prompt.id);
 
             if (response === undefined || response.content.toLowerCase() === 'c') {
                 if (args.suppress === true)
@@ -277,22 +299,22 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async awaitQuery(
-        channel: Textable & Channel,
+        channel: TextBasedChannels,
         user: User,
         content: SendPayload,
-        check?: ((message: AnyMessage) => boolean),
+        check?: ((message: Message) => boolean),
         timeoutMS?: number,
         label?: string
-    ): Promise<AnyMessage | undefined> {
+    ): Promise<Message | undefined> {
         const query = await this.createQuery(channel, user, content, check, timeoutMS, label);
         return await query.response;
     }
 
     public async createQuery(
-        channel: Textable & Channel,
+        channel: TextBasedChannels,
         user: User,
         content: SendPayload,
-        check?: ((message: AnyMessage) => boolean),
+        check?: ((message: Message) => boolean),
         timeoutMS = 300000,
         label?: string
     ): Promise<MessagePrompt> {
@@ -301,27 +323,31 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async awaitPrompt(
-        channel: Textable & Channel,
+        channel: TextBasedChannels,
         user: User,
         content: SendPayload,
-        check?: ((message: AnyMessage) => boolean),
+        check?: ((message: Message) => boolean),
         timeoutMS?: number,
         timeoutMessage?: SendPayload
-    ): Promise<AnyMessage | undefined> {
+    ): Promise<Message | undefined> {
         const prompt = await this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
         return await prompt.response;
     }
 
     public async createPrompt(
-        channel: Textable & Channel,
+        channel: TextBasedChannels,
         user: User,
         content: SendPayload,
-        check?: ((message: AnyMessage) => boolean),
+        check: ((message: Message) => boolean) = () => true,
         timeoutMS = 300000,
         timeoutMessage?: SendPayload
     ): Promise<MessagePrompt> {
         const prompt = await this.send(channel, content);
-        const response = this.cluster.messageAwaiter.wait([channel.id], [user.id], timeoutMS, check);
+        const response = channel.awaitMessages({
+            filter: msg => msg.author.id === user.id && check(msg),
+            max: 1,
+            time: timeoutMS
+        }).then(c => c.first());
 
         if (timeoutMessage !== undefined) {
             void response.then(async m => {
@@ -359,13 +385,13 @@ export class ClusterUtilities extends BaseUtilities {
             return undefined;
 
         try {
-            return foundGuild.roles.get(match[0]);
+            return await this.getRoleById(foundGuild, match[0]);
         } catch {
             return undefined;
         }
     }
 
-    public async getChannelById(channelId: string): Promise<AnyChannel | undefined> {
+    public async getChannelById(channelId: string): Promise<AllChannels | undefined> {
         const match = /\d{17,21}/.exec(channelId);
         if (match === null)
             return undefined;
@@ -375,8 +401,8 @@ export class ClusterUtilities extends BaseUtilities {
     /* eslint-disable @typescript-eslint/naming-convention */
     public async postStats(): Promise<void> {
         const stats = {
-            server_count: this.discord.guilds.size,
-            shard_count: this.discord.shards.size,
+            server_count: this.discord.guilds.cache.size,
+            shard_count: this.discord.ws.shards.size,
             shard_id: this.cluster.id
         };
         this.logger.log(stats);
@@ -413,8 +439,8 @@ export class ClusterUtilities extends BaseUtilities {
             );
 
             const shards = [];
-            for (const shardId of this.discord.shards.map(s => s.id)) {
-                shards[shardId] = this.discord.guilds.filter(g => g.shard.id === shardId);
+            for (const shardId of this.discord.ws.shards.keys()) {
+                shards[shardId] = this.discord.guilds.cache.filter(g => g.shard.id === shardId);
             }
             promises.push(
                 fetch(`https://discordbots.org/api/bots/${this.user.id}/stats`, {
@@ -439,9 +465,9 @@ export class ClusterUtilities extends BaseUtilities {
     }
     /* eslint-enable @typescript-eslint/naming-convention */
 
-    public hasRole(msg: Member | AnyMessage, roles: string | readonly string[], override = true): boolean {
-        let member: Member;
-        if (msg instanceof Member) {
+    public hasRole(msg: GuildMember | Message, roles: string | readonly string[], override = true): boolean {
+        let member: GuildMember;
+        if (msg instanceof GuildMember) {
             member = msg;
         } else {
             if (msg.member === null)
@@ -451,63 +477,56 @@ export class ClusterUtilities extends BaseUtilities {
 
         if (override
             && (member.id === this.cluster.config.discord.users.owner
-                || member.guild.ownerID === member.id
-                || member.permissions.json.administrator))
+                || member.guild.ownerId === member.id
+                || member.permissions.has('ADMINISTRATOR')))
             return true;
 
         if (typeof roles === 'string')
             roles = [roles];
 
-        return roles.some(r => member.roles.includes(r));
+        return roles.some(r => member.roles.cache.has(r));
     }
 
-    public isBotHigher(member: Member): boolean {
-        const bot = member.guild.members.get(this.cluster.discord.user.id);
-        if (bot === undefined)
+    public isBotHigher(member: GuildMember): boolean {
+        const bot = member.guild.me;
+        if (bot === null)
             return false;
         const botPos = this.getPosition(bot);
         const memPos = this.getPosition(member);
         return botPos > memPos;
     }
 
-    public getPosition(member: Member): number {
-        if (member.guild.ownerID === member.id)
+    public getPosition(member: GuildMember): number {
+        if (member.guild.ownerId === member.id)
             return Infinity;
 
-        const roles = member.roles.map(r => member.guild.roles.get(r)).filter(guard.hasValue);
-        if (roles.length === 0)
-            return 0;
-        return roles.sort((a, b) => b.position - a.position)[0].position;
+        return member.roles.highest.position;
     }
 
     public async isUserStaff(userId: string, guildId: string): Promise<boolean> {
         if (userId === guildId) return true;
 
-        const guild = this.discord.guilds.get(guildId);
-        if (guild === undefined) return false;
-
-        const member = guild.members.get(userId);
+        const member = await this.getMemberById(guildId, userId);
         if (member === undefined) return false;
 
-        if (guild.ownerID === userId) return true;
-        if (member.permissions.has('administrator')) return true;
+        if (member.guild.ownerId === userId) return true;
+        if (member.permissions.has('ADMINISTRATOR')) return true;
 
         if (await this.database.guilds.getSetting(guildId, 'permoverride') === true) {
             let allow = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
             if (typeof allow === 'string')
                 allow = parseInt(allow);
-            const member = this.discord.guilds.get(guildId)?.members.get(userId);
-            if (member !== undefined && this.hasPerms(member, allow)) {
+            if (this.hasPerms(member, allow)) {
                 return true;
             }
         }
         return false;
     }
 
-    public hasPerms(member: Member, allow?: number): boolean {
+    public hasPerms(member: GuildMember, allow?: number | readonly PermissionString[]): boolean {
         allow ??= defaultStaff;
-        const newPerm = new Permission(allow, 0);
-        for (const key in newPerm.json) {
+        const newPerm = new Permissions(typeof allow === 'number' ? BigInt(Math.floor(allow)) : allow);
+        for (const key of newPerm.toArray()) {
             if (member.permissions.has(key)) {
                 return true;
             }
@@ -515,10 +534,10 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public async hasRoles(msg: Member | AnyMessage, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
-        let member: Member;
-        let channel: (Textable & Channel) | undefined;
-        if (msg instanceof Member) {
+    public async hasRoles(msg: GuildMember | Message, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
+        let member: GuildMember;
+        let channel: TextBasedChannels | undefined;
+        if (msg instanceof GuildMember) {
             member = msg;
         } else {
             if (!guard.isGuildMessage(msg))
@@ -528,18 +547,18 @@ export class ClusterUtilities extends BaseUtilities {
         }
         if (override
             && (member.id === this.cluster.config.discord.users.owner
-                || member.guild.ownerID === member.id
-                || member.permissions.json.administrator)
+                || member.guild.ownerId === member.id
+                || member.permissions.has('ADMINISTRATOR'))
         ) {
             return true;
         }
 
         roles = roles.map(p => p.toLowerCase());
-        const guildRoles = member.guild.roles.filter(m =>
+        const guildRoles = member.guild.roles.cache.filter(m =>
             roles.includes(m.name.toLowerCase())
             || roles.some(p => parse.entityId(p, '@&', true) === m.id));
 
-        if (guildRoles.some(r => member.roles.includes(r.id)))
+        if (guildRoles.some(r => member.roles.cache.has(r.id)))
             return true;
 
         if (channel !== undefined && !quiet) {

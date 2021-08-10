@@ -21,9 +21,9 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                          */
                         if (channel === undefined)
                             return this.customError('Channel does not exist', context, subtag);
-                        const permission = channel.permissionsOf(context.authorizer);
+                        const permission = channel.permissionsFor(context.authorizer);
 
-                        if (!permission.has('manageChannels'))
+                        if (permission?.has('MANAGE_CHANNELS') !== true)
                             return this.customError('Author cannot edit this channel', context, subtag);
 
                         try {
@@ -32,8 +32,6 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                                 context.scope.reason ?? ''
                             );
                             await channel.delete(fullReason);
-                            if (context.guild.channels.get(channel.id) !== undefined)
-                                context.guild.channels.remove(channel);
                             return;//TODO return something on success
                         } catch (err: unknown) {
                             context.logger.error(err);

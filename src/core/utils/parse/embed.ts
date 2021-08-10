@@ -1,7 +1,7 @@
 import { MalformedEmbed } from '@core/types';
-import { EmbedOptions } from 'eris';
+import { MessageEmbedOptions } from 'discord.js';
 
-export function embed(embedText: string): EmbedOptions | MalformedEmbed | undefined {
+export function embed(embedText: string): MessageEmbedOptions | MalformedEmbed | undefined {
     if (embedText.trim().length === 0)
         return undefined;
 

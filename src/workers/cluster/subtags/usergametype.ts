@@ -1,5 +1,6 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
+import { ActivityType } from 'discord.js';
 
 const gameTypes = {
     default: '',
@@ -23,7 +24,7 @@ export class UserGameTypeSubtag extends BaseSubtag {
                     description: 'Returns how the executing user is playing a game (playing, streaming).',
                     exampleCode: 'You are {usergametype} right now!',
                     exampleOut: 'You are streaming right now!',
-                    execute: (ctx) => gameTypes[ctx.member.game !== null ? ctx.member.game.type : 'default']
+                    execute: (ctx) => ctx.member.presence?.activities[0]?.type.toLowerCase() ?? ''
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -40,7 +41,7 @@ export class UserGameTypeSubtag extends BaseSubtag {
         context: BBTagContext,
         userId: string,
         quietStr: string
-    ): Promise<string> {
+    ): Promise<Lowercase<ActivityType> | ''> {
         const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
         const user = await context.getUser(userId, {
             quiet, suppress: context.scope.suppressLookup,
@@ -48,9 +49,9 @@ export class UserGameTypeSubtag extends BaseSubtag {
         });
 
         if (user !== undefined) {
-            const member = context.guild.members.get(user.id);
+            const member = await context.util.getMemberById(context.guild, user.id);
             if (member !== undefined) {
-                return gameTypes[member.game !== null ? member.game.type : 'default'];
+                return member.presence?.activities[0]?.type.toLowerCase() ?? '';
             }
         }
 

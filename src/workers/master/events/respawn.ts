@@ -17,6 +17,6 @@ export class RespawnHandler extends WorkerPoolEventService<ClusterConnection> {
         id ??= worker.id;
         await this.master.clusters.spawn(id);
         timer.end();
-        await this.master.discord.createMessage(channel, `The shard has been successfully respawned! It only took me ${timer.format()}`);
+        await this.master.util.send(channel, `The shard has been successfully respawned! It only took me ${timer.format()}`);
     }
 }

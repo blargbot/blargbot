@@ -1,6 +1,6 @@
 import { WarnDetails, WarnResult } from '@cluster/types';
 import { ModerationType } from '@cluster/utils';
-import { Member, User } from 'eris';
+import { GuildMember, User } from 'discord.js';
 
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
@@ -10,7 +10,7 @@ export class WarnManager extends ModerationManagerBase {
         super(manager);
     }
 
-    public async warn(member: Member, moderator: User, count: number, reason?: string): Promise<WarnResult> {
+    public async warn(member: GuildMember, moderator: User, count: number, reason?: string): Promise<WarnResult> {
         if (count === 0)
             return { type: ModerationType.WARN, count: 0, state: 'countZero' };
         if (count < 0)
@@ -50,7 +50,7 @@ export class WarnManager extends ModerationManagerBase {
         return result;
     }
 
-    public async pardon(member: Member, moderator: User, count: number, reason?: string): Promise<number | 'countNaN' | 'countNegative' | 'countZero'> {
+    public async pardon(member: GuildMember, moderator: User, count: number, reason?: string): Promise<number | 'countNaN' | 'countNegative' | 'countZero'> {
         if (count === 0)
             return 'countZero';
         if (count < 0)
@@ -67,7 +67,7 @@ export class WarnManager extends ModerationManagerBase {
         return newCount;
     }
 
-    public async details(member: Member): Promise<WarnDetails> {
+    public async details(member: GuildMember): Promise<WarnDetails> {
         const count = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat');
         const kickAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'kickat');

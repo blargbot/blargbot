@@ -53,7 +53,7 @@ export class TimeoutManager {
                 continue;
 
             const shardId = this.getShardId(event);
-            if (!this.cluster.discord.shards.has(shardId)) {
+            if (this.cluster.discord.shard?.ids.includes(shardId) !== true) {
                 this.#events.delete(event.id);
                 continue;
             }
@@ -70,12 +70,12 @@ export class TimeoutManager {
 
     private getShardId(event: StoredEventOptions): number {
         if (event.channel !== undefined) {
-            const channel = this.cluster.discord.getChannel(event.channel);
+            const channel = this.cluster.discord.channels.cache.get(event.channel);
             if (channel !== undefined && guard.isGuildChannel(channel))
                 return channel.guild.shard.id;
         }
         if (event.guild !== undefined) {
-            const guild = this.cluster.discord.guilds.get(event.guild);
+            const guild = this.cluster.discord.guilds.cache.get(event.guild);
             if (guild !== undefined)
                 return guild.shard.id;
         }

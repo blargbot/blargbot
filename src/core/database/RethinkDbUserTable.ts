@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { MutableStoredUser, StoredUser, StoredUserSettings, UserTable } from '@core/types';
 import { guard } from '@core/utils';
-import { User } from 'eris';
+import { User } from 'discord.js';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';
 
@@ -54,8 +54,10 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
             if (currentUser.discriminator !== user.discriminator) {
                 currentUser.discriminator = update.discriminator = user.discriminator;
             }
-            if (currentUser.avatarURL !== user.avatarURL) {
-                currentUser.avatarURL = update.avatarURL = user.avatarURL;
+
+            const avatarUrl = user.avatarURL({ dynamic: true }) ?? user.defaultAvatarURL;
+            if (currentUser.avatarURL !== avatarUrl) {
+                currentUser.avatarURL = update.avatarURL = avatarUrl;
             }
 
             if (Object.values(update).some(guard.hasValue) && await this.rupdate(user.id, update))

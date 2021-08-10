@@ -1,8 +1,8 @@
 import { Cluster } from '@cluster';
 import { guard, randInt } from '@cluster/utils';
-import { AnyMessage, GuildMessage } from 'eris';
+import { GuildMessage, Message } from 'discord.js';
 
-export async function handleTableFlip(cluster: Cluster, msg: AnyMessage): Promise<void> {
+export async function handleTableFlip(cluster: Cluster, msg: Message): Promise<void> {
     if (!guard.isGuildMessage(msg) || msg.author.bot)
         return;
 

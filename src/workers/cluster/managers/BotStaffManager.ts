@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { Guild } from 'eris';
+import { Guild } from 'discord.js';
 
 export class BotStaffManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -28,7 +28,7 @@ export class BotStaffManager {
     }
 
     private async getUsers(): Promise<{ staff: readonly string[]; support: readonly string[]; }> {
-        const guild = this.cluster.discord.guilds.get(this.cluster.config.discord.guilds.home);
+        const guild = this.cluster.discord.guilds.cache.get(this.cluster.config.discord.guilds.home);
         if (guild === undefined) { // The guild is on another cluster
             const staff = await this.cluster.database.vars.get('police');
             const support = await this.cluster.database.vars.get('support');
@@ -49,5 +49,5 @@ export class BotStaffManager {
 }
 
 function userIdsWithRole(guild: Guild, roleId: string): string[] {
-    return guild.members.filter(m => m.roles.includes(roleId)).map(m => m.id);
+    return guild.roles.cache.get(roleId)?.members.map(m => m.id) ?? [];
 }

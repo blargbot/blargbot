@@ -12,7 +12,7 @@ export class GuildIcon extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'The guild\'s icon is {guildicon}',
                     exampleOut: 'The guild\'s icon is (icon url)',
-                    execute: (ctx) => ctx.guild.iconURL ?? ''
+                    execute: (ctx) => ctx.guild.iconURL({ size: 512, format: 'png', dynamic: true }) ?? ''
                 }
             ]
         });

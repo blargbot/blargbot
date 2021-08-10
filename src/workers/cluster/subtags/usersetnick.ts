@@ -1,6 +1,6 @@
 import { BaseSubtag } from '@cluster/bbtag';
 import { discordUtil, SubtagType } from '@cluster/utils';
-import { User } from 'eris';
+import { User } from 'discord.js';
 
 export class UserSetNickSubtag extends BaseSubtag {
     public constructor() {
@@ -25,16 +25,15 @@ export class UserSetNickSubtag extends BaseSubtag {
 
                         if (user === undefined)
                             return this.noUserFound(context, subtag);
-                        const member = context.guild.members.get(user.id);
+
+                        const member = await context.util.getMemberById(context.guild, user.id);
 
                         try {
                             if (user.id === context.discord.user.id)
-                                await context.discord.editNickname(context.guild.id, nick);
+                                await member?.setNickname(nick);
                             else {
                                 const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
-                                await member?.edit({
-                                    nick: nick
-                                }, fullReason);
+                                await member?.setNickname(nick, fullReason);
                             }
                         } catch (err: unknown) {
                             if (err instanceof Error) {

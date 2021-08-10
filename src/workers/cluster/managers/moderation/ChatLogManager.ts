@@ -1,7 +1,7 @@
 import { Cluster } from '@cluster';
 import { guard } from '@cluster/utils';
 import { ChatlogType } from '@core/types';
-import { AnyMessage, PossiblyUncachedMessage } from 'eris';
+import { Message, PartialMessage } from 'discord.js';
 
 export class ChatLogManager {
     public constructor(
@@ -10,7 +10,7 @@ export class ChatLogManager {
 
     }
 
-    public async messageCreated(message: AnyMessage): Promise<void> {
+    public async messageCreated(message: Message): Promise<void> {
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
@@ -21,17 +21,22 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachment: message.attachments[0]?.url
+            attachment: message.attachments.first()?.url
         }, ChatlogType.CREATE);
     }
 
-    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
-        if (!('guild' in message.channel) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
+    public async messageDeleted(message: Message | PartialMessage): Promise<void> {
+        if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
-        const chatlog = 'content' in message
-            ? { content: message.content, embeds: JSON.stringify(message.embeds), userid: message.author.id, attachment: message.attachments[0]?.url }
-            : await this.cluster.database.chatlogs.get(message.id);
+        const chatlog = message.partial
+            ? await this.cluster.database.chatlogs.get(message.id)
+            : {
+                content: message.content,
+                embeds: JSON.stringify(message.embeds),
+                userid: message.author.id,
+                attachment: message.attachments.first()?.url
+            };
         if (chatlog === undefined)
             return;
 
@@ -46,7 +51,10 @@ export class ChatLogManager {
         }, ChatlogType.DELETE);
     }
 
-    public async messageUpdated(message: AnyMessage): Promise<void> {
+    public async messageUpdated(message: Message | PartialMessage): Promise<void> {
+        if (message.partial)
+            return;
+
         if (!guard.isGuildMessage(message) || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'makelogs') !== true)
             return;
 
@@ -57,7 +65,7 @@ export class ChatLogManager {
             guildid: message.channel.guild.id,
             msgid: message.id,
             userid: message.author.id,
-            attachment: message.attachments[0]?.url
+            attachment: message.attachments.first()?.url
         }, ChatlogType.UPDATE);
     }
 }

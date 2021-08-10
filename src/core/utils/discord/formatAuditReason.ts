@@ -1,4 +1,4 @@
-import { User } from 'eris';
+import { User } from 'discord.js';
 
 import * as humanize from '../humanize';
 

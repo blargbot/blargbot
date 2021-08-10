@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
 import { guard, humanize, ModlogColour } from '@cluster/utils';
-import { EmbedField, EmbedOptions, Guild, User } from 'eris';
+import { EmbedField, Guild, MessageEmbedOptions, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 
 export class ModLogManager {
@@ -147,7 +147,7 @@ export class ModLogManager {
 
         reason ??= `Responsible moderator, please do \`reason ${caseId}\` to set.`;
 
-        const embed: EmbedOptions = {
+        const embed: MessageEmbedOptions = {
             title: `Case ${caseId}`,
             color: color,
             timestamp: new Date(),
@@ -160,7 +160,7 @@ export class ModLogManager {
         if (moderator !== undefined) {
             embed.footer = {
                 text: `${humanize.fullName(moderator)} (${moderator.id})`,
-                icon_url: moderator.avatarURL
+                iconURL: moderator.avatarURL({ dynamic: true }) ?? moderator.defaultAvatarURL
             };
         }
         if (Array.isArray(user)) {
@@ -168,11 +168,11 @@ export class ModLogManager {
         } else {
             embed.author = {
                 name: `${humanize.fullName(user)} (${user.id})`,
-                icon_url: user.avatarURL
+                iconURL: user.avatarURL({ dynamic: true }) ?? user.defaultAvatarURL
             };
         }
 
-        const modlogMessage = await this.cluster.util.send(modlogChannelId, { embed: embed });
+        const modlogMessage = await this.cluster.util.send(modlogChannelId, { embeds: [embed] });
         await this.cluster.database.guilds.addModlog(guildId, {
             caseid: caseId,
             modid: moderator?.id,

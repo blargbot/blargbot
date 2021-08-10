@@ -1,6 +1,6 @@
 import { BaseSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
-import { User } from 'eris';
+import { User } from 'discord.js';
 
 export class WarningsSubtag extends BaseSubtag {
     public constructor() {
@@ -13,7 +13,7 @@ export class WarningsSubtag extends BaseSubtag {
                     description: 'Gets the number of warnings `user` has. `user` defaults to the user who executed the containing tag.',
                     exampleCode: 'You have {warnings} warning(s)!',
                     exampleOut: 'You have 0 warning(s)!',
-                    execute: async (context, [{value: userStr}], subtag) => {
+                    execute: async (context, [{ value: userStr }], subtag) => {
                         let user: User | undefined = context.user;
 
                         if (userStr !== '') {

@@ -17,3 +17,6 @@ export * from './mapRecord';
 export * from './mapString';
 export * from './mapUnknown';
 export * from './result';
+export * from './mapOptionalDate';
+export * from './mapBigInt';
+export * from './mapOptionalBigInt';

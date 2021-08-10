@@ -1,14 +1,14 @@
 import { Cluster } from '@cluster';
 import { guard } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
-import { Guild, Member, OldMember } from 'eris';
+import { GuildMember, PartialGuildMember } from 'discord.js';
 
 export class DiscordGuildMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {
     public constructor(protected readonly cluster: Cluster) {
         super(cluster.discord, 'guildMemberUpdate', cluster.logger);
     }
 
-    protected async execute(_guild: Guild, member: Member, oldMember: OldMember | null): Promise<void> {
+    protected async execute(oldMember: GuildMember | PartialGuildMember, member: GuildMember): Promise<void> {
         if (member.id === this.cluster.discord.user.id)
             return;
 
@@ -18,17 +18,17 @@ export class DiscordGuildMemberUpdateHandler extends DiscordEventService<'guildM
             return;
         }
 
-        if (oldMember.nick !== member.nick)
-            promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nick));
+        if (oldMember.nickname !== member.nickname)
+            promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nickname ?? undefined));
 
-        for (const pair of join(member.roles, oldMember.roles)) {
+        for (const pair of join(member.roles.cache.values(), oldMember.roles.cache.values())) {
             if (pair[0] === pair[1])
                 continue;
 
             if (pair[0] === undefined)
-                promises.push(this.cluster.moderation.eventLog.roleRemoved(member, pair[1]));
+                promises.push(this.cluster.moderation.eventLog.roleRemoved(member, pair[1].id));
             if (pair[1] === undefined)
-                promises.push(this.cluster.moderation.eventLog.roleAdded(member, pair[0]));
+                promises.push(this.cluster.moderation.eventLog.roleAdded(member, pair[0].id));
         }
 
         await Promise.all(promises);

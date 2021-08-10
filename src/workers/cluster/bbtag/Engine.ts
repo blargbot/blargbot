@@ -5,14 +5,14 @@ import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { Client as ErisClient } from 'eris';
+import { Client as Discord } from 'discord.js';
 
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagContext } from './BBTagContext';
 import { BBTagError } from './BBTagError';
 
 export class BBTagEngine {
-    public get discord(): ErisClient { return this.cluster.discord; }
+    public get discord(): Discord<true> { return this.cluster.discord; }
     public get logger(): Logger { return this.cluster.logger; }
     public get database(): Database { return this.cluster.database; }
     public get util(): ClusterUtilities { return this.cluster.util; }
@@ -104,19 +104,21 @@ export class BBTagEngine {
             this.logger.error(err);
             await this.util.send(this.cluster.config.discord.channels.errorlog, {
                 content: 'A tag error occurred.',
-                embed: {
-                    title: err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err),
-                    description: err instanceof Error ? err.stack : 'No error stack!',
-                    color: parse.color('red'),
-                    fields: [
-                        { name: 'SubTag', value: definition?.name ?? name, inline: true },
-                        { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
-                        { name: 'Tag Name', value: context.tagName, inline: true },
-                        { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
-                        { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
-                        { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
-                    ]
-                }
+                embeds: [
+                    {
+                        title: err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err),
+                        description: err instanceof Error ? err.stack : 'No error stack!',
+                        color: parse.color('red'),
+                        fields: [
+                            { name: 'SubTag', value: definition?.name ?? name, inline: true },
+                            { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
+                            { name: 'Tag Name', value: context.tagName, inline: true },
+                            { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
+                            { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
+                            { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
+                        ]
+                    }
+                ]
             });
             return context.addError('An internal server error has occurred', bbtag, err instanceof Error ? err.message : undefined);
         }

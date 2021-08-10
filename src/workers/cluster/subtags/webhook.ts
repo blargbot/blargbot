@@ -1,12 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
-import { EmbedOptions } from 'eris';
-
-interface MessageFile {
-    file: Buffer;
-    name: string;
-}
+import { FileOptions, MessageEmbedOptions, WebhookClient } from 'discord.js';
 
 export class WebhookSubtag extends BaseSubtag {
     public constructor() {
@@ -22,7 +17,7 @@ export class WebhookSubtag extends BaseSubtag {
                     exampleOut: 'Error executing webhook: Cannot send an empty message', //TODO remove this
                     execute: async (context, args, subtag): Promise<string | void> => {
                         try {
-                            await context.discord.executeWebhook(args[0].value, args[1].value, {
+                            await new WebhookClient({ id: args[0].value, token: args[1].value }).send({
                                 content: '',
                                 embeds: []
                             });
@@ -70,8 +65,8 @@ export class WebhookSubtag extends BaseSubtag {
         fileStr?: string,
         fileName?: string
     ): Promise<string | void> {
-        let embed: EmbedOptions | undefined;
-        let file: MessageFile | undefined;
+        let embed: MessageEmbedOptions | undefined;
+        let file: FileOptions | undefined;
 
         if (embedStr !== undefined) {
             embed = parse.embed(embedStr);
@@ -82,21 +77,21 @@ export class WebhookSubtag extends BaseSubtag {
             if (fileName === undefined) fileName = 'file.txt';
 
             if (fileStr.startsWith('buffer:')) {
-                file = { file: Buffer.from(fileStr.substring(7), 'base64'), name: fileName};
+                file = { attachment: Buffer.from(fileStr.substring(7), 'base64'), name: fileName };
             } else {
-                file = { file: Buffer.from(fileStr), name: fileName};
+                file = { attachment: Buffer.from(fileStr), name: fileName };
             }
         } else {
             file = undefined;
         }
 
         try { //TODO Return the webhook message ID on success
-            await context.discord.executeWebhook(webhookID, webhookToken, {
+            await new WebhookClient({ id: webhookID, token: webhookToken }).send({
                 username: username,
                 avatarURL: avatar,
                 content: content,
                 embeds: embed !== undefined ? [embed] : undefined,
-                file
+                files: file !== undefined ? [file] : undefined
             });
         } catch (err: unknown) {
             if (err instanceof Error)

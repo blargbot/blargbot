@@ -15,7 +15,7 @@ export class ClusterGetStaffGuildsHandler extends ClusterEventService {
         const mapped = mapData(data);
         if (mapped.valid) {
             for (const guild of mapped.value.guilds) {
-                if (this.cluster.discord.guilds.get(guild) !== undefined) {
+                if (this.cluster.discord.guilds.cache.get(guild) !== undefined) {
                     if (await this.cluster.util.isUserStaff(mapped.value.user, guild))
                         res.push(guild);
                 }

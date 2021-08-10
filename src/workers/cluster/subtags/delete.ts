@@ -1,7 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { guard, SubtagType } from '@cluster/utils';
-import { Message } from 'eris';
+import { Message } from 'discord.js';
 
 export class DeleteSubtag extends BaseSubtag {
     public constructor() {
@@ -49,14 +49,13 @@ export class DeleteSubtag extends BaseSubtag {
         if (channel === undefined)
             return this.channelNotFound(context, subtag);
         if (messageId.length > 0 && guard.isTextableChannel(channel)) {
-            try {
-                msg = await context.discord.getMessage(channel.id, messageId);
-            } catch (err: unknown) {
+            msg = await context.util.getMessage(channel.id, messageId);
+            if (msg === undefined)
                 return this.noMessageFound(context, subtag);
-            }
         } else {
             return this.noMessageFound(context, subtag, 'messageId is empty');
         }
+
         /**
          * * This was used in messageDelete event? Not sure what it's purpose is tbh.
          * * bu.commandMessages seems to also be a thing
@@ -65,11 +64,11 @@ export class DeleteSubtag extends BaseSubtag {
         //     bu.notCommandMessages[context.guild.id] = {};
         // bu.notCommandMessages[context.guild.id][context.msg.id] = true;
 
-        //TODO return something like true/false
         try {
-            await context.discord.deleteMessage(msg.channel.id, msg.id);
+            await msg.delete();
         } catch (e: unknown) {
             // NO-OP
         }
+        //TODO return something like true/false
     }
 }

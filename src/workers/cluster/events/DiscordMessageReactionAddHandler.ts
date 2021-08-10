@@ -1,47 +1,37 @@
 import { Cluster } from '@cluster';
-import { guard } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
-import { Emoji, Member, Message, PossiblyUncachedMessage, TextableChannel, User } from 'eris';
+import { Message, MessageReaction, PartialMessage, PartialMessageReaction, PartialUser, User } from 'discord.js';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
     public constructor(public readonly cluster: Cluster) {
         super(cluster.discord, 'messageReactionAdd', cluster.logger);
     }
 
-    protected async execute(maybeMessage: PossiblyUncachedMessage, emoji: Emoji, maybeUser: Member | { id: string; }): Promise<void> {
-        const message = await this.resolveMessage(maybeMessage);
+    protected async execute(maybeReaction: MessageReaction | PartialMessageReaction, maybeUser: User | PartialUser): Promise<void> {
+        const message = await this.resolveMessage(maybeReaction.message);
         if (message === undefined)
             return;
 
-        const user = this.resolveUser(maybeUser);
+        const user = await this.resolveUser(maybeUser);
         if (user === undefined)
             return;
 
-        this.cluster.reactionAwaiter.emit(message, emoji, user);
-        await this.cluster.autoresponses.handleWhitelistApproval(message, emoji, user);
+        await this.cluster.autoresponses.handleWhitelistApproval(message, maybeReaction.emoji, user);
     }
 
-    protected async resolveMessage(message: PossiblyUncachedMessage): Promise<Message | undefined> {
-        if ('content' in message)
+    protected async resolveMessage(message: Message | PartialMessage): Promise<Message | undefined> {
+        if (!message.partial)
             return message;
 
-        const channel = this.resolveChannel(message.channel);
-        if (channel === undefined)
-            return;
         try {
-            return await channel.getMessage(message.id);
+            return await message.channel.messages.fetch(message.id);
         } catch (err: unknown) {
             return undefined;
         }
 
     }
 
-    protected resolveChannel(maybeChannel: PossiblyUncachedMessage['channel']): TextableChannel | undefined {
-        const channel = 'type' in maybeChannel ? maybeChannel : this.cluster.discord.getChannel(maybeChannel.id);
-        return channel !== undefined && guard.isTextableChannel(channel) ? channel : undefined;
-    }
-
-    protected resolveUser(maybeUser: Member | { id: string; }): User | undefined {
-        return 'user' in maybeUser ? maybeUser.user : this.cluster.discord.users.get(maybeUser.id);
+    protected async resolveUser(maybeUser: User | PartialUser): Promise<User | undefined> {
+        return !maybeUser.partial ? maybeUser : await this.cluster.util.getUserById(maybeUser.id);
     }
 }

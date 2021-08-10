@@ -1,13 +1,18 @@
-import { Channel, Constants, TextableChannel } from 'eris';
+import { AllChannels, TextBasedChannels } from 'discord.js';
 
-export function isTextableChannel<T extends Channel>(channel: T): channel is TextableChannel & T {
+export function isTextableChannel<T extends AllChannels>(channel: T): channel is TextBasedChannels & T {
     switch (channel.type) {
-        case Constants.ChannelTypes.DM:
-        case Constants.ChannelTypes.GROUP_DM:
-        case Constants.ChannelTypes.GUILD_NEWS:
-        case Constants.ChannelTypes.GUILD_TEXT:
-            return true;
-        default:
-            return false;
+        case 'DM': return true;
+        case 'GROUP_DM': return true;
+        case 'GUILD_CATEGORY': return false;
+        case 'GUILD_NEWS': return true;
+        case 'GUILD_NEWS_THREAD': return true;
+        case 'GUILD_PRIVATE_THREAD': return true;
+        case 'GUILD_PUBLIC_THREAD': return true;
+        case 'GUILD_STAGE_VOICE': return false;
+        case 'GUILD_STORE': return false;
+        case 'GUILD_TEXT': return true;
+        case 'GUILD_VOICE': return false;
+        case 'UNKNOWN': return false;
     }
 }

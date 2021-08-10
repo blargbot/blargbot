@@ -39,7 +39,7 @@ export class DMSubtag extends BaseSubtag {
 
         if (user === undefined)
             return this.noUserFound(context, subtag);
-        if (context.guild.members.get(user.id) === undefined)
+        if (await context.util.getMemberById(context.guild, user.id) === undefined)
             return this.userNotInGuild(context, subtag);
 
         if (embed !== undefined && embed.malformed !== true)
@@ -48,14 +48,14 @@ export class DMSubtag extends BaseSubtag {
             embed = discordUtil.parseEmbed(embedStr);
 
         try {
-            const dmChannel = await user.getDMChannel();
+            const dmChannel = user.dmChannel ?? await user.createDM();
             let cache = dmCache[user.id];
             if (cache === undefined ||
                 cache.count > 5 ||
                 cache.user !== context.user.id ||
                 cache.guild !== context.guild.id) {
                 // Ew we're gonna send a message first? It was voted...
-                await context.util.send(dmChannel.id, 'The following message was sent from ' +
+                await context.util.send(dmChannel, 'The following message was sent from ' +
                     `**__${context.guild.name}__** (${context.guild.id}), ` +
                     'and was sent by ' +
                     `**__${context.user.username}#${context.user.discriminator}}__** (${context.user.id}):`
@@ -64,7 +64,7 @@ export class DMSubtag extends BaseSubtag {
             }
             await context.util.send(dmChannel.id, {
                 content,
-                embed,
+                embeds: embed !== undefined ? [embed] : undefined,
                 nsfw: context.state.nsfw
             });
             cache.count++;

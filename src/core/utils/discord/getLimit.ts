@@ -8,7 +8,7 @@ export function getLimit(component: MessageComponent): number {
         case 'embed.field.value': return 1024;
         case 'embed.footer.text': return 2048;
         case 'embed.author.name': return 256;
-        case 'embed': return 6000;
+        case 'embeds': return 6000;
     }
 }
 
@@ -24,4 +24,4 @@ export type MessageStringComponent =
 export type MessageComponent =
     | MessageStringComponent
     | 'embed.fields'
-    | 'embed'
+    | 'embeds'

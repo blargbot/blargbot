@@ -2,7 +2,7 @@ import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDef
 import { SubtagType } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { Timer } from '@core/Timer';
-import { EmbedOptions } from 'eris';
+import { MessageEmbedOptions } from 'discord.js';
 
 import { BBTagContext } from './BBTagContext';
 import { compileSignatures, parseDefinitions } from './compilation';
@@ -42,7 +42,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         }
     }
 
-    public enrichDocs(docs: EmbedOptions): EmbedOptions {
+    public enrichDocs(docs: MessageEmbedOptions): MessageEmbedOptions {
         return docs;
     }
     public notANumber(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {

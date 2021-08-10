@@ -24,7 +24,10 @@ export class Master extends BaseClient {
         config: Configuration,
         options: MasterOptions
     ) {
-        super(logger, config, {});
+        super(logger, config, {
+            intents: []
+        });
+
         this.worker = options.worker;
         this.logHistory = new ClusterLogManager(30);
         this.clusterStats = new ClusterStatsManager();

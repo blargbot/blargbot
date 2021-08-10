@@ -34,8 +34,10 @@ declare global {
 
     interface ObjectConstructor {
         keys<T>(value: T): Array<string & keyof T>;
+        entries<TKey extends string, TValue>(value: { [P in TKey]: TValue; }): Array<[TKey, TValue]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
         create<T extends object>(value: T): T;
+        fromEntries<TKey extends string, TValue>(entries: Iterable<readonly [TKey, TValue]>): Record<TKey, TValue>;
     }
 
     interface Boolean {
@@ -56,6 +58,11 @@ declare global {
         interface Process {
             kill(): true;
         }
+    }
+
+    interface String {
+        toLowerCase<T extends string>(this: T): Lowercase<T>;
+        toUpperCase<T extends string>(this: T): Uppercase<T>;
     }
 
     function setTimeout<TArgs extends unknown[]>(callback: (...args: TArgs) => void, ms: number, ...args: TArgs): NodeJS.Timeout;

@@ -2,6 +2,7 @@ import { Cluster } from '@cluster';
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { guard, sleep, snowflake } from '@cluster/utils';
 import { CronService } from '@core/serviceTypes';
+import { Collection, Guild } from 'discord.js';
 import moment from 'moment';
 
 export class CustomCommandIntervalCron extends CronService {
@@ -16,29 +17,28 @@ export class CustomCommandIntervalCron extends CronService {
         const nonce = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0').toUpperCase();
 
         const guilds = (await this.cluster.database.guilds.withIntervalCommand())
-            .filter(guild => this.cluster.discord.guilds.has(guild));
+            .map(guildId => this.cluster.discord.guilds.cache.get(guildId))
+            .filter(guard.hasValue);
 
         this.logger.info(`[${nonce}] Running intervals on ${guilds.length} guilds`);
 
         let count = 0;
         let failures = 0;
-        const promises: Array<Promise<string | undefined>> = [];
+        const promises: Array<Promise<Guild | undefined>> = [];
         for (const guild of guilds) {
-            this.logger.debug(`[${nonce}] Performing interval on ${guild}`);
-            const interval = await this.cluster.database.guilds.getCommand(guild, '_interval');
+            this.logger.debug(`[${nonce}] Performing interval on ${guild.id}`);
+            const interval = await this.cluster.database.guilds.getCommand(guild.id, '_interval');
             if (interval === undefined || guard.isAliasedCustomCommand(interval))
                 continue;
 
             try {
-                const g = this.cluster.discord.guilds.get(guild);
-                if (g === undefined) continue;
                 const id = interval.authorizer ?? interval.author;
                 if (id.length === 0) continue;
-                const m = g.members.get(id);
+                const m = await this.cluster.util.getMemberById(guild, id);
                 if (m === undefined) continue;
                 const u = await this.cluster.util.getGlobalUser(id);
                 if (u === undefined) continue;
-                const c = g.channels.find(guard.isTextableChannel);
+                const c = guild.channels.cache.find(guard.isTextableChannel);
                 if (c === undefined) continue;
 
                 const promise = this.cluster.bbtag.execute(interval.content, {
@@ -46,8 +46,8 @@ export class CustomCommandIntervalCron extends CronService {
                         channel: c,
                         author: u,
                         member: m,
-                        timestamp: moment.now(),
-                        attachments: [],
+                        createdTimestamp: moment.now(),
+                        attachments: new Collection(),
                         embeds: [],
                         content: '',
                         id: snowflake.create().toString()
@@ -84,7 +84,7 @@ export class CustomCommandIntervalCron extends CronService {
 
         this.logger.info(`[${nonce}] Intervals complete. ${count} success | ${failures} fail | ${unresolved.length} unresolved`);
         if (unresolved.length > 0) {
-            this.logger.info(`[${nonce}] Unresolved in:\n${unresolved.map(m => '- ' + m).join('\n')}`);
+            this.logger.info(`[${nonce}] Unresolved in:\n${unresolved.map(m => '- ' + m.id).join('\n')}`);
         }
     }
 }

@@ -20,7 +20,7 @@ export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {
         const logString = logs.slice(Math.max(logs.length - 5, 0))
             .map(m => `[${m.timestamp}][${m.level}] ${m.text}`)
             .join('\n');
-        void this.master.discord.createMessage(
+        void this.master.util.send(
             this.master.config.discord.channels.shardlog,
             `Cluster ${worker.id} has died.\n\nLast 5 console outputs:${codeBlock(logString, 'md')}`.slice(0, 2000));
 

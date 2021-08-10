@@ -1,17 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
-import { Constants } from 'eris';
-
-const channelTypes: { [key in Constants['ChannelTypes']['string']]: string } = {
-    [Constants.ChannelTypes.GUILD_TEXT]: 'text',
-    [Constants.ChannelTypes.DM]: 'dm',
-    [Constants.ChannelTypes.GUILD_VOICE]: 'voice',
-    [Constants.ChannelTypes.GROUP_DM]: 'group-dm',
-    [Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
-    [Constants.ChannelTypes.GUILD_NEWS]: 'news',
-    [Constants.ChannelTypes.GUILD_STORE]: 'store'
-};
+import { Channel } from 'discord.js';
 
 export class ChannelTypeSubtag extends BaseSubtag {
     public constructor() {
@@ -52,3 +42,20 @@ export class ChannelTypeSubtag extends BaseSubtag {
         return channelTypes[channel.type];
     }
 }
+
+/* eslint-disable @typescript-eslint/naming-convention */
+const channelTypes: { [key in Channel['type']]: string } = {
+    GUILD_TEXT: 'text',
+    DM: 'dm',
+    GUILD_VOICE: 'voice',
+    GROUP_DM: 'group-dm',
+    GUILD_CATEGORY: 'category',
+    GUILD_NEWS: 'news',
+    GUILD_STORE: 'store',
+    GUILD_NEWS_THREAD: 'news-thread',
+    GUILD_PRIVATE_THREAD: 'private-thread',
+    GUILD_PUBLIC_THREAD: 'public-thread',
+    GUILD_STAGE_VOICE: 'stage-voice',
+    UNKNOWN: 'unknown'
+};
+/* eslint-enable @typescript-eslint/naming-convention */

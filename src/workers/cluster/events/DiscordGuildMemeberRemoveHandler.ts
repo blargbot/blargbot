@@ -1,13 +1,13 @@
 import { Cluster } from '@cluster';
 import { DiscordEventService } from '@core/serviceTypes';
-import { Guild, Member } from 'eris';
+import { GuildMember } from 'discord.js';
 
 export class DiscordGuildMemeberRemoveHandler extends DiscordEventService<'guildMemberRemove'> {
     public constructor(protected readonly cluster: Cluster) {
         super(cluster.discord, 'guildMemberRemove', cluster.logger);
     }
 
-    protected async execute(_guild: Guild, member: Member): Promise<void> {
+    protected async execute(member: GuildMember): Promise<void> {
         await Promise.all([
             this.cluster.moderation.bans.userLeft(member),
             this.cluster.moderation.eventLog.userLeft(member),

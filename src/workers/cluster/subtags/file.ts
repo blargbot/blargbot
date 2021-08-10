@@ -13,9 +13,9 @@ export class FileSubtag extends BaseSubtag {
                     exampleCode: '{file;Hello, world!;readme.txt}',
                     exampleOut: '(a file labeled readme.txt containing "Hello, world!")',
                     execute: (context, [{ value: fileContent }, { value: fileName }]) => {
-                        context.state.file = { file: fileContent, name: fileName};
+                        context.state.file = { attachment: fileContent, name: fileName };
                         if (fileContent.startsWith('buffer:'))
-                            context.state.file.file = Buffer.from(fileContent.substring(7), 'base64');
+                            context.state.file.attachment = Buffer.from(fileContent.substring(7), 'base64');
                     }
                 }
             ]

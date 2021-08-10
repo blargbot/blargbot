@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { codeBlock, CommandType, guard, humanize } from '@cluster/utils';
 import { SendPayload } from '@core/types';
-import { EmbedField, EmbedOptions } from 'eris';
+import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
 
 export class TimersCommand extends BaseGlobalCommand {
@@ -47,7 +47,7 @@ export class TimersCommand extends BaseGlobalCommand {
         const grid: Array<readonly [string, string, string, string, string, string]> = [];
         for (const event of eventsPage.events) {
             const userId = 'user' in event ? event.user : undefined;
-            const userObj = userId !== undefined ? context.discord.users.get(userId) : undefined;
+            const userObj = userId !== undefined ? context.discord.users.cache.get(userId) : undefined;
             const user = userObj !== undefined ? humanize.fullName(userObj) : userId ?? '';
             let content = 'content' in event ? event.content : '';
             if (content.length > 40)
@@ -89,8 +89,8 @@ export class TimersCommand extends BaseGlobalCommand {
         if (timer === undefined)
             return this.error('I couldn\'t find the timer you gave.');
 
-        const embed: EmbedOptions = {};
-        const fields = embed.fields = [] as EmbedField[];
+        const embed: MessageEmbedOptions = {};
+        const fields = embed.fields = [] as EmbedFieldData[];
 
         embed.title = `Timer #${simpleId(timer.id)}`;
         embed.description = 'content' in timer ? timer.content.length > 2000 ? timer.content.slice(0, 1997) + '...' : timer.content : undefined;
@@ -114,7 +114,7 @@ export class TimersCommand extends BaseGlobalCommand {
             inline: false
         });
 
-        return { embed };
+        return { embeds: [embed] };
     }
 
     public async cancelTimers(context: CommandContext, timerIds: string[]): Promise<string> {

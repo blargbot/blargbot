@@ -4,7 +4,7 @@ import { BaseGuildCommand, CommandContext } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse } from '@cluster/utils';
 import { SendPayload, StoredTag } from '@core/types';
-import { EmbedField, EmbedOptions, MessageFile, User } from 'eris';
+import { EmbedField, EmbedFieldData, FileOptions, MessageEmbedOptions, User } from 'discord.js';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 
@@ -169,7 +169,7 @@ export class TagCommand extends BaseGuildCommand {
         tagName: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string; files: MessageFile; } | undefined> {
+    ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
         const match = await this.requestReadableTag(context, tagName, false);
         if (typeof match !== 'object')
             return match;
@@ -199,7 +199,7 @@ export class TagCommand extends BaseGuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string; files: MessageFile; } | undefined> {
+    ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
             inputRaw: input,
@@ -272,7 +272,7 @@ export class TagCommand extends BaseGuildCommand {
         return this.success(`The \`${from.name}\` tag has been renamed to \`${to.name}\`.`);
     }
 
-    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: MessageFile; } | undefined> {
+    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -282,10 +282,12 @@ export class TagCommand extends BaseGuildCommand {
             ? response
             : {
                 content: `The raw code for \`${match.name}\` is attached`,
-                files: {
-                    name: match.name + '.bbtag',
-                    file: match.content
-                }
+                files: [
+                    {
+                        name: match.name + '.bbtag',
+                        attachment: match.content
+                    }
+                ]
             };
     }
 
@@ -381,15 +383,15 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const fields: EmbedField[] = [];
-        const embed: EmbedOptions = {
+        const fields: EmbedFieldData[] = [];
+        const embed: MessageEmbedOptions = {
             title: `__**Tag | ${match.name}**__`,
             fields: fields,
             color: 978212,
             timestamp: new Date(),
             footer: {
                 text: humanize.fullName(context.author),
-                icon_url: context.author.avatarURL
+                icon_url: context.author.avatarURL({ dynamic: true }) ?? context.author.defaultAvatarURL
             }
         };
 
@@ -429,7 +431,7 @@ export class TagCommand extends BaseGuildCommand {
         if (flags.length > 0)
             fields.push({ name: 'Flags', value: flags.join('\n') });
 
-        return { embed };
+        return { embeds: [embed] };
     }
 
     public async getTopTags(context: GuildCommandContext): Promise<string> {
@@ -711,7 +713,7 @@ export class TagCommand extends BaseGuildCommand {
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`);
 
-        return { embed: embed, isHelp: true };
+        return { embeds: [embed], isHelp: true };
     }
 
     private async logChange(
@@ -720,10 +722,10 @@ export class TagCommand extends BaseGuildCommand {
         user: User,
         messageId: string,
         details: Record<string, string>): Promise<void> {
-        const files: MessageFile[] = [];
+        const files: FileOptions[] = [];
         const fields: EmbedField[] = [];
         if ('tag' in details && 'content' in details)
-            files.push({ name: details.tag + '.bbtag', file: details.content });
+            files.push({ name: details.tag + '.bbtag', attachment: details.content });
 
         for (const key of Object.keys(details)) {
             fields.push({
@@ -734,21 +736,24 @@ export class TagCommand extends BaseGuildCommand {
         }
 
         await context.util.send(context.config.discord.channels.taglog, {
-            embed: {
-                title: action,
-                color: tagChangeActionColour[action],
-                fields,
-                author: {
-                    name: humanize.fullName(user),
-                    icon_url: user.avatarURL,
-                    url: `${context.config.website.secure ? 'https' : 'http'}://${context.config.website.host}/user/${user.id}`
-                },
-                timestamp: new Date(),
-                footer: {
-                    text: `MsgID: ${messageId}`
+            embeds: [
+                {
+                    title: action,
+                    color: tagChangeActionColour[action],
+                    fields,
+                    author: {
+                        name: humanize.fullName(user),
+                        icon_url: user.avatarURL({ dynamic: true }) ?? user.defaultAvatarURL,
+                        url: `${context.config.website.secure ? 'https' : 'http'}://${context.config.website.host}/user/${user.id}`
+                    },
+                    timestamp: new Date(),
+                    footer: {
+                        text: `MsgID: ${messageId}`
+                    }
                 }
-            }
-        }, files);
+            ],
+            files
+        });
     }
 }
 

@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@cluster/utils';
-import { EmbedOptions, Guild } from 'eris';
+import { Guild, MessageEmbedOptions, Permissions } from 'discord.js';
 
 export class SettingsCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
@@ -30,7 +30,7 @@ export class SettingsCommand extends BaseGuildCommand {
         });
     }
 
-    private async list(context: GuildCommandContext): Promise<string | { embed: EmbedOptions; }> {
+    private async list(context: GuildCommandContext): Promise<string | { embeds: [MessageEmbedOptions]; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
             return this.error('Your guild is not correctly configured yet! Please try again later');
@@ -39,60 +39,62 @@ export class SettingsCommand extends BaseGuildCommand {
         const guild = context.channel.guild;
 
         return {
-            embed: {
-                fields: [
-                    {
-                        name: 'General',
-                        value: settingGroup([
-                            ['dmhelp', parse.boolean(settings.dmhelp, false, true)],
-                            ['disablenoperms', settings.disablenoperms ?? false],
-                            ['social', settings.social ?? false]
-                        ])
-                    },
-                    {
-                        name: 'Messages',
-                        value: settingGroup([
-                            ['tableflip', parse.boolean(settings.tableflip, false, true)],
-                            ['nocleverbot', settings.nocleverbot ?? false],
-                            ['disableeveryone', settings.disableeveryone ?? false]
-                        ])
-                    },
-                    {
-                        name: 'Channels',
-                        value: settingGroup([
-                            ['farewellchan', resolveChannel(guild, settings.farewellchan) ?? 'Default Channel'],
-                            ['greetChan', resolveChannel(guild, settings.greetChan) ?? 'Default Channel'],
-                            ['modlog', resolveChannel(guild, settings.modlog)]
-                        ])
-                    },
-                    {
-                        name: 'Permissions',
-                        value: settingGroup([
-                            ['permoverride', parse.boolean(settings.permoverride, false, true)],
-                            ['staffperms', settings.staffperms ?? defaultStaff],
-                            ['kickoverride', settings.kickoverride],
-                            ['banoverride', settings.banoverride]
-                        ])
-                    },
-                    {
-                        name: 'Warnings',
-                        value: settingGroup([
-                            ['kickat', settings.kickat],
-                            ['banat', settings.banat]
-                        ])
-                    },
-                    {
-                        name: 'Moderation',
-                        value: settingGroup([
-                            ['makelogs', parse.boolean(settings.makelogs, false, true)],
-                            ['antimention', settings.antimention],
-                            ['mutedrole', resolveRole(guild, settings.mutedrole)],
-                            ['deletenotif', parse.boolean(settings.deletenotif, false, true)],
-                            ['adminrole', resolveRole(guild, settings.adminrole)]
-                        ])
-                    }
-                ]
-            }
+            embeds: [
+                {
+                    fields: [
+                        {
+                            name: 'General',
+                            value: settingGroup([
+                                ['dmhelp', parse.boolean(settings.dmhelp, false, true)],
+                                ['disablenoperms', settings.disablenoperms ?? false],
+                                ['social', settings.social ?? false]
+                            ])
+                        },
+                        {
+                            name: 'Messages',
+                            value: settingGroup([
+                                ['tableflip', parse.boolean(settings.tableflip, false, true)],
+                                ['nocleverbot', settings.nocleverbot ?? false],
+                                ['disableeveryone', settings.disableeveryone ?? false]
+                            ])
+                        },
+                        {
+                            name: 'Channels',
+                            value: settingGroup([
+                                ['farewellchan', resolveChannel(guild, settings.farewellchan) ?? 'Default Channel'],
+                                ['greetChan', resolveChannel(guild, settings.greetChan) ?? 'Default Channel'],
+                                ['modlog', resolveChannel(guild, settings.modlog)]
+                            ])
+                        },
+                        {
+                            name: 'Permissions',
+                            value: settingGroup([
+                                ['permoverride', parse.boolean(settings.permoverride, false, true)],
+                                ['staffperms', settings.staffperms ?? new Permissions(defaultStaff).bitfield.toString()],
+                                ['kickoverride', settings.kickoverride],
+                                ['banoverride', settings.banoverride]
+                            ])
+                        },
+                        {
+                            name: 'Warnings',
+                            value: settingGroup([
+                                ['kickat', settings.kickat],
+                                ['banat', settings.banat]
+                            ])
+                        },
+                        {
+                            name: 'Moderation',
+                            value: settingGroup([
+                                ['makelogs', parse.boolean(settings.makelogs, false, true)],
+                                ['antimention', settings.antimention],
+                                ['mutedrole', resolveRole(guild, settings.mutedrole)],
+                                ['deletenotif', parse.boolean(settings.deletenotif, false, true)],
+                                ['adminrole', resolveRole(guild, settings.adminrole)]
+                            ])
+                        }
+                    ]
+                }
+            ]
         };
     }
 
@@ -127,8 +129,8 @@ export class SettingsCommand extends BaseGuildCommand {
 function resolveChannel(guild: Guild, channelId: string | undefined): string | undefined {
     if (channelId === undefined)
         return undefined;
-    const channel = guild.channels.get(channelId)
-        ?? guild.channels.find(c => c.name.toLowerCase() === channelId.toLowerCase());
+    const channel = guild.channels.cache.get(channelId)
+        ?? guild.channels.cache.find(c => c.name.toLowerCase() === channelId.toLowerCase());
     if (channel === undefined)
         return `Unknown channel (${channelId})`;
     return `${channel.name} (${channel.id})`;
@@ -137,8 +139,8 @@ function resolveChannel(guild: Guild, channelId: string | undefined): string | u
 function resolveRole(guild: Guild, roleId: string | undefined): string | undefined {
     if (roleId === undefined)
         return undefined;
-    const role = guild.roles.get(roleId)
-        ?? guild.roles.find(r => r.name.toLowerCase() === roleId.toLowerCase());
+    const role = guild.roles.cache.get(roleId)
+        ?? guild.roles.cache.find(r => r.name.toLowerCase() === roleId.toLowerCase());
     if (role === undefined)
         return `Unknown role (${roleId})`;
     return `${role.name} (${role.id})`;

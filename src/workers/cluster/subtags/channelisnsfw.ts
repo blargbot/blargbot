@@ -1,6 +1,6 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
-import { SubtagType } from '@cluster/utils';
+import { guard, SubtagType } from '@cluster/utils';
 
 export class ChannelIsNsfw extends BaseSubtag {
     public constructor() {
@@ -14,7 +14,7 @@ export class ChannelIsNsfw extends BaseSubtag {
                     description: 'Checks if the current channel is a NSFW channel.',
                     exampleCode: '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
                     exampleOut: 'fluffy bunnies',
-                    execute: (ctx) => ctx.channel.nsfw.toString()
+                    execute: (ctx) => (!guard.isThreadChannel(ctx.channel) && ctx.channel.nsfw).toString()
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -37,6 +37,6 @@ export class ChannelIsNsfw extends BaseSubtag {
         const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
-        return channel.nsfw.toString();
+        return (!guard.isThreadChannel(channel) && guard.isTextableChannel(channel) && channel.nsfw).toString();
     }
 }

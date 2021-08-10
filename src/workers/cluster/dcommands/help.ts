@@ -2,7 +2,7 @@ import { BaseCommand, BaseGlobalCommand, CommandContext, CommandVariableType } f
 import { CommandParameter, GuildCommandContext } from '@cluster/types';
 import { codeBlock, CommandType, commandTypeDetails, guard, humanize } from '@cluster/utils';
 import { SendPayload, StoredGuildCommand } from '@core/types';
-import { EmbedField } from 'eris';
+import { EmbedFieldData } from 'discord.js';
 
 export class HelpCommand extends BaseGlobalCommand {
     public constructor() {
@@ -25,7 +25,7 @@ export class HelpCommand extends BaseGlobalCommand {
     }
 
     public async listCommands(context: CommandContext): Promise<SendPayload> {
-        const fields: EmbedField[] = [];
+        const fields: EmbedFieldData[] = [];
 
         let getCommandGroups = (command: BaseCommand): Promise<readonly string[]> =>
             Promise.resolve([commandTypeDetails[command.category].name]);
@@ -95,10 +95,12 @@ export class HelpCommand extends BaseGlobalCommand {
         });
 
         return {
-            embed: {
-                color: 0x7289da,
-                fields: fields
-            },
+            embeds: [
+                {
+                    color: 0x7289da,
+                    fields: fields
+                }
+            ],
             isHelp: true
         };
     }
@@ -123,11 +125,13 @@ export class HelpCommand extends BaseGlobalCommand {
             return this.error(`You dont have permission to run the \`${commandName}\` command`);
 
         return {
-            embed: {
-                title: `Help for ${commandName} (Custom Command)`,
-                description: command.help ?? '_No help text has been supplied_',
-                color: 0x7289da
-            },
+            embeds: [
+                {
+                    title: `Help for ${commandName} (Custom Command)`,
+                    description: command.help ?? '_No help text has been supplied_',
+                    color: 0x7289da
+                }
+            ],
             isHelp: true
         };
     }
@@ -139,7 +143,7 @@ export class HelpCommand extends BaseGlobalCommand {
         if (page < 0)
             return this.error('Page the page number must be 1 or higher');
 
-        const fields: EmbedField[] = [];
+        const fields: EmbedFieldData[] = [];
 
         if (command.aliases.length > 0)
             fields.push({ name: '**Aliases**', value: command.aliases.join(', ') });
@@ -183,13 +187,15 @@ export class HelpCommand extends BaseGlobalCommand {
         }
 
         return {
-            embed: {
-                title: `Help for ${command.name} ${subcommand}`,
-                url: context.util.websiteLink(`/commands#${command.name}`),
-                description: command.description,
-                color: commandTypeDetails[command.category].color,
-                fields: fields
-            },
+            embeds: [
+                {
+                    title: `Help for ${command.name} ${subcommand}`,
+                    url: context.util.websiteLink(`/commands#${command.name}`),
+                    description: command.description,
+                    color: commandTypeDetails[command.category].color,
+                    fields: fields
+                }
+            ],
             isHelp: true
         };
     }

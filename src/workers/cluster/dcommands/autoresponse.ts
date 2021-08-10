@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { between, CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
 import { SendPayload } from '@core/types';
-import { EmbedOptions } from 'eris';
+import { MessageEmbedOptions } from 'discord.js';
 
 export class AutoResponseCommand extends BaseGuildCommand {
     public constructor() {
@@ -66,7 +66,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
 
-        const embed: EmbedOptions & Required<Pick<EmbedOptions, 'fields'>> = {
+        const embed: MessageEmbedOptions & Required<Pick<MessageEmbedOptions, 'fields'>> = {
             fields: [],
             title: 'Autoresponses'
         };
@@ -89,7 +89,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
         if (embed.fields.length === 0)
             return this.error('There are no autoresponses configured for this server!');
 
-        return { embed };
+        return { embeds: [embed] };
     }
 
     public async addAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string> {

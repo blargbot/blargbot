@@ -4,9 +4,9 @@ import { humanize } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { SendContext, SendPayload } from '@core/types';
-import { AnyMessage, Channel, Client as ErisClient, Message, MessageFile, Textable, User } from 'eris';
+import { Client as Discord, Message, TextBasedChannels, User } from 'discord.js';
 
-export class CommandContext<TChannel extends Channel = Channel> {
+export class CommandContext<TChannel extends TextBasedChannels = TextBasedChannels> {
     public readonly commandText: string;
     public readonly commandName: string;
     public readonly argsString: string;
@@ -15,16 +15,16 @@ export class CommandContext<TChannel extends Channel = Channel> {
     public get bbtag(): BBTagEngine { return this.cluster.bbtag; }
     public get util(): ClusterUtilities { return this.cluster.util; }
     public get config(): Configuration { return this.cluster.config; }
-    public get discord(): ErisClient { return this.cluster.discord; }
+    public get discord(): Discord<true> { return this.cluster.discord; }
     public get database(): Database { return this.cluster.database; }
-    public get channel(): TChannel & Textable { return this.message.channel; }
+    public get channel(): TChannel { return this.message.channel; }
     public get author(): User { return this.message.author; }
     public get id(): string { return this.message.id; }
-    public get timestamp(): number { return this.message.timestamp; }
+    public get timestamp(): number { return this.message.createdTimestamp; }
 
     public constructor(
         public readonly cluster: Cluster,
-        public readonly message: Message<TChannel & Textable>,
+        public readonly message: Message & { channel: TChannel; },
         public readonly prefix: string
     ) {
         this.commandText = message.content.slice(prefix.length);
@@ -33,11 +33,11 @@ export class CommandContext<TChannel extends Channel = Channel> {
         this.argsString = parts[1] ?? '';
     }
 
-    public async reply(content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | undefined> {
-        return await this.cluster.util.send(this.message, content, files);
+    public async reply(content: SendPayload | undefined): Promise<Message & { channel: TChannel; } | undefined> {
+        return <Message & { channel: TChannel; }>await this.cluster.util.send(this.message, content);
     }
 
-    public async send(context: SendContext, content: SendPayload | undefined, files?: MessageFile | MessageFile[]): Promise<AnyMessage | undefined> {
-        return await this.cluster.util.send(context, content, files);
+    public async send(context: SendContext, content: SendPayload | undefined): Promise<Message | undefined> {
+        return await this.cluster.util.send(context, content);
     }
 }

@@ -22,7 +22,7 @@ module.exports =
         .whenArgs(1, async function (subtag, context, args) {
             let role = context.guild.roles.get(args[0]);
             if (role)
-                return context.guild.members.filter(m => m.roles.includes(role.id)).length;
+                return context.guild.members.filter(m => m.roles.cache.has(role.id)).length;
             return Builder.errors.noRoleFound(subtag, context);
         })
         .whenDefault(Builder.errors.tooManyArguments)

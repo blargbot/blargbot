@@ -31,7 +31,7 @@ export class RolePermsSubtag extends BaseSubtag {
         });
 
         if (role !== undefined) {
-            return role.permissions.allow.toString();
+            return role.permissions.bitfield.toString();
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

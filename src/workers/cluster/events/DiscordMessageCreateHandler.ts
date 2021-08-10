@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { DiscordEventService } from '@core/serviceTypes';
-import { AnyMessage, Channel, User } from 'eris';
+import { Message, TextBasedChannels, User } from 'discord.js';
 
 import { handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
 
@@ -13,11 +13,11 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         super(cluster.discord, 'messageCreate', cluster.logger);
     }
 
-    protected async execute(message: AnyMessage): Promise<void> {
+    protected async execute(message: Message): Promise<void> {
         await Promise.all(await this.executeIter(message));
     }
 
-    protected async executeIter(message: AnyMessage): Promise<Array<Promise<unknown>>> {
+    protected async executeIter(message: Message): Promise<Array<Promise<unknown>>> {
         const result: Array<Promise<unknown>> = [];
         if (message.author.id === this.cluster.discord.user.id) {
             this.logMessage(message);
@@ -46,15 +46,13 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             // NOOP
         } else if (await this.cluster.commands.tryExecute(message) || await tryHandleCleverbot(this.cluster, message)) {
             return result;
-        } else {
-            this.cluster.messageAwaiter.emit(message);
         }
 
         result.push(this.cluster.autoresponses.execute(this.cluster, message, false));
         return result;
     }
 
-    private logMessage(msg: AnyMessage): void {
+    private logMessage(msg: Message): void {
         const channel = msg.channel;
         if (guard.isGuildChannel(channel)) {
             const guild = channel.guild;
@@ -62,12 +60,10 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         } else if (guard.isPrivateChannel(channel)) {
             const recipient = channel.recipient;
             this.logger.output(`PM> ${recipient.username} (${recipient.id})> (${channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
-        } else {
-            this.logger.output(`??> (${channel.id})> ${msg.author.username}> ${msg.content} (${msg.id})`);
         }
     }
 
-    private async isBlacklisted(channel: Channel, user: User): Promise<boolean> {
+    private async isBlacklisted(channel: TextBasedChannels, user: User): Promise<boolean> {
         return guard.isGuildChannel(channel)
             && (await this.cluster.database.guilds.getChannelSetting(channel.guild.id, channel.id, 'blacklisted') ?? false)
             && !await this.cluster.util.isUserStaff(user.id, channel.guild.id);

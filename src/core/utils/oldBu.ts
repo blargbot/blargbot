@@ -2,7 +2,7 @@
 import config from '@config';
 import { Logger } from '@core/Logger';
 import { StoredTag } from '@core/types';
-import { AnyChannel, AnyMessage, Client as ErisClient, DiscordHTTPError, DiscordRESTError, Guild, GuildAuditLogEntry, GuildMessage, Member, Permission, User } from 'eris';
+import { AllChannels, Client as Discord, DiscordAPIError, Guild, GuildAuditLogsEntry, GuildMember, GuildMessage, Message, User } from 'discord.js';
 import { EventEmitter } from 'eventemitter3';
 import limax from 'limax';
 import moment from 'moment';
@@ -23,7 +23,7 @@ interface TagLocks {
 }
 
 const console: Logger = <Logger><unknown>undefined;
-const bot = <ErisClient><unknown>undefined;
+const bot = <Discord<true>><unknown>undefined;
 const cluster = <NodeJS.Process & Required<Pick<NodeJS.Process, 'send'>>><unknown>process;
 let awaitReactionCounter = 0;
 
@@ -46,12 +46,6 @@ export const oldBu = {
     startTime: moment(),
     emitter: new EventEmitter(),
     events: new EventEmitter(),
-    isNsfwChannel(channelid: string): boolean {
-        const channel = bot.getChannel(channelid);
-        if (channel !== undefined && 'nsfw' in channel)
-            return channel.nsfw;
-        return false;
-    },
     compareStats(a: StoredTag, b: StoredTag): -1 | 0 | 1 {
         if (a.uses < b.uses)
             return -1;
@@ -134,20 +128,20 @@ export const oldBu = {
         });
     },
     hasRole(
-        msg: GuildMessage | Member,
+        msg: GuildMessage | GuildMember,
         roles: string | readonly string[],
         override = true
     ): boolean {
-        const member = msg instanceof Member ? msg : msg.member;
+        const member = msg instanceof GuildMember ? msg : msg.member;
         if (override && (member.id === config.discord.users.owner ||
-            member.guild.ownerID === member.id ||
-            member.permissions.json.administrator)) {
+            member.guild.ownerId === member.id ||
+            member.permissions.has('ADMINISTRATOR'))) {
             return true;
         }
         if (typeof roles === 'string')
             roles = [roles];
         for (const role of roles) {
-            if (member.roles.includes(role)) {
+            if (member.roles.cache.has(role)) {
                 return true;
             }
         }
@@ -161,9 +155,11 @@ export const oldBu = {
         const errors = {} as Record<number, { error: unknown; reactions: string[]; }>;
         for (const reaction of new Set(reactions)) {
             try {
-                await bot.addMessageReaction(channelId, messageId, reaction);
+                const channel = bot.channels.cache.get(channelId);
+                if (channel !== undefined && guard.isTextableChannel(channel))
+                    await (await channel.messages.fetch(messageId)).react(reaction);
             } catch (e: unknown) {
-                if (e instanceof DiscordHTTPError || e instanceof DiscordRESTError) {
+                if (e instanceof DiscordAPIError || e instanceof DiscordAPIError) {
                     errors[e.code] ??= { error: e, reactions: [] };
                     switch (e.code) {
                         case 50013:
@@ -180,21 +176,6 @@ export const oldBu = {
         }
 
         return errors;
-    },
-
-    async getUserById(userId: string): Promise<User | undefined> {
-        const match = /\d{17,21}/.exec(userId);
-        if (match !== null) {
-            const user = bot.users.get(match[0]);
-            if (user !== undefined) {
-                return user;
-            }
-            try {
-                return await bot.getRESTUser(match[0]);
-            } catch (err: unknown) { return undefined; }
-
-        }
-        return undefined;
     },
     saveConfig(): void {
         oldBu.emitter.emit('saveConfig');
@@ -224,11 +205,11 @@ export const oldBu = {
     padRight(value: string, length: number): string {
         return value.toString().length < length ? oldBu.padRight(value + ' ', length) : value;
     },
-    async getAudit(guildId: string, targetId: string, type?: number): Promise<GuildAuditLogEntry | undefined> {
+    async getAudit(guildId: string, targetId: string, type?: number): Promise<GuildAuditLogsEntry | undefined> {
         try {
-            const al = await bot.getGuildAuditLogs(guildId, 50, undefined, type);
-            for (const e of al.entries) {
-                if (e.targetID === targetId) {
+            const al = await bot.guilds.cache.get(guildId)?.fetchAuditLogs({ limit: 50, before: undefined, type });
+            for (const e of al?.entries.values() ?? []) {
+                if (e.target !== null && 'id' in e.target && e.target.id === targetId) {
                     return e;
                 }
             }
@@ -243,7 +224,7 @@ export const oldBu = {
         while ((match = /<@!?([0-9]{17,21})>/.exec(message)) !== null) {
             const id = match[1];
             try {
-                const user = bot.users.get(id) ?? await bot.getRESTUser(id);
+                const user = bot.users.cache.get(id) ?? await bot.users.fetch(id);
                 message = message.replace(new RegExp(`<@!?${id}>`), humanize.fullName(user));
             } catch (err: unknown) {
                 message = message.replace(new RegExp(`<@!?${id}>`), `<@\u200b${id}>`);
@@ -251,8 +232,8 @@ export const oldBu = {
         }
         while ((match = /<#([0-9]{17,21})>/.exec(message)) !== null) {
             const id = match[1];
-            const channel = bot.getChannel(id);
-            if (guard.hasValue(channel) && 'name' in channel) {
+            const channel = bot.channels.cache.get(id);
+            if (guard.hasValue(channel) && guard.isGuildChannel(channel)) {
                 message = message.replace(new RegExp(`<#${id}>`), `#${channel.name}`);
             } else {
                 message = message.replace(new RegExp(`<#${id}>`), `<#\u200b${id}>`);
@@ -261,7 +242,7 @@ export const oldBu = {
         if (guard.hasValue(guild))
             while ((match = /<@&([0-9]{17,21})>/.exec(message)) !== null) {
                 const id = match[1];
-                const role = guild.roles.get(id);
+                const role = guild.roles.cache.get(id);
                 if (role !== undefined) {
                     message = message.replace(new RegExp(`<@&${id}>`), `${role.name}`);
                 } else {
@@ -269,15 +250,6 @@ export const oldBu = {
                 }
             }
         return message;
-    },
-    getPerms(channelid: string): Permission['json'] | undefined {
-        const channel = bot.getChannel(channelid);
-        if (guard.hasValue(channel) && 'guild' in channel) {
-            const permission = channel.permissionsOf(bot.user.id);
-            return permission.json;
-        }
-        return undefined;
-
     },
     genToken(length: number): string {
         if (length === 0)
@@ -321,10 +293,10 @@ export const oldBu = {
     isBoolean(value: unknown): value is boolean {
         return typeof value === 'boolean';
     },
-    parseChannel(text: string, allowJustId = false): AnyChannel | undefined {
+    parseChannel(text: string, allowJustId = false): AllChannels | undefined {
         const id = parse.entityId(text, '#', allowJustId);
         if (id === undefined) return undefined;
-        return bot.getChannel(id);
+        return bot.channels.cache.get(id);
     },
     groupBy<T, K extends string | number | symbol>(values: IterableIterator<T>, selector: (value: T) => K): Array<T[] & { key: K; }> {
         const groups: Partial<Record<K, T[] & { key: K; }>> = {};
@@ -356,16 +328,18 @@ export const oldBu = {
         return text;
     },
 
-    async findMessages(channelId: string, count: number, filter?: (m: AnyMessage) => boolean, before?: string, after?: string): Promise<AnyMessage[]> {
+    async findMessages(channelId: string, count: number, filter?: (m: Message) => boolean, before?: string, after?: string): Promise<Message[]> {
         const result = [];
         filter = filter ?? (() => true);
 
         while (result.length < count) {
             const batchSize = Math.min(100, count - result.length);
-            const batch = await bot.getMessages(channelId, batchSize, before, after);
-            result.push(...batch);
+            const channel = bot.channels.cache.get(channelId);
 
-            if (batch.length !== batchSize)
+            const batch = channel !== undefined && guard.isTextableChannel(channel) ? await channel.messages.fetch({ limit: batchSize, before, after }) : undefined;
+            result.push(...batch?.values() ?? []);
+
+            if (batch?.size !== batchSize)
                 break;
 
             before = result[result.length - 1].id;

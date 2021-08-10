@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
-import { Role } from 'eris';
 
 export class RolesSubtag extends BaseSubtag {
     public constructor() {
@@ -29,9 +28,7 @@ export class RolesSubtag extends BaseSubtag {
     public getGuildRoles(
         context: BBTagContext
     ): string {
-        let roles = context.guild.roles.map(r => r);
-        roles = roles.sort((a, b) => b.position - a.position);
-        return JSON.stringify(roles.map(r => r.id));
+        return JSON.stringify(context.member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id));
     }
 
     public async getUserRoles(
@@ -46,14 +43,9 @@ export class RolesSubtag extends BaseSubtag {
         });
 
         if (user !== undefined) {
-            const member = context.guild.members.get(user.id);
+            const member = await context.util.getMemberById(context.guild, user.id);
             if (member !== undefined) {
-                const guildRoles = context.guild.roles.reduce((o: Record<string, Role>, role) => {
-                    o[role.id] = role;
-                    return o;
-                }, {});
-                const roles = member.roles.map(r => guildRoles[r]);
-                return JSON.stringify(roles.sort((a, b) => b.position - a.position).map(r => r.id));
+                return JSON.stringify(member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id));
             }
         }
 

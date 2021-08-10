@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize } from '@cluster/utils';
-import { Member } from 'eris';
+import { GuildMember } from 'discord.js';
 
 export class WarningsCommand extends BaseGuildCommand {
     public constructor() {
@@ -23,7 +23,7 @@ export class WarningsCommand extends BaseGuildCommand {
         });
     }
 
-    public async warnings(context: GuildCommandContext, member: string | Member): Promise<string> {
+    public async warnings(context: GuildCommandContext, member: string | GuildMember): Promise<string> {
         if (typeof member === 'string')
             member = await context.util.getMember(context.message, member, { quiet: true }) ?? '';
 
@@ -33,8 +33,8 @@ export class WarningsCommand extends BaseGuildCommand {
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
         const result = [
             count > 0
-                ? this.warning(`**${humanize.fullName(member)}** has accumulated ${count === 1 ? '1 warning' : `${count} warnings`}.`)
-                : this.congrats(`**${humanize.fullName(member)}** doesn't have any warnings!`)
+                ? this.warning(`**${humanize.fullName(member.user)}** has accumulated ${count === 1 ? '1 warning' : `${count} warnings`}.`)
+                : this.congrats(`**${humanize.fullName(member.user)}** doesn't have any warnings!`)
         ];
 
         if (kickAt !== undefined)

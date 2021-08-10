@@ -43,7 +43,9 @@ export class ClusterMonitor extends IntervalService {
             return;
 
         this.master.clusterStats.set(cluster.id, undefined);
-        void this.master.discord.createMessage(this.master.config.discord.channels.shardlog, `Respawning unresponsive cluster ${cluster.id}...\n${alerts.join('\n')}`);
+        void this.master.util.send(
+            this.master.config.discord.channels.shardlog,
+            `Respawning unresponsive cluster ${cluster.id}...\n${alerts.join('\n')}`);
         void this.master.clusters.spawn(cluster.id);
     }
 }

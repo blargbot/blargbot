@@ -1,7 +1,7 @@
-import { Channel, Message, PrivateMessage, Textable } from 'eris';
+import { Message, PrivateChannels } from 'discord.js';
 
 import { isPrivateChannel } from './isPrivateChannel';
 
-export function isPrivateMessage<T extends Channel>(message: Message<T & Textable>): message is PrivateMessage & Message<T & Textable> {
+export function isPrivateMessage(message: Message): message is Message & { channel: PrivateChannels; } {
     return isPrivateChannel(message.channel);
 }

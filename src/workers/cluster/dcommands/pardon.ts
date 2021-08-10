@@ -40,7 +40,7 @@ export class PardonCommand extends BaseGuildCommand {
             case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);
             case 'countNegative': return this.error('I cant give a negative amount of pardons!');
             case 'countZero': return this.error('I cant give zero pardons!');
-            default: return this.success(`**${humanize.fullName(member)}** has been given ${count === 1 ? 'a pardon' : `${count} pardons`}. They now have ${result} warnings.`);
+            default: return this.success(`**${humanize.fullName(member.user)}** has been given ${count === 1 ? 'a pardon' : `${count} pardons`}. They now have ${result} warnings.`);
         }
     }
 }

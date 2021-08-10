@@ -9,6 +9,7 @@ export * from './isGuildMessage';
 export * from './isGuildRelated';
 export * from './isLetter';
 export * from './isPrivateChannel';
+export * from './isThreadChannel';
 export * from './isPrivateMessage';
 export * from './isTextableChannel';
 export * from './isVoiceChannel';

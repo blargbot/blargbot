@@ -1,7 +1,9 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { discordUtil, mapping, SubtagType } from '@cluster/utils';
-import { EditChannelOptions } from 'eris';
+import { TypeMapping } from '@core/types';
+import { guard } from '@core/utils';
+import { ChannelData, GuildChannels, ThreadEditData } from 'discord.js';
 
 export class ChannelEditSubtag extends BaseSubtag {
     public constructor() {
@@ -40,14 +42,26 @@ export class ChannelEditSubtag extends BaseSubtag {
         if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag);//TODO no channel found error
 
-        const permission = channel.permissionsOf(context.authorizer);
+        const permission = channel.permissionsFor(context.authorizer);
 
-        if (!permission.has('manageChannels'))
+        if (permission?.has('MANAGE_CHANNELS') !== true)
             return this.customError('Author cannot edit this channel', context, subtag);
 
-        let options: EditChannelOptions;
+        return guard.isThreadChannel(channel)
+            ? await this.channelEditCore(context, channel, args[1], mapThreadOptions, subtag)
+            : await this.channelEditCore(context, channel, args[1], mapChannelOptions, subtag);
+    }
+
+    private async channelEditCore<T>(
+        context: BBTagContext,
+        channel: Extract<GuildChannels, { edit(data: T, fullReason?: string): Promise<unknown>; }>,
+        editJson: string,
+        mapping: TypeMapping<T>,
+        subtag: SubtagCall
+    ): Promise<string> {
+        let options: T;
         try {
-            const mapped = mapOptions(args[1]);
+            const mapped = mapping(editJson);
             if (!mapped.valid)
                 return this.customError('Invalid JSON', context, subtag);
             options = mapped.value;
@@ -61,8 +75,6 @@ export class ChannelEditSubtag extends BaseSubtag {
                 context.scope.reason ?? ''
             );
             await channel.edit(options, fullReason);
-            if (context.guild.channels.get(channel.id) === undefined)
-                context.guild.channels.add(channel);
             return channel.id;
         } catch (err: unknown) {
             context.logger.error(err);
@@ -71,16 +83,30 @@ export class ChannelEditSubtag extends BaseSubtag {
     }
 }
 
-const mapOptions = mapping.mapJson(
-    mapping.mapObject<EditChannelOptions>({
+const mapChannelOptions = mapping.mapJson(
+    mapping.mapObject<ChannelData>({
         bitrate: mapping.mapOptionalNumber,
-        icon: mapping.mapOptionalString,
         name: mapping.mapOptionalString,
         nsfw: mapping.mapOptionalBoolean,
-        ownerID: mapping.mapOptionalString,
-        parentID: mapping.mapOptionalString,
+        parent: ['parentID', mapping.mapOptionalString],
         rateLimitPerUser: mapping.mapOptionalNumber,
         topic: mapping.mapOptionalString,
-        userLimit: mapping.mapOptionalNumber
+        userLimit: mapping.mapOptionalNumber,
+        defaultAutoArchiveDuration: mapping.mapIn(60, 1440, 4320, 10080, undefined),
+        lockPermissions: mapping.mapOptionalBoolean,
+        permissionOverwrites: [undefined],
+        position: mapping.mapOptionalNumber,
+        rtcRegion: [undefined],
+        type: [undefined]
+    })
+);
+
+const mapThreadOptions = mapping.mapJson(
+    mapping.mapObject<ThreadEditData>({
+        archived: mapping.mapOptionalBoolean,
+        autoArchiveDuration: mapping.mapIn(60, 1440, 4320, 10080, undefined),
+        locked: mapping.mapOptionalBoolean,
+        name: mapping.mapOptionalString,
+        rateLimitPerUser: mapping.mapOptionalNumber
     })
 );

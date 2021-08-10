@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
-import { Client as ErisClient } from 'eris';
+import { Client as Discord } from 'discord.js';
 
 import { PostgresDb, RethinkDb } from './base';
 import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
@@ -39,7 +39,7 @@ export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #logger: Logger;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #discord: ErisClient;
+    readonly #discord: Discord<true>;
 
     public get guilds(): GuildTable { return this.#guilds; }
     public get users(): UserTable { return this.#users; }
@@ -92,7 +92,7 @@ export class Database {
             this.#dumps.migrate()
         ]);
 
-        void this.#guilds.watchChanges(id => this.#discord.guilds.get(id) !== undefined);
-        void this.#users.watchChanges(id => this.#discord.users.get(id) !== undefined);
+        void this.#guilds.watchChanges(id => this.#discord.guilds.cache.get(id) !== undefined);
+        void this.#users.watchChanges(id => this.#discord.users.cache.get(id) !== undefined);
     }
 }

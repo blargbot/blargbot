@@ -14,7 +14,7 @@ export class RandUserSubtag extends BaseSubtag {
                     exampleCode: '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.',
                     exampleOut: 'abalabahaha is a lovely person! stupid cat isn\'t as good.',
                     execute: (context) => {
-                        const members = context.guild.members.map(m => m.id);
+                        const members = context.guild.members.cache.map(m => m.id);
                         return members[Math.floor(Math.random() * members.length)];
                     }
                 }

@@ -1,31 +1,40 @@
-import { EmbedOptions } from 'eris';
+import { guard } from '@core/utils';
+import { MessageEmbed, MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
 
-export function embed(embed: EmbedOptions & { asString?: string; }): string {
-    if ('asString' in embed && embed.asString !== undefined)
-        return embed.asString;
+export function embed(embeds: ReadonlyArray<(MessageEmbedOptions | MessageEmbed) & { asString?: string; }>): string {
+    return [...embedsIter(embeds)].join('\n').trim();
+}
 
-    const result = [];
-    if (embed.author !== undefined)
-        result.push(`__**${embed.author.name}**__`);
-    if (embed.title !== undefined)
-        result.push(embed.title);
-    if (embed.description !== undefined)
-        result.push(embed.description);
-    for (const field of embed.fields ?? []) {
-        if (field.name.replace('\u200b', '').trim().length > 0)
-            result.push(`__**- ${field.name}**__`);
-        if (field.value.replace('\u200b', '').trim().length > 0)
-            result.push(field.value);
+function* embedsIter(embeds: ReadonlyArray<(MessageEmbedOptions | MessageEmbed) & { asString?: string; }>): Generator<string> {
+    for (const embed of embeds) {
+        if ('asString' in embed && embed.asString !== undefined) {
+            yield embed.asString;
+            continue;
+        }
+
+        if (guard.hasValue(embed.author))
+            yield `__**${embed.author.name ?? ''}**__`;
+        if (guard.hasValue(embed.title))
+            yield embed.title;
+        if (guard.hasValue(embed.description))
+            yield embed.description;
+        for (const field of embed.fields ?? []) {
+            if (field.name.replace('\u200b', '').trim().length > 0)
+                yield `__**- ${field.name}**__`;
+            if (field.value.replace('\u200b', '').trim().length > 0)
+                yield field.value;
+        }
+        const footer = [];
+        if (guard.hasValue(embed.footer))
+            footer.push(embed.footer.text);
+        if (embed.timestamp !== undefined)
+            footer.push(moment(embed.timestamp).format('dddd, MMMM, Do YYYY, h:mm:ss a zz'));
+        if (footer.length > 0)
+            yield footer.join('|');
+        if (embed.image?.url !== undefined)
+            yield embed.image.url;
+
+        yield '\n\n';
     }
-    const footer = [];
-    if (embed.footer !== undefined)
-        footer.push(embed.footer.text);
-    if (embed.timestamp !== undefined)
-        footer.push(moment(embed.timestamp).format('dddd, MMMM, Do YYYY, h:mm:ss a zz'));
-    if (footer.length > 0)
-        result.push(footer.join('|'));
-    if (embed.image?.url !== undefined)
-        result.push(embed.image.url);
-    return result.join('\n');
 }
