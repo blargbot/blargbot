@@ -1,7 +1,5 @@
 import 'discord.js';
 
-import { ChannelTypes as ChannelTypesEnum } from 'discord.js/typings/enums';
-
 declare module 'discord.js' {
     export type UserChannelInteraction<TChannel extends TextBasedChannels = TextBasedChannels> = { channel: TChannel; author: User; }
     export type ChannelInteraction<TChannel extends TextBasedChannels = TextBasedChannels> = { channel: TChannel; author: never; }

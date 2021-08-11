@@ -2,7 +2,7 @@ import { RollingArray } from '@core/RollingArray';
 import { LogEntry } from '@core/types';
 
 export class ClusterLogManager {
-    private readonly logMap: Record<number, RollingArray<LogEntry>>;
+    private readonly logMap: Record<number, RollingArray<LogEntry> | undefined>;
     public constructor(public readonly historySize: number) {
         this.logMap = {};
     }

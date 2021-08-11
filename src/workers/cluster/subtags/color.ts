@@ -1,13 +1,17 @@
-import { BaseSubtag, BBTagContext} from '@cluster/bbtag';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 import Color from 'color';
 
 const getArray = bbtagUtil.tagArray.getArray;
 
-type InputFormat = 'hsl' | 'rgb' | 'hsv' | 'hwb' | 'cmyk' | 'xyz' | 'lab' | 'lch' | 'hex' | 'keyword' | 'ansi16' | 'ansi256' | 'hcg' | 'apple' | 'gray';
+type ColorFormat = typeof formats[number];
 
-const formats = ['hsl', 'rgb', 'hsv', 'hwb', 'cmyk', 'xyz', 'lab', 'lch', 'hex', 'keyword', 'ansi16', 'ansi256', 'hcg', 'apple', 'gray'];
+const formats = ['hsl', 'rgb', 'hsv', 'hwb', 'cmyk', 'xyz', 'lab', 'lch', 'hex', 'keyword', 'ansi16', 'ansi256', 'hcg', 'apple', 'gray'] as const;
+
+function isColorFormat(value: string): value is ColorFormat | Uppercase<ColorFormat> {
+    return (<readonly string[]>formats).includes(value.toLowerCase());
+}
 
 //* Thanks @types/color
 interface RGBColor extends Color {
@@ -15,7 +19,7 @@ interface RGBColor extends Color {
     color: string[] | number[] | undefined;
 }
 
-type ConvertedColor = RGBColor | {color: string; model: 'hex';} | string;
+type ConvertedColor = RGBColor | { color: string; model: 'hex'; } | string;
 export class ColorSubtag extends BaseSubtag {
     public constructor() {
         super({
@@ -35,7 +39,7 @@ export class ColorSubtag extends BaseSubtag {
                     description: 'Converts a color of `inputFormat` to `outputFormat`. If `inputFormat` is left empty, it will be automatically calculated.',
                     exampleCode: '{color;[66,134,244];hex;RGB}',
                     exampleOut: '#4286f4',
-                    execute: (ctx, args, subtag) => this.parseColor(ctx, args[0].value, args[1].value, args[2].value as InputFormat, subtag)
+                    execute: (ctx, args, subtag) => this.parseColor(ctx, args[0].value, args[1].value, args[2].value as ColorFormat, subtag)
                 }
             ]
         });
@@ -44,8 +48,8 @@ export class ColorSubtag extends BaseSubtag {
     public async parseColor(
         context: BBTagContext,
         colorStr: string,
-        outputFormat: string,
-        inputStr: InputFormat | undefined,
+        outputStr: string,
+        inputStr: string | undefined,
         subtag: SubtagCall
     ): Promise<string> {
         if (colorStr === '') return '`Invalid color`'; //TODO Would be better to use this.customError to add it to debug. This applies to the Invalid input/output formats too.
@@ -57,7 +61,6 @@ export class ColorSubtag extends BaseSubtag {
         } else {
             input = arr.v.map(elem => elem?.toString()).join(',');
         }
-        const inputFormat = inputStr !== undefined ? formats.includes(inputStr.toLowerCase()) ? inputStr.toLowerCase() as InputFormat : inputStr : undefined;
         let parsedInput;
         if (typeof input === 'string') {
             const match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(input);
@@ -66,7 +69,7 @@ export class ColorSubtag extends BaseSubtag {
                 const g = parseInt(match[2]);
                 const b = parseInt(match[3]);
                 parsedInput = [r, g, b];
-            } else if (inputFormat !== undefined && inputFormat.toLowerCase() === 'hsl') {
+            } else if (inputStr?.toLowerCase() === 'hsl') {
                 input = input.split(',');
                 parsedInput = [];
                 for (const i of input) {
@@ -77,10 +80,21 @@ export class ColorSubtag extends BaseSubtag {
             parsedInput = input;
         }
 
-        const method = outputFormat.toLowerCase();
         let color: Color | undefined;
 
-        if (inputFormat !== undefined && !formats.includes(inputFormat)) {
+        let inputFormat: undefined | ColorFormat;
+        if (inputStr === undefined) {
+            // NOOP
+        } else if (isColorFormat(inputStr)) {
+            inputFormat = inputStr.toLowerCase();
+        } else {
+            return '`Invalid input method`';
+        }
+
+        let outputFormat: ColorFormat;
+        if (isColorFormat(outputStr)) {
+            outputFormat = outputStr.toLowerCase();
+        } else {
             return '`Invalid input method`';
         }
 
@@ -91,9 +105,9 @@ export class ColorSubtag extends BaseSubtag {
         }
 
         if (typeof color === 'undefined') return '`Invalid color`';
-        if (!formats.includes(method)) return '`Invalid output method`';
+        if (!formats.includes(outputFormat)) return '`Invalid output method`';
 
-        let converted = color[method as InputFormat]() as ConvertedColor;
+        let converted = color[outputFormat]() as ConvertedColor;
 
         if (typeof converted === 'object') {
             if (converted.model === 'rgb' && typeof converted.color !== 'undefined') {

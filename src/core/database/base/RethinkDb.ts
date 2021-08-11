@@ -114,7 +114,7 @@ function hackySanitize(value: unknown, removeUndef: boolean): unknown {
                     .map(v => hackySanitize(v, removeUndef));
             }
             return Object.fromEntries(
-                Object.entries(value)
+                Object.entries(value as Record<PropertyKey, unknown>)
                     .filter(([, e]) => !removeUndef || e !== undefined)
                     .map(([k, e]) => [k, hackySanitize(e, removeUndef)])
             );
