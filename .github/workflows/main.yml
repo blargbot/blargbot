@@ -16,6 +16,11 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+      
+    - name: Add configuration file
+      run: echo $CONFIG_JSON >> config.json
+      env:
+        CONFIG_JSON: ${{secrets.config_json}}
     
     - name: Install Node
       uses: actions/setup-node@v2
