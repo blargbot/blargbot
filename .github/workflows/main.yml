@@ -29,7 +29,7 @@ jobs:
     - name: Install Node
       uses: actions/setup-node@v2
       with:
-        node-version: 16.6.*
+        node-version: 16
         cache: yarn
         
     - name: Install build dependencies
