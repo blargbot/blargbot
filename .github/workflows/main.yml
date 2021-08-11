@@ -29,19 +29,17 @@ jobs:
     - name: Install Node
       uses: actions/setup-node@v2
       with:
-        node-version: 16.6.1
+        node-version: 16.6.*
+        cache: yarn
         
     - name: Install build dependencies
       run: sudo apt-get install build-essential libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
-        
-    - name: Install Yarn
-      run: npm i yarn -g
       
     - name: Install packages
       run: yarn install
     
-    - name: Run linting
-      run: yarn run lint
-    
     - name: Run build
       run: yarn run build
+    
+    - name: Run linting
+      run: yarn run lint
