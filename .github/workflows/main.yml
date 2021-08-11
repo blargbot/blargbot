@@ -38,8 +38,5 @@ jobs:
     - name: Install packages
       run: yarn install
     
-    - name: Run build
-      run: yarn run build
-    
-    - name: Run linting
-      run: yarn run lint
+    - name: Run checks
+      run: yarn run check
