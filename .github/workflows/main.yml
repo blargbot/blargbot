@@ -17,8 +17,12 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
       
-    - name: Add configuration file
-      run: echo $CONFIG_JSON >> config.json
+    - name: Add configuration files
+      run: | 
+        echo $CONFIG_JSON >> config.json
+        echo '["abc"]' >> res/avatars.json
+        echo '[{ "type": 0, "content": "", "actor": "" }]' >> res/beemovie.json
+        wget 'https://raw.githubusercontent.com/jcquinlan/dnd-spells/master/spells.json' -O res/spells.json        
       env:
         CONFIG_JSON: ${{secrets.config_json}}
     
