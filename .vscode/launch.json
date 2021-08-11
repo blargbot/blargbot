@@ -14,7 +14,8 @@
             "autoAttachChildProcesses": true,
             "program": "${workspaceFolder}/src/entrypoints/master.ts",
             "args": [
-                "--async-stack-traces"
+                "--async-stack-traces",
+                "--enable-source-maps"
             ]
         },
         {
@@ -28,7 +29,8 @@
             "program": "${workspaceFolder}/src/entrypoints/master.ts",
             "preLaunchTask": "yarn: build",
             "args": [
-                "--async-stack-traces"
+                "--async-stack-traces",
+                "--enable-source-maps"
             ]
         },
         {
@@ -42,7 +44,8 @@
             "program": "${workspaceFolder}/src/entrypoints/cluster.ts",
             "args": [
                 "--async-stack-traces",
-                "--max-old-space-size=4096"
+                "--max-old-space-size=4096",
+                "--enable-source-maps"
             ],
             "env": {
                 "CLUSTER_ID": "0",
@@ -63,7 +66,8 @@
             "preLaunchTask": "yarn: build",
             "args": [
                 "--async-stack-traces",
-                "--max-old-space-size=4096"
+                "--max-old-space-size=4096",
+                "--enable-source-maps"
             ],
             "env": {
                 "CLUSTER_ID": "0",
@@ -82,7 +86,8 @@
             ],
             "autoAttachChildProcesses": true,
             "args": [
-                "--async-stack-traces"
+                "--async-stack-traces",
+                "--enable-source-maps"
             ]
         }
     ]

@@ -501,15 +501,11 @@ export interface Chatlog extends ChatlogMessage {
     readonly type: ChatlogType;
 }
 
-export interface BBTagVariableReference {
+export interface BBTagVariable {
     readonly name: string;
     readonly type: SubtagVariableType;
     readonly scope: string;
-
-}
-
-export interface BBTagVariable extends BBTagVariableReference {
-    readonly value: JToken;
+    content: string;
 }
 
 export interface DatabaseOptions {

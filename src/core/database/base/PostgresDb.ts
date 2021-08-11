@@ -1,40 +1,35 @@
 import { Logger } from '@core/Logger';
 import { PostgresDbOptions } from '@core/types';
 import { sleep } from '@core/utils';
-import pg from 'pg';
-import sequelize from 'sequelize';
+import { Sequelize, Transaction } from 'sequelize';
 
-import { models } from './postgresModels';
-
-delete (<Record<string, unknown>>pg).native; // TODO Do we need to do this?
-
-type PostgresModels = {
-    [P in keyof typeof models]: ReturnType<typeof models[P]>
-};
+import { BBTagVariableModel, createBBTagVariableModel } from './postgresModels';
 
 export class PostgresDb {
-    public readonly sequelize: sequelize.Sequelize;
-    public readonly models: PostgresModels;
+    private readonly sequelize: Sequelize;
+    public readonly bbtagVariables: BBTagVariableModel;
 
     public constructor(
         public readonly logger: Logger,
         options: PostgresDbOptions
     ) {
-        this.sequelize = new sequelize.Sequelize(
+        this.sequelize = new Sequelize(
             options.database,
             options.user,
             options.pass,
             {
-                operatorsAliases: false,
                 host: options.host,
                 dialect: 'postgres',
                 logging: this.logger.database,
                 ...options.sequelize
             }
         );
-        this.models = {
-            bbtagVariables: models.bbtagVariables(this.sequelize, this.logger)
-        };
+
+        this.bbtagVariables = createBBTagVariableModel(this.sequelize, this.logger);
+    }
+
+    public async transaction(): Promise<Transaction> {
+        return await this.sequelize.transaction();
     }
 
     public async authenticate(): Promise<void> {
@@ -50,7 +45,7 @@ export class PostgresDb {
     }
 
     private async loadModels(): Promise<void> {
-        for (const model of Object.values(this.models))
+        for (const model of Object.values(this.sequelize.models))
             await model.sync();
         this.logger.init('Database models loaded.');
     }

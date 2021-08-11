@@ -21,7 +21,7 @@ export function createLogger(config: Configuration, workerId: string): Logger {
         if (isSequelizeValidationError(arg) && Array.isArray(arg.errors)) {
             const text: string[] = [arg.stack ?? ''];
             for (const err of arg.errors) {
-                text.push(`\n - ${err.message}\n   - ${err.path} ${err.value}`);
+                text.push(`\n - ${err.message}\n   - ${err.path ?? 'UNKNOWN PATH'} ${err.value ?? 'UNKNOWN VALUE'}`);
             }
             return text.join('');
         }

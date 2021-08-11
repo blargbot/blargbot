@@ -1,17 +1,13 @@
 import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
-import sequelize, { ENUM, STRING, TEXT } from 'sequelize';
+import { BBTagVariable } from '@core/types';
+import { ENUM, Model, ModelCtor, Sequelize, STRING, TEXT } from 'sequelize';
 
-type BBTagVariable = {
-    name: string;
-    type: SubtagVariableType;
-    scope: string;
-    content: string;
-};
+export type BBTagVariableModel = ModelCtor<Model<BBTagVariable>>;
 
-export function createBBTagVariableModel(sequelize: sequelize.Sequelize, logger: Logger): sequelize.Model<BBTagVariable, BBTagVariable> {
+export function createBBTagVariableModel(sequelize: Sequelize, logger: Logger): BBTagVariableModel {
     logger.module('Loading postgres model bbtag_variable');
-    return sequelize.define<BBTagVariable, BBTagVariable>('bbtag_variable', {
+    return sequelize.define<Model<BBTagVariable>>('bbtag_variable', {
         name: {
             type: STRING,
             primaryKey: true,

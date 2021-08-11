@@ -13,8 +13,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
     }
 
     public async upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void> {
-        const model = this.postgres.models.bbtagVariables;
-        const trans = await this.postgres.sequelize.transaction();
+        const trans = await this.postgres.transaction();
         for (const [key, value] of Object.entries(values)) {
             const query = {
                 name: key.substring(0, 255),
@@ -23,9 +22,9 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
             };
             try {
                 if (guard.hasValue(value))
-                    await model.upsert({ ...query, content: JSON.stringify(value) });
+                    await this.postgres.bbtagVariables.upsert({ ...query, content: JSON.stringify(value) });
                 else
-                    await model.destroy({ where: query });
+                    await this.postgres.bbtagVariables.destroy({ where: query });
             } catch (err: unknown) {
                 this.logger.error(query, err);
             }
@@ -34,15 +33,18 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
     }
 
     public async get(name: string, type: SubtagVariableType, scope: string): Promise<JToken> {
-        const record = await this.postgres.models.bbtagVariables.findOne({
+        const model = await this.postgres.bbtagVariables.findOne({
             where: {
                 name: name.substring(0, 255),
                 type: type,
                 scope: scope
             }
         });
+
+        const record = model?.get();
+
         if (!guard.hasValue(record))
-            return record;
+            return undefined;
         try {
             return JSON.parse(record.content);
         } catch {
