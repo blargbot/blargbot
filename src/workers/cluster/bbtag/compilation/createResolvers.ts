@@ -82,15 +82,15 @@ function createResolver(
     afterGreedy: readonly SubtagHandlerParameter[])
     : ArgumentResolver {
     const defaultArgs = parameters.map(param => new LiteralSubtagArgumentValue(param.defaultValue));
-    return async function* resolve(context, args) {
+    return async function* resolve(context, subtagName, call) {
         let i = 0;
-        for (const { arg, param } of matchArgs(args, beforeGreedy, greedy, afterGreedy)) {
+        for (const { arg, param } of matchArgs(call.args, beforeGreedy, greedy, afterGreedy)) {
             const paramIndex = parameters.indexOf(param);
             for (; i < paramIndex; i++)
                 yield defaultArgs[i];
             i = paramIndex + 1;
 
-            const argValue = new ExecutingSubtagArgumentValue(context, arg, param.defaultValue);
+            const argValue = new ExecutingSubtagArgumentValue(context, subtagName, call, arg, param.defaultValue, param.maxLength);
             if (param.autoResolve)
                 await argValue.wait();
             yield argValue;

@@ -101,6 +101,9 @@ export class BBTagEngine {
             const result = await handler.execute(context, name, bbtag);
             return typeof result === 'string' ? result : '';
         } catch (err: unknown) {
+            if (err instanceof BBTagError)
+                return err.message;
+
             this.logger.error(err);
             await this.util.send(this.cluster.config.discord.channels.errorlog, {
                 content: 'A tag error occurred.',

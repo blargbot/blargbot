@@ -22,7 +22,8 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
             greedy: parameter.type?.endsWith('OrMore') === true ? parseInt(parameter.type) : false,
             required: argumentRequired.includes(parameter.type),
             nested: parameter.parameters.map(parseArgument),
-            defaultValue: ''
+            defaultValue: '',
+            maxLength: 1000000
         };
     }
 
@@ -32,9 +33,8 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         parameter = parameter.slice(1);
     }
 
-    const split = parameter.split(':');
-    parameter = split[0];
-    const defaultValue = split.length >= 2 ? split.slice(1).join(':') : '';
+    const match: Record<string, string | undefined> = /^(?<parameter>.*?)(?::(?<defaultValue>.*?))?(?:#(?<maxLength>\d+))?$/.exec(parameter)?.groups ?? {};
+    const { defaultValue = '', maxLength = '1000000' } = match;
 
     let required = true;
     let greedy: number | false = false;
@@ -69,6 +69,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         required,
         greedy: greedy,
         defaultValue,
-        nested: []
+        nested: [],
+        maxLength: parseInt(maxLength)
     };
 }
