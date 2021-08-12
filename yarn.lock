@@ -4221,13 +4221,6 @@ iconv-lite@^0.6.2:
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
-iconv@~2.2.1:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/iconv/-/iconv-2.2.3.tgz#e084d60eeb7d73da7f0a9c096e4c8abe090bfaed"
-  integrity sha1-4ITWDut9c9p/CpwJbkyKvgkL+u0=
-  dependencies:
-    nan "^2.3.5"
-
 icss-replace-symbols@^1.1.0:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/icss-replace-symbols/-/icss-replace-symbols-1.1.0.tgz#06ea6f83679a7749e386cfe1fe812ae5db223ded"
@@ -4440,21 +4433,6 @@ ipaddr.js@1.9.1:
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/ipaddr.js/-/ipaddr.js-1.9.1.tgz#bff38543eeb8984825079ff3a2a8e6cbd46781b3"
   integrity sha512-0KI/607xoxSToH7GjN1FfSbLoU0+btTicjsQSWQlh/hZykN8KpmMf7uYwPW3R+akZ6R/w18ZlXSHBYXiYUPO3g==
-
-irc-colors@^1.1.0:
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/irc-colors/-/irc-colors-1.5.0.tgz#08834c01ead88b0fd88386a5f2af8f2b0bb963fb"
-  integrity sha512-HtszKchBQTcqw1DC09uD7i7vvMayHGM1OCo6AHt5pkgZEyo99ClhHTMJdf+Ezc9ovuNNxcH89QfyclGthjZJOw==
-
-irc@^0.5.0:
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/irc/-/irc-0.5.2.tgz#3714f4768365a96d0b2f776bc91166beb2464bbc"
-  integrity sha1-NxT0doNlqW0LL3dryRFmvrJGS7w=
-  dependencies:
-    irc-colors "^1.1.0"
-  optionalDependencies:
-    iconv "~2.2.1"
-    node-icu-charset-detector "~0.2.0"
 
 is-absolute-url@^2.0.0:
   version "2.1.0"
@@ -5799,7 +5777,7 @@ mute-stream@0.0.7:
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
   integrity sha1-MHXOk7whuPq0PhvE2n6BFe0ee6s=
 
-nan@^2.12.1, nan@^2.13.2, nan@^2.3.3, nan@^2.3.5:
+nan@^2.12.1, nan@^2.13.2:
   version "2.14.2"
   resolved "https://registry.yarnpkg.com/nan/-/nan-2.14.2.tgz#f5376400695168f4cc694ac9393d0c9585eeea19"
   integrity sha512-M2ufzIiINKCuDfBSAUr1vWQ+vuVcA9kqx8JJUsbQi6yf1uGRyb7HfpdfUr5qLXf3B/t8dPvcjhKMmlfnP47EzQ==
@@ -5899,13 +5877,6 @@ node-gyp@^3.8.0:
     semver "~5.3.0"
     tar "^2.0.0"
     which "1"
-
-node-icu-charset-detector@~0.2.0:
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/node-icu-charset-detector/-/node-icu-charset-detector-0.2.0.tgz#c2320da374ddcb671fc54cb4a0e041e156ffd639"
-  integrity sha1-wjINo3Tdy2cfxUy0oOBB4Vb/1jk=
-  dependencies:
-    nan "^2.3.3"
 
 node-libs-browser@^2.0.0:
   version "2.2.1"
