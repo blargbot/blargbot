@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:25:58
  * @Last Modified by: RagingLink
- * @Last Modified time: 2021-08-13 00:37:30
+ * @Last Modified time: 2021-08-13 00:52:53
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -14,7 +14,8 @@ module.exports =
     Builder.ArrayTag('apply')
         .withArgs(a => [a.require([a.optional('subtag'), a.optional('function')]), a.optional('args', true)])
         .withDesc('Executes `subtag` or `function`, using the `args` as parameters. ' +
-        'If `args` is an array, it will get deconstructed to it\'s individual elements.'
+            'If `args` is an array, it will get deconstructed to it\'s individual elements.\n' +
+            '`function` must be of the format `func.<name>` eg: `{apply;func.hello;["world"]}`'
         ).withExample(
         '{apply;randint;[1,4]}',
         '3'
