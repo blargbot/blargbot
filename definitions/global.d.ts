@@ -2,7 +2,6 @@ import configJson from '@config';
 import { Snowflake as _Snowflake } from 'catflake';
 
 declare global {
-
     export type JToken = JObject | JArray | JValue | null | undefined;
     export type JValue = string | number | boolean;
     export type JObject = { [key: string]: JToken; };
