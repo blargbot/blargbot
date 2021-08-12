@@ -13,7 +13,7 @@ export class ArtCommand extends BaseGlobalCommand {
             flags: [{ flag: 'I', word: 'image', description: 'A custom image.' }],
             definitions: [
                 {
-                    parameters: '{user+?:user}',
+                    parameters: '{user:user+?}',
                     execute: (ctx, [user], flags) => this.art(ctx, user, flags),
                     description: 'Shows everyone a work of art.'
                 }
