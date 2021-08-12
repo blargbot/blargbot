@@ -30,7 +30,7 @@ module.exports =
                 const tagDefinition = TagManager.get(name) || {};
                 runSubtag = context.state.overrides[tagDefinition.name] || tagDefinition.execute;
             }
-            if (runSubtag === undefined)
+            if (runSubtag == null)
                 return Builder.util.error(subtag, context, 'No subtag found');
 
 
