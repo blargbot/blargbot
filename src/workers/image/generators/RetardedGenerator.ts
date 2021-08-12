@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { RetardedOptions } from '@image/types';
+import { ImageResult, RetardedOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
@@ -9,7 +9,7 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
         super('retarded', logger, mapOptions);
     }
 
-    public async executeCore({ text, avatar }: RetardedOptions): Promise<Buffer> {
+    public async executeCore({ text, avatar }: RetardedOptions): Promise<ImageResult> {
         const caption = await this.renderJimpText(text, {
             font: 'ARCENA.ttf',
             fill: 'black',
@@ -30,7 +30,10 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
         }
         img.composite(caption, 268, 0);
 
-        return await img.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'retarded.png'
+        };
     }
 }
 

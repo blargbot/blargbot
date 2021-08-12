@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { CAHOptions } from '@image/types';
+import { CAHOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class CAHGenerator extends BaseImageGenerator<'cah'> {
@@ -9,7 +9,7 @@ export class CAHGenerator extends BaseImageGenerator<'cah'> {
         super('cah', logger, mapOptions);
     }
 
-    public async executeCore({ white, black }: CAHOptions): Promise<Buffer> {
+    public async executeCore({ white, black }: CAHOptions): Promise<ImageResult> {
         const blackCard = await this.getLocalJimp('blackcard.png');
         const whiteCard = await this.getLocalJimp('whitecard.png');
 
@@ -38,7 +38,10 @@ export class CAHGenerator extends BaseImageGenerator<'cah'> {
             finalImg.composite(whiteCaption, 183 * (i + 1) + 19, 19);
         }
 
-        return await finalImg.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await finalImg.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'cah.png'
+        };
     }
 }
 

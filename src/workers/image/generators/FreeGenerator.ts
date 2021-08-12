@@ -2,7 +2,7 @@ import { Logger } from '@core/Logger';
 import { mapping, randInt } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
 import { JimpGifEncoder } from '@image/JimpGifEncoder';
-import { FreeOptions } from '@image/types';
+import { FreeOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class FreeGenerator extends BaseImageGenerator<'free'> {
@@ -10,7 +10,7 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
         super('free', logger, mapOptions);
     }
 
-    public async executeCore({ top, bottom }: FreeOptions): Promise<Buffer> {
+    public async executeCore({ top, bottom }: FreeOptions): Promise<ImageResult> {
         const topCaption = await this.renderJimpText(top, {
             font: 'impact.ttf',
             fill: 'white',
@@ -40,7 +40,10 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
             frame.composite(bottomCaption, 10, 228);
             gif.addFrame(frame);
         }
-        return await gif.render();
+        return {
+            data: await gif.render(),
+            fileName: 'free.gif'
+        };
     }
 
 }

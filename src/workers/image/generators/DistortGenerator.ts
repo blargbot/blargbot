@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping, randInt } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { DistortOptions } from '@image/types';
+import { DistortOptions, ImageResult } from '@image/types';
 import { BetterColorAction } from '@jimp/plugin-color';
 
 export class DistortGenerator extends BaseImageGenerator<'distort'> {
@@ -9,7 +9,7 @@ export class DistortGenerator extends BaseImageGenerator<'distort'> {
         super('distort', logger, mapOptions);
     }
 
-    public async executeCore({ avatar }: DistortOptions): Promise<Buffer> {
+    public async executeCore({ avatar }: DistortOptions): Promise<ImageResult> {
         // 344x410
         // 28 - 70
         // 400x620
@@ -22,11 +22,14 @@ export class DistortGenerator extends BaseImageGenerator<'distort'> {
         const horizRoll = randInt(0, avatarImg.bitmap.width);
         const vertiRoll = randInt(0, avatarImg.bitmap.height);
 
-        return await this.generate(avatarImg, x => {
-            x.out('-implode').out(`-${randInt(3, 10)}`);
-            x.out('-roll').out(`+${horizRoll}+${vertiRoll}`);
-            x.out('-swirl').out(`${randInt(0, 1) === 1 ? '+' : '-'}${randInt(120, 180)}`);
-        });
+        return {
+            data: await this.generate(avatarImg, x => {
+                x.out('-implode').out(`-${randInt(3, 10)}`);
+                x.out('-roll').out(`+${horizRoll}+${vertiRoll}`);
+                x.out('-swirl').out(`${randInt(0, 1) === 1 ? '+' : '-'}${randInt(120, 180)}`);
+            }, 'png'),
+            fileName: 'distort.png'
+        };
     }
 }
 

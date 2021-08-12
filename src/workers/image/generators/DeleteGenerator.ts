@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { DeleteOptions } from '@image/types';
+import { DeleteOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class DeleteGenerator extends BaseImageGenerator<'delete'> {
@@ -9,7 +9,7 @@ export class DeleteGenerator extends BaseImageGenerator<'delete'> {
         super('delete', logger, mapOptions);
     }
 
-    public async executeCore({ text }: DeleteOptions): Promise<Buffer> {
+    public async executeCore({ text }: DeleteOptions): Promise<ImageResult> {
         const originalText = await this.renderJimpText(text, {
             font: 'whitneybold.ttf',
             size: '512x24',
@@ -36,7 +36,10 @@ export class DeleteGenerator extends BaseImageGenerator<'delete'> {
         workspace.composite(body, 64 + (iterations * 64 - body.bitmap.width + 32) / 2, 14 + (48 - body.bitmap.height) / 2);
         workspace.composite(cursor, 64 + (iterations * 64 - cursor.bitmap.width + 32) / 2, 48);
 
-        return workspace.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await workspace.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'delete.png'
+        };
     }
 }
 

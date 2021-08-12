@@ -26,6 +26,8 @@ export class HandlerMiddleware<TContext extends CommandContext> implements Comma
                     return await context.reply({ files: result });
                 if ('attachment' in result)
                     return await context.reply({ files: [result] });
+                if ('data' in result)
+                    return await context.reply({ files: [{ attachment: result.data, name: result.fileName }] });
                 return await context.reply(result);
         }
 

@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { TheSearchOptions } from '@image/types';
+import { ImageResult, TheSearchOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
@@ -9,7 +9,7 @@ export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
         super('theSearch', logger, mapOptions);
     }
 
-    public async executeCore({ text }: TheSearchOptions): Promise<Buffer> {
+    public async executeCore({ text }: TheSearchOptions): Promise<ImageResult> {
         const caption = await this.renderJimpText(text, {
             fill: '#393b3e',
             font: 'SFToontime.ttf',
@@ -19,7 +19,10 @@ export class TheSearchGenerator extends BaseImageGenerator<'theSearch'> {
         const img = await this.getLocalJimp('thesearch.png');
         img.composite(caption, 60, 331);
 
-        return await img.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'thesearch.png'
+        };
     }
 }
 

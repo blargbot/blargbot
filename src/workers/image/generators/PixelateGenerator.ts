@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { PixelateOptions } from '@image/types';
+import { ImageResult, PixelateOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
@@ -9,7 +9,7 @@ export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
         super('pixelate', logger, mapOptions);
     }
 
-    public async executeCore({ url, scale }: PixelateOptions): Promise<Buffer> {
+    public async executeCore({ url, scale }: PixelateOptions): Promise<ImageResult> {
         const image = await this.getRemoteJimp(url);
         if (image.bitmap.width >= image.bitmap.height) {
             image.resize(scale, Jimp.AUTO);
@@ -19,7 +19,10 @@ export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {
             image.resize(Jimp.AUTO, 256, Jimp.RESIZE_NEAREST_NEIGHBOR);
         }
 
-        return await image.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await image.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'pixelate.png'
+        };
     }
 }
 

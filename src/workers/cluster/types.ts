@@ -2,6 +2,7 @@ import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCach
 import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildCommand, StoredGuildSettings, StoredTag } from '@core/types';
+import { ImageResult } from '@image/types';
 import { AllChannels, Collection, ConstantsStatus, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
 import ReadWriteLock from 'rwlock';
 
@@ -206,6 +207,7 @@ export interface SubtagHandlerParameter {
     readonly autoResolve: boolean;
     readonly defaultValue: string;
     readonly nested: readonly SubtagHandlerParameter[];
+    readonly maxLength: number;
 }
 
 export interface SubtagSignatureDetails<TArgs = SubtagHandlerParameter> {
@@ -269,6 +271,7 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 }
 
 export type CommandResult =
+    | ImageResult
     | SendPayload
     | FileOptions
     | FileOptions[]
@@ -420,7 +423,7 @@ export interface CommandDetails {
 }
 
 export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
-export type ArgumentResolver = (context: BBTagContext, args: readonly Statement[]) => AsyncGenerator<SubtagArgumentValue>;
+export type ArgumentResolver = (context: BBTagContext, subtagName: string, call: SubtagCall) => AsyncGenerator<SubtagArgumentValue>;
 
 export interface SubHandlerCollection {
     byNumber: { [argLength: number]: SubHandler | undefined; };

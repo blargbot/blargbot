@@ -8,6 +8,7 @@ export class BrainfuckCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'brainfuck',
+            aliases: ['bf'],
             category: CommandType.GENERAL,
             definitions: [
                 {

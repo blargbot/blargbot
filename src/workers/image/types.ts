@@ -37,6 +37,11 @@ export interface ImageRequest<T extends keyof ImageGeneratorMap, R = ImageGenera
     data: R;
 }
 
+export interface ImageResult<T = Buffer> {
+    data: T;
+    fileName: string;
+}
+
 export interface ImageGeneratorMap {
     'truth': TruthOptions;
     'triggered': TriggeredOptions;
@@ -136,10 +141,10 @@ export interface ClintOptions {
 export interface CaptionOptions {
     url: string;
     input: {
-        t?: string[];
-        b?: string[];
+        top?: string;
+        bottom?: string;
     };
-    font: string;
+    font: ValidFont;
 }
 
 export interface CAHOptions {
@@ -150,3 +155,17 @@ export interface CAHOptions {
 export interface ArtOptions {
     avatar: string;
 }
+
+export type ValidFont =
+    | 'ARCENA.ttf'
+    | 'arial.ttf'
+    | 'animeace.ttf'
+    | 'AnnieUseYourTelescope.ttf'
+    | 'comicjens.ttf'
+    | 'impact.ttf'
+    | 'SFToontime.ttf'
+    | 'delius.ttf'
+    | 'IndieFlower.ttf'
+    | 'Roboto-Regular.ttf'
+    | 'Ubuntu-Regular.ttf'
+    | 'comicsans.ttf';

@@ -2,7 +2,7 @@ import { Logger } from '@core/Logger';
 import { mapping, randInt } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
 import { JimpGifEncoder } from '@image/JimpGifEncoder';
-import { TriggeredOptions } from '@image/types';
+import { ImageResult, TriggeredOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
@@ -10,7 +10,7 @@ export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
         super('triggered', logger, mapOptions);
     }
 
-    public async executeCore({ avatar, inverted, horizontal, vertical, sepia, blur, greyscale }: TriggeredOptions): Promise<Buffer> {
+    public async executeCore({ avatar, inverted, horizontal, vertical, sepia, blur, greyscale }: TriggeredOptions): Promise<ImageResult> {
         const frameCount = 8;
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(320, 320);
@@ -58,7 +58,10 @@ export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
             frame.composite(triggered, x, y);
             gif.addFrame(frame);
         }
-        return await gif.render();
+        return {
+            data: await gif.render(),
+            fileName: 'triggered.gif'
+        };
     }
 
 }

@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ClydeOptions } from '@image/types';
+import { ClydeOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
@@ -9,7 +9,7 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
         super('clyde', logger, mapOptions);
     }
 
-    public async executeCore({ text }: ClydeOptions): Promise<Buffer> {
+    public async executeCore({ text }: ClydeOptions): Promise<ImageResult> {
         const originalText = await this.renderJimpText(text, {
             font: 'whitney.ttf',
             fontsize: 20,
@@ -26,7 +26,10 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
         canvas.composite(body, 118, 83);
         canvas.composite(bottom, 0, height - bottom.bitmap.height);
 
-        return canvas.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await canvas.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'clyde.png'
+        };
     }
 
 }

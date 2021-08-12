@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ClintOptions } from '@image/types';
+import { ClintOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class ClintGenerator extends BaseImageGenerator<'clint'> {
@@ -9,7 +9,7 @@ export class ClintGenerator extends BaseImageGenerator<'clint'> {
         super('clint', logger, mapOptions);
     }
 
-    public async executeCore({ image }: ClintOptions): Promise<Buffer> {
+    public async executeCore({ image }: ClintOptions): Promise<ImageResult> {
         const avatarImg = await this.getRemoteJimp(image);
         avatarImg.resize(700, 700);
         const bgImg = await this.generateJimp(avatarImg, x => {
@@ -25,7 +25,10 @@ export class ClintGenerator extends BaseImageGenerator<'clint'> {
         img.composite(bgImg, 782, 0);
         img.composite(foreground, 0, 0);
 
-        return img.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'clint.png'
+        };
     }
 }
 

@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ArtOptions } from '@image/types';
+import { ArtOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class ArtGenerator extends BaseImageGenerator<'art'> {
@@ -9,7 +9,7 @@ export class ArtGenerator extends BaseImageGenerator<'art'> {
         super('art', logger, mapOptions);
     }
 
-    public async executeCore({ avatar }: ArtOptions): Promise<Buffer> {
+    public async executeCore({ avatar }: ArtOptions): Promise<ImageResult> {
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(370, 370);
         const foreground = await this.getLocalJimp('art.png');
@@ -17,7 +17,10 @@ export class ArtGenerator extends BaseImageGenerator<'art'> {
         img.composite(avatarImg, 903, 92);
         img.composite(avatarImg, 903, 860);
         img.composite(foreground, 0, 0);
-        return await img.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'sobeautifulstan.png'
+        };
     }
 }
 

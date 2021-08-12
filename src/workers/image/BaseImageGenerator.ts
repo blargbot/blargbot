@@ -8,7 +8,7 @@ import path from 'path';
 import phantom from 'phantom';
 import { inspect } from 'util';
 
-import { ImageGeneratorMap, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
+import { ImageGeneratorMap, ImageResult, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
 
@@ -24,7 +24,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         this.#mapping = mapping;
     }
 
-    public async execute(message: JToken): Promise<Buffer | undefined> {
+    public async execute(message: JToken): Promise<ImageResult | undefined> {
         const mapped = this.#mapping(message);
         if (!mapped.valid)
             return undefined;
@@ -32,7 +32,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         return await this.executeCore(mapped.value);
     }
 
-    protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<Buffer | undefined>;
+    protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<ImageResult | undefined>;
 
     protected getLocalResourcePath(...segments: string[]): string {
         return path.join(res, 'img', ...segments);
@@ -90,7 +90,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         }
     }
 
-    protected async generate(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void)): Promise<Buffer> {
+    protected async generate(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void), format?: string): Promise<Buffer> {
         if (typeof source === 'string')
             source = im(source);
         else if (Array.isArray(source))
@@ -105,7 +105,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         source.command('convert');
         await configure(source);
 
-        return await this.toBuffer(source);
+        return await this.toBuffer(source, format);
     }
 
     protected async generateJimp(source: MagickSource, configure: (image: gm.State) => (Promise<void> | void)): Promise<Jimp> {

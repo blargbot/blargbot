@@ -2,7 +2,7 @@ import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { fafo, mapping } from '@core/utils';
 import { BaseWorker } from '@core/worker';
-import { ImageGeneratorMap, ImageRequest } from '@image/types';
+import { ImageGeneratorMap, ImageRequest, ImageResult } from '@image/types';
 
 import { BaseImageGenerator } from './BaseImageGenerator';
 
@@ -23,13 +23,16 @@ export class ImageWorker extends BaseWorker {
             }
 
             this.logger.worker(`${request.value.command} Requested`);
-            const buffer = await this.render(request.value.command, request.value.data);
-            this.logger.worker(`${request.value.command} finished, submitting as base64. Size: ${buffer?.length ?? 'NaN'}`);
-            reply(buffer?.toString('base64') ?? null);
+            const result = await this.render(request.value.command, request.value.data);
+            this.logger.worker(`${request.value.command} finished, submitting as base64. Size: ${result?.data.length ?? 'NaN'}`);
+            reply(result === undefined ? null : <ImageResult<string>>{
+                data: result.data.toString('base64'),
+                fileName: result.fileName
+            });
         }));
     }
 
-    private async render(command: keyof ImageGeneratorMap, message: JToken): Promise<Buffer | undefined> {
+    private async render(command: keyof ImageGeneratorMap, message: JToken): Promise<ImageResult | undefined> {
         const generator = this.renderers.get(command);
         if (generator === undefined)
             return undefined;

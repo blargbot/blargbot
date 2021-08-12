@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { StarVsTheForcesOfOptions } from '@image/types';
+import { ImageResult, StarVsTheForcesOfOptions } from '@image/types';
 import { BetterColorAction } from '@jimp/plugin-color';
 import colorThief from 'color-thief-jimp';
 import Jimp from 'jimp';
@@ -11,7 +11,7 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
         super('starVsTheForcesOf', logger, mapOptions);
     }
 
-    public async executeCore({ avatar }: StarVsTheForcesOfOptions): Promise<Buffer> {
+    public async executeCore({ avatar }: StarVsTheForcesOfOptions): Promise<ImageResult> {
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(700, 700);
         const color = colorThief.getColor(avatarImg);
@@ -44,7 +44,10 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
         img.composite(bgImg, 430, 0);
         img.composite(foreground, 0, 0);
 
-        return await img.getBufferAsync(Jimp.MIME_PNG);
+        return {
+            data: await img.getBufferAsync(Jimp.MIME_PNG),
+            fileName: 'starvstheforcesof.png'
+        };
     }
 }
 

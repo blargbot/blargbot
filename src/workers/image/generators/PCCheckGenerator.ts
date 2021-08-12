@@ -1,14 +1,14 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { PCCheckOptions } from '@image/types';
+import { ImageResult, PCCheckOptions } from '@image/types';
 
 export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
     public constructor(logger: Logger) {
         super('pcCheck', logger, mapOptions);
     }
 
-    public async executeCore({ text }: PCCheckOptions): Promise<Buffer> {
+    public async executeCore({ text }: PCCheckOptions): Promise<ImageResult> {
         const container: Array<{ italic: boolean; text: string; }> = [];
         let italic = false;
         let temp = '';
@@ -22,22 +22,26 @@ export class PCCheckGenerator extends BaseImageGenerator<'pcCheck'> {
         }
         container.push({ italic, text: temp });
 
-        return this.renderPhantom('pccheck.html', {
-            scale: 2,
-            transformArg: container,
-            transform(m: typeof container) {
-                const thing = document.getElementById('replace1');
-                if (thing !== null) {
-                    // This is run in phantom which might not support for-of
-                    // eslint-disable-next-line @typescript-eslint/prefer-for-of
-                    for (let i = 0; i < m.length; i++) {
-                        const el = document.createElement(m[i].italic ? 'em' : 'span');
-                        el.innerText = m[i].text;
-                        thing.appendChild(el);
+        return {
+            fileName: 'pccheck.png',
+            data: await this.renderPhantom('pccheck.html', {
+                scale: 2,
+                transformArg: container,
+                format: 'PNG',
+                transform(m: typeof container) {
+                    const thing = document.getElementById('replace1');
+                    if (thing !== null) {
+                        // This is run in phantom which might not support for-of
+                        // eslint-disable-next-line @typescript-eslint/prefer-for-of
+                        for (let i = 0; i < m.length; i++) {
+                            const el = document.createElement(m[i].italic ? 'em' : 'span');
+                            el.innerText = m[i].text;
+                            thing.appendChild(el);
+                        }
                     }
                 }
-            }
-        });
+            })
+        };
     }
 }
 

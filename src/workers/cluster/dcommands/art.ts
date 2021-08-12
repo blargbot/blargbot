@@ -1,7 +1,8 @@
 import { BaseGlobalCommand, CommandContext, RatelimitMiddleware, SingleThreadMiddleware } from '@cluster/command';
 import { FlagResult } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { FileOptions, User } from 'discord.js';
+import { ImageResult } from '@image/types';
+import { User } from 'discord.js';
 import { duration } from 'moment-timezone';
 
 export class ArtCommand extends BaseGlobalCommand {
@@ -24,7 +25,7 @@ export class ArtCommand extends BaseGlobalCommand {
         this.middleware.push(new RatelimitMiddleware(duration(5, 'seconds'), c => c.author.id));
     }
 
-    private async art(context: CommandContext, user: User | undefined, flags: FlagResult): Promise<void | string | FileOptions> {
+    private async art(context: CommandContext, user: User | undefined, flags: FlagResult): Promise<void | string | ImageResult> {
         let url = context.message.attachments.first()?.url;
         if (url !== undefined) {
             // NOOP
@@ -37,14 +38,9 @@ export class ArtCommand extends BaseGlobalCommand {
 
         void context.channel.sendTyping();
 
-        const buffer = await context.cluster.images.render('art', { avatar: url });
-        if (buffer === undefined || buffer.length === 0)
+        const result = await context.cluster.images.render('art', { avatar: url });
+        if (result === undefined || result.data.length === 0)
             return this.error('Something went wrong while trying to render that!');
-
-        return {
-            attachment: buffer,
-            name: 'sobeautifulstan.png'
-        };
-
+        return result;
     }
 }
