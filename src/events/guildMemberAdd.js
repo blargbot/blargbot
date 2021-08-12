@@ -14,6 +14,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
     let val = await bu.guildSettings.get(guild.id, 'greeting');
     let chan = await bu.guildSettings.get(guild.id, 'greetchan');
     let channel;
+    let userCreatedAtUnix = moment(member.user.createdAt).unix();
     if (chan && val) {
         channel = bot.getChannel(chan);
     }
@@ -49,7 +50,7 @@ bot.on('guildMemberAdd', async function (guild, member) {
         inline: true
     }, {
         name: 'Created',
-        value: `<t:${moment(member.user.createdAt).unix()}> (<t:${moment(member.user.createdAt).unix()}:R>)`, // we need to show there account age too right.
+        value: `<t:${userCreatedAtUnix}> (<t:${userCreatedAtUnix}:R>)`, // we need to show there account age too.
         inline: false
     }]);
 });
