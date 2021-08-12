@@ -20,7 +20,7 @@ export class DomainManager {
             const normDomain = domain.toLowerCase();
             this.whitelist[normDomain] = !this.whitelist[normDomain];
 
-            if (this.whitelist[normDomain])
+            if (!this.whitelist[normDomain])
                 removed.push(domain);
             else
                 added.push(domain);
