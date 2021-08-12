@@ -15,7 +15,7 @@ export class ArtCommand extends BaseGlobalCommand {
             definitions: [
                 {
                     parameters: '{user:user+?}',
-                    execute: (ctx, [user], flags) => this.art(ctx, user, flags),
+                    execute: (ctx, [user], flags) => this.render(ctx, user, flags),
                     description: 'Shows everyone a work of art.'
                 }
             ]
@@ -25,7 +25,7 @@ export class ArtCommand extends BaseGlobalCommand {
         this.middleware.push(new RatelimitMiddleware(duration(5, 'seconds'), c => c.author.id));
     }
 
-    private async art(context: CommandContext, user: User | undefined, flags: FlagResult): Promise<void | string | ImageResult> {
+    private async render(context: CommandContext, user: User | undefined, flags: FlagResult): Promise<void | string | ImageResult> {
         let url = context.message.attachments.first()?.url;
         if (url !== undefined) {
             // NOOP

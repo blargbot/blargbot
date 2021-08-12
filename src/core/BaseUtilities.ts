@@ -119,7 +119,7 @@ export class BaseUtilities {
             payload.content = undefined;
         }
         for (const file of payload.files ?? [])
-            if (typeof file === 'object' && 'attachment' in file)
+            if (typeof file === 'object' && 'attachment' in file && typeof file.attachment === 'string')
                 file.attachment = Buffer.from(file.attachment);
 
         this.logger.debug('Sending content: ', JSON.stringify(payload));

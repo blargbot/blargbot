@@ -19,6 +19,9 @@
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "moduleResolution": "node",
+        "lib": [
+            "ES2020"
+        ],
         // "noUncheckedIndexedAccess": true
         "paths": {
             "@core": [

@@ -66,10 +66,13 @@ export abstract class WorkerConnection extends IPCEvents {
             execArgv: this.args
         });
 
+        if (process.pid === undefined)
+            throw new Error(`Failed to start ${this.worker} worker (ID: ${this.id})`);
+
         super.attach(process);
 
         const relay = (code: string, data?: unknown): void => {
-            this.logger.worker(`${this.worker} worker (ID: ${this.id} PID: ${process.pid}) sent ${code}`);
+            this.logger.worker(`${this.worker} worker (ID: ${this.id} PID: ${process.pid ?? 'NOT RUNNING'}) sent ${code}`);
             this.emit(code, data, snowflake.create());
         };
         process.on('exit', (code, signal) => relay('exit', { code, signal }));
@@ -98,7 +101,7 @@ export abstract class WorkerConnection extends IPCEvents {
         if (this.#process === undefined || !this.#process.connected)
             throw new Error('The child process is not connected');
 
-        this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id} PID: ${this.#process.pid})`);
+        this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id} PID: ${this.#process.pid ?? 'NOT RUNNING'})`);
         this.#process.kill(code);
         this.#killed = true;
     }

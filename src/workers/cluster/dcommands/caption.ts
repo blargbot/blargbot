@@ -18,12 +18,12 @@ export class CaptionCommand extends BaseGlobalCommand {
                 {
                     parameters: '',
                     description: 'Puts captions on an attached image.',
-                    execute: (ctx, _, flags) => this.caption(ctx, ctx.message.attachments.first()?.url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
+                    execute: (ctx, _, flags) => this.render(ctx, ctx.message.attachments.first()?.url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 },
                 {
                     parameters: '{url+}',
                     description: 'Puts captions on the image in the URL.',
-                    execute: (ctx, [url], flags) => this.caption(ctx, url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
+                    execute: (ctx, [url], flags) => this.render(ctx, url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 }
             ],
             flags: [
@@ -41,7 +41,7 @@ export class CaptionCommand extends BaseGlobalCommand {
         return this.info(`The supported fonts are:${humanize.smartJoin(Object.keys(fontLookup), ', ', ' and ')}`);
     }
 
-    public async caption(
+    public async render(
         context: CommandContext,
         url: string | undefined,
         top: string | undefined,

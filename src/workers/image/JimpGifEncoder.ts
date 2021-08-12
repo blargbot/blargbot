@@ -1,9 +1,14 @@
+import { Canvas, createCanvas, ImageData, NodeCanvasRenderingContext2D } from 'canvas';
 import GIFEncoder from 'gifencoder';
 import Jimp from 'jimp';
 
 import { JimpGifEncoderOptions } from './types';
 
 export class JimpGifEncoder {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #canvas: Canvas;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #canvasContext: NodeCanvasRenderingContext2D;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #encoder: GIFEncoder;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -12,6 +17,8 @@ export class JimpGifEncoder {
     readonly #promise: Promise<Buffer>;
 
     public constructor({ width, height, repeat = 0, quality = 10, delay = 0 }: JimpGifEncoderOptions) {
+        this.#canvas = createCanvas(width, height);
+        this.#canvasContext = this.#canvas.getContext('2d');
         this.#encoder = new GIFEncoder(width, height);
         this.#encoder.setRepeat(repeat);
         this.#encoder.setQuality(quality);
@@ -22,24 +29,24 @@ export class JimpGifEncoder {
             const sr = this.#encoder.createReadStream();
             sr.on('data', (data: Uint8Array) => this.#buffers.push(data));
             sr.on('error', err => reject(err));
-            sr.on('end', () => resolve(Buffer.from(this.#buffers)));
+            sr.on('end', () => {
+                const buffer = new Uint8Array(this.#buffers.reduce((c, b) => c + b.length, 0));
+                this.#buffers.reduce((c, b) => {
+                    buffer.set(b, c);
+                    return c + b.length;
+                }, 0);
+                resolve(Buffer.from(buffer));
+            });
         });
     }
 
     public addFrame(frame: Jimp): void {
-        const byteArray = new Uint8ClampedArray(frame.bitmap.data);
-        const imageData = new ImageData(byteArray, frame.bitmap.width, frame.bitmap.height);
-        if (bypassBorkedTypeDefinition(imageData)) {
-            this.#encoder.addFrame(imageData); // ImageData is also accepted, but for some reason not on the declaration
-        }
+        this.#canvasContext.putImageData(new ImageData(new Uint8ClampedArray(frame.bitmap.data), frame.bitmap.width, frame.bitmap.height), 0, 0);
+        this.#encoder.addFrame(this.#canvasContext);
     }
 
     public async render(): Promise<Buffer> {
         this.#encoder.finish();
         return await this.#promise;
     }
-}
-
-function bypassBorkedTypeDefinition(value: unknown): value is CanvasRenderingContext2D {
-    return value instanceof ImageData;
 }
