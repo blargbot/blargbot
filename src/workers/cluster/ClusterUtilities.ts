@@ -385,7 +385,7 @@ export class ClusterUtilities extends BaseUtilities {
             return undefined;
 
         try {
-            return await this.getRoleById(foundGuild, match[0]);
+            return await foundGuild.roles.fetch(match[0]) ?? undefined;
         } catch {
             return undefined;
         }
@@ -400,28 +400,33 @@ export class ClusterUtilities extends BaseUtilities {
 
     /* eslint-disable @typescript-eslint/naming-convention */
     public async postStats(): Promise<void> {
+
         const stats = {
             server_count: this.discord.guilds.cache.size,
             shard_count: this.discord.ws.shards.size,
             shard_id: this.cluster.id
         };
         this.logger.log(stats);
-        const promises: Array<PromiseLike<unknown>> = [];
-        promises.push(
-            fetch(`https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`, {
-                method: 'POST',
-                headers: {
-                    'content-type': 'application/json',
-                    'Authorization': this.config.general.botlisttoken,
-                    'User-Agent': 'blargbot/1.0 (ratismal)'
-                },
-                body: JSON.stringify(stats)
-            })
-        );
 
-        if (!this.config.general.isbeta) {
-            this.logger.info('Posting to matt');
+        if (this.config.general.isbeta)
+            return;
 
+        const promises = [];
+        if (this.config.general.botlisttoken.length > 0) {
+            promises.push(
+                fetch(`https://discord.bots.gg/api/v1/bots/${this.user.id}/stats`, {
+                    method: 'POST',
+                    headers: {
+                        'content-type': 'application/json',
+                        'Authorization': this.config.general.botlisttoken,
+                        'User-Agent': 'blargbot/1.0 (ratismal)'
+                    },
+                    body: JSON.stringify(stats)
+                })
+            );
+        }
+
+        if (this.config.general.carbontoken.length > 0) {
             promises.push(
                 fetch('https://www.carbonitex.net/discord/data/botdata.php', {
                     method: 'POST',
@@ -437,7 +442,9 @@ export class ClusterUtilities extends BaseUtilities {
                     })
                 })
             );
+        }
 
+        if (this.config.general.botlistorgtoken.length > 0) {
             const shards = [];
             for (const shardId of this.discord.ws.shards.keys()) {
                 shards[shardId] = this.discord.guilds.cache.filter(g => g.shard.id === shardId);
@@ -454,6 +461,9 @@ export class ClusterUtilities extends BaseUtilities {
                 })
             );
         }
+
+        if (promises.length > 0)
+            this.logger.info('Posting to matt');
 
         for (const promise of promises) {
             try {

@@ -27,6 +27,6 @@ export class AddDomainCommand extends BaseGlobalCommand {
             output.push(`I always hated these ones anyways.${codeBlock(result.removed.join('\n'))}`);
         output.push('Just remember: it might take up to 15 minutes for these to go live.');
 
-        return output.join('');
+        return this.success(output.join(''));
     }
 }

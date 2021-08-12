@@ -301,12 +301,13 @@ export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
     readonly subcommands: ReadonlyArray<CommandDefinition<TContext>>;
 }
 
-export interface CommandSingleParameter {
-    readonly kind: 'singleVar';
+export interface CommandSingleParameter<T extends string = 'singleVar'> {
+    readonly kind: T;
     readonly name: string;
     readonly raw: boolean;
-    readonly fallback: undefined | string;
     readonly type: CommandVariableType;
+    readonly required: boolean;
+    readonly fallback: undefined | string;
 }
 
 export interface CommandGreedyParameter {
@@ -317,13 +318,7 @@ export interface CommandGreedyParameter {
     readonly minLength: number;
 }
 
-export interface CommandConcatParameter {
-    readonly kind: 'concatVar';
-    readonly name: string;
-    readonly raw: boolean;
-    readonly type: CommandVariableType;
-    readonly fallback: undefined | string;
-}
+export type CommandConcatParameter = CommandSingleParameter<'concatVar'>
 
 export interface CommandLiteralParameter {
     readonly kind: 'literal';

@@ -1,23 +1,24 @@
-import { CommandBinderParseResult, CommandBinderState } from '@cluster/types';
+import { CommandBinderParseResult, CommandBinderState, CommandSingleParameter } from '@cluster/types';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
 
-export class SingleBinding<TContext extends CommandContext, TResult> extends CommandBindingBase<TContext, TResult> {
+export class SingleBinding<TContext extends CommandContext, TResult> extends CommandBindingBase<TContext, TResult | undefined> {
+    public readonly name: string;
+
     public constructor(
-        public readonly name: string,
-        protected readonly fallback: string | undefined,
-        protected readonly raw: boolean,
+        protected readonly parameter: CommandSingleParameter,
         protected readonly next: ReadonlyArray<Binding<CommandBinderState<TContext>>>,
         protected readonly parse: (value: string, state: CommandBinderState<TContext>) => CommandBinderParseResult<TResult>
     ) {
         super();
+        this.name = parameter.name;
     }
 
     public * debugView(): Generator<string> {
-        yield `Single ${this.raw ? 'raw ' : ''}value into variable '${this.name}'${this.fallback === undefined ? '' : ` with fallback of '${this.fallback}'`}`;
+        yield `Single ${this.parameter.required ? 'required' : 'optional'} ${this.parameter.raw ? 'raw ' : ''}value into variable '${this.name}'${this.parameter.fallback === undefined ? '' : ` with fallback of '${this.parameter.fallback}'`}`;
         for (const binding of this.next)
             for (const line of binding.debugView())
                 yield `    ${line}`;
@@ -26,14 +27,15 @@ export class SingleBinding<TContext extends CommandContext, TResult> extends Com
     public *[Binder.binder](state: CommandBinderState<TContext>): BindingResultIterator<CommandBinderState<TContext>> {
         const arg = state.flags._.get(state.argIndex);
         if (arg !== undefined) {
-            const result = this.parse(this.raw ? arg.raw : arg.value, state);
+            const result = this.parse(this.parameter.raw ? arg.raw : arg.value, state);
             yield this.getBindingResult(state, this.next, 1, result);
         }
 
-        if (this.fallback !== undefined) {
-            const result = this.parse(this.fallback, state);
-            yield this.getBindingResult(state, this.next, 0, result);
-        } else
+        if (this.parameter.required)
             yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
+        else if (this.parameter.fallback !== undefined)
+            yield this.getBindingResult(state, this.next, 0, this.parse(this.parameter.fallback, state));
+        else
+            yield this.getBindingResult(state, this.next, 0, { success: true, value: undefined });
     }
 }

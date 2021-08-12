@@ -133,56 +133,51 @@ function readVariableType(name: string, parameters: string, i: number): { type: 
 }
 
 function readVariableKind(name: string, type: CommandVariableType, parameters: string, i: number): { parameter: CommandVariableParameter; i: number; } {
+    let required = true;
     let fallback: string | undefined = undefined;
-    let raw = false;
+    const result = { name, type, raw: false };
     if (name.startsWith('~')) {
-        raw = true;
+        result.raw = true;
         name = name.slice(1);
     }
 
     switch (parameters[i]) {
         case '?':
-            fallback ??= '';
+            required = false;
         // fallthrough
         case '!':
             if (parameters[++i] !== '}')
                 throw new Error(`Expected '}' but got '${parameters[i]}' in parameter '${name}'`);
         // fallthrough
-        case '=':
-            if (fallback === undefined)
-                ({ fallback, i } = readFallback(name, parameters, i));
+        case '=': if (required) {
+            const res = readFallback(name, parameters, i);
+            required &&= res.required;
+            fallback ??= res.fallback;
+            i = res.i;
+        }
         // fallthrough
         case '}': return {
             i: i,
-            parameter: {
-                kind: 'singleVar',
-                fallback: fallback,
-                name: name,
-                raw: raw,
-                type: type
-            }
+            parameter: { kind: 'singleVar', required, fallback, ...result }
         };
         case '+': switch (parameters[++i]) {
             case '?':
-                fallback ??= '';
+                required = false;
             // fallthrough
             case '!':
                 if (parameters[++i] !== '}')
                     throw new Error(`Expected '}' but got '${parameters[i]}' in parameter '${name}'`);
             // fallthrough
-            case '=':
-                if (fallback === undefined)
-                    ({ fallback, i } = readFallback(name, parameters, i));
+            case '=': if (required) {
+                const res = readFallback(name, parameters, i);
+                required &&= res.required;
+                fallback ??= res.fallback;
+                i = res.i;
+            }
             // fallthrough
             case '}': return {
                 i: i,
-                parameter: {
-                    kind: 'concatVar',
-                    fallback: fallback,
-                    name: name,
-                    raw: raw,
-                    type: type
-                }
+                parameter: { kind: 'concatVar', required, fallback, ...result }
             };
             default:
                 throw new Error(`Invalid parameter '${name}'`);
@@ -193,13 +188,7 @@ function readVariableKind(name: string, type: CommandVariableType, parameters: s
             if (parameters[i] === '}') {
                 return {
                     i: i + 1,
-                    parameter: {
-                        kind: 'greedyVar',
-                        minLength: minLength,
-                        name: name,
-                        raw: raw,
-                        type: type
-                    }
+                    parameter: { kind: 'greedyVar', minLength: minLength, ...result }
                 };
             }
         }
@@ -207,15 +196,15 @@ function readVariableKind(name: string, type: CommandVariableType, parameters: s
     throw new Error(`Unterminated parameter '${name}'`);
 }
 
-function readFallback(name: string, parameters: string, i: number): { fallback: string | undefined; i: number; } {
+function readFallback(name: string, parameters: string, i: number): { fallback: string | undefined; i: number; required: boolean; } {
     if (parameters[i] !== '=')
-        return { fallback: undefined, i };
+        return { fallback: undefined, i, required: true };
 
     let fallback = '';
     for (i++; i < parameters.length; i++) {
         switch (parameters[i]) {
             case '}':
-                return { fallback, i: i };
+                return { fallback, i: i, required: false };
             case '\\':
                 if (++i >= parameters.length)
                     break;

@@ -1,5 +1,5 @@
 import { Logger } from '@core/Logger';
-import { ChannelSettings, CommandPermissions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, MutableStoredGuild, MutableStoredGuildEventLogConfig, NamedStoredGuildCommand, StoredGuild, StoredGuildCommand, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, MutableStoredGuild, MutableStoredGuildEventLogConfig, NamedStoredGuildCommand, StoredGuild, StoredGuildCommand, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
 import { guard } from '@core/utils';
 import { Guild } from 'discord.js';
 
@@ -11,6 +11,29 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         logger: Logger
     ) {
         super('guild', 'guildid', rethinkDb, logger);
+    }
+
+    public async setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { announce: this.setExpr(options) }))
+            return false;
+
+        if (options === undefined)
+            delete guild.announce;
+        else
+            guild.announce = options;
+        return true;
+    }
+
+    public async getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        if (guild === undefined)
+            return undefined;
+
+        return guild.announce;
     }
 
     public async clearVoteBans(guildId: string, userId?: string): Promise<void> {

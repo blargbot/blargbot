@@ -83,7 +83,7 @@ function buildBindings<TContext extends CommandContext>(
                 const key = sortKeys.single(parameter);
                 let builder = results.get(key);
                 if (builder === undefined)
-                    results.set(key, builder = createSingleVarBindingBuilder(parameter.name, parameter.raw, parameter.type, parameter.fallback, depth));
+                    results.set(key, builder = createSingleVarBindingBuilder(parameter, depth));
                 builder.add(parameter, signature);
                 break;
             }
@@ -91,7 +91,7 @@ function buildBindings<TContext extends CommandContext>(
                 const key = sortKeys.concat(parameter);
                 let builder = results.get(key);
                 if (builder === undefined)
-                    results.set(key, builder = createConcatVarBindingBuilder(parameter.name, parameter.raw, parameter.type, parameter.fallback, depth));
+                    results.set(key, builder = createConcatVarBindingBuilder(parameter, depth));
                 builder.add(parameter, signature);
                 break;
             }
@@ -99,7 +99,7 @@ function buildBindings<TContext extends CommandContext>(
                 const key = sortKeys.greedy(parameter);
                 let builder = results.get(key);
                 if (builder === undefined)
-                    results.set(key, builder = createGreedyVarBindingBuilder(parameter.name, parameter.raw, parameter.type, depth));
+                    results.set(key, builder = createGreedyVarBindingBuilder(parameter, depth));
                 builder.add(parameter, signature);
                 break;
             }
@@ -177,12 +177,16 @@ function createLiteralBindingBuilder<TContext extends CommandContext>(depth: num
     };
 }
 
-function createSingleVarBindingBuilder<TContext extends CommandContext>(name: string, raw: boolean, type: CommandVariableType, fallback: string | undefined, depth: number): BindingBuilder<TContext> {
+function createSingleVarBindingBuilder<TContext extends CommandContext>(parameter: CommandSingleParameter, depth: number): BindingBuilder<TContext> {
     const next: Array<CommandSignatureHandler<TContext>> = [];
 
     return {
         create() {
-            return new bindings.SingleBinding(name, fallback, raw, buildBindings(next, depth + 1), typeParsers[type]);
+            return new bindings.SingleBinding(
+                parameter,
+                buildBindings(next, depth + 1),
+                typeParsers[parameter.type]
+            );
         },
         add(parameter, signature) {
             if (parameter === undefined)
@@ -194,12 +198,16 @@ function createSingleVarBindingBuilder<TContext extends CommandContext>(name: st
     };
 }
 
-function createConcatVarBindingBuilder<TContext extends CommandContext>(name: string, raw: boolean, type: CommandVariableType, fallback: string | undefined, depth: number): BindingBuilder<TContext> {
+function createConcatVarBindingBuilder<TContext extends CommandContext>(parameter: CommandConcatParameter, depth: number): BindingBuilder<TContext> {
     const next: Array<CommandSignatureHandler<TContext>> = [];
 
     return {
         create() {
-            return new bindings.ConcatBinding(name, fallback, raw, buildBindings(next, depth + 1), typeParsers[type], type);
+            return new bindings.ConcatBinding(
+                parameter,
+                buildBindings(next, depth + 1),
+                typeParsers[parameter.type]
+            );
         },
         add(parameter, signature) {
             if (parameter === undefined)
@@ -211,13 +219,19 @@ function createConcatVarBindingBuilder<TContext extends CommandContext>(name: st
     };
 }
 
-function createGreedyVarBindingBuilder<TContext extends CommandContext>(name: string, raw: boolean, type: CommandVariableType, depth: number): BindingBuilder<TContext> {
+function createGreedyVarBindingBuilder<TContext extends CommandContext>(parameter: CommandGreedyParameter, depth: number): BindingBuilder<TContext> {
     const nextMap: { [greedyMin: number]: Array<CommandSignatureHandler<TContext>>; } = {};
 
     return {
         create() {
             const next = mapKeys(nextMap, value => buildBindings(value, depth + 1));
-            return new bindings.GreedyBinding(name, raw, next, typeParsers[type], type);
+            return new bindings.GreedyBinding(
+                parameter.name,
+                parameter.raw,
+                next,
+                typeParsers[parameter.type],
+                parameter.type
+            );
         },
         add(parameter, signature) {
             if (parameter === undefined)

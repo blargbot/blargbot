@@ -248,6 +248,7 @@ export interface StoredGuild {
     readonly modlog?: readonly GuildModlogEntry[];
     readonly roleme?: readonly GuildRolemeEntry[];
     readonly autoresponse?: GuildAutoresponses;
+    readonly announce?: GuildAnnounceOptions;
     readonly log?: { readonly [key: string]: string | undefined; };
     readonly logIgnore?: readonly string[];
     readonly votebans?: { readonly [userId: string]: readonly string[] | undefined; };
@@ -276,6 +277,12 @@ export interface MutableStoredGuild extends StoredGuild {
     autoresponse?: MutableGuildAutoresponses;
     active: boolean;
     name: string;
+    announce?: GuildAnnounceOptions;
+}
+
+export interface GuildAnnounceOptions {
+    readonly channel: string;
+    readonly role: string;
 }
 
 export interface GuildAutoresponses {
@@ -550,6 +557,8 @@ export interface MutableStoredGuildEventLogConfig extends StoredGuildEventLogCon
 }
 
 export interface GuildTable {
+    setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean>;
+    getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined>;
     clearVoteBans(guildId: string, userId: string): Promise<void>;
     getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>;
