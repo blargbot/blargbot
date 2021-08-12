@@ -34,10 +34,11 @@ declare global {
 
     interface ObjectConstructor {
         keys<T>(value: T): Array<string & keyof T>;
-        entries<TKey extends string, TValue>(value: { [P in TKey]: TValue; }): Array<[TKey, TValue]>;
+        values<T>(value: T): Array<T[(string | number) & keyof T]>;
+        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[string & TKey, TValue]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
         create<T extends object>(value: T): T;
-        fromEntries<TKey extends string, TValue>(entries: Iterable<readonly [TKey, TValue]>): Record<TKey, TValue>;
+        fromEntries<TKey extends PropertyKey, TValue>(entries: Iterable<readonly [TKey, TValue]>): Record<TKey, TValue>;
     }
 
     interface Boolean {
@@ -50,6 +51,10 @@ declare global {
 
     interface ArrayConstructor {
         isArray(value: unknown): value is readonly unknown[] | unknown[];
+    }
+
+    interface Array<T> {
+        includes<R>(this: T extends R ? this : never, value: R): value is T & R;
     }
 
     namespace NodeJS {
