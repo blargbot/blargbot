@@ -60,7 +60,7 @@ const tagType = {
 };
 
 function mdToHtml(text) {
-    if (text === undefined)
+    if (text == undefined)
         return undefined;
 
     const html = converter.makeHtml(text) || text;
@@ -68,7 +68,7 @@ function mdToHtml(text) {
 }
 
 function addSubtagReferences(text) {
-    if (text === undefined)
+    if (text == undefined)
         return undefined;
 
     return text.replace(/\{([a-z]+)\}/ig, function (match, subtag) {
