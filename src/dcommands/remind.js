@@ -41,8 +41,8 @@ Example: ${example}`);
         }
 
         let channel;
-        if (input.c) channel = msg.channel.id;
         let endUnix = moment().add(duration).unix();
+        if (input.c) channel = msg.channel.id;
         await bu.events.insert({
             type: 'remind',
             source: channel ? msg.guild.id : msg.author.id,
@@ -56,6 +56,7 @@ Example: ${example}`);
     }
 
     async event(args) {
+        let endUnix = moment().add(duration).unix();
         if (args.channel) {
             bu.send(args.channel, {
                 content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${endUnix}:R> :
@@ -65,7 +66,7 @@ ${args.content}`,
                 }
             });
         } else {
-            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this <t:${moment(args.starttime).unix()}:R> :
+            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this <t:${endUnix}:R> :
     ${args.content}`);
         }
     };
