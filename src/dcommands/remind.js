@@ -56,7 +56,7 @@ Example: ${example}`);
     }
 
     async event(args) {
-        let endUnix = moment().add(duration).unix();
+        let endUnix = moment(args.starttime).unix();
         if (args.channel) {
             bu.send(args.channel, {
                 content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${endUnix}:R> :
