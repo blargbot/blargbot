@@ -34,13 +34,11 @@ class TimeCommand extends BaseCommand {
             }
         } else {
             let user = await bu.getUser(msg, words.length > 1 ? words.slice(1).join(' ') : msg.author.id);
-            if (user && !(user.id == msg.author.id)) {
+            if (user) {
                 let storedUser = await r.table('user').get(user.id);
                 if (storedUser && storedUser.timezone) {
                     message = `It is currently **${moment().tz(storedUser.timezone).format('LT')}** for **${bu.getFullName(user)}**.`;
                 } else message = `${bu.getFullName(user)} has not set their timezone in the \`timezone\` command yet.`;
-            } else if (user.id == msg.author.id) {
-                message = `It is currently <t:${moment().unix()}> for you.`;
             } else {
                 message = 'You either provided an invalid user or an invalid timezone code. See <https://en.wikipedia.org/wiki/List_of_tz_database_time_zones> for timezone codes that I understand.';
             }
