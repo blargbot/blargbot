@@ -12,7 +12,7 @@ import moment, { Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AutoresponseManager, BotStaffManager, CommandManager, GreetingManager, ModerationManager } from './managers';
+import { AutoresponseManager, BotStaffManager, CommandManager, DomainManager, GreetingManager, ModerationManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -29,6 +29,7 @@ export class Cluster extends BaseClient {
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
     public readonly commands: CommandManager;
+    public readonly domains: DomainManager;
     public readonly greetings: GreetingManager;
 
     public constructor(
@@ -72,6 +73,7 @@ export class Cluster extends BaseClient {
         this.id = options.id;
         this.createdAt = moment();
         this.worker = options.worker;
+        this.domains = new DomainManager(this.database.vars);
         this.images = new ImageConnection(1, this.logger);
         this.commands = new CommandManager(`${__dirname}/dcommands`, this);
         this.subtags = new ModuleLoader(`${__dirname}/subtags`, BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
