@@ -392,6 +392,16 @@ bu.send = async function (context, payload, files) {
         payload.embed = payload.embeds = files = null;
     }
 
+    if (payload.embed) {
+        if (!payload.embeds) {
+            payload.embeds = [payload.embed];
+        }
+
+        delete payload.embed;
+    }
+
+    console.log(payload);
+
     if (!payload.content && !payload.embed && !payload.embeds && (!files || files.length == 0)) {
         console.error('Tried to send an empty message!');
         return new Error('No content');
@@ -593,7 +603,7 @@ bu.getChannel = async function (msg, name, args = {}) {
                 channelListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newChannelList[i].name} - ${newChannelList[i].id}\n`;
             }
             let moreChannelString = newChannelList.length < channelList.length ? `...and ${channelList.length - newChannelList.length} more.\n` : '';
-            
+
             let query = await bu.createQuery(msg, `Multiple channels found! Please select one from the list.\`\`\`prolog
 ${channelListString}${moreChannelString}--------------------
 C. cancel query
@@ -735,7 +745,7 @@ bu.getRole = async function (msg, name, args = {}) {
     if (msg.channel.guild.roles.get(name)) {
         return msg.channel.guild.roles.get(name);
     }
-  
+
     let roleList = msg.channel.guild.roles.filter(m => (m.name &&
         m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
     roleList.sort(function (a, b) {
