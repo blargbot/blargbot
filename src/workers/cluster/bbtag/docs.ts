@@ -7,7 +7,7 @@ import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 import { BaseSubtag } from './BaseSubtag';
 import { limits } from './limits';
 
-export function getDocsEmbed(context: CommandContext, topic: string): MessageEmbedOptions | undefined {
+export function getDocsEmbed(context: CommandContext, topic: string | undefined): MessageEmbedOptions | undefined {
     const embed = getTopicBody(context, topic);
     if (embed === undefined)
         return undefined;
@@ -18,8 +18,8 @@ export function getDocsEmbed(context: CommandContext, topic: string): MessageEmb
     return embed;
 }
 
-function getTopicBody(context: CommandContext, topic: string): MessageEmbedOptions | undefined {
-    const words = humanize.smartSplit(topic);
+function getTopicBody(context: CommandContext, topic: string | undefined): MessageEmbedOptions | undefined {
+    const words = topic === undefined ? [] : humanize.smartSplit(topic);
 
     switch (words[0]?.toLowerCase()) {
         case undefined:

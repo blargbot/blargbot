@@ -167,7 +167,7 @@ export class TagCommand extends BaseGuildCommand {
     public async runTag(
         context: GuildCommandContext,
         tagName: string,
-        input: string,
+        input: string | undefined,
         debug: boolean
     ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
         const match = await this.requestReadableTag(context, tagName, false);
@@ -181,7 +181,7 @@ export class TagCommand extends BaseGuildCommand {
 
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            inputRaw: input,
+            inputRaw: input ?? '',
             isCC: false,
             limit: new TagLimit(),
             tagName: match.name,
@@ -191,7 +191,7 @@ export class TagCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input ?? '', result) : undefined;
     }
 
     public async runRaw(
@@ -708,7 +708,7 @@ export class TagCommand extends BaseGuildCommand {
         return { name: tag.name, tag };
     }
 
-    private showDocs(ctx: GuildCommandContext, topic: string): SendPayload | string {
+    private showDocs(ctx: GuildCommandContext, topic: string | undefined): SendPayload | string {
         const embed = getDocsEmbed(ctx, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`);

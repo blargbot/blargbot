@@ -8,7 +8,7 @@ export abstract class BaseCommand implements CommandBaseOptions {
     public readonly aliases: readonly string[];
     public readonly category: CommandType;
     public readonly cannotDisable: boolean;
-    public readonly description: string;
+    public readonly description: string | undefined;
     public readonly flags: readonly FlagDefinition[];
     public readonly onlyOn: string | undefined;
     public readonly signatures: readonly CommandSignature[];
@@ -22,7 +22,7 @@ export abstract class BaseCommand implements CommandBaseOptions {
         this.aliases = options.aliases ?? [];
         this.category = options.category;
         this.cannotDisable = options.cannotDisable ?? true;
-        this.description = options.description ?? 'WIP';
+        this.description = options.description;
         this.flags = options.flags ?? [];
         this.onlyOn = options.onlyOn;
         this.signatures = options.signatures;

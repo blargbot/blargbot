@@ -105,8 +105,7 @@ export class HelpCommand extends BaseGlobalCommand {
         };
     }
 
-    public async viewCommand(context: CommandContext, commandName: string, page: number, subcommand: string): Promise<SendPayload> {
-
+    public async viewCommand(context: CommandContext, commandName: string, page: number, subcommand: string | undefined): Promise<SendPayload> {
         if (guard.isGuildCommandContext(context)) {
             const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
             if (command !== undefined)
@@ -136,7 +135,7 @@ export class HelpCommand extends BaseGlobalCommand {
         };
     }
 
-    public async viewDefaultCommand(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {
+    public async viewDefaultCommand(context: CommandContext, command: BaseCommand, page: number, subcommand = ''): Promise<SendPayload> {
         if (!await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
             return this.error(`You dont have permission to run the \`${command.name}\` command`);
 
@@ -209,17 +208,17 @@ function stringifyParameter(parameter: CommandParameter): string {
     switch (parameter.kind) {
         case 'literal': return parameter.name;
         case 'singleVar':
-            if (parameter.fallback === undefined)
-                return `{${parameter.name}}`;
+            if (parameter.required)
+                return `<${parameter.name}>`;
             return `[${parameter.name}]`;
         case 'concatVar':
-            if (parameter.fallback === undefined)
-                return `{...${parameter.name}}`;
+            if (parameter.required)
+                return `<...${parameter.name}>`;
             return `[...${parameter.name}]`;
         case 'greedyVar':
             if (parameter.minLength === 0)
                 return `[...${parameter.name}]`;
-            return `{...${parameter.name}}`;
+            return `<...${parameter.name}>`;
     }
 }
 

@@ -270,6 +270,7 @@ export type StoredGuildEventLogType =
 export interface MutableStoredGuild extends StoredGuild {
     votebans?: { [userId: string]: string[] | undefined; };
     ccommands: { [key: string]: StoredGuildCommand | undefined; };
+    channels: { [channelId: string]: ChannelSettings | undefined; };
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
     log?: { [key: string]: string | undefined; };
@@ -569,6 +570,7 @@ export interface GuildTable {
     setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>;
     addAutoresponse(guildId: string, autoresponse: GuildFilteredAutoresponse): Promise<boolean>;
     getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined>;
+    setChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, value: ChannelSettings[K]): Promise<boolean>;
     getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]>;
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
     listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedStoredGuildCommand[]>;

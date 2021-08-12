@@ -98,14 +98,14 @@ export class SettingsCommand extends BaseGuildCommand {
         };
     }
 
-    private async set(context: GuildCommandContext, setting: string, value: string): Promise<string> {
+    private async set(context: GuildCommandContext, setting: string, value: string | undefined): Promise<string> {
         const key = setting.toLowerCase();
         if (!guard.hasProperty(guildSettings, key))
             return this.error('Invalid key!');
 
         const parsed = await parse.guildSetting(context, context.util, key, value);
         if (!parsed.success)
-            return this.error(`'${value}' is not a ${guildSettings[key].type}`);
+            return this.error(`'${value ?? '\u200b'}' is not a ${guildSettings[key].type}`);
 
         if (!await context.database.guilds.setSetting(context.channel.guild.id, key, parsed.value))
             return this.error('Failed to set');

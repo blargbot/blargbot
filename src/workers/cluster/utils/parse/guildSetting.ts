@@ -9,10 +9,10 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
     msg: UserChannelInteraction,
     util: ClusterUtilities,
     key: T,
-    raw: string
+    raw: string | undefined
 ): Promise<{ success: true; value: StoredGuildSettings[T]; display: string | undefined; } | { success: false; }> {
     const def = guildSettings[key];
-    if (raw.length === 0)
+    if (raw === undefined || raw.length === 0)
         return { success: true, value: undefined, display: undefined };
 
     switch (def.type) {

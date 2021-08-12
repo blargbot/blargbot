@@ -15,7 +15,7 @@ export class ClusterCommandListHandler extends ClusterEventService {
         for (const c of this.cluster.commands.list()) {
             commands[c.name] = {
                 name: c.name,
-                info: c.description,
+                description: c.description,
                 category: c.category,
                 aliases: c.aliases,
                 flags: c.flags,

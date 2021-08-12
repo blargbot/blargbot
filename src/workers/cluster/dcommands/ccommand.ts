@@ -104,13 +104,13 @@ export class CustomCommand extends BaseGuildCommand {
                             description: 'Lists the flags the custom command accepts'
                         },
                         {
-                            parameters: 'create|add {commandName} {~flags+?}',
+                            parameters: 'create|add {commandName} {~flags+}',
                             execute: (ctx, [commandName, flags]) => this.addCommandFlags(ctx, commandName, flags),
                             description: 'Adds multiple flags to your custom command. Flags should be of the form `-<f> <flag> [flag description]`\n' +
                                 'e.g. `b!cc flags add myCommand -c category The category you want to use -n name Your name`'
                         },
                         {
-                            parameters: 'delete|remove {commandName} {~flags+?}',
+                            parameters: 'delete|remove {commandName} {~flags+}',
                             execute: (ctx, [commandName, flags]) => this.removeCommandFlags(ctx, commandName, flags),
                             description: 'Removes multiple flags from your custom command. Flags should be of the form `-<f>`\n' +
                                 'e.g. `b!cc flags remove myCommand -c -n`'
@@ -174,7 +174,7 @@ export class CustomCommand extends BaseGuildCommand {
         return debug ? bbtagUtil.createDebugOutput('test', content, input, result) : undefined;
     }
 
-    public showDocs(context: GuildCommandContext, topic: string): SendPayload | string {
+    public showDocs(context: GuildCommandContext, topic: string | undefined): SendPayload | string {
         const embed = getDocsEmbed(context, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`);
@@ -185,7 +185,7 @@ export class CustomCommand extends BaseGuildCommand {
     public async runCommand(
         context: GuildCommandContext,
         commandName: string,
-        input: string,
+        input: string | undefined,
         debug: boolean
     ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
         const match = await this.requestReadableCommand(context, commandName, false);
@@ -200,7 +200,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const result = await context.bbtag.execute(match.content, {
             message: context.message,
-            inputRaw: input,
+            inputRaw: input ?? '',
             isCC: true,
             limit: new CustomCommandLimit(),
             tagName: match.name,
@@ -210,7 +210,7 @@ export class CustomCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input ?? '', result) : undefined;
     }
 
     public async createCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -414,7 +414,7 @@ export class CustomCommand extends BaseGuildCommand {
         return this.success(`Lang for custom command \`${match.name}\` set.`);
     }
 
-    public async setCommandHelp(context: GuildCommandContext, commandName: string, helpText: string): Promise<string | undefined> {
+    public async setCommandHelp(context: GuildCommandContext, commandName: string, helpText: string | undefined): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -450,8 +450,8 @@ export class CustomCommand extends BaseGuildCommand {
         return this.success(`Roles for custom command \`${match.name}\` set to ${humanize.smartJoin(roles.map(r => `\`${r.name}\``), ', ', ' and ')}.`);
     }
 
-    public async importCommand(context: GuildCommandContext, tagName: string, commandName: string): Promise<string> {
-        commandName = normalizeName(commandName);
+    public async importCommand(context: GuildCommandContext, tagName: string, commandName: string | undefined): Promise<string> {
+        commandName = normalizeName(commandName ?? tagName);
         if (await context.database.guilds.getCommand(context.channel.guild.id, commandName) !== undefined)
             return this.error(`The \`${commandName}\` custom command already exists!`);
 

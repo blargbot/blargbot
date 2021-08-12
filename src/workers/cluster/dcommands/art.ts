@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext, RatelimitMiddleware, SingleThreadMiddleware } from '@cluster/command';
 import { FlagResult } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { FileOptions } from 'discord.js';
+import { FileOptions, User } from 'discord.js';
 import { duration } from 'moment-timezone';
 
 export class ArtCommand extends BaseGlobalCommand {
@@ -13,7 +13,7 @@ export class ArtCommand extends BaseGlobalCommand {
             flags: [{ flag: 'I', word: 'image', description: 'A custom image.' }],
             definitions: [
                 {
-                    parameters: '{user+?}',
+                    parameters: '{user+?:user}',
                     execute: (ctx, [user], flags) => this.art(ctx, user, flags),
                     description: 'Shows everyone a work of art.'
                 }
@@ -24,20 +24,16 @@ export class ArtCommand extends BaseGlobalCommand {
         this.middleware.push(new RatelimitMiddleware(duration(5, 'seconds'), c => c.author.id));
     }
 
-    private async art(context: CommandContext, user: string, flags: FlagResult): Promise<void | string | FileOptions> {
+    private async art(context: CommandContext, user: User | undefined, flags: FlagResult): Promise<void | string | FileOptions> {
         let url = context.message.attachments.first()?.url;
         if (url !== undefined) {
             // NOOP
-        } else if (flags.I !== undefined) {
+        } else if (flags.I !== undefined)
             url = flags.I.merge().value;
-        } else if (user.length > 0) {
-            const u = await context.util.getUser(context, user);
-            if (u === undefined)
-                return this.error('I cant find that user!');
-            url = u.avatarURL({ dynamic: true }) ?? u.defaultAvatarURL;
-        } else {
+        else if (user !== undefined)
+            url = user.avatarURL({ dynamic: true }) ?? user.defaultAvatarURL;
+        else
             url = context.author.avatarURL({ dynamic: true }) ?? context.author.defaultAvatarURL;
-        }
 
         void context.channel.sendTyping();
 

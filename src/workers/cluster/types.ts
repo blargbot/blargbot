@@ -411,7 +411,7 @@ export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentVa
 
 export interface CommandDetails {
     readonly name: string;
-    readonly info: string;
+    readonly description: string | undefined;
     readonly category: CommandType;
     readonly aliases: readonly string[];
     readonly flags: readonly FlagDefinition[];

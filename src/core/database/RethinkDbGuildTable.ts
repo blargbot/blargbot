@@ -162,6 +162,23 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return guild?.channels[channelId]?.[key];
     }
 
+    public async setChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, value: ChannelSettings[K]): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { channels: { [channelId]: { [key]: this.setExpr(value) } } }))
+            return false;
+
+        const channels = guild.channels ??= {};
+        const channel = channels[channelId] ??= {};
+        if (value === undefined)
+            delete channel[key];
+        else
+            channel[key] = value;
+        return true;
+    }
+
     public async getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.roleme ?? [];
