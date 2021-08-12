@@ -366,7 +366,6 @@ bu.send = async function (context, payload, files) {
         default: payload = {};
     }
 
-    console.log(payload);
     if (payload.disableEveryone) {
         if (!payload.allowedMentions) {
             payload.allowedMentions = {};
@@ -392,6 +391,7 @@ bu.send = async function (context, payload, files) {
         payload.embed = payload.embeds = files = null;
     }
 
+    // in bsian03/eris#v9, `embed` is deprecated. If we revert to stable, this needs to be removed.
     if (payload.embed) {
         if (!payload.embeds) {
             payload.embeds = [payload.embed];
