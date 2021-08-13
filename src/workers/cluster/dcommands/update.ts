@@ -1,5 +1,5 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { codeBlock, CommandType } from '@cluster/utils';
+import { CommandType } from '@cluster/utils';
 import { exec } from 'child_process';
 
 export class UpdateCommand extends BaseGlobalCommand {
