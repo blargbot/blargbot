@@ -12,10 +12,14 @@ export class TagCooldownManager {
     }
 
     public get(context: BBTagContext): Moment {
-        return this.#cooldowns[this.getKey(context)] ??= moment();
+        const key = this.getKey(context);
+        const value = this.#cooldowns[key];
+        if (value !== undefined)
+            return value.clone().add(context.cooldown);
+        return this.#cooldowns[key] = moment();
     }
     public set(context: BBTagContext): Moment {
-        return this.#cooldowns[this.getKey(context)] = moment().add(context.cooldown);
+        return this.#cooldowns[this.getKey(context)] = moment();
     }
     private getKey(context: BBTagContext): string {
         return `${context.guild.id}:${context.isCC}:${context.user.id}:${context.tagName}`;

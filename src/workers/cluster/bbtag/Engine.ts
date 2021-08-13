@@ -6,12 +6,15 @@ import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { Client as Discord } from 'discord.js';
+import moment from 'moment';
 
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagContext } from './BBTagContext';
 import { BBTagError } from './BBTagError';
+import { TagCooldownManager } from './TagCooldownManager';
 
 export class BBTagEngine {
+    private readonly cooldowns: TagCooldownManager;
     public get discord(): Discord<true> { return this.cluster.discord; }
     public get logger(): Logger { return this.cluster.logger; }
     public get database(): Database { return this.cluster.database; }
@@ -21,23 +24,39 @@ export class BBTagEngine {
     public constructor(
         public readonly cluster: Cluster
     ) {
+        this.cooldowns = new TagCooldownManager();
     }
 
-    public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult> {
+    public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
         this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.tagName ?? ''}`);
         const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
-        const context = new BBTagContext(this, { ...options });
+        const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.cooldowns, ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
-        context.execTimer.start();
-        const content = await this.eval(bbtag, context);
-        context.execTimer.end();
-        this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
-        await context.variables.persist();
-        this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
-        await context.sendOutput(content);
-        this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
+        let content;
+        if (context.cooldowns.get(context).isAfter(moment())) {
+            const remaining = moment.duration(context.cooldowns.get(context).diff(moment()));
+            if (context.state.stackSize === 0)
+                await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again in ${remaining.asSeconds()} seconds.`);
+            context.state.return = RuntimeReturnState.ALL;
+            content = context.addError(`Cooldown: ${remaining.asMilliseconds()}`, caller);
+        } else if (++context.state.stackSize > 200) {
+            context.state.return = RuntimeReturnState.ALL;
+            content = context.addError(`Terminated recursive tag after ${context.state.stackSize} execs.`, caller);
+        } else {
+            context.cooldowns.set(context);
+            context.execTimer.start();
+            context.state.stackSize++;
+            content = await this.eval(bbtag, context);
+            context.state.stackSize--;
+            context.execTimer.end();
+            this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
+            await context.variables.persist();
+            this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
+            await context.sendOutput(content);
+            this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
+        }
         return {
             content: content,
             debug: context.debug,
