@@ -7,8 +7,7 @@ export class TagLimit extends BaseRuntimeLimit {
     public constructor() {
         super('tagLimit');
 
-        this.addRules('safeloops', new UseCountRule(100000))
-            .addRules('ban', DisabledRule.instance)
+        this.addRules('ban', DisabledRule.instance)
             .addRules('unban', DisabledRule.instance)
             .addRules('guildbans', DisabledRule.instance)
             .addRules('kick', DisabledRule.instance)
@@ -46,9 +45,10 @@ export class TagLimit extends BaseRuntimeLimit {
                 'for:loops',
                 'repeat:loops',
                 'while:loops'
-            ], new UseCountRule(1500, ['Loop', 'loops']))
-            .addRules('foreach:loops', new UseCountRule(3000, ['Loop', 'loops']))
-            .addRules('map:loops', new UseCountRule(3000, ['Loop', 'loops']))
+            ], new UseCountRule(10000, ['Loop', 'loops']))
+            .addRules('foreach:loops', new UseCountRule(100000, ['Loop', 'loops']))
+            .addRules('map:loops', new UseCountRule(100000, ['Loop', 'loops']))
+            .addRules('filter:loops', new UseCountRule(100000, ['Loop', 'loops']))
             .addRules('dump', new UseCountRule(5));
     }
 

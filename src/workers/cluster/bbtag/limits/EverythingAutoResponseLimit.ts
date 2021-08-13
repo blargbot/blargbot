@@ -7,8 +7,7 @@ export class EverythingAutoResponseLimit extends BaseRuntimeLimit {
     public constructor() {
         super('everythingAutoResponseLimit');
 
-        this.addRules('safeloops', new UseCountRule(100000))
-            .addRules('ban', StaffOnlyRule.instance)
+        this.addRules('ban', StaffOnlyRule.instance)
             .addRules('unban', StaffOnlyRule.instance)
             .addRules('guildbans', StaffOnlyRule.instance)
             .addRules('kick', StaffOnlyRule.instance)
@@ -47,9 +46,10 @@ export class EverythingAutoResponseLimit extends BaseRuntimeLimit {
                 'for:loops',
                 'repeat:loops',
                 'while:loops'
-            ], new UseCountRule(500, ['Loop', 'loops']))
-            .addRules('foreach:loops', new UseCountRule(1000, ['Loop', 'loops']))
-            .addRules('map:loops', new UseCountRule(1000, ['Loop', 'loops']))
+            ], new UseCountRule(1000, ['Loop', 'loops']))
+            .addRules('foreach:loops', new UseCountRule(10000, ['Loop', 'loops']))
+            .addRules('map:loops', new UseCountRule(10000, ['Loop', 'loops']))
+            .addRules('filter:loops', new UseCountRule(10000, ['Loop', 'loops']))
             .addRules('dump', new UseCountRule(5));
     }
 }

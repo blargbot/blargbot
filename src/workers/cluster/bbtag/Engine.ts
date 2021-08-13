@@ -121,7 +121,7 @@ export class BBTagEngine {
         try {
             // sleep for 100ms every 1000 subtag calls
             if (++context.state.subtagCount % 1000 === 0)
-                await sleep(100);
+                await sleep(10);
             const result = await handler.execute(context, name, bbtag);
             return typeof result === 'string' ? result : '';
         } catch (err: unknown) {

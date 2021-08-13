@@ -36,7 +36,7 @@ export class FilterSubtag extends BaseSubtag {
                         for (const item of array) {
                             const stringifiedItem = parse.string(item);
                             if (processed[stringifiedItem]) continue;
-                            if (await context.limit.check(context, subtag, 'safeloops') !== undefined) {
+                            if (await context.limit.check(context, subtag, 'filter:loops') !== undefined) {
                                 for (const override of subtagOverrides) {
                                     override.revert();
                                 }
