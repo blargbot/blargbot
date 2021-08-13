@@ -28,7 +28,7 @@ export class BBTagEngine {
     }
 
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
-        this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.tagName ?? ''}`);
+        this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
         const timer = new Timer().start();
         const bbtag = bbtagUtil.parse(source);
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
@@ -41,7 +41,7 @@ export class BBTagEngine {
                 await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again in ${remaining.asSeconds()} seconds.`);
             context.state.return = RuntimeReturnState.ALL;
             content = context.addError(`Cooldown: ${remaining.asMilliseconds()}`, caller);
-        } else if (++context.state.stackSize > 200) {
+        } else if (context.state.stackSize > 200) {
             context.state.return = RuntimeReturnState.ALL;
             content = context.addError(`Terminated recursive tag after ${context.state.stackSize} execs.`, caller);
         } else {
@@ -49,14 +49,19 @@ export class BBTagEngine {
             context.execTimer.start();
             context.state.stackSize++;
             content = await this.eval(bbtag, context);
+            if (context.state.replace !== undefined)
+                content = content.replace(context.state.replace.regex, context.state.replace.with);
             context.state.stackSize--;
             context.execTimer.end();
             this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
             await context.variables.persist();
             this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
-            await context.sendOutput(content);
-            this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
+            if (context.state.stackSize === 0) {
+                await context.sendOutput(content);
+                this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
+            }
         }
+
         return {
             content: content,
             debug: context.debug,
@@ -134,7 +139,7 @@ export class BBTagEngine {
                         fields: [
                             { name: 'SubTag', value: definition?.name ?? name, inline: true },
                             { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
-                            { name: 'Tag Name', value: context.tagName, inline: true },
+                            { name: 'Tag Name', value: context.rootTagName, inline: true },
                             { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
                             { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
                             { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }

@@ -1,7 +1,7 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
-import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildCommand, StoredGuildSettings, StoredTag } from '@core/types';
+import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredGuildCommand, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
 import { AllChannels, Collection, ConstantsStatus, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
 import ReadWriteLock from 'rwlock';
@@ -79,6 +79,7 @@ export interface SerializedBBTagContext {
     inputRaw: string;
     flaggedInput: FlagResult;
     tagName: string;
+    rootTagName: string;
     author: string;
     authorizer: string;
     tagVars: boolean;
@@ -117,7 +118,7 @@ export interface BBTagContextState {
     continue: number;
     subtags: Record<string, number[] | undefined>;
     overrides: Record<string, SubtagHandler | undefined>;
-    cache: Record<string, StoredGuildCommand | StoredTag>;
+    cache: Record<string, NamedStoredGuildCommand | StoredTag | null>;
     subtagCount: number;
     allowedMentions: {
         users: string[];
@@ -161,6 +162,7 @@ export interface BBTagContextOptions {
     readonly tagVars?: boolean;
     readonly author: string;
     readonly authorizer?: string;
+    readonly rootTagName?: string;
     readonly tagName?: string;
     readonly cooldown?: number;
     readonly cooldowns?: TagCooldownManager;
