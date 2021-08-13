@@ -1,27 +1,11 @@
 import { Logger } from '@core/Logger';
 import { mapping } from '@core/utils';
-import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ImageResult, ShitOptions } from '@image/types';
-import Jimp from 'jimp';
+import { BaseApiImageGenerator } from '@image/BaseApiImageGenerator';
+import { ShitOptions } from 'blargbot-api';
 
-export class ShitGenerator extends BaseImageGenerator<'shit'> {
-    public constructor(logger: Logger) {
-        super('shit', logger, mapOptions);
-    }
-
-    public async executeCore({ plural, text }: ShitOptions): Promise<ImageResult> {
-        const caption = await this.renderJimpText(text, {
-            font: 'animeace.ttf',
-            size: '200x160',
-            gravity: 'South'
-        });
-        const img = await this.getLocalJimp(`SHIT${plural ? 'S' : ''}.png`);
-        img.composite(caption, 810, 31);
-
-        return {
-            data: await img.getBufferAsync(Jimp.MIME_PNG),
-            fileName: 'shit.png'
-        };
+export class ShitGenerator extends BaseApiImageGenerator<'shit'> {
+    public constructor(logger: Logger, config: Configuration) {
+        super('shit', logger, config.blargbot_api.token, config.blargbot_api.base, mapOptions);
     }
 }
 

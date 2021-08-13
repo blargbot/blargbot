@@ -7,13 +7,13 @@ import { ImageGeneratorMap, ImageRequest, ImageResult } from '@image/types';
 import { BaseImageGenerator } from './BaseImageGenerator';
 
 export class ImageWorker extends BaseWorker {
-    public readonly renderers: ModuleLoader<BaseImageGenerator>;
+    public readonly renderers: ModuleLoader<BaseImageGenerator<keyof ImageGeneratorMap>>;
 
-    public constructor(logger: Logger) {
+    public constructor(config: Configuration, logger: Logger) {
         super(logger);
         this.logger.init(`IMAGE WORKER (pid ${this.id}) PROCESS INITIALIZED`);
 
-        this.renderers = new ModuleLoader<BaseImageGenerator>(`${__dirname}/generators`, BaseImageGenerator, [this.logger], this.logger, g => [g.key]);
+        this.renderers = new ModuleLoader<BaseImageGenerator<keyof ImageGeneratorMap>>(`${__dirname}/generators`, BaseImageGenerator, [this.logger, config], this.logger, g => [g.key]);
 
         this.on('img', fafo(async (data, _, reply) => {
             const request = mapData(data);
@@ -64,15 +64,16 @@ const commands = Object.keys<{ [P in keyof ImageGeneratorMap]: undefined }>({
     delete: undefined,
     distort: undefined,
     free: undefined,
-    pcCheck: undefined,
+    pccheck: undefined,
     pixelate: undefined,
     retarded: undefined,
     shit: undefined,
-    sonicSays: undefined,
+    sonicsays: undefined,
     starVsTheForcesOf: undefined,
-    theSearch: undefined,
+    thesearch: undefined,
     triggered: undefined,
-    truth: undefined
+    truth: undefined,
+    linus: undefined
 });
 
 const mapData = mapping.mapObject<ImageRequest<keyof ImageGeneratorMap, JToken>>({

@@ -1,6 +1,7 @@
 import { Logger } from '@core/Logger';
 import { TypeMapping } from '@core/types';
 import { directory as res } from '@res';
+import { CommandMap } from 'blargbot-api';
 import gm from 'gm';
 import Jimp from 'jimp';
 import fetch from 'node-fetch';
@@ -12,14 +13,14 @@ import { ImageGeneratorMap, ImageResult, MagickSource, PhantomOptions, PhantomTr
 
 const im = gm.subClass({ imageMagick: true });
 
-export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = keyof ImageGeneratorMap> {
+export abstract class BaseImageGenerator<T extends keyof R, R extends CommandMap = ImageGeneratorMap> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #mapping: TypeMapping<ImageGeneratorMap[T]>;
+    readonly #mapping: TypeMapping<R[T]>;
 
     public constructor(
         public readonly key: T,
         public readonly logger: Logger,
-        mapping: TypeMapping<ImageGeneratorMap[T]>
+        mapping: TypeMapping<R[T]>
     ) {
         this.#mapping = mapping;
     }
@@ -32,7 +33,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
         return await this.executeCore(mapped.value);
     }
 
-    protected abstract executeCore(message: ImageGeneratorMap[T]): Promise<ImageResult | undefined>;
+    protected abstract executeCore(message: R[T]): Promise<ImageResult | undefined>;
 
     protected getLocalResourcePath(...segments: string[]): string {
         return path.join(res, 'img', ...segments);

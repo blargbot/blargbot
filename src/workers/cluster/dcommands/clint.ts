@@ -1,4 +1,5 @@
 import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
+import { guard } from '@cluster/utils';
 import { ImageResult } from '@image/types';
 import { User } from 'discord.js';
 
@@ -34,6 +35,9 @@ export class ClintCommand extends BaseGlobalImageCommand {
     }
 
     public async render(context: CommandContext, url: string): Promise<ImageResult | string> {
+        if (!guard.isUrl(url))
+            return this.error(`${url} is not a valid url!`);
+
         return await this.renderImage(context, 'clint', { image: url });
     }
 }

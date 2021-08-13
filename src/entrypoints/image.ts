@@ -7,4 +7,4 @@ import { ImageWorker } from '@image/ImageWorker';
 const logger = createLogger(config, `IM${process.env.IMAGE_ID ?? ''}(${process.pid})`);
 logger.setGlobal();
 
-void new ImageWorker(logger).start();
+void new ImageWorker(config, logger).start();

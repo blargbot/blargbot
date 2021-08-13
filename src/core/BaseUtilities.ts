@@ -221,19 +221,19 @@ export class BaseUtilities {
             const [val, format = 'f'] = tag.substring(2).split(':');
             const timestamp = moment.unix(parseInt(val));
             switch (format) {
-                case 't': return timestamp.format('hh:mm');
-                case 'T': return timestamp.format('hh:mm:ss');
-                case 'd': return timestamp.format('dd/MM/yyyy');
-                case 'D': return timestamp.format('dd MMMM yyyy');
-                case 'F': return timestamp.format('dddd, dd MMMM yyyy hh:mm');
-                case 'R': return moment.duration(moment().diff(timestamp)).humanize(false);
-                default: return timestamp.format('dd MMMM yyyy hh:mm');
+                case 't': return timestamp.format('HH:mm');
+                case 'T': return timestamp.format('HH:mm:ss');
+                case 'd': return timestamp.format('DD/MM/yyyy');
+                case 'D': return timestamp.format('DD MMMM yyyy');
+                case 'F': return timestamp.format('dddd, DD MMMM yyyy HH:mm');
+                case 'R': return moment.duration(timestamp.diff(moment())).humanize(true);
+                case 'f': return timestamp.format('DD MMMM yyyy HH:mm');
             }
         }
         if (tag.startsWith('a:') || tag.startsWith(':')) { // EMOJI
             return tag.split(':')[1];
         }
-        return tag;
+        return `<${tag}>`;
     }
 
     public async generateOutputPage(payload: SendPayload, channel?: TextBasedChannels): Promise<Snowflake> {

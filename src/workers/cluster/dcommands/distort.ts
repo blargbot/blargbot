@@ -3,26 +3,24 @@ import { guard } from '@cluster/utils';
 import { ImageResult } from '@image/types';
 import { User } from 'discord.js';
 
-export class ArtCommand extends BaseGlobalImageCommand {
+export class DistortCommand extends BaseGlobalImageCommand {
     public constructor() {
         super({
-            name: 'art',
-            description: 'Shows everyone a work of art.',
+            name: 'distort',
             definitions: [
                 {
                     parameters: '{user:user+}',
-                    description: 'Shows everyone a work of art.',
+                    description: 'Turns an avatar into modern art.',
                     execute: (ctx, [user]) => this.renderUser(ctx, user)
                 },
                 {
                     parameters: '',
-                    description: 'Shows everyone a work of art.',
+                    description: 'Turns an image into modern art.',
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         ctx.message.attachments.first()?.url
                         ?? flags.i?.merge().value
-                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png' })
-                    )
+                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png' }))
                 }
             ],
             flags: [
@@ -31,14 +29,14 @@ export class ArtCommand extends BaseGlobalImageCommand {
         });
     }
 
-    public async renderUser(context: CommandContext, user: User): Promise<string | ImageResult> {
+    public async renderUser(context: CommandContext, user: User): Promise<ImageResult | string> {
         return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png' }));
     }
 
-    public async render(context: CommandContext, url: string): Promise<string | ImageResult> {
+    public async render(context: CommandContext, url: string): Promise<ImageResult | string> {
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 
-        return await this.renderImage(context, 'art', { avatar: url });
+        return await this.renderImage(context, 'distort', { avatar: url });
     }
 }

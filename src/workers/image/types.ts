@@ -1,3 +1,4 @@
+import { CommandMap } from 'blargbot-api';
 import gm from 'gm';
 import Jimp from 'jimp';
 
@@ -42,23 +43,16 @@ export interface ImageResult<T = Buffer> {
     fileName: string;
 }
 
-export interface ImageGeneratorMap {
+export interface ImageGeneratorMap extends CommandMap {
     'truth': TruthOptions;
     'triggered': TriggeredOptions;
-    'theSearch': TheSearchOptions;
     'starVsTheForcesOf': StarVsTheForcesOfOptions;
-    'sonicSays': SonicSaysOptions;
-    'shit': ShitOptions;
     'retarded': RetardedOptions;
     'pixelate': PixelateOptions;
-    'pcCheck': PCCheckOptions;
     'free': FreeOptions;
     'distort': DistortOptions;
-    'delete': DeleteOptions;
-    'color': ColorOptions;
     'clyde': ClydeOptions;
     'clippy': ClippyOptions;
-    'clint': ClintOptions;
     'caption': CaptionOptions;
     'cah': CAHOptions;
     'art': ArtOptions;
@@ -78,21 +72,8 @@ export interface TriggeredOptions {
     greyscale: boolean;
 }
 
-export interface TheSearchOptions {
-    text: string;
-}
-
 export interface StarVsTheForcesOfOptions {
     avatar: string;
-}
-
-export interface SonicSaysOptions {
-    text: string;
-}
-
-export interface ShitOptions {
-    text: string;
-    plural: boolean;
 }
 
 export interface RetardedOptions {
@@ -105,10 +86,6 @@ export interface PixelateOptions {
     scale: number;
 }
 
-export interface PCCheckOptions {
-    text: string;
-}
-
 export interface FreeOptions {
     top: string;
     bottom?: string;
@@ -118,24 +95,12 @@ export interface DistortOptions {
     avatar: string;
 }
 
-export interface DeleteOptions {
-    text: string;
-}
-
-export interface ColorOptions {
-    hex: number;
-}
-
 export interface ClydeOptions {
     text: string;
 }
 
 export interface ClippyOptions {
     text: string;
-}
-
-export interface ClintOptions {
-    image: string;
 }
 
 export interface CaptionOptions {
