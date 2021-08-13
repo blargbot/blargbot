@@ -78,13 +78,37 @@ export class UpdateCommand extends BaseGlobalCommand {
         try {
             await context.channel.sendTyping();
             const result = await execCommandline(command);
-            await message?.edit(this.success(`Command: \`${command}\` ${codeBlock(result, 'xl')}`));
+            await message?.edit({
+                content: this.success(`Command: \`${command}\``),
+                files: [
+                    {
+                        attachment: Buffer.from(result),
+                        name: 'output.txt'
+                    }
+                ]
+            });
             return result;
         } catch (err: unknown) {
             if (err instanceof Error)
-                await message?.edit(this.error(`Command: \`${command}\` ${codeBlock(err.message)}`));
+                await message?.edit({
+                    content: this.error(`Command: \`${command}\``),
+                    files: [
+                        {
+                            attachment: Buffer.from(err.toString()),
+                            name: 'output.txt'
+                        }
+                    ]
+                });
             else
-                await message?.edit(this.error(`Command: \`${command}\` ${codeBlock(err)}`));
+                await message?.edit({
+                    content: this.error(`Command: \`${command}\``),
+                    files: [
+                        {
+                            attachment: Buffer.from(Object.prototype.toString.call(err)),
+                            name: 'output.txt'
+                        }
+                    ]
+                });
             throw err;
         }
     }
