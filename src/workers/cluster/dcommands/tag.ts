@@ -184,7 +184,7 @@ export class TagCommand extends BaseGuildCommand {
             inputRaw: input ?? '',
             isCC: false,
             limit: new TagLimit(),
-            tagName: match.name,
+            rootTagName: match.name,
             author: match.author,
             authorizer: match.authorizer,
             flags: match.flags,
@@ -205,7 +205,7 @@ export class TagCommand extends BaseGuildCommand {
             inputRaw: input,
             isCC: false,
             limit: new TagLimit(),
-            tagName: 'test',
+            rootTagName: 'test',
             author: context.author.id
         });
 

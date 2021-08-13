@@ -16,3 +16,4 @@ export * from './random';
 export * from './sleep';
 export * from './snowflake';
 export * from './toBlocks';
+export * from './shuffle';

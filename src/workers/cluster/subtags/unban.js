@@ -24,7 +24,7 @@ module.exports =
             let user = await context.getUser(args[0], {
                 quiet: false,
                 suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName || 'unknown'}\``
             });
             let reason = args[1];
             let noPerms = args[2] != null;

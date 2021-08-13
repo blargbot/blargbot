@@ -30,7 +30,7 @@ export class IsStaffSubtag extends BaseSubtag {
                         const quiet = context.scope.quiet !== undefined ? context.scope.quiet : args[1].value !== '';
                         const user = await context.getUser(args[0].value, {
                             quiet, suppress: context.scope.suppressLookup,
-                            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+                            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
                         });
 
                         if (user === undefined) return false.toString();

@@ -80,7 +80,7 @@ ${codeBlock(code, 'js')}`
                     author: command.author,
                     inputRaw: msg.content,
                     isCC: true,
-                    tagName: commandName,
+                    rootTagName: commandName,
                     silent
                 });
             }

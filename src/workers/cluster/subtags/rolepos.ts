@@ -27,7 +27,7 @@ export class RolePosSubtag extends BaseSubtag {
         const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
         const role = await context.getRole(roleId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
         });
 
         if (role !== undefined) {

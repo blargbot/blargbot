@@ -11,7 +11,7 @@ export class WarnSubtag extends BaseSubtag {
         super({
             name: 'warn',
             category: SubtagType.BOT,
-            desc: '`user` defaults to the authorizer of the tag', //TODO change this to executing user
+            desc: '`user` defaults to the executing user.',
             definition: [
                 {
                     parameters: ['user?'],
@@ -38,29 +38,26 @@ export class WarnSubtag extends BaseSubtag {
         reason: string,
         subtag: SubtagCall
     ): Promise<string> {
-        let user: User | string | undefined = context.authorizer;
+        let user: User | undefined = context.user;
         const count = parse.int(countStr);
 
         if (userStr !== '')
             user = await context.getUser(userStr, {
                 suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
             });
-
-        if (typeof user === 'string')
-            user = await context.util.getUserById(user);
 
         if (user === undefined)
             return this.noUserFound(context, subtag);
-
-        if (isNaN(count))
-            return this.notANumber(context, subtag);
 
         const member = await context.util.getMemberById(context.guild, user.id);
 
         if (member === undefined)
             return this.noUserFound(context, subtag);
-        const result = await this.cluster.moderation.warns.warn(member, user, count, reason !== '' ? reason : 'Tag Warning');
+        if (isNaN(count))
+            return this.notANumber(context, subtag);
+
+        const result = await this.cluster.moderation.warns.warn(member, this.cluster.discord.user, count, reason !== '' ? reason : 'Tag Warning');
         return result.count.toString();
     }
 }

@@ -34,7 +34,7 @@ export async function handleRoleme(cluster: Cluster, msg: Message): Promise<void
             cluster.logger.verbose(roleme.output);
             await cluster.bbtag.execute(roleme.output ?? 'Your roles have been edited!', {
                 message: msg,
-                tagName: 'roleme',
+                rootTagName: 'roleme',
                 limit: new CustomCommandLimit(),
                 inputRaw: '',
                 isCC: true,

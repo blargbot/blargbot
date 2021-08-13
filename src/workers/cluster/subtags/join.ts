@@ -13,7 +13,7 @@ export class JoinSubtag extends BaseSubtag {
                     exampleCode: '{join;["this", "is", "an", "array"];!}',
                     exampleOut: 'this!is!an!array',
                     execute: async (context, [{ value: inputArray }, { value: text }], subtag) => {
-                        const array = await bbtagUtil.tagArray.getArray(context, subtag, inputArray);
+                        const array = await bbtagUtil.tagArray.getArray(context, inputArray);
 
                         if (array === undefined || !Array.isArray(array.v))
                             return this.notAnArray(context, subtag);

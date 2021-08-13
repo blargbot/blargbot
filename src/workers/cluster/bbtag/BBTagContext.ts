@@ -5,7 +5,7 @@ import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { StoredGuildCommand, StoredTag } from '@core/types';
+import { NamedStoredGuildCommand, StoredTag } from '@core/types';
 import { Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
@@ -27,12 +27,13 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public readonly message: BBTagContextMessage;
     public readonly inputRaw: string;
-    public readonly input: readonly string[];
+    public readonly input: string[];
     public readonly flags: readonly FlagDefinition[];
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
     public readonly author: string;
     public readonly authorizer: string;
+    public readonly rootTagName: string;
     public readonly tagName: string;
     public readonly cooldown: number;
     public readonly cooldowns: TagCooldownManager;
@@ -76,7 +77,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.tagVars = options.tagVars ?? !this.isCC;
         this.author = options.author;
         this.authorizer = options.authorizer ?? this.author;
-        this.tagName = options.tagName ?? 'unknown';
+        this.rootTagName = options.rootTagName ?? 'unknown';
+        this.tagName = options.tagName ?? this.rootTagName;
         this.cooldown = options.cooldown ?? 0;
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
         this.locks = options.locks ?? {};
@@ -284,12 +286,16 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return await (this.state.outputMessage ??= this._sendOutput(text));
     }
 
-    public getCached(key: `tag_${string}`, getIfNotSet: (key: string) => StoredTag): StoredTag;
-    public getCached(key: `cc_${string}`, getIfNotSet: (key: string) => StoredGuildCommand): StoredGuildCommand;
-    public getCached(key: string, getIfNotSet: (key: string) => StoredGuildCommand | StoredTag): StoredGuildCommand | StoredTag {
-        if (key in this.state.cache[key])
+    public async getCached(key: `tag_${string}`, getIfNotSet: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
+    public async getCached(key: `cc_${string}`, getIfNotSet: (key: string) => Promise<NamedStoredGuildCommand | undefined>): Promise<NamedStoredGuildCommand | null>;
+    public async getCached(key: string, getIfNotSet: (key: string) => Promise<NamedStoredGuildCommand | StoredTag | undefined>): Promise<NamedStoredGuildCommand | StoredTag | null> {
+        key = key.split('_').slice(1).join('_');
+        if (key in this.state.cache)
             return this.state.cache[key];
-        return this.state.cache[key] = getIfNotSet(key);
+        const fetchedValue = await getIfNotSet(key);
+        if (fetchedValue !== undefined)
+            return this.state.cache[key] = fetchedValue;
+        return this.state.cache[key] = null;
     }
 
     public static async deserialize(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContext> {
@@ -326,6 +332,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             inputRaw: obj.inputRaw,
             message: message,
             isCC: obj.isCC,
+            rootTagName: obj.rootTagName,
             tagName: obj.tagName,
             author: obj.author,
             authorizer: obj.authorizer,
@@ -361,6 +368,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             scope: newScope,
             inputRaw: this.inputRaw,
             flaggedInput: this.flaggedInput,
+            rootTagName: this.rootTagName,
             tagName: this.tagName,
             tagVars: this.tagVars,
             author: this.author,

@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:26:54
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-07-05 15:19:33
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-08-13 17:38:43
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -30,7 +30,7 @@ module.exports =
         .whenArgs('1-5', async function (subtag, context, args) {
             let user = await context.getUser(args[0], {
                 quiet: true, suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName || 'unknown'}\``
             });
 
             if (!user)

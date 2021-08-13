@@ -55,7 +55,7 @@ export class VariableCache {
             return this.#cache[variable] = new CacheEntry(this.context, variable,
                 await scope.getter(this.context, subtag, variable.substring(scope.prefix.length)) ?? '');
         } catch (err: unknown) {
-            this.context.logger.error(err, this.context.isCC, this.context.tagName);
+            this.context.logger.error(err, this.context.isCC, this.context.rootTagName);
             throw err;
         }
     }

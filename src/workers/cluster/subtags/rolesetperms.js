@@ -30,7 +30,7 @@ module.exports =
             let quiet = bu.isBoolean(context.scope.quiet) ? context.scope.quiet : !!args[2];
             let role = await context.getRole(args[0], {
                 quiet, suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName || 'unknown'}\``
             });
             let perms = bu.parseInt(args[1]) || 0;
 

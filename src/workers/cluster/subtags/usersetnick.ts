@@ -19,7 +19,7 @@ export class UserSetNickSubtag extends BaseSubtag {
                         if (userStr !== '') {
                             user = await context.getUser(userStr, {
                                 quiet: false, suppress: context.scope.suppressLookup,
-                                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+                                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
                             });
                         }
 

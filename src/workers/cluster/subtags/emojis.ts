@@ -33,7 +33,7 @@ export class EmojisSubtag extends BaseSubtag {
                         //* The code commented below is the working code, however to keep compatibility the old code is still used
                         // const role = await context.getRole(roleStr, {
                         //     quiet: true, suppress: true,
-                        //     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+                        //     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
                         // });
 
                         // if (role === undefined) {

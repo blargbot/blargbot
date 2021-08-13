@@ -66,12 +66,12 @@ export class EmojiCreateSubtag extends BaseSubtag {
             return this.customError('Image was not a buffer or a URL', context, subtag);
         }
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
-        const roleArray = await bbtagUtil.tagArray.getArray(context, subtag, rolesStr);
+        const roleArray = await bbtagUtil.tagArray.getArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
                 const role = await context.getRole(roleQuery?.toString() !== undefined ? roleQuery.toString() : '', {
                     quiet: true, suppress: true,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
                 });
                 if (role !== undefined) {
                     options.roles.push(role.id);

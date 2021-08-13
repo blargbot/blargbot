@@ -46,7 +46,7 @@ export class CensorManager extends ModerationManagerBase {
         if (content !== undefined) {
             await this.cluster.bbtag.execute(content, {
                 message: message,
-                tagName: 'censor',
+                rootTagName: 'censor',
                 limit: new CustomCommandLimit(),
                 inputRaw: message.content,
                 isCC: true,

@@ -7,3 +7,4 @@ export * from './entityId';
 export * from './float';
 export * from './int';
 export * from './time';
+export * from './string';
