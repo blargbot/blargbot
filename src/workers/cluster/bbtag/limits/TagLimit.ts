@@ -7,7 +7,8 @@ export class TagLimit extends BaseRuntimeLimit {
     public constructor() {
         super('tagLimit');
 
-        this.addRules('ban', DisabledRule.instance)
+        this.addRules('safeloops', new UseCountRule(100000))
+            .addRules('ban', DisabledRule.instance)
             .addRules('unban', DisabledRule.instance)
             .addRules('guildbans', DisabledRule.instance)
             .addRules('kick', DisabledRule.instance)

@@ -83,6 +83,9 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         return context.addError('Invalid embed: ' + issue, subtag, debugMessage);//TODO move issue to debug perhaps?
     }
 
+    public tooManyLoops(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
+        return context.addError('Too many loops', subtag, debugMessage);
+    }
     public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError(errorText, subtag, debugMessage);
     }

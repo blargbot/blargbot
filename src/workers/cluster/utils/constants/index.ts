@@ -7,3 +7,4 @@ export * from './modlogColour';
 export * from './subtagArgumentKind';
 export * from './subtagType';
 export * from './subtagVariableType';
+export * as overrides from './overrides';
