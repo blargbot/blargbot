@@ -36,7 +36,7 @@ export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {
         let x;
         let y;
         const base = new Jimp(256, 256);
-        const gif = new JimpGifEncoder({ width: 256, height: 256 });
+        const gif = new JimpGifEncoder({ width: 256, height: 256, delay: 20 });
         for (let i = 0; i < frameCount; i++) {
             frame = base.clone();
             if (i === 0) {
