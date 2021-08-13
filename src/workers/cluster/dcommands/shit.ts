@@ -5,6 +5,7 @@ export class ShitCommand extends BaseGlobalImageCommand {
     public constructor() {
         super({
             name: 'shit',
+            aliases: ['heck'],
             definitions: [
                 {
                     parameters: '{text+=Your favourite anime}',
