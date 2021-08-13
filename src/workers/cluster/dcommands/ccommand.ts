@@ -167,7 +167,7 @@ export class CustomCommand extends BaseGuildCommand {
             inputRaw: input,
             isCC: true,
             limit: new CustomCommandLimit(),
-            tagName: 'test',
+            rootTagName: 'test',
             author: context.author.id
         });
 
@@ -203,7 +203,7 @@ export class CustomCommand extends BaseGuildCommand {
             inputRaw: input ?? '',
             isCC: true,
             limit: new CustomCommandLimit(),
-            tagName: match.name,
+            rootTagName: match.name,
             author: match.author,
             authorizer: match.authorizer,
             flags: match.flags,

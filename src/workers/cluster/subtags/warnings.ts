@@ -19,7 +19,7 @@ export class WarningsSubtag extends BaseSubtag {
                         if (userStr !== '') {
                             user = await context.getUser(userStr, {
                                 suppress: context.scope.suppressLookup,
-                                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+                                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
                             });
                         }
                         if (user === undefined)

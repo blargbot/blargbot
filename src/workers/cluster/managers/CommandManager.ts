@@ -169,7 +169,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         metrics.commandCounter.labels('custom', 'custom').inc();
         await this.cluster.bbtag.execute(commandDetails.content, {
             message: context.message,
-            tagName: context.commandName,
+            rootTagName: context.commandName,
             isCC: true,
             inputRaw: context.argsString,
             limit: new CustomCommandLimit(),

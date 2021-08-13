@@ -38,7 +38,7 @@ export class UserJoinedAtSubtag extends BaseSubtag {
         const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
         const user = await context.getUser(userId, {
             quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
         });
 
         if (user !== undefined) {

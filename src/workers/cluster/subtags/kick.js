@@ -28,7 +28,7 @@ module.exports =
         .whenArgs('1-3', async function (subtag, context, args) {
             let user = await context.getUser(args[0], {
                 quiet: true, suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName || 'unknown'}\``
             });
             let noPerms = args[2] ? true : false;
             let error = (message) => Builder.util.error(subtag, context, message);

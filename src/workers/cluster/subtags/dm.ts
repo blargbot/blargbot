@@ -32,7 +32,7 @@ export class DMSubtag extends BaseSubtag {
     ): Promise<string | void> {
         const user = await context.getUser(userStr, {
             suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
         });
         let content: string | undefined = messageStr;
         let embed = discordUtil.parseEmbed(messageStr);

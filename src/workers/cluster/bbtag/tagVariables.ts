@@ -66,8 +66,8 @@ interface TagVariableScope {
 
 function localScope(context: BBTagContext): [type: SubtagVariableType, scope: string] {
     return context.tagVars
-        ? [SubtagVariableType.LOCAL, context.tagName]
-        : [SubtagVariableType.GUILDLOCAL, `${context.guild.id}_${context.tagName}`];
+        ? [SubtagVariableType.LOCAL, context.rootTagName]
+        : [SubtagVariableType.GUILDLOCAL, `${context.guild.id}_${context.rootTagName}`];
 }
 
 function serverScope(context: BBTagContext): [type: SubtagVariableType, scope: string] {

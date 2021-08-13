@@ -91,7 +91,7 @@ function buildLengthEmbed(context: BBTagContext, subtag: SubtagCall, subtagName:
     return {
         fields: [
             { name: 'Details', value: `Guild: ${context.guild.id}\nChannel: ${context.channel.id}\nAuthor: <@${context.author}>\nUser: <@${context.user.id}>`, inline: true },
-            { name: `Type: ${context.isCC ? 'CC' : 'Tag'}`, value: context.tagName, inline: true },
+            { name: `Type: ${context.isCC ? 'CC' : 'Tag'}`, value: context.rootTagName, inline: true },
             { name: 'Subtag', value: subtagName, inline: true },
             { name: 'Location', value: `(${subtag.start.line},${subtag.start.column}):(${subtag.end.line},${subtag.end.column})`, inline: true }
         ]

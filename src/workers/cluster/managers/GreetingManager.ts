@@ -56,7 +56,7 @@ export class GreetingManager {
             flags: command.flags,
             silent: true,
             tagVars: false,
-            tagName: name
+            rootTagName: name
         });
     }
 

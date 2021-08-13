@@ -71,7 +71,7 @@ export class EmojiCreateSubtag extends BaseSubtag {
             for (const roleQuery of roleArray.v) {
                 const role = await context.getRole(roleQuery?.toString() !== undefined ? roleQuery.toString() : '', {
                     quiet: true, suppress: true,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName}\``
+                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
                 });
                 if (role !== undefined) {
                     options.roles.push(role.id);

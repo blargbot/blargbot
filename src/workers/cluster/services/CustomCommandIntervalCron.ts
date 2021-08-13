@@ -55,7 +55,7 @@ export class CustomCommandIntervalCron extends CronService {
                     limit: new CustomCommandLimit(),
                     inputRaw: '',
                     isCC: true,
-                    tagName: '_interval',
+                    rootTagName: '_interval',
                     author: interval.author,
                     authorizer: interval.authorizer,
                     silent: true
