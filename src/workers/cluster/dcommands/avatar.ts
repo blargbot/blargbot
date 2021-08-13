@@ -38,11 +38,11 @@ export class AvatarCommand extends BaseGlobalCommand {
         if (parsedSize !== undefined && !allowedImageSizes.includes(parsedSize))
             return this.error(`${size ?? parsedSize} is not a valid image size! Supported sizes are ${humanize.smartJoin(allowedImageSizes, ', ', ' and ')}`);
 
-        const avatarUrl = user.avatarURL({
+        const avatarUrl = user.displayAvatarURL({
             dynamic: format === undefined,
             format: format,
             size: parsedSize
-        }) ?? user.defaultAvatarURL;
+        });
 
         await context.channel.sendTyping();
         const avatar = await fetch(avatarUrl);

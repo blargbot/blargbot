@@ -55,7 +55,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
                 currentUser.discriminator = update.discriminator = user.discriminator;
             }
 
-            const avatarUrl = user.avatarURL({ dynamic: true }) ?? user.defaultAvatarURL;
+            const avatarUrl = user.displayAvatarURL({ dynamic: true });
             if (currentUser.avatarURL !== avatarUrl) {
                 currentUser.avatarURL = update.avatarURL = avatarUrl;
             }

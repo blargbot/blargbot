@@ -2,7 +2,7 @@ import { FindEntityOptions, LookupMatch, MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { SendPayload } from '@core/types';
-import { AllChannels, Constants, DiscordAPIError, Guild, GuildMember, GuildTextBasedChannels, Message, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AllChannels, GuildMember, GuildTextBasedChannels, Message, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -21,27 +21,6 @@ export class ClusterUtilities extends BaseUtilities {
             return undefined;
 
         return await this.getMemberById(msg.channel.guild, user.id);
-    }
-
-    public async getMemberById(guild: string | Guild, userId: string): Promise<GuildMember | undefined> {
-        if (typeof guild === 'string') {
-            guild = await this.getGuildById(guild) ?? guild;
-            if (typeof guild === 'string')
-                return undefined;
-        }
-
-        try {
-            return guild.members.fetch(userId);
-        } catch (error: unknown) {
-            if (error instanceof DiscordAPIError) {
-                switch (error.code) {
-                    case Constants.APIErrors.UNKNOWN_MEMBER:
-                    case Constants.APIErrors.UNKNOWN_USER:
-                        return undefined;
-                }
-            }
-            throw error;
-        }
     }
 
     public async getUser(msg: UserChannelInteraction, name: string, args: FindEntityOptions = {}): Promise<User | undefined> {
@@ -360,42 +339,6 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             response
         };
-    }
-
-    public async getUserById(userId: string): Promise<User | undefined> {
-        const match = /\d{17,21}/.exec(userId);
-        if (match === null)
-            return undefined;
-        return await this.getGlobalUser(match[0]);
-    }
-
-    public async getGuildById(guildId: string): Promise<Guild | undefined> {
-        const match = /\d{17,21}/.exec(guildId);
-        if (match === null)
-            return undefined;
-        return await this.getGlobalGuild(match[0]);
-    }
-
-    public async getRoleById(guild: string | Guild, roleId: string): Promise<Role | undefined> {
-        const foundGuild = typeof guild === 'string' ? await this.getGuildById(guild) : guild;
-        if (foundGuild === undefined)
-            return undefined;
-        const match = /\d{17,21}/.exec(roleId);
-        if (match === null)
-            return undefined;
-
-        try {
-            return await foundGuild.roles.fetch(match[0]) ?? undefined;
-        } catch {
-            return undefined;
-        }
-    }
-
-    public async getChannelById(channelId: string): Promise<AllChannels | undefined> {
-        const match = /\d{17,21}/.exec(channelId);
-        if (match === null)
-            return undefined;
-        return await this.getGlobalChannel(match[0]);
     }
 
     /* eslint-disable @typescript-eslint/naming-convention */

@@ -124,9 +124,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
             if (font !== undefined)
                 image.font(this.getLocalResourcePath('fonts', font), fontsize);
 
-            if (size !== undefined)
-                image.out('-size').out(size);
-
+            image.out('-size').out(size);
             image.out('-background').out('transparent');
             image.out('-fill').out(fill);
             image.out('-gravity').out(gravity);
@@ -138,8 +136,7 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap = key
             image.out(`caption:${text}`);
             if (stroke !== undefined) {
                 image.out('-compose').out('Over');
-                if (size !== undefined)
-                    image.out('-size').out(size);
+                image.out('-size').out(size);
                 image.out('-background').out('transparent');
                 image.out('-fill').out(fill);
                 image.out('-gravity').out(gravity);

@@ -1,14 +1,11 @@
-import { BaseGlobalCommand, CommandContext, RatelimitMiddleware, SingleThreadMiddleware } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
+import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
 import { guard, humanize } from '@core/utils';
 import { ImageResult, ValidFont } from '@image/types';
-import { duration } from 'moment';
 
-export class CaptionCommand extends BaseGlobalCommand {
+export class CaptionCommand extends BaseGlobalImageCommand {
     public constructor() {
         super({
             name: 'caption',
-            category: CommandType.IMAGE,
             definitions: [
                 {
                     parameters: 'fonts',
@@ -32,9 +29,6 @@ export class CaptionCommand extends BaseGlobalCommand {
                 { flag: 'f', word: 'font', description: 'The font to use (case insensitive). Use the command with the -l flag to view the available fonts. Defaults to impact.' }
             ]
         });
-
-        this.middleware.push(new SingleThreadMiddleware(c => c.channel.id));
-        this.middleware.push(new RatelimitMiddleware(duration(5, 'seconds'), c => c.author.id));
     }
 
     public listFonts(): string {
@@ -61,17 +55,17 @@ export class CaptionCommand extends BaseGlobalCommand {
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 
-        await context.channel.sendTyping();
-        const result = await context.cluster.images.render('caption', {
+        if (top !== undefined)
+            top = await context.util.resolveTags(context, top);
+
+        if (bottom !== undefined)
+            bottom = await context.util.resolveTags(context, bottom);
+
+        return await this.renderImage(context, 'caption', {
             url,
             font: fontLookup[fontName],
             input: { top: top, bottom: bottom }
         });
-
-        if (result === undefined || result.data.length === 0)
-            return this.error('Something went wrong while trying to render that!');
-
-        return result;
     }
 }
 

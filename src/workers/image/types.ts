@@ -6,7 +6,7 @@ export type MagickSource = string | Jimp | Buffer | gm.State | [width: number, h
 export interface TextOptions {
     font?: string;
     fontsize?: number;
-    size?: string;
+    size: string;
     fill?: string;
     gravity?: string;
     stroke?: string;

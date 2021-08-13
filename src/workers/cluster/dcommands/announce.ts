@@ -77,7 +77,7 @@ export class AnnounceCommand extends BaseGuildCommand {
             },
             footer: {
                 text: humanize.fullName(context.author),
-                icon_url: context.author.avatarURL({ dynamic: true }) ?? context.author.defaultAvatarURL
+                icon_url: context.author.displayAvatarURL({ dynamic: true })
             },
             timestamp: context.timestamp
         };

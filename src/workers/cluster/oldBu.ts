@@ -88,7 +88,7 @@ export const oldBu = {
         return {
             name: humanize.fullName(user),
             url: util.websiteLink(`/user/${user.id}`),
-            iconURL: user.avatarURL() ?? user.defaultAvatarURL
+            iconURL: user.displayAvatarURL({ dynamic: true })
         };
     }
 };

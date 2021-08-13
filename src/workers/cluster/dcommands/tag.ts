@@ -391,7 +391,7 @@ export class TagCommand extends BaseGuildCommand {
             timestamp: new Date(),
             footer: {
                 text: humanize.fullName(context.author),
-                icon_url: context.author.avatarURL({ dynamic: true }) ?? context.author.defaultAvatarURL
+                icon_url: context.author.displayAvatarURL({ dynamic: true })
             }
         };
 
@@ -743,7 +743,7 @@ export class TagCommand extends BaseGuildCommand {
                     fields,
                     author: {
                         name: humanize.fullName(user),
-                        icon_url: user.avatarURL({ dynamic: true }) ?? user.defaultAvatarURL,
+                        icon_url: user.displayAvatarURL({ dynamic: true }),
                         url: `${context.config.website.secure ? 'https' : 'http'}://${context.config.website.host}/user/${user.id}`
                     },
                     timestamp: new Date(),

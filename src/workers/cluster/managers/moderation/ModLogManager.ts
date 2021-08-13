@@ -160,7 +160,7 @@ export class ModLogManager {
         if (moderator !== undefined) {
             embed.footer = {
                 text: `${humanize.fullName(moderator)} (${moderator.id})`,
-                iconURL: moderator.avatarURL({ dynamic: true }) ?? moderator.defaultAvatarURL
+                iconURL: moderator.displayAvatarURL({ dynamic: true })
             };
         }
         if (Array.isArray(user)) {
@@ -168,7 +168,7 @@ export class ModLogManager {
         } else {
             embed.author = {
                 name: `${humanize.fullName(user)} (${user.id})`,
-                iconURL: user.avatarURL({ dynamic: true }) ?? user.defaultAvatarURL
+                iconURL: user.displayAvatarURL({ dynamic: true })
             };
         }
 

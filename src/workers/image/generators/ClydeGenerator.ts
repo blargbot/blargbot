@@ -14,7 +14,8 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
             font: 'whitney.ttf',
             fontsize: 20,
             fill: '#ffffff',
-            gravity: 'west'
+            gravity: 'west',
+            size: '714x1000'
         });
         const body = new Jimp(originalText.bitmap.width + 10, originalText.bitmap.height + 10);
         body.composite(originalText, 5, 5).autocrop().opacity(0.7);
