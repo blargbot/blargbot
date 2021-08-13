@@ -1,4 +1,5 @@
 import { createDebugOutput } from './debugOutput';
+import * as json from './json';
 import * as operators from './operators';
 import { parse } from './parse';
 import { stringify } from './stringify';
@@ -17,5 +18,6 @@ export const bbtagUtil = {
     stringifyRange,
     stringifyParameters,
     createDebugOutput,
-    operators
+    operators,
+    json
 };
