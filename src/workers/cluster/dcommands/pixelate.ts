@@ -20,7 +20,7 @@ export class PixelateCommand extends BaseGlobalImageCommand {
                         ctx,
                         ctx.message.attachments.first()?.url
                         ?? flags.i?.merge().value
-                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png' }),
+                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
                         scale
                     )
                 }
@@ -33,7 +33,7 @@ export class PixelateCommand extends BaseGlobalImageCommand {
     }
 
     public async renderUser(context: CommandContext, user: User, scale: number): Promise<ImageResult | string> {
-        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png' }), scale);
+        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }), scale);
     }
 
     public async render(context: CommandContext, url: string, scale: number): Promise<ImageResult | string> {

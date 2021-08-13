@@ -3,19 +3,19 @@ import { guard } from '@cluster/utils';
 import { ImageResult } from '@image/types';
 import { User } from 'discord.js';
 
-export class ClintCommand extends BaseGlobalImageCommand {
+export class LinusCommand extends BaseGlobalImageCommand {
     public constructor() {
         super({
-            name: 'clint',
+            name: 'linus',
             definitions: [
                 {
                     parameters: '{user:user+}',
-                    description: 'I don\'t even know, to be honest.',
+                    description: 'Shows a picture of Linus pointing at something on his monitor.',
                     execute: (ctx, [user]) => this.renderUser(ctx, user)
                 },
                 {
                     parameters: '',
-                    description: 'I don\'t even know, to be honest.',
+                    description: 'Shows a picture of Linus pointing at something on his monitor.',
                     execute: (ctx, _, flags) => this.render(
                         ctx,
                         flags.i?.merge().value
@@ -38,6 +38,6 @@ export class ClintCommand extends BaseGlobalImageCommand {
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
 
-        return await this.renderImage(context, 'clint', { image: url });
+        return await this.renderImage(context, 'linus', { image: url });
     }
 }

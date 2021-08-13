@@ -40,8 +40,8 @@ export class AvatarCommand extends BaseGlobalCommand {
 
         const avatarUrl = user.displayAvatarURL({
             dynamic: format === undefined,
-            format: format,
-            size: parsedSize
+            format: format ?? 'png',
+            size: parsedSize ?? 512
         });
 
         await context.channel.sendTyping();

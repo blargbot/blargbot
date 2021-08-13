@@ -20,7 +20,7 @@ export class DistortCommand extends BaseGlobalImageCommand {
                         ctx,
                         ctx.message.attachments.first()?.url
                         ?? flags.i?.merge().value
-                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png' }))
+                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }))
                 }
             ],
             flags: [
@@ -30,7 +30,7 @@ export class DistortCommand extends BaseGlobalImageCommand {
     }
 
     public async renderUser(context: CommandContext, user: User): Promise<ImageResult | string> {
-        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png' }));
+        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }));
     }
 
     public async render(context: CommandContext, url: string): Promise<ImageResult | string> {

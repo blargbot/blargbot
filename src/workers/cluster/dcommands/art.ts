@@ -21,7 +21,7 @@ export class ArtCommand extends BaseGlobalImageCommand {
                         ctx,
                         ctx.message.attachments.first()?.url
                         ?? flags.i?.merge().value
-                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png' })
+                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
                     )
                 }
             ],
@@ -32,7 +32,7 @@ export class ArtCommand extends BaseGlobalImageCommand {
     }
 
     public async renderUser(context: CommandContext, user: User): Promise<string | ImageResult> {
-        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png' }));
+        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }));
     }
 
     public async render(context: CommandContext, url: string): Promise<string | ImageResult> {

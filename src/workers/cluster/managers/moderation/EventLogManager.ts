@@ -183,8 +183,8 @@ export class EventLogManager {
         });
 
         const embed = this.eventLogEmbed('Avatar Updated', user, 0xd8af1a, {
-            image: { url: user.displayAvatarURL({ dynamic: true }) },
-            thumbnail: { url: oldUserInstance.displayAvatarURL({ dynamic: true }) },
+            image: { url: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }) },
+            thumbnail: { url: oldUserInstance.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }) },
             description: '➡️ Old avatar\n⬇️ New avatar'
         });
 
@@ -305,7 +305,7 @@ function toEmbedAuthor(user: string | User | undefined): MessageEmbedAuthor | un
         };
         case 'object': return {
             name: `${humanize.fullName(user)} (${user.id})`,
-            iconURL: user.displayAvatarURL({ dynamic: true })
+            iconURL: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
         };
     }
 }
