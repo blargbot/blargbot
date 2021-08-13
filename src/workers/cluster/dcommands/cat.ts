@@ -20,9 +20,7 @@ export class CatCommand extends BaseGlobalCommand {
             ]
         });
 
-        // TODO Replace with commented line once `wolke` is available to the CI
-        //this.client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
-        this.client = new Wolken(cluster.config.general.loglevel, 'Wolke', 'blargbot/6.0.0');
+        this.client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
     }
 
     public async render(): Promise<MessageOptions> {

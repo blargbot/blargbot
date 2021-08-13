@@ -7,8 +7,8 @@ import { ImageConnection } from './ImageConnection';
 export class ImagePool extends WorkerPool<ImageConnection> {
     private nextWorker: number;
 
-    public constructor(private readonly clusterId: number, workerCount: number, logger: Logger) {
-        super('Image', workerCount, 20000, logger);
+    public constructor(private readonly clusterId: number, config: Configuration['discord']['images'], logger: Logger) {
+        super('Image', config.perCluster, config.spawnTime, logger);
         this.nextWorker = 0;
     }
 
@@ -17,8 +17,9 @@ export class ImagePool extends WorkerPool<ImageConnection> {
     }
 
     public async render<T extends keyof ImageGeneratorMap>(command: T, data: ImageGeneratorMap[T]): Promise<ImageResult | undefined> {
-        const worker = this.tryGet(this.nextWorker) ?? await this.spawn(this.nextWorker);
-        this.nextWorker = (this.nextWorker + 1) % this.workerCount;
+        const workerId = this.nextWorker;
+        this.nextWorker = (this.nextWorker + 1) % this.workerCount; // round robin
+        const worker = this.tryGet(workerId) ?? await this.spawn(workerId);
         return await worker.render(command, data);
     }
 }

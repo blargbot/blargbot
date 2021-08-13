@@ -74,7 +74,7 @@ export class Cluster extends BaseClient {
         this.createdAt = moment();
         this.worker = options.worker;
         this.domains = new DomainManager(this.database.vars);
-        this.images = new ImagePool(this.id, config.general.imageWorkerCount, this.logger);
+        this.images = new ImagePool(this.id, config.discord.images, this.logger);
         this.commands = new CommandManager(`${__dirname}/dcommands`, this);
         this.subtags = new ModuleLoader(`${__dirname}/subtags`, BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
