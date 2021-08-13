@@ -117,7 +117,7 @@ export class Cluster extends BaseClient {
 
         try {
             const code = text.split('\n').length === 1
-                ? `async () => ${text}`
+                ? `async () => (${text})`
                 : `async () => { ${text} }`;
             const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
