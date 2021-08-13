@@ -136,6 +136,16 @@ export class ModLogManager {
         });
     }
 
+    public async logCustom(guild: Guild, action: string, user: User, moderator?: User, reason?: string, color?: number): Promise<void> {
+        await this.logAction({
+            type: action,
+            guildId: guild.id,
+            user: user,
+            color: color,
+            moderator: moderator,
+            reason: reason
+        });
+    }
     private async logAction({ guildId, user, reason, fields = [], color = 0x17c484, type = 'Generic', moderator }: ModerationLogOptions): Promise<void> {
         const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, 'modlog');
         if (!guard.hasValue(modlogChannelId))
