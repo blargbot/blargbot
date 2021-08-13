@@ -2,9 +2,9 @@ import moment, { Moment } from 'moment-timezone';
 
 import * as guard from '../guard';
 
-export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
-    const now = moment.tz(timezone);
-    if (text.length === 0)
+export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC', toTimezone = 'Etc/UTC'): Moment {
+    const now = moment.tz(timezone).tz(toTimezone);
+    if (text === '')
         return now;
 
     switch (text.toLowerCase()) {
@@ -32,7 +32,7 @@ export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, 
     const tz = format === undefined
         ? moment.tz(text, timezone)
         : moment.tz(text, format, timezone);
-    return tz.utcOffset(0);
+    return tz.tz(toTimezone);
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
