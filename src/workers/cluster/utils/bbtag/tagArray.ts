@@ -1,5 +1,5 @@
 import { BBTagContext } from '@cluster/bbtag';
-import { BBTagArray, SubtagCall } from '@cluster/types';
+import { BBTagArray } from '@cluster/types';
 import { getRange, mapping, parse } from '@core/utils';
 
 export function serialize(array: JArray | BBTagArray, varName?: string): string {
@@ -55,12 +55,12 @@ export function flattenArray(array: JArray): JArray {
     return result;
 }
 
-export async function getArray(context: BBTagContext, subtag: SubtagCall, arrName: string): Promise<BBTagArray | undefined> {
+export async function getArray(context: BBTagContext, arrName: string): Promise<BBTagArray | undefined> {
     const obj = deserialize(arrName);
     if (obj !== undefined)
         return obj;
     try {
-        const arr = await context.variables.get(arrName, subtag);
+        const arr = await context.variables.get(arrName);
         if (arr !== undefined && Array.isArray(arr))
             return { v: arr, n: arrName };
     } catch {
