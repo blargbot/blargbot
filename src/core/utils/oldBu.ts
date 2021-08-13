@@ -180,9 +180,6 @@ export const oldBu = {
     saveConfig(): void {
         oldBu.emitter.emit('saveConfig');
     },
-    reloadUserList(): void {
-        oldBu.emitter.emit('ircUserList');
-    },
     getMemoryUsage(): number {
         const memory = process.memoryUsage();
         return memory.rss / 1024 / 1024;
