@@ -25,7 +25,7 @@ export class RetardedGenerator extends BaseImageGenerator<'retarded'> {
             smallAvatar.resize(74, 74);
             img.composite(smallAvatar, 166, 131);
             avatarImg.resize(171, 171);
-            avatarImg.rotate(18);
+            avatarImg.rotate(-18);
             img.composite(avatarImg, 277, 32);
         }
         img.composite(caption, 268, 0);
