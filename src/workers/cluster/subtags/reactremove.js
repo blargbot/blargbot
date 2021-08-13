@@ -63,7 +63,7 @@ module.exports =
                     : [emote];
                 entries = await Promise.all(entries.map(entry => context.getUser(entry, {
                     quiet: true, suppress: context.scope.suppressLookup,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.tagName || 'unknown'}\``
+                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName || 'unknown'}\``
                 })));
                 if (entries.reduce((c, entry) => c && entry == null, true)) {
                     emotes.splice(0, 0, emote);
