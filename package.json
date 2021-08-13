@@ -96,6 +96,7 @@
         "eslint-plugin-simple-import-sort": "^7.0.0",
         "eslint-plugin-vue": "^7.16.0",
         "husky": "^7.0.1",
+        "rimraf": "^3.0.2",
         "sass-lint": "^1.12.1",
         "typescript": "^4.3.2",
         "yarn": "^1.22.10"
@@ -110,7 +111,8 @@
         "build:check:watch": "tsc -w --noemit",
         "lint": "eslint --ext .ts,.vue,.js ./",
         "lint-fix": "eslint --ext .ts,.vue,.js ./ --fix",
-        "prepare": "husky install"
+        "prepare": "husky install",
+        "clean": "rimraf out/**/*.js out/**/*.js.map"
     },
     "repository": {
         "type": "git",
