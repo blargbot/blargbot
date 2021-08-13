@@ -8,6 +8,7 @@ export class ImageConnection extends WorkerConnection {
         logger: Logger
     ) {
         super(id, 'image', logger);
+        this.env.IMAGE_ID = id.toString();
     }
 
     public async render<T extends keyof ImageGeneratorMap>(command: T, data: ImageGeneratorMap[T]): Promise<ImageResult | undefined> {

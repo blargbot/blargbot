@@ -6,7 +6,7 @@ import { BaseClient } from '@core/BaseClient';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
-import { ImageConnection } from '@image/ImageConnection';
+import { ImagePool } from '@image/ImagePool';
 import { Options, Util } from 'discord.js';
 import moment, { Moment } from 'moment-timezone';
 
@@ -24,7 +24,7 @@ export class Cluster extends BaseClient {
     public readonly timeouts: TimeoutManager;
     public readonly autoresponses: AutoresponseManager;
     public readonly bbtag: BBTagEngine;
-    public readonly images: ImageConnection;
+    public readonly images: ImagePool;
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
@@ -74,7 +74,7 @@ export class Cluster extends BaseClient {
         this.createdAt = moment();
         this.worker = options.worker;
         this.domains = new DomainManager(this.database.vars);
-        this.images = new ImageConnection(1, this.logger);
+        this.images = new ImagePool(this.id, config.general.imageWorkerCount, this.logger);
         this.commands = new CommandManager(`${__dirname}/dcommands`, this);
         this.subtags = new ModuleLoader(`${__dirname}/subtags`, BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
@@ -101,7 +101,7 @@ export class Cluster extends BaseClient {
             super.start(),
             this.commands.init(),
             this.subtags.init(),
-            this.images.connect(20000)
+            this.images.spawnAll()
         ]);
 
         this.logger.init(this.moduleStats(this.commands, 'Commands', c => c.category, c => commandTypeDetails[c].name));
