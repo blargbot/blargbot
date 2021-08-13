@@ -1,5 +1,4 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 import Color from 'color';
 
@@ -32,14 +31,14 @@ export class ColorSubtag extends BaseSubtag {
                     description: 'Converts a color to `outputFormat`.',
                     exampleCode: '{color;#4286f4;RGB}',
                     exampleOut: '[66,134,244]',
-                    execute: (ctx, args, subtag) => this.parseColor(ctx, args[0].value, args[1].value, undefined, subtag)
+                    execute: (ctx, args) => this.parseColor(ctx, args[0].value, args[1].value, undefined)
                 },
                 {
                     parameters: ['color', 'outputFormat:hex', 'inputFormat'],
                     description: 'Converts a color of `inputFormat` to `outputFormat`. If `inputFormat` is left empty, it will be automatically calculated.',
                     exampleCode: '{color;[66,134,244];hex;RGB}',
                     exampleOut: '#4286f4',
-                    execute: (ctx, args, subtag) => this.parseColor(ctx, args[0].value, args[1].value, args[2].value as ColorFormat, subtag)
+                    execute: (ctx, args) => this.parseColor(ctx, args[0].value, args[1].value, args[2].value as ColorFormat)
                 }
             ]
         });
@@ -49,12 +48,11 @@ export class ColorSubtag extends BaseSubtag {
         context: BBTagContext,
         colorStr: string,
         outputStr: string,
-        inputStr: string | undefined,
-        subtag: SubtagCall
+        inputStr: string | undefined
     ): Promise<string> {
         if (colorStr === '') return '`Invalid color`'; //TODO Would be better to use this.customError to add it to debug. This applies to the Invalid input/output formats too.
 
-        const arr = await getArray(context, subtag, colorStr);
+        const arr = await getArray(context, colorStr);
         let input: string | string[];
         if (arr === undefined || !Array.isArray(arr.v)) {
             input = colorStr;
