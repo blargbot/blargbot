@@ -81,11 +81,18 @@ export class AnnounceCommand extends BaseGuildCommand {
             },
             timestamp: context.timestamp
         };
-        await context.util.send(config.channel, {
+
+        const announcement = await context.util.send(config.channel, {
             content: config.role.toString(),
             embeds: [embed],
             allowedMentions: mentions
         });
+
+        if (announcement === undefined)
+            return this.error('I wasnt able to send that message for some reason!');
+
+        if (announcement.crosspostable)
+            await announcement.crosspost();
 
         return this.success('I\'ve sent the announcement!');
     }
