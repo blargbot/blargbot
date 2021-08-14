@@ -3,6 +3,12 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class PatCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('pat', 'pat', 'pats', 'user', 'Give somebody a lovely pat.', cluster.config.general.wolke);
+        super('pat', {
+            search: 'pat',
+            action: 'pats',
+            user: true,
+            description: 'Give somebody a lovely pat.',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

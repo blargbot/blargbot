@@ -3,6 +3,12 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class HugCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('hug', 'hug', 'hugs', 'user', 'Give somebody a hug.', cluster.config.general.wolke);
+        super('hug', {
+            search: 'hug',
+            action: 'hugs',
+            user: true,
+            description: 'Give somebody a hug.',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

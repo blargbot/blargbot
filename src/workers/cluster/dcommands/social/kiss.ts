@@ -3,6 +3,12 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class KissCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('kiss', 'kiss', 'kisses', 'user', 'Give someone a kiss!', cluster.config.general.wolke);
+        super('kiss', {
+            search: 'kiss',
+            action: 'kisses',
+            user: true,
+            description: 'Give someone a kiss!',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

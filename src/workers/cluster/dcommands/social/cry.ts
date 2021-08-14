@@ -3,6 +3,11 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class CryCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('cry', 'cry', 'cries', 'self', 'Show everyone that you\'re crying.', cluster.config.general.wolke);
+        super('cry', {
+            search: 'cry',
+            action: 'cries',
+            description: 'Show everyone that you\'re crying.',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

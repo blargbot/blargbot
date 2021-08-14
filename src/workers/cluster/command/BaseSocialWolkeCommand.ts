@@ -5,39 +5,39 @@ import Wolke from 'wolken';
 import { BaseGlobalCommand } from './BaseGlobalCommand';
 import { CommandContext } from './CommandContext';
 
+export interface SocialWolkeOptions {
+    search: string;
+    action?: string;
+    user?: boolean;
+    description: string;
+    wolkeKey: string;
+}
+
 export abstract class BaseSocialWolkeCommand extends BaseGlobalCommand {
     private readonly client: Wolke;
 
     public constructor(
         name: string,
-        type: string,
-        action: string | undefined,
-        target: 'self' | 'user' | 'none',
-        description: string,
-        wolkeKey: string
+        options: SocialWolkeOptions
     ) {
         super({
             name: name,
             category: CommandType.SOCIAL,
             definitions: [
-                target !== 'self' ? target === 'none' ? {
+                options.user !== true ? {
                     parameters: '',
-                    description,
-                    execute: (ctx) => this.render(ctx, type, undefined, undefined)
+                    description: options.description,
+                    execute: (ctx) => this.render(ctx, options.search, options.action, undefined)
                 } : {
                     parameters: '{user:user+?}',
-                    description,
+                    description: options.description,
                     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                    execute: (ctx, [user]) => this.render(ctx, type, action, user ?? ctx.author)
-                } : {
-                    parameters: '',
-                    description,
-                    execute: (ctx) => this.render(ctx, type, action, undefined)
+                    execute: (ctx, [user]) => this.render(ctx, options.search, options.action, user ?? ctx.author)
                 }
             ]
         });
 
-        this.client = new Wolke(wolkeKey, 'Wolke', 'blargbot/6.0.0');
+        this.client = new Wolke(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
     }
 
     public async render(context: CommandContext, type: string, action: string | undefined, target: User | undefined): Promise<MessageOptions> {

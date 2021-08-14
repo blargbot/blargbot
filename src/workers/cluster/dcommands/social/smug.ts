@@ -3,6 +3,11 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class SmugCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('smug', 'smug', 'is smug', 'self', 'Let out your inner smugness.', cluster.config.general.wolke);
+        super('smug', {
+            search: 'smug',
+            action: 'is smug',
+            description: 'Let out your inner smugness.',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

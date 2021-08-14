@@ -3,6 +3,11 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class StareCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('stare', 'stare', 'stares', 'self', 'Staaaaaaaaare', cluster.config.general.wolke);
+        super('stare', {
+            search: 'stare',
+            action: 'stares',
+            description: 'Staaaaaaaaare',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

@@ -3,6 +3,12 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class CuddleCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('cuddle', 'cuddle', 'cuddles with', 'user', 'Cuddle with someone.', cluster.config.general.wolke);
+        super('cuddle', {
+            search: 'cuddle',
+            action: 'cuddles with',
+            user: true,
+            description: 'Cuddle with someone.',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

@@ -3,6 +3,12 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class PunchCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('punch', 'punch', 'punches', 'user', 'Punch someone. They probably deserved it.', cluster.config.general.wolke);
+        super('punch', {
+            search: 'punch',
+            action: 'punches',
+            user: true,
+            description: 'Punch someone. They probably deserved it.',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }

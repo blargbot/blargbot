@@ -3,6 +3,11 @@ import { BaseSocialWolkeCommand } from '@cluster/command';
 
 export class ThumbsupCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {
-        super('thumbsup', 'thumbsup', 'gives a thumbs up', 'self', 'Give a thumbs up!', cluster.config.general.wolke);
+        super('thumbsup', {
+            search: 'thumbsup',
+            action: 'gives a thumbs up',
+            description: 'Give a thumbs up!',
+            wolkeKey: cluster.config.general.wolke
+        });
     }
 }
