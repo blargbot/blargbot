@@ -27,6 +27,6 @@ export class SayCommand extends BaseGlobalCommand {
         if (!guard.isTextableChannel(channel))
             await context.reply(`You cant send messages to ${channel.toString()}`);
 
-        await context.util.send(channel.id, text);
+        await context.send(channel.id, text);
     }
 }

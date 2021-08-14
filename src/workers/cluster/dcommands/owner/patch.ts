@@ -56,7 +56,7 @@ export class PatchCommand extends BaseGlobalCommand {
         if (response?.content.toLowerCase() !== 'yes')
             return this.info('Patch cancelled');
 
-        const changelog = await context.util.send(channel, {
+        const changelog = await context.send(channel, {
             content: role?.toString(),
             embeds: [embed],
             allowedMentions: {

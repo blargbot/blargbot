@@ -82,7 +82,7 @@ export class AnnounceCommand extends BaseGuildCommand {
             timestamp: context.timestamp
         };
 
-        const announcement = await context.util.send(config.channel, {
+        const announcement = await context.send(config.channel, {
             content: config.role.toString(),
             embeds: [embed],
             allowedMentions: mentions

@@ -29,12 +29,12 @@ export class RestartCommand extends BaseGlobalCommand {
     }
 
     private async restartWebsites(context: CommandContext): Promise<void> {
-        await context.util.send(context, 'Frontend has been respawned.');
+        await context.reply('Frontend has been respawned.');
         context.cluster.worker.send('respawnFrontend', context.channel.id);
     }
 
     private async restart(context: CommandContext): Promise<void> {
-        await context.util.send(context, 'Ah! You\'ve killed me! D:');
+        await context.reply('Ah! You\'ve killed me! D:');
         await context.database.vars.set('restart', {
             varvalue: {
                 channel: context.channel.id,
@@ -45,7 +45,7 @@ export class RestartCommand extends BaseGlobalCommand {
     }
 
     private async respawnClusters(context: CommandContext): Promise<void> {
-        await context.util.send(context, 'Ah! You\'ve killed me but in a way that minimizes downtime! D:');
+        await context.reply('Ah! You\'ve killed me but in a way that minimizes downtime! D:');
         context.cluster.worker.send('respawnAll', context.channel.id);
     }
 }

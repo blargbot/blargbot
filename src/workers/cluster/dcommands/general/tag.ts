@@ -493,7 +493,7 @@ export class TagCommand extends BaseGuildCommand {
         if (user.reports?.[match.name] !== undefined)
             await context.database.tags.incrementReports(match.name, 1);
         await context.database.users.setTagReport(context.author.id, match.name, reason);
-        await context.util.send(context.config.discord.channels.tagreports,
+        await context.send(context.config.discord.channels.tagreports,
             `**${humanize.fullName(context.author)}** has reported the tag: ${match.name}\n\n${reason}`);
         return this.success(`The \`${match.name}\` tag has been reported.`);
     }
@@ -735,7 +735,7 @@ export class TagCommand extends BaseGuildCommand {
             });
         }
 
-        await context.util.send(context.config.discord.channels.taglog, {
+        await context.send(context.config.discord.channels.taglog, {
             embeds: [
                 {
                     title: action,
