@@ -424,6 +424,7 @@ export interface StoredGuildSettings {
     readonly dmhelp?: boolean;
     readonly kickoverride?: number;
     readonly banoverride?: number;
+    readonly cahnsfw?: boolean;
 }
 
 export interface GuildModlogEntry {

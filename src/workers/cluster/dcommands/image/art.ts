@@ -7,7 +7,6 @@ export class ArtCommand extends BaseGlobalImageCommand {
     public constructor() {
         super({
             name: 'art',
-            description: 'Shows everyone a work of art.',
             definitions: [
                 {
                     parameters: '{user:user+}',

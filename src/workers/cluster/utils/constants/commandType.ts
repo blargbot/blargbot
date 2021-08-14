@@ -1,6 +1,6 @@
 import { CommandContext } from '@cluster/command';
 import { CommandPropertiesSet } from '@cluster/types';
-import { isGuildCommandContext } from '@cluster/utils/guard';
+import { guard } from '@cluster/utils';
 
 import { defaultStaff } from './defaultStaff';
 
@@ -25,7 +25,15 @@ export const commandTypeDetails: CommandPropertiesSet = {
     },
     [CommandType.NSFW]: {
         name: 'NSFW',
-        requirement: () => true,
+        requirement: (context: CommandContext) => {
+            if (guard.isPrivateCommandContext(context))
+                return true;
+
+            if ('nsfw' in context.channel)
+                return context.channel.nsfw;
+
+            return false;
+        },
         description: 'Commands that can only be executed in NSFW channels.',
         color: 0x010101
     },
@@ -45,7 +53,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
     [CommandType.SOCIAL]: {
         name: 'Social',
         async requirement(context: CommandContext): Promise<boolean> {
-            if (!isGuildCommandContext(context))
+            if (!guard.isGuildCommandContext(context))
                 return false;
             return await context.cluster.database.guilds.getSetting(context.channel.guild.id, 'social') ?? false;
         },

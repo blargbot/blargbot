@@ -9,6 +9,12 @@ export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix' 
         desc: 'Whether to record chat logs or not.',
         type: 'bool'
     },
+    cahnsfw: {
+        key: 'cahnsfw',
+        name: 'Is CAH NSFW',
+        desc: 'Whether \'cah\' can only be done in nsfw channels or not.',
+        type: 'bool'
+    },
     deletenotif: {
         key: 'deletenotif',
         name: 'Delete notifications',
