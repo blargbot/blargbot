@@ -110,10 +110,6 @@ export interface WhitelistedDomainsStoredVar extends StoredVar<'whitelistedDomai
     readonly values: { readonly [domain: string]: boolean; };
 }
 
-export interface ChangelogStoredVar extends StoredVar<'changelog'> {
-    readonly guilds: { readonly [guildid: string]: string; };
-}
-
 export interface PGStoredVar extends StoredVar<'pg'> {
     readonly value: number;
 }
@@ -143,7 +139,6 @@ export type KnownStoredVars =
     | GuildBlacklistStoredVar
     | BlacklistStoredVar
     | WhitelistedDomainsStoredVar
-    | ChangelogStoredVar
     | PGStoredVar
     | PoliceStoredVar
     | SupportStoredVar
@@ -157,14 +152,13 @@ export type MutableKnownStoredVars =
     | GuildBlacklistStoredVar
     | BlacklistStoredVar
     | WhitelistedDomainsStoredVar
-    | ChangelogStoredVar
     | PGStoredVar
     | PoliceStoredVar
     | SupportStoredVar
     | VersionStoredVar
     | CleverStatsStoredVar
 
-export type GetStoredVar<T extends KnownStoredVars['varname']> = Extract<KnownStoredVars, { varname: T; }>;
+export type GetStoredVar<T extends KnownStoredVars['varname']> = Omit<Extract<KnownStoredVars, { varname: T; }>, 'varname'>;
 
 export interface StoredEventOptionsBase {
     readonly source: string;
@@ -612,9 +606,10 @@ export interface UserTable {
 }
 
 export interface VarsTable {
+    set<K extends KnownStoredVars['varname']>(name: K, value: GetStoredVar<K> | undefined): Promise<boolean>;
     get<K extends KnownStoredVars['varname']>(key: K): Promise<GetStoredVar<K> | undefined>;
-    set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean>;
-    delete<K extends KnownStoredVars['varname']>(key: K): Promise<boolean>;
+    get(key: string): Promise<unknown>;
+    delete(key: string): Promise<boolean>;
 }
 
 export interface EventsTable {

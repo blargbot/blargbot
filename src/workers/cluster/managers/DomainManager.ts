@@ -26,10 +26,7 @@ export class DomainManager {
                 added.push(domain);
         }
 
-        await this.db.set({
-            varname: 'whitelistedDomains',
-            values: this.whitelist
-        });
+        await this.db.set('whitelistedDomains', { values: this.whitelist });
 
         return { added, removed };
     }

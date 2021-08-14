@@ -40,8 +40,8 @@ export class BotStaffManager {
         const support = userIdsWithRole(guild, this.cluster.config.discord.roles.support);
 
         await Promise.all([
-            this.cluster.database.vars.set({ varname: 'police', value: staff }),
-            this.cluster.database.vars.set({ varname: 'support', value: support })
+            this.cluster.database.vars.set('police', { value: staff }),
+            this.cluster.database.vars.set('support', { value: support })
         ]);
 
         return { staff, support };

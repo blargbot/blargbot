@@ -35,8 +35,7 @@ export class RestartCommand extends BaseGlobalCommand {
 
     private async restart(context: CommandContext): Promise<void> {
         await context.util.send(context, 'Ah! You\'ve killed me! D:');
-        await context.database.vars.set<'restart'>({
-            varname: 'restart',
+        await context.database.vars.set('restart', {
             varvalue: {
                 channel: context.channel.id,
                 time: moment().valueOf()

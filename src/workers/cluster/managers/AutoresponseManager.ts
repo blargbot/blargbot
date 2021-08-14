@@ -47,10 +47,7 @@ ${codeBlock(code, 'js')}`
             if (whitelisted) this.#guilds.add(guildId);
             else this.#guilds.delete(guildId);
 
-            await this.cluster.database.vars.set({
-                varname: 'arwhitelist',
-                values: [...this.#guilds]
-            });
+            await this.cluster.database.vars.set('arwhitelist', { values: [...this.#guilds] });
         }
 
         if (isChange) {

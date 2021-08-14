@@ -54,7 +54,7 @@ export class UpdateCommand extends BaseGlobalCommand {
                     patch++;
                     break;
             }
-            await context.database.vars.set({ varname: 'version', major, minor, patch });
+            await context.database.vars.set('version', { major, minor, patch });
             const newCommit = await execCommandline('git rev-parse HEAD');
             return this.success(`Updated to version ${major}.${minor}.${patch} commit \`${newCommit}\`!\nRun \`${context.prefix}restart\` to gracefully start all the clusters on this new version.`);
         } catch (err: unknown) {

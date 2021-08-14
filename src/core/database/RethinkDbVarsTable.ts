@@ -1,5 +1,5 @@
 import { Logger } from '@core/Logger';
-import { GetStoredVar, KnownStoredVars, VarsTable } from '@core/types';
+import { GetStoredVar, KnownStoredVars, MutableKnownStoredVars, VarsTable } from '@core/types';
 
 import { RethinkDb, RethinkDbTable } from './base';
 
@@ -15,8 +15,9 @@ export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTa
         return <GetStoredVar<K> | undefined>await this.rget(key);
     }
 
-    public async set<K extends KnownStoredVars['varname']>(value: GetStoredVar<K>): Promise<boolean> {
-        return await this.rset(value.varname, value);
+    public async set<K extends KnownStoredVars['varname']>(name: K, value: GetStoredVar<K>): Promise<boolean> {
+        const dbVal = <MutableKnownStoredVars><unknown>{ varname: name, ...value };
+        return await this.rset(name, dbVal);
     }
 
     public async delete<K extends KnownStoredVars['varname']>(key: K): Promise<boolean> {
