@@ -9,7 +9,6 @@ export enum CommandType {
     OWNER,
     NSFW,
     IMAGE,
-    MUSIC,
     ADMIN,
     SOCIAL,
     DEVELOPER,
@@ -34,12 +33,6 @@ export const commandTypeDetails: CommandPropertiesSet = {
         name: 'Image',
         requirement: () => true,
         description: 'Commands that generate or display images.',
-        color: 0xefff00
-    },
-    [CommandType.MUSIC]: {
-        name: 'Music',
-        requirement: () => false,
-        description: '',
         color: 0xefff00
     },
     [CommandType.ADMIN]: {

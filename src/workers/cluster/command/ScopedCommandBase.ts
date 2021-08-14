@@ -7,7 +7,7 @@ import { compileSignatures } from './compilation';
 import { HandlerMiddleware } from './middleware';
 
 // Circular reference means this needs to be resolved asyncronously;
-const helpCommandPromise = import('@cluster/dcommands/help');
+const helpCommandPromise = import('@cluster/dcommands/general/help');
 
 export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
     private readonly handler: HandlerMiddleware<TContext>;

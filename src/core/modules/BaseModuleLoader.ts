@@ -29,6 +29,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
         this.#modules.on('link', (...args: unknown[]) => this.emit('link', ...args));
         this.#modules.on('unlink', (...args: unknown[]) => this.emit('unlink', ...args));
     }
+
     public list(): Generator<TModule>;
     public list(filter: (module: TModule) => boolean): Generator<TModule>
     public * list(filter?: (module: TModule) => boolean): Generator<TModule> {
@@ -45,7 +46,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     }
 
     public async init(): Promise<void> {
-        this.load(await this.findFiles());
+        this.load(await toArray(this.findFiles()));
     }
 
     private load(fileNames: Iterable<string>, loader = require): void {
@@ -81,7 +82,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     public reload(fileNames: Iterable<string>): void
     public reload(fileNames?: Iterable<string>): void | Promise<void> {
         if (fileNames === undefined) {
-            return this.findFiles().then(files => this.load(files, reload));
+            return toArray(this.findFiles()).then(files => this.load(files, reload));
         }
         this.load(fileNames, reload);
     }
@@ -108,9 +109,19 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
 
     protected abstract tryActivate(rawModule: unknown): ModuleResult<TModule> | undefined;
 
-    private async findFiles(): Promise<Iterable<string>> {
-        const fileNames = await fs.readdir(this.#root);
-        return fileNames.filter(n => n.endsWith('.js'));
+    private async * findFiles(): AsyncGenerator<string> {
+        const directories = [this.#root];
+        let dir;
+        while ((dir = directories.shift()) !== undefined) {
+            const items = await fs.readdir(dir);
+            for (const item of items) {
+                const location = path.join(dir, item);
+                if ((await fs.stat(location)).isDirectory())
+                    directories.push(location);
+                else if (item.endsWith('.js'))
+                    yield location.replace(this.#root, '');
+            }
+        }
     }
 }
 
@@ -123,4 +134,11 @@ function getAbsolutePath(...segments: string[]): string {
 
 function isPromiseLike<T>(value: T | PromiseLike<T>): value is PromiseLike<T> {
     return typeof value === 'object' && 'then' in value && typeof value.then === 'function';
+}
+
+async function toArray<T>(source: AsyncIterable<T>): Promise<T[]> {
+    const result = [];
+    for await (const item of source)
+        result.push(item);
+    return result;
 }

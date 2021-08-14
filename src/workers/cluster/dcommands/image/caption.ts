@@ -50,7 +50,7 @@ export class CaptionCommand extends BaseGlobalImageCommand {
             return this.error('You must give atleast 1 caption!');
 
         if (!Object.keys(fontLookup).includes(fontName))
-            return this.error(`${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see alla available fonts`);
+            return this.error(`${fontName} is not a supported font! Use \`${context.prefix}caption list\` to see all available fonts`);
 
         if (!guard.isUrl(url))
             return this.error(`${url} is not a valid url!`);
