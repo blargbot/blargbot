@@ -17,7 +17,7 @@ export interface SendPayloadContent extends MessageOptions {
     nsfw?: string;
     isHelp?: boolean;
 }
-export type SendPayload = SendPayloadContent | string | boolean;
+export type SendPayload = SendPayloadContent | string;
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

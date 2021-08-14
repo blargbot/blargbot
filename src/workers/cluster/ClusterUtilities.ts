@@ -1,8 +1,8 @@
 import { FindEntityOptions, LookupMatch, MessagePrompt } from '@cluster/types';
-import { codeBlock, defaultStaff, guard, humanize, parse } from '@cluster/utils';
+import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { SendPayload } from '@core/types';
-import { AllChannels, GuildMember, GuildTextBasedChannels, Message, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { SendPayload, SendPayloadContent } from '@core/types';
+import { AllChannels, EmojiIdentifierResolvable, GuildMember, GuildTextBasedChannels, Message, MessageActionRowOptions, MessageComponentInteraction, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -13,6 +13,143 @@ export class ClusterUtilities extends BaseUtilities {
         public readonly cluster: Cluster
     ) {
         super(cluster);
+    }
+
+    public async lookup<T>(
+        channel: TextBasedChannels,
+        user: User,
+        choices: Array<{ label: string; value: T; description?: string; emoji?: EmojiIdentifierResolvable; }>,
+        payload: string | Omit<SendPayloadContent, 'components'>,
+        timeout = 300000
+    ): Promise<T | undefined> {
+        if (choices.length === 0)
+            return undefined;
+
+        if (typeof payload === 'string')
+            payload = { content: payload };
+
+        const prevId = snowflake.create().toString();
+        const nextId = snowflake.create().toString();
+        const selectId = snowflake.create().toString();
+
+        const valueMap: Record<string, T | undefined> = {};
+        const options: MessageSelectOptionData[] = [];
+        let page = 0;
+        const lastPage = Math.floor(choices.length / 24);
+
+        for (const option of choices) {
+            const id = snowflake.create().toString();
+            valueMap[id] = option.value;
+            options.push({ ...option, value: id });
+        }
+
+        const validIds = new Set([nextId, prevId, selectId]);
+        const collector = channel.createMessageComponentCollector({
+            time: timeout,
+            filter: async (interaction) => {
+                if (!validIds.has(interaction.customId))
+                    return false;
+
+                if (interaction.user.id !== user.id) {
+                    await interaction.reply({ content: '❌ You cant use this lookup!', ephemeral: true });
+                    return false;
+                }
+
+                return true;
+            }
+        });
+
+        try {
+            collector.on('collect', async interaction => {
+                let pageShift = -1;
+                switch (interaction.customId) {
+                    case nextId:
+                        pageShift = 1;
+                    //fallthrough
+                    case prevId: {
+                        page += pageShift;
+                        const promises: Array<Promise<unknown>> = [interaction.deferUpdate({})];
+                        if (prompt?.editable === true)
+                            promises.push(prompt.edit({ components: createComponents() }));
+                        await Promise.all(promises);
+                        break;
+                    }
+                    case selectId:
+                        collector.stop();
+                        break;
+                }
+            });
+
+            const createComponents = (): MessageActionRowOptions[] => {
+                const result: MessageActionRowOptions[] = [
+                    {
+                        type: 'ACTION_ROW',
+                        components: [
+                            {
+                                type: 'SELECT_MENU',
+                                customId: selectId,
+                                options: [
+                                    ...options.slice(page * 24, (page + 1) * 24),
+                                    { label: 'Cancel', value: snowflake.create().toString(), emoji: '❌' }
+                                ]
+                            }
+                        ]
+                    }
+                ];
+                if (lastPage === 0)
+                    return result;
+
+                result.push({
+                    type: 'ACTION_ROW',
+                    components: [
+                        {
+                            type: 'BUTTON',
+                            customId: prevId,
+                            label: page === 0
+                                ? 'Previous page'
+                                : `Previous page (${page}/${lastPage + 1})`,
+                            emoji: '◀️',
+                            style: 'SECONDARY',
+                            disabled: page === 0
+                        },
+                        {
+
+                            type: 'BUTTON',
+                            customId: nextId,
+                            label: page === lastPage
+                                ? 'Next page'
+                                : `Next page (${page + 2}/${lastPage + 1})`,
+                            emoji: '▶️',
+                            style: 'SECONDARY',
+                            disabled: page === lastPage
+                        }
+                    ]
+                });
+
+                return result;
+            };
+
+            const prompt = await this.send(channel, {
+                ...payload,
+                components: createComponents()
+            });
+
+            if (prompt === undefined)
+                return undefined;
+
+            try {
+                const interaction = await new Promise<MessageComponentInteraction | undefined>(resolve => collector.on('end', c => resolve(c.last())));
+                if (interaction === undefined || !interaction.isSelectMenu())
+                    return undefined;
+                return valueMap[interaction.values[0]];
+            } finally {
+                await prompt.delete();
+            }
+        } catch (err: unknown) {
+            return undefined;
+        } finally {
+            collector.stop();
+        }
     }
 
     public async getMember(msg: UserChannelInteraction<GuildTextBasedChannels>, name: string, args?: FindEntityOptions): Promise<GuildMember | undefined> {

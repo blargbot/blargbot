@@ -51,24 +51,14 @@ export class BaseUtilities {
         return `${scheme}://${host}/${path}`;
     }
 
-    public async send(context: SendContext, payload: SendPayload | undefined): Promise<Message | undefined> {
+    public async send(context: SendContext, payload: SendPayload): Promise<Message | undefined> {
         metrics.sendCounter.inc();
 
         let channel = await this.getSendChannel(context);
         const author = typeof context === 'object' && 'author' in context ? context.author : undefined;
 
-        switch (typeof payload) {
-            case 'string':
-                payload = { content: payload };
-                break;
-            case 'boolean':
-            case 'number':
-                payload = { content: payload.toString() };
-                break;
-            case 'object':
-                break;
-            default: payload = {};
-        }
+        if (typeof payload === 'string')
+            payload = { content: payload };
 
         // Send help messages to DMs if the message is marked as a help message
         if (payload.isHelp === true
@@ -98,7 +88,10 @@ export class BaseUtilities {
             payload.embeds = payload.files = undefined;
         }
 
-        if (payload.content === undefined && (payload.embeds?.length ?? 0) === 0 && (payload.files?.length ?? 0) === 0) {
+        if (payload.content === undefined
+            && (payload.embeds?.length ?? 0) === 0
+            && (payload.files?.length ?? 0) === 0
+            && (payload.components?.length ?? 0) === 0) {
             this.logger.error('Tried to send an empty message!');
             throw new Error('No content');
         }
@@ -237,19 +230,9 @@ export class BaseUtilities {
     }
 
     public async generateOutputPage(payload: SendPayload, channel?: TextBasedChannels): Promise<Snowflake> {
-        switch (typeof payload) {
-            case 'string':
-                payload = { content: payload };
-                break;
-            case 'boolean':
-                payload = { content: payload.toString() };
-                break;
-            case 'object':
-                break;
-            default:
-                payload = {};
-                break;
-        }
+        if (typeof payload === 'string')
+            payload = { content: payload };
+
         const id = snowflake.create();
         await this.database.dumps.add({
             id: id.toString(),

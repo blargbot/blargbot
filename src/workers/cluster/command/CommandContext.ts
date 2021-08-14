@@ -33,11 +33,11 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
         this.argsString = parts[1] ?? '';
     }
 
-    public async reply(content: SendPayload | undefined): Promise<Message & { channel: TChannel; } | undefined> {
+    public async reply(content: SendPayload): Promise<Message & { channel: TChannel; } | undefined> {
         return <Message & { channel: TChannel; }>await this.cluster.util.send(this.message, content);
     }
 
-    public async send(context: SendContext, content: SendPayload | undefined): Promise<Message | undefined> {
+    public async send(context: SendContext, content: SendPayload): Promise<Message | undefined> {
         return await this.cluster.util.send(context, content);
     }
 }
