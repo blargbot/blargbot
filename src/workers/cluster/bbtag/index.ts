@@ -6,7 +6,7 @@ export * from './BBTagContext';
 export * from './BBTagError';
 export * from './Caching';
 export * from './docs';
-export * from './Engine';
+export * from './BBTagEngine';
 export * from './limits';
 export * from './ScopeCollection';
 export * from './TagCooldownManager';

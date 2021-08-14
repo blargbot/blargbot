@@ -11,8 +11,8 @@ import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import { BaseSubtag } from './BaseSubtag';
+import { BBTagEngine } from './BBTagEngine';
 import { CacheEntry, VariableCache } from './Caching';
-import { BBTagEngine } from './Engine';
 import { limits } from './limits';
 import { ScopeCollection } from './ScopeCollection';
 import { TagCooldownManager } from './TagCooldownManager';
