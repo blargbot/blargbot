@@ -1,6 +1,7 @@
 export * from './BaseCommand';
 export * from './BaseGlobalCommand';
 export * from './BaseGlobalImageCommand';
+export * from './BaseSocialWolkeCommand';
 export * from './BaseGuildCommand';
 export * from './BasePrivateCommand';
 export * from './CommandContext';

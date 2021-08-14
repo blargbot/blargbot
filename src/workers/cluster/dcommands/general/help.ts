@@ -173,7 +173,7 @@ export class HelpCommand extends BaseGlobalCommand {
 
         for (const signature of signatures) {
             fields.push({
-                name: `__\`${context.prefix}${command.name} ${signature.usage}\`__`,
+                name: `__\`${context.prefix}${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}\`__`,
                 value: `${signature.notes.join('\n')}\n\n${signature.description}`.trim()
             });
         }

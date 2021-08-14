@@ -18,7 +18,7 @@ declare module 'wolken' {
         tags?: string[];
         allowNSFW?: boolean | string;
         hidden?: boolean;
-        fileType?: string;
+        filetype?: string;
     }
 
     interface WolkeTypeQueryOptions extends WolkeQueryOptionsBase {
