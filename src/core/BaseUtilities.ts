@@ -125,11 +125,10 @@ export class BaseUtilities {
 
             const code = error.code;
             if (!guard.hasProperty(sendErrors, code)) {
-                this.logger.error(error);
                 return undefined;
             }
 
-            let result = sendErrors[code](this, channel, payload);
+            let result = sendErrors[code](this, channel, payload, error);
             if (typeof result === 'string' && author !== undefined && await this.canDmErrors(author.id)) {
                 if (guard.isGuildChannel(channel))
                     result += `\nGuild: ${channel.guild.name} (${channel.guild.id})`;
@@ -393,7 +392,7 @@ const sendErrors = {
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    [Constants.APIErrors.INVALID_FORM_BODY]: (util: BaseUtilities, channel: TextBasedChannels, payload: SendPayload) => {
-        util.logger.warn(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`);
+    [Constants.APIErrors.INVALID_FORM_BODY]: (util: BaseUtilities, channel: TextBasedChannels, payload: SendPayload, error: DiscordAPIError) => {
+        util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
     }
 } as const;

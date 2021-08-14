@@ -1,8 +1,8 @@
-import { FindEntityOptions, LookupMatch, MessagePrompt } from '@cluster/types';
+import { FindEntityOptions, MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { SendPayload, SendPayloadContent } from '@core/types';
-import { AllChannels, EmojiIdentifierResolvable, GuildMember, GuildTextBasedChannels, Message, MessageActionRowOptions, MessageComponentInteraction, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AllChannels, EmojiIdentifierResolvable, GuildMember, GuildTextBasedChannels, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -20,22 +20,21 @@ export class ClusterUtilities extends BaseUtilities {
         user: User,
         choices: Array<{ label: string; value: T; description?: string; emoji?: EmojiIdentifierResolvable; }>,
         payload: string | Omit<SendPayloadContent, 'components'>,
+        placeholder?: string | undefined,
         timeout = 300000
     ): Promise<T | undefined> {
         if (choices.length === 0)
             return undefined;
 
+        if (choices.length === 1)
+            return choices[0].value;
+
         if (typeof payload === 'string')
             payload = { content: payload };
 
-        const prevId = snowflake.create().toString();
-        const nextId = snowflake.create().toString();
-        const selectId = snowflake.create().toString();
-
         const valueMap: Record<string, T | undefined> = {};
         const options: MessageSelectOptionData[] = [];
-        let page = 0;
-        const lastPage = Math.floor(choices.length / 24);
+        const pageSize = 25;
 
         for (const option of choices) {
             const id = snowflake.create().toString();
@@ -43,7 +42,21 @@ export class ClusterUtilities extends BaseUtilities {
             options.push({ ...option, value: id });
         }
 
-        const validIds = new Set([nextId, prevId, selectId]);
+        const lookupOptions: LookupComponentOptions = {
+            content: payload.content ?? '',
+            prevId: snowflake.create().toString(),
+            nextId: snowflake.create().toString(),
+            cancelId: snowflake.create().toString(),
+            selectId: snowflake.create().toString(),
+            get select(): MessageSelectOptionData[] {
+                return options.slice(this.page * pageSize, (this.page + 1) * pageSize);
+            },
+            page: 0,
+            lastPage: Math.floor(choices.length / pageSize),
+            placeholder
+        };
+
+        const validIds = new Set([lookupOptions.nextId, lookupOptions.prevId, lookupOptions.selectId, lookupOptions.cancelId]);
         const collector = channel.createMessageComponentCollector({
             time: timeout,
             filter: async (interaction) => {
@@ -63,88 +76,34 @@ export class ClusterUtilities extends BaseUtilities {
             collector.on('collect', async interaction => {
                 let pageShift = -1;
                 switch (interaction.customId) {
-                    case nextId:
+                    case lookupOptions.nextId:
                         pageShift = 1;
                     //fallthrough
-                    case prevId: {
-                        page += pageShift;
+                    case lookupOptions.prevId: {
+                        lookupOptions.page += pageShift;
                         const promises: Array<Promise<unknown>> = [interaction.deferUpdate({})];
                         if (prompt?.editable === true)
-                            promises.push(prompt.edit({ components: createComponents() }));
+                            promises.push(prompt.edit(createLookupBody(lookupOptions)));
                         await Promise.all(promises);
                         break;
                     }
-                    case selectId:
+                    case lookupOptions.cancelId:
+                    case lookupOptions.selectId:
                         collector.stop();
                         break;
                 }
             });
 
-            const createComponents = (): MessageActionRowOptions[] => {
-                const result: MessageActionRowOptions[] = [
-                    {
-                        type: 'ACTION_ROW',
-                        components: [
-                            {
-                                type: 'SELECT_MENU',
-                                customId: selectId,
-                                options: [
-                                    ...options.slice(page * 24, (page + 1) * 24),
-                                    { label: 'Cancel', value: snowflake.create().toString(), emoji: '❌' }
-                                ]
-                            }
-                        ]
-                    }
-                ];
-                if (lastPage === 0)
-                    return result;
-
-                result.push({
-                    type: 'ACTION_ROW',
-                    components: [
-                        {
-                            type: 'BUTTON',
-                            customId: prevId,
-                            label: page === 0
-                                ? 'Previous page'
-                                : `Previous page (${page}/${lastPage + 1})`,
-                            emoji: '◀️',
-                            style: 'SECONDARY',
-                            disabled: page === 0
-                        },
-                        {
-
-                            type: 'BUTTON',
-                            customId: nextId,
-                            label: page === lastPage
-                                ? 'Next page'
-                                : `Next page (${page + 2}/${lastPage + 1})`,
-                            emoji: '▶️',
-                            style: 'SECONDARY',
-                            disabled: page === lastPage
-                        }
-                    ]
-                });
-
-                return result;
-            };
-
-            const prompt = await this.send(channel, {
-                ...payload,
-                components: createComponents()
-            });
+            const prompt = await this.send(channel, { ...payload, ...createLookupBody(lookupOptions) });
 
             if (prompt === undefined)
                 return undefined;
 
-            try {
-                const interaction = await new Promise<MessageComponentInteraction | undefined>(resolve => collector.on('end', c => resolve(c.last())));
-                if (interaction === undefined || !interaction.isSelectMenu())
-                    return undefined;
-                return valueMap[interaction.values[0]];
-            } finally {
-                await prompt.delete();
-            }
+            const interaction = await new Promise<MessageComponentInteraction | undefined>(resolve => collector.on('end', c => resolve(c.last())));
+            await prompt.delete();
+            if (interaction === undefined || !interaction.isSelectMenu())
+                return undefined;
+            return valueMap[interaction.values[0]];
         } catch (err: unknown) {
             return undefined;
         } finally {
@@ -221,9 +180,13 @@ export class ClusterUtilities extends BaseUtilities {
             default: {
                 if (args.quiet === true || args.suppress === true)
                     return undefined;
-                const matches = userList.map(m => ({ content: `${m.username}#${m.discriminator} - ${m.id}`, value: m }));
-                const lookupResponse = await this.createLookup(msg, 'user', matches, args);
-                return lookupResponse;
+                return await this.lookup(
+                    msg.channel,
+                    msg.author,
+                    userList.map(u => ({ label: `${humanize.fullName(u)} (${u.id})`, value: u })),
+                    'ℹ️ Multiple users found! Please select one from the drop down.',
+                    'Select a user'
+                );
             }
         }
     }
@@ -272,9 +235,13 @@ export class ClusterUtilities extends BaseUtilities {
             default: {
                 if (args.quiet === true || args.suppress === true)
                     return undefined;
-                const matches = roleList.map(r => ({ content: `${r.name} - ${r.color.toString(16)} (${r.id})`, value: r }));
-                const lookupResponse = await this.createLookup(msg, 'role', matches, args);
-                return lookupResponse;
+                return await this.lookup(
+                    msg.channel,
+                    msg.author,
+                    roleList.map(r => ({ label: `${r.name} #${r.color.toString(16)} (${r.id})`, value: r })),
+                    'ℹ️ Multiple roles found! Please select one from the drop down.',
+                    'Select a role'
+                );
             }
         }
     }
@@ -327,9 +294,13 @@ export class ClusterUtilities extends BaseUtilities {
             default: {
                 if (args.quiet === true || args.suppress === true)
                     return undefined;
-                const matches = channelList.map(c => ({ content: `${c.name} (${c.id})`, value: c }));
-                const lookupResponse = await this.createLookup(msg, 'channel', matches, args);
-                return lookupResponse;
+                return await this.lookup(
+                    msg.channel,
+                    msg.author,
+                    channelList.map(c => ({ label: `${c.name} (${c.id})`, value: c })),
+                    'ℹ️ Multiple channels found! Please select one from the drop down.',
+                    'Select a channel'
+                );
             }
         }
     }
@@ -371,47 +342,6 @@ export class ClusterUtilities extends BaseUtilities {
                 return undefined;
         }
         return true;
-    }
-
-    public async createLookup<T>(msg: UserChannelInteraction, type: string, matches: Array<LookupMatch<T>>, args: FindEntityOptions = {}): Promise<T | undefined> {
-        const lookupList = matches.slice(0, 20);
-        let outputString = '';
-        for (let i = 0; i < lookupList.length; i++) {
-            outputString += `${i + 1 < 10 ? ` ${i + 1}` : i + 1}. ${lookupList[i].content}\n`;
-        }
-        const moreLookup = lookupList.length < matches.length ? `...and ${matches.length - lookupList.length}more.\n` : '';
-        try {
-            if (args.onSendCallback !== undefined)
-                args.onSendCallback();
-
-            const query = await this.createQuery(msg.channel, msg.author,
-                `Multiple ${type}s found! Please select one from the list.\`\`\`prolog` +
-                `\n${outputString}${moreLookup}--------------------` +
-                '\nC.cancel query```' +
-                `\n**${humanize.fullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`,
-                (msg2) => msg2.content.toLowerCase() === 'c' || parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1,
-                300000,
-                args.label
-            );
-            const response = await query.response;
-            if (query.prompt !== undefined)
-                await query.prompt.channel.messages.delete(query.prompt.id);
-
-            if (response === undefined || response.content.toLowerCase() === 'c') {
-                if (args.suppress === true)
-                    return undefined;
-
-                if (args.onSendCallback !== undefined)
-                    args.onSendCallback();
-
-                await this.send(msg, `Query ${response !== undefined ? 'cancelled' : 'timed out'}${args.label !== undefined ? ' in ' + args.label : ''}.`);
-                return undefined;
-            }
-
-            return lookupList[parseInt(response.content) - 1].value;
-        } catch (err: unknown) {
-            return undefined;
-        }
     }
 
     public async awaitQuery(
@@ -667,4 +597,66 @@ export class ClusterUtilities extends BaseUtilities {
     public isSupport(id: string): boolean {
         return this.cluster.botStaff.support.has(id);
     }
+}
+
+interface LookupComponentOptions {
+    readonly content: string;
+    readonly selectId: string;
+    readonly cancelId: string;
+    readonly prevId: string;
+    readonly nextId: string;
+    readonly lastPage: number;
+    readonly placeholder: string | undefined;
+    readonly select: MessageSelectOptionData[];
+    page: number;
+}
+
+function createLookupBody(options: LookupComponentOptions): { content: string; components: MessageActionRowOptions[]; } {
+    const select: MessageSelectMenuOptions = {
+        type: 'SELECT_MENU',
+        customId: options.selectId,
+        options: options.select,
+        placeholder: options.placeholder
+    };
+    const cancel: MessageButtonOptions = {
+        type: 'BUTTON',
+        customId: options.cancelId,
+        emoji: '✖️',
+        style: 'DANGER'
+    };
+
+    if (options.lastPage === 0) {
+        return {
+            content: options.content,
+            components: [
+                { type: 'ACTION_ROW', components: [select] },
+                { type: 'ACTION_ROW', components: [cancel] }
+            ]
+        };
+    }
+
+    const prev: MessageButtonOptions = {
+        type: 'BUTTON',
+        customId: options.prevId,
+        emoji: ':bigarrowleft:876227640976097351',
+        style: 'PRIMARY',
+        disabled: options.page === 0
+    };
+
+    const next: MessageButtonOptions = {
+
+        type: 'BUTTON',
+        customId: options.nextId,
+        emoji: ':bigarrowright:876227816998461511',
+        style: 'PRIMARY',
+        disabled: options.page === options.lastPage
+    };
+
+    return {
+        content: `${options.content}\nPage ${options.page + 1}/${options.lastPage + 1}`.trim(),
+        components: [
+            { type: 'ACTION_ROW', components: [select] },
+            { type: 'ACTION_ROW', components: [prev, cancel, next] }
+        ]
+    };
 }
