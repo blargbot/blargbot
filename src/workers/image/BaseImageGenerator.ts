@@ -1,6 +1,5 @@
 import { Logger } from '@core/Logger';
 import { TypeMapping } from '@core/types';
-import { directory as res } from '@res';
 import { CommandMap } from 'blargbot-api';
 import gm from 'gm';
 import Jimp from 'jimp';
@@ -12,6 +11,7 @@ import { inspect } from 'util';
 import { ImageGeneratorMap, ImageResult, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
+const imgDir = path.join(path.dirname(require.resolve('@config')), 'res/img');
 
 export abstract class BaseImageGenerator<T extends keyof R, R extends CommandMap = ImageGeneratorMap> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -36,7 +36,7 @@ export abstract class BaseImageGenerator<T extends keyof R, R extends CommandMap
     protected abstract executeCore(message: R[T]): Promise<ImageResult | undefined>;
 
     protected getLocalResourcePath(...segments: string[]): string {
-        return path.join(res, 'img', ...segments);
+        return path.join(imgDir, ...segments);
     }
 
     protected getLocalJimp(...segments: string[]): Promise<Jimp> {
