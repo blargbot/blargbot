@@ -306,11 +306,12 @@ export class BaseUtilities {
         const normalizedQuery = query.toLowerCase();
 
         if (guard.isGuildChannel(channel)) {
+            const normalizedName = channel.name.toLowerCase();
             if (channel.name === query) return 10000;
             if (channel.name.startsWith(query)) return 1000;
-            if (channel.name.startsWith(normalizedQuery)) return 100;
+            if (normalizedName.startsWith(normalizedQuery)) return 100;
             if (channel.name.includes(query)) return 10;
-            if (channel.name.includes(normalizedQuery)) return 1;
+            if (normalizedName.includes(normalizedQuery)) return 1;
         } else if (guard.isPrivateChannel(channel) && 'recipient' in channel) {
             return this.userMatchScore(channel.recipient, query);
         }
@@ -478,12 +479,13 @@ export class BaseUtilities {
 
     public roleMatchScore(role: Role, query: string): number {
         const normalizedQuery = query.toLowerCase();
+        const normalizedName = role.name.toLowerCase();
 
         if (role.name === query) return 10000;
         if (role.name.startsWith(query)) return 1000;
-        if (role.name.startsWith(normalizedQuery)) return 100;
+        if (normalizedName.startsWith(normalizedQuery)) return 100;
         if (role.name.includes(query)) return 10;
-        if (role.name.includes(normalizedQuery)) return 1;
+        if (normalizedName.includes(normalizedQuery)) return 1;
         return 0;
     }
 
