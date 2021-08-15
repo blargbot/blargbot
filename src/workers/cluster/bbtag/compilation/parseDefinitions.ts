@@ -34,8 +34,8 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
     }
 
     const match: Record<string, string | undefined> = /^(?<parameter>.*?)(?::(?<defaultValue>.*?))?(?:#(?<maxLength>\d+))?$/.exec(parameter)?.groups ?? {};
-    const { defaultValue = '', maxLength = '1000000' } = match;
-
+    const { defaultValue = '', maxLength = '1000000', parameter: param } = match;
+    parameter = param ?? parameter;
     let required = true;
     let greedy: number | false = false;
     switch (parameter[parameter.length - 1]) {
