@@ -359,13 +359,28 @@ export class ClusterUtilities extends BaseUtilities {
 
     public async isUserStaff(member: GuildMember): Promise<boolean>;
     public async isUserStaff(userId: string, guildId: string): Promise<boolean>;
-    public async isUserStaff(...args: [userId: string, guildId: string] | [member: GuildMember]): Promise<boolean> {
+    public async isUserStaff(guildId: string | Guild): Promise<(member: GuildMember) => boolean>;
+    public async isUserStaff(
+        ...args:
+            | [userId: string, guildId: string]
+            | [member: GuildMember]
+            | [guildId: string | Guild]
+    ): Promise<boolean | ((member: GuildMember) => boolean)> {
         let member;
         if (args.length === 2) {
             if (args[0] === args[1]) return true;
             member = await this.getMember(args[1], args[0]);
-        } else {
+        } else if (args[0] instanceof GuildMember) {
             member = args[0];
+        } else {
+            const guildId = typeof args[0] === 'string' ? args[0] : args[0].id;
+
+            if (await this.database.guilds.getSetting(guildId, 'permoverride') !== true)
+                return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
+
+            const staffperms = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
+            const allow = typeof staffperms === 'string' ? parseInt(staffperms) : staffperms;
+            return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
         }
 
         if (member === undefined) return false;
