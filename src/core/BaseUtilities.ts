@@ -1,5 +1,5 @@
 import { SendContext, SendPayload } from '@core/types';
-import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, Guild, GuildChannels, GuildMember, Message, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -179,6 +179,34 @@ export class BaseUtilities {
         return await this.send(user.dmChannel ?? await user.createDM(), payload);
     }
 
+    public async addReactions(context: Message, reactions: Iterable<EmojiIdentifierResolvable>): Promise<Record<number, { error: unknown; reactions: string[]; }>> {
+        const errors = {} as Record<number, { error: unknown; reactions: string[]; }>;
+        const reacted = new Set<EmojiIdentifierResolvable>();
+        forloop:
+        for (const reaction of reactions) {
+            if (reacted.size === reacted.add(reaction).size)
+                continue;
+
+            try {
+                await context.react(reaction);
+            } catch (e: unknown) {
+                if (e instanceof DiscordAPIError) {
+                    switch (e.code) {
+                        case Constants.APIErrors.REACTION_BLOCKED:
+                        case Constants.APIErrors.MAXIMUM_REACTIONS:
+                        case Constants.APIErrors.MISSING_PERMISSIONS:
+                            break forloop;
+                        case Constants.APIErrors.UNKNOWN_EMOJI:
+                            continue;
+                    }
+                }
+                throw e;
+            }
+        }
+
+        return errors;
+    }
+
     public async resolveTags(context: ChannelInteraction | UserChannelInteraction | Channel, message: string): Promise<string> {
         const regex = /<[^<>\s]+>/g;
         const promiseMap: { [tag: string]: Promise<string>; } = {};
@@ -254,8 +282,28 @@ export class BaseUtilities {
         return storedUser?.dontdmerrors !== true;
     }
 
+    public getOwners(): Iterable<User> {
+        const owner = this.discord.application.owner;
+        if (owner === null)
+            return [];
+        if (!('members' in owner))
+            return [owner];
+
+        return owner.members
+            .filter(m => m.membershipState === 'ACCEPTED' && m.permissions.includes('*'))
+            .map(m => m.user)
+            .values();
+    }
+
+    public isOwner(userId: string): boolean {
+        for (const owner of this.getOwners())
+            if (owner.id === userId)
+                return true;
+        return false;
+    }
+
     public isDeveloper(userId: string): boolean {
-        return this.config.discord.users.owner === userId
+        return this.isOwner(userId)
             || this.config.discord.users.developers.includes(userId);
     }
 

@@ -112,7 +112,7 @@ export class Cluster extends BaseClient {
     }
 
     public async eval(author: string, text: string): Promise<{ success: boolean; result: unknown; }> {
-        if (author !== this.config.discord.users.owner)
+        if (!this.util.isOwner(author))
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {

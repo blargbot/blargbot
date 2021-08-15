@@ -330,7 +330,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
 
         if (override
-            && (member.id === this.cluster.config.discord.users.owner
+            && (this.isOwner(member.id)
                 || member.guild.ownerId === member.id
                 || member.permissions.has('ADMINISTRATOR')))
             return true;
@@ -407,7 +407,7 @@ export class ClusterUtilities extends BaseUtilities {
             channel = msg.channel;
         }
         if (override
-            && (member.id === this.cluster.config.discord.users.owner
+            && (this.isOwner(member.id)
                 || member.guild.ownerId === member.id
                 || member.permissions.has('ADMINISTRATOR'))
         ) {

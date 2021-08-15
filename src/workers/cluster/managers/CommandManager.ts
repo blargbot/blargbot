@@ -52,7 +52,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         if (command.onlyOn !== undefined && (!guard.isGuildCommandContext(context) || command.onlyOn !== context.channel.guild.id))
             return false; // Command only works on the specific guild
 
-        if (context.author.id === this.cluster.config.discord.users.owner)
+        if (context.util.isOwner(context.author.id))
             return true; // The owner can execute any command anywhere
 
         const category = commandTypeDetails[command.category];

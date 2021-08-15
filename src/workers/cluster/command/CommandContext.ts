@@ -4,7 +4,7 @@ import { humanize } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { SendContext, SendPayload } from '@core/types';
-import { Client as Discord, Message, TextBasedChannels, User } from 'discord.js';
+import { Client as Discord, DMChannel, Message, TextBasedChannels, User } from 'discord.js';
 
 export class CommandContext<TChannel extends TextBasedChannels = TextBasedChannels> {
     public readonly commandText: string;
@@ -39,5 +39,9 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
 
     public async send(context: SendContext, content: SendPayload): Promise<Message | undefined> {
         return await this.cluster.util.send(context, content);
+    }
+
+    public async replyDM(content: SendPayload): Promise<Message & { channel: DMChannel; } | undefined> {
+        return <Message & { channel: DMChannel; }>await this.cluster.util.sendDM(this.author, content);
     }
 }

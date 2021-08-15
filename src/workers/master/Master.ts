@@ -72,7 +72,7 @@ export class Master extends BaseClient {
         }
     }
     public async eval(author: string, text: string): Promise<EvalResult> {
-        if (author !== this.config.discord.users.owner)
+        if (!this.util.isOwner(author))
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {

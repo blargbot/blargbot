@@ -627,7 +627,7 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (context.author.id !== context.config.discord.users.owner
+        if (context.util.isOwner(context.author.id)
             && match.tag !== undefined
             && match.tag.author !== context.author.id) {
             return this.error(`You don't own the \`${match.name}\` tag!`);

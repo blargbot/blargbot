@@ -1,6 +1,6 @@
 import { ClusterUtilities } from '@cluster';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, LookupResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
-import { bbtagUtil, guard, humanize, oldBu, parse } from '@cluster/utils';
+import { bbtagUtil, guard, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
@@ -268,7 +268,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 });
 
             if (response !== undefined) {
-                await oldBu.addReactions(response.channel.id, response.id, [...new Set(this.state.reactions)]);
+                await this.util.addReactions(response, [...new Set(this.state.reactions)]);
                 this.state.ownedMsgs.push(response.id);
                 return response.id;
             }
