@@ -126,6 +126,7 @@
     "homepage": "https://github.com/blargbot/blargbot#readme",
     "_moduleAliases": {
         "@config": "out/config.json",
+        "@package": "out/package.json",
         "@res": "out/res",
         "@core": "out/src/core",
         "@cluster": "out/src/workers/cluster",

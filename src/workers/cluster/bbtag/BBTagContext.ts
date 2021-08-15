@@ -204,7 +204,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             case 'FAILED':
             case 'NO_OPTIONS':
                 if (!noErrors) {
-                    await this.util.send(this.channel, `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} ${this.rootTagName}.`);
+                    await this.util.send(this.channel, `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
                     this.state.query.count++;
                 }
                 return undefined;
@@ -212,7 +212,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             case 'CANCELLED':
                 this.state.query.count = Infinity;
                 if (!noErrors)
-                    await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} ${this.rootTagName}.`);
+                    await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
                 return undefined;
             default:
                 this.state.query[cacheKey][queryString] = result.id;

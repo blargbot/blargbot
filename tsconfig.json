@@ -66,6 +66,9 @@
             "@config": [
                 "./config.json"
             ],
+            "@package": [
+                "./package.json"
+            ],
             "@res/*": [
                 "./res/*"
             ],
