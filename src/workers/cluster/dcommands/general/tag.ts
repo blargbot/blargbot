@@ -80,7 +80,7 @@ export class TagCommand extends BaseGuildCommand {
                 },
                 {
                     parameters: 'list {author+?}',
-                    execute: (ctx, [author]) => this.listTags(ctx, author.join('')),
+                    execute: (ctx, [author]) => this.listTags(ctx, author !== undefined ? author.join('') : undefined),
                     description: 'Lists all tags, or tags made by a specific author'
                 },
                 {
