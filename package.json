@@ -112,7 +112,7 @@
         "lint": "eslint --ext .ts,.vue,.js ./",
         "lint-fix": "eslint --ext .ts,.vue,.js ./ --fix",
         "prepare": "husky install",
-        "clean": "rimraf out/**/*.js out/**/*.js.map"
+        "clean": "rimraf out/**/*.js && rimraf out/**/*.js.map"
     },
     "repository": {
         "type": "git",
