@@ -49,7 +49,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
     }
 
     public async canExecuteDefaultCommand(context: CommandContext, command: BaseCommand, options: CanExecuteDefaultCommandOptions = {}): Promise<boolean> {
-        if (command.onlyOn !== undefined && (!guard.isGuildCommandContext(context) || command.onlyOn !== context.channel.guild.id))
+        if (command.onlyOn !== null && (!guard.isGuildCommandContext(context) || command.onlyOn !== context.channel.guild.id))
             return false; // Command only works on the specific guild
 
         if (context.util.isOwner(context.author.id))

@@ -190,7 +190,7 @@ export class HelpCommand extends BaseGlobalCommand {
                 {
                     title: `Help for ${command.name} ${subcommand}`,
                     url: context.util.websiteLink(`/commands#${command.name}`),
-                    description: command.description,
+                    description: command.description ?? undefined,
                     color: commandTypeDetails[command.category].color,
                     fields: fields
                 }

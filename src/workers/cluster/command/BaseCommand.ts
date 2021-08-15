@@ -8,10 +8,11 @@ export abstract class BaseCommand implements CommandBaseOptions {
     public readonly aliases: readonly string[];
     public readonly category: CommandType;
     public readonly cannotDisable: boolean;
-    public readonly description: string | undefined;
+    public readonly description: string | null;
     public readonly flags: readonly FlagDefinition[];
-    public readonly onlyOn: string | undefined;
+    public readonly onlyOn: string | null;
     public readonly signatures: readonly CommandSignature[];
+    public readonly hidden: boolean;
 
     public get names(): readonly string[] { return [this.name, ...this.aliases]; }
 
@@ -22,10 +23,11 @@ export abstract class BaseCommand implements CommandBaseOptions {
         this.aliases = options.aliases ?? [];
         this.category = options.category;
         this.cannotDisable = options.cannotDisable ?? true;
-        this.description = options.description;
+        this.description = options.description ?? null;
         this.flags = options.flags ?? [];
-        this.onlyOn = options.onlyOn;
+        this.onlyOn = options.onlyOn ?? null;
         this.signatures = options.signatures;
+        this.hidden = options.hidden ?? false;
     }
 
     public abstract checkContext(context: CommandContext): boolean;

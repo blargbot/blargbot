@@ -20,7 +20,9 @@ export class ClusterCommandListHandler extends ClusterEventService {
                 aliases: c.aliases,
                 flags: c.flags,
                 onlyOn: c.onlyOn,
-                signatures: c.signatures
+                signatures: c.signatures,
+                cannotDisable: c.cannotDisable,
+                hidden: c.hidden
             };
         }
         reply(commands);

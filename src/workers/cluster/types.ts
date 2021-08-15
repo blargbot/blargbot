@@ -259,9 +259,10 @@ export interface CommandOptionsBase {
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly description?: string;
+    readonly description?: string | null;
     readonly flags?: readonly FlagDefinition[];
-    readonly onlyOn?: string | undefined;
+    readonly onlyOn?: string | null;
+    readonly hidden?: boolean;
 }
 
 export interface CommandBaseOptions extends CommandOptionsBase {
@@ -414,13 +415,7 @@ export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentVa
     readonly subtagName: string;
 }
 
-export interface CommandDetails {
-    readonly name: string;
-    readonly description: string | undefined;
-    readonly category: CommandType;
-    readonly aliases: readonly string[];
-    readonly flags: readonly FlagDefinition[];
-    readonly onlyOn: string | undefined;
+export interface CommandDetails extends Readonly<Required<CommandOptionsBase>> {
     readonly signatures: readonly CommandSignature[];
 }
 
