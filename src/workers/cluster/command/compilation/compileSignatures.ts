@@ -138,7 +138,7 @@ function readVariableKind(name: string, type: CommandVariableType, parameters: s
     const result = { name, type, raw: false };
     if (name.startsWith('~')) {
         result.raw = true;
-        name = name.slice(1);
+        name = result.name = name.slice(1);
     }
 
     switch (parameters[i]) {
