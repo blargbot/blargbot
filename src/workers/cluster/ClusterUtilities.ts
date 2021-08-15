@@ -81,10 +81,7 @@ export class ClusterUtilities extends BaseUtilities {
                     //fallthrough
                     case lookupOptions.prevId: {
                         lookupOptions.page += pageShift;
-                        const promises: Array<Promise<unknown>> = [interaction.deferUpdate({})];
-                        if (prompt?.editable === true)
-                            promises.push(prompt.edit(createLookupBody(lookupOptions)));
-                        await Promise.all(promises);
+                        await interaction.update(createLookupBody(lookupOptions));
                         break;
                     }
                     case lookupOptions.cancelId:

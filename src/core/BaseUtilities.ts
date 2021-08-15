@@ -60,6 +60,9 @@ export class BaseUtilities {
         if (typeof payload === 'string')
             payload = { content: payload };
 
+        if (payload.reply === undefined && context instanceof Message)
+            payload.reply = { messageReference: context, failIfNotExists: false };
+
         // Send help messages to DMs if the message is marked as a help message
         if (payload.isHelp === true
             && guard.isGuildChannel(channel)
@@ -137,7 +140,10 @@ export class BaseUtilities {
                 result += `\nChannel: ${name} (${channel.id})`;
                 result += '\n\nIf you wish to stop seeing these messages, do the command `dmerrors`.';
 
-                await this.sendDM(author.id, result);
+                await this.sendDM(author.id, {
+                    content: result,
+                    reply: payload.reply
+                });
             }
             return undefined;
         }

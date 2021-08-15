@@ -18,6 +18,22 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         return user?.[key];
     }
 
+    public async setSetting<K extends keyof StoredUserSettings>(userId: string, key: K, value: StoredUserSettings[K]): Promise<boolean> {
+        const user = await this.rget(userId);
+        if (user === undefined)
+            return false;
+
+        if (!await this.rupdate(userId, { [key]: this.setExpr(value) }))
+            return false;
+
+        if (value === undefined)
+            delete user[key];
+        else
+            user[key] = value as MutableStoredUser[K];
+
+        return true;
+    }
+
     public async get(userId: string, skipCache = false): Promise<StoredUser | undefined> {
         return await this.rget(userId, skipCache);
     }

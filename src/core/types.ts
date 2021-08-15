@@ -455,7 +455,7 @@ export interface StoredUser extends StoredUserSettings {
     readonly reports?: { readonly [key: string]: string | undefined; };
 }
 
-export interface MutableStoredUser extends StoredUser {
+export interface MutableStoredUser extends Omit<StoredUser, keyof MutableStoredUserSettings>, MutableStoredUserSettings {
     usernames: StoredUsername[];
     username?: string;
     discriminator?: string;
@@ -468,6 +468,10 @@ export interface StoredUserSettings {
     readonly prefixes?: readonly string[];
     readonly blacklisted?: string;
     readonly timezone?: string;
+}
+
+export interface MutableStoredUserSettings extends Mutable<StoredUserSettings> {
+    prefixes?: string[];
 }
 
 export interface UserTodo {
@@ -599,6 +603,7 @@ export interface GuildTable {
 }
 
 export interface UserTable {
+    setSetting<K extends keyof StoredUserSettings>(userId: string, key: K, value: StoredUserSettings[K]): Promise<boolean>;
     getSetting<K extends keyof StoredUserSettings>(userId: string, key: K, skipCache?: boolean): Promise<StoredUserSettings[K] | undefined>;
     get(userId: string, skipCache?: boolean): Promise<StoredUser | undefined>;
     upsert(user: User): Promise<'inserted' | 'updated' | false>;
