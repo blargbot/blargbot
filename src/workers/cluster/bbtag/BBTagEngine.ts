@@ -1,12 +1,13 @@
 import { Cluster, ClusterUtilities } from '@cluster';
 import { AnalysisResults, BBTagContextOptions, ExecutionResult, RuntimeReturnState, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
-import { bbtagUtil, parse, sleep } from '@cluster/utils';
+import { bbtagUtil, discordUtil, parse, sleep } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { Client as Discord } from 'discord.js';
 import moment from 'moment';
+import { inspect } from 'util';
 
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagContext } from './BBTagContext';
@@ -129,12 +130,16 @@ export class BBTagEngine {
                 return err.message;
 
             this.logger.error(err);
+            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+            let description = `${err}`;
+            if (description.length > discordUtil.getLimit('embed.description'))
+                description = description.substring(0, discordUtil.getLimit('embed.description') - 15) + '... (truncated)';
+
             await this.util.send(this.cluster.config.discord.channels.errorlog, {
-                content: 'A tag error occurred.',
                 embeds: [
                     {
-                        title: err instanceof Error ? err.message : typeof err === 'string' ? err : JSON.stringify(err),
-                        description: err instanceof Error ? err.stack : 'No error stack!',
+                        title: 'A tag error occurred',
+                        description: description,
                         color: parse.color('red'),
                         fields: [
                             { name: 'SubTag', value: definition?.name ?? name, inline: true },
@@ -144,6 +149,12 @@ export class BBTagEngine {
                             { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
                             { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
                         ]
+                    }
+                ],
+                files: [
+                    {
+                        attachment: inspect(err),
+                        name: 'error.txt'
                     }
                 ]
             });

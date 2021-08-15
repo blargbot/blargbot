@@ -266,7 +266,13 @@ export class BaseUtilities {
     public async getChannel(channelId: string): Promise<AllChannels | undefined>;
     public async getChannel(guild: string | Guild, channelId: string): Promise<GuildChannels | undefined>;
     public async getChannel(...args: [string] | [string | Guild, string]): Promise<AllChannels | undefined> {
-        const [guild, channelId] = args.length === 2 ? args : [undefined, args[0]];
+        const _args = args.length === 2 ? args : [undefined, args[0]] as const;
+
+        const guild = _args[0];
+        const channelId = parse.entityId(_args[1], '@!?', true) ?? '';
+        if (channelId === '')
+            return undefined;
+
         try {
             if (guild === undefined)
                 return await this.discord.channels.fetch(channelId) ?? undefined;

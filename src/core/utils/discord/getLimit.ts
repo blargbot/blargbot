@@ -1,6 +1,6 @@
 export function getLimit(component: MessageComponent): number {
     switch (component) {
-        case 'content': return 4000;
+        case 'content': return 2000;
         case 'embed.title': return 256;
         case 'embed.description': return 4096;
         case 'embed.fields': return 25;

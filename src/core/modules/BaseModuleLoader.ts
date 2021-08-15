@@ -50,6 +50,9 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     }
 
     private load(fileNames: Iterable<string>, loader = require): void {
+        if (typeof fileNames === 'string')
+            fileNames = [fileNames];
+
         for (const fileName of fileNames) {
             try {
                 const rawModule = loader(path.join(this.#root, fileName)) as unknown;
@@ -81,9 +84,9 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     public reload(): Promise<void>
     public reload(fileNames: Iterable<string>): void
     public reload(fileNames?: Iterable<string>): void | Promise<void> {
-        if (fileNames === undefined) {
+        if (fileNames === undefined)
             return toArray(this.findFiles()).then(files => this.load(files, reload));
-        }
+
         this.load(fileNames, reload);
     }
 
