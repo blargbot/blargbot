@@ -12,7 +12,7 @@ import moment, { Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AutoresponseManager, BotStaffManager, CommandManager, DomainManager, GreetingManager, ModerationManager } from './managers';
+import { AutoresponseManager, BotStaffManager, CommandManager, ContributorManager, DomainManager, GreetingManager, ModerationManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -23,6 +23,7 @@ export class Cluster extends BaseClient {
     public readonly util: ClusterUtilities;
     public readonly timeouts: TimeoutManager;
     public readonly autoresponses: AutoresponseManager;
+    public readonly contributors: ContributorManager;
     public readonly bbtag: BBTagEngine;
     public readonly images: ImagePool;
     public readonly events: ModuleLoader<BaseService>;
@@ -82,6 +83,7 @@ export class Cluster extends BaseClient {
         this.util = new ClusterUtilities(this);
         this.timeouts = new TimeoutManager(this);
         this.autoresponses = new AutoresponseManager(this);
+        this.contributors = new ContributorManager(this);
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);

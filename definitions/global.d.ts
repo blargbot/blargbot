@@ -1,4 +1,3 @@
-import configJson from '@config';
 import { Snowflake as _Snowflake } from 'catflake';
 
 declare global {
@@ -19,7 +18,7 @@ declare global {
         'object': JObject;
     }
 
-    export type Configuration = typeof configJson;
+    export type Configuration = typeof import('@config')
     export type Snowflake = _Snowflake;
 
     // eslint-disable-next-line @typescript-eslint/ban-types

@@ -1,9 +1,9 @@
-import _colors from '@res/colors.json';
+import colors from '@res/colors.json';
 
 import { randInt } from '../random';
 import { hex } from './hex';
 
-const colors = _colors as { readonly [name: string]: string; };
+const colorKeys = Object.keys(colors);
 
 export function color(text: number | 'random' | string): number {
     if (typeof text === 'number')
@@ -18,7 +18,7 @@ export function color(text: number | 'random' | string): number {
         return randInt(0, 0xffffff);
 
     //By name
-    if (name in colors)
+    if (colorKeys.includes(name))
         return parseInt(colors[name], 16);
 
     //RGB 256,256,256
