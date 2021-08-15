@@ -29,7 +29,7 @@ export class TimersCommand extends BaseGlobalCommand {
                 {
                     parameters: 'clear',
                     description: 'Clears all currently active timers',
-                    execute: (ctx) => this.cancelAllTimers(ctx)
+                    execute: (ctx) => this.clearAllTimers(ctx)
                 }
             ]
         });
@@ -77,7 +77,7 @@ export class TimersCommand extends BaseGlobalCommand {
             ? `Showing timers ${(page - 1) * pageSize + 1} - ${page * pageSize + 1} of ${eventsPage.total}. Page ${page}/${Math.ceil(eventsPage.total / pageSize)}`
             : '';
 
-        return this.success(`Here are the currently active timers:${codeBlock(gridLines.join('\n'), 'prolog')}${paging}`);
+        return this.info(`Here are the currently active timers:${codeBlock(gridLines.join('\n'), 'prolog')}${paging}`);
     }
 
     public async getTimer(context: CommandContext, timerId: string): Promise<SendPayload> {
@@ -148,20 +148,17 @@ export class TimersCommand extends BaseGlobalCommand {
         return this.success(lines.join('\n'));
     }
 
-    public async cancelAllTimers(context: CommandContext): Promise<string> {
+    public async clearAllTimers(context: CommandContext): Promise<string> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
-        const response = await context.util.awaitQuery(
-            context.channel,
-            context.author,
-            'Are you sure you want to cancel all timers? Type `yes` to confirm, or anything else to cancel.'
+        const shouldClear = await context.util.queryConfirm(context.channel, context.author,
+            this.warning('Are you sure you want to clear all timers?'), 'Yes', 'No'
         );
 
-        if (response?.content.toLowerCase() !== 'yes')
+        if (!shouldClear)
             return this.info('Cancelled clearing of timers');
 
         await context.cluster.timeouts.deleteAll(source);
-
-        return this.success('All timers cancelled');
+        return this.success('All timers cleared');
     }
 }
 

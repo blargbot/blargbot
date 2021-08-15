@@ -17,10 +17,10 @@ export class ClusterUtilities extends BaseUtilities {
 
     public async queryChoice<T extends Exclude<Primitive, string>>(
         channel: TextBasedChannels,
-        user: User,
-        choices: Array<{ label: string; value: T; description?: string; emoji?: EmojiIdentifierResolvable; }>,
+        users: Iterable<string | User> | string | User,
         payload: string | Omit<SendPayloadContent, 'components'>,
-        placeholder?: string | undefined,
+        placeholder: string,
+        choices: ReadonlyArray<Omit<MessageSelectOptionData, 'value'> & { value: T; }>,
         timeout = 300000
     ): Promise<LookupResult<T>> {
         if (choices.length === 0)
@@ -33,109 +33,218 @@ export class ClusterUtilities extends BaseUtilities {
             payload = { content: payload };
 
         const valueMap: Record<string, T> = {};
-        const options: MessageSelectOptionData[] = [];
+        const selectData: MessageSelectOptionData[] = [];
         const pageSize = 25;
 
         for (const option of choices) {
             const id = snowflake.create().toString();
             valueMap[id] = option.value;
-            options.push({ ...option, value: id });
+            selectData.push({ ...option, value: id });
         }
 
-        const lookupOptions: LookupComponentOptions = {
+        const options: LookupComponentOptions = {
             content: payload.content ?? '',
-            prevId: snowflake.create().toString(),
-            nextId: snowflake.create().toString(),
-            cancelId: snowflake.create().toString(),
-            selectId: snowflake.create().toString(),
             get select(): MessageSelectOptionData[] {
-                return options.slice(this.page * pageSize, (this.page + 1) * pageSize);
+                return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
             page: 0,
             lastPage: Math.floor(choices.length / pageSize),
-            placeholder
+            placeholder,
+            prevId: snowflake.create().toString(),
+            nextId: snowflake.create().toString(),
+            cancelId: snowflake.create().toString(),
+            selectId: snowflake.create().toString()
         };
 
-        const validIds = new Set([lookupOptions.nextId, lookupOptions.prevId, lookupOptions.selectId, lookupOptions.cancelId]);
-        const collector = channel.createMessageComponentCollector({
-            time: timeout,
-            filter: async (interaction) => {
-                if (!validIds.has(interaction.customId))
-                    return false;
-
-                if (interaction.user.id !== user.id) {
-                    await interaction.reply({ content: '❌ You cant use this lookup!', ephemeral: true });
-                    return false;
-                }
-
-                return true;
+        const awaiter = this.createComponentAwaiter(channel, users, '❌ This isnt for you to use!', timeout, {
+            [options.cancelId]: () => true,
+            [options.selectId]: () => true,
+            [options.prevId]: async i => {
+                options.page--;
+                await i.update(createLookupBody(options));
+                return false;
+            },
+            [options.nextId]: async i => {
+                options.page++;
+                await i.update(createLookupBody(options));
+                return false;
             }
         });
 
         try {
-            collector.on('collect', async interaction => {
-                let pageShift = -1;
-                switch (interaction.customId) {
-                    case lookupOptions.nextId:
-                        pageShift = 1;
-                    //fallthrough
-                    case lookupOptions.prevId: {
-                        lookupOptions.page += pageShift;
-                        await interaction.update(createLookupBody(lookupOptions));
-                        break;
-                    }
-                    case lookupOptions.cancelId:
-                    case lookupOptions.selectId:
-                        collector.stop();
-                        break;
-                }
-            });
-
-            const prompt = await this.send(channel, { ...payload, ...createLookupBody(lookupOptions) });
+            const prompt = await this.send(channel, { ...payload, ...createLookupBody(options) });
 
             if (prompt === undefined)
                 return 'FAILED';
 
-            const interaction = await new Promise<MessageComponentInteraction | undefined>(resolve => collector.on('end', c => resolve(c.last())));
+            const interaction = await awaiter.result;
             await prompt.delete();
             if (interaction === undefined)
                 return 'TIMED_OUT';
+
             if (interaction.isSelectMenu())
                 return valueMap[interaction.values[0]];
-            if (interaction.customId === lookupOptions.cancelId)
+
+            if (interaction.customId === options.cancelId)
                 return 'CANCELLED';
+
             return 'TIMED_OUT';
         } catch (err: unknown) {
             return 'FAILED';
         } finally {
-            collector.stop();
+            awaiter.cancel();
         }
     }
 
-    public async queryMember(channel: TextBasedChannels, user: User, guild: string | Guild, query: string): Promise<LookupResult<GuildMember>> {
+    public async queryConfirm(
+        channel: TextBasedChannels,
+        users: Iterable<string | User> | string | User,
+        payload: string | Omit<SendPayloadContent, 'components'>,
+        confirm: string | { label?: string; emojji: EmojiIdentifierResolvable; },
+        cancel: string | { label?: string; emojji: EmojiIdentifierResolvable; },
+        timeout = 60000
+    ): Promise<boolean> {
+        if (typeof payload === 'string')
+            payload = { content: payload };
+
+        const options: ConfirmComponentOptions = {
+            cancelId: snowflake.create().toString(),
+            confirmId: snowflake.create().toString(),
+            cancelEmoji: typeof cancel !== 'string' ? cancel.emojji : undefined,
+            confirmEmoji: typeof confirm !== 'string' ? confirm.emojji : undefined,
+            cancelLabel: typeof cancel === 'string' ? cancel : cancel.label,
+            confirmLabel: typeof confirm === 'string' ? confirm : confirm.label
+        };
+
+        const awaiter = this.createComponentAwaiter(channel, users, '❌ This isnt for you to use!', timeout, {
+            [options.confirmId]: () => true,
+            [options.cancelId]: () => true
+        });
+
+        try {
+            const prompt = await this.send(channel, { ...payload, ...createConfirmBody(options) });
+            if (prompt === undefined)
+                return false;
+
+            const interaction = await awaiter.result;
+            await prompt.delete();
+
+            return interaction?.customId === options.confirmId;
+        } finally {
+            awaiter.cancel();
+        }
+    }
+
+    public createComponentAwaiter(
+        channel: TextBasedChannels,
+        users: Iterable<string | User> | string | User,
+        rejectMessage: string,
+        timeout: number | undefined,
+        options: Record<string, (interaction: MessageComponentInteraction) => boolean | Promise<boolean>>
+    ): {
+        readonly result: Promise<MessageComponentInteraction | undefined>;
+        cancel(): void;
+    } {
+        const shouldReject = (() => {
+            const userIds = typeof users === 'string' ? [users]
+                : users instanceof User ? [users.id]
+                    : [...users].map(u => typeof u === 'string' ? u : u.id);
+
+            switch (userIds.length) {
+                case 0: return () => false;
+                case 1: {
+                    const check = userIds[0];
+                    return (id: string) => id !== check;
+                }
+                default: {
+                    const lookup = new Set(userIds);
+                    return (id: string) => !lookup.has(id);
+                }
+            }
+        })();
+
+        const validIds = new Set(Object.keys(options));
+        const collector = channel.createMessageComponentCollector({
+            time: timeout,
+            max: 1,
+            filter: async (interaction) => {
+                if (!validIds.has(interaction.customId))
+                    return false;
+
+                if (shouldReject(interaction.user.id)) {
+                    await interaction.reply({ content: rejectMessage, ephemeral: true });
+                    return false;
+                }
+
+                return await options[interaction.customId](interaction);
+            }
+        });
+
+        return {
+            result: new Promise<MessageComponentInteraction | undefined>(resolve => collector.once('end', c => resolve(c.first()))),
+            cancel() {
+                collector.stop();
+            }
+        };
+    }
+
+    public async queryMember(
+        channel: TextBasedChannels,
+        users: Iterable<string | User> | string | User,
+        guild: string | Guild,
+        query: string,
+        timeout?: number
+    ): Promise<LookupResult<GuildMember>> {
         const matches = await this.findMember(guild, query);
-        return await this.queryChoice(channel, user,
-            matches.map(m => ({ label: `${m.displayName} (${humanize.fullName(m.user)})`, value: m, description: `Id: ${m.id}` })),
+        return await this.queryChoice(channel, users,
             'ℹ️ Multiple users found! Please select one from the drop down.',
-            'Select a user'
+            'Select a user',
+            matches.map(m => ({
+                label: `${m.displayName} (${humanize.fullName(m.user)})`,
+                value: m,
+                description: `Id: ${m.id}`
+            })),
+            timeout
         );
     }
 
-    public async queryRole(channel: TextBasedChannels, user: User, guild: string | Guild, query: string): Promise<LookupResult<Role>> {
+    public async queryRole(
+        channel: TextBasedChannels,
+        users: Iterable<string | User> | string | User,
+        guild: string | Guild,
+        query: string,
+        timeout?: number
+    ): Promise<LookupResult<Role>> {
         const matches = await this.findRoles(guild, query);
-        return await this.queryChoice(channel, user,
-            matches.map(r => ({ label: `${r.name}`, value: r, description: `Id: ${r.id}\nColor: #${r.color.toString(16).padStart(6, '0')}` })),
+        return await this.queryChoice(channel, users,
             'ℹ️ Multiple roles found! Please select one from the drop down.',
-            'Select a role'
+            'Select a role',
+            matches.map(r => ({
+                label: `${r.name}`,
+                value: r,
+                description: `Id: ${r.id}\nColor: #${r.color.toString(16).padStart(6, '0')}`
+            })),
+            timeout
         );
     }
 
-    public async queryChannel(channel: TextBasedChannels, user: User, guild: string | Guild, query: string): Promise<LookupResult<GuildChannels>> {
+    public async queryChannel(
+        channel: TextBasedChannels,
+        users: Iterable<string | User> | string | User,
+        guild: string | Guild,
+        query: string,
+        timeout?: number
+    ): Promise<LookupResult<GuildChannels>> {
         const matches = await this.findChannels(guild, query);
-        return await this.queryChoice(channel, user,
-            matches.map(c => ({ label: `#${c.name}`, value: c, description: `Id: ${c.id}${c.parent?.type === 'GUILD_CATEGORY' ? `\nCategory: #${c.parent.name}` : ''}` })),
+        return await this.queryChoice(channel, users,
             'ℹ️ Multiple channels found! Please select one from the drop down.',
-            'Select a channel'
+            'Select a channel',
+            matches.map(c => ({
+                label: `#${c.name}`,
+                value: c,
+                description: `Id: ${c.id}${c.parent?.type === 'GUILD_CATEGORY' ? `\nCategory: #${c.parent.name}` : ''}`
+            })),
+            timeout
         );
     }
 
@@ -465,6 +574,41 @@ interface LookupComponentOptions {
     readonly placeholder: string | undefined;
     readonly select: MessageSelectOptionData[];
     page: number;
+}
+
+interface ConfirmComponentOptions {
+    readonly confirmId: string;
+    readonly cancelId: string;
+    readonly confirmLabel?: string;
+    readonly cancelLabel?: string;
+    readonly confirmEmoji?: EmojiIdentifierResolvable;
+    readonly cancelEmoji?: EmojiIdentifierResolvable;
+}
+
+function createConfirmBody(options: ConfirmComponentOptions): { components: MessageActionRowOptions[]; } {
+    const confirm: MessageButtonOptions = {
+        type: 'BUTTON',
+        customId: options.confirmId,
+        emoji: options.confirmEmoji,
+        label: options.confirmLabel,
+        style: 'SUCCESS'
+    };
+    const cancel: MessageButtonOptions = {
+        type: 'BUTTON',
+        customId: options.cancelId,
+        emoji: options.cancelEmoji,
+        label: options.cancelLabel,
+        style: 'DANGER'
+    };
+
+    return {
+        components: [
+            {
+                type: 'ACTION_ROW',
+                components: [confirm, cancel]
+            }
+        ]
+    };
 }
 
 function createLookupBody(options: LookupComponentOptions): { content: string; components: MessageActionRowOptions[]; } {

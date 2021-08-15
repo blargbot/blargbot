@@ -500,17 +500,14 @@ export class CustomCommand extends BaseGuildCommand {
             }
         }
 
-        const key = 'thanks, shrinkwrapper!';
         confirm.push(
             'This will not:',
             ' - Export variables',
             ' - Export authors or authorizers',
-            ' - Export depedencies',
-            `If you wish to continue, please say \`${key}\``
+            ' - Export depedencies'
         );
 
-        const response = await context.cluster.util.awaitQuery(context.channel, context.author, confirm.join('\n'));
-        if (response?.content !== key)
+        if (!await context.cluster.util.queryConfirm(context.channel, context.author, confirm.join('\n'), 'Continue', 'Cancel'))
             return this.success('Maybe next time then.');
 
         return {
@@ -611,16 +608,12 @@ export class CustomCommand extends BaseGuildCommand {
             }
         }
 
-        const key = 'thanks, shrinkwrapper!';
         confirm.push(
             'This will also:',
-            ' - Set you as the author for all imported commands',
-            '',
-            `If you wish to continue, please say \`${key}\``
+            ' - Set you as the author for all imported commands'
         );
 
-        const response = await context.cluster.util.awaitQuery(context.channel, context.author, confirm.join('\n'));
-        if (response?.content !== key)
+        if (!await context.cluster.util.queryConfirm(context.channel, context.author, confirm.join('\n'), 'Continue', 'Cancel'))
             return this.success('Maybe next time then.');
 
         for (const step of importSteps)
