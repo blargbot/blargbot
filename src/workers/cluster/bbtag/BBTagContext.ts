@@ -1,12 +1,12 @@
 import { ClusterUtilities } from '@cluster';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, LookupResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
 import { bbtagUtil, guard, humanize, oldBu, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { NamedStoredGuildCommand, StoredTag } from '@core/types';
-import { Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
+import { Base, Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -148,71 +148,76 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return this.scope.fallback ?? `\`${error}\``;
     }
 
-    public async getUser(name: string, args: FindEntityOptions = {}): Promise<User | undefined> {
-        if (this.state.query.count >= 5)
-            args.quiet = args.suppress = true;
-        if (args.onSendCallback !== undefined)
-            args.onSendCallback = ((oldCallback) => () => {
-                this.state.query.count++;
-                oldCallback();
-            })(args.onSendCallback);
-        else
-            args.onSendCallback = () => this.state.query.count++;
+    public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {
+        const member = await this.queryEntity(
+            query, 'user', 'User',
+            async id => await this.util.getMember(this.guild, id),
+            async query => await this.util.findMember(this.guild, query),
+            async query => await this.util.queryMember(this.channel, this.user, this.guild, query),
+            options
+        );
+        return member?.user;
+    }
 
-        const cached = this.state.query.user[name];
-        if (cached !== undefined) {
-            const user = await this.util.getUserById(cached);
-            if (user !== undefined)
-                return user;
-            name = cached;
+    public async queryRole(query: string, options: FindEntityOptions = {}): Promise<Role | undefined> {
+        return await this.queryEntity(
+            query, 'role', 'Role',
+            async id => await this.util.getRole(this.guild, id),
+            async query => await this.util.findRoles(this.guild, query),
+            async query => await this.util.queryRole(this.channel, this.user, this.guild, query),
+            options
+        );
+    }
+
+    public async queryChannel(query: string, options: FindEntityOptions = {}): Promise<GuildChannels | undefined> {
+        return await this.queryEntity(
+            query, 'channel', 'Channel',
+            async id => await this.util.getChannel(this.guild, id),
+            async query => await this.util.findChannels(this.guild, query),
+            async query => await this.util.queryChannel(this.channel, this.user, this.guild, query),
+            options
+        );
+    }
+
+    private async queryEntity<T extends Base & { id: string; }>(
+        queryString: string,
+        cacheKey: FilteredKeys<BBTagContextState['query'], Record<string, string | undefined>>,
+        type: string,
+        fetch: (id: string) => Promise<T | undefined>,
+        find: (query: string) => Promise<T[]>,
+        query: (query: string) => Promise<LookupResult<T>>,
+        options: FindEntityOptions
+    ): Promise<T | undefined> {
+        const cached = this.state.query[cacheKey][queryString];
+        if (cached !== undefined)
+            return await fetch(cached) ?? undefined;
+
+        const noLookup = this.scope.quiet ?? options.noLookup ?? false;
+        if (this.state.query.count >= 5 || noLookup) {
+            const entities = await find(queryString);
+            return entities.length === 1 ? entities[0] : undefined;
         }
 
-        const user = await this.util.getUser(this.message, name, args);
-        this.state.query.user[name] = user?.id;
-        return user;
-    }
-
-    public async getRole(name: string, args: FindEntityOptions = {}): Promise<Role | undefined> {
-        if (this.state.query.count >= 5)
-            args.quiet = args.suppress = true;
-        if (args.onSendCallback !== undefined)
-            args.onSendCallback = ((oldCallback) => () => {
-                this.state.query.count++;
-                oldCallback();
-            })(args.onSendCallback);
-        else
-            args.onSendCallback = () => this.state.query.count++;
-
-        const cached = this.state.query.role[name];
-        if (cached !== undefined)
-            return await this.util.getRoleById(this.guild, cached) ?? undefined;
-
-        const role = await this.engine.util.getRole(this.message, name, args);
-        this.state.query.role[name] = role?.id;
-        return role;
-    }
-
-    public async getChannel(name: string, args: FindEntityOptions = {}): Promise<GuildChannels | undefined> {
-        if (this.state.query.count >= 5)
-            args.quiet = args.suppress = true;
-        if (args.onSendCallback !== undefined)
-            args.onSendCallback = ((oldCallback) => () => {
-                this.state.query.count++;
-                oldCallback();
-            })(args.onSendCallback);
-        else
-            args.onSendCallback = () => this.state.query.count++;
-
-        const cached = this.state.query.channel[name];
-        if (cached !== undefined)
-            return await this.guild.channels.fetch(cached) ?? undefined;
-
-        const channel = await this.engine.util.getChannel(this.message, name, args);
-        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
-            return undefined;
-
-        this.state.query.channel[name] = channel.id;
-        return channel;
+        const noErrors = this.scope.noLookupErrors ?? options.noErrors ?? false;
+        const result = await query(queryString);
+        switch (result) {
+            case 'FAILED':
+            case 'NO_OPTIONS':
+                if (!noErrors) {
+                    await this.util.send(this.channel, `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} ${this.rootTagName}.`);
+                    this.state.query.count++;
+                }
+                return undefined;
+            case 'TIMED_OUT':
+            case 'CANCELLED':
+                this.state.query.count = Infinity;
+                if (!noErrors)
+                    await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} ${this.rootTagName}.`);
+                return undefined;
+            default:
+                this.state.query[cacheKey][queryString] = result.id;
+                return result;
+        }
     }
 
     public override(subtag: string, handler: SubtagHandler): { previous?: SubtagHandler; revert: () => void; } {
@@ -306,12 +311,12 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 throw new Error('Channel must be a guild channel to work with BBTag');
             message = msg;
         } catch (err: unknown) {
-            const channel = await engine.util.getGlobalChannel(obj.msg.channel.id);
+            const channel = await engine.util.getChannel(obj.msg.channel.id);
             if (channel === undefined || !guard.isGuildChannel(channel))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             if (!guard.isTextableChannel(channel))
                 throw new Error('Channel must be able to send and receive messages to work with BBTag');
-            const member = await engine.util.getMemberById(channel.guild.id, obj.msg.member.id);
+            const member = await engine.util.getMember(channel.guild.id, obj.msg.member.id);
             if (member === undefined)
                 throw new Error(`User ${obj.msg.member.id} doesnt exist on ${channel.guild.id} any more`);
 

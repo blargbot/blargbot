@@ -261,7 +261,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         else {
             const chatlog = await this.cluster.database.chatlogs.get(message.id);
             if (chatlog !== undefined) {
-                author = (await this.cluster.util.getUserById(chatlog.userid))?.username;
+                author = (await this.cluster.util.getUser(chatlog.userid))?.username;
             }
         }
 

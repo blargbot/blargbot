@@ -20,7 +20,7 @@ export class ChannelsSubtag extends BaseSubtag {
                     description: 'Returns an array of channel IDs in within the given `category`. If `category` is not a category, returns an empty array. If `category` cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: 'Category cat-channels has {length;{channels;cat-channels}} channels.',
                     exampleOut: 'Category cat-channels has 6 channels.',
-                    execute: (ctx, [category, quiet], subtag) => this.getChannelsInCategory(ctx, category.value, quiet.value, subtag)
+                    execute: (ctx, [category, quiet], subtag) => this.getChannelsInCategory(ctx, category.value, quiet.value !== '', subtag)
                 }
             ]
         });
@@ -29,11 +29,11 @@ export class ChannelsSubtag extends BaseSubtag {
     public async getChannelsInCategory(
         context: BBTagContext,
         channelStr: string,
-        quietStr: string,
+        quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
-        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        quiet ||= context.scope.quiet ?? false;
+        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
         if (channel.type !== 'GUILD_CATEGORY')

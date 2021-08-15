@@ -39,7 +39,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         item: string,
         subtag: SubtagCall
     ): Promise<string> {
-        const channel = await context.getChannel(channelStr);
+        const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag); //TODO No channel found error
@@ -74,7 +74,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         deny: number,
         subtag: SubtagCall
     ): Promise<string> {
-        const channel = await context.getChannel(channelStr);
+        const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag); //TODO No channel found error

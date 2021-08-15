@@ -1,4 +1,5 @@
 import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
+import { guard } from '@cluster/utils';
 import { ImageResult } from '@image/types';
 
 export class RetardedCommand extends BaseGlobalImageCommand {
@@ -28,11 +29,13 @@ export class RetardedCommand extends BaseGlobalImageCommand {
     }
 
     public async renderUser(context: CommandContext, text: string, userStr: string): Promise<ImageResult | string> {
-        const user = await context.util.getUser(context, userStr);
-        if (user === undefined)
+        if (!guard.isGuildCommandContext(context))
             return this.error(`I could not find the user \`${userStr}\``);
 
-        return await this.render(context, text, user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }));
+        const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, userStr);
+        if (typeof result === 'string')
+            return this.error(`I could not find the user \`${userStr}\``);
+        return await this.render(context, text, result.user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }));
     }
 
     public async render(context: CommandContext, text: string, url: string): Promise<ImageResult | string> {

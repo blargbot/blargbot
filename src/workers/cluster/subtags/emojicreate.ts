@@ -69,10 +69,7 @@ export class EmojiCreateSubtag extends BaseSubtag {
         const roleArray = await bbtagUtil.tagArray.getArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
-                const role = await context.getRole(roleQuery?.toString() !== undefined ? roleQuery.toString() : '', {
-                    quiet: true, suppress: true,
-                    label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-                });
+                const role = await context.queryRole(roleQuery?.toString() !== undefined ? roleQuery.toString() : '', { noLookup: true });
                 if (role !== undefined) {
                     options.roles.push(role.id);
                 }

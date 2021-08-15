@@ -38,21 +38,27 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             };
         }
         case 'channel': {
-            const channel = await util.getChannel(msg, raw);
+            if (!guard.isGuildRelated(msg))
+                return { success: false };
+            const result = await util.queryChannel(msg.channel, msg.author, msg.channel.guild, raw);
+            if (typeof result === 'string')
+                return { success: false };
             return {
-                success: channel !== undefined && guard.isTextableChannel(channel),
-                value: <StoredGuildSettings[T]>channel?.id,
-                display: channel?.toString()
+                success: true,
+                value: result.id as StoredGuildSettings[T],
+                display: result.toString()
             };
         }
         case 'role': {
             if (!guard.isGuildRelated(msg))
                 return { success: false };
-            const role = await util.getRole(msg, raw);
+            const result = await util.queryRole(msg.channel, msg.author, msg.channel.guild, raw);
+            if (typeof result === 'string')
+                return { success: false };
             return {
-                success: role !== undefined,
-                value: <StoredGuildSettings[T]>role?.id,
-                display: role === undefined ? undefined : `\`@${role.name} (${role.id})\``
+                success: true,
+                value: result.id as StoredGuildSettings[T],
+                display: result.toString()
             };
         }
     }

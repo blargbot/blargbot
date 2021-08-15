@@ -14,7 +14,7 @@ export class ChannelSetPosSubtag extends BaseSubtag {
                     exampleCode: '{channelsetpos;11111111111111111;5}',
                     exampleOut: '',
                     execute: async (context, [{ value: channelStr }, { value: posStr }], subtag) => {
-                        const channel = await context.getChannel(channelStr);
+                        const channel = await context.queryChannel(channelStr);
 
                         if (channel === undefined)
                             return this.customError('Channel does not exist', context, subtag);//TODO No channel found error

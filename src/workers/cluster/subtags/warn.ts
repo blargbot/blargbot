@@ -42,15 +42,12 @@ export class WarnSubtag extends BaseSubtag {
         const count = parse.int(countStr);
 
         if (userStr !== '')
-            user = await context.getUser(userStr, {
-                suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-            });
+            user = await context.queryUser(userStr);
 
         if (user === undefined)
             return this.noUserFound(context, subtag);
 
-        const member = await context.util.getMemberById(context.guild, user.id);
+        const member = await context.util.getMember(context.guild, user.id);
 
         if (member === undefined)
             return this.noUserFound(context, subtag);

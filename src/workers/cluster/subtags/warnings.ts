@@ -17,10 +17,7 @@ export class WarningsSubtag extends BaseSubtag {
                         let user: User | undefined = context.user;
 
                         if (userStr !== '') {
-                            user = await context.getUser(userStr, {
-                                suppress: context.scope.suppressLookup,
-                                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-                            });
+                            user = await context.queryUser(userStr);
                         }
                         if (user === undefined)
                             return this.noUserFound(context, subtag);

@@ -19,7 +19,7 @@ export class UserNickSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s nickname. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s nickname is {usernick;Stupid cat}!',
                     exampleOut: 'Stupid cat\'s nickname is Secretly Awoken',
-                    execute: (ctx, [userId, quietStr]) => this.getUserNick(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserNick(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -28,16 +28,13 @@ export class UserNickSubtag extends BaseSubtag {
     public async getUserNick(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined) {
-            const member = await context.util.getMemberById(context.guild, user.id);
+            const member = await context.util.getMember(context.guild, user.id);
             if (member !== undefined)
                 return (member.nickname ?? user.username).replace(/@/g, '@\u200b');
         }

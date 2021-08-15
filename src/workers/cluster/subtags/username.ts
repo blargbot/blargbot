@@ -19,7 +19,7 @@ export class UserNameSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s username. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s username is {username;Stupid cat}!',
                     exampleOut: 'Stupid cat\'s username is Stupid cat!',
-                    execute: (ctx, [userId, quietStr]) => this.getUserName(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserName(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -28,13 +28,10 @@ export class UserNameSubtag extends BaseSubtag {
     public async getUserName(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined) {
             return user.username.replace(/@/g, '@\u200b');

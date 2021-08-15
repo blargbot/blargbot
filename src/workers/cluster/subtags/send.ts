@@ -34,7 +34,7 @@ export class SendSubtag extends BaseSubtag {
     }
 
     public async send(context: BBTagContext, subtag: SubtagCall, channelId: string, message?: string, embed?: MessageEmbedOptions | MalformedEmbed, file?: FileOptions): Promise<string> {
-        const channel = await context.getChannel(channelId, { quiet: true, suppress: context.scope.suppressLookup });
+        const channel = await context.queryChannel(channelId, { noLookup: true });
         if (channel === undefined || !guard.isTextableChannel(channel))
             return this.channelNotFound(context, subtag, `Unable to read ${channelId} as a valid channel`);
 

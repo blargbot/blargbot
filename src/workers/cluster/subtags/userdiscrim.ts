@@ -20,7 +20,7 @@ export class UserDiscrimSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s discriminator. If `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s discriminator is {userdiscrim;Stupid cat}',
                     exampleOut: 'Stupid cat\'s discriminator is 8160',
-                    execute: (ctx, [userId, quietStr]) => this.getUserDiscrim(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserDiscrim(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -29,13 +29,10 @@ export class UserDiscrimSubtag extends BaseSubtag {
     public async getUserDiscrim(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined)
             return user.discriminator;

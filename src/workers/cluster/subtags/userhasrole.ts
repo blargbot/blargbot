@@ -16,14 +16,14 @@ export class UserHasRoleSubtag extends BaseSubtag {
                     description: 'Checks if the executing user has *any* of the provided `roleids`.',
                     exampleCode: '{if;{userhasrole;{roleid;moderator}};You are a moderator; You are not a moderator}',
                     exampleOut: 'You are a moderator',
-                    execute: (ctx, args, subtag) => this.userHasRole(ctx, args[0].value, '', '', subtag)
+                    execute: (ctx, args, subtag) => this.userHasRole(ctx, args[0].value, '', false, subtag)
                 },
                 {
                     parameters: ['roleids', 'user', 'quiet?'],
                     description: 'Checks if `user` has *any* of the provided `roleids`. If `quiet` is specified, if `user` or any `roleid` can\'t be found it will simply return `false`.',
                     exampleCode: '{if;{userhasrole;{userid;moderator};Stupid cat};Stupid cat is a moderator;Stupid cat is not a moderator}',
                     exampleOut: 'Stupid cat is a moderator',
-                    execute: (ctx, args, subtag) => this.userHasRole(ctx, args[0].value, args[1].value, args[2].value, subtag)
+                    execute: (ctx, args, subtag) => this.userHasRole(ctx, args[0].value, args[1].value, args[2].value !== '', subtag)
                 }
             ]
         });
@@ -33,10 +33,9 @@ export class UserHasRoleSubtag extends BaseSubtag {
         context: BBTagContext,
         roleStr: string,
         userStr: string,
-        quietStr: string,
+        quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
         const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
 
         if (result.member === undefined)

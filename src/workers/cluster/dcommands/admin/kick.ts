@@ -20,9 +20,9 @@ export class KickCommand extends BaseGuildCommand {
         });
     }
 
-    public async kick(context: GuildCommandContext, user: string, flags: FlagResult): Promise<string> {
-        const member = await context.util.getMember(context.message, user);
-        if (member === undefined)
+    public async kick(context: GuildCommandContext, userStr: string, flags: FlagResult): Promise<string> {
+        const member = await context.util.queryMember(context.channel, context.author, context.channel.guild, userStr);
+        if (typeof member === 'string')
             return this.error('I couldn\'t find that user!');
 
         const reason = flags.r?.merge().value;

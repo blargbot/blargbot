@@ -1,8 +1,8 @@
-import { FindEntityOptions, MessagePrompt } from '@cluster/types';
+import { LookupResult, MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { SendPayload, SendPayloadContent } from '@core/types';
-import { AllChannels, EmojiIdentifierResolvable, GuildMember, GuildTextBasedChannels, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -15,16 +15,16 @@ export class ClusterUtilities extends BaseUtilities {
         super(cluster);
     }
 
-    public async lookup<T>(
+    public async queryChoice<T extends Exclude<Primitive, string>>(
         channel: TextBasedChannels,
         user: User,
         choices: Array<{ label: string; value: T; description?: string; emoji?: EmojiIdentifierResolvable; }>,
         payload: string | Omit<SendPayloadContent, 'components'>,
         placeholder?: string | undefined,
         timeout = 300000
-    ): Promise<T | undefined> {
+    ): Promise<LookupResult<T>> {
         if (choices.length === 0)
-            return undefined;
+            return 'NO_OPTIONS';
 
         if (choices.length === 1)
             return choices[0].value;
@@ -32,7 +32,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (typeof payload === 'string')
             payload = { content: payload };
 
-        const valueMap: Record<string, T | undefined> = {};
+        const valueMap: Record<string, T> = {};
         const options: MessageSelectOptionData[] = [];
         const pageSize = 25;
 
@@ -97,212 +97,49 @@ export class ClusterUtilities extends BaseUtilities {
             const prompt = await this.send(channel, { ...payload, ...createLookupBody(lookupOptions) });
 
             if (prompt === undefined)
-                return undefined;
+                return 'FAILED';
 
             const interaction = await new Promise<MessageComponentInteraction | undefined>(resolve => collector.on('end', c => resolve(c.last())));
             await prompt.delete();
-            if (interaction === undefined || !interaction.isSelectMenu())
-                return undefined;
-            return valueMap[interaction.values[0]];
+            if (interaction === undefined)
+                return 'TIMED_OUT';
+            if (interaction.isSelectMenu())
+                return valueMap[interaction.values[0]];
+            if (interaction.customId === lookupOptions.cancelId)
+                return 'CANCELLED';
+            return 'TIMED_OUT';
         } catch (err: unknown) {
-            return undefined;
+            return 'FAILED';
         } finally {
             collector.stop();
         }
     }
 
-    public async getMember(msg: UserChannelInteraction<GuildTextBasedChannels>, name: string, args?: FindEntityOptions): Promise<GuildMember | undefined> {
-        const user = await this.getUser(msg, name, args);
-        if (user === undefined)
-            return undefined;
-
-        return await this.getMemberById(msg.channel.guild, user.id);
+    public async queryMember(channel: TextBasedChannels, user: User, guild: string | Guild, query: string): Promise<LookupResult<GuildMember>> {
+        const matches = await this.findMember(guild, query);
+        return await this.queryChoice(channel, user,
+            matches.map(m => ({ label: `${m.displayName} (${humanize.fullName(m.user)})`, value: m, description: `Id: ${m.id}` })),
+            'ℹ️ Multiple users found! Please select one from the drop down.',
+            'Select a user'
+        );
     }
 
-    public async getUser(msg: UserChannelInteraction, name: string, args: FindEntityOptions = {}): Promise<User | undefined> {
-        if (name.length === 0)
-            return undefined;
-
-        const normName = name.toLowerCase();
-        const matchScore = (user: { name: string; nick: string; normName: string; normNick: string; }): number => {
-            let score = 0;
-            if (user.name.startsWith(name)) score += 100;
-            if (user.nick.startsWith(name)) score += 100;
-            if (user.normName.startsWith(normName)) score += 10;
-            if (user.normNick.startsWith(normName)) score += 10;
-            if (user.normName.includes(normName)) score += 1;
-            if (user.normNick.includes(normName)) score += 1;
-            return score;
-        };
-
-        const user = await this.getUserById(name);
-        if (user !== undefined)
-            return user;
-
-        if (!guard.isGuildRelated(msg)) {
-            return matchScore({
-                name: msg.author.username,
-                nick: msg.author.username,
-                normName: msg.author.username.toLowerCase(),
-                normNick: msg.author.username.toLowerCase()
-            }) > 0 ? msg.author : undefined;
-        }
-
-        let discrim: string | undefined;
-        const nameMatch = /^(.*)#(\d{4})$/.exec(name);
-        if (nameMatch !== null) {
-            [, name, discrim] = nameMatch;
-        }
-
-        const userList = msg.channel.guild.members.cache
-            .map(m => ({
-                member: m,
-                match: matchScore({
-                    name: m.user.username,
-                    nick: m.nickname ?? m.user.username,
-                    normNick: m.nickname?.toLowerCase() ?? m.user.username.toLowerCase(),
-                    normName: m.user.username.toLowerCase()
-                })
-            }))
-            .filter(m => m.match > 0 && (discrim === undefined || discrim === m.member.user.discriminator))
-            .sort((a, b) => b.match - a.match)
-            .map(m => m.member.user);
-
-        switch (userList.length) {
-            case 1: return userList[0];
-            case 0:
-                if (args.quiet === true || args.suppress === true)
-                    return undefined;
-                if (args.onSendCallback !== undefined)
-                    args.onSendCallback();
-                await this.send(msg, `No users found${args.label !== undefined ? ' in ' + args.label : ''}.`);
-                return undefined;
-            default: {
-                if (args.quiet === true || args.suppress === true)
-                    return undefined;
-                return await this.lookup(
-                    msg.channel,
-                    msg.author,
-                    userList.map(u => ({ label: `${humanize.fullName(u)} (${u.id})`, value: u })),
-                    'ℹ️ Multiple users found! Please select one from the drop down.',
-                    'Select a user'
-                );
-            }
-        }
+    public async queryRole(channel: TextBasedChannels, user: User, guild: string | Guild, query: string): Promise<LookupResult<Role>> {
+        const matches = await this.findRoles(guild, query);
+        return await this.queryChoice(channel, user,
+            matches.map(r => ({ label: `${r.name}`, value: r, description: `Id: ${r.id}\nColor: #${r.color.toString(16).padStart(6, '0')}` })),
+            'ℹ️ Multiple roles found! Please select one from the drop down.',
+            'Select a role'
+        );
     }
 
-    public async getRole(msg: UserChannelInteraction<GuildTextBasedChannels>, name: string, args: boolean | FindEntityOptions = {}): Promise<Role | undefined> {
-        if (name.length === 0)
-            return undefined;
-
-        const normName = name.toLowerCase();
-        const matchScore = (role: { name: string; normName: string; }): number => {
-            let score = 0;
-            if (role.name.startsWith(name)) score += 100;
-            if (role.normName.startsWith(normName)) score += 10;
-            if (role.normName.includes(normName)) score += 1;
-            return score;
-        };
-
-        if (typeof args !== 'object')
-            args = { quiet: args };
-
-        const role = await this.getRoleById(msg.channel.guild, name);
-        if (role !== undefined)
-            return role;
-
-        const roleList = msg.channel.guild.roles.cache
-            .map(r => ({
-                role: r,
-                match: matchScore({
-                    name: r.name,
-                    normName: r.name.toLowerCase()
-                })
-            }))
-            .filter(r => r.match > 0)
-            .sort((a, b) => b.match - a.match)
-            .map(r => r.role);
-
-        switch (roleList.length) {
-            case 1: return roleList[0];
-            case 0:
-                if (args.quiet === true || args.suppress === true)
-                    return undefined;
-                if (args.onSendCallback !== undefined)
-                    args.onSendCallback();
-                await this.send(msg, `No roles found${args.label !== undefined ? ' in ' + args.label : ''}.`);
-                return undefined;
-            default: {
-                if (args.quiet === true || args.suppress === true)
-                    return undefined;
-                return await this.lookup(
-                    msg.channel,
-                    msg.author,
-                    roleList.map(r => ({ label: `${r.name} #${r.color.toString(16)} (${r.id})`, value: r })),
-                    'ℹ️ Multiple roles found! Please select one from the drop down.',
-                    'Select a role'
-                );
-            }
-        }
-    }
-
-    public async getChannel(msg: UserChannelInteraction, name: string, args: boolean | FindEntityOptions = {}): Promise<AllChannels | undefined> {
-        if (name.length === 0)
-            return undefined;
-
-        const normName = name.toLowerCase();
-        const matchScore = (role: { name: string; normName: string; }): number => {
-            let score = 0;
-            if (role.name.startsWith(name)) score += 100;
-            if (role.normName.startsWith(normName)) score += 10;
-            if (role.normName.includes(normName)) score += 1;
-            return score;
-        };
-
-        if (typeof args !== 'object')
-            args = { quiet: args };
-
-        const channel = await this.getChannelById(name);
-        if (guard.isGuildChannel(msg.channel)) {
-            if (channel !== undefined)
-                return channel;
-        } else {
-            return channel?.id === msg.channel.id ? channel : undefined;
-        }
-
-        const channelList = msg.channel.guild.channels.cache
-            .map(c => ({
-                channel: c,
-                match: matchScore({
-                    name: c.name,
-                    normName: c.name.toLowerCase()
-                })
-            }))
-            .filter(c => c.match > 0)
-            .sort((a, b) => b.match - a.match)
-            .map(c => c.channel);
-
-        switch (channelList.length) {
-            case 1: return channelList[0];
-            case 0:
-                if (args.quiet === true || args.suppress === true)
-                    return undefined;
-                if (args.onSendCallback !== undefined)
-                    args.onSendCallback();
-                await this.send(msg, `No channel found${args.label !== undefined ? ' in ' + args.label : ''}.`);
-                return undefined;
-            default: {
-                if (args.quiet === true || args.suppress === true)
-                    return undefined;
-                return await this.lookup(
-                    msg.channel,
-                    msg.author,
-                    channelList.map(c => ({ label: `${c.name} (${c.id})`, value: c })),
-                    'ℹ️ Multiple channels found! Please select one from the drop down.',
-                    'Select a channel'
-                );
-            }
-        }
+    public async queryChannel(channel: TextBasedChannels, user: User, guild: string | Guild, query: string): Promise<LookupResult<GuildChannels>> {
+        const matches = await this.findChannels(guild, query);
+        return await this.queryChoice(channel, user,
+            matches.map(c => ({ label: `#${c.name}`, value: c, description: `Id: ${c.id}${c.parent?.type === 'GUILD_CATEGORY' ? `\nCategory: #${c.parent.name}` : ''}` })),
+            'ℹ️ Multiple channels found! Please select one from the drop down.',
+            'Select a channel'
+        );
     }
 
     public async displayPaged(
@@ -526,7 +363,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async isUserStaff(userId: string, guildId: string): Promise<boolean> {
         if (userId === guildId) return true;
 
-        const member = await this.getMemberById(guildId, userId);
+        const member = await this.getMember(guildId, userId);
         if (member === undefined) return false;
 
         if (member.guild.ownerId === userId) return true;

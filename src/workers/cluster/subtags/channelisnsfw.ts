@@ -21,7 +21,7 @@ export class ChannelIsNsfw extends BaseSubtag {
                     description: 'Checks if `channel` is a NSFW channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{isnsfw;SFW Cat pics}',
                     exampleOut: 'true',
-                    execute: (ctx, [channel, quiet], subtag) => this.isNsfwChannel(ctx, channel.value, quiet.value, subtag)
+                    execute: (ctx, [channel, quiet], subtag) => this.isNsfwChannel(ctx, channel.value, quiet.value !== '', subtag)
                 }
             ]
         });
@@ -30,11 +30,11 @@ export class ChannelIsNsfw extends BaseSubtag {
     public async isNsfwChannel(
         context: BBTagContext,
         channelStr: string,
-        quietStr: string,
+        quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
-        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        quiet ||= context.scope.quiet ?? false;
+        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
         return (!guard.isThreadChannel(channel) && guard.isTextableChannel(channel) && channel.nsfw).toString();

@@ -28,8 +28,8 @@ export class WarnCommand extends BaseGuildCommand {
     }
 
     public async warn(context: GuildCommandContext, user: string, flags: FlagResult): Promise<string> {
-        const member = await context.util.getMember(context.message, user);
-        if (member === undefined)
+        const member = await context.util.queryMember(context.channel, context.author, context.channel.guild, user);
+        if (typeof member === 'string')
             return this.error('I couldn\'t find that user!');
 
         const reason = flags.r?.merge().value;

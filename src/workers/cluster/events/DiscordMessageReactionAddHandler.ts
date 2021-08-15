@@ -32,6 +32,6 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
     }
 
     protected async resolveUser(maybeUser: User | PartialUser): Promise<User | undefined> {
-        return !maybeUser.partial ? maybeUser : await this.cluster.util.getUserById(maybeUser.id);
+        return !maybeUser.partial ? maybeUser : await this.cluster.util.getUser(maybeUser.id);
     }
 }

@@ -37,7 +37,7 @@ export class ChannelEditSubtag extends BaseSubtag {
         args: string[],
         subtag: SubtagCall
     ): Promise<string> {
-        const channel = await context.getChannel(args[0]);
+        const channel = await context.queryChannel(args[0]);
 
         if (channel === undefined)
             return this.customError('Channel does not exist', context, subtag);//TODO no channel found error

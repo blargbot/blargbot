@@ -51,7 +51,7 @@ export interface SourceToken {
 export interface BBTagRuntimeScope {
     quiet?: boolean;
     fallback?: string;
-    suppressLookup?: boolean;
+    noLookupErrors?: boolean;
     reason?: string;
 }
 export interface SerializedRuntimeLimit {
@@ -483,10 +483,8 @@ export interface ClusterPoolOptions {
 }
 
 export interface FindEntityOptions {
-    quiet?: boolean;
-    suppress?: boolean;
-    onSendCallback?: () => void;
-    label?: string;
+    noLookup?: boolean;
+    noErrors?: boolean;
 }
 
 export interface CanExecuteDefaultCommandOptions {
@@ -509,6 +507,14 @@ export interface MessagePrompt {
     prompt: Message | undefined;
     response: Promise<Message | undefined>;
 }
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+export type LookupResult<T extends Exclude<Primitive, string>> =
+    | T
+    | 'NO_OPTIONS'
+    | 'TIMED_OUT'
+    | 'CANCELLED'
+    | 'FAILED';
 
 export interface BanDetails {
     mod: User;
@@ -626,10 +632,10 @@ export interface CommandBinderDeferred<TResult> {
 }
 
 export interface CommandBinderStateLookupCache {
-    findUser(userString: string): CommandBinderParseResult<User>;
-    findMember(memberString: string): CommandBinderParseResult<GuildMember>;
-    findRole(roleString: string): CommandBinderParseResult<Role>;
-    findChannel(channelString: string): CommandBinderParseResult<AllChannels>;
+    findUser(userString: string): CommandBinderParseResult<LookupResult<User>>;
+    findMember(memberString: string): CommandBinderParseResult<LookupResult<GuildMember>>;
+    findRole(roleString: string): CommandBinderParseResult<LookupResult<Role>>;
+    findChannel(channelString: string): CommandBinderParseResult<LookupResult<AllChannels>>;
 }
 
 export interface CommandBinderState<TContext extends CommandContext> {

@@ -42,13 +42,10 @@ export class PardonSubtag extends BaseSubtag {
         const count = parse.int(countStr);
         let member: GuildMember | undefined;
         if (userStr !== '')
-            user = await context.getUser(userStr, {
-                suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-            });
+            user = await context.queryUser(userStr);
 
         if (user !== undefined) {
-            member = await context.util.getMemberById(context.guild.id, user.id);
+            member = await context.util.getMember(context.guild.id, user.id);
         }
 
         if (user === undefined || member === undefined)

@@ -1,12 +1,12 @@
 import { SendContext, SendPayload } from '@core/types';
-import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, Guild, GuildMember, Message, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, Guild, GuildChannels, GuildMember, Message, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
 import { Database } from './database';
 import { Logger } from './Logger';
 import { metrics } from './Metrics';
-import { guard, humanize, snowflake } from './utils';
+import { guard, humanize, parse, snowflake } from './utils';
 
 export class BaseUtilities {
     public get user(): ClientUser { return this.client.discord.user; }
@@ -25,7 +25,7 @@ export class BaseUtilities {
         switch (typeof context) {
             // Id provided, get channel object
             case 'string': {
-                const foundChannel = await this.getGlobalChannel(context);
+                const foundChannel = await this.getChannel(context);
                 if (foundChannel === undefined)
                     break;
                 else if (guard.isTextableChannel(foundChannel))
@@ -147,7 +147,7 @@ export class BaseUtilities {
         let user: User | undefined;
         switch (typeof context) {
             case 'string': {
-                user = await this.getGlobalUser(context);
+                user = await this.getUser(context);
                 break;
             }
             case 'object': {
@@ -174,45 +174,46 @@ export class BaseUtilities {
     }
 
     public async resolveTags(context: ChannelInteraction | UserChannelInteraction | Channel, message: string): Promise<string> {
-        const regex = /<([^<>\s]+)>/g;
+        const regex = /<[^<>\s]+>/g;
         const promiseMap: { [tag: string]: Promise<string>; } = {};
-        let tag;
-        while ((tag = regex.exec(message)) !== null) {
-            promiseMap[tag[1]] ??= this.resolveTag(context instanceof Channel ? context : context.channel, tag[1]);
+        let match;
+        while ((match = regex.exec(message)) !== null) {
+            promiseMap[match[0]] ??= this.resolveTag(context instanceof Channel ? context : context.channel, match[0]);
         }
         const replacements = Object.fromEntries(await Promise.all(Object.entries(promiseMap).map(async e => [e[0], await e[1]] as const)));
-        return message.replace(regex, (_, tag: string) => replacements[tag]);
+        return message.replace(regex, match => replacements[match]);
     }
 
     public async resolveTag(context: AllChannels, tag: string): Promise<string> {
-        if (tag.startsWith('@&')) { // ROLE
+        let id: string | undefined;
+        if ((id = parse.entityId(tag, '@&')) !== undefined) { // ROLE
             const role = guard.isGuildChannel(context)
-                ? await this.getRoleById(context.guild, tag.substring(2))
+                ? await this.getRole(context.guild, id)
                 : undefined;
 
             return `@${role?.name ?? 'UNKNOWN ROLE'}`;
         }
-        if (tag.startsWith('@!')) { // USER (NICKNAME)
+        if ((id = parse.entityId(tag, '@!')) !== undefined) { // USER (NICKNAME)
             if (guard.isGuildChannel(context)) {
-                const member = await this.getMemberById(context.guild, tag.substring(2));
+                const member = await this.getMember(context.guild, tag.substring(2));
                 if (member !== undefined)
                     return member.displayName;
             }
-            const user = await this.getUserById(tag.substring(2));
+            const user = await this.getUser(id);
             return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
         }
-        if (tag.startsWith('@')) { // USER
-            const user = await this.getUserById(tag.substring(2));
+        if ((id = parse.entityId(tag, '@')) !== undefined) { // USER
+            const user = await this.getUser(id);
             return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
         }
-        if (tag.startsWith('#')) { // CHANNEL
-            const channel = await this.getChannelById(tag.substring(1));
+        if ((id = parse.entityId(tag, '#')) !== undefined) { // CHANNEL
+            const channel = await this.getChannel(id);
             return channel !== undefined && guard.isGuildChannel(channel) ? `#${channel.name}` : '';
         }
-        if (tag.startsWith('t:')) { // TIMESTAMP
-            const [val, format = 'f'] = tag.substring(2).split(':');
+        if (tag.startsWith('<t:')) { // TIMESTAMP
+            const [, val, format = 'f'] = tag.split(':');
             const timestamp = moment.unix(parseInt(val));
-            switch (format) {
+            switch (format.substring(0, format.length - 1)) {
                 case 't': return timestamp.format('HH:mm');
                 case 'T': return timestamp.format('HH:mm:ss');
                 case 'd': return timestamp.format('DD/MM/yyyy');
@@ -222,10 +223,10 @@ export class BaseUtilities {
                 case 'f': return timestamp.format('DD MMMM yyyy HH:mm');
             }
         }
-        if (tag.startsWith('a:') || tag.startsWith(':')) { // EMOJI
+        if (tag.startsWith('<a:') || tag.startsWith('<:')) { // EMOJI
             return tag.split(':')[1];
         }
-        return `<${tag}>`;
+        return tag;
     }
 
     public async generateOutputPage(payload: SendPayload, channel?: TextBasedChannels): Promise<Snowflake> {
@@ -256,39 +257,105 @@ export class BaseUtilities {
         return this.database.vars.get('police')
             .then(police => police?.value.includes(id) ?? false);
     }
+
     public isSupport(id: string): Promise<boolean> | boolean {
         return this.database.vars.get('support')
             .then(support => support?.value.includes(id) ?? false);
     }
-    public async getGlobalChannel(channelId: string): Promise<Channel | undefined> {
+
+    public async getChannel(channelId: string): Promise<AllChannels | undefined>;
+    public async getChannel(guild: string | Guild, channelId: string): Promise<GuildChannels | undefined>;
+    public async getChannel(...args: [string] | [string | Guild, string]): Promise<AllChannels | undefined> {
+        const [guild, channelId] = args.length === 2 ? args : [undefined, args[0]];
         try {
-            return await this.discord.channels.fetch(channelId) ?? undefined;
+            if (guild === undefined)
+                return await this.discord.channels.fetch(channelId) ?? undefined;
+            const _guild = typeof guild === 'string' ? await this.getGuild(guild) : guild;
+            return await _guild?.channels.fetch(channelId) ?? undefined;
         } catch (err: unknown) {
             if (err instanceof DiscordAPIError && err.code === Constants.APIErrors.UNKNOWN_CHANNEL)
                 return undefined;
             throw err;
         }
     }
-    public async getGlobalUser(userId: string): Promise<User | undefined> {
+
+    public async findChannels(guild: string | Guild, query: string): Promise<GuildChannels[]> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+        if (typeof guild === 'string')
+            return [];
+
+        const channel = await this.getChannel(guild, query);
+        if (channel !== undefined)
+            return [channel];
+
+        return guild.channels.cache
+            .map(c => ({ channel: <GuildChannels>c, score: this.channelMatchScore(<GuildChannels>c, query) }))
+            .filter(c => c.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map(c => c.channel);
+    }
+
+    public channelMatchScore(channel: AllChannels, query: string): number {
+        const normalizedQuery = query.toLowerCase();
+
+        if (guard.isGuildChannel(channel)) {
+            if (channel.name === query) return 10000;
+            if (channel.name.startsWith(query)) return 1000;
+            if (channel.name.startsWith(normalizedQuery)) return 100;
+            if (channel.name.includes(query)) return 10;
+            if (channel.name.includes(normalizedQuery)) return 1;
+        } else if (guard.isPrivateChannel(channel) && 'recipient' in channel) {
+            return this.userMatchScore(channel.recipient, query);
+        }
+        return 0;
+
+    }
+
+    public async getUser(userId: string): Promise<User | undefined> {
+        userId = parse.entityId(userId, '@!?', true) ?? '';
+        if (userId === '')
+            return undefined;
+
         try {
             return await this.discord.users.fetch(userId);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError && err.code === Constants.APIErrors.UNKNOWN_USER)
-                return undefined;
+            if (err instanceof DiscordAPIError) {
+                switch (err.code) {
+                    case Constants.APIErrors.UNKNOWN_USER:
+                    case Constants.APIErrors.INVALID_FORM_BODY:
+                        return undefined;
+                }
+            }
             throw err;
         }
     }
-    public async getGlobalGuild(guildId: string): Promise<Guild | undefined> {
+
+    public async getGuild(guildId: string): Promise<Guild | undefined> {
+        guildId = parse.entityId(guildId) ?? '';
+        if (guildId === '')
+            return undefined;
+
         try {
             return await this.discord.guilds.fetch(guildId);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError && err.code === Constants.APIErrors.UNKNOWN_GUILD)
-                return undefined;
+            if (err instanceof DiscordAPIError) {
+                switch (err.code) {
+                    case Constants.APIErrors.UNKNOWN_GUILD:
+                    case Constants.APIErrors.INVALID_FORM_BODY:
+                        return undefined;
+                }
+            }
             throw err;
         }
     }
-    public async getMessage(channel: string | Channel, messageId: string): Promise<Message | undefined> {
-        const foundChannel = typeof channel === 'string' ? await this.getGlobalChannel(channel) : channel;
+
+    public async getMessage(channel: string | AllChannels, messageId: string): Promise<Message | undefined> {
+        messageId = parse.entityId(messageId) ?? '';
+        if (messageId === '')
+            return undefined;
+
+        const foundChannel = typeof channel === 'string' ? await this.getChannel(channel) : channel;
 
         if (foundChannel === undefined || !guard.isTextableChannel(foundChannel))
             return undefined;
@@ -296,26 +363,35 @@ export class BaseUtilities {
         try {
             return await foundChannel.messages.fetch(messageId);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError && err.code === Constants.APIErrors.UNKNOWN_MESSAGE)
-                return undefined;
+            if (err instanceof DiscordAPIError) {
+                switch (err.code) {
+                    case Constants.APIErrors.UNKNOWN_MESSAGE:
+                    case Constants.APIErrors.INVALID_FORM_BODY:
+                        return undefined;
+                }
+            }
             throw err;
         }
     }
 
-    public async getMemberById(guild: string | Guild, userId: string): Promise<GuildMember | undefined> {
-        if (typeof guild === 'string') {
-            guild = await this.getGuildById(guild) ?? guild;
-            if (typeof guild === 'string')
-                return undefined;
-        }
+    public async getMember(guild: string | Guild, userId: string): Promise<GuildMember | undefined> {
+        userId = parse.entityId(userId) ?? '';
+        if (userId === '')
+            return undefined;
+
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+        if (typeof guild === 'string')
+            return undefined;
 
         try {
-            return guild.members.fetch(userId);
+            return await guild.members.fetch(userId);
         } catch (error: unknown) {
             if (error instanceof DiscordAPIError) {
                 switch (error.code) {
                     case Constants.APIErrors.UNKNOWN_MEMBER:
                     case Constants.APIErrors.UNKNOWN_USER:
+                    case Constants.APIErrors.INVALID_FORM_BODY:
                         return undefined;
                 }
             }
@@ -323,44 +399,90 @@ export class BaseUtilities {
         }
     }
 
-    public async getUserById(userId: string): Promise<User | undefined> {
-        const match = /\d{17,21}/.exec(userId);
-        if (match === null)
-            return undefined;
-        return await this.getGlobalUser(match[0]);
+    public async findMember(guild: string | Guild, query: string): Promise<GuildMember[]> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+        if (typeof guild === 'string')
+            return [];
+
+        const member = await this.getMember(guild, query);
+        if (member !== undefined)
+            return [member];
+
+        return guild.members.cache
+            .map(m => ({ member: m, score: this.memberMatchScore(m, query) }))
+            .filter(m => m.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map(m => m.member);
     }
 
-    public async getGuildById(guildId: string): Promise<Guild | undefined> {
-        const match = /\d{17,21}/.exec(guildId);
-        if (match === null)
-            return undefined;
-        return await this.getGlobalGuild(match[0]);
+    public memberMatchScore(member: GuildMember, query: string): number {
+        let score = this.userMatchScore(member.user, query);
+        const normalizedDisplayname = member.displayName.toLowerCase();
+        const normalizedQuery = query.toLowerCase();
+
+        if (member.displayName.startsWith(query)) score += 100;
+        if (normalizedDisplayname.startsWith(normalizedQuery)) score += 10;
+        if (normalizedDisplayname.includes(normalizedQuery)) score += 1;
+        return score;
     }
 
-    public async getRoleById(guild: string | Guild, roleId: string): Promise<Role | undefined> {
-        const foundGuild = typeof guild === 'string' ? await this.getGuildById(guild) : guild;
-        if (foundGuild === undefined)
-            return undefined;
-        const match = /\d{17,21}/.exec(roleId);
-        if (match === null)
+    public userMatchScore(user: User, query: string): number {
+        let score = 0;
+        const normalizedUsername = user.username.toLowerCase();
+        const normalizedQuery = query.toLowerCase();
+
+        if (user.username.startsWith(query)) score += 100;
+        if (normalizedUsername.startsWith(normalizedQuery)) score += 10;
+        if (normalizedUsername.includes(normalizedQuery)) score += 1;
+        return score;
+    }
+
+    public async getRole(guild: string | Guild, roleId: string): Promise<Role | undefined> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+        if (typeof guild === 'string')
             return undefined;
 
         try {
-            return await foundGuild.roles.fetch(match[0]) ?? undefined;
-        } catch {
-            return undefined;
+            return await guild.roles.fetch(roleId) ?? undefined;
+        } catch (error: unknown) {
+            if (error instanceof DiscordAPIError && error.code === Constants.APIErrors.UNKNOWN_ROLE)
+                return undefined;
+            throw error;
         }
     }
 
-    public async getChannelById(channelId: string): Promise<AllChannels | undefined> {
-        const match = /\d{17,21}/.exec(channelId);
-        if (match === null)
-            return undefined;
-        return await this.getGlobalChannel(match[0]);
+    public async findRoles(guild: string | Guild, query: string): Promise<Role[]> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+        if (typeof guild === 'string')
+            return [];
+
+        const role = await this.getRole(guild, query);
+        if (role !== undefined)
+            return [role];
+
+        return guild.roles.cache
+            .map(r => ({ role: r, score: this.roleMatchScore(r, query) }))
+            .filter(r => r.score > 0)
+            .sort((a, b) => b.score - a.score)
+            .map(r => r.role);
     }
 
-    public async getGlobalMessage(channel: string | Channel, messageId: string): Promise<Message | undefined> {
-        const foundChannel = typeof channel === 'string' ? await this.getGlobalChannel(channel) : channel;
+    public roleMatchScore(role: Role, query: string): number {
+        const normalizedQuery = query.toLowerCase();
+
+        if (role.name === query) return 10000;
+        if (role.name.startsWith(query)) return 1000;
+        if (role.name.startsWith(normalizedQuery)) return 100;
+        if (role.name.includes(query)) return 10;
+        if (role.name.includes(normalizedQuery)) return 1;
+        return 0;
+    }
+
+    public async getGlobalMessage(channel: string | AllChannels, messageId: string): Promise<Message | undefined> {
+        const foundChannel = typeof channel === 'string' ? await this.getChannel(channel) : channel;
         return foundChannel === undefined ? undefined : await this.getMessage(foundChannel, messageId);
     }
 }

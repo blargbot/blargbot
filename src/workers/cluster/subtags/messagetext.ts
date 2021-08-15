@@ -15,21 +15,21 @@ export class MessageTextSubtag extends BaseSubtag {
                     description: 'Returns the text of the executing message.',
                     exampleCode: 'You sent "text"',
                     exampleOut: 'You sent "b!t test You sent "{text}""`',
-                    execute: (ctx, _, subtag) => this.getMessageText(ctx, ctx.channel.id, ctx.message.id, '', subtag)
+                    execute: (ctx, _, subtag) => this.getMessageText(ctx, ctx.channel.id, ctx.message.id, false, subtag)
                 },
                 {
                     parameters: ['messageid'],
                     description: 'Returns the text of `messageid` in the current channel.',
                     exampleCode: 'Message 1111111111111 contained: "{text;1111111111111}"',
                     exampleOut: 'Message 1111111111111 contained: "Hello world!"',
-                    execute: (ctx, args, subtag) => this.getMessageText(ctx, ctx.channel.id, args[0].value, '', subtag)
+                    execute: (ctx, args, subtag) => this.getMessageText(ctx, ctx.channel.id, args[0].value, false, subtag)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
                     description: 'Returns the text of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
                     exampleCode: 'Message 1111111111111 in #support contained: "{text;support;1111111111111}"',
                     exampleOut: 'Message 1111111111111 in #support contained: "Spooky Stuff"',
-                    execute: (ctx, args, subtag) => this.getMessageText(ctx, args[0].value, args[1].value, args[2].value, subtag)
+                    execute: (ctx, args, subtag) => this.getMessageText(ctx, args[0].value, args[1].value, args[2].value !== '', subtag)
                 }
             ]
         });
@@ -39,11 +39,11 @@ export class MessageTextSubtag extends BaseSubtag {
         context: BBTagContext,
         channelStr: string,
         messageStr: string,
-        quietStr: string,
+        quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
-        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        quiet ||= context.scope.quiet ?? false;
+        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
         let message: Message | undefined;

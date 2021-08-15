@@ -164,7 +164,7 @@ export class EventLogManager {
         await Promise.all(
             this.cluster.discord.guilds.cache
                 .map(async guild => {
-                    if (await this.cluster.util.getMemberById(guild, user.id) === undefined)
+                    if (await this.cluster.util.getMember(guild, user.id) === undefined)
                         return;
 
                     const channel = await this.getLogChannel('nameupdate', guild.id);
@@ -191,7 +191,7 @@ export class EventLogManager {
         await Promise.all(
             this.cluster.discord.guilds.cache
                 .map(async guild => {
-                    if (await this.cluster.util.getMemberById(guild, user.id) === undefined)
+                    if (await this.cluster.util.getMember(guild, user.id) === undefined)
                         return;
 
                     const channel = await this.getLogChannel('avatarupdate', guild.id);
@@ -271,7 +271,7 @@ export class EventLogManager {
         if (channelId === undefined)
             return undefined;
 
-        const channel = await this.cluster.util.getChannelById(channelId);
+        const channel = await this.cluster.util.getChannel(channelId);
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel) || channel.guild.id !== guildId)
             return undefined;
 

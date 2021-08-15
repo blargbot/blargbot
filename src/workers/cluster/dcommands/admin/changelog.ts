@@ -29,7 +29,7 @@ export class ChangelogCommand extends BaseGuildCommand {
         if (typeof current !== 'undefined')
             return this.info('This channel is already subscribed to my changelog updates!');
 
-        const changelogChannel = await context.util.getChannelById(context.config.discord.channels.changelog);
+        const changelogChannel = await context.util.getChannel(context.config.discord.channels.changelog);
         if (changelogChannel === undefined || !guard.isGuildChannel(changelogChannel) || changelogChannel.type !== 'GUILD_NEWS')
             return this.error('It looks like I cant find the where to get changelog messages from! Please try again later.');
 

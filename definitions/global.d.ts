@@ -2,6 +2,8 @@ import configJson from '@config';
 import { Snowflake as _Snowflake } from 'catflake';
 
 declare global {
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    export type Primitive = string | number | bigint | boolean | object | Function | symbol | undefined;
     export type JToken = JObject | JArray | JValue | null | undefined;
     export type JValue = string | number | boolean;
     export type JObject = { [key: string]: JToken; };
@@ -30,6 +32,7 @@ declare global {
     type Alphanumeric = Letter | Numeric;
 
     type Mutable<T> = { -readonly [P in keyof T]: T[P] }
+    type FilteredKeys<T, U> = { [P in keyof T]: T[P] extends U ? P : never }[keyof T];
 
     interface ObjectConstructor {
         keys<T>(value: T): Array<string & keyof T>;

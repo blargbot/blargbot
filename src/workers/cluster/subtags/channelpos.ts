@@ -24,7 +24,7 @@ export class ChannelPosSubtag extends BaseSubtag {
                     description: 'Returns the position of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: 'The position of test-channel is {channelpos;test-channel}',
                     exampleOut: 'The position of test-channel is 0',
-                    execute: (ctx, [channel, quiet], subtag) => this.getChannelPosition(ctx, channel.value, quiet.value, subtag)
+                    execute: (ctx, [channel, quiet], subtag) => this.getChannelPosition(ctx, channel.value, quiet.value !== '', subtag)
                 }
             ]
         });
@@ -33,11 +33,11 @@ export class ChannelPosSubtag extends BaseSubtag {
     public async getChannelPosition(
         context: BBTagContext,
         channelStr: string,
-        quietStr: string,
+        quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
-        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        quiet ||= context.scope.quiet ?? false;
+        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined)
             return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
         return this.getChanelPositionCore(context, channel, subtag);

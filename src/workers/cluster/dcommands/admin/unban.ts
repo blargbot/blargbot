@@ -22,7 +22,7 @@ export class UnbanCommand extends BaseGuildCommand {
     }
 
     public async unban(context: GuildCommandContext, userId: string, flags: FlagResult): Promise<string> {
-        const user = await context.util.getGlobalUser(userId);
+        const user = await context.util.getUser(userId);
         if (user === undefined)
             return this.error('I couldn\'t find that user!');
 

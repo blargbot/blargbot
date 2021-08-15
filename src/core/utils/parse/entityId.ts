@@ -10,7 +10,7 @@ export function entityId(text: string, identifier = '', allowJustId = identifier
     if (!allowJustId)
         return undefined;
 
-    regex = new RegExp(`${identifier}(\\d{17,23})`);
+    regex = new RegExp(`(?:${identifier})?(\\d{17,23})`);
     match = regex.exec(text);
     if (match !== null)
         return match[1];

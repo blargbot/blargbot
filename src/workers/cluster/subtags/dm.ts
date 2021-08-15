@@ -30,16 +30,13 @@ export class DMSubtag extends BaseSubtag {
         messageStr: string,
         embedStr?: string
     ): Promise<string | void> {
-        const user = await context.getUser(userStr, {
-            suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        const user = await context.queryUser(userStr);
         let content: string | undefined = messageStr;
         let embed = discordUtil.parseEmbed(messageStr);
 
         if (user === undefined)
             return this.noUserFound(context, subtag);
-        if (await context.util.getMemberById(context.guild, user.id) === undefined)
+        if (await context.util.getMember(context.guild, user.id) === undefined)
             return this.userNotInGuild(context, subtag);
 
         if (embed !== undefined && embed.malformed !== true)

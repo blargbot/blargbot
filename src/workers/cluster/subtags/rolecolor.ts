@@ -12,7 +12,7 @@ export class RoleColorSubtag extends BaseSubtag {
                     description: 'Returns `role`\'s hex color code. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role color is: #{rolecolor;admin}.',
                     exampleOut: 'The admin role ID is: #1b1b1b.',
-                    execute: (ctx, [roleId, quietStr]) => this.getRoleHexColor(ctx, roleId.value, quietStr.value)
+                    execute: (ctx, [roleId, quiet]) => this.getRoleHexColor(ctx, roleId.value, quiet.value !== '')
                 }
             ]
         });
@@ -21,13 +21,10 @@ export class RoleColorSubtag extends BaseSubtag {
     public async getRoleHexColor(
         context: BBTagContext,
         roleId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const role = await context.getRole(roleId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role !== undefined) {
             return role.color.toString(16).padStart(6, '0');

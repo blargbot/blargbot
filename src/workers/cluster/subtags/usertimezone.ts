@@ -23,7 +23,7 @@ export class UserTimezoneSubtag extends BaseSubtag {
                         'If the user has no set timezone, the output will be UTC.',
                     exampleCode: 'Discord official\'s timezone is {usertimezone;Discord official}',
                     exampleOut: 'Discord official\'s timezone is Europe/Berlin',
-                    execute: (ctx, [userId, quietStr]) => this.getUserTimezone(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserTimezone(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -32,13 +32,10 @@ export class UserTimezoneSubtag extends BaseSubtag {
     public async getUserTimezone(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
         if (user === undefined)
             return quiet ? '' : ''; //TODO add behavior for this??? Old code did nothing if user didnt exist
 

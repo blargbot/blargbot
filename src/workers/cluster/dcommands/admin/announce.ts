@@ -120,8 +120,8 @@ export class AnnounceCommand extends BaseGuildCommand {
         if (config === undefined)
             return undefined;
 
-        let channel = await context.util.getChannelById(config.channel);
-        const role = await context.util.getRoleById(context.channel.guild.id, config.role);
+        let channel = await context.util.getChannel(config.channel);
+        const role = await context.util.getRole(context.channel.guild.id, config.role);
 
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel) || guard.isThreadChannel(channel) && channel.archived === true)
             channel = undefined;
@@ -140,16 +140,20 @@ export class AnnounceCommand extends BaseGuildCommand {
                 return false;
 
             const mentioned = response.mentions.channels.first();
-            if (mentioned === undefined)
-                return this.error('You need to tell me what channel to send announcements in!');
+            if (mentioned !== undefined) {
+                if (!guard.isGuildChannel(mentioned) || mentioned.guild.id !== context.channel.guild.id)
+                    return this.error(`${mentioned.toString()} is not a channel on this guild!`);
+                channel = mentioned;
+            } else {
+                const found = await context.util.queryChannel(context.channel, context.author, context.channel.guild, response.content);
+                if (typeof found === 'string')
+                    return this.error('I couldnt find a channel with that name or id!');
 
-            if (!guard.isGuildChannel(mentioned) || mentioned.guild.id !== context.channel.guild.id)
-                return this.error(`${mentioned.toString()} is not a channel on this guild!`);
+                channel = found;
+            }
 
-            if (!guard.isTextableChannel(mentioned))
-                return this.error(`${mentioned.toString()} is not a text channel!`);
-
-            channel = mentioned;
+            if (!guard.isTextableChannel(channel))
+                return this.error(`${channel.toString()} is not a text channel!`);
         }
 
         if (role === undefined) {
@@ -165,8 +169,8 @@ export class AnnounceCommand extends BaseGuildCommand {
             if (mentioned !== undefined)
                 role = mentioned;
             else {
-                const found = await context.util.getRole(context, response.content);
-                if (found === undefined)
+                const found = await context.util.queryRole(context.channel, context.author, context.channel.guild, response.content);
+                if (typeof found === 'string')
                     return this.error('I couldnt find a role with that name or id!');
 
                 role = found;

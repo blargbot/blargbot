@@ -20,7 +20,7 @@ export class UserGameSubtag extends BaseSubtag {
                     description: 'Returns the game `user` is playing. If `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat is playing {usergame;Stupid cat}',
                     exampleOut: 'Stupid cat is playing nothing',
-                    execute: (ctx, [userId, quietStr]) => this.getUserGame(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserGame(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -29,16 +29,13 @@ export class UserGameSubtag extends BaseSubtag {
     public async getUserGame(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined) {
-            const member = await context.util.getMemberById(context.guild, user.id);
+            const member = await context.util.getMember(context.guild, user.id);
             if (member !== undefined)
                 return member.presence?.activities[0]?.name ?? 'nothing';
         }

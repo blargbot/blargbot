@@ -87,7 +87,7 @@ export class BanManager extends ModerationManagerBase {
                 return permMessage;
         }
 
-        const member = await this.cluster.util.getMemberById(guild, userId);
+        const member = await this.cluster.util.getMember(guild, userId);
         if (member !== undefined && !this.cluster.util.isBotHigher(member))
             return 'memberTooHigh';
 
@@ -153,11 +153,11 @@ export class BanManager extends ModerationManagerBase {
     }
 
     public async banExpired(event: UnbanEventOptions): Promise<void> {
-        const guild = await this.cluster.util.getGuildById(event.guild);
+        const guild = await this.cluster.util.getGuild(event.guild);
         if (guild === undefined)
             return;
 
-        const user = await this.cluster.util.getGlobalUser(event.user);
+        const user = await this.cluster.util.getUser(event.user);
         if (user === undefined)
             return;
 

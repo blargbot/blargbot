@@ -24,12 +24,9 @@ export async function checkRoles(
     let roles: string[];
     if (userStr !== '') {
         delete result.member;
-        const user = await context.getUser(userStr, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        const user = await context.queryUser(userStr, { noLookup: quiet });
         if (user !== undefined)
-            result.member = await context.util.getMemberById(context.guild.id, user.id);
+            result.member = await context.util.getMember(context.guild.id, user.id);
     }
 
     if (deserialized !== undefined && Array.isArray(deserialized.v))

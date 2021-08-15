@@ -23,15 +23,11 @@ export class IsStaffSubtag extends BaseSubtag {
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Checks if `user` is a member of staff. ' +
-                    'If the `user` cannot be found `false` will be returned.',
+                        'If the `user` cannot be found `false` will be returned.',
                     exampleCode: '{if;{isstaff;{userid}};You are a staff member!;You are not a staff member :(}',
                     exampleOut: 'You are not a staff member :(',
                     execute: async (context, args) => {
-                        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : args[1].value !== '';
-                        const user = await context.getUser(args[0].value, {
-                            quiet, suppress: context.scope.suppressLookup,
-                            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-                        });
+                        const user = await context.queryUser(args[0].value, { noLookup: args[1].value !== '' });
 
                         if (user === undefined) return false.toString();
 

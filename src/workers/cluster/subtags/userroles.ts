@@ -19,7 +19,7 @@ export class UserRolesSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s roles as an array. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s roles are {userroles;stupidcat}',
                     exampleOut: 'Stupid cat\'s roles are ["1111111111111111","2222222222222222", "3333333333333333"]',
-                    execute: (ctx, [userId, quietStr]) => this.getUserRoles(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserRoles(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -28,16 +28,13 @@ export class UserRolesSubtag extends BaseSubtag {
     public async getUserRoles(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined) {
-            const member = await context.util.getMemberById(context.guild, user.id);
+            const member = await context.util.getMember(context.guild, user.id);
             if (member !== undefined)
                 return JSON.stringify([...member.roles.cache.keys()]);
         }

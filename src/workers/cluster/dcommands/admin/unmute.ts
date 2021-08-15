@@ -22,8 +22,8 @@ export class UnmuteCommand extends BaseGuildCommand {
     }
 
     public async unmute(context: GuildCommandContext, userStr: string, flags: FlagResult): Promise<string> {
-        const member = await context.cluster.util.getMember(context.message, userStr);
-        if (member === undefined)
+        const member = await context.cluster.util.queryMember(context.channel, context.author, context.channel.guild, userStr);
+        if (typeof member === 'string')
             return this.error('I couldn\'t find that user!');
 
         const reason = flags.r?.merge().value;

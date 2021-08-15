@@ -19,7 +19,7 @@ export class UserIdSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s ID. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'This is Stupid cat\'s user ID {userid;Stupid cat}',
                     exampleOut: 'This is Stupid cat\'s user ID 103347843934212096',
-                    execute: (ctx, [userId, quietStr]) => this.getUserId(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserId(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -28,13 +28,10 @@ export class UserIdSubtag extends BaseSubtag {
     public async getUserId(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined) {
             return user.id;

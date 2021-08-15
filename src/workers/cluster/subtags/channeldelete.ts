@@ -13,7 +13,7 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                     exampleCode: '{channeldelete;11111111111111111}',
                     exampleOut: '',
                     execute: async (context, [{ value: channelStr }], subtag) => {
-                        const channel = await context.getChannel(channelStr);
+                        const channel = await context.queryChannel(channelStr);
 
                         /**
                          * TODO change this to "No channel found" for consistency

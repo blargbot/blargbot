@@ -24,11 +24,12 @@ export class WarningsCommand extends BaseGuildCommand {
     }
 
     public async warnings(context: GuildCommandContext, member: string | GuildMember): Promise<string> {
-        if (typeof member === 'string')
-            member = await context.util.getMember(context.message, member, { quiet: true }) ?? '';
-
-        if (typeof member === 'string')
-            return this.error(`I couldnt find the user ${member}!`);
+        if (typeof member === 'string') {
+            const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, member);
+            if (typeof result === 'string')
+                return this.error(`I couldnt find the user ${member}!`);
+            member = result;
+        }
 
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
         const result = [

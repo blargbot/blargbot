@@ -123,7 +123,7 @@ export class MuteManager extends ModerationManagerBase {
         if (guild === undefined)
             return;
 
-        const member = await this.cluster.util.getMemberById(guild, event.user);
+        const member = await this.cluster.util.getMember(guild, event.user);
         if (member === undefined)
             return;
 

@@ -25,7 +25,7 @@ export class AutoresponseManager {
         const isChange = whitelisted !== this.#guilds.has(guildId);
         if (isChange) {
             if (!this.cluster.util.isStaff(userId)) {
-                const user = await this.cluster.util.getUserById(userId);
+                const user = await this.cluster.util.getUser(userId);
                 const guild = this.cluster.discord.guilds.cache.get(guildId);
                 const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
                 const message = await this.cluster.util.send(

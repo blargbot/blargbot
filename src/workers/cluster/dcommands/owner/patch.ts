@@ -22,14 +22,14 @@ export class PatchCommand extends BaseGlobalCommand {
     }
 
     public async patch(context: CommandContext, features: string | undefined, fixes: string | undefined, notes: string | undefined): Promise<string> {
-        const channel = await context.util.getChannelById(context.config.discord.channels.changelog);
+        const channel = await context.util.getChannel(context.config.discord.channels.changelog);
         if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel))
             return this.error('I cant find the changelog channel!');
 
         if (features === undefined && fixes === undefined && notes === undefined)
             return this.error('I cant send out an empty patch note!');
 
-        const role = await context.util.getRoleById(channel.guild, context.config.discord.roles.updates);
+        const role = await context.util.getRole(channel.guild, context.config.discord.roles.updates);
         const { major = 0, minor = 0, patch = 0 } = await context.database.vars.get('version') ?? {};
         const fields: EmbedFieldData[] = [];
         const embed: MessageEmbedOptions = {

@@ -12,7 +12,7 @@ export class RoleMembersSubtag extends BaseSubtag {
                     description: 'Returns an array of members in `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admins are: {rolemembers;Admin}.',
                     exampleOut: 'The admins are: ["11111111111111111","22222222222222222"].',
-                    execute: (ctx, [roleId, quietStr]) => this.getRoleMembers(ctx, roleId.value, quietStr.value)
+                    execute: (ctx, [roleId, quiet]) => this.getRoleMembers(ctx, roleId.value, quiet.value !== '')
                 }
             ]
         });
@@ -21,13 +21,10 @@ export class RoleMembersSubtag extends BaseSubtag {
     public async getRoleMembers(
         context: BBTagContext,
         roleId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const role = await context.getRole(roleId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role !== undefined) {
             const membersInRole = (await context.guild.roles.fetch(role.id))?.members;

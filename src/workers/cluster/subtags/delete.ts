@@ -44,7 +44,7 @@ export class DeleteSubtag extends BaseSubtag {
         if (!(await context.isStaff || context.ownsMessage(messageId)))
             return this.customError('Author must be staff to delete unrelated messages', context, subtag);
 
-        const channel = await context.getChannel(channelStr);
+        const channel = await context.queryChannel(channelStr);
         let msg: Message | undefined;
         if (channel === undefined)
             return this.channelNotFound(context, subtag);

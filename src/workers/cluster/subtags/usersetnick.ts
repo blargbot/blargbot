@@ -17,16 +17,13 @@ export class UserSetNickSubtag extends BaseSubtag {
                     execute: async (context, [{ value: nick }, { value: userStr }], subtag): Promise<string | void> => {
                         let user: User | undefined = context.user;
                         if (userStr !== '') {
-                            user = await context.getUser(userStr, {
-                                quiet: false, suppress: context.scope.suppressLookup,
-                                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-                            });
+                            user = await context.queryUser(userStr);
                         }
 
                         if (user === undefined)
                             return this.noUserFound(context, subtag);
 
-                        const member = await context.util.getMemberById(context.guild, user.id);
+                        const member = await context.util.getMember(context.guild, user.id);
 
                         try {
                             if (user.id === context.discord.user.id)

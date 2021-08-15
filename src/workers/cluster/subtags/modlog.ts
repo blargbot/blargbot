@@ -39,18 +39,12 @@ export class ModlogSubtag extends BaseSubtag {
         colorStr: string,
         subtag: SubtagCall
     ): Promise<string | void> {
-        const user = await context.getUser(userStr, {
-            suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        const user = await context.queryUser(userStr);
         const color = colorStr !== '' ? parse.color(colorStr) : undefined;
         let mod: User | undefined;
 
         if (modStr !== '')
-            mod = await context.getUser(modStr, {
-                suppress: context.scope.suppressLookup,
-                label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-            }); //TODO no user found for this?
+            mod = await context.queryUser(modStr); //TODO no user found for this?
 
         if (user === undefined)
             return this.noUserFound(context, subtag);

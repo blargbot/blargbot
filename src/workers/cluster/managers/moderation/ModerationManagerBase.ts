@@ -19,7 +19,7 @@ export abstract class ModerationManagerBase {
         if (guild.ownerId === moderatorId)
             return undefined;
 
-        const moderatorMember = await this.cluster.util.getMemberById(guild, moderatorId);
+        const moderatorMember = await this.cluster.util.getMember(guild, moderatorId);
         if (moderatorMember === undefined)
             return 'moderatorNoPerms';
 
@@ -43,11 +43,11 @@ export abstract class ModerationManagerBase {
         if (guild.ownerId === targetId)
             return false;
 
-        const moderatorMember = await this.cluster.util.getMemberById(guild, moderatorId);
+        const moderatorMember = await this.cluster.util.getMember(guild, moderatorId);
         if (moderatorMember === undefined)
             return false;
 
-        const targetMember = await this.cluster.util.getMemberById(guild, targetId);
+        const targetMember = await this.cluster.util.getMember(guild, targetId);
         if (targetMember === undefined)
             return true;
 

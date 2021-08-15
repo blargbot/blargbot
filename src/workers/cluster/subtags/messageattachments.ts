@@ -19,21 +19,21 @@ export class MessageAttachmentsSubtag extends BaseSubtag {
                     description: 'Returns an array of attachments of the invoking message.',
                     exampleCode: 'You sent the attachments "{messageattachments}"',
                     exampleOut: 'You sent the attachments "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
-                    execute: (ctx, _, subtag) => this.getMessageAttachments(ctx, ctx.channel.id, ctx.message.id, '', subtag)
+                    execute: (ctx, _, subtag) => this.getMessageAttachments(ctx, ctx.channel.id, ctx.message.id, false, subtag)
                 },
                 {
                     parameters: ['messageid'],
                     description: 'Returns an array of attachments of `messageid` in the current channel',
                     exampleCode: 'Someone sent a message with attachments: "{messageattachments;1111111111111}"',
                     exampleOut: 'Someone sent a message with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
-                    execute: (ctx, args, subtag) => this.getMessageAttachments(ctx, ctx.channel.id, args[0].value, '', subtag)
+                    execute: (ctx, args, subtag) => this.getMessageAttachments(ctx, ctx.channel.id, args[0].value, false, subtag)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
                     description: 'Returns an array of attachments of `messageid` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
                     exampleCode: 'Someone sent a message in #support with attachments: "{messageattachments;support;1111111111111}"',
                     exampleOut: 'Someone sent a message in #support with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
-                    execute: (ctx, args, subtag) => this.getMessageAttachments(ctx, args[0].value, args[1].value, args[2].value, subtag)
+                    execute: (ctx, args, subtag) => this.getMessageAttachments(ctx, args[0].value, args[1].value, args[2].value !== '', subtag)
                 }
             ]
         });
@@ -43,11 +43,11 @@ export class MessageAttachmentsSubtag extends BaseSubtag {
         context: BBTagContext,
         channelStr: string,
         messageStr: string,
-        quietStr: string,
+        quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr.length > 0;
-        const channel = await context.getChannel(channelStr, { quiet, suppress: context.scope.suppressLookup });
+        quiet ||= context.scope.quiet ?? false;
+        const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined)
             return quiet ? '[]' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
         let message: Message | undefined;

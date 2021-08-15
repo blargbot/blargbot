@@ -13,7 +13,7 @@ export class RolePermsSubtag extends BaseSubtag {
                     description: 'Returns `role`\'s permission number. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role\'s permissions are: {roleperms;admin}.',
                     exampleOut: 'The admin role\'s permissions are: 8.',
-                    execute: (ctx, [userId, quietStr]) => this.getRolePerms(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getRolePerms(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -22,13 +22,10 @@ export class RolePermsSubtag extends BaseSubtag {
     public async getRolePerms(
         context: BBTagContext,
         roleId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const role = await context.getRole(roleId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role !== undefined) {
             return role.permissions.bitfield.toString();

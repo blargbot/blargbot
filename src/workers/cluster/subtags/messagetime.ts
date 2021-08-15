@@ -32,7 +32,7 @@ export class MessageTimeSubtag extends BaseSubtag {
                     parameters: ['channel|messageid', 'messageid|format'],
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
                     execute: async (context, args, subtag) => {
-                        const channel = await context.getChannel(args[0].value, {suppress: true});
+                        const channel = await context.queryChannel(args[0].value, { noErrors: true });
                         if (channel === undefined)
                             return this.getMessageTime(context, context.channel.id, args[0].value, args[1].value, subtag);
                         return this.getMessageTime(context, args[0].value, args[1].value, 'x', subtag);
@@ -54,7 +54,7 @@ export class MessageTimeSubtag extends BaseSubtag {
         format: string,
         subtag: SubtagCall
     ): Promise<string> {
-        const channel = await context.getChannel(channelStr, {quiet: true}); //TODO lookup
+        const channel = await context.queryChannel(channelStr, { noLookup: true }); //TODO lookup
         if (channel === undefined)
             return this.channelNotFound(context, subtag);
 

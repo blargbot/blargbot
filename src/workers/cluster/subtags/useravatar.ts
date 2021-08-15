@@ -20,7 +20,7 @@ export class UserAvatarSubtag extends BaseSubtag {
                     description: 'Returns the avatar of `user`. If `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s avatar is {useravatar;Stupid cat}',
                     exampleOut: 'Stupid cat\'s avatar is (avatar url)',
-                    execute: (ctx, [userId, quietStr]) => this.getUserAvatarUrl(ctx, userId.value, quietStr.value)
+                    execute: (ctx, [userId, quiet]) => this.getUserAvatarUrl(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -29,13 +29,10 @@ export class UserAvatarSubtag extends BaseSubtag {
     public async getUserAvatarUrl(
         context: BBTagContext,
         userId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const user = await context.getUser(userId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined)
             return user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 });

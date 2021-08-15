@@ -13,9 +13,9 @@ export class RoleSizeSubtag extends BaseSubtag {
                     description: 'Returns the amount of people in role `role`',
                     exampleCode: 'There are {rolesize;11111111111111111} people in the role!',
                     exampleOut: 'There are 5 people in the role!',
-                    execute: async (context, [{value: roleStr}], subtag) => {
+                    execute: async (context, [{ value: roleStr }], subtag) => {
                         //! Above code is the 'new' way, below code is the old way
-                        const role = await context.util.getRoleById(context.guild.id, roleStr);
+                        const role = await context.util.getRole(context.guild.id, roleStr);
 
                         if (role === undefined)
                             return this.noRoleFound(context, subtag);

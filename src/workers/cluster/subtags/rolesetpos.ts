@@ -13,16 +13,13 @@ export class RoleSetPosSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role is now at position 3. {rolesetpos;admin;3}',
                     exampleOut: 'The admin role is now at position 3.',
-                    execute: async (context, [{value: roleStr}, {value: posStr}, {value: quietStr}], subtag) => {
+                    execute: async (context, [{ value: roleStr }, { value: posStr }, { value: quietStr }], subtag) => {
                         const topRole = discordUtil.getRoleEditPosition(context);
                         if (topRole === 0)
                             return this.customError('Author cannot edit roles', context, subtag);
 
-                        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
-                        const role = await context.getRole(roleStr, {
-                            quiet, suppress: context.scope.suppressLookup,
-                            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-                        });
+                        const quiet = quietStr !== '' || (context.scope.quiet ?? false);
+                        const role = await context.queryRole(roleStr, { noLookup: quiet });
                         const pos = parse.int(posStr);
 
                         if (role !== undefined) {
@@ -33,7 +30,7 @@ export class RoleSetPosSubtag extends BaseSubtag {
                             }
 
                             try {
-                                await role.edit({ position: pos});
+                                await role.edit({ position: pos });
                                 return '`Role not found`'; //TODO meaningful output, this is purely for backwards compatibility :/
                             } catch (err: unknown) {
                                 if (!quiet)

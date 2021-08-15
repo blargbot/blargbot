@@ -13,7 +13,7 @@ export class RolePosSubtag extends BaseSubtag {
                     description: 'Returns the position of `role`. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.\n**Note**: the highest role will have the highest position, and the lowest role will have the lowest position and therefore return `0` (`@everyone`).',
                     exampleCode: 'The position of Mayor is {rolepos;Mayor}',
                     exampleOut: 'The position of Mayor is 10',
-                    execute: (ctx, [roleId, quietStr]) => this.getRolePosition(ctx, roleId.value, quietStr.value)
+                    execute: (ctx, [roleId, quiet]) => this.getRolePosition(ctx, roleId.value, quiet.value !== '')
                 }
             ]
         });
@@ -22,13 +22,10 @@ export class RolePosSubtag extends BaseSubtag {
     public async getRolePosition(
         context: BBTagContext,
         roleId: string,
-        quietStr: string
+        quiet: boolean
     ): Promise<string> {
-        const quiet = context.scope.quiet !== undefined ? context.scope.quiet : quietStr.length > 0;
-        const role = await context.getRole(roleId, {
-            quiet, suppress: context.scope.suppressLookup,
-            label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        });
+        quiet ||= context.scope.quiet ?? false;
+        const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role !== undefined) {
             return role.position.toString();
