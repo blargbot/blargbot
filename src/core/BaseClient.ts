@@ -33,6 +33,7 @@ export class BaseClient {
             new Promise(resolve => this.discord.once('ready', resolve)),
             this.discord.login(this.config.discord.token).then(() => this.logger.init('discord connected'))
         ]);
+        await this.discord.application.fetch();
     }
 
     protected moduleStats<TModule, TKey extends string | number>(
