@@ -360,17 +360,24 @@ export class ClusterUtilities extends BaseUtilities {
         return member.roles.highest.position;
     }
 
-    public async isUserStaff(userId: string, guildId: string): Promise<boolean> {
-        if (userId === guildId) return true;
+    public async isUserStaff(member: GuildMember): Promise<boolean>;
+    public async isUserStaff(userId: string, guildId: string): Promise<boolean>;
+    public async isUserStaff(...args: [userId: string, guildId: string] | [member: GuildMember]): Promise<boolean> {
+        let member;
+        if (args.length === 2) {
+            if (args[0] === args[1]) return true;
+            member = await this.getMember(args[1], args[0]);
+        } else {
+            member = args[0];
+        }
 
-        const member = await this.getMember(guildId, userId);
         if (member === undefined) return false;
 
-        if (member.guild.ownerId === userId) return true;
+        if (member.guild.ownerId === member.id) return true;
         if (member.permissions.has('ADMINISTRATOR')) return true;
 
-        if (await this.database.guilds.getSetting(guildId, 'permoverride') === true) {
-            let allow = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
+        if (await this.database.guilds.getSetting(member.guild.id, 'permoverride') === true) {
+            let allow = await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff;
             if (typeof allow === 'string')
                 allow = parseInt(allow);
             if (this.hasPerms(member, allow)) {

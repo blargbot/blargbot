@@ -8,5 +8,6 @@ export function formatAuditReason(user: User, reason = '', ban = false): string 
         fullReason += `: ${reason}`;
     }
     // bans use their own system and cannot be uriencoded. thanks discord!
-    return !ban ? encodeURIComponent(fullReason) : fullReason;
+    // return !ban ? encodeURIComponent(fullReason) : fullReason; // Not needed in djs
+    return ban ? fullReason : fullReason;
 }
