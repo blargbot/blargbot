@@ -77,7 +77,8 @@ export class UpdateCommand extends BaseGlobalCommand {
         const message = await context.reply(this.info(`Command: \`${command}\`\nRunning...`));
         try {
             await context.channel.sendTyping();
-            const result = await execCommandline(command);
+            // eslint-disable-next-line no-control-regex
+            const result = (await execCommandline(command)).replace(/\u001b\[.*?m/g, '');
             await message?.edit({
                 content: this.success(`Command: \`${command}\``),
                 files: [
