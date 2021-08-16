@@ -1,5 +1,5 @@
 import { Logger } from '@core/Logger';
-import { MutableStoredUser, StoredUser, StoredUserSettings, UserTable } from '@core/types';
+import { MutableStoredUser, StoredUser, StoredUsername, StoredUserSettings, UserTable } from '@core/types';
 import { guard } from '@core/utils';
 import { User } from 'discord.js';
 
@@ -38,6 +38,36 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         return await this.rget(userId, skipCache);
     }
 
+    public async removeUsernames(userId: string, usernames: readonly string[] | 'all'): Promise<boolean> {
+        const user = await this.rget(userId);
+        if (user === undefined)
+            return false;
+
+        const success = await this.rupdate(userId, user => ({
+            usernames: usernames === 'all' ? [] : user('usernames').filter(username => this.expr([...usernames]).contains<string>(username('name')).not())
+        }));
+
+        if (!success)
+            return false;
+
+        if (usernames === 'all')
+            user.usernames = [];
+        else {
+            const nameLookup = new Set(usernames);
+            user.usernames = user.usernames.filter(username => !nameLookup.has(username.name));
+        }
+
+        return true;
+    }
+
+    public async getUsernames(userId: string, skipCache?: boolean): Promise<readonly StoredUsername[] | undefined> {
+        const user = await this.rget(userId, skipCache);
+        if (user === undefined)
+            return undefined;
+
+        return user.usernames;
+    }
+
     public async upsert(user: User): Promise<'inserted' | 'updated' | false> {
         if (user.discriminator === '0000')
             return false;
@@ -54,7 +84,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
                 lastspoke: new Date(),
                 discriminator: user.discriminator,
                 todo: []
-            })) {
+            }, true)) {
                 return 'inserted';
             }
         } else {

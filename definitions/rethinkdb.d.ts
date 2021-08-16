@@ -323,7 +323,11 @@ declare module 'rethinkdb' {
         setDifference<R>(this: Expression<R[]>, prop: R[]): Expression<R[]>;
         setDifference<R>(this: Expression<R[]>, prop: Expression<R[]>): Expression<R[]>;
         contains(this: Expression<string>, prop: string): Expression<boolean>;
-        contains<R>(this: Expression<R[]>, prop: R): Expression<boolean>;
+        contains<R>(this: Expression<R[]>, prop: R | Expression<R>): Expression<boolean>;
+
+        filter<R>(this: Expression<R[]>, rql: ExpressionFunction<R, boolean>): Expression<T>;
+        filter<R>(this: Expression<R[]>, rql: Expression<boolean>): Expression<T>;
+        filter<R>(this: Expression<R[]>, obj: FilterMap<R>): Expression<T>;
 
         and(this: Expression<boolean>, b: boolean | Expression<boolean>): Expression<boolean>;
         or(this: Expression<boolean>, b: boolean | Expression<boolean>): Expression<boolean>;

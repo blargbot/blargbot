@@ -52,4 +52,8 @@ export abstract class BaseCommand implements CommandBaseOptions {
     public congrats(message: string): string {
         return `🎉 ${message}`;
     }
+
+    public question(message: string): string {
+        return `❓ ${message}`;
+    }
 }

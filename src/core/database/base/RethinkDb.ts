@@ -93,6 +93,10 @@ export class RethinkDb {
             return r.literal();
         return r.literal(this.addExpr(value));
     }
+
+    public expr<T>(value: T): Expression<T> {
+        return r.expr(value);
+    }
 }
 
 function hackySanitize(value: unknown, removeUndef: boolean): unknown {
@@ -113,6 +117,8 @@ function hackySanitize(value: unknown, removeUndef: boolean): unknown {
                 return value.filter(v => v !== undefined)
                     .map(v => hackySanitize(v, removeUndef));
             }
+            if (value instanceof Date)
+                return value;
             return Object.fromEntries(
                 Object.entries(value as Record<PropertyKey, unknown>)
                     .filter(([, e]) => !removeUndef || e !== undefined)

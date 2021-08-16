@@ -90,6 +90,10 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return this.#rethinkDb.setExpr(value);
     }
 
+    protected expr<T>(value: T): Expression<T> {
+        return this.#rethinkDb.expr(value);
+    }
+
     public migrate(): Promise<void> {
         return Promise.resolve();
     }
