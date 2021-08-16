@@ -34,7 +34,7 @@ export function compileHandler<TContext extends CommandContext>(
                 arguments: [],
                 bindIndex: 0,
                 result: undefined,
-                flags: parse.flags(command.flags, context.argsString),
+                flags: parse.flags(command.flags, context.argsString, true),
                 context,
                 command,
                 lookupCache: getLookupCache(context, command)

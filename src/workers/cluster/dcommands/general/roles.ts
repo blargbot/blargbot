@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { MessageOptions } from 'discord.js';
+import { MessageEmbedOptions } from 'discord.js';
 
 export class RolesCommand extends BaseGuildCommand {
     public constructor() {
@@ -18,18 +18,14 @@ export class RolesCommand extends BaseGuildCommand {
         });
     }
 
-    public showRoles(context: GuildCommandContext): MessageOptions {
+    public showRoles(context: GuildCommandContext): MessageEmbedOptions {
         return {
-            embeds: [
-                {
-                    author: context.util.embedifyAuthor(context.channel.guild),
-                    title: 'Roles',
-                    description: context.channel.guild.roles.cache
-                        .sort((a, b) => b.position - a.position)
-                        .map(r => r.toString())
-                        .join('\n')
-                }
-            ]
+            author: context.util.embedifyAuthor(context.channel.guild),
+            title: 'Roles',
+            description: context.channel.guild.roles.cache
+                .sort((a, b) => b.position - a.position)
+                .map(r => r.toString())
+                .join('\n')
         };
     }
 }

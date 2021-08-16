@@ -1,7 +1,7 @@
 import { LookupResult, MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { SendPayload, SendPayloadContent } from '@core/types';
+import { SendOptions, SendPayload } from '@core/types';
 import { EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
@@ -18,7 +18,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async queryChoice<T extends Exclude<Primitive, string>>(
         channel: TextBasedChannels,
         users: Iterable<string | User> | string | User,
-        payload: string | Omit<SendPayloadContent, 'components'>,
+        payload: string | Omit<SendOptions, 'components'>,
         placeholder: string,
         choices: ReadonlyArray<Omit<MessageSelectOptionData, 'value'> & { value: T; }>,
         timeout = 300000
@@ -99,7 +99,7 @@ export class ClusterUtilities extends BaseUtilities {
     public async queryConfirm(
         channel: TextBasedChannels,
         users: Iterable<string | User> | string | User,
-        payload: string | Omit<SendPayloadContent, 'components'>,
+        payload: string | Omit<SendOptions, 'components'>,
         confirm: string | { label?: string; emojji: EmojiIdentifierResolvable; },
         cancel: string | { label?: string; emojji: EmojiIdentifierResolvable; },
         timeout = 60000

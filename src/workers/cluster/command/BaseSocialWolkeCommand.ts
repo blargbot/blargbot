@@ -1,5 +1,5 @@
 import { CommandType } from '@cluster/utils';
-import { MessageOptions, User } from 'discord.js';
+import { MessageEmbedOptions, User } from 'discord.js';
 import Wolke from 'wolken';
 
 import { BaseGlobalCommand } from './BaseGlobalCommand';
@@ -40,7 +40,7 @@ export abstract class BaseSocialWolkeCommand extends BaseGlobalCommand {
         this.client = new Wolke(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
     }
 
-    public async render(context: CommandContext, type: string, action: string | undefined, target: User | undefined): Promise<MessageOptions> {
+    public async render(context: CommandContext, type: string, action: string | undefined, target: User | undefined): Promise<MessageEmbedOptions> {
         const image = await this.client.getRandom({ type, allowNSFW: false, filetype: 'gif' });
         const message = action !== undefined ? target === undefined
             ? `**${context.author.toString()}** ${action}!`
@@ -48,13 +48,9 @@ export abstract class BaseSocialWolkeCommand extends BaseGlobalCommand {
             : undefined;
 
         return {
-            embeds: [
-                {
-                    description: message,
-                    image: { url: image.url },
-                    footer: { text: 'Powered by weeb.sh' }
-                }
-            ]
+            description: message,
+            image: { url: image.url },
+            footer: { text: 'Powered by weeb.sh' }
         };
     }
 }

@@ -13,11 +13,11 @@ export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; 
 export type SendContext = UserChannelInteraction | ChannelInteraction | TextBasedChannels | string
 export type SendEmbed = MessageEmbedOptions & { asString?: string; }
 export type SendFiles = FileOptions | FileOptions[]
-export interface SendPayloadContent extends MessageOptions {
+export interface SendOptions extends MessageOptions {
     nsfw?: string;
     isHelp?: boolean;
 }
-export type SendPayload = SendPayloadContent | string;
+export type SendPayload = SendOptions | MessageEmbedOptions | string | FileOptions;
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

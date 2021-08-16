@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
 import { humanize } from '@core/utils';
-import { MessageOptions } from 'discord.js';
+import { MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
 
 const year = [undefined, 'year', 'years'];
@@ -25,7 +25,7 @@ export class InfoCommand extends BaseGlobalCommand {
             ]
         });
     }
-    public showInfo(context: CommandContext): MessageOptions | string {
+    public showInfo(context: CommandContext): MessageEmbedOptions | string {
         if (context.cluster.contributors.patrons.length === 0)
             return this.warning('Im still waking up! Try again in a minute or two');
 
@@ -47,37 +47,33 @@ export class InfoCommand extends BaseGlobalCommand {
         );
 
         return {
-            embeds: [
-                {
-                    author: context.util.embedifyAuthor(context.discord.user),
-                    title: 'About me!',
-                    description: `I am a multipurpose bot with new features implemented regularly, written in typescript using [discord.js](https://discord.js.org/).
+            author: context.util.embedifyAuthor(context.discord.user),
+            title: 'About me!',
+            description: `I am a multipurpose bot with new features implemented regularly, written in typescript using [discord.js](https://discord.js.org/).
                     
 🎂 I am currently ${ageStr} old!`,
-                    fields: [
-                        {
-                            name: '️️️️️️️️❤️ Special thanks to my patrons! ❤️',
-                            value: context.cluster.contributors.patrons.map(u => typeof u === 'string' ? u : humanize.fullName(u)).join('\n'),
-                            inline: true
-                        },
-                        {
-                            name: '️️️️️️️️❤️ Special thanks to all my other donators! ❤️',
-                            value: context.cluster.contributors.donators.map(u => typeof u === 'string' ? u : humanize.fullName(u)).join('\n'),
-                            inline: true
-                        },
-                        {
-                            name: '❤️ Special huge thanks to: ❤️',
-                            value: context.cluster.contributors.others.map(x => {
-                                const user = typeof x.user === 'string' ? x.user : humanize.fullName(x.user);
-                                return `🎉 The ${x.decorator} **${user}** for ${x.reason}!`;
-                            }).join('\n')
-                        },
-                        {
-                            name: '\u200b',
-                            value: `For commands, do \`${context.prefix}help\`. For information about supporting me, do \`${context.prefix}donate\`. 
+            fields: [
+                {
+                    name: '️️️️️️️️❤️ Special thanks to my patrons! ❤️',
+                    value: context.cluster.contributors.patrons.map(u => typeof u === 'string' ? u : humanize.fullName(u)).join('\n'),
+                    inline: true
+                },
+                {
+                    name: '️️️️️️️️❤️ Special thanks to all my other donators! ❤️',
+                    value: context.cluster.contributors.donators.map(u => typeof u === 'string' ? u : humanize.fullName(u)).join('\n'),
+                    inline: true
+                },
+                {
+                    name: '❤️ Special huge thanks to: ❤️',
+                    value: context.cluster.contributors.others.map(x => {
+                        const user = typeof x.user === 'string' ? x.user : humanize.fullName(x.user);
+                        return `🎉 The ${x.decorator} **${user}** for ${x.reason}!`;
+                    }).join('\n')
+                },
+                {
+                    name: '\u200b',
+                    value: `For commands, do \`${context.prefix}help\`. For information about supporting me, do \`${context.prefix}donate\`. 
 For any additional information, such as command documentation, please visit my website: <https://blargbot.xyz>`
-                        }
-                    ]
                 }
             ]
         };

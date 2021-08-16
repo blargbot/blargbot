@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { EmbedFieldData, GuildMember, MessageOptions, PresenceStatus } from 'discord.js';
+import { EmbedFieldData, GuildMember, MessageEmbedOptions, PresenceStatus } from 'discord.js';
 
 export class ModsCommand extends BaseGuildCommand {
     public constructor() {
@@ -38,7 +38,7 @@ export class ModsCommand extends BaseGuildCommand {
         });
     }
 
-    public async listMods(context: GuildCommandContext, filter: (status: PresenceStatus) => boolean): Promise<MessageOptions> {
+    public async listMods(context: GuildCommandContext, filter: (status: PresenceStatus) => boolean): Promise<MessageEmbedOptions> {
         const byStatus: { [P in PresenceStatus]: GuildMember[] } = {
             online: [],
             idle: [],
@@ -67,14 +67,10 @@ export class ModsCommand extends BaseGuildCommand {
             fields.push({ name: `<${context.config.discord.emotes.offline}> Offline`, value: [...byStatus.offline, ...byStatus.invisible].join('\n'), inline: true });
 
         return {
-            embeds: [
-                {
-                    author: context.util.embedifyAuthor(context.channel.guild),
-                    title: 'Moderators',
-                    description: fields.length > 0 ? undefined : 'There are no mods with that status!',
-                    fields
-                }
-            ]
+            author: context.util.embedifyAuthor(context.channel.guild),
+            title: 'Moderators',
+            description: fields.length > 0 ? undefined : 'There are no mods with that status!',
+            fields
         };
     }
 }

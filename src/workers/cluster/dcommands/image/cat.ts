@@ -1,7 +1,7 @@
 import { Cluster } from '@cluster';
 import { BaseGlobalCommand } from '@cluster/command';
 import { CommandType, randInt } from '@cluster/utils';
-import { MessageOptions } from 'discord.js';
+import { MessageEmbedOptions } from 'discord.js';
 import { Handler as Wolken } from 'wolken';
 
 export class CatCommand extends BaseGlobalCommand {
@@ -23,16 +23,12 @@ export class CatCommand extends BaseGlobalCommand {
         this.client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
     }
 
-    public async render(): Promise<MessageOptions> {
+    public async render(): Promise<MessageEmbedOptions> {
         const res = await this.client.getRandom({ type: 'animal_cat', allowNSFW: false });
         return {
-            embeds: [
-                {
-                    image: { url: res.url },
-                    footer: { text: 'Powered by weeb.sh' },
-                    color: randInt(0x1, 0xffffff)
-                }
-            ]
+            image: { url: res.url },
+            footer: { text: 'Powered by weeb.sh' },
+            color: randInt(0x1, 0xffffff)
         };
     }
 }

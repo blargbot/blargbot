@@ -17,3 +17,4 @@ export * from './snowflake';
 export * from './toBlocks';
 export * from './shuffle';
 export * from './pluralise';
+export * from './repeat';

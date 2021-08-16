@@ -1,8 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, guard, humanize } from '@cluster/utils';
-import { SendPayloadContent, StoredGuildEventLogType } from '@core/types';
-import { EmbedFieldData, Role, User } from 'discord.js';
+import { StoredGuildEventLogType } from '@core/types';
+import { EmbedFieldData, MessageEmbedOptions, Role, User } from 'discord.js';
 
 export class LogCommand extends BaseGuildCommand {
     public constructor() {
@@ -90,7 +90,7 @@ export class LogCommand extends BaseGuildCommand {
         return this.success(`I will no longer log the following events:\n${eventStrings.join('\n')}`);
     }
 
-    public async listEvents(context: GuildCommandContext): Promise<SendPayloadContent> {
+    public async listEvents(context: GuildCommandContext): Promise<MessageEmbedOptions> {
         const channels = await context.database.guilds.getLogChannels(context.channel.guild.id);
         const ignoreUsers = await context.database.guilds.getLogIgnores(context.channel.guild.id);
         const ignoreUsersField: EmbedFieldData = {
@@ -101,36 +101,28 @@ export class LogCommand extends BaseGuildCommand {
 
         if (Object.values<string | undefined>(channels.events).every(e => e === undefined)) {
             return {
-                embeds: [
-                    {
-                        fields: [
-                            { name: 'Currently logged events', value: 'No logged events', inline: true },
-                            ignoreUsersField
-                        ]
-                    }
+                fields: [
+                    { name: 'Currently logged events', value: 'No logged events', inline: true },
+                    ignoreUsersField
                 ]
             };
         }
 
         return {
-            embeds: [
+            fields: [
                 {
-                    fields: [
-                        {
-                            name: 'Currently logged events',
-                            value: [
-                                ...Object.entries<string | undefined>(channels.events)
-                                    .filter((e): e is [string, string] => e[1] !== undefined)
-                                    .map(([eventName, channelId]) => `**${eventName}** - <#${channelId}>`),
-                                ...Object.entries<string | undefined>(channels.roles)
-                                    .filter((e): e is [string, string] => e[1] !== undefined)
-                                    .map(([roleId, channelId]) => `**<@&${roleId}>** - <#${channelId}>`)
-                            ].join('\n'),
-                            inline: true
-                        },
-                        ignoreUsersField
-                    ]
-                }
+                    name: 'Currently logged events',
+                    value: [
+                        ...Object.entries<string | undefined>(channels.events)
+                            .filter((e): e is [string, string] => e[1] !== undefined)
+                            .map(([eventName, channelId]) => `**${eventName}** - <#${channelId}>`),
+                        ...Object.entries<string | undefined>(channels.roles)
+                            .filter((e): e is [string, string] => e[1] !== undefined)
+                            .map(([roleId, channelId]) => `**<@&${roleId}>** - <#${channelId}>`)
+                    ].join('\n'),
+                    inline: true
+                },
+                ignoreUsersField
             ]
         };
     }

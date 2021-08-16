@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType, pluralise as p } from '@cluster/utils';
-import { MessageEmbedOptions, MessageOptions, User } from 'discord.js';
+import { MessageEmbedOptions, User } from 'discord.js';
 import moment from 'moment-timezone';
 
 export class NamesCommand extends BaseGlobalCommand {
@@ -27,7 +27,7 @@ export class NamesCommand extends BaseGlobalCommand {
         });
     }
 
-    public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<MessageOptions | string> {
+    public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<MessageEmbedOptions | string> {
         let usernames = await context.database.users.getUsernames(user.id);
         if (usernames === undefined || usernames.length === 0)
             return this.info(`I havent seen any usernames for ${user.toString()} yet!`);
@@ -50,7 +50,7 @@ export class NamesCommand extends BaseGlobalCommand {
             ? usernames.map(u => `${u.name} - <t:${moment(u.date).unix()}:R>`).join('\n')
             : usernames.map(u => u.name).join('\n');
 
-        return { embeds: [embed] };
+        return embed;
     }
 
     public async removeNames(context: CommandContext, names: string): Promise<string> {

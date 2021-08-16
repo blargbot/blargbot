@@ -1,7 +1,7 @@
 import { BaseGlobalCommand } from '@cluster/command';
 import { CommandType, mapping, randInt } from '@cluster/utils';
 import packageJson from '@package';
-import { MessageOptions } from 'discord.js';
+import { MessageEmbedOptions } from 'discord.js';
 import fetch, { Response } from 'node-fetch';
 
 export class CommitCommand extends BaseGlobalCommand {
@@ -19,7 +19,7 @@ export class CommitCommand extends BaseGlobalCommand {
         });
     }
 
-    public async getCommit(commitNumber: number | undefined): Promise<MessageOptions | string> {
+    public async getCommit(commitNumber: number | undefined): Promise<MessageEmbedOptions | string> {
         const commitCount = await this.fetchCommitCount();
         if (commitCount === 0)
             return this.error('I cant find any commits at the moment, please try again later!');
@@ -32,18 +32,14 @@ export class CommitCommand extends BaseGlobalCommand {
             return this.error('I couldnt find the commit!');
 
         return {
-            embeds: [
-                {
-                    author: {
-                        name: commit.author?.login ?? commit.commit.author.name,
-                        iconURL: commit.author?.avatar_url,
-                        url: commit.author?.html_url
-                    },
-                    title: `${commit.sha.substring(0, 7)} - commit #${commitNumber}`,
-                    url: commit.html_url,
-                    description: commit.commit.message
-                }
-            ]
+            author: {
+                name: commit.author?.login ?? commit.commit.author.name,
+                iconURL: commit.author?.avatar_url,
+                url: commit.author?.html_url
+            },
+            title: `${commit.sha.substring(0, 7)} - commit #${commitNumber}`,
+            url: commit.html_url,
+            description: commit.commit.message
         };
     }
 

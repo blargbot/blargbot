@@ -1,5 +1,5 @@
 import { SendContext, SendPayload, StoredUser } from '@core/types';
-import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageEmbedAuthor, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -55,13 +55,13 @@ export class BaseUtilities {
         if (target instanceof User) {
             return {
                 iconURL: target.displayAvatarURL({ size: 512, dynamic: true, format: 'png' }),
-                name: `${humanize.fullName(target)} (${target.id})`,
+                name: humanize.fullName(target),
                 url: this.websiteLink(target === this.discord.user ? undefined : `user/${target.id}`)
             };
         } else if (target instanceof GuildMember) {
             return {
                 iconURL: target.user.displayAvatarURL({ size: 512, dynamic: true, format: 'png' }),
-                name: `${target.displayName} (${target.id})`,
+                name: target.displayName,
                 url: this.websiteLink(`user/${target.id}`)
             };
         } else if (target instanceof Guild) {
@@ -94,6 +94,10 @@ export class BaseUtilities {
 
         if (typeof payload === 'string')
             payload = { content: payload };
+        else if ('attachment' in payload)
+            payload = { files: [payload] };
+        else if (isEmbed(payload))
+            payload = { embeds: [payload] };
 
         if (payload.reply === undefined && context instanceof Message)
             payload.reply = { messageReference: context, failIfNotExists: false };
@@ -305,7 +309,7 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateOutputPage(payload: SendPayload, channel?: TextBasedChannels): Promise<Snowflake> {
+    public async generateOutputPage(payload: MessageOptions | string, channel?: TextBasedChannels): Promise<Snowflake> {
         if (typeof payload === 'string')
             payload = { content: payload };
 
@@ -623,3 +627,21 @@ const sendErrors = {
         util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
     }
 } as const;
+
+function isEmbed(payload: SendPayload): payload is MessageEmbedOptions {
+    return typeof payload !== 'string' && embedKeys.some(k => k in payload);
+}
+
+const embedKeys = Object.keys<{ [P in keyof MessageEmbedOptions]-?: true }>({
+    author: true,
+    color: true,
+    description: true,
+    fields: true,
+    footer: true,
+    image: true,
+    thumbnail: true,
+    timestamp: true,
+    title: true,
+    url: true,
+    video: true
+});

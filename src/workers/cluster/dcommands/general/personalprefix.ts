@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
-import { MessageOptions } from 'discord.js';
+import { MessageEmbedOptions } from 'discord.js';
 
 export class PersonalPrefixCommand extends BaseGlobalCommand {
     public constructor() {
@@ -28,19 +28,15 @@ export class PersonalPrefixCommand extends BaseGlobalCommand {
         });
     }
 
-    public async listPrefixes(context: CommandContext): Promise<string | MessageOptions> {
+    public async listPrefixes(context: CommandContext): Promise<string | MessageEmbedOptions> {
         const prefixes = await context.database.users.getSetting(context.author.id, 'prefixes');
         if (prefixes === undefined || prefixes.length === 0)
             return this.info('You dont have any personal command prefixes set!');
 
         return {
-            embeds: [
-                {
-                    author: context.util.embedifyAuthor(context.author),
-                    title: 'Personal prefixes',
-                    description: prefixes.map(p => ` - ${p}`).join('\n')
-                }
-            ]
+            author: context.util.embedifyAuthor(context.author),
+            title: 'Personal prefixes',
+            description: prefixes.map(p => ` - ${p}`).join('\n')
         };
     }
 

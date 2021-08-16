@@ -276,6 +276,7 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 
 export type CommandResult =
     | ImageResult
+    | MessageEmbedOptions
     | SendPayload
     | FileOptions
     | FileOptions[]
