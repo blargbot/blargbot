@@ -1,4 +1,4 @@
-import { CommandBinderParseResult, CommandBinderStateLookupCache, GuildCommandContext, LookupResult, PrivateCommandContext } from '@cluster/types';
+import { CommandBinderParseResult, CommandBinderStateLookupCache, GuildCommandContext, PrivateCommandContext } from '@cluster/types';
 import { guard, parse } from '@cluster/utils';
 import { GuildMember, Role } from 'discord.js';
 
@@ -19,26 +19,35 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
     return {
         findChannel: createLookup(
             command, '#', 'channel',
-            id => context.channel.guild.channels.cache.get(id) ?? 'NO_OPTIONS',
-            async search => await context.util.queryChannel(context.channel, context.author, context.channel.guild, search)
+            id => context.channel.guild.channels.cache.get(id),
+            async search => {
+                const result = await context.util.queryChannel(context.channel, context.author, context.channel.guild, search);
+                return result.state === 'SUCCESS' ? result.value : undefined;
+            }
         ),
         findUser: createLookup(
             command, '@!?', 'user',
-            id => context.channel.guild.members.cache.get(id)?.user ?? 'NO_OPTIONS',
+            id => context.channel.guild.members.cache.get(id)?.user,
             async search => {
-                const member = await context.util.queryMember(context.channel, context.author, context.channel.guild, search);
-                return typeof member === 'string' ? member : member.user;
+                const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, search);
+                return result.state === 'SUCCESS' ? result.value.user : undefined;
             }
         ),
         findRole: createLookup(
             command, '@&', 'role',
-            id => context.channel.guild.roles.cache.get(id) ?? 'NO_OPTIONS',
-            async search => await context.util.queryRole(context.channel, context.author, context.channel.guild, search)
+            id => context.channel.guild.roles.cache.get(id),
+            async search => {
+                const result = await context.util.queryRole(context.channel, context.author, context.channel.guild, search);
+                return result.state === 'SUCCESS' ? result.value : undefined;
+            }
         ),
         findMember: createLookup(
             command, '@!?', 'member',
-            id => context.channel.guild.members.cache.get(id) ?? 'NO_OPTIONS',
-            async search => await context.util.queryMember(context.channel, context.author, context.channel.guild, search)
+            id => context.channel.guild.members.cache.get(id),
+            async search => {
+                const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, search);
+                return result.state === 'SUCCESS' ? result.value : undefined;
+            }
         )
     };
 }
@@ -47,10 +56,10 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
     return {
         findChannel: createLookup(
             command, '#', 'channel',
-            id => context.channel.id === id ? context.channel : 'NO_OPTIONS',
+            id => context.channel.id === id ? context.channel : undefined,
             search => context.util.channelMatchScore(context.channel, search) > 0
                 ? context.channel
-                : 'NO_OPTIONS'
+                : undefined
         ),
         findUser: createLookup(
             command, '@!?', 'user',
@@ -59,31 +68,29 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
                     return context.channel.recipient;
                 if (id === context.discord.user.id)
                     return context.discord.user;
-                return 'NO_OPTIONS';
+                return undefined;
             },
-            search => context.util.userMatchScore(context.channel.recipient, search) > 0
-                ? context.channel.recipient
-                : 'NO_OPTIONS'
+            search => context.util.userMatchScore(context.channel.recipient, search) > 0 ? context.channel.recipient : undefined
         ),
         findRole: createLookup<Role>(
             command, '@&', 'role',
-            () => 'NO_OPTIONS',
-            () => 'NO_OPTIONS'
+            () => undefined,
+            () => undefined
         ),
         findMember: createLookup<GuildMember>(
             command, '@!?', 'member',
-            () => 'NO_OPTIONS',
-            () => 'NO_OPTIONS'
+            () => undefined,
+            () => undefined
         )
     };
 }
 
-function createLookup<TResult extends Exclude<Primitive, string>>(
+function createLookup<TResult>(
     command: BaseCommand,
     idTag: string,
     type: string,
-    getById: (id: string) => LookupResult<TResult>,
-    search: (searchString: string) => Promise<LookupResult<TResult>> | LookupResult<TResult>
+    getById: (id: string) => TResult | undefined,
+    search: (searchString: string) => Promise<TResult | undefined> | TResult | undefined
 ): (searchString: string) => CommandBinderParseResult<TResult> {
     const cache = new Map<string, CommandBinderParseResult<TResult>>();
     return searchString => {
@@ -95,18 +102,9 @@ function createLookup<TResult extends Exclude<Primitive, string>>(
         const id = parse.entityId(searchString, idTag, true);
         if (id !== undefined) {
             const value = getById(id);
-            let result: CommandBinderParseResult<TResult>;
-            switch (value) {
-                case 'CANCELLED':
-                case 'FAILED':
-                case 'NO_OPTIONS':
-                case 'TIMED_OUT':
-                    result = { success: false, error: command.error(`A ${type} with id \`${id}\` does not exist`) };
-                    break;
-                default:
-                    result = { success: true, value };
-                    break;
-            }
+            const result = value === undefined
+                ? { success: false, error: command.error(`A ${type} with id \`${id}\` does not exist`) } as const
+                : { success: true, value: value } as const;
             cache.set(key, result);
             return result;
         }
@@ -119,18 +117,10 @@ function createLookup<TResult extends Exclude<Primitive, string>>(
                     return current;
 
                 const value = await search(searchString);
-                let result: CommandBinderParseResult<TResult>;
-                switch (value) {
-                    case 'CANCELLED':
-                    case 'FAILED':
-                    case 'NO_OPTIONS':
-                    case 'TIMED_OUT':
-                        result = { success: false, error: command.error(`I could not find a ${type} matching \`${searchString}\``) };
-                        break;
-                    default:
-                        result = { success: true, value };
-                        break;
-                }
+                const result = value === undefined
+                    ? { success: false, error: command.error(`I could not find a ${type} matching \`${searchString}\``) } as const
+                    : { success: true, value: value } as const;
+
                 cache.set(key, result);
                 return result;
             }

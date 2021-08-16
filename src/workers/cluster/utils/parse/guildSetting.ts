@@ -41,11 +41,11 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             if (!guard.isGuildRelated(msg))
                 return { success: false };
             const result = await util.queryChannel(msg.channel, msg.author, msg.channel.guild, raw);
-            if (typeof result === 'string')
+            if (result.state !== 'SUCCESS')
                 return { success: false };
             return {
                 success: true,
-                value: result.id as StoredGuildSettings[T],
+                value: result.value.id as StoredGuildSettings[T],
                 display: result.toString()
             };
         }
@@ -53,11 +53,11 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             if (!guard.isGuildRelated(msg))
                 return { success: false };
             const result = await util.queryRole(msg.channel, msg.author, msg.channel.guild, raw);
-            if (typeof result === 'string')
+            if (result.state !== 'SUCCESS')
                 return { success: false };
             return {
                 success: true,
-                value: result.id as StoredGuildSettings[T],
+                value: result.value.id as StoredGuildSettings[T],
                 display: result.toString()
             };
         }

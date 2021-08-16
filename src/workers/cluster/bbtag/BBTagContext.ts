@@ -1,11 +1,11 @@
 import { ClusterUtilities } from '@cluster';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, LookupResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
 import { bbtagUtil, guard, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { NamedStoredGuildCommand, StoredTag } from '@core/types';
+import { ChoiceQueryResult, NamedStoredGuildCommand, StoredTag } from '@core/types';
 import { Base, Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
@@ -185,7 +185,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         type: string,
         fetch: (id: string) => Promise<T | undefined>,
         find: (query: string) => Promise<T[]>,
-        query: (query: string) => Promise<LookupResult<T>>,
+        query: (query: string) => Promise<ChoiceQueryResult<T>>,
         options: FindEntityOptions
     ): Promise<T | undefined> {
         const cached = this.state.query[cacheKey][queryString];
@@ -200,7 +200,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
         const noErrors = this.scope.noLookupErrors ?? options.noErrors ?? false;
         const result = await query(queryString);
-        switch (result) {
+        switch (result.state) {
             case 'FAILED':
             case 'NO_OPTIONS':
                 if (!noErrors) {
@@ -214,8 +214,10 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 if (!noErrors)
                     await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
                 return undefined;
+            case 'SUCCESS':
+                this.state.query[cacheKey][queryString] = result.value.id;
+                return result.value;
             default:
-                this.state.query[cacheKey][queryString] = result.id;
                 return result;
         }
     }

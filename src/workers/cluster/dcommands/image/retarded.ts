@@ -33,9 +33,9 @@ export class RetardedCommand extends BaseGlobalImageCommand {
             return this.error(`I could not find the user \`${userStr}\``);
 
         const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, userStr);
-        if (typeof result === 'string')
+        if (result.state !== 'SUCCESS')
             return this.error(`I could not find the user \`${userStr}\``);
-        return await this.render(context, text, result.user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }));
+        return await this.render(context, text, result.value.user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }));
     }
 
     public async render(context: CommandContext, text: string, url: string): Promise<ImageResult | string> {

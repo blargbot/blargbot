@@ -1,7 +1,7 @@
 import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
-import { BaseButtonOptions, ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, Message, MessageEmbedOptions, MessageOptions, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { BaseButtonOptions, ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 
@@ -61,12 +61,37 @@ export interface ConfirmQueryOptionsBase {
     timeout?: number;
 }
 
-export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase & ConfirmQueryOptionsFallback<T>
+export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase & ConfirmQueryOptionsFallback<T>;
+
+export interface ChoiceQueryOptions<T> {
+    context: TextBasedChannels | Message;
+    users: Iterable<string | User> | string | User;
+    prompt: string | Omit<SendOptions, 'components'>;
+    placeholder: string;
+    choices: ReadonlyArray<Omit<MessageSelectOptionData, 'value'> & { value: T; }>;
+    timeout?: number;
+}
+
+export interface ChoiceQuery<T> {
+    prompt: Message | undefined;
+    getResult(): Promise<ChoiceQueryResult<T>>;
+    cancel(): void;
+}
 
 export interface ConfirmQuery<T extends boolean | undefined = undefined> {
     prompt: Message | undefined;
     getResult(): Promise<T>;
     cancel(): void;
+}
+
+export type ChoiceQueryResult<T> = ChoiceQueryBaseResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED'> | ChoiceQuerySuccess<T>;
+
+export interface ChoiceQueryBaseResult<T extends string> {
+    readonly state: T;
+}
+
+export interface ChoiceQuerySuccess<T> extends ChoiceQueryBaseResult<'SUCCESS'> {
+    readonly value: T;
 }
 
 export type ConfirmQueryButton =

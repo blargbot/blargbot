@@ -146,10 +146,10 @@ export class AnnounceCommand extends BaseGuildCommand {
                 channel = mentioned;
             } else {
                 const found = await context.util.queryChannel(context.channel, context.author, context.channel.guild, response.content);
-                if (typeof found === 'string')
+                if (found.state !== 'SUCCESS')
                     return this.error('I couldnt find a channel with that name or id!');
 
-                channel = found;
+                channel = found.value;
             }
 
             if (!guard.isTextableChannel(channel))
@@ -170,10 +170,10 @@ export class AnnounceCommand extends BaseGuildCommand {
                 role = mentioned;
             else {
                 const found = await context.util.queryRole(context.channel, context.author, context.channel.guild, response.content);
-                if (typeof found === 'string')
+                if (found.state !== 'SUCCESS')
                     return this.error('I couldnt find a role with that name or id!');
 
-                role = found;
+                role = found.value;
             }
         }
 

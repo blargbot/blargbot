@@ -26,9 +26,9 @@ export class WarningsCommand extends BaseGuildCommand {
     public async warnings(context: GuildCommandContext, member: string | GuildMember): Promise<string> {
         if (typeof member === 'string') {
             const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, member);
-            if (typeof result === 'string')
+            if (result.state !== 'SUCCESS')
                 return this.error(`I couldnt find the user ${member}!`);
-            member = result;
+            member = result.value;
         }
 
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);

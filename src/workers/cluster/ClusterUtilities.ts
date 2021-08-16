@@ -1,7 +1,7 @@
-import { LookupResult, MessagePrompt } from '@cluster/types';
+import { MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, SendOptions, SendPayload } from '@core/types';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, SendPayload } from '@core/types';
 import { Guild, GuildChannels, GuildMember, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
@@ -15,85 +15,99 @@ export class ClusterUtilities extends BaseUtilities {
         super(cluster);
     }
 
-    public async queryChoice<T extends Exclude<Primitive, string>>(
-        channel: TextBasedChannels,
-        users: Iterable<string | User> | string | User,
-        payload: string | Omit<SendOptions, 'components'>,
-        placeholder: string,
-        choices: ReadonlyArray<Omit<MessageSelectOptionData, 'value'> & { value: T; }>,
-        timeout = 300000
-    ): Promise<LookupResult<T>> {
-        if (choices.length === 0)
-            return 'NO_OPTIONS';
+    public async queryChoice<T extends Exclude<Primitive, string>>(options: ChoiceQueryOptions<T>): Promise<ChoiceResult<T>> {
+        const query = await this.createChoiceQuery(options);
+        const result = await query.getResult();
+        try {
+            await query.prompt?.delete();
+        } catch { /* NOOP */ }
+        return result;
+    }
 
-        if (choices.length === 1)
-            return choices[0].value;
+    public async createChoiceQuery<T>(options: ChoiceQueryOptions<T>): Promise<ChoiceQuery<T>> {
+        if (options.choices.length === 0) {
+            return {
+                prompt: undefined,
+                getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
+                cancel() { /* NOOP */ }
+            };
+        }
 
-        if (typeof payload === 'string')
-            payload = { content: payload };
+        if (options.choices.length === 1) {
+            return {
+                prompt: undefined,
+                getResult: () => Promise.resolve({ state: 'SUCCESS', value: options.choices[0].value }),
+                cancel() { /* NOOP */ }
+            };
+        }
+
+        if (typeof options.prompt === 'string')
+            options.prompt = { content: options.prompt };
 
         const valueMap: Record<string, T> = {};
         const selectData: MessageSelectOptionData[] = [];
         const pageSize = 25;
 
-        for (const option of choices) {
+        for (const option of options.choices) {
             const id = snowflake.create().toString();
             valueMap[id] = option.value;
             selectData.push({ ...option, value: id });
         }
 
-        const options: LookupComponentOptions = {
-            content: payload.content ?? '',
+        const component: LookupComponentOptions = {
+            content: options.prompt.content ?? '',
             get select(): MessageSelectOptionData[] {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
             page: 0,
-            lastPage: Math.floor(choices.length / pageSize),
-            placeholder,
+            lastPage: Math.floor(options.choices.length / pageSize),
+            placeholder: options.placeholder,
             prevId: snowflake.create().toString(),
             nextId: snowflake.create().toString(),
             cancelId: snowflake.create().toString(),
             selectId: snowflake.create().toString()
         };
 
-        const awaiter = this.createComponentAwaiter(channel, users, '❌ This isnt for you to use!', timeout, {
-            [options.cancelId]: () => true,
-            [options.selectId]: () => true,
-            [options.prevId]: async i => {
-                options.page--;
-                await i.update(createLookupBody(options));
+        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const awaiter = this.createComponentAwaiter(channel, options.users, '❌ This isnt for you to use!', options.timeout, {
+            [component.cancelId]: () => true,
+            [component.selectId]: () => true,
+            [component.prevId]: async i => {
+                component.page--;
+                await i.update(createLookupBody(component));
                 return false;
             },
-            [options.nextId]: async i => {
-                options.page++;
-                await i.update(createLookupBody(options));
+            [component.nextId]: async i => {
+                component.page++;
+                await i.update(createLookupBody(component));
                 return false;
             }
         });
 
-        try {
-            const prompt = await this.send(channel, { ...payload, ...createLookupBody(options) });
+        const prompt = await this.send(options.context, { ...options.prompt, ...createLookupBody(component) });
+        if (prompt === undefined)
+            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
-            if (prompt === undefined)
-                return 'FAILED';
+        return {
+            prompt,
+            async getResult() {
+                const interaction = await awaiter.result;
+                await prompt.delete();
+                if (interaction === undefined)
+                    return { state: 'TIMED_OUT' };
 
-            const interaction = await awaiter.result;
-            await prompt.delete();
-            if (interaction === undefined)
-                return 'TIMED_OUT';
+                if (interaction.isSelectMenu())
+                    return { state: 'SUCCESS', value: valueMap[interaction.values[0]] };
 
-            if (interaction.isSelectMenu())
-                return valueMap[interaction.values[0]];
+                if (interaction.customId === component.cancelId)
+                    return { state: 'CANCELLED' };
 
-            if (interaction.customId === options.cancelId)
-                return 'CANCELLED';
-
-            return 'TIMED_OUT';
-        } catch (err: unknown) {
-            return 'FAILED';
-        } finally {
-            awaiter.cancel();
-        }
+                return { state: 'TIMED_OUT' };
+            },
+            cancel() {
+                awaiter.cancel();
+            }
+        };
     }
 
     public async queryConfirm(options: ConfirmQueryOptions): Promise<boolean | undefined>
@@ -102,7 +116,9 @@ export class ClusterUtilities extends BaseUtilities {
     public async queryConfirm(options: ConfirmQueryOptions<boolean | undefined>): Promise<boolean | undefined> {
         const query = await this.createConfirmQuery(options);
         const result = await query.getResult();
-        await query.prompt?.delete();
+        try {
+            await query.prompt?.delete();
+        } catch { /* NOOP */ }
         return result;
     }
 
@@ -201,63 +217,69 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async queryMember(
-        channel: TextBasedChannels,
+        context: TextBasedChannels | Message,
         users: Iterable<string | User> | string | User,
         guild: string | Guild,
         query: string,
         timeout?: number
-    ): Promise<LookupResult<GuildMember>> {
+    ): Promise<ChoiceResult<GuildMember>> {
         const matches = await this.findMember(guild, query);
-        return await this.queryChoice(channel, users,
-            'ℹ️ Multiple users found! Please select one from the drop down.',
-            'Select a user',
-            matches.map(m => ({
+        return await this.queryChoice({
+            context,
+            users,
+            prompt: 'ℹ️ Multiple users found! Please select one from the drop down.',
+            placeholder: 'Select a user',
+            choices: matches.map(m => ({
                 label: `${m.displayName} (${humanize.fullName(m.user)})`,
                 value: m,
                 description: `Id: ${m.id}`
             })),
             timeout
-        );
+        });
     }
 
     public async queryRole(
-        channel: TextBasedChannels,
+        context: TextBasedChannels | Message,
         users: Iterable<string | User> | string | User,
         guild: string | Guild,
         query: string,
         timeout?: number
-    ): Promise<LookupResult<Role>> {
+    ): Promise<ChoiceResult<Role>> {
         const matches = await this.findRoles(guild, query);
-        return await this.queryChoice(channel, users,
-            'ℹ️ Multiple roles found! Please select one from the drop down.',
-            'Select a role',
-            matches.map(r => ({
+        return await this.queryChoice({
+            context,
+            users,
+            prompt: 'ℹ️ Multiple roles found! Please select one from the drop down.',
+            placeholder: 'Select a role',
+            choices: matches.map(r => ({
                 label: `${r.name}`,
                 value: r,
                 description: `Id: ${r.id}\nColor: #${r.color.toString(16).padStart(6, '0')}`
             })),
             timeout
-        );
+        });
     }
 
     public async queryChannel(
-        channel: TextBasedChannels,
+        context: TextBasedChannels | Message,
         users: Iterable<string | User> | string | User,
         guild: string | Guild,
         query: string,
         timeout?: number
-    ): Promise<LookupResult<GuildChannels>> {
+    ): Promise<ChoiceResult<GuildChannels>> {
         const matches = await this.findChannels(guild, query);
-        return await this.queryChoice(channel, users,
-            'ℹ️ Multiple channels found! Please select one from the drop down.',
-            'Select a channel',
-            matches.map(c => ({
+        return await this.queryChoice({
+            context,
+            users,
+            prompt: 'ℹ️ Multiple channels found! Please select one from the drop down.',
+            placeholder: 'Select a channel',
+            choices: matches.map(c => ({
                 label: `#${c.name}`,
                 value: c,
                 description: `Id: ${c.id}${c.parent?.type === 'GUILD_CATEGORY' ? `\nCategory: #${c.parent.name}` : ''}`
             })),
             timeout
-        );
+        });
     }
 
     public async displayPaged(

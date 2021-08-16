@@ -303,13 +303,13 @@ export class TagCommand extends BaseGuildCommand {
         ];
 
         if (author !== undefined) {
-            const member = await context.util.queryMember(context.channel, context.author, context.channel.guild, author);
-            if (typeof member === 'string')
+            const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, author);
+            if (result.state !== 'SUCCESS')
                 return undefined;
 
-            args[2] += ` made by **${humanize.fullName(member.user)}**`;
-            args[3] = async (skip, take) => await context.database.tags.byAuthor(member.id, skip, take);
-            args[4] = async () => await context.database.tags.byAuthorCount(member.id);
+            args[2] += ` made by **${humanize.fullName(result.value.user)}**`;
+            args[3] = async (skip, take) => await context.database.tags.byAuthor(result.value.id, skip, take);
+            args[4] = async () => await context.database.tags.byAuthorCount(result.value.id);
         }
 
         switch (await context.util.displayPaged(...args)) {

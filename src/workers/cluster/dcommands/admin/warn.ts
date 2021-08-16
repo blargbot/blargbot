@@ -29,14 +29,14 @@ export class WarnCommand extends BaseGuildCommand {
 
     public async warn(context: GuildCommandContext, user: string, flags: FlagResult): Promise<string> {
         const member = await context.util.queryMember(context.channel, context.author, context.channel.guild, user);
-        if (typeof member === 'string')
+        if (member.state !== 'SUCCESS')
             return this.error('I couldn\'t find that user!');
 
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1);
 
-        const result = await context.cluster.moderation.warns.warn(member, context.author, count, reason);
-        const preamble = `**${humanize.fullName(member.user)}** has been given ${count} ${p(count, 'warning')}.`;
+        const result = await context.cluster.moderation.warns.warn(member.value, context.author, count, reason);
+        const preamble = `**${humanize.fullName(member.value.user)}** has been given ${count} ${p(count, 'warning')}.`;
         const actionStr = getActionString(result.type);
         switch (result.state) {
             case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);
