@@ -55,7 +55,11 @@ declare global {
     }
 
     interface Array<T> {
-        includes<R>(this: T extends R ? this : never, value: R): value is T & R;
+        includes<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
+    }
+
+    interface Set<T> {
+        has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
     }
 
     namespace NodeJS {

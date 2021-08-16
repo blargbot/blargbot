@@ -25,25 +25,6 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async createChoiceQuery<T>(options: ChoiceQueryOptions<T>): Promise<ChoiceQuery<T>> {
-        if (options.choices.length === 0) {
-            return {
-                prompt: undefined,
-                getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
-                cancel() { /* NOOP */ }
-            };
-        }
-
-        if (options.choices.length === 1) {
-            return {
-                prompt: undefined,
-                getResult: () => Promise.resolve({ state: 'SUCCESS', value: options.choices[0].value }),
-                cancel() { /* NOOP */ }
-            };
-        }
-
-        if (typeof options.prompt === 'string')
-            options.prompt = { content: options.prompt };
-
         const valueMap: Record<string, T> = {};
         const selectData: MessageSelectOptionData[] = [];
         const pageSize = 25;
@@ -54,13 +35,32 @@ export class ClusterUtilities extends BaseUtilities {
             selectData.push({ ...option, value: id });
         }
 
+        if (selectData.length === 0) {
+            return {
+                prompt: undefined,
+                getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
+                cancel() { /* NOOP */ }
+            };
+        }
+
+        if (selectData.length === 1) {
+            return {
+                prompt: undefined,
+                getResult: () => Promise.resolve({ state: 'SUCCESS', value: Object.values(valueMap)[0] }),
+                cancel() { /* NOOP */ }
+            };
+        }
+
+        if (typeof options.prompt === 'string')
+            options.prompt = { content: options.prompt };
+
         const component: LookupComponentOptions = {
             content: options.prompt.content ?? '',
             get select(): MessageSelectOptionData[] {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
             page: 0,
-            lastPage: Math.floor(options.choices.length / pageSize),
+            lastPage: Math.floor(selectData.length / pageSize),
             placeholder: options.placeholder,
             prevId: snowflake.create().toString(),
             nextId: snowflake.create().toString(),

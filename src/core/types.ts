@@ -68,7 +68,7 @@ export interface ChoiceQueryOptions<T> {
     users: Iterable<string | User> | string | User;
     prompt: string | Omit<SendOptions, 'components'>;
     placeholder: string;
-    choices: ReadonlyArray<Omit<MessageSelectOptionData, 'value'> & { value: T; }>;
+    choices: Iterable<Omit<MessageSelectOptionData, 'value'> & { value: T; }>;
     timeout?: number;
 }
 
