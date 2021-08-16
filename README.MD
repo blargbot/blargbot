@@ -21,4 +21,4 @@ Have a suggestion for the bot? I would be glad to hear it! Found a bug? I'd like
 ## Note
 Open-source does not mean portable. blargbot was not built with portability in mind, and a lot of it is dependant on configs, files, and data structures that aren't available on github. The reason it's open-source is so people can look at it's internals and learn how it works; for educational purposes. Hosting it yourself is not supported.
 
-If you're planning on reverse-engineering the bot to host it yourself, I can't say that I'll approve, but I won't stop you either. My requirements include for this include giving me the heads-up and crediting me as the original author. See the license for more details 
+If you're planning on reverse-engineering the bot to host it yourself, I can't say that I'll approve, but I won't stop you either. My requirements include for this include giving me the heads-up and crediting me as the original author. See the license for more details
