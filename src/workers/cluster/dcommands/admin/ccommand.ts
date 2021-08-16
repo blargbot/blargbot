@@ -507,7 +507,16 @@ export class CustomCommand extends BaseGuildCommand {
             ' - Export depedencies'
         );
 
-        if (!await context.cluster.util.queryConfirm(context.channel, context.author, confirm.join('\n'), 'Continue', 'Cancel'))
+        const shouldExport = await context.cluster.util.queryConfirm({
+            context: context.channel,
+            users: context.author,
+            prompt: confirm.join('\n'),
+            confirm: 'Continue',
+            cancel: 'Cancel',
+            fallback: false
+        });
+
+        if (!shouldExport)
             return this.success('Maybe next time then.');
 
         return {
@@ -613,7 +622,16 @@ export class CustomCommand extends BaseGuildCommand {
             ' - Set you as the author for all imported commands'
         );
 
-        if (!await context.cluster.util.queryConfirm(context.channel, context.author, confirm.join('\n'), 'Continue', 'Cancel'))
+        const shouldImport = await context.cluster.util.queryConfirm({
+            context: context.channel,
+            users: context.author,
+            prompt: confirm.join('\n'),
+            confirm: 'Continue',
+            cancel: 'Cancel',
+            fallback: false
+        });
+
+        if (!shouldImport)
             return this.success('Maybe next time then.');
 
         for (const step of importSteps)

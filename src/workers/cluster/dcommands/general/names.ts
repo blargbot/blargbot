@@ -65,7 +65,16 @@ export class NamesCommand extends BaseGlobalCommand {
             return this.error('I couldnt find any of the usernames you gave!');
 
         const countStr = names.length === 0 ? '**all usernames**' : `${usernames.length} ${p(usernames.length, 'username')}`;
-        if (!await context.util.queryConfirm(context.channel, context.author, this.warning(`Are you sure you want to remove ${countStr}`), 'Yes', 'No'))
+        const confirmed = await context.util.queryConfirm({
+            context: context.channel,
+            users: context.author,
+            prompt: this.warning(`Are you sure you want to remove ${countStr}`),
+            confirm: 'Yes',
+            cancel: 'No',
+            fallback: false
+        });
+
+        if (!confirmed)
             return this.success('I wont remove any usernames then!');
 
         await context.database.users.removeUsernames(context.author.id, names.length === 0 ? 'all' : usernames.map(u => u.name));

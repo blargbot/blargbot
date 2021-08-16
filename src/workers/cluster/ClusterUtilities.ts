@@ -1,8 +1,8 @@
 import { LookupResult, MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { SendOptions, SendPayload } from '@core/types';
-import { EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
+import { ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, SendOptions, SendPayload } from '@core/types';
+import { Guild, GuildChannels, GuildMember, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -96,43 +96,55 @@ export class ClusterUtilities extends BaseUtilities {
         }
     }
 
-    public async queryConfirm(
-        channel: TextBasedChannels,
-        users: Iterable<string | User> | string | User,
-        payload: string | Omit<SendOptions, 'components'>,
-        confirm: string | { label?: string; emojji: EmojiIdentifierResolvable; },
-        cancel: string | { label?: string; emojji: EmojiIdentifierResolvable; },
-        timeout = 60000
-    ): Promise<boolean> {
-        if (typeof payload === 'string')
-            payload = { content: payload };
+    public async queryConfirm(options: ConfirmQueryOptions): Promise<boolean | undefined>
+    public async queryConfirm(options: ConfirmQueryOptions<boolean>): Promise<boolean>
+    public async queryConfirm(options: ConfirmQueryOptions<boolean | undefined>): Promise<boolean | undefined>
+    public async queryConfirm(options: ConfirmQueryOptions<boolean | undefined>): Promise<boolean | undefined> {
+        const query = await this.createConfirmQuery(options);
+        const result = await query.getResult();
+        await query.prompt?.delete();
+        return result;
+    }
 
-        const options: ConfirmComponentOptions = {
+    public async createConfirmQuery(options: ConfirmQueryOptions): Promise<ConfirmQuery>;
+    public async createConfirmQuery(options: ConfirmQueryOptions<boolean>): Promise<ConfirmQuery<boolean>>
+    public async createConfirmQuery(options: ConfirmQueryOptions<boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>>
+    public async createConfirmQuery(options: ConfirmQueryOptions<boolean | undefined>): Promise<ConfirmQuery<boolean | undefined>> {
+        const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
+
+        const component: ConfirmComponentOptions = {
             cancelId: snowflake.create().toString(),
             confirmId: snowflake.create().toString(),
-            cancelEmoji: typeof cancel !== 'string' ? cancel.emojji : undefined,
-            confirmEmoji: typeof confirm !== 'string' ? confirm.emojji : undefined,
-            cancelLabel: typeof cancel === 'string' ? cancel : cancel.label,
-            confirmLabel: typeof confirm === 'string' ? confirm : confirm.label
+            cancelButton: options.cancel,
+            confirmButton: options.confirm
         };
 
-        const awaiter = this.createComponentAwaiter(channel, users, '❌ This isnt for you to use!', timeout, {
-            [options.confirmId]: () => true,
-            [options.cancelId]: () => true
+        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const awaiter = this.createComponentAwaiter(channel, options.users, '❌ This isnt for you to use!', options.timeout, {
+            [component.confirmId]: () => true,
+            [component.cancelId]: () => true
         });
 
-        try {
-            const prompt = await this.send(channel, { ...payload, ...createConfirmBody(options) });
-            if (prompt === undefined)
-                return false;
-
-            const interaction = await awaiter.result;
-            await prompt.delete();
-
-            return interaction?.customId === options.confirmId;
-        } finally {
+        const prompt = await this.send(options.context, { ...payload, ...createConfirmBody(component) });
+        if (prompt === undefined) {
             awaiter.cancel();
+            return { prompt, getResult: () => Promise.resolve(options.fallback), cancel() { /* NOOP */ } };
         }
+
+        return {
+            prompt,
+            async getResult() {
+                const interaction = await awaiter.result;
+                switch (interaction?.customId) {
+                    case component.confirmId: return true;
+                    case undefined: return options.fallback;
+                    default: return false;
+                }
+            },
+            cancel() {
+                awaiter.cancel();
+            }
+        };
     }
 
     public createComponentAwaiter(
@@ -579,25 +591,22 @@ interface LookupComponentOptions {
 interface ConfirmComponentOptions {
     readonly confirmId: string;
     readonly cancelId: string;
-    readonly confirmLabel?: string;
-    readonly cancelLabel?: string;
-    readonly confirmEmoji?: EmojiIdentifierResolvable;
-    readonly cancelEmoji?: EmojiIdentifierResolvable;
+    readonly confirmButton: ConfirmQueryButton;
+    readonly cancelButton: ConfirmQueryButton;
 }
 
 function createConfirmBody(options: ConfirmComponentOptions): { components: MessageActionRowOptions[]; } {
+
     const confirm: MessageButtonOptions = {
+        ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
         type: 'BUTTON',
         customId: options.confirmId,
-        emoji: options.confirmEmoji,
-        label: options.confirmLabel,
         style: 'SUCCESS'
     };
     const cancel: MessageButtonOptions = {
+        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
         type: 'BUTTON',
         customId: options.cancelId,
-        emoji: options.cancelEmoji,
-        label: options.cancelLabel,
         style: 'DANGER'
     };
 

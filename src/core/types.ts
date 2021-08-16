@@ -1,7 +1,7 @@
 import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
-import { ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, MessageEmbedOptions, MessageOptions, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { BaseButtonOptions, ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, Message, MessageEmbedOptions, MessageOptions, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 
@@ -47,6 +47,31 @@ export type BindingResultAsyncIterator<TState> = AsyncIterator<BindingResultValu
 export type BindingResultValue<TState> =
     | BindingSuccess<TState>
     | BindingFailure<TState>
+
+type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends undefined
+    ? { fallback?: undefined; }
+    : { fallback: boolean; };
+
+export interface ConfirmQueryOptionsBase {
+    context: TextBasedChannels | Message;
+    users: Iterable<string | User> | string | User;
+    prompt: string | Omit<SendOptions, 'components'>;
+    confirm: ConfirmQueryButton;
+    cancel: ConfirmQueryButton;
+    timeout?: number;
+}
+
+export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase & ConfirmQueryOptionsFallback<T>
+
+export interface ConfirmQuery<T extends boolean | undefined = undefined> {
+    prompt: Message | undefined;
+    getResult(): Promise<T>;
+    cancel(): void;
+}
+
+export type ConfirmQueryButton =
+    | string
+    | Omit<BaseButtonOptions, 'disabled' | 'type'>
 
 export interface BindingSuccess<TState> {
     readonly success: true;

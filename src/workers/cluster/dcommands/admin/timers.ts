@@ -150,9 +150,14 @@ export class TimersCommand extends BaseGlobalCommand {
 
     public async clearAllTimers(context: CommandContext): Promise<string> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
-        const shouldClear = await context.util.queryConfirm(context.channel, context.author,
-            this.warning('Are you sure you want to clear all timers?'), 'Yes', 'No'
-        );
+        const shouldClear = await context.util.queryConfirm({
+            context: context.channel,
+            users: context.author,
+            prompt: this.warning('Are you sure you want to clear all timers?'),
+            confirm: 'Yes',
+            cancel: 'No',
+            fallback: false
+        });
 
         if (!shouldClear)
             return this.info('Cancelled clearing of timers');

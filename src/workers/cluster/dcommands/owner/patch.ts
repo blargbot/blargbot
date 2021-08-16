@@ -49,13 +49,15 @@ export class PatchCommand extends BaseGlobalCommand {
         if (notes !== undefined)
             fields.push({ name: 'Other Notes', value: notes });
 
-        const confirmed = await context.util.queryConfirm(context.channel, context.author,
-            { content: 'This is a preview of what the patch will look like', embeds: [embed] },
-            'Looks good, post it!',
-            'Nah let me change something'
-        );
+        const confirmed = await context.util.queryConfirm({
+            context: context.channel,
+            users: context.author,
+            prompt: { content: 'This is a preview of what the patch will look like', embeds: [embed] },
+            confirm: 'Looks good, post it!',
+            cancel: 'Nah let me change something'
+        });
 
-        if (!confirmed)
+        if (confirmed !== true)
             return this.info('Patch cancelled');
 
         const changelog = await context.send(channel, {
