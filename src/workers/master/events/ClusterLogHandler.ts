@@ -4,7 +4,7 @@ import { LogEntry } from '@core/types';
 import { Master } from '@master';
 import stripAnsi from 'strip-ansi';
 
-export class LogHandler extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterLogHandler extends WorkerPoolEventService<ClusterConnection> {
 
     public constructor(
         public readonly master: Master

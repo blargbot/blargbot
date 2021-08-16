@@ -3,8 +3,7 @@ import { ClusterStats } from '@cluster/types';
 import { WorkerPoolEventService } from '@core/serviceTypes';
 import { Master } from '@master';
 
-export class ClusterStatsHandler extends WorkerPoolEventService<ClusterConnection> {
-
+export class ClusterClusterStatsHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(public readonly master: Master) {
         super(master.clusters, 'clusterStats');
     }

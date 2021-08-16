@@ -5,7 +5,7 @@ import { WorkerState } from '@core/worker';
 import { Master } from '@master';
 import moment from 'moment';
 
-export class ExitHandler extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(
         public readonly master: Master
     ) {

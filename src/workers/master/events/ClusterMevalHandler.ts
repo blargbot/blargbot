@@ -4,7 +4,7 @@ import { WorkerPoolEventService } from '@core/serviceTypes';
 import { EvalRequest, EvalResult, MasterEvalRequest, MasterEvalResult, WorkerPoolEventHandler } from '@core/types';
 import { Master } from '@master';
 
-export class MasterEval extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(private readonly master: Master) {
         super(master.clusters, 'meval');
     }

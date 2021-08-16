@@ -4,7 +4,7 @@ import { WorkerPoolEventService } from '@core/serviceTypes';
 import { Timer } from '@core/Timer';
 import { Master } from '@master';
 
-export class RespawnHandler extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterRespawnHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(
         public readonly master: Master
     ) {

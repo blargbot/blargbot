@@ -2,7 +2,7 @@ import { ClusterConnection } from '@cluster';
 import { WorkerPoolEventService } from '@core/serviceTypes';
 import { Master } from '@master';
 
-export class KillAllHandler extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterKillAllHandler extends WorkerPoolEventService<ClusterConnection> {
     public constructor(private readonly master: Master) {
         super(master.clusters, 'killAll');
     }
