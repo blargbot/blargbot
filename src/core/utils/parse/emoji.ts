@@ -1,30 +1,28 @@
 import * as twemoji from 'twemoji';
 
 export function emoji(text: string, distinct = false): string[] {
-    if (typeof text !== 'string') return [];
-    let match;
     let result: string[] = [];
 
     text = text.replace(/\ufe0f/g, '');
+    const source = text;
 
     // Find custom emotes
-    const regex = /<(a?:\w+:\d{17,23})>|(\w+:\d{17,23})/gi;
-    while ((match = regex.exec(text)) !== null) {
-        if (match[2].length > 0)
-            result.push(match[2]);
-        else
-            result.push(match[1]);
-    }
+    text = text.replace(/(?<!\w)a?:\w+:\d{17,23}(?!\d)/gi, m => {
+        result.push(m);
+        return '';
+    });
 
     // Find twemoji defined emotes
-    twemoji.replace(text, (match?: string) =>
-        void (match !== undefined ? result.push(match) : undefined));
+    twemoji.replace(text, m => {
+        result.push(m);
+        return '';
+    });
 
     if (distinct)
         result = [...new Set(result)];
 
     // Sort by order of appearance
-    return result.map(r => ({ value: r, index: text.indexOf(r) }))
+    return result.map(r => ({ value: r, index: source.indexOf(r) }))
         .sort((a, b) => a.index - b.index)
         .map(r => r.value);
 }

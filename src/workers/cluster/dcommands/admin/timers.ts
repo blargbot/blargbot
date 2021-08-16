@@ -1,5 +1,5 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { codeBlock, CommandType, guard, humanize } from '@cluster/utils';
+import { codeBlock, CommandType, guard, humanize, pluralise as p } from '@cluster/utils';
 import { SendPayload } from '@core/types';
 import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
@@ -132,13 +132,13 @@ export class TimersCommand extends BaseGlobalCommand {
         }
 
         if (successes.length === 0)
-            return this.error(`I couldnt find ${timerIds.length === 1 ? 'the timer' : 'any of the timers'} you specified!`);
+            return this.error(`I couldnt find ${p(timerIds.length, 'the timer', 'any of the timers')} you specified!`);
 
-        const lines = [`Cancelled ${successes.length} timer${successes.length === 1 ? '' : 's'}:`];
+        const lines = [`Cancelled ${successes.length} ${p(successes.length, 'timer')}:`];
         for (const id of successes)
             lines.push(`\`${simpleId(id)}\``);
         if (failures.length > 0) {
-            lines.push(`Could not find id${failures.length === 1 ? '' : 's'}:`);
+            lines.push(`Could not find ${p(failures.length, 'id')}:`);
             for (const id of failures)
                 lines.push(`\`${simpleId(id)}\``);
         }

@@ -3,7 +3,7 @@ import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredGuildCommand, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { AllChannels, Collection, ConstantsStatus, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
+import { AllChannels, Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterWorker } from './ClusterWorker';
@@ -242,11 +242,12 @@ export interface FlagResultValue {
 }
 
 export interface FlagResultValueSet {
-    merge(): FlagResultValue;
-    merge(start: number, end?: number): FlagResultValue;
+    merge(start?: number, end?: number): FlagResultValue;
     length: number;
     get(index: number): FlagResultValue | undefined;
     slice(start: number, end?: number): FlagResultValueSet;
+    map<T>(mapFn: (value: FlagResultValue) => T): T[];
+    toArray(): FlagResultValue[];
 }
 
 export type FlagResultBase = { readonly [P in Letter | '_']?: FlagResultValueSet }
@@ -577,6 +578,20 @@ export interface SubtagVariableProperties {
 }
 
 export type WhitelistResponse = 'approved' | 'rejected' | 'requested' | 'alreadyApproved' | 'alreadyRejected';
+
+export type PollResponse = BasePollResponse<'OPTIONS_EMPTY' | 'TOO_SHORT' | 'FAILED_SEND' | 'NO_ANNOUNCE_PERMS'> | PollSuccess | PollInvalidOption;
+
+export interface BasePollResponse<T extends string> {
+    readonly state: T;
+}
+
+export interface PollInvalidOption<T extends string = 'OPTIONS_INVALID'> extends BasePollResponse<T> {
+    readonly failedReactions: EmojiIdentifierResolvable[];
+}
+
+export interface PollSuccess extends PollInvalidOption<'SUCCESS'> {
+    readonly message: Message;
+}
 
 export type EnsureMutedRoleResult = 'success' | 'unconfigured' | 'noPerms';
 export type MuteResult = 'success' | 'alreadyMuted' | 'noPerms' | 'roleMissing' | 'roleTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow';

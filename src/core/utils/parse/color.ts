@@ -5,11 +5,9 @@ import { hex } from './hex';
 
 const colorKeys = Object.keys(colors);
 
-export function color(text: number | 'random' | string): number {
+export function color(text: number | 'random' | string): number | undefined {
     if (typeof text === 'number')
         return text;
-    if (typeof text !== 'string')
-        throw new Error('Not a colour');
 
     text = text.replace(/\s+/g, '').toLowerCase();
 
@@ -28,7 +26,7 @@ export function color(text: number | 'random' | string): number {
         const g = parseInt(match[2]);
         const b = parseInt(match[3]);
         if (isNaN(r + g + b) || !isByte(r) || !isByte(g) || !isByte(b))
-            throw new Error('Not a colour');
+            return undefined;
         return parseInt(hex(r) + hex(g) + hex(b), 16);
     }
 
@@ -50,7 +48,7 @@ export function color(text: number | 'random' | string): number {
             return value;
     }
 
-    throw new Error('Not a colour');
+    return undefined;
 }
 
 function isInt(value: number): boolean {

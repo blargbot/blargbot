@@ -2,7 +2,7 @@ import { Cluster, ClusterUtilities } from '@cluster';
 import { getDocsEmbed, TagLimit } from '@cluster/bbtag';
 import { BaseGuildCommand, CommandContext } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse } from '@cluster/utils';
+import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@cluster/utils';
 import { SendPayload, StoredTag } from '@core/types';
 import { EmbedField, EmbedFieldData, FileOptions, MessageEmbedOptions, User } from 'discord.js';
 import moment from 'moment';
@@ -419,11 +419,11 @@ export class TagCommand extends BaseGuildCommand {
             fields.push({ name: 'Cooldown', value: humanize.duration(moment.duration(match.cooldown)), inline: true });
 
         fields.push({ name: 'Last modified', value: moment(match.lastmodified.valueOf()).format('LLLL'), inline: true });
-        fields.push({ name: 'Used', value: `${match.uses} time${match.uses === 1 ? '' : 's'}`, inline: true });
-        fields.push({ name: 'Favourited', value: `${favouriteCount} time${favouriteCount === 1 ? '' : 's'}`, inline: true });
+        fields.push({ name: 'Used', value: `${match.uses} ${p(match.uses, 'time')}`, inline: true });
+        fields.push({ name: 'Favourited', value: `${favouriteCount} ${p(favouriteCount, 'time')}`, inline: true });
 
         if (match.reports !== undefined && match.reports > 0)
-            fields.push({ name: this.warning('Reported'), value: `${match.reports} time${match.reports === 1 ? '' : 's'}`, inline: true });
+            fields.push({ name: this.warning('Reported'), value: `${match.reports} ${p(match.reports, 'time')}`, inline: true });
 
         const flags = humanize.flags(match.flags ?? []);
         if (flags.length > 0)
@@ -438,7 +438,7 @@ export class TagCommand extends BaseGuildCommand {
         let i = 1;
         for (const tag of tags) {
             const author = await context.database.users.get(tag.author);
-            result.push(`**${i++}.** **${tag.name}** (**${humanize.fullName(author)}**) - used **${tag.uses} time${tag.uses === 1 ? '' : 's'}**`);
+            result.push(`**${i++}.** **${tag.name}** (**${humanize.fullName(author)}**) - used **${tag.uses} ${p(tag.uses, 'time')}**`);
         }
         return result.join('\n');
     }
@@ -461,7 +461,7 @@ export class TagCommand extends BaseGuildCommand {
         const tags = await context.database.tags.getFavourites(context.author.id);
         if (tags.length === 0)
             return 'You have no favourite tags!';
-        return `You have ${tags.length} favourite tag${tags.length === 1 ? '' : 's'}. ${codeBlock(tags.join(', '), 'fix')}`;
+        return `You have ${tags.length} favourite ${p(tags.length, 'tag')}. ${codeBlock(tags.join(', '), 'fix')}`;
     }
 
     public async reportTag(context: GuildCommandContext, tagName: string, reason: string | undefined): Promise<string | undefined> {

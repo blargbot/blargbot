@@ -53,7 +53,7 @@ export class TimeoutManager {
                 continue;
 
             const shardId = this.getShardId(event);
-            if (this.cluster.discord.shard?.ids.includes(shardId) !== true) {
+            if (!this.cluster.discord.ws.shards.has(shardId)) {
                 this.#events.delete(event.id);
                 continue;
             }

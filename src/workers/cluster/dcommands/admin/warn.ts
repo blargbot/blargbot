@@ -1,6 +1,6 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { FlagResult, GuildCommandContext } from '@cluster/types';
-import { CommandType, humanize, ModerationType, parse } from '@cluster/utils';
+import { CommandType, humanize, ModerationType, parse, pluralise as p } from '@cluster/utils';
 
 export class WarnCommand extends BaseGuildCommand {
     public constructor() {
@@ -36,7 +36,7 @@ export class WarnCommand extends BaseGuildCommand {
         const count = parse.int(flags.c?.merge().value ?? 1);
 
         const result = await context.cluster.moderation.warns.warn(member, context.author, count, reason);
-        const preamble = `**${humanize.fullName(member.user)}** has been given ${count === 1 ? 'a warning' : `${count} warnings`}.`;
+        const preamble = `**${humanize.fullName(member.user)}** has been given ${count} ${p(count, 'warning')}.`;
         const actionStr = getActionString(result.type);
         switch (result.state) {
             case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);

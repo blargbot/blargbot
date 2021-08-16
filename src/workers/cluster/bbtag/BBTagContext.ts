@@ -306,7 +306,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public static async deserialize(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContext> {
         let message: BBTagContextMessage | undefined;
         try {
-            const msg = await engine.util.getGlobalMessage(obj.msg.channel.id, obj.msg.id);
+            const msg = await engine.util.getMessage(obj.msg.channel.id, obj.msg.id);
             if (msg === undefined || !guard.isGuildMessage(msg))
                 throw new Error('Channel must be a guild channel to work with BBTag');
             message = msg;

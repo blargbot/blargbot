@@ -1,6 +1,6 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { CommandType, humanize } from '@cluster/utils';
+import { CommandType, humanize, pluralise as p } from '@cluster/utils';
 import { GuildMember } from 'discord.js';
 
 export class WarningsCommand extends BaseGuildCommand {
@@ -34,7 +34,7 @@ export class WarningsCommand extends BaseGuildCommand {
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
         const result = [
             count > 0
-                ? this.warning(`**${humanize.fullName(member.user)}** has accumulated ${count === 1 ? '1 warning' : `${count} warnings`}.`)
+                ? this.warning(`**${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, 'warning')}.`)
                 : this.congrats(`**${humanize.fullName(member.user)}** doesn't have any warnings!`)
         ];
 

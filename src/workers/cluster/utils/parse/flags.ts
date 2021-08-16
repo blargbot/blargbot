@@ -66,14 +66,14 @@ function pushFlagGroup(groupsMap: FlagResultGroups, flag: keyof FlagResult, grou
 }
 
 function toFlagResultSet(source: string, rangeGroups: StringRange[][]): FlagResultValueSet {
-    const flatValues = rangeGroups.flat() as { [index: number]: StringRange | undefined; length: number; };
+    const flatValues = rangeGroups.flat();
     return {
         length: flatValues.length,
         get(index: number) {
-            const result = flatValues[index];
-            if (result === undefined)
+            if (index < 0 || index >= flatValues.length)
                 return undefined;
 
+            const result = flatValues[index];
             const start = result.start;
             const end = result.end;
             return {
@@ -91,6 +91,18 @@ function toFlagResultSet(source: string, rangeGroups: StringRange[][]): FlagResu
         },
         slice(start: number, end?: number) {
             return toFlagResultSet(source, [...jaggedSlice(rangeGroups, start, end)]);
+        },
+        toArray() {
+            return flatValues.map(r => ({
+                value: r.value,
+                get raw() { return source.slice(r.start, r.end); }
+            }));
+        },
+        map(mapFn) {
+            return flatValues.map(r => mapFn({
+                value: r.value,
+                get raw() { return source.slice(r.start, r.end); }
+            }));
         }
     };
 }

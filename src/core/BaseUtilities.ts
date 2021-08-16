@@ -1,5 +1,5 @@
 import { SendContext, SendPayload, StoredUser } from '@core/types';
-import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageEmbedAuthor, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageEmbedAuthor, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -214,24 +214,31 @@ export class BaseUtilities {
         return await this.send(user.dmChannel ?? await user.createDM(), payload);
     }
 
-    public async addReactions(context: Message, reactions: Iterable<EmojiIdentifierResolvable>): Promise<Record<number, { error: unknown; reactions: string[]; }>> {
-        const errors = {} as Record<number, { error: unknown; reactions: string[]; }>;
+    public async addReactions(context: Message, reactions: Iterable<EmojiIdentifierResolvable>): Promise<{ success: MessageReaction[]; failed: EmojiIdentifierResolvable[]; }> {
+        const results = { success: [] as MessageReaction[], failed: [] as EmojiIdentifierResolvable[] };
         const reacted = new Set<EmojiIdentifierResolvable>();
-        forloop:
+        let done = false;
         for (const reaction of reactions) {
             if (reacted.size === reacted.add(reaction).size)
                 continue;
 
+            if (done) {
+                results.failed.push(reaction);
+                continue;
+            }
+
             try {
-                await context.react(reaction);
+                results.success.push(await context.react(reaction));
             } catch (e: unknown) {
                 if (e instanceof DiscordAPIError) {
                     switch (e.code) {
-                        case Constants.APIErrors.REACTION_BLOCKED:
                         case Constants.APIErrors.MAXIMUM_REACTIONS:
                         case Constants.APIErrors.MISSING_PERMISSIONS:
-                            break forloop;
+                            done = true;
+                        //fallthrough
+                        case Constants.APIErrors.REACTION_BLOCKED:
                         case Constants.APIErrors.UNKNOWN_EMOJI:
+                            results.failed.push(reaction);
                             continue;
                     }
                 }
@@ -239,7 +246,7 @@ export class BaseUtilities {
             }
         }
 
-        return errors;
+        return results;
     }
 
     public async resolveTags(context: ChannelInteraction | UserChannelInteraction | Channel, message: string): Promise<string> {
@@ -418,8 +425,10 @@ export class BaseUtilities {
         } catch (err: unknown) {
             if (err instanceof DiscordAPIError) {
                 switch (err.code) {
-                    case Constants.APIErrors.UNKNOWN_USER:
                     case Constants.APIErrors.INVALID_FORM_BODY:
+                        this.logger.error('Error while getting user', userId, err);
+                    // fallthrough
+                    case Constants.APIErrors.UNKNOWN_USER:
                         return undefined;
                 }
             }
@@ -437,8 +446,10 @@ export class BaseUtilities {
         } catch (err: unknown) {
             if (err instanceof DiscordAPIError) {
                 switch (err.code) {
-                    case Constants.APIErrors.UNKNOWN_GUILD:
                     case Constants.APIErrors.INVALID_FORM_BODY:
+                        this.logger.error('Error while getting guild', guildId, err);
+                    // fallthrough
+                    case Constants.APIErrors.UNKNOWN_GUILD:
                         return undefined;
                 }
             }
@@ -446,7 +457,7 @@ export class BaseUtilities {
         }
     }
 
-    public async getMessage(channel: string | AllChannels, messageId: string): Promise<Message | undefined> {
+    public async getMessage(channel: string | AllChannels, messageId: string, force?: boolean): Promise<Message | undefined> {
         messageId = parse.entityId(messageId) ?? '';
         if (messageId === '')
             return undefined;
@@ -457,12 +468,14 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await foundChannel.messages.fetch(messageId);
+            return await foundChannel.messages.fetch(messageId, { force });
         } catch (err: unknown) {
             if (err instanceof DiscordAPIError) {
                 switch (err.code) {
-                    case Constants.APIErrors.UNKNOWN_MESSAGE:
                     case Constants.APIErrors.INVALID_FORM_BODY:
+                        this.logger.error('Error while getting message', messageId, 'in channel', foundChannel.id, err);
+                    // fallthrough
+                    case Constants.APIErrors.UNKNOWN_MESSAGE:
                         return undefined;
                 }
             }
@@ -576,11 +589,6 @@ export class BaseUtilities {
         if (role.name.includes(query)) return 10;
         if (normalizedName.includes(normalizedQuery)) return 1;
         return 0;
-    }
-
-    public async getGlobalMessage(channel: string | AllChannels, messageId: string): Promise<Message | undefined> {
-        const foundChannel = typeof channel === 'string' ? await this.getChannel(channel) : channel;
-        return foundChannel === undefined ? undefined : await this.getMessage(foundChannel, messageId);
     }
 }
 

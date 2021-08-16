@@ -208,12 +208,23 @@ export type TagStoredEventOptions =
     | TagStoredEventOptionsBase<3>
     | TagV4StoredEventOptions;
 
+export interface PollEventOptions extends StoredEventOptionsBase {
+    readonly color: number;
+    readonly channel: string;
+    readonly guild: string;
+    readonly user: string;
+    readonly msg: string;
+    readonly content: string;
+    readonly strict?: readonly string[];
+}
+
 export type EventOptionsTypeMap = {
     'tag': TagStoredEventOptions;
     'unmute': UnmuteEventOptions;
     'unban': UnbanEventOptions;
     'timer': TimerEventOptions;
     'remind': RemindEventOptions;
+    'poll': PollEventOptions;
 }
 
 export type EventTypeMap = {

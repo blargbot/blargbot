@@ -1,5 +1,5 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
+import { CommandType, pluralise as p } from '@cluster/utils';
 import { MessageEmbedOptions, MessageOptions, User } from 'discord.js';
 import moment from 'moment-timezone';
 
@@ -64,7 +64,7 @@ export class NamesCommand extends BaseGlobalCommand {
         if (usernames.length === 0)
             return this.error('I couldnt find any of the usernames you gave!');
 
-        const countStr = names.length === 0 ? '**all usernames**' : `${usernames.length} username${usernames.length === 1 ? '' : 's'}`;
+        const countStr = names.length === 0 ? '**all usernames**' : `${usernames.length} ${p(usernames.length, 'username')}`;
         if (!await context.util.queryConfirm(context.channel, context.author, this.warning(`Are you sure you want to remove ${countStr}`), 'Yes', 'No'))
             return this.success('I wont remove any usernames then!');
 
