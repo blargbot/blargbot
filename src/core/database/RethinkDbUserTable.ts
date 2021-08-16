@@ -129,4 +129,38 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
 
         return true;
     }
+
+    public async addPrefix(userId: string, prefix: string): Promise<boolean> {
+        const user = await this.rget(userId);
+        if (user === undefined)
+            return false;
+
+        const success = await this.rupdate(userId, user => ({
+            prefixes: user('prefixes').default([]).setInsert(prefix)
+        }));
+
+        if (!success)
+            return false;
+
+        const oldLength = user.prefixes?.length ?? 0;
+        user.prefixes = [...new Set([...user.prefixes ?? [], prefix])];
+        return oldLength !== user.prefixes.length;
+    }
+
+    public async removePrefix(userId: string, prefix: string): Promise<boolean> {
+        const user = await this.rget(userId);
+        if (user === undefined)
+            return false;
+
+        const success = await this.rupdate(userId, user => ({
+            prefixes: user('prefixes').default([]).filter(p => p.ne(prefix))
+        }));
+
+        if (!success)
+            return false;
+
+        const oldLength = user.prefixes?.length;
+        user.prefixes = user.prefixes?.filter(p => p !== prefix);
+        return oldLength !== user.prefixes?.length;
+    }
 }

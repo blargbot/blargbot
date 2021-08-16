@@ -1,5 +1,5 @@
-import { SendContext, SendPayload } from '@core/types';
-import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, Role, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { SendContext, SendPayload, StoredUser } from '@core/types';
+import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageEmbedAuthor, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -44,11 +44,46 @@ export class BaseUtilities {
         throw new Error('Channel not found');
     }
 
-    public websiteLink(path: string): string {
-        path = path.replace(/^[/\\]+/, '');
+    public websiteLink(path?: string): string {
+        path = path?.replace(/^[/\\]+/, '');
         const scheme = this.config.website.secure ? 'https' : 'http';
         const host = this.config.website.host;
-        return `${scheme}://${host}/${path}`;
+        return `${scheme}://${host}/${path ?? ''}`;
+    }
+
+    public embedifyAuthor(target: GuildMember | User | Guild | Team | StoredUser): MessageEmbedAuthor {
+        if (target instanceof User) {
+            return {
+                iconURL: target.displayAvatarURL({ size: 512, dynamic: true, format: 'png' }),
+                name: `${humanize.fullName(target)} (${target.id})`,
+                url: this.websiteLink(target === this.discord.user ? undefined : `user/${target.id}`)
+            };
+        } else if (target instanceof GuildMember) {
+            return {
+                iconURL: target.user.displayAvatarURL({ size: 512, dynamic: true, format: 'png' }),
+                name: `${target.displayName} (${target.id})`,
+                url: this.websiteLink(`user/${target.id}`)
+            };
+        } else if (target instanceof Guild) {
+            return {
+                iconURL: target.iconURL({ size: 512, dynamic: true, format: 'png' }) ?? undefined,
+                name: target.name
+            };
+        } else if (target instanceof Team) {
+            return {
+                iconURL: target.iconURL({ size: 512, format: 'png' }) ?? undefined,
+                name: target.name,
+                url: this.websiteLink()
+            };
+        } else if ('userid' in target) {
+            return {
+                iconURL: target.avatarURL,
+                name: target.username,
+                url: this.websiteLink(`user/${target.userid}`)
+            };
+        }
+
+        return target; // never
     }
 
     public async send(context: SendContext, payload: SendPayload): Promise<Message | undefined> {

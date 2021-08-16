@@ -33,11 +33,7 @@ export class NamesCommand extends BaseGlobalCommand {
             return this.info(`I havent seen any usernames for ${user.toString()} yet!`);
 
         const embed: MessageEmbedOptions = {
-            author: {
-                name: `${user.username}#${user.discriminator}`,
-                iconURL: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
-                url: context.util.websiteLink(`users/${user.id}`)
-            },
+            author: context.util.embedifyAuthor(user),
             title: 'Historical usernames'
         };
 

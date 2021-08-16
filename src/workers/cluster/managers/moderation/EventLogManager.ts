@@ -1,5 +1,6 @@
 import { Cluster } from '@cluster';
 import { discordUtil, guard, humanize } from '@cluster/utils';
+import { BaseUtilities } from '@core/BaseUtilities';
 import { StoredGuildEventLogType } from '@core/types';
 import { DiscordAPIError, EmbedFieldData, Guild, GuildAuditLogs, GuildAuditLogsAction, GuildMember, GuildTextBasedChannels, Message, MessageEmbedAuthor, MessageEmbedOptions, PartialMessage, PartialUser, User } from 'discord.js';
 import moment from 'moment';
@@ -261,7 +262,7 @@ export class EventLogManager {
             ...partial,
             title: `ℹ️ ${title}`,
             color: colour,
-            author: toEmbedAuthor(user),
+            author: toEmbedAuthor(this.cluster.util, user),
             timestamp: new Date()
         };
     }
@@ -297,16 +298,13 @@ export class EventLogManager {
     }
 }
 
-function toEmbedAuthor(user: string | User | undefined): MessageEmbedAuthor | undefined {
+function toEmbedAuthor(util: BaseUtilities, user: string | User | undefined): MessageEmbedAuthor | undefined {
     switch (typeof user) {
         case 'undefined': return undefined;
         case 'string': return {
             name: `${humanize.fullName({})} (${user})`
         };
-        case 'object': return {
-            name: `${humanize.fullName(user)} (${user.id})`,
-            iconURL: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
-        };
+        case 'object': return util.embedifyAuthor(user);
     }
 }
 

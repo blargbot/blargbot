@@ -603,6 +603,8 @@ export interface GuildTable {
 }
 
 export interface UserTable {
+    addPrefix(userId: string, prefix: string): Promise<boolean>;
+    removePrefix(userId: string, prefix: string): Promise<boolean>;
     removeUsernames(userId: string, usernames: readonly string[] | 'all'): Promise<boolean>;
     getUsernames(userId: string, skipCache?: boolean): Promise<readonly StoredUsername[] | undefined>;
     setSetting<K extends keyof StoredUserSettings>(userId: string, key: K, value: StoredUserSettings[K]): Promise<boolean>;

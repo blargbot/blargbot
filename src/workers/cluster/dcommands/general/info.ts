@@ -49,11 +49,7 @@ export class InfoCommand extends BaseGlobalCommand {
         return {
             embeds: [
                 {
-                    author: {
-                        iconURL: context.discord.user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
-                        url: context.util.websiteLink(''),
-                        name: 'blargbot'
-                    },
+                    author: context.util.embedifyAuthor(context.discord.user),
                     title: 'About me!',
                     description: `I am a multipurpose bot with new features implemented regularly, written in typescript using [discord.js](https://discord.js.org/).
                     

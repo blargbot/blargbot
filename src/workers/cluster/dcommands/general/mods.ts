@@ -69,10 +69,7 @@ export class ModsCommand extends BaseGuildCommand {
         return {
             embeds: [
                 {
-                    author: {
-                        name: `${context.channel.guild.name}`,
-                        iconURL: context.channel.guild.iconURL({ dynamic: true, size: 512, format: 'png' }) ?? undefined
-                    },
+                    author: context.util.embedifyAuthor(context.channel.guild),
                     title: 'Moderators',
                     description: fields.length > 0 ? undefined : 'There are no mods with that status!',
                     fields

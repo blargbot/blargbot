@@ -397,10 +397,8 @@ export class TagCommand extends BaseGuildCommand {
 
         const favouriteCount = Object.values(match.favourites ?? {}).filter(v => v).length;
         const author = await context.database.users.get(match.author);
-        embed.author = {
-            name: humanize.fullName(author),
-            icon_url: author?.avatarURL
-        };
+        if (author !== undefined)
+            embed.author = context.util.embedifyAuthor(author);
 
         fields.push({
             name: 'Author',
