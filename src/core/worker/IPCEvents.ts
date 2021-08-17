@@ -74,21 +74,26 @@ export class IPCEvents {
 
     public async request<T = unknown, R = unknown>(type: string, data: T, timeoutMS = 10000): Promise<R> {
         const requestId = snowflake.create();
-        return await new Promise<R>((resolve, reject) => {
+        const result = await new Promise<{ success: true; data: R; } | { success: false; }>(res => {
             const handler: ProcessMessageHandler = (data, id) => {
                 if (id === requestId) {
-                    resolve(<R>data);
                     this.off(type, handler);
+                    res({ success: true, data: <R>data } as const);
                 }
             };
 
             this.on(type, handler);
             setTimeout(() => {
                 this.off(type, handler);
-                reject(new Error(`Failed to get a response to '${type}' in time`));
+                res({ success: false });
             }, timeoutMS);
             this.send(type, data, requestId);
         });
+
+        if (!result.success)
+            throw new Error(`Failed to get a response to '${type}' in time (${timeoutMS}ms)`);
+
+        return result.data;
     }
 }
 
