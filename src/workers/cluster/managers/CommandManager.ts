@@ -99,19 +99,19 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
     }
 
     private async getPrefix(message: Message): Promise<undefined | string> {
-        const guildPrefixes = await this.getGuildPrefixes(message);
+        const contextPrefixes = await this.getContextPrefixes(message);
         const userPrefixes = await this.cluster.database.users.getSetting(message.author.id, 'prefixes') ?? [];
         const defaultPrefixes = [this.cluster.config.discord.defaultPrefix, this.cluster.discord.user.username];
         const mentionPrefixes = [`<@${this.cluster.discord.user.id}>`, `<@!${this.cluster.discord.user.id}>`];
 
-        return [...guildPrefixes, ...userPrefixes, ...defaultPrefixes, ...mentionPrefixes]
+        return [...contextPrefixes, ...userPrefixes, ...defaultPrefixes, ...mentionPrefixes]
             .sort((a, b) => b.length - a.length)
             .find(p => message.content.startsWith(p));
     }
 
-    private async getGuildPrefixes(message: Message): Promise<readonly string[]> {
+    private async getContextPrefixes(message: Message): Promise<readonly string[]> {
         if (!guard.isGuildMessage(message))
-            return [];
+            return [''];
 
         const guildPrefixes = await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'prefix');
         if (guildPrefixes === undefined)

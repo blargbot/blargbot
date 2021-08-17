@@ -70,7 +70,8 @@ export class Cluster extends BaseClient {
                 'GUILD_EMOJIS_AND_STICKERS',
                 'DIRECT_MESSAGES',
                 'DIRECT_MESSAGE_REACTIONS'
-            ]
+            ],
+            partials: ['CHANNEL']
         });
         this.id = options.id;
         this.createdAt = Object.freeze(moment());
