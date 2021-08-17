@@ -58,7 +58,7 @@ export class HelpCommand extends BaseGlobalCommand {
 
         const commandGroups = new Map<string, Set<string>>();
         for (const command of context.cluster.commands.list()) {
-            if (command.checkContext(context) && !await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
+            if (!command.checkContext(context) || !await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
                 continue;
 
             const commandName = command.names.find(n => !customCommands.has(n));
