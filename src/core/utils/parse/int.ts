@@ -13,5 +13,8 @@ export function int(s: string | number, radix?: number): number {
         }
     }
 
-    return parseInt(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
+    const result = parseInt(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
+    if (Math.abs(result) > Number.MAX_SAFE_INTEGER)
+        return NaN;
+    return result;
 }
