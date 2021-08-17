@@ -9,6 +9,8 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
     readonly #workers: Map<number, TWorker>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #events: EventEmitter;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #inProgress: Map<number, boolean>;
 
     public *[Symbol.iterator](): IterableIterator<TWorker | undefined> {
         for (let i = 0; i < this.workerCount; i++)
@@ -23,6 +25,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
     ) {
         this.#workers = new Map();
         this.#events = new EventEmitter();
+        this.#inProgress = new Map();
     }
 
     public on(type: string, handler: (worker: TWorker) => void): this {
@@ -58,21 +61,28 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
     public async spawn(id: number, timeoutMS = this.defaultTimeout): Promise<TWorker> {
         if (id >= this.workerCount)
             throw new Error(`${this.type} ${id} doesnt exist`);
+        if (this.#inProgress.get(id) === true)
+            throw new Error(`${this.type} ${id} is already spawning`);
 
-        const worker = this.createWorker(id);
-        const oldWorker = this.#workers.get(id);
-        this.#workers.delete(id);
-        this.#events.emit('spawningworker', worker);
-        await worker.connect(timeoutMS);
-        this.#workers.set(id, worker);
-        if (oldWorker !== undefined) {
-            this.#events.emit('killingworker', oldWorker);
-            if (oldWorker.state === WorkerState.RUNNING)
-                oldWorker.kill();
-            this.#events.emit('killedworker', worker);
+        this.#inProgress.set(id, true);
+        try {
+            const worker = this.createWorker(id);
+            const oldWorker = this.#workers.get(id);
+            this.#workers.delete(id);
+            this.#events.emit('spawningworker', worker);
+            await worker.connect(timeoutMS);
+            this.#workers.set(id, worker);
+            if (oldWorker !== undefined) {
+                this.#events.emit('killingworker', oldWorker);
+                if (oldWorker.state === WorkerState.RUNNING)
+                    oldWorker.kill();
+                this.#events.emit('killedworker', worker);
+            }
+            this.#events.emit('spawnedworker', worker);
+            return worker;
+        } finally {
+            this.#inProgress.set(id, false);
         }
-        this.#events.emit('spawnedworker', worker);
-        return worker;
     }
 
     protected abstract createWorker(id: number): TWorker;
