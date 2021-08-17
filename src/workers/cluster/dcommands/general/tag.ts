@@ -692,7 +692,7 @@ export class TagCommand extends BaseGuildCommand {
         if (tag === undefined)
             return { name: tagName };
         if (tag.deleted === true) {
-            let result = this.error(`The \`${tag.name}\` tag has been permanently deleted`);
+            let result: string = this.error(`The \`${tag.name}\` tag has been permanently deleted`);
             if (tag.deleter !== undefined) {
                 const deleter = await context.database.users.get(tag.deleter);
                 if (deleter !== undefined)

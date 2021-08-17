@@ -306,7 +306,7 @@ export interface StoredGuild {
     readonly announce?: GuildAnnounceOptions;
     readonly log?: { readonly [key: string]: string | undefined; };
     readonly logIgnore?: readonly string[];
-    readonly votebans?: { readonly [userId: string]: readonly string[] | undefined; };
+    readonly votebans?: GuildVotebans;
 }
 
 export type StoredGuildEventLogType =
@@ -334,6 +334,10 @@ export interface MutableStoredGuild extends StoredGuild {
     active: boolean;
     name: string;
     announce?: GuildAnnounceOptions;
+}
+
+export interface GuildVotebans {
+    readonly [userId: string]: readonly string[] | undefined;
 }
 
 export interface GuildAnnounceOptions {
@@ -621,6 +625,11 @@ export interface GuildTable {
     setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean>;
     getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined>;
     clearVoteBans(guildId: string, userId: string): Promise<void>;
+    getVoteBans(guildId: string, skipCache?: boolean): Promise<GuildVotebans | undefined>;
+    getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly string[] | undefined>;
+    hasVoteBanned(guildId: string, target: string, signee: string, skipCache?: boolean): Promise<boolean>;
+    addVoteBan(guildId: string, target: string, signee: string): Promise<number | false>;
+    removeVoteBan(guildId: string, target: string, signee: string): Promise<number | false>;
     getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined>;

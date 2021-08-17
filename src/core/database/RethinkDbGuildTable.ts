@@ -1,5 +1,5 @@
 import { Logger } from '@core/Logger';
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, MutableStoredGuild, MutableStoredGuildEventLogConfig, NamedStoredGuildCommand, StoredGuild, StoredGuildCommand, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildVotebans, MutableStoredGuild, MutableStoredGuildEventLogConfig, NamedStoredGuildCommand, StoredGuild, StoredGuildCommand, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
 import { guard } from '@core/utils';
 import { Guild } from 'discord.js';
 
@@ -55,6 +55,73 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             delete guild.votebans;
         else
             delete guild.votebans[userId];
+    }
+
+    public async getVoteBans(guildId: string, skipCache?: boolean): Promise<GuildVotebans | undefined>
+    public async getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly string[] | undefined>
+    public async getVoteBans(...args: [string, boolean?] | [string, string, boolean?]): Promise<GuildVotebans | readonly string[] | undefined> {
+        let guildId: string;
+        let target: string | undefined;
+        let skipCache: boolean | undefined;
+
+        switch (args.length) {
+            case 1:
+                [guildId, skipCache] = args;
+                break;
+            case 3:
+                [guildId, target, skipCache] = args;
+                break;
+            case 2:
+                if (typeof args[1] === 'string')
+                    [guildId, target, skipCache] = args;
+                else
+                    [guildId, skipCache] = args;
+                break;
+        }
+
+        const guild = await this.rget(guildId, skipCache);
+        if (guild === undefined)
+            return undefined;
+
+        if (target !== undefined)
+            return guild.votebans?.[target];
+
+        return guild.votebans ?? {};
+    }
+
+    public async hasVoteBanned(guildId: string, target: string, signee: string, skipCache?: boolean): Promise<boolean> {
+        const guild = await this.rget(guildId, skipCache);
+        if (guild === undefined)
+            return false;
+
+        return guild.votebans?.[target]?.includes(signee) ?? false;
+    }
+
+    public async addVoteBan(guildId: string, target: string, signee: string): Promise<number | false> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, g => ({ votebans: { [target]: g('votebans').default({})(target).default([]).setInsert(signee) } })))
+            return false;
+
+        const vb = guild.votebans ??= {};
+        const votes = vb[target] = [...new Set([...vb[target] ?? [], signee])];
+        return votes.length;
+    }
+
+    public async removeVoteBan(guildId: string, target: string, signee: string): Promise<number | false> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, g => ({ votebans: { [target]: g('votebans').default({})(target).default([]).setDifference(this.expr([signee])) } })))
+            return false;
+
+        const vb = guild.votebans ??= {};
+        const votes = vb[target] = vb[target]?.filter(s => s !== signee);
+        return votes?.length ?? 0;
+
     }
 
     public async getLogIgnores(guildId: string, skipCache?: boolean): Promise<ReadonlySet<string>> {
@@ -129,7 +196,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             case 'number': {
                 const [, index, autoresponse] = <Extract<typeof args, { 1: number; }>>args;
                 const replacement = autoresponse === undefined ? [] : [autoresponse];
-                const success = await this.rupdate(guildId, r => ({ autoresponse: { list: r.getField('autoresponse').default({})('list').default([]).spliceAt(index, this.addExpr(replacement)) } }));
+                const success = await this.rupdate(guildId, r => ({ autoresponse: { list: r('autoresponse').default({})('list').default([]).spliceAt(index, this.addExpr(replacement)) } }));
                 if (!success)
                     return false;
                 guild.autoresponse.list ??= [];
@@ -147,7 +214,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, r => ({ autoresponse: { list: r.getField('autoresponse').default({})('list').default([]).append(this.addExpr(autoresponse)) } })))
+        if (!await this.rupdate(guildId, r => ({ autoresponse: { list: r('autoresponse').default({})('list').default([]).append(this.addExpr(autoresponse)) } })))
             return false;
 
         guild.autoresponse ??= { list: [] };
@@ -344,7 +411,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         newName = newName.toLowerCase();
         if (guild.ccommands[oldName] === undefined
             || guild.ccommands[newName] !== undefined
-            || !await this.rupdate(guildId, r => ({ ccommands: { [newName]: r.getField('ccommands')(oldName), [oldName]: this.setExpr(undefined) } })))
+            || !await this.rupdate(guildId, r => ({ ccommands: { [newName]: r('ccommands')(oldName), [oldName]: this.setExpr(undefined) } })))
             return false;
 
         guild.ccommands[newName] = guild.ccommands[oldName];
@@ -362,7 +429,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, r => ({ modlog: r.getField('modlog').default([]).append(this.addExpr(modlog)) })))
+        if (!await this.rupdate(guildId, r => ({ modlog: r('modlog').default([]).append(this.addExpr(modlog)) })))
             return false;
 
         guild.modlog ??= [];
@@ -375,7 +442,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, r => ({ logIgnore: r.getField('logIgnore').default([]).setUnion(userIds) })))
+        if (!await this.rupdate(guildId, r => ({ logIgnore: r('logIgnore').default([]).setUnion(userIds) })))
             return false;
 
         guild.logIgnore = [...new Set([...guild.logIgnore ?? [], ...userIds])];
@@ -433,7 +500,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
     public async migrate(): Promise<void> {
         const indexes = await this.rquery(t => t.indexList());
         if (!indexes.includes('interval')) {
-            await this.rquery(t => t.indexCreate('interval', r => r.getField('ccommands').hasFields('_interval')));
+            await this.rquery(t => t.indexCreate('interval', r => r('ccommands').hasFields('_interval')));
         }
     }
 }

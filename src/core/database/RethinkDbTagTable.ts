@@ -42,7 +42,7 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
         const expr = partialName.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
         return await this.rqueryAll(t =>
             t.orderBy({ index: 'name' })
-                .filter(r => r.getField('name').match(`(?i)${expr}`).ne(null))
+                .filter(r => r('name').match(`(?i)${expr}`).ne(null))
                 .getField('name')
                 .skip(skip)
                 .limit(take));
@@ -51,7 +51,7 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
     public async searchCount(partialName: string): Promise<number> {
         const expr = partialName.replace(/[.?*+^$[\]\\(){}|-]/g, '\\$&');
         return await this.rquery(t =>
-            t.filter(r => r.getField('name').match(`(?i)${expr}`).ne(null))
+            t.filter(r => r('name').match(`(?i)${expr}`).ne(null))
                 .count());
     }
 
@@ -90,14 +90,14 @@ export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTabl
 
     public async incrementUses(tagName: string, count = 1): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            uses: r.getField('uses').default(0).add(count),
+            uses: r('uses').default(0).add(count),
             lastuse: new Date()
         }));
     }
 
     public async incrementReports(tagName: string, count = 1): Promise<boolean> {
         return await this.rupdate(tagName, r => ({
-            reports: r.getField('reports').default(0).add(count)
+            reports: r('reports').default(0).add(count)
         }));
     }
 

@@ -33,27 +33,29 @@ export abstract class BaseCommand implements CommandBaseOptions {
     public abstract checkContext(context: CommandContext): boolean;
     public abstract execute(context: CommandContext): Promise<void>;
 
-    public error(message: string): string {
+    public error<T extends string>(message: T): `❌ ${T}` {
         return `❌ ${message}`;
     }
 
+    public warning<T extends string>(message: T): `⚠️ ${T}`
+    public warning(message: string, ...reasons: string[]): string
     public warning(message: string, ...reasons: string[]): string {
         return `⚠️ ${message}${reasons.map(r => `\n⛔ ${r}`).join('')}`;
     }
 
-    public success(message: string): string {
+    public success<T extends string>(message: T): `✅ ${T}` {
         return `✅ ${message}`;
     }
 
-    public info(message: string): string {
+    public info<T extends string>(message: T): `ℹ️ ${T}` {
         return `ℹ️ ${message}`;
     }
 
-    public congrats(message: string): string {
+    public congrats<T extends string>(message: T): `🎉 ${T}` {
         return `🎉 ${message}`;
     }
 
-    public question(message: string): string {
+    public question<T extends string>(message: T): `❓ ${T}` {
         return `❓ ${message}`;
     }
 }

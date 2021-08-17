@@ -25,7 +25,7 @@ export class WarningsCommand extends BaseGuildCommand {
 
     public async warnings(context: GuildCommandContext, member: GuildMember): Promise<string> {
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
-        const result = [
+        const result: string[] = [
             count > 0
                 ? this.warning(`**${humanize.fullName(member.user)}** has accumulated ${count} ${p(count, 'warning')}.`)
                 : this.congrats(`**${humanize.fullName(member.user)}** doesn't have any warnings!`)
