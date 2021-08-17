@@ -1,7 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
-import { Channel } from 'discord.js';
+import { AnyChannel } from 'discord.js';
 
 export class ChannelTypeSubtag extends BaseSubtag {
     public constructor() {
@@ -44,7 +44,7 @@ export class ChannelTypeSubtag extends BaseSubtag {
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
-const channelTypes: { [key in Channel['type']]: string } = {
+const channelTypes: { [key in AnyChannel['type']]: string } = {
     GUILD_TEXT: 'text',
     DM: 'dm',
     GUILD_VOICE: 'voice',

@@ -1,6 +1,6 @@
-import { AllChannels, GuildChannels } from 'discord.js';
+import { AnyChannel, GuildChannels } from 'discord.js';
 
-export function isGuildChannel<T extends AllChannels>(channel: T): channel is GuildChannels & T {
+export function isGuildChannel<T extends AnyChannel>(channel: T): channel is GuildChannels & T {
     switch (channel.type) {
         case 'DM': return false;
         case 'GROUP_DM': return false;

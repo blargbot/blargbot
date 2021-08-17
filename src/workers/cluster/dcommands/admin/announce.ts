@@ -145,7 +145,7 @@ export class AnnounceCommand extends BaseGuildCommand {
                     return this.error(`${mentioned.toString()} is not a channel on this guild!`);
                 channel = mentioned;
             } else {
-                const found = await context.util.queryChannel(context.channel, context.author, context.channel.guild, response.content);
+                const found = await context.util.queryChannel(context.channel, context.author, { guild: context.channel.guild, filter: response.content });
                 if (found.state !== 'SUCCESS')
                     return this.error('I couldnt find a channel with that name or id!');
 
@@ -169,7 +169,7 @@ export class AnnounceCommand extends BaseGuildCommand {
             if (mentioned !== undefined)
                 role = mentioned;
             else {
-                const found = await context.util.queryRole(context.channel, context.author, context.channel.guild, response.content);
+                const found = await context.util.queryRole(context.channel, context.author, { guild: context.channel.guild, filter: response.content });
                 if (found.state !== 'SUCCESS')
                     return this.error('I couldnt find a role with that name or id!');
 

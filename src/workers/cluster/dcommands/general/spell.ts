@@ -50,7 +50,7 @@ export class SpellCommand extends BaseGlobalCommand {
 
         const result = await context.util.queryChoice({
             context: context.message,
-            users: context.author,
+            actors: context.author,
             prompt: '🪄 Multiple spells found! Please pick the right one',
             placeholder: 'Pick a spell',
             choices: spells.filter(s => s.name.toLowerCase().includes(name.toLowerCase()))

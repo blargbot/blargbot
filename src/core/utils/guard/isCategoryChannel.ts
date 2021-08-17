@@ -1,6 +1,6 @@
-import { AllChannels, CategoryChannels } from 'discord.js';
+import { AnyChannel, CategoryChannels } from 'discord.js';
 
-export function isCategoryChannel<T extends AllChannels>(channel: T): channel is CategoryChannels & T {
+export function isCategoryChannel<T extends AnyChannel>(channel: T): channel is CategoryChannels & T {
     switch (channel.type) {
         case 'DM': return false;
         case 'GROUP_DM': return false;

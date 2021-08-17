@@ -152,8 +152,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         const member = await this.queryEntity(
             query, 'user', 'User',
             async id => await this.util.getMember(this.guild, id),
-            async query => await this.util.findMember(this.guild, query),
-            async query => await this.util.queryMember(this.channel, this.user, this.guild, query),
+            async query => await this.util.findMembers(this.guild, query),
+            async options => await this.util.queryMember(this.channel, this.user, options),
             options
         );
         return member?.user;
@@ -164,7 +164,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             query, 'role', 'Role',
             async id => await this.util.getRole(this.guild, id),
             async query => await this.util.findRoles(this.guild, query),
-            async query => await this.util.queryRole(this.channel, this.user, this.guild, query),
+            async options => await this.util.queryRole(this.channel, this.user, options),
             options
         );
     }
@@ -174,7 +174,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             query, 'channel', 'Channel',
             async id => await this.util.getChannel(this.guild, id),
             async query => await this.util.findChannels(this.guild, query),
-            async query => await this.util.queryChannel(this.channel, this.user, this.guild, query),
+            async options => await this.util.queryChannel(this.channel, this.user, options),
             options
         );
     }
@@ -185,7 +185,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         type: string,
         fetch: (id: string) => Promise<T | undefined>,
         find: (query: string) => Promise<T[]>,
-        query: (query: string) => Promise<ChoiceQueryResult<T>>,
+        query: (options: T[]) => Promise<ChoiceQueryResult<T>>,
         options: FindEntityOptions
     ): Promise<T | undefined> {
         const cached = this.state.query[cacheKey][queryString];
@@ -193,13 +193,13 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             return await fetch(cached) ?? undefined;
 
         const noLookup = this.scope.quiet ?? options.noLookup ?? false;
+        const entities = await find(queryString);
         if (this.state.query.count >= 5 || noLookup) {
-            const entities = await find(queryString);
             return entities.length === 1 ? entities[0] : undefined;
         }
 
         const noErrors = this.scope.noLookupErrors ?? options.noErrors ?? false;
-        const result = await query(queryString);
+        const result = await query(entities);
         switch (result.state) {
             case 'FAILED':
             case 'NO_OPTIONS':

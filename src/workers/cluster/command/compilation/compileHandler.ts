@@ -258,7 +258,7 @@ function mapKeys<TKey extends string | number, TValue, TResult>(
 }
 
 const typeParsers: {
-    [P in CommandVariableType]: <TContext extends CommandContext>(value: string, state: CommandBinderState<TContext>) => CommandBinderParseResult<unknown>
+    [P in CommandVariableType]: <TContext extends CommandContext>(value: string, state: CommandBinderState<TContext>) => Awaitable<CommandBinderParseResult<unknown>>
 } = {
     string(value) {
         return { success: true, value };

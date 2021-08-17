@@ -3,7 +3,7 @@ import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredGuildCommand, NamedStoredRawGuildCommand, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { AllChannels, Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterWorker } from './ClusterWorker';
@@ -613,7 +613,7 @@ export type WarnResult =
 
 export type CommandBinderParseResult<TResult> =
     | CommandBinderValue<TResult>
-    | CommandBinderDeferred<TResult>
+    | CommandBinderDeferred<TResult>;
 
 export type CommandBinderValue<TResult> =
     | CommandBinderSuccess<TResult>
@@ -635,10 +635,10 @@ export interface CommandBinderDeferred<TResult> {
 }
 
 export interface CommandBinderStateLookupCache {
-    findUser(userString: string): CommandBinderParseResult<User>;
-    findMember(memberString: string): CommandBinderParseResult<GuildMember>;
-    findRole(roleString: string): CommandBinderParseResult<Role>;
-    findChannel(channelString: string): CommandBinderParseResult<AllChannels>;
+    findUser(userString: string): Awaitable<CommandBinderParseResult<User>>;
+    findMember(memberString: string): Awaitable<CommandBinderParseResult<GuildMember>>;
+    findRole(roleString: string): Awaitable<CommandBinderParseResult<Role>>;
+    findChannel(channelString: string): Awaitable<CommandBinderParseResult<KnownChannel>>;
 }
 
 export interface CommandBinderState<TContext extends CommandContext> {

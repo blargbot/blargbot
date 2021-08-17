@@ -1,6 +1,6 @@
-import { AllChannels, ThreadChannels } from 'discord.js';
+import { AnyChannel, ThreadChannels } from 'discord.js';
 
-export function isThreadChannel<T extends AllChannels>(channel: T): channel is ThreadChannels & T {
+export function isThreadChannel<T extends AnyChannel>(channel: T): channel is ThreadChannels & T {
     switch (channel.type) {
         case 'DM': return false;
         case 'GROUP_DM': return false;

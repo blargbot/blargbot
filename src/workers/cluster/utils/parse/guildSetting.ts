@@ -40,7 +40,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
         case 'channel': {
             if (!guard.isGuildRelated(msg))
                 return { success: false };
-            const result = await util.queryChannel(msg.channel, msg.author, msg.channel.guild, raw);
+            const result = await util.queryChannel(msg.channel, msg.author, { guild: msg.channel.guild, filter: raw });
             if (result.state !== 'SUCCESS')
                 return { success: false };
             return {
@@ -52,7 +52,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
         case 'role': {
             if (!guard.isGuildRelated(msg))
                 return { success: false };
-            const result = await util.queryRole(msg.channel, msg.author, msg.channel.guild, raw);
+            const result = await util.queryRole(msg.channel, msg.author, { guild: msg.channel.guild, filter: raw });
             if (result.state !== 'SUCCESS')
                 return { success: false };
             return {

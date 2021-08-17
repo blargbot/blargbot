@@ -1,5 +1,5 @@
 import { SendContext, SendPayload, StoredUser } from '@core/types';
-import { AllChannels, Channel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -253,18 +253,18 @@ export class BaseUtilities {
         return results;
     }
 
-    public async resolveTags(context: ChannelInteraction | UserChannelInteraction | Channel, message: string): Promise<string> {
+    public async resolveTags(context: ChannelInteraction | UserChannelInteraction | KnownChannel, message: string): Promise<string> {
         const regex = /<[^<>\s]+>/g;
         const promiseMap: { [tag: string]: Promise<string>; } = {};
         let match;
         while ((match = regex.exec(message)) !== null) {
-            promiseMap[match[0]] ??= this.resolveTag(context instanceof Channel ? context : context.channel, match[0]);
+            promiseMap[match[0]] ??= this.resolveTag('channel' in context ? context.channel : context, match[0]);
         }
         const replacements = Object.fromEntries(await Promise.all(Object.entries(promiseMap).map(async e => [e[0], await e[1]] as const)));
         return message.replace(regex, match => replacements[match]);
     }
 
-    public async resolveTag(context: AllChannels, tag: string): Promise<string> {
+    public async resolveTag(context: KnownChannel, tag: string): Promise<string> {
         let id: string | undefined;
         if ((id = parse.entityId(tag, '@&')) !== undefined) { // ROLE
             const role = guard.isGuildChannel(context)
@@ -363,9 +363,9 @@ export class BaseUtilities {
             .then(support => support?.value.includes(id) ?? false);
     }
 
-    public async getChannel(channelId: string): Promise<AllChannels | undefined>;
+    public async getChannel(channelId: string): Promise<AnyChannel | undefined>;
     public async getChannel(guild: string | Guild, channelId: string): Promise<GuildChannels | undefined>;
-    public async getChannel(...args: [string] | [string | Guild, string]): Promise<AllChannels | undefined> {
+    public async getChannel(...args: [string] | [string | Guild, string]): Promise<AnyChannel | undefined> {
         const _args = args.length === 2 ? args : [undefined, args[0]] as const;
 
         const guild = _args[0];
@@ -402,7 +402,7 @@ export class BaseUtilities {
             .map(c => c.channel);
     }
 
-    public channelMatchScore(channel: AllChannels, query: string): number {
+    public channelMatchScore(channel: KnownChannel, query: string): number {
         const normalizedQuery = query.toLowerCase();
 
         if (guard.isGuildChannel(channel)) {
@@ -461,7 +461,7 @@ export class BaseUtilities {
         }
     }
 
-    public async getMessage(channel: string | AllChannels, messageId: string, force?: boolean): Promise<Message | undefined> {
+    public async getMessage(channel: string | KnownChannel, messageId: string, force?: boolean): Promise<Message | undefined> {
         messageId = parse.entityId(messageId) ?? '';
         if (messageId === '')
             return undefined;
@@ -512,7 +512,7 @@ export class BaseUtilities {
         }
     }
 
-    public async findMember(guild: string | Guild, query: string): Promise<GuildMember[]> {
+    public async findMembers(guild: string | Guild, query: string): Promise<GuildMember[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
         if (typeof guild === 'string')

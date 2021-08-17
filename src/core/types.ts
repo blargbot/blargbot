@@ -65,7 +65,7 @@ export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = Con
 
 export interface ChoiceQueryOptions<T> {
     context: TextBasedChannels | Message;
-    users: Iterable<string | User> | string | User;
+    actors: Iterable<string | User> | string | User;
     prompt: string | Omit<SendOptions, 'components'>;
     placeholder: string;
     choices: Iterable<Omit<MessageSelectOptionData, 'value'> & { value: T; }>;

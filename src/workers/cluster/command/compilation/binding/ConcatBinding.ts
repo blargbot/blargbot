@@ -1,6 +1,6 @@
 import { CommandBinderParseResult, CommandBinderState, CommandConcatParameter } from '@cluster/types';
 import { Binder } from '@core/Binder';
-import { Binding, BindingResultIterator } from '@core/types';
+import { Binding, BindingResultAsyncIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
@@ -11,7 +11,7 @@ export class ConcatBinding<TContext extends CommandContext, TResult> extends Com
     public constructor(
         protected readonly parameter: CommandConcatParameter,
         protected readonly next: ReadonlyArray<Binding<CommandBinderState<TContext>>>,
-        protected readonly parse: (value: string, state: CommandBinderState<TContext>) => CommandBinderParseResult<TResult>
+        protected readonly parse: (value: string, state: CommandBinderState<TContext>) => Awaitable<CommandBinderParseResult<TResult>>
     ) {
         super();
         this.name = parameter.name;
@@ -24,25 +24,25 @@ export class ConcatBinding<TContext extends CommandContext, TResult> extends Com
                 yield `    ${line}`;
     }
 
-    public *[Binder.binder](state: CommandBinderState<TContext>): BindingResultIterator<CommandBinderState<TContext>> {
+    public async *[Binder.binder](state: CommandBinderState<TContext>): BindingResultAsyncIterator<CommandBinderState<TContext>> {
         if (!this.parameter.required && this.parameter.type === 'string') {
             if (this.parameter.fallback === undefined)
                 yield this.getBindingResult(state, this.next, 0, { success: true, value: undefined });
             else
-                yield this.getBindingResult(state, this.next, 0, this.parse(this.parameter.fallback, state));
+                yield this.getBindingResult(state, this.next, 0, await this.parse(this.parameter.fallback, state));
         }
 
         for (let i = 1; i <= state.flags._.length - state.argIndex; i++) {
             const args = state.flags._.merge(state.argIndex, state.argIndex + i);
             const arg = this.parameter.raw ? args.raw : args.value;
-            yield this.getBindingResult(state, this.next, i, this.parse(arg, state));
+            yield this.getBindingResult(state, this.next, i, await this.parse(arg, state));
         }
 
         if (!this.parameter.required && this.parameter.type !== 'string') {
             if (this.parameter.fallback === undefined)
                 yield this.getBindingResult(state, this.next, 0, { success: true, value: undefined });
             else
-                yield this.getBindingResult(state, this.next, 0, this.parse(this.parameter.fallback, state));
+                yield this.getBindingResult(state, this.next, 0, await this.parse(this.parameter.fallback, state));
         }
 
         if (this.parameter.required && state.flags._.length === state.argIndex)

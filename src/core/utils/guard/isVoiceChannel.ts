@@ -1,6 +1,6 @@
-import { AllChannels, VoiceChannels } from 'discord.js';
+import { AnyChannel, VoiceChannels } from 'discord.js';
 
-export function isVoiceChannel<T extends AllChannels>(channel: T): channel is VoiceChannels & T {
+export function isVoiceChannel<T extends AnyChannel>(channel: T): channel is VoiceChannels & T {
     switch (channel.type) {
         case 'DM': return false;
         case 'GROUP_DM': return false;

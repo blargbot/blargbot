@@ -1,6 +1,6 @@
-import { AllChannels, PrivateChannels } from 'discord.js';
+import { AnyChannel, PrivateChannels } from 'discord.js';
 
-export function isPrivateChannel<T extends AllChannels>(channel: T): channel is PrivateChannels & T {
+export function isPrivateChannel<T extends AnyChannel>(channel: T): channel is PrivateChannels & T {
     switch (channel.type) {
         case 'DM': return true;
         case 'GROUP_DM': return true;

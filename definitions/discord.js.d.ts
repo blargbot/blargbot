@@ -4,7 +4,7 @@ declare module 'discord.js' {
     export type UserChannelInteraction<TChannel extends TextBasedChannels = TextBasedChannels> = { channel: TChannel; author: User; }
     export type ChannelInteraction<TChannel extends TextBasedChannels = TextBasedChannels> = { channel: TChannel; author: never; }
 
-    export type AllChannels =
+    export type KnownChannel =
         | DMChannel
         | PartialDMChannel
         | PartialGroupDMChannel
@@ -14,16 +14,17 @@ declare module 'discord.js' {
         | NewsChannel
         | StoreChannel
         | ThreadChannel
-        | StageChannel
-        | Channel;
+        | StageChannel;
 
-    type PickChannels<T extends Channel['type']> = Extract<AllChannels, { type: T; }>;
+    export type AnyChannel = KnownChannel | Channel;
 
-    export type PrivateChannels = PickChannels<'DM' | 'GROUP_DM'>;
-    export type CategoryChannels = PickChannels<'GUILD_CATEGORY'>;
-    export type GuildChannels = PickChannels<'GUILD_CATEGORY' | 'GUILD_NEWS' | 'GUILD_NEWS_THREAD' | 'GUILD_PRIVATE_THREAD' | 'GUILD_PUBLIC_THREAD' | 'GUILD_STAGE_VOICE' | 'GUILD_STORE' | 'GUILD_TEXT' | 'GUILD_VOICE'>
-    export type ThreadChannels = PickChannels<'GUILD_NEWS_THREAD' | 'GUILD_PRIVATE_THREAD' | 'GUILD_PUBLIC_THREAD'>
-    export type VoiceChannels = PickChannels<'GUILD_VOICE' | 'GUILD_STAGE_VOICE'>;
+    type PickChannel<T extends AnyChannel['type']> = Extract<KnownChannel, { type: T; }>;
+
+    export type PrivateChannels = PickChannel<'DM' | 'GROUP_DM'>;
+    export type CategoryChannels = PickChannel<'GUILD_CATEGORY'>;
+    export type GuildChannels = PickChannel<'GUILD_CATEGORY' | 'GUILD_NEWS' | 'GUILD_NEWS_THREAD' | 'GUILD_PRIVATE_THREAD' | 'GUILD_PUBLIC_THREAD' | 'GUILD_STAGE_VOICE' | 'GUILD_STORE' | 'GUILD_TEXT' | 'GUILD_VOICE'>
+    export type ThreadChannels = PickChannel<'GUILD_NEWS_THREAD' | 'GUILD_PRIVATE_THREAD' | 'GUILD_PUBLIC_THREAD'>
+    export type VoiceChannels = PickChannel<'GUILD_VOICE' | 'GUILD_STAGE_VOICE'>;
     export type GuildTextBasedChannels = GuildChannels & TextBasedChannels;
     export type PrivateTextBasedChannels = PrivateChannels & TextBasedChannels;
 

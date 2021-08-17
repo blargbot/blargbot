@@ -50,12 +50,12 @@ export class LogCommand extends BaseGuildCommand {
                 {
                     parameters: 'ignore {users:user[]}',
                     description: 'Ignores any tracked events concerning the users',
-                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users.map((u: User) => u.id), true)
+                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users, true)
                 },
                 {
                     parameters: 'track {users:user[]}',
                     description: 'Removes the users from the list of ignored users and begins tracking events from them again',
-                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users.map((u: User) => u.id), false)
+                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users, false)
                 }
             ]
         });
@@ -127,10 +127,10 @@ export class LogCommand extends BaseGuildCommand {
         };
     }
 
-    public async ignoreUsers(context: GuildCommandContext, userIds: string[], ignore: boolean): Promise<string> {
-        await context.database.guilds.setLogIgnores(context.channel.guild.id, userIds, ignore);
+    public async ignoreUsers(context: GuildCommandContext, users: User[], ignore: boolean): Promise<string> {
+        await context.database.guilds.setLogIgnores(context.channel.guild.id, users.map(u => u.id), ignore);
 
-        const mentions = userIds.map(u => `<@${u}>`);
+        const mentions = users.map(u => u.toString());
         if (ignore)
             return this.success(`I will now ignore events from ${humanize.smartJoin(mentions, ', ', ' and ')}`);
         return this.success(`I will no longer ignore events from ${humanize.smartJoin(mentions, ', ', ' and ')}`);

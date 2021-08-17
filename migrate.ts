@@ -4,7 +4,7 @@ import config from '@config';
 import { Database } from '@core/database';
 import { createLogger, Logger } from '@core/Logger';
 import { guard } from '@core/utils';
-import { AllChannels, Client as Discord } from 'discord.js';
+import { AnyChannel, Client as Discord } from 'discord.js';
 
 void (async function () {
     // This is for migrating from the js blarg to the ts blarg
@@ -39,7 +39,7 @@ void (async function () {
 async function migrateChangelog(discord: Discord, database: Database, logger: Logger): Promise<void> {
     const changelogs = <{ guilds: Record<string, string>; } | undefined>await database.vars.get('changelog');
     await discord.guilds.fetch(config.discord.guilds.home);
-    const changelogChannel = <AllChannels | null>await discord.channels.fetch(config.discord.channels.changelog);
+    const changelogChannel = <AnyChannel | null>await discord.channels.fetch(config.discord.channels.changelog);
     if (changelogChannel === null || changelogChannel.type !== 'GUILD_NEWS' || !('addFollower' in changelogChannel)) {
         logger.error('[migrateChangelog] Cannot locate changelog news channel');
         return;

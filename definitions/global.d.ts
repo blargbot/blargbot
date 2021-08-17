@@ -62,6 +62,8 @@ declare global {
         has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
     }
 
+    type Awaitable<T> = T | PromiseLike<T>;
+
     namespace NodeJS {
         type WorkerProcess = Process & Required<Pick<Process, 'send'>>;
 

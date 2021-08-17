@@ -1,6 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { FlagResult, GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize, ModerationType, parse, pluralise as p } from '@cluster/utils';
+import { GuildMember } from 'discord.js';
 
 export class WarnCommand extends BaseGuildCommand {
     public constructor() {
@@ -17,7 +18,7 @@ export class WarnCommand extends BaseGuildCommand {
             ],
             definitions: [
                 {
-                    parameters: '{user+}',
+                    parameters: '{user:member+}',
                     description: 'Issues a warning.\n' +
                         'If mod-logging is enabled, the warning will be logged.\n' +
                         'If `kickat` and `banat` have been set using the `settings` command, the target could potentially get banned or kicked.',
@@ -27,16 +28,12 @@ export class WarnCommand extends BaseGuildCommand {
         });
     }
 
-    public async warn(context: GuildCommandContext, user: string, flags: FlagResult): Promise<string> {
-        const member = await context.util.queryMember(context.channel, context.author, context.channel.guild, user);
-        if (member.state !== 'SUCCESS')
-            return this.error('I couldn\'t find that user!');
-
+    public async warn(context: GuildCommandContext, member: GuildMember, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1);
 
-        const result = await context.cluster.moderation.warns.warn(member.value, context.author, count, reason);
-        const preamble = `**${humanize.fullName(member.value.user)}** has been given ${count} ${p(count, 'warning')}.`;
+        const result = await context.cluster.moderation.warns.warn(member, context.author, count, reason);
+        const preamble = `**${humanize.fullName(member.user)}** has been given ${count} ${p(count, 'warning')}.`;
         const actionStr = getActionString(result.type);
         switch (result.state) {
             case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);

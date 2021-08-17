@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { AllChannels } from 'discord.js';
+import { KnownChannel } from 'discord.js';
 
 export class SayCommand extends BaseGlobalCommand {
     public constructor() {
@@ -23,7 +23,7 @@ export class SayCommand extends BaseGlobalCommand {
         });
     }
 
-    public async say(context: CommandContext, channel: AllChannels, text: string): Promise<void> {
+    public async say(context: CommandContext, channel: KnownChannel, text: string): Promise<void> {
         if (!guard.isTextableChannel(channel))
             await context.reply(`You cant send messages to ${channel.toString()}`);
 

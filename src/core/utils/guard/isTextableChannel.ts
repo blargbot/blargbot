@@ -1,6 +1,6 @@
-import { AllChannels, TextBasedChannels } from 'discord.js';
+import { AnyChannel, TextBasedChannels } from 'discord.js';
 
-export function isTextableChannel<T extends AllChannels>(channel: T): channel is TextBasedChannels & T {
+export function isTextableChannel<T extends AnyChannel>(channel: T): channel is TextBasedChannels & T {
     switch (channel.type) {
         case 'DM': return true;
         case 'GROUP_DM': return true;

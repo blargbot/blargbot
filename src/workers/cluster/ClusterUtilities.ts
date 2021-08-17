@@ -2,7 +2,7 @@ import { MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, SendPayload } from '@core/types';
-import { Guild, GuildChannels, GuildMember, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
+import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -69,7 +69,7 @@ export class ClusterUtilities extends BaseUtilities {
         };
 
         const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const awaiter = this.createComponentAwaiter(channel, options.users, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, {
             [component.cancelId]: () => true,
             [component.selectId]: () => true,
             [component.prevId]: async i => {
@@ -215,70 +215,98 @@ export class ClusterUtilities extends BaseUtilities {
             }
         };
     }
+    public async queryUser(
+        context: TextBasedChannels | Message,
+        actors: Iterable<string | User> | string | User,
+        users: Iterable<User>,
+        timeout?: number
+    ): Promise<ChoiceResult<User>> {
+        return await this.queryChoice({
+            context,
+            actors,
+            prompt: 'ℹ️ Multiple users found! Please select one from the drop down.',
+            placeholder: 'Select a user',
+            timeout,
+            choices: [...users].map(u => ({
+                label: humanize.fullName(u),
+                value: u,
+                description: `Id: ${u.id}`
+            }))
+        });
+    }
 
     public async queryMember(
         context: TextBasedChannels | Message,
-        users: Iterable<string | User> | string | User,
-        guild: string | Guild,
-        query: string,
+        actors: Iterable<string | User> | string | User,
+        members: { guild: string | Guild; filter: string; } | Iterable<GuildMember>,
         timeout?: number
     ): Promise<ChoiceResult<GuildMember>> {
-        const matches = await this.findMember(guild, query);
+        const matches = 'guild' in members ? await this.findMembers(members.guild, members.filter) : [...members];
         return await this.queryChoice({
             context,
-            users,
+            actors,
             prompt: 'ℹ️ Multiple users found! Please select one from the drop down.',
             placeholder: 'Select a user',
+            timeout,
             choices: matches.map(m => ({
                 label: `${m.displayName} (${humanize.fullName(m.user)})`,
                 value: m,
                 description: `Id: ${m.id}`
-            })),
-            timeout
+            }))
         });
     }
 
     public async queryRole(
         context: TextBasedChannels | Message,
-        users: Iterable<string | User> | string | User,
-        guild: string | Guild,
-        query: string,
+        actors: Iterable<string | User> | string | User,
+        roles: { guild: string | Guild; filter: string; } | Iterable<Role>,
         timeout?: number
     ): Promise<ChoiceResult<Role>> {
-        const matches = await this.findRoles(guild, query);
+        const matches = 'guild' in roles ? await this.findRoles(roles.guild, roles.filter) : [...roles];
         return await this.queryChoice({
             context,
-            users,
+            actors,
             prompt: 'ℹ️ Multiple roles found! Please select one from the drop down.',
             placeholder: 'Select a role',
+            timeout,
             choices: matches.map(r => ({
                 label: `${r.name}`,
                 value: r,
-                description: `Id: ${r.id}\nColor: #${r.color.toString(16).padStart(6, '0')}`
-            })),
-            timeout
+                description: `Id: ${r.id} Color: #${r.color.toString(16).padStart(6, '0')}`
+            }))
         });
     }
 
     public async queryChannel(
         context: TextBasedChannels | Message,
-        users: Iterable<string | User> | string | User,
-        guild: string | Guild,
-        query: string,
+        actors: Iterable<string | User> | string | User,
+        query: { guild: string | Guild; filter: string; },
         timeout?: number
-    ): Promise<ChoiceResult<GuildChannels>> {
-        const matches = await this.findChannels(guild, query);
+    ): Promise<ChoiceResult<GuildChannels>>;
+    public async queryChannel<T extends KnownChannel>(
+        context: TextBasedChannels | Message,
+        actors: Iterable<string | User> | string | User,
+        channels: Iterable<T>,
+        timeout?: number
+    ): Promise<ChoiceResult<T>>;
+    public async queryChannel(
+        context: TextBasedChannels | Message,
+        actors: Iterable<string | User> | string | User,
+        channels: { guild: string | Guild; filter: string; } | Iterable<KnownChannel>,
+        timeout?: number
+    ): Promise<ChoiceResult<KnownChannel>> {
+        const matches = 'guild' in channels ? await this.findChannels(channels.guild, channels.filter) : [...channels];
         return await this.queryChoice({
             context,
-            users,
+            actors,
             prompt: 'ℹ️ Multiple channels found! Please select one from the drop down.',
             placeholder: 'Select a channel',
+            timeout,
             choices: matches.map(c => ({
-                label: `#${c.name}`,
-                value: c,
-                description: `Id: ${c.id}${c.parent?.type === 'GUILD_CATEGORY' ? `\nCategory: #${c.parent.name}` : ''}`
-            })),
-            timeout
+                label: getChannelLookupName(c),
+                description: `Id: ${c.id}${guard.isGuildChannel(c) && c.parent !== null ? ` Parent: ${getChannelLookupName(c.parent)}` : ''}`,
+                value: c
+            }))
         });
     }
 
@@ -690,4 +718,20 @@ function createLookupBody(options: LookupComponentOptions): { content: string; c
             { type: 'ACTION_ROW', components: [prev, cancel, next] }
         ]
     };
+}
+
+function getChannelLookupName(channel: KnownChannel): string {
+    switch (channel.type) {
+        case 'DM': return '🕵️ DM';
+        case 'GROUP_DM': return '👥 Group DM';
+        case 'GUILD_CATEGORY': return `📁 ${channel.name}`;
+        case 'GUILD_NEWS': return `📰 ${channel.name}`;
+        case 'GUILD_NEWS_THREAD': return `# ${channel.name}`;
+        case 'GUILD_PRIVATE_THREAD': return `# ${channel.name}`;
+        case 'GUILD_PUBLIC_THREAD': return `# ${channel.name}`;
+        case 'GUILD_STAGE_VOICE': return `🔈 ${channel.name}`;
+        case 'GUILD_STORE': return `🛒 ${channel.name}`;
+        case 'GUILD_TEXT': return `# ${channel.name}`;
+        case 'GUILD_VOICE': return `🔈 ${channel.name}`;
+    }
 }

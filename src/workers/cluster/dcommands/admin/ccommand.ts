@@ -440,7 +440,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const roles = [];
         for (const roleName of roleNames) {
-            const role = await context.cluster.util.queryRole(context.channel, context.author, context.channel.guild, roleName);
+            const role = await context.cluster.util.queryRole(context.channel, context.author, { guild: context.channel.guild, filter: roleName });
             if (role.state !== 'SUCCESS')
                 return;
             roles.push(role.value);

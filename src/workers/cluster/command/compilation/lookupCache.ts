@@ -1,5 +1,5 @@
 import { CommandBinderParseResult, CommandBinderStateLookupCache, GuildCommandContext, PrivateCommandContext } from '@cluster/types';
-import { guard, parse } from '@cluster/utils';
+import { guard } from '@cluster/utils';
 import { GuildMember, Role } from 'discord.js';
 
 import { BaseCommand } from '../BaseCommand';
@@ -18,34 +18,34 @@ export function getLookupCache<TContext extends CommandContext>(context: TContex
 function getGuildLookupCache<TContext extends GuildCommandContext>(context: TContext, command: BaseCommand): CommandBinderStateLookupCache {
     return {
         findChannel: createLookup(
-            command, '#', 'channel',
-            id => context.channel.guild.channels.cache.get(id),
-            async search => {
-                const result = await context.util.queryChannel(context.channel, context.author, context.channel.guild, search);
+            command, 'channel',
+            query => context.util.findChannels(context.channel.guild, query),
+            async options => {
+                const result = await context.util.queryChannel(context.channel, context.author, options);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findUser: createLookup(
-            command, '@!?', 'user',
-            id => context.channel.guild.members.cache.get(id)?.user,
-            async search => {
-                const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, search);
-                return result.state === 'SUCCESS' ? result.value.user : undefined;
+            command, 'user',
+            async query => (await context.util.findMembers(context.channel.guild, query)).map(m => m.user),
+            async options => {
+                const result = await context.util.queryUser(context.channel, context.author, options);
+                return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findRole: createLookup(
-            command, '@&', 'role',
-            id => context.channel.guild.roles.cache.get(id),
-            async search => {
-                const result = await context.util.queryRole(context.channel, context.author, context.channel.guild, search);
+            command, 'role',
+            query => context.util.findRoles(context.channel.guild, query),
+            async options => {
+                const result = await context.util.queryRole(context.channel, context.author, options);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findMember: createLookup(
-            command, '@!?', 'member',
-            id => context.channel.guild.members.cache.get(id),
-            async search => {
-                const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, search);
+            command, 'member',
+            query => context.util.findMembers(context.channel.guild, query),
+            async options => {
+                const result = await context.util.queryMember(context.channel, context.author, options);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         )
@@ -55,31 +55,34 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
 function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: TContext, command: BaseCommand): CommandBinderStateLookupCache {
     return {
         findChannel: createLookup(
-            command, '#', 'channel',
-            id => context.channel.id === id ? context.channel : undefined,
-            search => context.util.channelMatchScore(context.channel, search) > 0
-                ? context.channel
-                : undefined
+            command, 'channel',
+            query => [
+                context.channel
+            ].filter(c => context.util.channelMatchScore(c, query) > 0),
+            async options => {
+                const result = await context.util.queryChannel(context.message, context.author, options);
+                return result.state === 'SUCCESS' ? result.value : undefined;
+            }
         ),
         findUser: createLookup(
-            command, '@!?', 'user',
-            id => {
-                if (id === context.channel.recipient.id)
-                    return context.channel.recipient;
-                if (id === context.discord.user.id)
-                    return context.discord.user;
-                return undefined;
-            },
-            search => context.util.userMatchScore(context.channel.recipient, search) > 0 ? context.channel.recipient : undefined
+            command, 'user',
+            query => [
+                context.channel.recipient,
+                context.discord.user
+            ].filter(u => context.util.userMatchScore(u, query) > 0),
+            async options => {
+                const result = await context.util.queryUser(context.message, context.author, options);
+                return result.state === 'SUCCESS' ? result.value : undefined;
+            }
         ),
         findRole: createLookup<Role>(
-            command, '@&', 'role',
-            () => undefined,
+            command, 'role',
+            () => [],
             () => undefined
         ),
         findMember: createLookup<GuildMember>(
-            command, '@!?', 'member',
-            () => undefined,
+            command, 'member',
+            () => [],
             () => undefined
         )
     };
@@ -87,44 +90,46 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
 
 function createLookup<TResult>(
     command: BaseCommand,
-    idTag: string,
     type: string,
-    getById: (id: string) => TResult | undefined,
-    search: (searchString: string) => Promise<TResult | undefined> | TResult | undefined
-): (searchString: string) => CommandBinderParseResult<TResult> {
+    search: (query: string) => TResult[] | Promise<TResult[]>,
+    select: (options: TResult[]) => Promise<TResult | undefined> | TResult | undefined
+): (query: string) => Awaitable<CommandBinderParseResult<TResult>> {
     const cache = new Map<string, CommandBinderParseResult<TResult>>();
-    return searchString => {
-        const key = searchString.toLowerCase();
+    return async query => {
+        const key = query.toLowerCase();
         const current = cache.get(key);
         if (current !== undefined)
             return current;
 
-        const id = parse.entityId(searchString, idTag, true);
-        if (id !== undefined) {
-            const value = getById(id);
-            const result = value === undefined
-                ? { success: false, error: command.error(`A ${type} with id \`${id}\` does not exist`) } as const
-                : { success: true, value: value } as const;
-            cache.set(key, result);
-            return result;
+        const matches = await search(query);
+        let result: CommandBinderParseResult<TResult>;
+        switch (matches.length) {
+            case 0:
+                result = { success: false, error: command.error(`I could not find a ${type} matching \`${query}\``) } as const;
+                break;
+            case 1:
+                result = { success: true, value: matches[0] } as const;
+                break;
+            default:
+                result = {
+                    success: 'deferred',
+                    async getValue() {
+                        const current = cache.get(key);
+                        if (current !== undefined && current.success !== 'deferred')
+                            return current;
+
+                        const value = await select(matches);
+                        const result = value === undefined
+                            ? { success: false, error: command.error(`I could not find a ${type} matching \`${query}\``) } as const
+                            : { success: true, value: value } as const;
+
+                        cache.set(key, result);
+                        return result;
+                    }
+                };
+                break;
         }
 
-        const result: CommandBinderParseResult<TResult> = {
-            success: 'deferred',
-            async getValue() {
-                const current = cache.get(key);
-                if (current !== undefined && current.success !== 'deferred')
-                    return current;
-
-                const value = await search(searchString);
-                const result = value === undefined
-                    ? { success: false, error: command.error(`I could not find a ${type} matching \`${searchString}\``) } as const
-                    : { success: true, value: value } as const;
-
-                cache.set(key, result);
-                return result;
-            }
-        };
         cache.set(key, result);
         return result;
     };

@@ -1,6 +1,6 @@
 import { CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandResult } from '@cluster/types';
 import { Binder } from '@core/Binder';
-import { Binding, BindingResultIterator } from '@core/types';
+import { Binding, BindingResultAsyncIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { CommandVariableType } from '../parameterType';
@@ -11,7 +11,7 @@ export class GreedyBinding<TContext extends CommandContext, TResult> extends Com
         public readonly name: string,
         protected readonly raw: boolean,
         protected readonly next: Readonly<Record<number, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>,
-        protected readonly parse: (value: string, state: CommandBinderState<TContext>) => CommandBinderParseResult<TResult>,
+        protected readonly parse: (value: string, state: CommandBinderState<TContext>) => Awaitable<CommandBinderParseResult<TResult>>,
         protected readonly type: CommandVariableType
     ) {
         super();
@@ -32,7 +32,7 @@ export class GreedyBinding<TContext extends CommandContext, TResult> extends Com
         }
     }
 
-    public *[Binder.binder](state: CommandBinderState<TContext>): BindingResultIterator<CommandBinderState<TContext>> {
+    public async *[Binder.binder](state: CommandBinderState<TContext>): BindingResultAsyncIterator<CommandBinderState<TContext>> {
 
         const results: Array<CommandBinderParseResult<TResult>> = [];
         const next = [...this.next[0] ?? []];
@@ -46,7 +46,7 @@ export class GreedyBinding<TContext extends CommandContext, TResult> extends Com
             yield this.getBindingResult(state, next, 0, { success: true, value: [] });
 
         while ((arg = state.flags._.get(state.argIndex + i++)) !== undefined) {
-            parsed = memoize(this.parse(this.raw ? arg.raw : arg.value, state));
+            parsed = memoize(await this.parse(this.raw ? arg.raw : arg.value, state));
             if (parsed.success === false)
                 break;
             results.push(parsed);

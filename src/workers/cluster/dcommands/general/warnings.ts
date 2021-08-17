@@ -15,7 +15,7 @@ export class WarningsCommand extends BaseGuildCommand {
                     execute: (ctx) => this.warnings(ctx, ctx.message.member)
                 },
                 {
-                    parameters: '{user+}',
+                    parameters: '{user:member+}',
                     description: 'Gets how many warnings the user has',
                     execute: (ctx, [user]) => this.warnings(ctx, user)
                 }
@@ -23,14 +23,7 @@ export class WarningsCommand extends BaseGuildCommand {
         });
     }
 
-    public async warnings(context: GuildCommandContext, member: string | GuildMember): Promise<string> {
-        if (typeof member === 'string') {
-            const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, member);
-            if (result.state !== 'SUCCESS')
-                return this.error(`I couldnt find the user ${member}!`);
-            member = result.value;
-        }
-
+    public async warnings(context: GuildCommandContext, member: GuildMember): Promise<string> {
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
         const result = [
             count > 0
