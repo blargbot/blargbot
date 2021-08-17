@@ -73,7 +73,7 @@ export class Cluster extends BaseClient {
             ]
         });
         this.id = options.id;
-        this.createdAt = moment();
+        this.createdAt = Object.freeze(moment());
         this.worker = options.worker;
         this.domains = new DomainManager(this.database.vars);
         this.images = new ImagePool(this.id, config.discord.images, this.logger);
