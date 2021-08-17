@@ -573,12 +573,7 @@ export class ClusterUtilities extends BaseUtilities {
     public hasPerms(member: GuildMember, allow?: number | readonly PermissionString[]): boolean {
         allow ??= defaultStaff;
         const newPerm = new Permissions(typeof allow === 'number' ? BigInt(Math.floor(allow)) : allow);
-        for (const key of newPerm.toArray()) {
-            if (member.permissions.has(key)) {
-                return true;
-            }
-        }
-        return false;
+        return member.permissions.any(newPerm);
     }
 
     public async hasRoles(msg: GuildMember | Message, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {

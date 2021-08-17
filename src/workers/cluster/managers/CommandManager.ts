@@ -62,6 +62,9 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         if (!guard.isGuildCommandContext(context))
             return true; // No configurable restrictions outside of guilds
 
+        if (context.channel.guild.ownerId === context.author.id)
+            return true; // Guild owner can execute all commands
+
         const commandPerms = await this.cluster.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
         if (commandPerms?.disabled === true && !command.cannotDisable)
             return false; // Command is disabled
