@@ -13,12 +13,68 @@ The process for setting up a parent/worker relationship is as follows
 
 1. Create worker specific implementations of:
     - `BaseWorker`: Override the `start()` method to do any setup the worker needs before calling `super.start()`
+        <details>
+            <summary>Example BaseWorker implementation</summary>
+
+        ```ts
+        export class MyWorker extends BaseWorker {
+            public async start(): Promise<void> {
+                await Promise.All([
+                    setupService1(),
+                    setupService2(),
+                    setupService3()
+                ]);
+                await super.start();
+            }
+        }
+        ```
+        </details>
     
     - `WorkerConnection`: Pass in the name of the [entrypoint](/src/entrypoints) we will create later to the constructor
+        <details>
+            <summary>Example WorkerConnection implementation</summary>
+
+        ```ts
+        export class MyConnection extends WorkerConnection {
+            public constructor(id: number, logger: Logger) {
+                super(id, 'myWorker', logger);
+            }
+        }
+        ```
+        </details>
 
     - `WorkerPool`: Implement the abstract `createWorker(id: number)` method to return an instance of our new `WorkerConnection` class
+        <details>
+            <summary>Example WorkerPool implementation</summary>
+
+        ```ts
+        export class MyWorkerPool extends WorkerPool<MyConnection> {
+            public constructor(logger: Logger) {
+                super(
+                    'Test process', /* a name, just used for logging */
+                    10, /* number of workers */
+                    60000, /* how long to allow each worker to start up */
+                    logger
+                );
+            }
+
+            protected createWorker(id: number): MyConnection {
+                return new MyConnection(id, this.logger);
+            }
+        }
+        ```
+        </details>
     
-1. Create an [entrypoint](/src/entrypoints) file which creates a new instance of the workers implementation of `BaseWorker` and calls the `start()` method.
+1. Create an [entrypoint](/src/entrypoints) file which creates a new instance of the workers implementation of `BaseWorker` and calls the `start()` method. 
+    <details>
+        <summary>Example entrypoing file</summary>
+
+    ```ts
+    // src/entrypoints/myWorker.ts
+    const worker = new MyWorker();
+    void worker.start();
+    ```
+    </details>
 
 1. From the parent process, create a new instance of the workers implementation of `WorkerPool` and call `spawnAll()`
 
