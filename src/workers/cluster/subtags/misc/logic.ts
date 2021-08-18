@@ -13,7 +13,8 @@ export class LogicSubtag extends BaseSubtag {
                 {
                     parameters: ['operator', 'values+'],
                     description: 'Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. ' +
-                        'Valid logic operators are `' + Object.keys(operators).join('`, `') + '`.',
+                        'Valid logic operators are `' + Object.keys(operators).join('`, `') + '`.' +
+                        'See `{operators}` for a shorter way of performing logic operations.',
                     exampleCode: '{logic;&&;true;false}',
                     exampleOut: 'false',
                     execute: (ctx, args, subtag) => this.applyLogicOperation(ctx, args.map(arg => arg.value), subtag)

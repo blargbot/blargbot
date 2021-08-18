@@ -13,7 +13,10 @@ export class MathSubtag extends BaseSubtag {
                 {
                     parameters: ['numbers+'],
                     description: 'Accepts multiple `values` and returns the result of `operator` on them. ' +
-                        'Valid operators are `' + Object.keys(operators).join('`, `') + '`',
+                        'Valid operators are `' + Object.keys(operators).join('`, `') + '`\n' +
+                        'See `{operators}` for a shorter way of performing numeric operations.',
+                    exampleCode: '2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}',
+                    exampleOut: '2 + 3 + 6 - 2 = 9',
                     execute: (ctx, args, subtag) => this.doMath(ctx, args[0].value, args.slice(1).map(arg => arg.value), subtag)
                 }
             ]
