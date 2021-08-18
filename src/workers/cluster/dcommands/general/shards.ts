@@ -59,7 +59,7 @@ export class ShardsCommand extends BaseGlobalCommand {
             });
         }
         const clusterFields = clusters.map(cluster => {
-            let fieldValue = `I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? 's' : ''} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? 's' : ''}\n`;
+            let fieldValue = '';
             fieldValue += `Ready since: <t:${Math.round(cluster.readyTime / 1000)}:R>\nRam: ${humanize.ram(cluster.rss)}`;
             fieldValue += '\n**Shards**:\n```\n';
             fieldValue += cluster.shards.map(shard => {
@@ -73,7 +73,10 @@ export class ShardsCommand extends BaseGlobalCommand {
         });
         if (clusters.length === 0)
             return this.error('No cluster stats yet!');
-        await context.reply({fields: clusterFields});
+        await context.reply({
+            description: `I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? 's' : ''} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? 's' : ''}\n`,
+            fields: clusterFields
+        });
     }
 
     public async showGuildShards(
