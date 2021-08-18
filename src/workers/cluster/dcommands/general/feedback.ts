@@ -47,7 +47,7 @@ export class FeedbackCommand extends BaseGlobalCommand {
         });
 
         this.client = new Airtable({
-            apiKey: cluster.config.airtable.token
+            apiKey: cluster.config.airtable.key
         }).base(cluster.config.airtable.base);
     }
 
