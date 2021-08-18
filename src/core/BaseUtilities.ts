@@ -341,24 +341,24 @@ export class BaseUtilities {
             .values();
     }
 
-    public isOwner(userId: string): boolean {
+    public isBotOwner(userId: string): boolean {
         for (const owner of this.getOwners())
             if (owner.id === userId)
                 return true;
         return false;
     }
 
-    public isDeveloper(userId: string): boolean {
-        return this.isOwner(userId)
+    public isBotDeveloper(userId: string): boolean {
+        return this.isBotOwner(userId)
             || this.config.discord.users.developers.includes(userId);
     }
 
-    public isStaff(id: string): Promise<boolean> | boolean {
+    public isBotStaff(id: string): Promise<boolean> | boolean {
         return this.database.vars.get('police')
             .then(police => police?.value.includes(id) ?? false);
     }
 
-    public isSupport(id: string): Promise<boolean> | boolean {
+    public isBotSupport(id: string): Promise<boolean> | boolean {
         return this.database.vars.get('support')
             .then(support => support?.value.includes(id) ?? false);
     }

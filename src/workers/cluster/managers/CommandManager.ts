@@ -56,7 +56,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         if (!await category.requirement(context))
             return false; // Context doesnt meet the category requirements
 
-        if (context.util.isOwner(context.author.id))
+        if (context.util.isBotOwner(context.author.id))
             return true; // The owner can execute any command anywhere
 
         if (!guard.isGuildCommandContext(context))

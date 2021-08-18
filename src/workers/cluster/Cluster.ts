@@ -117,7 +117,7 @@ export class Cluster extends BaseClient {
     }
 
     public async eval(author: string, text: string): Promise<{ success: boolean; result: unknown; }> {
-        if (!this.util.isOwner(author))
+        if (!this.util.isBotOwner(author))
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {
