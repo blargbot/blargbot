@@ -60,7 +60,7 @@ export class ShardCommand extends BaseGlobalCommand {
     ): Promise<void>  {
         const embed: MessageEmbedOptions = {};
         embed.title = `Shard ${shard.id}`;
-        embed.url = 'https://blargbot.xyz/shards';
+        embed.url = context.util.websiteLink('shards');
         embed.description = shardDesc;
         embed.fields = [
             {

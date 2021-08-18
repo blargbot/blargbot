@@ -74,6 +74,8 @@ export class ShardsCommand extends BaseGlobalCommand {
         if (clusters.length === 0)
             return this.error('No cluster stats yet!');
         await context.reply({
+            title: 'Shards',
+            url: context.util.websiteLink('shards'),
             description: `I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? 's' : ''} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? 's' : ''}\n`,
             fields: clusterFields
         });
@@ -109,7 +111,7 @@ export class ShardsCommand extends BaseGlobalCommand {
     ): Promise<void>  {
         const embed: MessageEmbedOptions = {};
         embed.title = shard !== undefined ? `Shard ${shard.id}` : `Cluster ${clusterData.id}`;
-        embed.url = 'https://blargbot.xyz/shards';
+        embed.url = context.util.websiteLink('shards');
         embed.description = embedDesc;
         embed.fields = [
             {
