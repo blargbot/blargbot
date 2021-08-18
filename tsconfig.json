@@ -20,7 +20,8 @@
         "allowUnusedLabels": false,
         "moduleResolution": "node",
         "lib": [
-            "ES2021"
+            "ES2021",
+            "dom.iterable"
         ],
         // "noUncheckedIndexedAccess": true
         "paths": {
