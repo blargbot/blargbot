@@ -1,7 +1,7 @@
 import { MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, SendPayload } from '@core/types';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, SendPayload } from '@core/types';
 import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
 import moment from 'moment';
 import fetch from 'node-fetch';
@@ -15,7 +15,7 @@ export class ClusterUtilities extends BaseUtilities {
         super(cluster);
     }
 
-    public async queryChoice<T extends Exclude<Primitive, string>>(options: ChoiceQueryOptions<T>): Promise<ChoiceResult<T>> {
+    public async queryChoice<T>(options: ChoiceQueryOptions<T>): Promise<ChoiceResult<T>> {
         const query = await this.createChoiceQuery(options);
         const result = await query.getResult();
         try {
@@ -54,7 +54,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (typeof options.prompt === 'string')
             options.prompt = { content: options.prompt };
 
-        const component: LookupComponentOptions = {
+        const component: ChoiceComponentOptions = {
             content: options.prompt.content ?? '',
             get select(): MessageSelectOptionData[] {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
@@ -74,17 +74,17 @@ export class ClusterUtilities extends BaseUtilities {
             [component.selectId]: () => true,
             [component.prevId]: async i => {
                 component.page--;
-                await i.update(createLookupBody(component));
+                await i.update(createChoiceBody(component));
                 return false;
             },
             [component.nextId]: async i => {
                 component.page++;
-                await i.update(createLookupBody(component));
+                await i.update(createChoiceBody(component));
                 return false;
             }
         });
 
-        const prompt = await this.send(options.context, { ...options.prompt, ...createLookupBody(component) });
+        const prompt = await this.send(options.context, { ...options.prompt, ...createChoiceBody(component) });
         if (prompt === undefined)
             return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
@@ -98,6 +98,85 @@ export class ClusterUtilities extends BaseUtilities {
 
                 if (interaction.isSelectMenu())
                     return { state: 'SUCCESS', value: valueMap[interaction.values[0]] };
+
+                if (interaction.customId === component.cancelId)
+                    return { state: 'CANCELLED' };
+
+                return { state: 'TIMED_OUT' };
+            },
+            cancel() {
+                awaiter.cancel();
+            }
+        };
+    }
+
+    public async queryMultiple<T>(options: MultipleQueryOptions<T>): Promise<MultipleResult<T>> {
+        const query = await this.createMultipleQuery(options);
+        const result = await query.getResult();
+        try {
+            await query.prompt?.delete();
+        } catch { /* NOOP */ }
+        return result;
+    }
+
+    public async createMultipleQuery<T>(options: MultipleQueryOptions<T>): Promise<MultipleQuery<T>> {
+        const valueMap: Record<string, T> = {};
+        const selectData: MessageSelectOptionData[] = [];
+
+        for (const option of options.choices) {
+            const id = snowflake.create().toString();
+            valueMap[id] = option.value;
+            selectData.push({ ...option, value: id });
+        }
+
+        if (selectData.length === 0) {
+            return {
+                prompt: undefined,
+                getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
+                cancel() { /* NOOP */ }
+            };
+        }
+
+        if (selectData.length > 25) {
+            return {
+                prompt: undefined,
+                getResult: () => Promise.resolve({ state: 'EXCESS_OPTIONS' }),
+                cancel() { /* NOOP */ }
+            };
+        }
+
+        if (typeof options.prompt === 'string')
+            options.prompt = { content: options.prompt };
+
+        const component: MultipleComponentOptions = {
+            select: selectData,
+            placeholder: options.placeholder,
+            cancelId: snowflake.create().toString(),
+            selectId: snowflake.create().toString(),
+            maxCount: options.maxCount,
+            minCount: options.minCount
+        };
+
+        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const awaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, {
+            [component.cancelId]: () => true,
+            [component.selectId]: () => true
+        });
+
+        const prompt = await this.send(options.context, { ...options.prompt, ...createMultipleBody(component) });
+        if (prompt === undefined)
+            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
+
+        return {
+            prompt,
+            async getResult() {
+                const interaction = await awaiter.result;
+                await prompt.delete();
+                if (interaction === undefined)
+                    return { state: 'TIMED_OUT' };
+
+                if (interaction.isSelectMenu())
+                    return { state: 'SUCCESS', value: interaction.values.map(id => valueMap[id]) };
 
                 if (interaction.customId === component.cancelId)
                     return { state: 'CANCELLED' };
@@ -621,7 +700,7 @@ export class ClusterUtilities extends BaseUtilities {
     }
 }
 
-interface LookupComponentOptions {
+interface ChoiceComponentOptions {
     readonly content: string;
     readonly selectId: string;
     readonly cancelId: string;
@@ -631,6 +710,15 @@ interface LookupComponentOptions {
     readonly placeholder: string | undefined;
     readonly select: MessageSelectOptionData[];
     page: number;
+}
+
+interface MultipleComponentOptions {
+    readonly selectId: string;
+    readonly cancelId: string;
+    readonly placeholder: string | undefined;
+    readonly select: MessageSelectOptionData[];
+    readonly maxCount?: number;
+    readonly minCount?: number;
 }
 
 interface ConfirmComponentOptions {
@@ -665,7 +753,31 @@ function createConfirmBody(options: ConfirmComponentOptions): { components: Mess
     };
 }
 
-function createLookupBody(options: LookupComponentOptions): { content: string; components: MessageActionRowOptions[]; } {
+function createMultipleBody(options: MultipleComponentOptions): { components: MessageActionRowOptions[]; } {
+    const select: MessageSelectMenuOptions = {
+        type: 'SELECT_MENU',
+        customId: options.selectId,
+        options: options.select,
+        placeholder: options.placeholder,
+        maxValues: options.maxCount ?? options.select.length,
+        minValues: options.minCount ?? 0
+    };
+    const cancel: MessageButtonOptions = {
+        type: 'BUTTON',
+        customId: options.cancelId,
+        emoji: '✖️',
+        style: 'DANGER'
+    };
+
+    return {
+        components: [
+            { type: 'ACTION_ROW', components: [select] },
+            { type: 'ACTION_ROW', components: [cancel] }
+        ]
+    };
+}
+
+function createChoiceBody(options: ChoiceComponentOptions): { content: string; components: MessageActionRowOptions[]; } {
     const select: MessageSelectMenuOptions = {
         type: 'SELECT_MENU',
         customId: options.selectId,

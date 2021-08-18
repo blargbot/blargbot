@@ -72,9 +72,20 @@ export interface ChoiceQueryOptions<T> {
     timeout?: number;
 }
 
+export interface MultipleQueryOptions<T> extends ChoiceQueryOptions<T> {
+    minCount?: number;
+    maxCount?: number;
+}
+
 export interface ChoiceQuery<T> {
     prompt: Message | undefined;
     getResult(): Promise<ChoiceQueryResult<T>>;
+    cancel(): void;
+}
+
+export interface MultipleQuery<T> {
+    prompt: Message | undefined;
+    getResult(): Promise<MultipleResult<T>>;
     cancel(): void;
 }
 
@@ -85,6 +96,7 @@ export interface ConfirmQuery<T extends boolean | undefined = undefined> {
 }
 
 export type ChoiceQueryResult<T> = ChoiceQueryBaseResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED'> | ChoiceQuerySuccess<T>;
+export type MultipleResult<T> = ChoiceQueryBaseResult<'NO_OPTIONS' | 'EXCESS_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED'> | ChoiceQuerySuccess<T[]>;
 
 export interface ChoiceQueryBaseResult<T extends string> {
     readonly state: T;

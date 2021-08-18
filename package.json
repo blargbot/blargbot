@@ -5,7 +5,7 @@
     "main": "out/index.js",
     "dependencies": {
         "@nuxtjs/axios": "^5.3.3",
-        "airtable": "^0.5.7",
+        "airtable": "^0.11.1",
         "better-cleverbot-io": "^1.0.2",
         "body-parser": "^1.18.3",
         "brainfuck-node": "^1.0.1",
