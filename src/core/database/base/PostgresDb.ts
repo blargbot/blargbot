@@ -1,6 +1,5 @@
 import { Logger } from '@core/Logger';
 import { PostgresDbOptions } from '@core/types';
-import { sleep } from '@core/utils';
 import { Sequelize, Transaction } from 'sequelize';
 
 import { BBTagVariableModel, createBBTagVariableModel } from './postgresModels';
@@ -32,16 +31,10 @@ export class PostgresDb {
         return await this.sequelize.transaction();
     }
 
-    public async authenticate(): Promise<void> {
-        try {
-            await this.sequelize.authenticate();
-            this.logger.init('Connected to postgres. Loading models...');
-            await this.loadModels();
-        } catch (err: unknown) {
-            this.logger.error('Failed to connect to postgres, retrying in 5 seconds', err);
-            await sleep(5 * 1000);
-            return await this.authenticate();
-        }
+    public async connect(): Promise<void> {
+        await this.sequelize.authenticate();
+        this.logger.init('Connected to postgres. Loading models...');
+        await this.loadModels();
     }
 
     private async loadModels(): Promise<void> {

@@ -362,7 +362,7 @@ export interface FilteredAutoresponseShrinkwrap extends AutoresponseShrinkwrap, 
 }
 
 export interface GuildShrinkwrap {
-    readonly cc: Record<string, CustomCommandShrinkwrap>;
+    readonly cc: Record<string, CustomCommandShrinkwrap | undefined>;
     readonly ar: FilteredAutoresponseShrinkwrap[];
     are: null | AutoresponseShrinkwrap;
 }

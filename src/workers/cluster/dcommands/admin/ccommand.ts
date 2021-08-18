@@ -567,6 +567,9 @@ export class CustomCommand extends BaseGuildCommand {
             }
 
             const command = shrinkwrap.cc[commandName];
+            if (command === undefined)
+                continue;
+
             confirm.push(this.success(`Import the command \`${commandName}\``));
             importSteps.push(async () => {
                 await context.cluster.database.guilds.setCommand(guildId, commandName, {

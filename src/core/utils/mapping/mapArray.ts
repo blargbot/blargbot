@@ -1,23 +1,20 @@
-import { TypeMapping, TypeMappingResult } from '@core/types';
+import { TypeMapping, TypeMappingOptions } from '@core/types';
 
 import { result as _result } from './result';
 
-export function mapArray<T, R = T[]>(
-    mapping: TypeMapping<T, [index: number]>,
-    {
-        ifNull = _result.never as TypeMappingResult<T[] | R>,
-        ifUndefined = _result.never as TypeMappingResult<T[] | R>
-    } = {}
-): TypeMapping<T[] | R> {
+export function mapArray<T>(mapping: TypeMapping<T, [index: number]>): TypeMapping<T[]>;
+export function mapArray<T>(mapping: TypeMapping<T, [index: number]>, options: TypeMappingOptions<T[], T[]>): TypeMapping<T[]>;
+export function mapArray<T, R>(mapping: TypeMapping<T, [index: number]>, options: TypeMappingOptions<T[], R>): TypeMapping<T[] | R>;
+export function mapArray<T, R>(mapping: TypeMapping<T, [index: number]>, options: TypeMappingOptions<T[], R> = {}): TypeMapping<T[] | R> {
     return value => {
         if (value === undefined)
-            return ifUndefined;
+            return options.ifUndefined ?? _result.never;
         if (value === null)
-            return ifNull;
+            return options.ifNull ?? _result.never;
         if (!Array.isArray(value))
             return _result.never;
 
-        const result = [];
+        const result = options.initial?.() ?? [];
         let i = 0;
         for (const v of value) {
             const m = mapping(v, i++);

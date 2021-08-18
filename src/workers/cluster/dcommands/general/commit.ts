@@ -57,10 +57,13 @@ export class CommitCommand extends BaseGlobalCommand {
     }
 
     private async fetchCommit(commitNumber: number): Promise<CommitData | undefined> {
-        const response = await this.fetchCommitRaw(commitNumber);
-        const body = await response.json() as unknown;
-        const mapped = commitMapping(body);
-        return mapped.valid ? mapped.value[0] : undefined;
+        try {
+            const response = await this.fetchCommitRaw(commitNumber);
+            const mapped = commitMapping(await response.json());
+            return mapped.valid ? mapped.value[0] : undefined;
+        } catch {
+            return undefined;
+        }
     }
 
     private async fetchCommitRaw(commitNumber: number): Promise<Response> {

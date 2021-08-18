@@ -41,9 +41,12 @@ export class XKCDCommand extends BaseGlobalCommand {
 
     private async requestComic(comicNumber: number | undefined): Promise<ComicInfo | undefined> {
         const response = await fetch(`http://xkcd.com/${comicNumber === undefined ? '' : `${comicNumber}/`}info.0.json`);
-        const body = await response.json() as unknown;
-        const info = comicInfoMapping(body);
-        return info.valid ? info.value : undefined;
+        try {
+            const info = comicInfoMapping(await response.json());
+            return info.valid ? info.value : undefined;
+        } catch {
+            return undefined;
+        }
     }
 }
 

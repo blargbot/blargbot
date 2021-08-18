@@ -1,5 +1,6 @@
 import { Logger } from '@core/Logger';
 import { ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
+import { sleep } from '@core/utils';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
 import { Client as Discord } from 'discord.js';
 
@@ -78,9 +79,9 @@ export class Database {
         this.connect = () => Promise.resolve();
 
         await Promise.all([
-            this.#rethinkDb.connect().then(() => this.#logger.init('rethinkdb connected')),
-            this.#cassandra.connect().then(() => this.#logger.init('cassandra connected')),
-            this.#postgres.authenticate().then(() => this.#logger.init('postgresdb connected'))
+            this.retryConnect('rethinkDb', () => this.#rethinkDb.connect(), 5000, 10),
+            this.retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
+            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
         ]);
 
         await Promise.all([
@@ -95,5 +96,19 @@ export class Database {
 
         void this.#guilds.watchChanges(id => this.#discord.guilds.cache.get(id) !== undefined);
         void this.#users.watchChanges(id => this.#discord.users.cache.get(id) !== undefined);
+    }
+
+    private async retryConnect(dbName: string, connect: () => Promise<unknown>, intervalMs: number, maxAttempts = Infinity): Promise<void> {
+        let attempt = 0;
+        while (attempt++ < maxAttempts) {
+            try {
+                await connect();
+                this.#logger.init(dbName, 'connected on attempt', attempt);
+                break;
+            } catch (err: unknown) {
+                this.#logger.error('Failed to connect to', dbName, 'on attempt', attempt, '. Retrying in', intervalMs, 'ms', err);
+                await sleep(intervalMs);
+            }
+        }
     }
 }

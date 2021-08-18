@@ -737,3 +737,8 @@ export interface TagVariablesTable {
 export type TypeMappingResult<T> = { valid: false; } | { valid: true; value: T; };
 export type TypeMapping<T, TArgs extends unknown[] = []> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
 export type TypeMappings<T> = { readonly [P in keyof T]-?: TypeMapping<T[P]> | [string, TypeMapping<T[P]>] | [T[P]] };
+export interface TypeMappingOptions<T, R> {
+    initial?: () => T;
+    ifNull?: TypeMappingResult<T | R>;
+    ifUndefined?: TypeMappingResult<T | R>;
+}

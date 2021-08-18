@@ -1,26 +1,22 @@
-import { TypeMapping, TypeMappingResult, TypeMappings } from '@core/types';
+import { TypeMapping, TypeMappingOptions, TypeMappings } from '@core/types';
 
 import * as guard from '../guard';
 import { result as _result } from './result';
 
-export function mapObject<T>(
-    mappings: TypeMappings<T>,
-    {
-        initial = () => ({}) as Partial<T>,
-        ifNull = _result.never as TypeMappingResult<T>,
-        ifUndefined = _result.never as TypeMappingResult<T>
-    } = {}
-): TypeMapping<T> {
+export function mapObject<T>(mappings: TypeMappings<T>): TypeMapping<T>;
+export function mapObject<T>(mappings: TypeMappings<T>, options: TypeMappingOptions<T, T>): TypeMapping<T>;
+export function mapObject<T, R>(mappings: TypeMappings<T>, options: TypeMappingOptions<T, R>): TypeMapping<T | R>;
+export function mapObject<T, R>(mappings: TypeMappings<T>, options: TypeMappingOptions<T, R> = {}): TypeMapping<T | R> {
     return value => {
         if (value === undefined)
-            return ifUndefined;
+            return options.ifUndefined ?? _result.never;
         if (typeof value !== 'object')
             return _result.never;
         if (value === null)
-            return ifNull;
+            return options.ifNull ?? _result.never;
 
         const objValue = <Record<string, unknown>>value;
-        const result = initial();
+        const result = options.initial?.() ?? {} as Partial<T>;
 
         function checkKey<K extends string & keyof T>(resultKey: K, sourceKey: string | undefined, mapping: TypeMapping<T[K]>): boolean {
             if (sourceKey !== undefined) {
