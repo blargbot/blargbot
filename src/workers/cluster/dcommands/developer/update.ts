@@ -76,8 +76,7 @@ export class UpdateCommand extends BaseGlobalCommand {
         const message = await context.reply(this.info(`Command: \`${command}\`\nRunning...`));
         try {
             await context.channel.sendTyping();
-            // eslint-disable-next-line no-control-regex
-            const result = (await execCommandline(command)).replace(/\u001b\[.*?m/g, '');
+            const result = cleanConsole(await execCommandline(command));
             await message?.edit({
                 content: this.success(`Command: \`${command}\``),
                 files: [
@@ -94,7 +93,8 @@ export class UpdateCommand extends BaseGlobalCommand {
                     content: this.error(`Command: \`${command}\``),
                     files: [
                         {
-                            attachment: Buffer.from(err.toString()),
+                            // eslint-disable-next-line no-control-regex
+                            attachment: Buffer.from(cleanConsole(err.toString())),
                             name: 'output.txt'
                         }
                     ]
@@ -104,7 +104,7 @@ export class UpdateCommand extends BaseGlobalCommand {
                     content: this.error(`Command: \`${command}\``),
                     files: [
                         {
-                            attachment: Buffer.from(Object.prototype.toString.call(err)),
+                            attachment: Buffer.from(cleanConsole(Object.prototype.toString.call(err))),
                             name: 'output.txt'
                         }
                     ]
@@ -121,4 +121,9 @@ async function execCommandline(command: string): Promise<string> {
         else
             res(`${stderr}\n${stdout}`.trim());
     }));
+}
+
+function cleanConsole(text: string): string {
+    // eslint-disable-next-line no-control-regex
+    return text.replace(/\u001b\[.*?m/g, '');
 }
