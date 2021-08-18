@@ -69,7 +69,8 @@ export class ShardsCommand extends BaseGlobalCommand {
                 inline: true
             };
         });
-
+        if (clusters.length === 0)
+            return this.error('No cluster stats yet!');
         await context.reply({fields: clusterFields});
     }
 
