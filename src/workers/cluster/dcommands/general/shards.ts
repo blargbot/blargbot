@@ -39,6 +39,8 @@ export class ShardsCommand extends BaseGlobalCommand {
         context: CommandContext,
         downOnly: boolean
     ): Promise<string | void> {
+        const shardConfig = context.config.discord.shards;
+        const clusterCount = Math.ceil(shardConfig.max / shardConfig.perCluster);
         const clusterData: Record<number, ClusterStats> = Object.assign({}, await context.cluster.worker.request('getClusterStats', {}));
         let clusters: ClusterStats[] = Object.values(clusterData);
         if (downOnly) {
@@ -57,7 +59,7 @@ export class ShardsCommand extends BaseGlobalCommand {
             });
         }
         const clusterFields = clusters.map(cluster => {
-            let fieldValue = '';
+            let fieldValue = `I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? 's' : ''} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? 's' : ''}\n`;
             fieldValue += `Ready since: <t:${Math.round(cluster.readyTime / 1000)}:R>\nRam: ${humanize.ram(cluster.rss)}`;
             fieldValue += '\n**Shards**:\n```\n';
             fieldValue += cluster.shards.map(shard => {
