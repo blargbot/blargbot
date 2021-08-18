@@ -5,3 +5,4 @@ export * from './fullName';
 export * from './smartJoin';
 export * from './smartSplit';
 export * from './truncate';
+export * from './ram';

@@ -17,4 +17,8 @@ export class ClusterStatsManager {
     public get(clusterId: number): ClusterStats | undefined {
         return this.statsMap[clusterId];
     }
+
+    public getAll(): Record<number, ClusterStats | undefined> {
+        return this.statsMap;
+    }
 }
