@@ -108,7 +108,7 @@ The process for setting up a parent/worker relationship is as follows
 
 1. And youre done! Now you can use the `send()` or `request()` methods on either the `WorkerConnection` or `BaseWorker` implementations to send messages between the parent and worker.
     <details>
-        <summary>Example to subscribing events to worker connections</summary>
+        <summary>Example of sending requests</summary>
 
     ```ts
     /***** on the worker *****/
