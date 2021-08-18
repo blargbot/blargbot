@@ -39,6 +39,8 @@ export class ShardsCommand extends BaseGlobalCommand {
         context: CommandContext,
         downOnly: boolean
     ): Promise<string | void> {
+        const shardConfig = context.config.discord.shards;
+        const clusterCount = Math.ceil(shardConfig.max / shardConfig.perCluster);
         const clusterData: Record<number, ClusterStats> = Object.assign({}, await context.cluster.worker.request('getClusterStats', {}));
         let clusters: ClusterStats[] = Object.values(clusterData);
         if (downOnly) {
@@ -69,8 +71,14 @@ export class ShardsCommand extends BaseGlobalCommand {
                 inline: true
             };
         });
-
-        await context.reply({fields: clusterFields});
+        if (clusters.length === 0)
+            return this.error('No cluster stats yet!');
+        await context.reply({
+            title: 'Shards',
+            url: context.util.websiteLink('shards'),
+            description: `I'm running on \`${clusterCount}\` cluster${clusterCount > 1 ? 's' : ''} and \`${shardConfig.max}\` shard${shardConfig.max > 1 ? 's' : ''}\n`,
+            fields: clusterFields
+        });
     }
 
     public async showGuildShards(
@@ -103,7 +111,7 @@ export class ShardsCommand extends BaseGlobalCommand {
     ): Promise<void>  {
         const embed: MessageEmbedOptions = {};
         embed.title = shard !== undefined ? `Shard ${shard.id}` : `Cluster ${clusterData.id}`;
-        embed.url = 'https://blargbot.xyz/shards';
+        embed.url = context.util.websiteLink('shards');
         embed.description = embedDesc;
         embed.fields = [
             {
