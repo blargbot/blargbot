@@ -89,5 +89,3 @@ export class ShardCommand extends BaseGlobalCommand {
         await context.reply(embed);
     }
 }
-
-module.exports = ShardCommand;
