@@ -52,12 +52,12 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         if (command.onlyOn !== null && (!guard.isGuildCommandContext(context) || command.onlyOn !== context.channel.guild.id))
             return false; // Command only works on the specific guild
 
-        if (context.util.isOwner(context.author.id))
-            return true; // The owner can execute any command anywhere
-
         const category = commandTypeDetails[command.category];
         if (!await category.requirement(context))
             return false; // Context doesnt meet the category requirements
+
+        if (context.util.isBotOwner(context.author.id))
+            return true; // The owner can execute any command anywhere
 
         if (!guard.isGuildCommandContext(context))
             return true; // No configurable restrictions outside of guilds

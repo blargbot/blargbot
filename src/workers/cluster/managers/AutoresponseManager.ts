@@ -24,7 +24,7 @@ export class AutoresponseManager {
         await this.refresh();
         const isChange = whitelisted !== this.#guilds.has(guildId);
         if (isChange) {
-            if (!this.cluster.util.isStaff(userId)) {
+            if (!this.cluster.util.isBotStaff(userId)) {
                 const user = await this.cluster.util.getUser(userId);
                 const guild = this.cluster.discord.guilds.cache.get(guildId);
                 const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
@@ -88,7 +88,7 @@ ${codeBlock(code, 'js')}`
         if (message.channel.id !== this.cluster.config.discord.channels.autoresponse
             || emoji.name === null
             || !guard.hasProperty(emojiValues, emoji.name)
-            || !this.cluster.util.isStaff(user.id))
+            || !this.cluster.util.isBotStaff(user.id))
             return;
 
         const match = /```js\n(.+)\n```/.exec(message.content);

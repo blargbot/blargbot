@@ -63,7 +63,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
     [CommandType.OWNER]: {
         name: 'Blargbot Owner',
         requirement(context: CommandContext): boolean {
-            return context.util.isOwner(context.author.id);
+            return context.util.isBotOwner(context.author.id);
         },
         description: 'MREOW MEOWWWOW! **purr**',
         color: 0xff0000
@@ -71,7 +71,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
     [CommandType.DEVELOPER]: {
         name: 'Blargbot Developer',
         requirement(context: CommandContext): boolean {
-            return context.cluster.util.isDeveloper(context.author.id);
+            return context.cluster.util.isBotDeveloper(context.author.id);
         },
         description: 'Commands that can only be executed by blargbot developers.',
         color: 0xff0000
@@ -79,7 +79,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
     [CommandType.STAFF]: {
         name: 'Blargbot Staff',
         requirement(context: CommandContext): boolean {
-            return context.cluster.util.isStaff(context.author.id);
+            return context.cluster.util.isBotStaff(context.author.id);
         },
         description: 'Commands that can only be executed by staff on the official support server.',
         color: 0xff0000
@@ -87,7 +87,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
     [CommandType.SUPPORT]: {
         name: 'Blargbot Support',
         requirement(context: CommandContext): boolean {
-            return context.cluster.util.isSupport(context.author.id);
+            return context.cluster.util.isBotSupport(context.author.id);
         },
         description: 'Commands that can only be executed by support members on the official support server.',
         color: 0xff0000

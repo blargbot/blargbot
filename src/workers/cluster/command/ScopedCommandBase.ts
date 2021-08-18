@@ -5,6 +5,7 @@ import { BaseCommand } from './BaseCommand';
 import { CommandContext } from './CommandContext';
 import { compileSignatures } from './compilation';
 import { HandlerMiddleware } from './middleware';
+import { ErrorHandlerMiddleware } from './middleware/ErrorHandlerMiddleware';
 
 // Circular reference means this needs to be resolved asyncronously;
 const helpCommandPromise = import('@cluster/dcommands/general/help');
@@ -31,7 +32,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
 
         super({ ...options, signatures });
 
-        this.middleware = [];
+        this.middleware = [new ErrorHandlerMiddleware()];
         this.handler = new HandlerMiddleware(signatures, this);
     }
 

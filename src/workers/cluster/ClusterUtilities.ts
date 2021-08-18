@@ -580,7 +580,7 @@ export class ClusterUtilities extends BaseUtilities {
         }
 
         if (override
-            && (this.isOwner(member.id)
+            && (this.isBotOwner(member.id)
                 || member.guild.ownerId === member.id
                 || member.permissions.has('ADMINISTRATOR')))
             return true;
@@ -667,7 +667,7 @@ export class ClusterUtilities extends BaseUtilities {
             channel = msg.channel;
         }
         if (override
-            && (this.isOwner(member.id)
+            && (this.isBotOwner(member.id)
                 || member.guild.ownerId === member.id
                 || member.permissions.has('ADMINISTRATOR'))
         ) {
@@ -691,11 +691,11 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public isStaff(id: string): boolean {
+    public isBotStaff(id: string): boolean {
         return this.cluster.botStaff.staff.has(id);
     }
 
-    public isSupport(id: string): boolean {
+    public isBotSupport(id: string): boolean {
         return this.cluster.botStaff.support.has(id);
     }
 }

@@ -30,7 +30,6 @@ export class HandlerMiddleware<TContext extends CommandContext> implements Comma
                     return await context.reply({ files: [{ attachment: result.data, name: result.fileName }] });
                 return await context.reply(result);
         }
-
     }
 
     public async execute(context: TContext): Promise<void> {
