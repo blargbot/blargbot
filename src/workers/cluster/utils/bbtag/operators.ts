@@ -2,6 +2,11 @@ import { compare as compareFn, guard } from '@core/utils';
 
 import { deserialize } from './tagArray';
 
+export type CompareOperator = '==' | '!=' | '>=' | '>' | '<=' | '<';
+
+export type NumericOperator = '+' | '-' | '*' | '/' | '%' | '^';
+
+export type LogicOperator = '||' | '&&' | '!' | 'xor' | '^';
 export function isCompareOperator(operator: string): operator is keyof typeof compare {
     return guard.hasProperty(compare, operator);
 }
