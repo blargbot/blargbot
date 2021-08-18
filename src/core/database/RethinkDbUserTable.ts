@@ -1,5 +1,5 @@
 import { Logger } from '@core/Logger';
-import { MutableStoredUser, StoredUser, StoredUsername, StoredUserSettings, UserTable } from '@core/types';
+import { MutableStoredUser, StoredUser, StoredUsername, StoredUserSettings, UserTable, UserTodo } from '@core/types';
 import { guard } from '@core/utils';
 import { User } from 'discord.js';
 
@@ -162,5 +162,41 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
         const oldLength = user.prefixes?.length;
         user.prefixes = user.prefixes?.filter(p => p !== prefix);
         return oldLength !== user.prefixes?.length;
+    }
+
+    public async getTodo(userId: string, skipCache?: boolean): Promise<readonly string[] | undefined> {
+        const user = await this.rget(userId, skipCache);
+        if (user === undefined)
+            return undefined;
+
+        return user.todo.filter(t => t.active === 1).map(t => t.content);
+    }
+
+    public async addTodo(userId: string, item: string): Promise<boolean> {
+        const user = await this.rget(userId);
+        if (user === undefined)
+            return false;
+
+        const todo: UserTodo = {
+            active: 1,
+            content: item
+        };
+
+        if (!await this.rupdate(userId, u => ({ todo: u('todo').append(todo) })))
+            return false;
+
+        user.todo.push(todo);
+        return true;
+    }
+
+    public async removeTodo(userId: string, index: number): Promise<boolean> {
+        const user = await this.rget(userId);
+        if (user === undefined)
+            return false;
+
+        if (!await this.rupdate(userId, u => ({ todo: u('todo').deleteAt(index).filter(t => t('active').eq(1)) })))
+            return false;
+
+        return user.todo.splice(index, 1).length === 1;
     }
 }

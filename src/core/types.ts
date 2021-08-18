@@ -526,6 +526,7 @@ export interface MutableStoredUser extends Omit<StoredUser, keyof MutableStoredU
     discriminator?: string;
     avatarURL?: string;
     reports?: { [key: string]: string | undefined; };
+    todo: UserTodo[];
 }
 
 export interface StoredUserSettings {
@@ -673,6 +674,9 @@ export interface GuildTable {
 }
 
 export interface UserTable {
+    getTodo(userId: string, skipCache?: boolean): Promise<readonly string[] | undefined>;
+    addTodo(userId: string, item: string): Promise<boolean>;
+    removeTodo(userId: string, index: number): Promise<boolean>;
     addPrefix(userId: string, prefix: string): Promise<boolean>;
     removePrefix(userId: string, prefix: string): Promise<boolean>;
     removeUsernames(userId: string, usernames: readonly string[] | 'all'): Promise<boolean>;
