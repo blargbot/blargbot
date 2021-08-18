@@ -48,6 +48,8 @@ export function getStats(cluster: Cluster): ClusterStats {
         time: Date.now().valueOf(),
         readyTime: cluster.createdAt.valueOf(),
         guilds: cluster.discord.guilds.cache.size,
+        users: cluster.discord.guilds.cache.reduce((a, c) => c.memberCount + a, 0),
+        channels: cluster.discord.guilds.cache.reduce((a, c) => c.channels.cache.size + a, 0),
         rss: cluster.worker.memoryUsage.rss,
         ...cpuLoad(),
         shardCount: cluster.discord.ws.shards.size,
@@ -60,6 +62,9 @@ export function getStats(cluster: Cluster): ClusterStats {
             time: getLastReady(cluster, s).valueOf()
         }))
     };
+}
+export async function getAllStats(cluster: Cluster): Promise<Record<number, ClusterStats>> {
+    return cluster.worker.request('getClusterStats', {});
 }
 
 export async function getGuildClusterStats(cluster: Cluster, guildID: string): Promise<{cluster: ClusterStats; shard: ShardStats;}> {

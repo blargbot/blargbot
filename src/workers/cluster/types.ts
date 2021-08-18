@@ -452,6 +452,8 @@ export interface ClusterStats {
     readonly time: number;
     readonly readyTime: number;
     readonly guilds: number;
+    readonly users: number;
+    readonly channels: number;
     readonly rss: number;
     readonly userCpu: number;
     readonly systemCpu: number;
