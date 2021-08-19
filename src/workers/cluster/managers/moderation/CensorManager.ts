@@ -1,6 +1,6 @@
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { guard, ModerationType } from '@cluster/utils';
-import { GuildCensorExceptions } from '@core/types';
+import { GuildCensorExceptions, GuildTriggerTag } from '@core/types';
 import { GuildMessage } from 'discord.js';
 
 import { ModerationManager } from '../ModerationManager';
@@ -30,27 +30,28 @@ export class CensorManager extends ModerationManagerBase {
         }
 
         const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
-        let content: string | undefined;
+        let tag: GuildTriggerTag | undefined;
         switch (result.type) {
             case ModerationType.BAN:
-                content = censor.banMessage ?? censors.rule?.banMessage;
+                tag = censor.banMessage ?? censors.rule?.banMessage;
                 break;
             case ModerationType.KICK:
-                content = censor.kickMessage ?? censors.rule?.kickMessage;
+                tag = censor.kickMessage ?? censors.rule?.kickMessage;
                 break;
             case ModerationType.WARN:
-                content = censor.deleteMessage ?? censors.rule?.deleteMessage;
+                tag = censor.deleteMessage ?? censors.rule?.deleteMessage;
                 break;
         }
 
-        if (content !== undefined) {
-            await this.cluster.bbtag.execute(content, {
+        if (tag !== undefined) {
+            await this.cluster.bbtag.execute(tag.content, {
                 message: message,
                 rootTagName: 'censor',
                 limit: new CustomCommandLimit(),
                 inputRaw: message.content,
                 isCC: true,
-                author: message.channel.guild.id
+                author: tag.author,
+                authorizer: tag.authorizer
             });
         }
 

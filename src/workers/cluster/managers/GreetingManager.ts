@@ -1,7 +1,7 @@
 import { Cluster } from '@cluster';
 import { limits } from '@cluster/bbtag';
 import { snowflake } from '@cluster/utils';
-import { StoredRawGuildCommand } from '@core/types';
+import { GuildTriggerTag } from '@core/types';
 import { Collection, Guild, GuildMember, TextChannel } from 'discord.js';
 import moment from 'moment';
 
@@ -10,8 +10,8 @@ export class GreetingManager {
     }
 
     public async greet(member: GuildMember): Promise<void> {
-        const greeting = await this.cluster.database.guilds.getSetting(member.guild.id, 'greeting');
-        if (typeof greeting !== 'object')
+        const greeting = await this.cluster.database.guilds.getGreeting(member.guild.id);
+        if (greeting === undefined)
             return;
 
         const channelId = await this.cluster.database.guilds.getSetting(member.guild.id, 'greetChan');
@@ -23,8 +23,8 @@ export class GreetingManager {
     }
 
     public async farewell(member: GuildMember): Promise<void> {
-        const farewell = await this.cluster.database.guilds.getSetting(member.guild.id, 'farewell');
-        if (typeof farewell !== 'object')
+        const farewell = await this.cluster.database.guilds.getFarewell(member.guild.id);
+        if (farewell === undefined)
             return;
 
         const channelId = await this.cluster.database.guilds.getSetting(member.guild.id, 'farewellchan');
@@ -35,7 +35,7 @@ export class GreetingManager {
         await this.execute(farewell, channel, member, 'farewell');
     }
 
-    private async execute(command: StoredRawGuildCommand, channel: TextChannel, member: GuildMember, name: string): Promise<void> {
+    private async execute(command: GuildTriggerTag, channel: TextChannel, member: GuildMember, name: string): Promise<void> {
         await this.cluster.bbtag.execute(command.content, {
             author: command.author,
             inputRaw: '',
@@ -52,8 +52,6 @@ export class GreetingManager {
                 createdTimestamp: moment().valueOf()
             },
             authorizer: command.authorizer,
-            cooldown: command.cooldown,
-            flags: command.flags,
             silent: true,
             tagVars: false,
             rootTagName: name

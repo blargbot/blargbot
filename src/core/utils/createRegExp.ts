@@ -11,7 +11,7 @@ export function createSafeRegExp(term: string): { success: true; regex: RegExp; 
         const flagStart = term.lastIndexOf('/');
         if (flagStart === -1)
             return { success: false, reason: 'invalid' };
-        body = term.slice(0, flagStart);
+        body = term.slice(1, flagStart);
         flags = term.slice(flagStart + 1);
     } else {
         body = term;

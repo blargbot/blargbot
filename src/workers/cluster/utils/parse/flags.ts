@@ -10,7 +10,7 @@ export function flags(definitions: Iterable<FlagDefinition>, text: string, stric
     const flagKeys = new Set<string>(defArr.map(d => d.flag));
 
     for (const { start, end, value } of humanize.smartSplitRanges(text)) {
-        if (!/^--?[a-z]|^--$/i.test(text)) {
+        if (!/^--?[a-z]|^--$/i.test(value)) {
             currentGroup.push({ start, end, value });
         } else if (value === '--') {
             if (currentFlag !== '_') {

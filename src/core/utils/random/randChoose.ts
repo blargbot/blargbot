@@ -15,9 +15,15 @@ export function randChoose(set: unknown[] | Set<unknown> | Map<unknown, unknown>
     return result;
 }
 
-function createWrapper<T>(set: T[] | Set<T> | Iterable<T>): { length: number; get(index: number): T; } {
+function createWrapper(set: unknown[] | Set<unknown> | Iterable<unknown> | string): { length: number; get(index: number): unknown; } {
+    if (typeof set === 'string') {
+        return {
+            length: set.length,
+            get(index) { return set[index]; }
+        };
+    }
     if ('size' in set) {
-        let values: undefined | T[];
+        let values: undefined | unknown[];
         return {
             length: set.size,
             get: (index) => (values ??= [...set])[index]

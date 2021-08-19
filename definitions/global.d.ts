@@ -31,6 +31,8 @@ declare global {
     type Alphanumeric = Letter | Numeric;
 
     type Mutable<T> = { -readonly [P in keyof T]: T[P] }
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    type DeepMutable<T> = T extends Exclude<Primitive, object> ? T : { -readonly [P in keyof T]: DeepMutable<T[P]>; };
     type FilteredKeys<T, U> = { [P in keyof T]: T[P] extends U ? P : never }[keyof T];
 
     interface ObjectConstructor {

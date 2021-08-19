@@ -28,7 +28,7 @@ export class CustomCommandIntervalCron extends CronService {
         for (const guild of guilds) {
             this.logger.debug(`[${nonce}] Performing interval on ${guild.id}`);
             const interval = await this.cluster.database.guilds.getCommand(guild.id, '_interval');
-            if (interval === undefined || guard.isAliasedCustomCommand(interval))
+            if (interval === undefined || guard.isGuildImportedCommandTag(interval))
                 continue;
 
             try {

@@ -1,8 +1,9 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { between, CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
-import { SendPayload } from '@core/types';
-import { MessageEmbedOptions } from 'discord.js';
+import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
+import { GuildAutoresponse, GuildFilteredAutoresponse, GuildTriggerTag, SendPayload } from '@core/types';
+import { codeBlock, guard } from '@core/utils';
+import { MessageEmbedOptions, MessageOptions } from 'discord.js';
 
 export class AutoResponseCommand extends BaseGuildCommand {
     public constructor() {
@@ -33,22 +34,104 @@ export class AutoResponseCommand extends BaseGuildCommand {
                     execute: ctx => this.listAutoresponses(ctx)
                 },
                 {
-                    parameters: 'add|create {~pattern+}',
+                    parameters: 'add|create {~pattern+?}',
                     description: 'Adds a autoresponse which matches the given pattern',
-                    execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.addAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
+                    execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.create(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
                 },
                 {
-                    parameters: 'delete|remove',
-                    description: 'Brings up a menu to remove an autoresponse',
-                    execute: ctx => this.removeAutoresponse(ctx)
+                    parameters: 'delete|remove {id}',
+                    description: 'Deletes an autoresponse. Ids can be seen when using the `list` subcommand',
+                    execute: (ctx, [id]) => this.delete(ctx, id)
                 },
                 {
-                    parameters: 'edit {~pattern+}',
-                    description: 'Brings up a menu to edit an autoresponse',
-                    execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.editAutoresponse(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
+                    parameters: 'setpattern {id} {~pattern+}',
+                    description: 'Sets the pattern of an autoresponse',
+                    execute: (ctx, [id, pattern], { R: isRegex }) => this.setPattern(ctx, id, pattern, isRegex !== undefined)
+                },
+                {
+                    parameters: 'set {id} {~bbtag+}',
+                    description: 'Sets the bbtag code to run when the autoresponse is triggered',
+                    execute: (ctx, [id, bbtag]) => this.setBBTag(ctx, id, bbtag)
+                },
+                {
+                    parameters: 'raw {id}',
+                    description: 'Gets the bbtag that is executed when the autoresponse is triggered',
+                    execute: (ctx, [id]) => this.getRaw(ctx, id)
+                },
+                {
+                    parameters: 'setauthorizer {id}',
+                    description: 'Sets the autoresponse to use your permissions for the bbtag when it is triggered',
+                    execute: (ctx, [id]) => this.setAuthorizer(ctx, id)
                 }
             ]
         });
+    }
+
+    public async setBBTag(context: GuildCommandContext, id: string, bbtag: string): Promise<string> {
+        const accessError = this.checkArAccess(context);
+        if (accessError !== undefined)
+            return accessError;
+
+        const match = await this.getAutoresponse(context, id);
+        if (match === undefined)
+            return this.arNotFound(id);
+
+        const executes = {
+            ...match.ar.executes,
+            author: context.author.id,
+            content: bbtag
+        };
+
+        if (match.id === 'everything')
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { executes });
+        else
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, executes });
+
+        return this.success(`Updated the code for ${id === 'everything' ? 'the everything autoresponse' : `autoresponse ${id}`}`);
+    }
+
+    public async getRaw(context: GuildCommandContext, id: string): Promise<string | MessageOptions> {
+        const accessError = this.checkArAccess(context);
+        if (accessError !== undefined)
+            return accessError;
+
+        const match = await this.getAutoresponse(context, id);
+        if (match === undefined)
+            return this.arNotFound(id);
+
+        const responseBase = `The raw code for ${match.id === 'everything' ? 'the everything autoresponse' : `autoresponse ${match.id}`} is`;
+
+        const response = this.success(`${responseBase}:\n${codeBlock(match.ar.executes.content)}`);
+        return guard.checkMessageSize(response)
+            ? response
+            : {
+                content: this.success(`${responseBase} attached`),
+                files: [
+                    {
+                        name: `autoresponse_${match.id}.bbtag`,
+                        attachment: match.ar.executes.content
+                    }
+                ]
+            };
+    }
+
+    public async setAuthorizer(context: GuildCommandContext, id: string): Promise<string> {
+        const accessError = this.checkArAccess(context);
+        if (accessError !== undefined)
+            return accessError;
+
+        const match = await this.getAutoresponse(context, id);
+        if (match === undefined)
+            return this.arNotFound(id);
+
+        const executes = { ...match.ar.executes, authorizer: context.author.id };
+
+        if (match.id === 'everything')
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { executes });
+        else
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, executes });
+
+        return this.success(`You are now the authorizer for ${id === 'everything' ? 'the everything autoresponse' : `autoresponse ${id}`}`);
     }
 
     public async requestWhitelist(context: GuildCommandContext, reason: string): Promise<string | undefined> {
@@ -70,20 +153,23 @@ export class AutoResponseCommand extends BaseGuildCommand {
             fields: [],
             title: 'Autoresponses'
         };
+
         if (ars.everything !== undefined) {
             embed.fields.push({
-                name: `Command: \`${ars.everything.executes}\``,
+                name: 'Autoresponse `everything`',
                 value: 'Trigger: everything',
                 inline: true
             });
         }
 
-        if (ars.list !== undefined) {
-            embed.fields.push(...ars.list.map(ar => ({
-                name: `Command: \`${ar.executes}\``,
-                value: `Trigger: \`${ar.term}\`${ar.regex ? ' (regex)' : ''}`,
-                inline: true
-            })));
+        if (ars.filtered !== undefined) {
+            embed.fields.push(...Object.entries(ars.filtered)
+                .filter((ar): ar is [string, GuildFilteredAutoresponse] => guard.hasValue(ar[1]))
+                .map((ar) => ({
+                    name: `Autoresponse \`${ar[0]}\``,
+                    value: `Trigger: \`${ar[1].term}\`${ar[1].regex ? ' (regex)' : ''}`,
+                    inline: true
+                })));
         }
 
         if (embed.fields.length === 0)
@@ -92,91 +178,111 @@ export class AutoResponseCommand extends BaseGuildCommand {
         return { embeds: [embed] };
     }
 
-    public async addAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string> {
+    public async create(context: GuildCommandContext, pattern: string | undefined, isRegex: boolean, isEverything: boolean): Promise<string> {
         const accessError = this.checkArAccess(context);
         if (accessError !== undefined)
             return accessError;
 
-        let commandName;
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
-        const commands = await context.database.guilds.listCommands(context.channel.guild.id);
-        const commandNames = new Set(commands.map(c => c.name));
-        let commandIndex = 0;
+        const command: GuildTriggerTag = {
+            content: '{//;No content set yet.}',
+            author: context.author.id
+        };
+
         if (isEverything) {
             if (ars.everything?.executes !== undefined)
-                return this.error(`An autoresponse that responds to everything already exists! It executes the following ccommand: \`${ars.everything.executes}\``);
-            if (pattern !== '')
+                return this.error('An autoresponse that responds to everything already exists!');
+            if (pattern !== undefined)
                 return this.error('Autoresponses that respond to everything cannot have a pattern');
-            while (commandNames.has(commandName = `_autoresponse_${commandIndex++}`));
-            await context.database.guilds.setAutoresponse(context.channel.guild.id, 'everything', { executes: commandName });
-        } else {
-            if ((ars.list?.length ?? 0) >= 20)
-                return this.error('You already have 20 autoresponses!');
-            if (pattern === '')
-                return this.error('If you want to respond to everything, you need to use the `-e` flag.');
-            if (isRegex) {
-                const regexError = this.validateRegex(context, pattern);
-                if (regexError !== undefined)
-                    return regexError;
-            }
-            while (commandNames.has(commandName = `_autoresponse_${commandIndex++}`));
-            await context.database.guilds.addAutoresponse(context.channel.guild.id, { executes: commandName, regex: isRegex, term: pattern });
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, 'everything', { executes: command });
+            return this.success(`Your autoresponse has been added! Use \`${context.prefix}autoresponse set everything <bbtag>\` to change the code that it runs`);
         }
 
-        await context.database.guilds.setCommand(context.channel.guild.id, commandName, {
-            content: '{//;This custom command was generated by an autoresponse.}',
-            author: context.author.id,
-            hidden: true,
-            managed: true
-        });
+        const ids = Object.entries(ars.filtered ?? {}).filter(ar => ar[1] !== undefined).map(ar => parseInt(ar[0]));
+        if (ids.length >= 20)
+            return this.error('You already have 20 autoresponses!');
 
-        return this.success(`Your autoresponse has been added! It will execute the hidden ccommand: \`${commandName}\``);
-    }
+        if (pattern === undefined)
+            return this.error('If you want to respond to everything, you need to use the `-e` flag.');
 
-    public async removeAutoresponse(context: GuildCommandContext): Promise<string | undefined> {
-        const accessError = this.checkArAccess(context);
-        if (accessError !== undefined)
-            return accessError;
-
-        const ar = await this.requestEditableAutoresponse(context, true);
-        if (typeof ar === 'string' || ar === undefined)
-            return ar;
-
-        const match = await context.database.guilds.getAutoresponse(context.channel.guild.id, ar.index);
-        await context.database.guilds.setAutoresponse(context.channel.guild.id, ar.index, undefined);
-        await context.database.guilds.setCommand(context.channel.guild.id, ar.executes, undefined);
-
-        return match === undefined ? this.success('Autoresponse removed!')
-            : 'term' in match ? this.success(`Autoresponse \`${match.term}\` removed!`)
-                : this.success('The everything autoresponse has been removed!');
-    }
-
-    public async editAutoresponse(context: GuildCommandContext, pattern: string, isRegex: boolean, isEverything: boolean): Promise<string | undefined> {
-        const accessError = this.checkArAccess(context);
-        if (accessError !== undefined)
-            return accessError;
-
-        if (isEverything)
-            return this.error('You can\'t edit the everything autoresponse.');
-        if (pattern === '')
-            return this.error('The pattern cannot be empty');
         if (isRegex) {
             const regexError = this.validateRegex(context, pattern);
             if (regexError !== undefined)
                 return regexError;
         }
 
-        const ar = await this.requestEditableAutoresponse(context, false);
-        if (typeof ar === 'string' || ar === undefined)
-            return ar;
+        const id = Math.max(...ids, 0) + 1;
+        await context.database.guilds.setAutoresponse(context.channel.guild.id, id, { executes: command, regex: isRegex, term: pattern });
+        return this.success(`Your autoresponse has been added! Use \`${context.prefix}autoresponse set ${id} <bbtag>\` to change the code that it runs`);
 
-        await context.database.guilds.setAutoresponse(context.channel.guild.id, ar.index, {
-            executes: ar.executes,
+    }
+
+    public async delete(context: GuildCommandContext, id: string): Promise<string | undefined> {
+        const accessError = this.checkArAccess(context);
+        if (accessError !== undefined)
+            return accessError;
+
+        const match = await this.getAutoresponse(context, id);
+        if (match === undefined)
+            return this.arNotFound(id);
+
+        await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, undefined);
+        return 'term' in match.ar
+            ? this.success(`Autoresponse ${match.id} (${match.ar.regex ? 'Regex' : 'Pattern'}: \`${match.ar.term}\`) has been deleted!`)
+            : this.success('The everything autoresponse has been deleted!');
+    }
+
+    public async setPattern(context: GuildCommandContext, id: string, pattern: string, isRegex: boolean): Promise<string | undefined> {
+        const accessError = this.checkArAccess(context);
+        if (accessError !== undefined)
+            return accessError;
+
+        if (pattern === '')
+            return this.error('The pattern cannot be empty');
+
+        if (isRegex) {
+            const regexError = this.validateRegex(context, pattern);
+            if (regexError !== undefined)
+                return regexError;
+        }
+
+        const match = await this.getAutoresponse(context, id);
+        if (match === undefined)
+            return this.arNotFound(id);
+
+        if (match.id === 'everything')
+            return this.error('Cannot set the pattern for the everything autoresponse');
+
+        await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, {
+            executes: match.ar.executes,
             regex: isRegex,
             term: pattern
         });
 
-        return this.success(`Autoresponse \`${pattern}\` has been edited!`);
+        return this.success(`The pattern for autoresponse ${id} has been set to ${isRegex ? '(regex)' : ''}\`${pattern}\`!`);
+    }
+
+    private async getAutoresponse(context: GuildCommandContext, id: string): Promise<{ id: number; ar: GuildFilteredAutoresponse; } | { id: 'everything'; ar: GuildAutoresponse; } | undefined> {
+        const _id = id === 'everything' ? id : parse.int(id);
+        if (typeof _id === 'number' && isNaN(_id))
+            return undefined;
+
+        if (_id === 'everything') {
+            const ar = await context.database.guilds.getAutoresponse(context.channel.guild.id, _id);
+            if (ar === undefined)
+                return undefined;
+            return { id: _id, ar };
+        }
+
+        const ar = await context.database.guilds.getAutoresponse(context.channel.guild.id, _id);
+        if (ar === undefined)
+            return undefined;
+        return { id: _id, ar };
+
+    }
+
+    private arNotFound(id: string): string {
+        return this.error(`There isnt an ${id === 'everything' ? 'everything autoresponse' : `autoresponse with id \`${id}\``} here!`);
     }
 
     private checkArAccess(context: GuildCommandContext): string | undefined {
@@ -209,40 +315,8 @@ export class AutoResponseCommand extends BaseGuildCommand {
             ? undefined
             : this.error('Your regex cannot match everything!');
     }
-
-    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: false): Promise<string | undefined | { index: number; executes: string; }>;
-    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: true): Promise<string | undefined | { index: number | 'everything'; executes: string; }>;
-    private async requestEditableAutoresponse(context: GuildCommandContext, includeEverything: boolean): Promise<string | undefined | { index: number | 'everything'; executes: string; }> {
-        const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
-        const indexes: Array<{ name: string; result: { index: number | 'everything'; executes: string; }; }> = [];
-        if (includeEverything && ars.everything !== undefined)
-            indexes.push({ name: 'Trigger: Everything', result: { index: 'everything', executes: ars.everything.executes } });
-        if (ars.list !== undefined) {
-            for (let i = 0; i < ars.list.length; i++) {
-                const ar = ars.list[i];
-                indexes.push({ name: `Trigger: \`${ar.term}\`${ar.regex ? ' (regex)' : ''}`, result: { index: i, executes: ar.executes } });
-            }
-        }
-        if (indexes.length === 0)
-            return this.error('There are no autoresponses on this guild!');
-
-        const result = await context.util.awaitQuery(
-            context.channel,
-            context.author,
-            `Autoresponses:
-${indexes.map((e, i) => `${i + 1}. ${e.name}`).join('\n')}
-Please type the number of the autoresponse you wish to remove, or type 'c' to cancel. This prompt will expire in 5 minutes.`,
-            message => message.content.toLowerCase() === 'c' || between(parse.int(message.content), 1, indexes.length, true),
-            300000
-        );
-
-        if (result === undefined)
-            return undefined;
-        if (result.content.toLowerCase() === 'c')
-            return 'Query cancelled';
-        return indexes[parse.int(result.content) - 1].result;
-    }
 }
+
 const symbols = '!@#$%^&*()_+{}|\\[]-=:";\'<>?,./';
 const numbers = '0123456790';
 const letters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';

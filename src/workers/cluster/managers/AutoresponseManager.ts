@@ -2,6 +2,7 @@ import { Cluster } from '@cluster';
 import { EverythingAutoResponseLimit, GeneralAutoResponseLimit } from '@cluster/bbtag';
 import { RuntimeLimit, WhitelistResponse } from '@cluster/types';
 import { codeBlock, guard, humanize, mapping } from '@cluster/utils';
+import { GuildTriggerTag } from '@core/types';
 import { GuildEmoji, GuildMessage, Message, ReactionEmoji, User } from 'discord.js';
 
 export class AutoresponseManager {
@@ -68,19 +69,16 @@ ${codeBlock(code, 'js')}`
         if (!this.#guilds.has(msg.channel.guild.id))
             return;
 
-        for await (const { commandName, limit, silent = false } of this.findAutoresponses(cluster, msg, everything)) {
-            const command = await cluster.database.guilds.getCommand(msg.channel.guild.id, commandName);
-            if (command !== undefined && !guard.isAliasedCustomCommand(command)) {
-                await cluster.bbtag.execute(command.content, {
-                    message: msg,
-                    limit,
-                    author: command.author,
-                    inputRaw: msg.content,
-                    isCC: true,
-                    rootTagName: commandName,
-                    silent
-                });
-            }
+        for await (const { command, limit, silent = false } of this.findAutoresponses(cluster, msg, everything)) {
+            await cluster.bbtag.execute(command.content, {
+                message: msg,
+                limit,
+                author: command.author,
+                inputRaw: msg.content,
+                isCC: true,
+                rootTagName: 'autoresponse',
+                silent
+            });
         }
     }
 
@@ -113,20 +111,20 @@ ${codeBlock(code, 'js')}`
         await Promise.all(promises);
     }
 
-    private async * findAutoresponses(cluster: Cluster, msg: GuildMessage, everything: boolean): AsyncGenerator<{ commandName: string; limit: RuntimeLimit; silent?: boolean; }> {
+    private async * findAutoresponses(cluster: Cluster, msg: GuildMessage, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; limit: RuntimeLimit; silent?: boolean; }> {
         const ars = await cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
         if (everything) {
             if (ars.everything !== undefined)
-                yield { commandName: ars.everything.executes, limit: new EverythingAutoResponseLimit(), silent: true };
+                yield { command: ars.everything.executes, limit: new EverythingAutoResponseLimit(), silent: true };
             return;
         }
 
-        if (ars.list === undefined)
+        if (ars.filtered === undefined)
             return;
 
-        for (const ar of ars.list) {
-            if (guard.testMessageFilter(ar, msg)) {
-                yield { commandName: ar.executes, limit: new GeneralAutoResponseLimit() };
+        for (const ar of Object.values(ars.filtered)) {
+            if (ar !== undefined && guard.testMessageFilter(ar, msg)) {
+                yield { command: ar.executes, limit: new GeneralAutoResponseLimit() };
             }
         }
     }

@@ -31,14 +31,18 @@ export async function handleRoleme(cluster: Cluster, msg: Message): Promise<void
 
         try {
             await msg.member.edit({ roles: [...roleList] });
-            cluster.logger.verbose(roleme.output);
-            await cluster.bbtag.execute(roleme.output ?? 'Your roles have been edited!', {
+            const tag = roleme.output ?? {
+                content: 'Your roles have been edited!',
+                author: ''
+            };
+            await cluster.bbtag.execute(tag.content, {
                 message: msg,
                 rootTagName: 'roleme',
                 limit: new CustomCommandLimit(),
                 inputRaw: '',
                 isCC: true,
-                author: ''
+                author: tag.author,
+                authorizer: tag.authorizer
             });
         } catch (err: unknown) {
             await cluster.util.send(msg, 'A roleme was triggered, but I don\'t have the permissions required to give you your role!');

@@ -1,10 +1,9 @@
 import { Cluster } from '@cluster';
 import { CustomCommandLimit, getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand } from '@cluster/command';
-import { AutoresponseShrinkwrap, CommandResult, CustomCommandShrinkwrap, FilteredAutoresponseShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, SignedGuildShrinkwrap } from '@cluster/types';
+import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, SignedGuildShrinkwrap } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
-import { Database } from '@core/database';
-import { GuildAutoresponse, GuildFilteredAutoresponse, NamedStoredGuildCommand, NamedStoredRawGuildCommand, SendPayload } from '@core/types';
+import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
 import { FileOptions, MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
@@ -118,11 +117,6 @@ export class CustomCommand extends BaseGuildCommand {
                     ]
                 },
                 {
-                    parameters: 'setlang {commandName} {language}',
-                    execute: (ctx, [commandName, language]) => this.setCommandLanguage(ctx, commandName, language),
-                    description: 'Sets the language to use when returning the raw text of your custom command'
-                },
-                {
                     parameters: 'sethelp {commandName} {~helpText+?}',
                     execute: (ctx, [commandName, helpText]) => this.setCommandHelp(ctx, commandName, helpText),
                     description: 'Sets the help text to show for the command'
@@ -195,7 +189,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (debug && match.author !== context.author.id)
             return this.error('You cannot debug someone elses custom command.');
 
-        if (guard.isAliasedCustomCommand(match))
+        if (guard.isGuildImportedCommandTag(match))
             return this.error(`The command \`${commandName}\` is an alias to the tag \`${match.alias}\``);
 
         const result = await context.bbtag.execute(match.content, {
@@ -226,7 +220,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (guard.isAliasedCustomCommand(match))
+        if (guard.isGuildImportedCommandTag(match))
             return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.alias}\``);
 
         return await this.saveCommand(context, 'edited', match.name, content, match);
@@ -246,7 +240,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (guard.isAliasedCustomCommand(match.command))
+        if (guard.isGuildImportedCommandTag(match.command))
             return this.error(`The \`${match.name}\` custom command is an alias to the tag \`${match.command.alias}\``);
 
         return await this.saveCommand(context, 'set', match.name, content, match.command);
@@ -271,10 +265,10 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (guard.isAliasedCustomCommand(match))
+        if (guard.isGuildImportedCommandTag(match))
             return this.error(`The command \`${match.name}\` is an alias to the tag \`${match.alias}\``);
 
-        const response = this.success(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
+        const response = this.success(`The raw code for \`${match.name}\` is:\n${codeBlock(match.content)}`);
         return guard.checkMessageSize(response)
             ? response
             : {
@@ -346,7 +340,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const flagDefinitions = guard.isAliasedCustomCommand(match)
+        const flagDefinitions = guard.isGuildImportedCommandTag(match)
             ? (await context.database.tags.get(match.alias))?.flags ?? []
             : match.flags ?? [];
 
@@ -362,7 +356,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (guard.isAliasedCustomCommand(match))
+        if (guard.isGuildImportedCommandTag(match))
             return this.error(`The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``);
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -393,7 +387,7 @@ export class CustomCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        if (guard.isAliasedCustomCommand(match))
+        if (guard.isGuildImportedCommandTag(match))
             return this.error(`The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``);
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -403,15 +397,6 @@ export class CustomCommand extends BaseGuildCommand {
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'flags', flags);
         return this.success(`The flags for \`${match.name}\` have been updated.`);
-    }
-
-    public async setCommandLanguage(context: GuildCommandContext, commandName: string, language: string): Promise<string | undefined> {
-        const match = await this.requestEditableCommand(context, commandName);
-        if (typeof match !== 'object')
-            return match;
-
-        await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'lang', language);
-        return this.success(`Lang for custom command \`${match.name}\` set.`);
     }
 
     public async setCommandHelp(context: GuildCommandContext, commandName: string, helpText: string | undefined): Promise<string | undefined> {
@@ -469,35 +454,21 @@ export class CustomCommand extends BaseGuildCommand {
     }
 
     public async shrinkwrapCommands(context: GuildCommandContext, commandNames: string[]): Promise<CommandResult> {
-        const shrinkwrap: GuildShrinkwrap = { cc: {}, ar: [], are: null };
+        const shrinkwrap: GuildShrinkwrap = { cc: {} };
         const confirm = [
             'Salutations! You have discovered the super handy ShrinkWrapper9000!',
             '',
             'If you decide to proceed, this will:'
         ];
 
-        const { commands, autoResponses, everythingAutoResponse } = await getShrinkwrapData(context.cluster.database, context.channel.guild.id);
-
+        const commands = new Map((await context.database.guilds.listCommands(context.channel.guild.id)).map(c => [c.name, c] as const));
         for (let commandName of commandNames) {
             commandName = commandName.toLowerCase();
-            const command = commands[commandName];
-            if (command === undefined || guard.isAliasedCustomCommand(command))
+            const command = commands.get(commandName);
+            if (command === undefined || guard.isGuildImportedCommandTag(command))
                 continue;
 
             confirm.push(` - Export the custom command \`${commandName}\``);
-
-            const ars = autoResponses[commandName];
-            if (ars !== undefined) {
-                for (const ar of ars) {
-                    confirm.push(`   - Export the associated autoresponse to \`${ar.term}\`${ar.regex ? ' (regex)' : ''}`);
-                    shrinkwrap.ar.push({ ...ar, executes: shrinkCommand(command) });
-                }
-            } else if (everythingAutoResponse?.executes === commandName) {
-                confirm.push('   - Export the associated everything autoresponse');
-                shrinkwrap.are = { executes: shrinkCommand(command) };
-            } else {
-                shrinkwrap.cc[commandName] = shrinkCommand(command);
-            }
         }
 
         confirm.push(
@@ -558,10 +529,10 @@ export class CustomCommand extends BaseGuildCommand {
         );
 
         const guildId = context.channel.guild.id;
-        const { commands, autoResponses, everythingAutoResponse } = await getShrinkwrapData(context.cluster.database, guildId);
+        const commandNames = new Set((await context.database.guilds.listCommands(guildId)).map(c => c.name));
         const shrinkwrap = signedShrinkwrap.value.payload;
         for (const commandName of Object.keys(shrinkwrap.cc)) {
-            if (guard.hasProperty(commands, commandName.toLowerCase())) {
+            if (commandNames.has(commandName.toLowerCase())) {
                 confirm.push(this.error(`Ignore the command \`${commandName}\` as a command with that name already exists`));
                 continue;
             }
@@ -577,47 +548,6 @@ export class CustomCommand extends BaseGuildCommand {
                     author: context.author.id
                 });
             });
-        }
-        let arIndex = -1;
-        let arCount = Object.values(autoResponses).reduce((c, a) => c + (a?.length ?? 0), 0);
-        for (const autoresponse of shrinkwrap.ar) {
-            const arName = `\`${autoresponse.term}\`${autoresponse.regex ? ' (regex)' : ''}`;
-            if (arCount++ >= 20) {
-                confirm.push(this.error(`Ignore the autoresponse to ${arName} as the limit has been reached.`));
-                continue;
-            }
-
-            confirm.push(this.success(`Import the autoresponse ${arName}`));
-            importSteps.push(async () => {
-                let commandName;
-                while (commands[commandName = `_autoresponse_${++arIndex}`] !== undefined);
-                await context.cluster.database.guilds.addAutoresponse(guildId, { ...autoresponse, executes: commandName });
-                await context.cluster.database.guilds.setCommand(guildId, commandName, {
-                    ...autoresponse.executes,
-                    author: context.author.id,
-                    hidden: true,
-                    managed: true
-                });
-            });
-        }
-        if (shrinkwrap.are !== null) {
-            const are = shrinkwrap.are;
-            if (everythingAutoResponse !== undefined) {
-                confirm.push(this.error('Ignore everything autoresponse as one already exists'));
-            } else {
-                confirm.push(this.success('Import the autoresponse to everything'));
-                importSteps.push(async () => {
-                    let commandName;
-                    while (commands[commandName = `_autoresponse_${++arIndex}`] !== undefined);
-                    await context.cluster.database.guilds.setAutoresponse(guildId, 'everything', { executes: commandName });
-                    await context.cluster.database.guilds.setCommand(guildId, commandName, {
-                        ...are.executes,
-                        author: context.author.id,
-                        hidden: true,
-                        managed: true
-                    });
-                });
-            }
         }
 
         confirm.push(
@@ -648,7 +578,7 @@ export class CustomCommand extends BaseGuildCommand {
         operation: string,
         commandName: string,
         content: string | undefined,
-        currentCommand?: NamedStoredRawGuildCommand
+        currentCommand?: NamedGuildSourceCommandTag
     ): Promise<string | undefined> {
         content = await this.requestCommandContent(context, content);
         if (content === undefined)
@@ -666,9 +596,7 @@ export class CustomCommand extends BaseGuildCommand {
             flags: currentCommand?.flags,
             cooldown: currentCommand?.cooldown,
             help: currentCommand?.help,
-            lang: currentCommand?.lang,
-            roles: currentCommand?.roles,
-            uses: currentCommand?.uses
+            roles: currentCommand?.roles
         };
 
         await context.database.guilds.setCommand(context.channel.guild.id, commandName, command);
@@ -715,7 +643,7 @@ export class CustomCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
-    ): Promise<{ name: string; command?: NamedStoredGuildCommand; } | string | undefined> {
+    ): Promise<{ name: string; command?: NamedGuildCommandTag; } | string | undefined> {
         const match = await this.requestCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -726,17 +654,14 @@ export class CustomCommand extends BaseGuildCommand {
     private async requestEditableCommand(
         context: GuildCommandContext,
         commandName: string | undefined,
-        { managed = false, hidden = true, allowQuery = true } = {}
-    ): Promise<NamedStoredGuildCommand | string | undefined> {
+        { hidden = true, allowQuery = true } = {}
+    ): Promise<NamedGuildCommandTag | string | undefined> {
         const match = await this.requestSettableCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
 
         if (match.command === undefined)
             return this.error(`The \`${match.name}\` custom command doesn't exist!`);
-
-        if (!managed && !guard.isAliasedCustomCommand(match.command) && match.command.managed === true)
-            return this.error(`The \`${match.name}\` custom command is a managed command`);
 
         if (!hidden && match.command.hidden === true)
             return this.error(`The \`${match.name}\` custom command is a hidden command`);
@@ -748,7 +673,7 @@ export class CustomCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery = true
-    ): Promise<NamedStoredGuildCommand | string | undefined> {
+    ): Promise<NamedGuildCommandTag | string | undefined> {
         const match = await this.requestCommand(context, commandName, allowQuery);
         if (typeof match !== 'object')
             return match;
@@ -778,7 +703,7 @@ export class CustomCommand extends BaseGuildCommand {
         context: GuildCommandContext,
         commandName: string | undefined,
         allowQuery: boolean
-    ): Promise<{ name: string; command?: NamedStoredGuildCommand; } | string | undefined> {
+    ): Promise<{ name: string; command?: NamedGuildCommandTag; } | string | undefined> {
         commandName = await this.requestCommandName(context, commandName, allowQuery ? undefined : '');
         if (commandName === undefined)
             return;
@@ -795,20 +720,6 @@ function normalizeName(title: string): string {
     return title.replace(/[^\d\w .,/#!$%^&*;:{}[\]=\-_~()<>]/gi, '').toLowerCase();
 }
 
-function shrinkCommand(command: NamedStoredRawGuildCommand): CustomCommandShrinkwrap {
-    return {
-        content: command.content,
-        cooldown: command.cooldown,
-        flags: command.flags,
-        help: command.help,
-        hidden: command.hidden,
-        lang: command.lang,
-        managed: command.managed,
-        roles: command.roles,
-        uses: command.uses
-    };
-}
-
 function signShrinkwrap(shrinkwrap: GuildShrinkwrap, config: Configuration): string {
     const content = JSON.stringify(shrinkwrap);
     return createHmac('sha256', config.general.interface_key).update(content).digest('hex');
@@ -821,34 +732,6 @@ async function requestSafe(url: string): Promise<unknown> {
     } catch {
         return undefined;
     }
-}
-
-async function getShrinkwrapData(
-    database: Database,
-    guildId: string
-): Promise<{
-    commands: Record<string, NamedStoredGuildCommand | undefined>;
-    autoResponses: Record<string, GuildFilteredAutoresponse[] | undefined>;
-    everythingAutoResponse: GuildAutoresponse | undefined;
-}> {
-
-    const autoresponses = await database.guilds.getAutoresponses(guildId);
-    const commands = await database.guilds.listCommands(guildId);
-    const commandMap: Record<string, NamedStoredGuildCommand> = {};
-    const arMap: Record<string, GuildFilteredAutoresponse[]> = {};
-
-    for (const command of commands) {
-        commandMap[command.name] = command;
-    }
-    for (const ar of autoresponses.list ?? []) {
-        (arMap[ar.executes] ??= []).push(ar);
-    }
-
-    return {
-        commands: commandMap,
-        autoResponses: arMap,
-        everythingAutoResponse: autoresponses.everything
-    };
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
@@ -871,23 +754,10 @@ const mapCustomCommandShrinkwrap = mapping.mapObject<CustomCommandShrinkwrap>({
     ),
     help: mapping.mapOptionalString,
     hidden: mapping.mapOptionalBoolean,
-    lang: mapping.mapOptionalString,
-    managed: mapping.mapOptionalBoolean,
-    roles: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined }),
-    uses: mapping.mapOptionalNumber
+    roles: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined })
 });
 
 const mapGuildShrinkwrap = mapping.mapObject<GuildShrinkwrap>({
-    are: mapping.mapObject<AutoresponseShrinkwrap | null>({
-        executes: mapCustomCommandShrinkwrap
-    }, { ifNull: mapping.result.null }),
-    ar: mapping.mapArray(
-        mapping.mapObject<FilteredAutoresponseShrinkwrap>({
-            executes: mapCustomCommandShrinkwrap,
-            regex: mapping.mapBoolean,
-            term: mapping.mapString
-        })
-    ),
     cc: mapping.mapRecord(mapCustomCommandShrinkwrap)
 });
 

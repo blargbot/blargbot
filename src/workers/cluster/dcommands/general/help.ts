@@ -1,7 +1,7 @@
 import { BaseCommand, BaseGlobalCommand, CommandContext, CommandVariableType } from '@cluster/command';
 import { CommandParameter, GuildCommandContext } from '@cluster/types';
 import { codeBlock, CommandType, commandTypeDetails, guard, humanize } from '@cluster/utils';
-import { SendPayload, StoredGuildCommand } from '@core/types';
+import { GuildCommandTag, SendPayload } from '@core/types';
 import { EmbedFieldData } from 'discord.js';
 
 export class HelpCommand extends BaseGlobalCommand {
@@ -31,7 +31,7 @@ export class HelpCommand extends BaseGlobalCommand {
             Promise.resolve([commandTypeDetails[command.category].name]);
 
         let prefix = context.config.discord.defaultPrefix;
-        const customCommands = new Map<string, StoredGuildCommand | undefined>();
+        const customCommands = new Map<string, GuildCommandTag | undefined>();
         if (guard.isGuildCommandContext(context)) {
             for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
                 if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
@@ -119,7 +119,7 @@ export class HelpCommand extends BaseGlobalCommand {
         return this.error(`The command \`${commandName}\` could not be found`);
     }
 
-    public async viewCustomCommand(context: GuildCommandContext, commandName: string, command: StoredGuildCommand): Promise<SendPayload> {
+    public async viewCustomCommand(context: GuildCommandContext, commandName: string, command: GuildCommandTag): Promise<SendPayload> {
         if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
             return this.error(`You dont have permission to run the \`${commandName}\` command`);
 

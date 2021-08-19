@@ -5,7 +5,7 @@ import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { ChoiceQueryResult, NamedStoredGuildCommand, StoredTag } from '@core/types';
+import { ChoiceQueryResult, NamedGuildCommandTag, StoredTag } from '@core/types';
 import { Base, Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
@@ -294,8 +294,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     }
 
     public async getCached(key: `tag_${string}`, getIfNotSet: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
-    public async getCached(key: `cc_${string}`, getIfNotSet: (key: string) => Promise<NamedStoredGuildCommand | undefined>): Promise<NamedStoredGuildCommand | null>;
-    public async getCached(key: string, getIfNotSet: (key: string) => Promise<NamedStoredGuildCommand | StoredTag | undefined>): Promise<NamedStoredGuildCommand | StoredTag | null> {
+    public async getCached(key: `cc_${string}`, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
+    public async getCached(key: string, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
         key = key.split('_').slice(1).join('_');
         if (key in this.state.cache)
             return this.state.cache[key];

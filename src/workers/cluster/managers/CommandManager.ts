@@ -7,7 +7,7 @@ import { MessageIdQueue } from '@core/MessageIdQueue';
 import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { StoredAliasedGuildCommand, StoredGuildCommand, StoredRawGuildCommand } from '@core/types';
+import { GuildCommandTag, GuildImportedCommandTag, GuildSourceCommandTag } from '@core/types';
 import { DiscordAPIError, Message, PartialMessage } from 'discord.js';
 
 export class CommandManager extends ModuleLoader<BaseCommand> {
@@ -43,7 +43,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         return false;
     }
 
-    public async canExecuteCustomCommand(context: GuildCommandContext, command: StoredGuildCommand, options: CanExecuteCustomCommandOptions = {}): Promise<boolean> {
+    public async canExecuteCustomCommand(context: GuildCommandContext, command: GuildCommandTag, options: CanExecuteCustomCommandOptions = {}): Promise<boolean> {
         return command.hidden !== true
             && (command.roles === undefined || await this.cluster.util.hasRoles(context.message, command.roles, options.quiet ?? false));
     }
@@ -160,8 +160,8 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         return true;
     }
 
-    private async invokeCustomCommand(context: GuildCommandContext, command: StoredGuildCommand): Promise<void> {
-        const commandDetails = guard.isAliasedCustomCommand(command)
+    private async invokeCustomCommand(context: GuildCommandContext, command: GuildCommandTag): Promise<void> {
+        const commandDetails = guard.isGuildImportedCommandTag(command)
             ? await this.tryResolveAliasedCustomCommand(context, command)
             : this.tryResolveRawCustomCommand(command);
 
@@ -208,7 +208,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         }
     }
 
-    private async tryResolveAliasedCustomCommand(context: GuildCommandContext, command: StoredAliasedGuildCommand): Promise<CommandDetails | undefined> {
+    private async tryResolveAliasedCustomCommand(context: GuildCommandContext, command: GuildImportedCommandTag): Promise<CommandDetails | undefined> {
         const author = await this.cluster.database.users.get(command.author);
         const tag = await this.cluster.database.tags.get(command.alias);
         if (tag === undefined) {
@@ -239,7 +239,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         };
     }
 
-    private tryResolveRawCustomCommand(command: StoredRawGuildCommand): CommandDetails {
+    private tryResolveRawCustomCommand(command: GuildSourceCommandTag): CommandDetails {
         return {
             author: command.author,
             authorizer: command.authorizer,

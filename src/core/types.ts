@@ -308,7 +308,7 @@ export interface StoredGuild {
     readonly name: string;
     readonly settings: StoredGuildSettings;
     readonly channels: { readonly [channelId: string]: ChannelSettings | undefined; };
-    readonly ccommands: { readonly [key: string]: StoredGuildCommand | undefined; };
+    readonly ccommands: { readonly [key: string]: GuildCommandTag | undefined; };
     readonly commandperms?: { readonly [key: string]: CommandPermissions | undefined; };
     readonly censor?: GuildCensors;
     readonly warnings?: GuildWarnings;
@@ -319,6 +319,9 @@ export interface StoredGuild {
     readonly log?: { readonly [key: string]: string | undefined; };
     readonly logIgnore?: readonly string[];
     readonly votebans?: GuildVotebans;
+    readonly interval?: GuildTriggerTag;
+    readonly greeting?: GuildTriggerTag;
+    readonly farewell?: GuildTriggerTag;
 }
 
 export type StoredGuildEventLogType =
@@ -336,16 +339,22 @@ export type StoredGuildEventLogType =
 
 export interface MutableStoredGuild extends StoredGuild {
     votebans?: { [userId: string]: string[] | undefined; };
-    ccommands: { [key: string]: StoredGuildCommand | undefined; };
+    ccommands: { [key: string]: GuildCommandTag | undefined; };
     channels: { [channelId: string]: ChannelSettings | undefined; };
+    settings: StoredGuildSettings;
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
+    censor?: MutableGuildCensors;
+    roleme?: MutableGuildRolemeEntry[];
     log?: { [key: string]: string | undefined; };
     logIgnore?: string[];
     autoresponse?: MutableGuildAutoresponses;
     active: boolean;
     name: string;
     announce?: GuildAnnounceOptions;
+    interval?: GuildTriggerTag;
+    greeting?: GuildTriggerTag;
+    farewell?: GuildTriggerTag;
 }
 
 export interface GuildVotebans {
@@ -359,15 +368,15 @@ export interface GuildAnnounceOptions {
 
 export interface GuildAutoresponses {
     readonly everything?: GuildAutoresponse;
-    readonly list?: readonly GuildFilteredAutoresponse[];
+    readonly filtered?: { readonly [key: string]: GuildFilteredAutoresponse | undefined; };
 }
 export interface MutableGuildAutoresponses extends GuildAutoresponses {
     everything?: GuildAutoresponse;
-    list?: GuildFilteredAutoresponse[];
+    filtered?: { [key: string]: GuildFilteredAutoresponse | undefined; };
 }
 
 export interface GuildAutoresponse {
-    readonly executes: string;
+    readonly executes: GuildTriggerTag;
 }
 
 export interface GuildFilteredAutoresponse extends GuildAutoresponse, MessageFilter {
@@ -379,7 +388,16 @@ export interface GuildRolemeEntry {
     readonly message: string;
     readonly add?: readonly string[];
     readonly remove?: readonly string[];
-    readonly output?: string;
+    readonly output?: GuildTriggerTag;
+}
+
+export interface MutableGuildRolemeEntry extends GuildRolemeEntry {
+    channels: string[];
+    casesensitive: boolean;
+    message: string;
+    add?: string[];
+    remove?: string[];
+    output?: GuildTriggerTag;
 }
 
 export interface GuildWarnings {
@@ -395,15 +413,32 @@ export interface GuildCensors {
     readonly rule?: GuildCensorRule;
 }
 
+export interface MutableGuildCensors extends GuildCensors {
+    list: GuildCensor[];
+    exception?: GuildCensorExceptions;
+    rule?: MutableGuildCensorRule;
+}
+
 export interface GuildCensorRule {
-    readonly deleteMessage?: string;
-    readonly banMessage?: string;
-    readonly kickMessage?: string;
+    readonly deleteMessage?: GuildTriggerTag;
+    readonly banMessage?: GuildTriggerTag;
+    readonly kickMessage?: GuildTriggerTag;
+}
+
+export interface MutableGuildCensorRule extends GuildCensorRule {
+    deleteMessage?: GuildTriggerTag;
+    banMessage?: GuildTriggerTag;
+    kickMessage?: GuildTriggerTag;
 }
 
 export interface GuildCensor extends GuildCensorRule, MessageFilter {
     readonly weight: number;
     readonly reason?: string;
+}
+
+export interface MutableGuildCensor extends MutableGuildCensorRule, MessageFilter {
+    weight: number;
+    reason?: string;
 }
 
 export interface GuildCensorExceptions {
@@ -412,40 +447,41 @@ export interface GuildCensorExceptions {
     readonly role: string | readonly string[];
 }
 
-export interface StoredRawGuildCommand {
-    readonly content: string;
+export interface GuildTagBase {
     readonly author: string;
-    readonly help?: string;
-    readonly lang?: string;
     readonly authorizer?: string;
+}
+
+export interface GuildCommandTagBase extends GuildTagBase {
+    readonly help?: string;
     readonly hidden?: boolean;
-    readonly managed?: boolean;
     readonly roles?: readonly string[];
-    readonly uses?: number;
     readonly flags?: readonly FlagDefinition[];
     readonly cooldown?: number;
 }
 
-export interface NamedStoredRawGuildCommand extends StoredRawGuildCommand {
+export interface GuildSourceCommandTag extends GuildCommandTagBase {
+    readonly content: string;
+}
+
+export interface NamedGuildSourceCommandTag extends GuildSourceCommandTag {
     readonly name: string;
 }
 
-export interface StoredAliasedGuildCommand {
+export interface GuildImportedCommandTag extends GuildCommandTagBase {
     readonly alias: string;
-    readonly author: string;
-    readonly authorizer?: string;
-    readonly hidden?: boolean;
-    readonly roles?: readonly string[];
-    readonly cooldown?: number;
-    readonly help?: string;
 }
 
-export interface NamedStoredAliasedGuildCommand extends StoredAliasedGuildCommand {
+export interface NamedGuildImportedCommandTag extends GuildImportedCommandTag {
     readonly name: string;
 }
 
-export type StoredGuildCommand = StoredAliasedGuildCommand | StoredRawGuildCommand;
-export type NamedStoredGuildCommand = NamedStoredAliasedGuildCommand | NamedStoredRawGuildCommand;
+export interface GuildTriggerTag extends GuildTagBase {
+    readonly content: string;
+}
+
+export type GuildCommandTag = GuildImportedCommandTag | GuildSourceCommandTag;
+export type NamedGuildCommandTag = NamedGuildImportedCommandTag | NamedGuildSourceCommandTag;
 
 export interface CommandPermissions {
     readonly disabled?: boolean;
@@ -487,9 +523,7 @@ export interface StoredGuildSettings {
     readonly modlog?: string;
     readonly deletenotif?: boolean;
     readonly disableeveryone?: boolean;
-    readonly greeting?: StoredRawGuildCommand;
     readonly greetChan?: string;
-    readonly farewell?: StoredRawGuildCommand;
     readonly farewellchan?: string;
     readonly mutedrole?: string;
     readonly dmhelp?: boolean;
@@ -635,6 +669,8 @@ export interface MutableStoredGuildEventLogConfig extends StoredGuildEventLogCon
 }
 
 export interface GuildTable {
+    getFarewell(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
+    getGreeting(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean>;
     getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined>;
     clearVoteBans(guildId: string, userId: string): Promise<void>;
@@ -650,12 +686,11 @@ export interface GuildTable {
     setAutoresponse(guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>;
     setAutoresponse(guildId: string, index: 'everything', autoresponse: GuildAutoresponse | undefined): Promise<boolean>;
     setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>;
-    addAutoresponse(guildId: string, autoresponse: GuildFilteredAutoresponse): Promise<boolean>;
     getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined>;
     setChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, value: ChannelSettings[K]): Promise<boolean>;
     getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]>;
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
-    listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedStoredGuildCommand[]>;
+    listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedGuildCommandTag[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
     upsert(guild: Guild): Promise<'inserted' | 'updated' | false>;
     exists(guildId: string, skipCache?: boolean): Promise<boolean>;
@@ -664,13 +699,13 @@ export interface GuildTable {
     getIds(skipCache?: boolean): Promise<readonly string[]>;
     getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<StoredGuildSettings[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
-    getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<NamedStoredGuildCommand | undefined>;
+    getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<NamedGuildCommandTag | undefined>;
     withIntervalCommand(skipCache?: boolean): Promise<readonly string[]>;
-    updateCommand(guildId: string, commandName: string, command: Partial<StoredGuildCommand>): Promise<boolean>;
-    setCommand(guildId: string, commandName: string, command: StoredGuildCommand | undefined): Promise<boolean>;
-    setCommandProp<K extends keyof StoredRawGuildCommand>(guildId: string, commandName: string, key: K, value: StoredRawGuildCommand[K]): Promise<boolean>;
-    setCommandProp<K extends keyof StoredAliasedGuildCommand>(guildId: string, commandName: string, key: K, value: StoredAliasedGuildCommand[K]): Promise<boolean>;
-    setCommandProp<K extends keyof StoredGuildCommand>(guildId: string, commandName: string, key: K, value: StoredGuildCommand[K]): Promise<boolean>;
+    updateCommand(guildId: string, commandName: string, command: Partial<GuildCommandTag>): Promise<boolean>;
+    setCommand(guildId: string, commandName: string, command: GuildCommandTag | undefined): Promise<boolean>;
+    setCommandProp<K extends keyof GuildSourceCommandTag>(guildId: string, commandName: string, key: K, value: GuildSourceCommandTag[K]): Promise<boolean>;
+    setCommandProp<K extends keyof GuildImportedCommandTag>(guildId: string, commandName: string, key: K, value: GuildImportedCommandTag[K]): Promise<boolean>;
+    setCommandProp<K extends keyof GuildCommandTag>(guildId: string, commandName: string, key: K, value: GuildCommandTag[K]): Promise<boolean>;
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     getNewModlogCaseId(guildId: string, skipCache?: boolean): Promise<number | undefined>;
     addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
