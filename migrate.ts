@@ -36,11 +36,16 @@ void (async function () {
         })
     ]);
 
-    await Promise.allSettled([
+    const results = await Promise.allSettled([
         migrateChangelog(discord, rethink, logger),
         migrateGuilds(rethink, logger),
         migrateIntervalIndex(rethink, logger)
     ]);
+
+    for (const result of results) {
+        if (result.status === 'rejected')
+            logger.error(result.reason);
+    }
 
     process.exit();
 })();
