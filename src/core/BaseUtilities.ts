@@ -99,7 +99,8 @@ export class BaseUtilities {
         else if (isEmbed(payload))
             payload = { embeds: [payload] };
 
-        if (payload.reply === undefined && context instanceof Message)
+        const replyToExecuting = payload.replyToExecuting !== undefined ? delete payload.replyToExecuting : true;
+        if (payload.reply === undefined && replyToExecuting && context instanceof Message)
             payload.reply = { messageReference: context, failIfNotExists: false };
 
         // Send help messages to DMs if the message is marked as a help message

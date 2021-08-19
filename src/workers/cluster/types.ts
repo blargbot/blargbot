@@ -77,7 +77,7 @@ export interface SerializedBBTagContext {
     state: Omit<BBTagContextState, 'cache' | 'overrides'>;
     scope: BBTagRuntimeScope;
     inputRaw: string;
-    flaggedInput: FlagResult;
+    flags: readonly FlagDefinition[];
     tagName: string;
     rootTagName: string;
     author: string;
@@ -106,6 +106,7 @@ export interface BBTagContextState {
         channel: Record<string, string | undefined>;
     };
     outputMessage: Promise<string | undefined> | undefined;
+    replyToExecuting: boolean;
     ownedMsgs: string[];
     return: RuntimeReturnState;
     stackSize: number;

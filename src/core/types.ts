@@ -16,6 +16,7 @@ export type SendFiles = FileOptions | FileOptions[]
 export interface SendOptions extends MessageOptions {
     nsfw?: string;
     isHelp?: boolean;
+    replyToExecuting?: boolean;
 }
 export type SendPayload = SendOptions | MessageEmbedOptions | string | FileOptions;
 export type LogEntry = { text: string; level: string; timestamp: string; }

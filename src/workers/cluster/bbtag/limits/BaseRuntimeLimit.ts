@@ -78,7 +78,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
     }
 
     public load(state: SerializedRuntimeLimit): void {
-        for (const ruleKey of Object.keys(state)) {
+        for (const ruleKey of Object.keys(state.rules)) {
             const [rootKey, subKey] = this.getKeys(ruleKey);
             const states = state.rules[ruleKey];
 
