@@ -29,6 +29,9 @@ export class GetSubtag extends BaseSubtag {
     }
 
     public async get(context: BBTagContext, variableName: string): Promise<string> {
+        const arr = await bbtagUtil.tagArray.getArray(context, variableName);
+        if (arr !== undefined && Array.isArray(arr.v))
+            return JSON.stringify(arr);
         const result = await context.variables.get(variableName);
         switch (typeof result) {
             case 'object':
