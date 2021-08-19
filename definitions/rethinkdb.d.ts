@@ -214,8 +214,8 @@ declare module 'rethinkdb' {
         distinct(opts?: { index: string; }): Sequence<T>;
         contains(prop: T): Expression<boolean>;
 
-        pluck<K extends string & keyof T>(...props: string[]): Sequence<Pick<T, K>>;
-        without<K extends string & keyof T>(...props: string[]): Sequence<Omit<T, K>>;
+        pluck<K extends string & keyof T>(...props: K[]): Sequence<Pick<T, K>>;
+        without<K extends string & keyof T>(...props: K[]): Sequence<Omit<T, K>>;
     }
 
     type IndexFunction<T, U> = (doc: Expression<T>) => Expression<U> | Array<Expression<U>>;

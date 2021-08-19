@@ -13,6 +13,30 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         super('guild', 'guildid', rethinkDb, logger);
     }
 
+    public async getInterval(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        if (guild === undefined)
+            return undefined;
+
+        return guild.interval;
+    }
+
+    public async setInterval(guildId: string, interval: GuildTriggerTag | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { interval: this.setExpr(interval) }))
+            return false;
+
+        if (interval === undefined)
+            delete guild.interval;
+        else
+            guild.interval = interval;
+
+        return true;
+    }
+
     public async getFarewell(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
         const guild = await this.rget(guildId, skipCache);
         if (guild === undefined)
@@ -349,8 +373,10 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return command === undefined ? undefined : { ...command, name: commandName };
     }
 
-    public async withIntervalCommand(): Promise<readonly string[]> {
-        return await this.rqueryAll(t => t.getAll(true, { index: 'interval' }).getField('guildid'));
+    public async getIntervals(): Promise<ReadonlyArray<{ readonly guildId: string; readonly interval: GuildTriggerTag; }>> {
+        const guilds = await this.rqueryAll(t => t.getAll(true, { index: 'interval' }).pluck('guildid', 'interval'));
+        return guilds.map(g => g.interval === undefined ? undefined : { guildId: g.guildid, interval: g.interval })
+            .filter(guard.hasValue);
     }
 
     public async updateCommand(guildId: string, commandName: string, partialCommand: Partial<GuildCommandTag>): Promise<boolean> {

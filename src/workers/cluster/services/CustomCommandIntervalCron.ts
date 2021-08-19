@@ -2,6 +2,7 @@ import { Cluster } from '@cluster';
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { guard, sleep, snowflake } from '@cluster/utils';
 import { CronService } from '@core/serviceTypes';
+import { GuildTriggerTag } from '@core/types';
 import { Collection, Guild } from 'discord.js';
 import moment from 'moment';
 
@@ -10,26 +11,23 @@ export class CustomCommandIntervalCron extends CronService {
     public constructor(
         public readonly cluster: Cluster
     ) {
-        super({ cronTime: '*/15 * * * *' }, cluster.logger);
+        super({ cronTime: '*/1 * * * *' }, cluster.logger);
     }
 
     protected async execute(): Promise<void> {
         const nonce = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0').toUpperCase();
 
-        const guilds = (await this.cluster.database.guilds.withIntervalCommand())
-            .map(guildId => this.cluster.discord.guilds.cache.get(guildId))
-            .filter(guard.hasValue);
+        const intervals = (await this.cluster.database.guilds.getIntervals())
+            .map(i => ({ guild: this.cluster.discord.guilds.cache.get(i.guildId), interval: i.interval }))
+            .filter((i): i is { guild: Guild; interval: GuildTriggerTag; } => i.guild !== undefined);
 
-        this.logger.info(`[${nonce}] Running intervals on ${guilds.length} guilds`);
+        this.logger.info(`[${nonce}] Running intervals on ${intervals.length} guilds`);
 
         let count = 0;
         let failures = 0;
         const promises: Array<Promise<Guild | undefined>> = [];
-        for (const guild of guilds) {
+        for (const { interval, guild } of intervals) {
             this.logger.debug(`[${nonce}] Performing interval on ${guild.id}`);
-            const interval = await this.cluster.database.guilds.getCommand(guild.id, '_interval');
-            if (interval === undefined || guard.isGuildImportedCommandTag(interval))
-                continue;
 
             try {
                 const id = interval.authorizer ?? interval.author;

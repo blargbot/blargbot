@@ -8,7 +8,7 @@ import 'module-alias/register';
 
 import config from '@config';
 import { createLogger, Logger } from '@core/Logger';
-import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildTriggerTag, MutableGuildCensor, MutableGuildCensorRule, MutableGuildRolemeEntry, MutableStoredGuild } from '@core/types';
+import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildTriggerTag, MutableGuildCensor, MutableGuildCensorRule, MutableGuildRolemeEntry, MutableStoredGuild, StoredGuild } from '@core/types';
 import { guard, mapping } from '@core/utils';
 import { AnyChannel, Client as Discord } from 'discord.js';
 import * as r from 'rethinkdb';
@@ -38,7 +38,8 @@ void (async function () {
 
     await Promise.allSettled([
         migrateChangelog(discord, rethink, logger),
-        migrateGuilds(rethink, logger)
+        migrateGuilds(rethink, logger),
+        migrateIntervalIndex(rethink, logger)
     ]);
 
     process.exit();
@@ -78,6 +79,12 @@ async function migrateChangelog(discord: Discord, rethink: r.Connection, logger:
     const failed = Object.entries(unmigrated);
     const success = Object.keys(changelogs?.guilds ?? {}).length - failed.length;
     logger.info('[migrateChangelog] Complete.', success, 'channels updated.', failed.length, 'channels failed:', unmigrated);
+}
+
+async function migrateIntervalIndex(rethink: r.Connection, logger: Logger): Promise<void> {
+    await r.table('guild').indexDrop('interval').run(rethink);
+    await r.table<StoredGuild>('guild').indexCreate('interval', doc => doc.hasFields('interval')).run(rethink);
+    logger.info('[migrateIntervalIndex] Complete');
 }
 
 async function migrateGuilds(rethink: r.Connection, logger: Logger): Promise<void> {

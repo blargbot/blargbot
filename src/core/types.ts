@@ -670,6 +670,8 @@ export interface MutableStoredGuildEventLogConfig extends StoredGuildEventLogCon
 }
 
 export interface GuildTable {
+    getInterval(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
+    setInterval(guildId: string, interval: GuildTriggerTag | undefined): Promise<boolean>;
     getFarewell(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     getGreeting(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean>;
@@ -701,7 +703,7 @@ export interface GuildTable {
     getSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, skipCache?: boolean): Promise<StoredGuildSettings[K] | undefined>;
     setSetting<K extends keyof StoredGuildSettings>(guildId: string, key: K, value: StoredGuildSettings[K]): Promise<boolean>;
     getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<NamedGuildCommandTag | undefined>;
-    withIntervalCommand(skipCache?: boolean): Promise<readonly string[]>;
+    getIntervals(skipCache?: boolean): Promise<ReadonlyArray<{ readonly guildId: string; readonly interval: GuildTriggerTag; }>>;
     updateCommand(guildId: string, commandName: string, command: Partial<GuildCommandTag>): Promise<boolean>;
     setCommand(guildId: string, commandName: string, command: GuildCommandTag | undefined): Promise<boolean>;
     setCommandProp<K extends keyof GuildSourceCommandTag>(guildId: string, commandName: string, key: K, value: GuildSourceCommandTag[K]): Promise<boolean>;
