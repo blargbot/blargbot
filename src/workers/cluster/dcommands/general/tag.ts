@@ -7,6 +7,7 @@ import { SendPayload, StoredTag } from '@core/types';
 import { EmbedField, EmbedFieldData, FileOptions, MessageEmbedOptions, User } from 'discord.js';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
+import fetch from 'node-fetch';
 
 export class TagCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
@@ -224,6 +225,12 @@ export class TagCommand extends BaseGuildCommand {
         const match = await this.requestEditableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
+        if (content === undefined) {
+            const firstAttachment = context.message.attachments.first();
+            if (firstAttachment !== undefined)
+                if (firstAttachment.name?.endsWith('.bbtag') === true || firstAttachment.name?.endsWith('.txt') === true)
+                    content = await (await fetch(firstAttachment.url)).text();
+        }
 
         return await this.saveTag(context, 'edited', match.name, content, match);
     }
@@ -246,7 +253,12 @@ export class TagCommand extends BaseGuildCommand {
         const match = await this.requestSettableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
-
+        if (content === undefined) {
+            const firstAttachment = context.message.attachments.first();
+            if (firstAttachment !== undefined)
+                if (firstAttachment.name?.endsWith('.bbtag') === true || firstAttachment.name?.endsWith('.txt') === true)
+                    content = await (await fetch(firstAttachment.url)).text();
+        }
         return await this.saveTag(context, 'set', match.name, content, match.tag);
     }
 
