@@ -11,7 +11,7 @@ export class CustomCommandIntervalCron extends CronService {
     public constructor(
         public readonly cluster: Cluster
     ) {
-        super({ cronTime: '*/1 * * * *' }, cluster.logger);
+        super({ cronTime: '*/15 * * * *' }, cluster.logger);
     }
 
     protected async execute(): Promise<void> {
