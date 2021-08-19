@@ -114,10 +114,13 @@ export class Cluster extends BaseClient {
 
         await this.services.init();
         this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
+        //? Caches home guild and bot user perms for logging channels
+        const homeGuild = await this.discord.guilds.fetch(this.config.discord.guilds.home);
+        await homeGuild.members.fetch(this.discord.user.id);
     }
 
-    public async eval(author: string, text: string): Promise<{ success: boolean; result: unknown; }> {
-        if (!this.util.isBotOwner(author))
+    public async eval(this: Cluster, author: string, text: string): Promise<{ success: boolean; result: unknown; }> {
+        if (this.util.isBotOwner(author) === false)
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {

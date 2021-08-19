@@ -101,6 +101,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 channel: {}
             },
             outputMessage: undefined,
+            replyToExecuting: true,
             ownedMsgs: [],
             return: RuntimeReturnState.NONE,
             stackSize: 0,
@@ -259,6 +260,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             const response = await this.engine.util.send(this.message,
                 {
                     content: text,
+                    replyToExecuting: this.state.replyToExecuting,
                     embeds: this.state.embed !== undefined ? [this.state.embed] : undefined,
                     nsfw: this.state.nsfw,
                     allowedMentions: {
@@ -339,6 +341,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             inputRaw: obj.inputRaw,
             message: message,
             isCC: obj.isCC,
+            flags: obj.flags,
             rootTagName: obj.rootTagName,
             tagName: obj.tagName,
             author: obj.author,
@@ -374,7 +377,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             state: newState,
             scope: newScope,
             inputRaw: this.inputRaw,
-            flaggedInput: this.flaggedInput,
+            flags: this.flags,
             rootTagName: this.rootTagName,
             tagName: this.tagName,
             tagVars: this.tagVars,
