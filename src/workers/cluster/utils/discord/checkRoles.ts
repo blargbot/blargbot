@@ -1,10 +1,10 @@
 import { BBTagContext } from '@cluster/bbtag';
 import { bbtagUtil } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { GuildMember, Role } from 'discord.js';
 
 interface CheckRolesResult {
     member: GuildMember | undefined;
-    roles: string[];
+    roles: Role[];
     hasRole: boolean[];
 }
 
@@ -39,12 +39,12 @@ export async function checkRoles(
         const role = context.guild.roles.cache.get(match !== null ? match[1] : ''); //TODO context.getRole
         if (role === undefined)
             continue;
-        result.roles.push(role.id);
+        result.roles.push(role);
     }
 
     result.hasRole = result.roles.map(role => {
         if (result.member !== undefined)
-            return context.util.hasRole(result.member, role, false);
+            return context.util.hasRole(result.member, role.id, false);
         return false;
     });
     return result;
