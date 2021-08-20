@@ -45,12 +45,44 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return guild.farewell;
     }
 
+    public async setFarewell(guildId: string, farewell: GuildTriggerTag | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { farewell: this.setExpr(farewell) }))
+            return false;
+
+        if (farewell === undefined)
+            delete guild.farewell;
+        else
+            guild.farewell = farewell;
+
+        return true;
+    }
+
     public async getGreeting(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
         const guild = await this.rget(guildId, skipCache);
         if (guild === undefined)
             return undefined;
 
         return guild.greeting;
+    }
+
+    public async setGreeting(guildId: string, greeting: GuildTriggerTag | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { greeting: this.setExpr(greeting) }))
+            return false;
+
+        if (greeting === undefined)
+            delete guild.greeting;
+        else
+            guild.greeting = greeting;
+
+        return true;
     }
 
     public async setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean> {

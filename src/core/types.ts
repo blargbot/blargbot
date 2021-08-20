@@ -673,7 +673,9 @@ export interface GuildTable {
     getInterval(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     setInterval(guildId: string, interval: GuildTriggerTag | undefined): Promise<boolean>;
     getFarewell(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
+    setFarewell(guildId: string, farewell: GuildTriggerTag | undefined): Promise<boolean>;
     getGreeting(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
+    setGreeting(guildId: string, greeting: GuildTriggerTag | undefined): Promise<boolean>;
     setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean>;
     getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined>;
     clearVoteBans(guildId: string, userId: string): Promise<void>;

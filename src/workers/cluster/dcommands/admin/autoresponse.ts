@@ -3,7 +3,7 @@ import { GuildCommandContext } from '@cluster/types';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
 import { GuildAutoresponse, GuildFilteredAutoresponse, GuildTriggerTag, SendPayload } from '@core/types';
 import { codeBlock, guard } from '@core/utils';
-import { MessageEmbedOptions, MessageOptions } from 'discord.js';
+import { EmbedFieldData, MessageEmbedOptions, MessageOptions } from 'discord.js';
 
 export class AutoResponseCommand extends BaseGuildCommand {
     public constructor() {
@@ -172,22 +172,24 @@ export class AutoResponseCommand extends BaseGuildCommand {
             title: 'Autoresponses'
         };
 
-        if (ars.everything !== undefined) {
-            embed.fields.push({
-                name: 'Autoresponse `everything`',
-                value: 'Trigger: everything',
+        const arField = (id: string, trigger: string, executes: GuildTriggerTag): EmbedFieldData => {
+            const authorizer = executes.authorizer ?? executes.author;
+            return {
+                name: `Autoresponse \`${id}\``,
+                value: `**Trigger:** ${trigger}\n**Author:** <@${executes.author}> (${executes.author})\n**Authorizer:** <@${authorizer}> (${authorizer})`,
                 inline: true
-            });
-        }
+            };
+        };
+
+        if (ars.everything !== undefined)
+            embed.fields.push(arField('everything', 'everything', ars.everything.executes));
 
         if (ars.filtered !== undefined) {
-            embed.fields.push(...Object.entries(ars.filtered)
-                .filter((ar): ar is [string, GuildFilteredAutoresponse] => guard.hasValue(ar[1]))
-                .map((ar) => ({
-                    name: `Autoresponse \`${ar[0]}\``,
-                    value: `Trigger: \`${ar[1].term}\`${ar[1].regex ? ' (regex)' : ''}`,
-                    inline: true
-                })));
+            embed.fields.push(
+                ...Object.entries(ars.filtered)
+                    .filter((ar): ar is [string, GuildFilteredAutoresponse] => guard.hasValue(ar[1]))
+                    .map((ar) => arField(ar[0], `\`${ar[1].term}\`${ar[1].regex ? ' (regex)' : ''}`, ar[1].executes))
+            );
         }
 
         if (embed.fields.length === 0)

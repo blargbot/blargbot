@@ -5,7 +5,7 @@ import moment from 'moment';
 
 import { bbtagUtil } from '.';
 
-export function createDebugOutput(name: string, code: string, args: string, result: ExecutionResult): MessageOptions {
+export function createDebugOutput(result: ExecutionResult): MessageOptions {
     const performance: Record<string, unknown> = {};
     for (const key of Object.keys(result.duration.subtag)) {
         const times = result.duration.subtag[key];
@@ -30,9 +30,9 @@ export function createDebugOutput(name: string, code: string, args: string, resu
             {
                 name: 'bbtag.debug.json',
                 attachment: JSON.stringify({
-                    tagName: name,
-                    userInput: args,
-                    code: code,
+                    tagName: result.tagName,
+                    userInput: result.input,
+                    code: result.source,
                     debug: result.debug,
                     errors: result.errors.map(e => ({
                         error: e.error,

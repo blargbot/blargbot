@@ -176,6 +176,9 @@ export interface BBTagContextOptions {
 }
 
 export interface ExecutionResult {
+    source: string;
+    tagName: string;
+    input: string;
     content: string;
     errors: RuntimeError[];
     debug: RuntimeDebugEntry[];
