@@ -10,7 +10,7 @@ export class EditSubtag extends BaseSubtag {
             category: SubtagType.API,
             desc: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.' +
                 'Please note that `embed` is the JSON for an embed object, don\'t put `{embed}` there, as nothing will show. Only messages created by the bot may be edited.',
-            definition: [//! Overidden docs
+            definition: [//! Overwritten
                 {
                     parameters: ['messageId', 'text|embed'],
                     execute: (ctx, args, subtag) => this.edit(ctx, subtag, ctx.channel.id, args[0].value, args[1].value)
@@ -94,22 +94,34 @@ export class EditSubtag extends BaseSubtag {
             {
                 name: 'Usage',
                 value: '```\n{edit;<messageID>;<text|embed>}```\n' +
-                    'Edits `messageID` in the current channel to say `text` or `embed`.'
+                    'Edits `messageID` in the current channel to say `text` or `embed`.\n\n' +
+                    '**Example code:**\n' +
+                    '> {edit;111111111111111111;{embedbuild;title:Hello world}}\n**Example out:**\n' +
+                    '> (the message got edited idk how to do examples for this)'
             },
             {
                 name: '\u200b',
                 value: '```\n{edit;<channelID>;<messageID>;<text|embed>}```\n' +
-                    'Edits `messageID` in `channelID` to say `text` or `embed`.'
+                    'Edits `messageID` in `channelID` to say `text` or `embed`.\n\n' +
+                    '**Example code:**\n' +
+                    '> {edit;111111111111111111;222222222222222222;Hello world}\n**Example out:**\n' +
+                    '> (the message got edited idk how to do examples for this)'
             },
             {
                 name: '\u200b',
                 value: '```\n{edit;<messageID>;<text>;<embed>}```\n' +
-                    'Edits `messageID` in the current channel to say `text` and `embed`.'
+                    'Edits `messageID` in the current channel to say `text` and `embed`.\n\n' +
+                    '**Example code:**\n' +
+                    '> {edit;111111111111111111;Hello world;{embedbuild;title:Foo bar}}\n**Example out:**\n' +
+                    ' (the message got edited idk how to do examples for this)'
             },
             {
                 name: '\u200b',
                 value: '```\n{edit;<channelID>;<messageID>;<text>;<embed>}```\n' +
-                    'Edits `messageID` in `channelID` to say `text` and `embed`.'
+                    'Edits `messageID` in `channelID` to say `text` and `embed`.\n\n' +
+                    '**Example code:**\n' +
+                    '> {edit;111111111111111111;222222222222222222;Hello world;{embedbuild;title:Foo bar}}\n**Example out:**\n' +
+                    '> (the message got edited idk how to do examples for this)'
             }
         ];
         embed.fields.push(limitField);

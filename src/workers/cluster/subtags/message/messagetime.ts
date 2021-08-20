@@ -10,7 +10,7 @@ export class MessageTimeSubtag extends BaseSubtag {
             name: 'messagetime',
             category: SubtagType.API,
             aliases: ['timestamp'],
-            definition: [//! Not the actual docs
+            definition: [//! overwritten
                 {
                     parameters: [],
                     description: 'Returns the send time of the executing message in unix milliseconds.',

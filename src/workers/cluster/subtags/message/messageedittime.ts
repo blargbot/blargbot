@@ -10,7 +10,7 @@ export class MessageEditTimeSubtag extends BaseSubtag {
             name: 'messageedittime',
             category: SubtagType.API,
             desc: 'If the message is not edited, this will return the current time instead.\n\n**Note:** there are plans to change this behaviour, but due to backwards-compatibility this remains unchanged.', //TODO Change this
-            definition: [
+            definition: [//!Overwritten
                 {
                     parameters: [],
                     description: 'Returns the edit time of the executing message in unix milliseconds.',

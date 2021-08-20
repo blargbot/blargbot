@@ -17,9 +17,9 @@ export class KickSubtag extends BaseSubtag {
                     execute: (ctx, args, subtag) => this.kickMember(ctx, args[0].value, '', '', subtag)
                 },
                 {
-                    parameters: ['user', 'reason', 'noperms?'],
+                    parameters: ['user', 'reason', 'noPerms?'],
                     description: 'Kicks `user`. ' +
-                        'If `noperms` is provided, do not check if the command executor is actually able to kick people. ' +
+                        'If `noPerms` is provided and not an empty string, do not check if the command executor is actually able to kick people. ' +
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{kick;stupid cat;because I can} @stupid cat was kicked!',
                     exampleOut: 'Success @stupid cat was kicked, because I can!',

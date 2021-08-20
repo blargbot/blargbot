@@ -18,7 +18,7 @@ export class UnbanSubtag extends BaseSubtag {
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
                     description: 'Unbans `user` with the given `reason`.' +
-                        'If `noperms` is provided, do not check if the command executor is actually able to ban people. ' +
+                        'If `noPerms` is provided and not an empty string, do not check if the command executor is actually able to ban people. ' +
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{unban;@stupid cat;I made a mistake} @stupid cat has been unbanned',
                     exampleOut: 'true @stupid cat has been unbanned',
