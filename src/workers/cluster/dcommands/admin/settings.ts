@@ -127,6 +127,7 @@ export class SettingsCommand extends BaseGuildCommand {
 }
 
 function resolveChannel(guild: Guild, channelId: string | undefined): string | undefined {
+    // TODO channelId can be channel name, id or tag
     if (channelId === undefined)
         return undefined;
     const channel = guild.channels.cache.get(channelId)
@@ -137,6 +138,7 @@ function resolveChannel(guild: Guild, channelId: string | undefined): string | u
 }
 
 function resolveRole(guild: Guild, roleId: string | undefined): string | undefined {
+    // TODO roleId can be role name, id or tag
     if (roleId === undefined)
         return undefined;
     const role = guild.roles.cache.get(roleId)

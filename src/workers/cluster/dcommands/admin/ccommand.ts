@@ -285,6 +285,7 @@ export class CustomCommand extends BaseGuildCommand {
     public async listCommands(context: GuildCommandContext): Promise<{ embeds: [MessageEmbedOptions]; } | string | undefined> {
         const grouped: Record<string, string[]> = {};
         for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
+            // TODO command.roles can be role id, name or tag
             const roles = command.roles === undefined || command.roles.length === 0 ? ['All Roles'] : command.roles;
             for (const role of roles) {
                 (grouped[role] ??= []).push(command.name);

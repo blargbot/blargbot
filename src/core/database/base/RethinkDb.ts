@@ -97,6 +97,27 @@ export class RethinkDb {
     public expr<T>(value: T): Expression<T> {
         return r.expr(value);
     }
+
+    public branchExpr<T>(
+        context: Expression<T>,
+        test: (context: Expression<T>) => Expression<boolean>,
+        ifTrue: (context: Expression<T>) => Expression<T>,
+        ifFalse?: (context: Expression<T>) => Expression<T>
+    ): Expression<T>;
+    public branchExpr<TContext, TResult>(
+        context: Expression<TContext>,
+        test: (context: Expression<TContext>) => Expression<boolean>,
+        ifTrue: (context: Expression<TContext>) => Expression<TResult>,
+        ifFalse: (context: Expression<TContext>) => Expression<TResult>
+    ): Expression<TResult>;
+    public branchExpr<T>(
+        context: Expression<T>,
+        test: (context: Expression<T>) => Expression<boolean>,
+        ifTrue: (context: Expression<T>) => Expression<T>,
+        ifFalse: (context: Expression<T>) => Expression<T> = ctx => ctx
+    ): Expression<T> {
+        return r.branch(test(context), ifTrue(context), ifFalse(context));
+    }
 }
 
 function hackySanitize(value: unknown, removeUndef: boolean): unknown {

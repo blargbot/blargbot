@@ -94,6 +94,27 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return this.#rethinkDb.expr(value);
     }
 
+    public branchExpr<T>(
+        context: Expression<T>,
+        test: (context: Expression<T>) => Expression<boolean>,
+        ifTrue: (context: Expression<T>) => Expression<T>,
+        ifFalse?: (context: Expression<T>) => Expression<T>
+    ): Expression<T>;
+    public branchExpr<TContext, TResult>(
+        context: Expression<TContext>,
+        test: (context: Expression<TContext>) => Expression<boolean>,
+        ifTrue: (context: Expression<TContext>) => Expression<TResult>,
+        ifFalse: (context: Expression<TContext>) => Expression<TResult>
+    ): Expression<TResult>;
+    public branchExpr<T>(
+        context: Expression<T>,
+        test: (context: Expression<T>) => Expression<boolean>,
+        ifTrue: (context: Expression<T>) => Expression<T>,
+        ifFalse?: (context: Expression<T>) => Expression<T>
+    ): Expression<T> {
+        return this.#rethinkDb.branchExpr(context, test, ifTrue, ifFalse);
+    }
+
     public migrate(): Promise<void> {
         return Promise.resolve();
     }

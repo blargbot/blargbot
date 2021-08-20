@@ -147,6 +147,7 @@ export class ModLogManager {
         });
     }
     private async logAction({ guildId, user, reason, fields = [], color = 0x17c484, type = 'Generic', moderator }: ModerationLogOptions): Promise<void> {
+        // TODO modlog setting can be channel id or tag
         const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, 'modlog');
         if (!guard.hasValue(modlogChannelId))
             return;

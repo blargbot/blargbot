@@ -69,7 +69,7 @@ export class VoteBanCommand extends BaseGuildCommand {
         if (await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
             return this.error(`I know youre eager, but you have already signed the petition to ban ${user.toString()}!`);
 
-        const newTotal = await context.database.guilds.addVoteBan(context.channel.guild.id, user.id, context.author.id);
+        const newTotal = await context.database.guilds.addVoteBan(context.channel.guild.id, user.id, context.author.id, reason);
         if (newTotal === false)
             return this.error('Seems the petitions office didnt like that one! Please try again');
 

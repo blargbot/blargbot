@@ -354,6 +354,7 @@ declare module 'rethinkdb' {
 
         default(value: T): Expression<Exclude<T, null | undefined>>;
         getField<K extends keyof T>(name: K): Expression<T[K]>;
+        getField<R, K extends keyof R>(this: Expression<R[]>, name: K): Expression<Array<R[K]>>;
         match(this: Expression<string>, re2: string): Expression<MatchResult | null>;
         spliceAt<R>(this: Expression<R[]>, index: number, replacement: R[]): Expression<T>;
         deleteAt<R>(this: Expression<R[]>, index: number): Expression<T>;

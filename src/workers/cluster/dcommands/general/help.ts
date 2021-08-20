@@ -47,12 +47,11 @@ export class HelpCommand extends BaseGlobalCommand {
 
             getCommandGroups = async (command) => {
                 const perms = await context.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
+                // TODO perms.rolename can be role id, name or tag
                 const roles = perms?.rolename;
-                switch (typeof roles) {
-                    case 'string': return [roles];
-                    case 'undefined': return [commandTypeDetails[command.category].name];
-                    default: return roles;
-                }
+                if (Array.isArray(roles))
+                    return roles;
+                return [commandTypeDetails[command.category].name];
             };
         }
 

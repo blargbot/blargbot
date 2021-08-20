@@ -78,15 +78,12 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         }
 
         if (commandPerms !== undefined) {
-            if (commandPerms.permission !== undefined && this.cluster.util.hasPerms(context.message.member, commandPerms.permission))
+            if (guard.hasValue(commandPerms.permission) && this.cluster.util.hasPerms(context.message.member, commandPerms.permission))
                 return true; // User has any of the permissions for this command
 
-            switch (typeof commandPerms.rolename) {
-                case 'undefined': break;
-                // User has one of the roles this command is linked to?
-                case 'string': return await this.cluster.util.hasRoles(context.message, [commandPerms.rolename], options.quiet ?? false);
-                case 'object': return await this.cluster.util.hasRoles(context.message, commandPerms.rolename, options.quiet ?? false);
-            }
+            // User has one of the roles this command is linked to?
+            if (Array.isArray(commandPerms.rolename))
+                return await this.cluster.util.hasRoles(context.message, commandPerms.rolename, options.quiet ?? false);
         }
 
         const adminrole = await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'adminrole');

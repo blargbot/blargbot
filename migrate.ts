@@ -24,8 +24,7 @@ void (async function () {
         shards: [0]
     });
 
-    const [, rethink] = await Promise.all([
-        discord.login(config.discord.token),
+    const [rethink] = await Promise.all([
         r.connect({
             host: config.rethink.host,
             db: config.rethink.database,
@@ -33,7 +32,8 @@ void (async function () {
             user: config.rethink.user,
             port: config.rethink.port,
             timeout: 10000
-        })
+        }),
+        discord.login(config.discord.token)
     ]);
 
     const results = await Promise.allSettled([
@@ -150,7 +150,7 @@ async function migrateGuild(guild: any, rethink: r.Connection, logger: Logger): 
             return false;
         }
     } else {
-        logger.info('[migrateGuild]', guildId, 'No changes');
+        logger.debug('[migrateGuild]', guildId, 'No changes');
         return 'nochange';
     }
 }
@@ -166,7 +166,7 @@ function migrateInterval(guildId: string, guild: any, logger: Logger, context: G
         return false;
     }
 
-    logger.info('[migrateGuild]', guildId, 'migrating _interval');
+    logger.debug('[migrateGuild]', guildId, 'migrating _interval');
     context.update.interval = mapped.value;
     context.update.ccommands = context.ccommands;
     context.ccommands['_interval'] = nukedCC('b!interval set <bbtag>');
@@ -184,7 +184,7 @@ function migrateGreeting(guildId: string, guild: any, logger: Logger, context: G
         return false;
     }
 
-    logger.info('[migrateGuild]', guildId, 'migrating', key);
+    logger.debug('[migrateGuild]', guildId, 'migrating', key);
     context.update.settings = context.settings;
     (<any>context.settings)[key] = r.literal();
     context.update[key] = typeof mapped.value === 'string'
@@ -211,7 +211,7 @@ function migrateEverythingAR(guildId: string, guild: any, logger: Logger, contex
         return false;
     }
 
-    logger.info('[migrateGuild]', guildId, 'migrating everything autoresponse ', everythingAr);
+    logger.debug('[migrateGuild]', guildId, 'migrating everything autoresponse ', everythingAr);
     context.update.autoresponse = context.autoresponse;
     context.autoresponse.everything = { executes: mapped.value };
     context.update.ccommands = context.ccommands;
@@ -256,7 +256,7 @@ function migrateFilteredAR(guildId: string, guild: any, ar: any, index: number, 
 
     const ccommand = guild.ccommands?.[mappedAr.value.executes];
     if (ccommand === undefined) {
-        logger.info('[migrateGuild]', guildId, 'migrating autoresponse', index);
+        logger.debug('[migrateGuild]', guildId, 'migrating autoresponse', index);
         return { ...mappedAr.value, executes: { content: '{//;This autoresponse hasnt been set yet!}', author: '' } };
     }
 
@@ -266,7 +266,7 @@ function migrateFilteredAR(guildId: string, guild: any, ar: any, index: number, 
         return undefined;
     }
 
-    logger.info('[migrateGuild]', guildId, 'migrating autoresponse', index);
+    logger.debug('[migrateGuild]', guildId, 'migrating autoresponse', index);
     context.ccommands[mappedAr.value.executes] = nukedCC(`b!ar set ${index} <bbtag>`);
     return { ...mappedAr.value, executes: mappedCommand.value };
 }
@@ -281,7 +281,7 @@ function migrateCensors(guildId: string, guild: any, logger: Logger, context: Gu
         const rule = {} as r.UpdateData<MutableGuildCensorRule>;
         for (const key of ['deleteMessage', 'banMessage', 'kickMessage'] as const) {
             if (guild.censor.rule[key] !== undefined) {
-                logger.info('[migrateGuild]', guildId, 'migrating censor rule', key);
+                logger.debug('[migrateGuild]', guildId, 'migrating censor rule', key);
                 context.update.censor = context.censor;
                 context.censor.rule = rule;
                 rule[key] = { content: guild.censor.rule[key] };
@@ -297,17 +297,20 @@ function migrateCensors(guildId: string, guild: any, logger: Logger, context: Gu
             const list: MutableGuildCensor[] = guild.censor.list.map((censor: any, i: number) => {
                 const update = { ...censor } as MutableGuildCensor;
                 for (const key of ['deleteMessage', 'banMessage', 'kickMessage'] as const) {
-                    if (guild.censor.rule[key] !== undefined) {
-                        logger.info('[migrateGuild]', guildId, 'migrating censor list', i, key);
+                    if (censor[key] !== undefined) {
+                        logger.debug('[migrateGuild]', guildId, 'migrating censor list', i, key);
                         update[key] = { content: censor[key], author: '' };
-                        changed = true;
                     }
                 }
                 return update;
             });
-            context.update.censor = context.censor;
-            context.censor.list = r.literal(list);
-            changed = true;
+            try {
+                context.censor.list = r.literal(list);
+                context.update.censor = context.censor;
+                changed = true;
+            } catch (err: unknown) {
+                logger.error('[migrateGuild]', guildId, 'migrating censor list failed: r.literal(list) error', err);
+            }
         }
     }
 
@@ -330,7 +333,7 @@ function migrateRolemes(guildId: string, guild: any, logger: Logger, context: Gu
         const update = { ...roleme } as MutableGuildRolemeEntry;
 
         if (typeof roleme.output === 'string') {
-            logger.info('[migrateGuild]', guildId, 'migrating roleme', i);
+            logger.debug('[migrateGuild]', guildId, 'migrating roleme', i);
             changed = true;
             update.output = { content: roleme.output, author: '' };
         }
@@ -341,8 +344,13 @@ function migrateRolemes(guildId: string, guild: any, logger: Logger, context: Gu
     if (!changed)
         return false;
 
-    context.update.roleme = r.literal(update);
-    return true;
+    try {
+        context.update.roleme = r.literal(update);
+        return true;
+    } catch (err: unknown) {
+        logger.error('[migrateGuild]', guildId, 'migrating rolemes failed: r.literal(update) error', err);
+        return false;
+    }
 }
 
 const mapGuildTriggerTag = mapping.mapObject<GuildTriggerTag>({

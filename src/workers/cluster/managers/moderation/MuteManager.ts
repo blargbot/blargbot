@@ -112,6 +112,7 @@ export class MuteManager extends ModerationManagerBase {
     }
 
     private async getMuteRole(guild: Guild): Promise<Role | undefined> {
+        // TODO mutedrole setting can be role id or tag
         const role = await this.cluster.database.guilds.getSetting(guild.id, 'mutedrole');
         if (role === undefined)
             return undefined;

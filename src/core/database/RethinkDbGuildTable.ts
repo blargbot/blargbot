@@ -156,7 +156,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             return undefined;
 
         if (target !== undefined)
-            return guild.votebans?.[target];
+            return guild.votebans?.[target]?.map(vb => vb.id);
 
         return guild.votebans ?? {};
     }
@@ -166,19 +166,30 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (guild === undefined)
             return false;
 
-        return guild.votebans?.[target]?.includes(signee) ?? false;
+        return guild.votebans?.[target]?.some(vb => vb.id === signee) ?? false;
     }
 
-    public async addVoteBan(guildId: string, target: string, signee: string): Promise<number | false> {
+    public async addVoteBan(guildId: string, target: string, signee: string, reason?: string): Promise<number | false> {
         const guild = await this.rget(guildId);
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, g => ({ votebans: { [target]: g('votebans').default({})(target).default([]).setInsert(signee) } })))
+        const updated = await this.rupdate(guildId, g => ({
+            votebans: {
+                [target]: this.branchExpr(g('votebans').default({})(target).default([]),
+                    x => x.getField('id').contains(signee).not(),
+                    x => x.append({ id: signee, reason })
+                )
+            }
+        }));
+
+        if (!updated)
             return false;
 
         const vb = guild.votebans ??= {};
-        const votes = vb[target] = [...new Set([...vb[target] ?? [], signee])];
+        const votes = vb[target] ??= [];
+        if (!votes.some(vb => vb.id === signee))
+            votes.push({ id: signee, reason });
         return votes.length;
     }
 
@@ -187,11 +198,17 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (guild === undefined)
             return false;
 
-        if (!await this.rupdate(guildId, g => ({ votebans: { [target]: g('votebans').default({})(target).default([]).setDifference(this.expr([signee])) } })))
+        const updated = await this.rupdate(guildId, g => ({
+            votebans: {
+                [target]: g('votebans').default({})(target).default([]).filter(b => b('id').eq(signee))
+            }
+        }));
+
+        if (!updated)
             return false;
 
         const vb = guild.votebans ??= {};
-        const votes = vb[target] = vb[target]?.filter(s => s !== signee);
+        const votes = vb[target] = vb[target]?.filter(s => s.id !== signee);
         return votes?.length ?? 0;
 
     }

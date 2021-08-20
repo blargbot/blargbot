@@ -317,8 +317,8 @@ export interface StoredGuild {
     readonly roleme?: readonly GuildRolemeEntry[];
     readonly autoresponse?: GuildAutoresponses;
     readonly announce?: GuildAnnounceOptions;
-    readonly log?: { readonly [key: string]: string | undefined; };
-    readonly logIgnore?: readonly string[];
+    readonly log?: { readonly [key: string]: string | undefined; /* channelid */ };
+    readonly logIgnore?: readonly string[]; // userids
     readonly votebans?: GuildVotebans;
     readonly interval?: GuildTriggerTag;
     readonly greeting?: GuildTriggerTag;
@@ -339,7 +339,7 @@ export type StoredGuildEventLogType =
     | 'kick';
 
 export interface MutableStoredGuild extends StoredGuild {
-    votebans?: { [userId: string]: string[] | undefined; };
+    votebans?: MutableGuildVotebans;
     ccommands: { [key: string]: GuildCommandTag | undefined; };
     channels: { [channelId: string]: ChannelSettings | undefined; };
     settings: StoredGuildSettings;
@@ -358,13 +358,22 @@ export interface MutableStoredGuild extends StoredGuild {
     farewell?: GuildTriggerTag;
 }
 
+export interface GuildVoteban {
+    readonly id: string; // userid
+    readonly reason?: string;
+}
+
 export interface GuildVotebans {
-    readonly [userId: string]: readonly string[] | undefined;
+    readonly [userId: string]: readonly GuildVoteban[] | undefined;
+}
+
+export interface MutableGuildVotebans extends GuildVotebans {
+    [userId: string]: GuildVoteban[] | undefined;
 }
 
 export interface GuildAnnounceOptions {
-    readonly channel: string;
-    readonly role: string;
+    readonly channel: string; // channelid
+    readonly role: string; // roleid
 }
 
 export interface GuildAutoresponses {
@@ -384,11 +393,11 @@ export interface GuildFilteredAutoresponse extends GuildAutoresponse, MessageFil
 }
 
 export interface GuildRolemeEntry {
-    readonly channels: readonly string[];
+    readonly channels: readonly string[]; // channelids
     readonly casesensitive: boolean;
     readonly message: string;
-    readonly add?: readonly string[];
-    readonly remove?: readonly string[];
+    readonly add?: readonly string[]; // roleids
+    readonly remove?: readonly string[]; // roleids
     readonly output?: GuildTriggerTag;
 }
 
@@ -443,9 +452,9 @@ export interface MutableGuildCensor extends MutableGuildCensorRule, MessageFilte
 }
 
 export interface GuildCensorExceptions {
-    readonly channel: string | readonly string[];
-    readonly user: string | readonly string[];
-    readonly role: string | readonly string[];
+    readonly channel: readonly string[]; // channelids
+    readonly user: readonly string[]; // userids
+    readonly role: readonly string[]; // roleids
 }
 
 export interface GuildTagBase {
@@ -456,7 +465,7 @@ export interface GuildTagBase {
 export interface GuildCommandTagBase extends GuildTagBase {
     readonly help?: string;
     readonly hidden?: boolean;
-    readonly roles?: readonly string[];
+    readonly roles?: readonly string[]; // role ids or role names or role tags
     readonly flags?: readonly FlagDefinition[];
     readonly cooldown?: number;
 }
@@ -486,8 +495,8 @@ export type NamedGuildCommandTag = NamedGuildImportedCommandTag | NamedGuildSour
 
 export interface CommandPermissions {
     readonly disabled?: boolean;
-    readonly permission?: number;
-    readonly rolename?: string | readonly string[];
+    readonly permission?: number | null;
+    readonly rolename?: null | readonly string[]; // roleIds or role names or role tags
 }
 
 export interface StoredTag {
@@ -509,28 +518,28 @@ export interface StoredTag {
 }
 
 export interface StoredGuildSettings {
-    readonly permoverride?: boolean;
-    readonly staffperms?: number | string;
-    readonly social?: boolean;
-    readonly makelogs?: boolean;
-    readonly prefix?: readonly string[] | string;
-    readonly nocleverbot?: boolean;
-    readonly tableflip?: boolean;
-    readonly disablenoperms?: boolean;
-    readonly adminrole?: string;
+    readonly adminrole?: string; // role tag or role name
     readonly antimention?: number;
     readonly banat?: number;
-    readonly kickat?: number;
-    readonly modlog?: string;
-    readonly deletenotif?: boolean;
-    readonly disableeveryone?: boolean;
-    readonly greetChan?: string;
-    readonly farewellchan?: string;
-    readonly mutedrole?: string;
-    readonly dmhelp?: boolean;
-    readonly kickoverride?: number;
     readonly banoverride?: number;
     readonly cahnsfw?: boolean;
+    readonly deletenotif?: boolean;
+    readonly disableeveryone?: boolean;
+    readonly disablenoperms?: boolean;
+    readonly dmhelp?: boolean;
+    readonly farewellchan?: string; // channelid
+    readonly greetChan?: string; // channelid
+    readonly kickat?: number;
+    readonly kickoverride?: number;
+    readonly makelogs?: boolean;
+    readonly modlog?: string; // channelid or channel tag
+    readonly mutedrole?: string; // roleid or role tag
+    readonly nocleverbot?: boolean;
+    readonly permoverride?: boolean;
+    readonly prefix?: readonly string[];
+    readonly social?: boolean;
+    readonly staffperms?: number;
+    readonly tableflip?: boolean;
 }
 
 export interface GuildModlogEntry {
@@ -682,7 +691,7 @@ export interface GuildTable {
     getVoteBans(guildId: string, skipCache?: boolean): Promise<GuildVotebans | undefined>;
     getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly string[] | undefined>;
     hasVoteBanned(guildId: string, target: string, signee: string, skipCache?: boolean): Promise<boolean>;
-    addVoteBan(guildId: string, target: string, signee: string): Promise<number | false>;
+    addVoteBan(guildId: string, target: string, signee: string, reason?: string): Promise<number | false>;
     removeVoteBan(guildId: string, target: string, signee: string): Promise<number | false>;
     getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
     getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>;
