@@ -8,11 +8,11 @@ import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
 import { ImagePool } from '@image/ImagePool';
 import { Options, Util } from 'discord.js';
-import moment, { Moment } from 'moment-timezone';
+import moment, { duration, Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AutoresponseManager, BotStaffManager, CommandManager, ContributorManager, DomainManager, GreetingManager, ModerationManager, PollManager } from './managers';
+import { AutoresponseManager, BotStaffManager, CommandManager, ContributorManager, DomainManager, GreetingManager, IntervalManager, ModerationManager, PollManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -33,6 +33,7 @@ export class Cluster extends BaseClient {
     public readonly domains: DomainManager;
     public readonly greetings: GreetingManager;
     public readonly polls: PollManager;
+    public readonly intervals: IntervalManager;
 
     public constructor(
         logger: Logger,
@@ -91,6 +92,7 @@ export class Cluster extends BaseClient {
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
         this.bbtag = new BBTagEngine(this);
+        this.intervals = new IntervalManager(this, duration(10, 's'));
 
         this.services.on('add', (module: BaseService) => void module.start());
         this.services.on('remove', (module: BaseService) => void module.stop());

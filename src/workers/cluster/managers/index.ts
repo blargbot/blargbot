@@ -6,3 +6,4 @@ export * from './ModerationManager';
 export * from './DomainManager';
 export * from './ContributorManager';
 export * from './PollManager';
+export * from './IntervalManager';
