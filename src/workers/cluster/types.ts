@@ -106,7 +106,6 @@ export interface BBTagContextState {
         channel: Record<string, string | undefined>;
     };
     outputMessage: Promise<string | undefined> | undefined;
-    replyToExecuting: boolean;
     ownedMsgs: string[];
     return: RuntimeReturnState;
     stackSize: number;
