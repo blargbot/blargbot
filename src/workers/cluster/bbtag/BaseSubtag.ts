@@ -23,7 +23,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         this.aliases = options.aliases ?? [];
         this.category = options.category;
         this.isTag = true;
-        this.desc = options.desc ?? '';
+        this.desc = options.desc;
         this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
         this.signatures = parseDefinitions(options.definition);

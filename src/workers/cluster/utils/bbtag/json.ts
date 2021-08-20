@@ -157,3 +157,32 @@ export function set(input: JObject | JArray, path: string | string[], value: str
 
     return input;
 }
+
+export function clean(input: JToken): JToken {
+    if (typeof input === 'string') {
+        try {
+            // don't parse ints, because it will break snowflakes
+            if (/^\d+$/.test(input)) {
+                return input;
+            }
+            const raw = JSON.parse(input);
+
+            return clean(raw);
+        } catch (err: unknown) {
+            return input;
+        }
+    } else if (Array.isArray(input)) {
+        for (let i = 0; i < input.length; i++) {
+            input[i] = clean(input[i]);
+        }
+    } else if (typeof input === 'object' && input !== null) {
+        if (input.n !== undefined && input.v !== undefined && Array.isArray(input.v)) {
+            return clean(input.v);
+        }
+
+        for (const key of Object.keys(input)) {
+            input[key] = clean(input[key]);
+        }
+    }
+    return input;
+}

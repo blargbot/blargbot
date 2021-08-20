@@ -101,7 +101,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 channel: {}
             },
             outputMessage: undefined,
-            replyToExecuting: true,
             ownedMsgs: [],
             return: RuntimeReturnState.NONE,
             stackSize: 0,
@@ -260,7 +259,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             const response = await this.engine.util.send(this.message,
                 {
                     content: text,
-                    replyToExecuting: this.state.replyToExecuting,
+                    replyToExecuting: true,
                     embeds: this.state.embed !== undefined ? [this.state.embed] : undefined,
                     nsfw: this.state.nsfw,
                     allowedMentions: {

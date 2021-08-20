@@ -63,7 +63,12 @@ export class SetSubtag extends BaseSubtag {
         const result = [];
         for (const element of arrayElements) {
             try {
-                result.push(JSON.parse(element));
+                const parsedElement = JSON.parse(element);
+                if (typeof parsedElement === 'number') {
+                    result.push(element); //Might be snowflake
+                    continue;             //TODO better logic for this
+                }
+                result.push(parsedElement);
             } catch (e: unknown) {
                 result.push(element);
             }
