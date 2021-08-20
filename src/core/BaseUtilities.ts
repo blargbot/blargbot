@@ -401,11 +401,10 @@ export class BaseUtilities {
         if (channel !== undefined)
             return [channel];
 
-        return guild.channels.cache
-            .map(c => ({ channel: <GuildChannels>c, score: this.channelMatchScore(<GuildChannels>c, query) }))
-            .filter(c => c.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .map(c => c.channel);
+        return findBest<GuildChannels>(
+            guild.channels.cache.filter(guard.isGuildChannel).values(),
+            (c) => this.channelMatchScore(c, query)
+        );
     }
 
     public channelMatchScore(channel: KnownChannel, query: string): number {
@@ -413,7 +412,7 @@ export class BaseUtilities {
 
         if (guard.isGuildChannel(channel)) {
             const normalizedName = channel.name.toLowerCase();
-            if (channel.name === query) return 10000;
+            if (channel.name === query) return Infinity;
             if (channel.name.startsWith(query)) return 1000;
             if (normalizedName.startsWith(normalizedQuery)) return 100;
             if (channel.name.includes(query)) return 10;
@@ -528,11 +527,7 @@ export class BaseUtilities {
         if (member !== undefined)
             return [member];
 
-        return guild.members.cache
-            .map(m => ({ member: m, score: this.memberMatchScore(m, query) }))
-            .filter(m => m.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .map(m => m.member);
+        return findBest(guild.members.cache.values(), m => this.memberMatchScore(m, query));
     }
 
     public memberMatchScore(member: GuildMember, query: string): number {
@@ -540,6 +535,7 @@ export class BaseUtilities {
         const normalizedDisplayname = member.displayName.toLowerCase();
         const normalizedQuery = query.toLowerCase();
 
+        if (humanize.fullName(member.user) === query) return Infinity;
         if (member.displayName.startsWith(query)) score += 100;
         if (normalizedDisplayname.startsWith(normalizedQuery)) score += 10;
         if (normalizedDisplayname.includes(normalizedQuery)) score += 1;
@@ -551,6 +547,7 @@ export class BaseUtilities {
         const normalizedUsername = user.username.toLowerCase();
         const normalizedQuery = query.toLowerCase();
 
+        if (humanize.fullName(user) === query) return Infinity;
         if (user.username.startsWith(query)) score += 100;
         if (normalizedUsername.startsWith(normalizedQuery)) score += 10;
         if (normalizedUsername.includes(normalizedQuery)) score += 1;
@@ -582,18 +579,14 @@ export class BaseUtilities {
         if (role !== undefined)
             return [role];
 
-        return guild.roles.cache
-            .map(r => ({ role: r, score: this.roleMatchScore(r, query) }))
-            .filter(r => r.score > 0)
-            .sort((a, b) => b.score - a.score)
-            .map(r => r.role);
+        return findBest(guild.roles.cache.values(), r => this.roleMatchScore(r, query));
     }
 
     public roleMatchScore(role: Role, query: string): number {
         const normalizedQuery = query.toLowerCase();
         const normalizedName = role.name.toLowerCase();
 
-        if (role.name === query) return 10000;
+        if (role.name === query) return Infinity;
         if (role.name.startsWith(query)) return 1000;
         if (normalizedName.startsWith(normalizedQuery)) return 100;
         if (role.name.includes(query)) return 10;
@@ -651,3 +644,23 @@ const embedKeys = Object.keys<{ [P in keyof MessageEmbedOptions]-?: true }>({
     url: true,
     video: true
 });
+
+function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[] {
+    const result = [];
+    const matches = [];
+
+    for (const option of options) {
+        const score = evaluator(option);
+        if (score === Infinity)
+            matches.push(option);
+
+        if (score > 0)
+            result.push({ option, score });
+    }
+
+    if (matches.length === 1)
+        return matches;
+
+    return result.sort((a, b) => b.score - a.score)
+        .map(r => r.option);
+}

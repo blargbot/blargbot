@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, guard, humanize } from '@cluster/utils';
 import { StoredGuildEventLogType } from '@core/types';
-import { EmbedFieldData, MessageEmbedOptions, Role, User } from 'discord.js';
+import { EmbedFieldData, GuildTextBasedChannels, MessageEmbedOptions, Role, User } from 'discord.js';
 
 export class LogCommand extends BaseGuildCommand {
     public constructor() {
@@ -19,17 +19,17 @@ export class LogCommand extends BaseGuildCommand {
                     parameters: 'enable {channel:channel} {eventNames[]}',
                     description: 'Sets the channel to log the given events to. Available events are:\n' +
                         Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join('\n'),
-                    execute: (ctx, [channel, eventNames]) => this.setEventChannel(ctx, eventNames, channel.id)
+                    execute: (ctx, [channel, eventNames]) => this.setEventChannel(ctx, eventNames, channel)
                 },
                 {
                     parameters: 'enable {channel:channel} all',
                     description: 'Sets the channel to log all events to, except role related events.',
-                    execute: (ctx, [channel]) => this.setEventChannel(ctx, Object.keys(eventDescriptions), channel.id)
+                    execute: (ctx, [channel]) => this.setEventChannel(ctx, Object.keys(eventDescriptions), channel)
                 },
                 {
                     parameters: 'enable {channel:channel} roles|role {roles:role[]}',
                     description: 'Sets the channel to log when someone gets or loses a role.',
-                    execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.map((r: Role) => `role:${r.id}`), channel.id)
+                    execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.map((r: Role) => `role:${r.id}`), channel)
                 },
                 {
                     parameters: 'disable {eventNames[]}',
@@ -61,7 +61,7 @@ export class LogCommand extends BaseGuildCommand {
         });
     }
 
-    public async setEventChannel(context: GuildCommandContext, eventnames: string[], channelId: string | undefined): Promise<string> {
+    public async setEventChannel(context: GuildCommandContext, eventnames: string[], channel: GuildTextBasedChannels | undefined): Promise<string> {
         const validEvents: StoredGuildEventLogType[] = [];
         const invalidEvents = [];
         for (const event of eventnames) {
@@ -78,15 +78,15 @@ export class LogCommand extends BaseGuildCommand {
             default: return this.error(`${humanize.smartJoin(invalidEvents, ', ', ' and ')} are not valid events`);
         }
 
-        await context.database.guilds.setLogChannel(context.channel.guild.id, validEvents, channelId);
+        await context.database.guilds.setLogChannel(context.channel.guild.id, validEvents, channel?.id);
         const eventStrings = validEvents.map(e => {
             if (e.startsWith('role:'))
                 return `<@&${e.slice(5)}>`;
             return `\`${e}\``;
         });
 
-        if (typeof channelId === 'string')
-            return this.success(`I will now log the following events in <#${channelId}>:\n${eventStrings.join('\n')}`);
+        if (channel !== undefined)
+            return this.success(`I will now log the following events in ${channel.toString()}:\n${eventStrings.join('\n')}`);
         return this.success(`I will no longer log the following events:\n${eventStrings.join('\n')}`);
     }
 

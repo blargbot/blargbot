@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
-import { GuildChannels, MessageOptions } from 'discord.js';
+import { GuildTextBasedChannels, MessageOptions } from 'discord.js';
 
 export class FarewellCommand extends BaseGuildCommand {
     public constructor() {
@@ -110,10 +110,7 @@ export class FarewellCommand extends BaseGuildCommand {
         return this.success('The farewell message will now run using your permissions');
     }
 
-    public async setChannel(context: GuildCommandContext, channel: GuildChannels): Promise<string> {
-        if (!guard.isTextableChannel(channel))
-            return this.error('Farewell messages can only be sent in text channels!');
-
+    public async setChannel(context: GuildCommandContext, channel: GuildTextBasedChannels): Promise<string> {
         await context.database.guilds.setSetting(context.channel.guild.id, 'farewellchan', channel.id);
         return this.success(`Farewell messages will now be sent in ${channel.toString()}`);
     }

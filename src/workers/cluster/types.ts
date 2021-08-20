@@ -3,7 +3,7 @@ import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterWorker } from './ClusterWorker';
@@ -633,7 +633,7 @@ export interface CommandBinderStateLookupCache {
     findUser(userString: string): Awaitable<CommandBinderParseResult<User>>;
     findMember(memberString: string): Awaitable<CommandBinderParseResult<GuildMember>>;
     findRole(roleString: string): Awaitable<CommandBinderParseResult<Role>>;
-    findChannel(channelString: string): Awaitable<CommandBinderParseResult<KnownChannel>>;
+    findChannel(channelString: string): Awaitable<CommandBinderParseResult<TextBasedChannels>>;
 }
 
 export interface CommandBinderState<TContext extends CommandContext> {
