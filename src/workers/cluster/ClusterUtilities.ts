@@ -692,11 +692,11 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public isBotStaff(id: string): boolean {
-        return this.cluster.botStaff.staff.has(id);
+        return this.isBotDeveloper(id) || this.cluster.botStaff.staff.has(id);
     }
 
     public isBotSupport(id: string): boolean {
-        return this.cluster.botStaff.support.has(id);
+        return this.isBotStaff(id) || this.cluster.botStaff.support.has(id);
     }
 }
 

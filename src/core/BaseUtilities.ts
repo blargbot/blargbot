@@ -353,15 +353,20 @@ export class BaseUtilities {
         return this.isBotOwner(userId)
             || this.config.discord.users.developers.includes(userId);
     }
-
-    public isBotStaff(id: string): Promise<boolean> | boolean {
-        return this.database.vars.get('police')
-            .then(police => police?.value.includes(id) ?? false);
+    public isBotStaff(userId: string): Promise<boolean> | boolean;
+    public async isBotStaff(userId: string): Promise<boolean> {
+        if (this.isBotDeveloper(userId))
+            return true;
+        const police = await this.database.vars.get('police');
+        return police?.value.includes(userId) ?? false;
     }
 
-    public isBotSupport(id: string): Promise<boolean> | boolean {
-        return this.database.vars.get('support')
-            .then(support => support?.value.includes(id) ?? false);
+    public isBotSupport(userId: string): Promise<boolean> | boolean;
+    public async isBotSupport(userId: string): Promise<boolean> {
+        if (await this.isBotStaff(userId))
+            return true;
+        const support = await this.database.vars.get('support');
+        return support?.value.includes(userId) ?? false;
     }
 
     public async getChannel(channelId: string): Promise<AnyChannel | undefined>;
