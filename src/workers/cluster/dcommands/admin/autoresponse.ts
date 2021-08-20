@@ -62,9 +62,27 @@ export class AutoResponseCommand extends BaseGuildCommand {
                     parameters: 'setauthorizer {id}',
                     description: 'Sets the autoresponse to use your permissions for the bbtag when it is triggered',
                     execute: (ctx, [id]) => this.setAuthorizer(ctx, id)
+                },
+                {
+                    parameters: 'debug {id}',
+                    description: 'Sets the autoresponse to send you the debug output when it is next triggered by one of your messages',
+                    execute: (ctx, [id]) => this.setDebug(ctx, id)
                 }
             ]
         });
+    }
+
+    public async setDebug(context: GuildCommandContext, id: string): Promise<string> {
+        const accessError = this.checkArAccess(context);
+        if (accessError !== undefined)
+            return accessError;
+
+        const match = await this.getAutoresponse(context, id);
+        if (match === undefined)
+            return this.arNotFound(id);
+
+        context.cluster.autoresponses.setDebug(context.channel.guild.id, match.id, context.author.id, context.channel.id, context.message.id);
+        return this.success(`The next message that you send that triggers ${match.id === 'everything' ? 'the everything autoresponse' : `autoresponse ${match.id}`} will send the debug output here`);
     }
 
     public async setBBTag(context: GuildCommandContext, id: string, bbtag: string): Promise<string> {

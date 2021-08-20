@@ -38,7 +38,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
 
         result.push(
             handleRoleme(this.cluster, message),
-            this.cluster.autoresponses.execute(this.cluster, message, true),
+            this.cluster.autoresponses.execute(message, true),
             handleTableFlip(this.cluster, message)
         );
 
@@ -48,7 +48,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             return result;
         }
 
-        result.push(this.cluster.autoresponses.execute(this.cluster, message, false));
+        result.push(this.cluster.autoresponses.execute(message, false));
         return result;
     }
 

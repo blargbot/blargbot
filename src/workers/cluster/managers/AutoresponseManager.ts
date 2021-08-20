@@ -1,17 +1,21 @@
 import { Cluster } from '@cluster';
 import { EverythingAutoResponseLimit, GeneralAutoResponseLimit } from '@cluster/bbtag';
-import { RuntimeLimit, WhitelistResponse } from '@cluster/types';
-import { codeBlock, guard, humanize, mapping } from '@cluster/utils';
+import { WhitelistResponse } from '@cluster/types';
+import { bbtagUtil, codeBlock, guard, humanize, mapping } from '@cluster/utils';
 import { GuildTriggerTag } from '@core/types';
 import { GuildEmoji, GuildMessage, Message, ReactionEmoji, User } from 'discord.js';
 
 export class AutoresponseManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #guilds: Set<string>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
+
     public get guilds(): ReadonlySet<string> { return this.#guilds; }
 
     public constructor(private readonly cluster: Cluster) {
         this.#guilds = new Set();
+        this.#debugOutput = {};
     }
 
     public async refresh(): Promise<void> {
@@ -62,24 +66,46 @@ ${codeBlock(code, 'js')}`
             : isChange ? 'rejected' : 'alreadyRejected';
     }
 
-    public async execute(cluster: Cluster, msg: Message, everything: boolean): Promise<void> {
+    public setDebug(guildId: string, id: number | 'everything', userId: string, channelId: string, messageId: string): void {
+        this.#debugOutput[`${guildId}|${id}|${userId}`] = { channelId, messageId };
+    }
+
+    public async execute(msg: Message, everything: boolean): Promise<void> {
         if (msg.author.discriminator === '0000' || !guard.isGuildMessage(msg))
             return;
 
         if (!this.#guilds.has(msg.channel.guild.id))
             return;
 
-        for await (const { command, limit, silent = false } of this.findAutoresponses(cluster, msg, everything)) {
-            await cluster.bbtag.execute(command.content, {
-                message: msg,
-                limit,
-                author: command.author,
-                inputRaw: msg.content,
-                isCC: true,
-                rootTagName: 'autoresponse',
-                silent
-            });
-        }
+        const promises = [];
+        for await (const ar of this.findAutoresponses(msg, everything))
+            promises.push(this.executeCore(msg, ar.id, ar.command));
+
+        await Promise.all(promises);
+    }
+
+    private async executeCore(msg: GuildMessage, id: `${number}` | 'everything', tag: GuildTriggerTag): Promise<void> {
+        const result = await this.cluster.bbtag.execute(tag.content, {
+            message: msg,
+            limit: id === 'everything' ? new EverythingAutoResponseLimit() : new GeneralAutoResponseLimit(),
+            author: tag.author,
+            authorizer: tag.authorizer,
+            inputRaw: msg.content,
+            isCC: true,
+            rootTagName: 'autoresponse',
+            silent: id === 'everything'
+        });
+
+        const key = `${msg.channel.guild.id}|${id}|${msg.author.id}`;
+        const debugCtx = this.#debugOutput[key];
+        if (debugCtx === undefined)
+            return;
+
+        delete this.#debugOutput[key];
+        await this.cluster.util.send(debugCtx.channelId, {
+            ...bbtagUtil.createDebugOutput('autoresponse', tag.content, msg.content, result),
+            reply: { messageReference: debugCtx.messageId }
+        });
     }
 
     public async handleWhitelistApproval(message: Message, emoji: GuildEmoji | ReactionEmoji, user: User): Promise<void> {
@@ -111,20 +137,20 @@ ${codeBlock(code, 'js')}`
         await Promise.all(promises);
     }
 
-    private async * findAutoresponses(cluster: Cluster, msg: GuildMessage, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; limit: RuntimeLimit; silent?: boolean; }> {
-        const ars = await cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
+    private async * findAutoresponses(msg: GuildMessage, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; }> {
+        const ars = await this.cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
         if (everything) {
             if (ars.everything !== undefined)
-                yield { command: ars.everything.executes, limit: new EverythingAutoResponseLimit(), silent: true };
+                yield { command: ars.everything.executes, id: 'everything' };
             return;
         }
 
         if (ars.filtered === undefined)
             return;
 
-        for (const ar of Object.values(ars.filtered)) {
+        for (const [id, ar] of Object.entries(ars.filtered)) {
             if (ar !== undefined && guard.testMessageFilter(ar, msg)) {
-                yield { command: ar.executes, limit: new GeneralAutoResponseLimit() };
+                yield { command: ar.executes, id: <`${number}`>id };
             }
         }
     }
