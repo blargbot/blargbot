@@ -64,6 +64,9 @@ export class BBTagEngine {
         }
 
         return {
+            source,
+            tagName: context.rootTagName,
+            input: context.inputRaw,
             content: content,
             debug: context.debug,
             errors: context.errors,

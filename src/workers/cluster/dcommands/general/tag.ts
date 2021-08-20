@@ -192,7 +192,7 @@ export class TagCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input ?? '', result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
     }
 
     public async runRaw(
@@ -210,7 +210,7 @@ export class TagCommand extends BaseGuildCommand {
             author: context.author.id
         });
 
-        return debug ? bbtagUtil.createDebugOutput('test', content, input, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
     }
 
     public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -289,11 +289,11 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const response = `The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``;
+        const response = this.info(`The raw code for \`${match.name}\` is:\n\`\`\`${match.lang ?? ''}\n${match.content}\n\`\`\``);
         return guard.checkMessageSize(response)
             ? response
             : {
-                content: `The raw code for \`${match.name}\` is attached`,
+                content: this.info(`The raw code for \`${match.name}\` is attached`),
                 files: [
                     {
                         name: match.name + '.bbtag',

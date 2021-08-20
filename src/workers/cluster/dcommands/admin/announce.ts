@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
 import { guard, humanize } from '@core/utils';
-import { GuildChannels, MessageEmbedOptions, MessageMentionOptions, NewsChannel, Role, TextChannel, ThreadChannel } from 'discord.js';
+import { GuildChannels, GuildTextBasedChannels, MessageEmbedOptions, MessageMentionOptions, NewsChannel, Role, TextChannel, ThreadChannel } from 'discord.js';
 
 export class AnnounceCommand extends BaseGuildCommand {
     public constructor() {
@@ -39,7 +39,7 @@ export class AnnounceCommand extends BaseGuildCommand {
         return this.success(`Announcement configuration reset! Do \`${context.prefix}announce configure\` to reconfigure it.`);
     }
 
-    public async configure(context: GuildCommandContext, channel: GuildChannels | undefined, role: Role | undefined): Promise<string | undefined> {
+    public async configure(context: GuildCommandContext, channel: GuildTextBasedChannels | undefined, role: Role | undefined): Promise<string | undefined> {
         const result = await this.configureCore(context, channel, role);
         switch (result) {
             case true: return this.success('Your announcements have been configured!');

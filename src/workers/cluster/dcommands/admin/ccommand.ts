@@ -165,7 +165,7 @@ export class CustomCommand extends BaseGuildCommand {
             author: context.author.id
         });
 
-        return debug ? bbtagUtil.createDebugOutput('test', content, input, result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
     }
 
     public showDocs(context: GuildCommandContext, topic: string | undefined): SendPayload | string {
@@ -204,7 +204,7 @@ export class CustomCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(match.name, match.content, input ?? '', result) : undefined;
+        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
     }
 
     public async createCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -268,11 +268,11 @@ export class CustomCommand extends BaseGuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return this.error(`The command \`${match.name}\` is an alias to the tag \`${match.alias}\``);
 
-        const response = this.success(`The raw code for \`${match.name}\` is:\n${codeBlock(match.content)}`);
+        const response = this.info(`The raw code for \`${match.name}\` is:\n${codeBlock(match.content)}`);
         return guard.checkMessageSize(response)
             ? response
             : {
-                content: this.success(`The raw code for \`${match.name}\` is attached`),
+                content: this.info(`The raw code for \`${match.name}\` is attached`),
                 files: [
                     {
                         name: match.name + '.bbtag',

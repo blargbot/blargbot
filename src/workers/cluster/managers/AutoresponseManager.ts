@@ -103,7 +103,7 @@ ${codeBlock(code, 'js')}`
 
         delete this.#debugOutput[key];
         await this.cluster.util.send(debugCtx.channelId, {
-            ...bbtagUtil.createDebugOutput('autoresponse', tag.content, msg.content, result),
+            ...bbtagUtil.createDebugOutput(result),
             reply: { messageReference: debugCtx.messageId }
         });
     }

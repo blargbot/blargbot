@@ -34,9 +34,23 @@ export class IntervalCommand extends BaseGuildCommand {
                     parameters: 'debug',
                     description: 'Runs the interval now and sends the debug output',
                     execute: (ctx) => this.debug(ctx)
+                },
+                {
+                    parameters: 'info',
+                    description: 'Shows information about the current farewell message',
+                    execute: (ctx) => this.getInfo(ctx)
                 }
             ]
         });
+    }
+
+    public async getInfo(context: GuildCommandContext): Promise<string> {
+        const interval = await context.database.guilds.getInterval(context.channel.guild.id);
+        if (interval === undefined)
+            return this.error('No interval has been set yet!');
+
+        const authorizer = interval.authorizer ?? interval.author;
+        return this.info(`The current interval was last edited by <@${interval.author}> (${interval.author}) and is authorized by <@${authorizer}> (${authorizer})`);
     }
 
     public async setInterval(context: GuildCommandContext, code: string): Promise<string> {
@@ -59,11 +73,11 @@ export class IntervalCommand extends BaseGuildCommand {
         if (interval === undefined)
             return this.error('There is no interval currently set up!');
 
-        const response = this.success(`The raw code for the interval is:\n${codeBlock(interval.content)}`);
+        const response = this.info(`The raw code for the interval is:\n${codeBlock(interval.content)}`);
         return guard.checkMessageSize(response)
             ? response
             : {
-                content: this.success('The raw code for the interval is attached'),
+                content: this.info('The raw code for the interval is attached'),
                 files: [
                     {
                         name: 'interval.bbtag',
@@ -93,8 +107,7 @@ export class IntervalCommand extends BaseGuildCommand {
             case 'MISSING_AUTHORIZER': return this.error('I couldnt find the user who authorizes the interval!');
             case 'MISSING_CHANNEL': return this.error('I wasnt able to figure out which channel to run the interval in!');
             case 'TOO_LONG': return this.error(`The interval took longer than the max allowed time (${humanize.duration(context.cluster.intervals.timeLimit)})`);
+            default: return bbtagUtil.createDebugOutput(result);
         }
-
-        return bbtagUtil.createDebugOutput('interval', interval.content, '', result);
     }
 }

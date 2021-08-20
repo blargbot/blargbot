@@ -19,7 +19,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
     return {
         findChannel: createLookup(
             command, 'channel',
-            query => context.util.findChannels(context.channel.guild, query),
+            async query => (await context.util.findChannels(context.channel.guild, query)).filter(guard.isTextableChannel),
             async options => {
                 const result = await context.util.queryChannel(context.channel, context.author, options);
                 return result.state === 'SUCCESS' ? result.value : undefined;
