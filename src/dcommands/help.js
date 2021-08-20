@@ -132,10 +132,31 @@ class HelpCommand extends BaseCommand {
                                 helpCommandList.push(key);
                         }
                         helpCommandList.sort();
-                        embed.fields.push({
+                        const sections = [];
+                        var section = {
                             name: 'Custom Commands',
-                            value: '```\n' + helpCommandList.join(', ') + '\n```'
-                        });
+                            value: '```\n'
+                        };
+                        for (var i = 0; i < helpCommandList.length; i++) {
+                            if (i === 0) {
+                                section.value += helpCommandList[i];
+                                continue;
+                            }
+
+                            if ((section.value + ', ' + helpCommandList[i]).length < 1020) {
+                                section.value += ', ' + helpCommandList[i];
+                            } else {
+                                section.value += '\n```';
+                                sections.push(section);
+                                section = {
+                                    name: '\u200b',
+                                    value: '```\n' + helpCommandList[i]
+                                };
+                            }
+                        }
+                        section.value += '\n```';
+                        sections.push(section);
+                        embed.fields.push(...sections);
                     }
                 }
 
