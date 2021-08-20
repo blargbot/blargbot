@@ -209,7 +209,7 @@ function getTopicBody(context: CommandContext, topic: string | undefined): Messa
             return subtag.enrichDocs({
                 title: ` - {${subtag.name}}`,
                 url: `/#${encodeURIComponent(subtag.name)}`,
-                description: description.length === 0 ? undefined : description.join('\n') + '\u200b',
+                description: description.length === 0 ? undefined : description.join('\n'),
                 color: subtag.deprecated !== false ? 0xff0000 : undefined,
                 fields,
                 footer: {
