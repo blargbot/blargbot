@@ -5,7 +5,7 @@ import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandCon
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
 import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
-import { FileOptions, MessageEmbedOptions } from 'discord.js';
+import { FileOptions, MessageEmbedOptions, MessageOptions } from 'discord.js';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
@@ -155,7 +155,7 @@ export class CustomCommand extends BaseGuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
+    ): Promise<string | MessageOptions | undefined> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
             inputRaw: input,
@@ -181,7 +181,7 @@ export class CustomCommand extends BaseGuildCommand {
         commandName: string,
         input: string | undefined,
         debug: boolean
-    ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
+    ): Promise<string | MessageOptions | undefined> {
         const match = await this.requestReadableCommand(context, commandName, false);
         if (typeof match !== 'object')
             return match;

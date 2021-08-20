@@ -4,7 +4,7 @@ import { BaseGuildCommand, CommandContext } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@cluster/utils';
 import { SendPayload, StoredTag } from '@core/types';
-import { EmbedField, EmbedFieldData, FileOptions, MessageEmbedOptions, User } from 'discord.js';
+import { EmbedField, EmbedFieldData, FileOptions, MessageEmbedOptions, MessageOptions, User } from 'discord.js';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
@@ -170,7 +170,7 @@ export class TagCommand extends BaseGuildCommand {
         tagName: string,
         input: string | undefined,
         debug: boolean
-    ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
+    ): Promise<string | MessageOptions | undefined> {
         const match = await this.requestReadableTag(context, tagName, false);
         if (typeof match !== 'object')
             return match;
@@ -200,7 +200,7 @@ export class TagCommand extends BaseGuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
+    ): Promise<string | MessageOptions | undefined> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
             inputRaw: input,

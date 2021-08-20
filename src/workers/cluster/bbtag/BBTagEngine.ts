@@ -116,7 +116,7 @@ export class BBTagEngine {
         if (definition !== undefined) {
             const result = await context.limit.check(context, bbtag, definition.name);
             if (result !== undefined)
-                return context.addError(result, bbtag);
+                return result;
         }
 
         try {

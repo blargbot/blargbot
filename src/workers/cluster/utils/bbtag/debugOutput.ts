@@ -1,9 +1,11 @@
 import { ExecutionResult } from '@cluster/types';
 import { codeBlock, humanize } from '@core/utils';
-import { FileOptions } from 'discord.js';
+import { MessageOptions } from 'discord.js';
 import moment from 'moment';
 
-export function createDebugOutput(name: string, code: string, args: string, result: ExecutionResult): { content: string; files: FileOptions[]; } {
+import { bbtagUtil } from '.';
+
+export function createDebugOutput(name: string, code: string, args: string, result: ExecutionResult): MessageOptions {
     const performance: Record<string, unknown> = {};
     for (const key of Object.keys(result.duration.subtag)) {
         const times = result.duration.subtag[key];
@@ -12,8 +14,7 @@ export function createDebugOutput(name: string, code: string, args: string, resu
             performance[key] = {
                 count: times.length,
                 totalMs: totalTime,
-                averageMs: totalTime / times.length,
-                timesMs: times
+                averageMs: totalTime / times.length
             };
         }
     }
@@ -33,7 +34,16 @@ export function createDebugOutput(name: string, code: string, args: string, resu
                     userInput: args,
                     code: code,
                     debug: result.debug,
-                    errors: result.errors,
+                    errors: result.errors.map(e => ({
+                        error: e.error,
+                        details: e.debugMessage,
+                        subtag: e.subtag === undefined ? undefined : {
+                            name: bbtagUtil.stringify(e.subtag.name),
+                            arguments: e.subtag.args.map(bbtagUtil.stringify),
+                            start: `Index ${e.subtag.start.index}: Line ${e.subtag.start.line}, column ${e.subtag.start.column}`,
+                            end: `Index ${e.subtag.end.index}: Line ${e.subtag.end.line}, column ${e.subtag.end.column}`
+                        }
+                    })),
                     variables: result.database.values,
                     performance: performance
                 }, undefined, 2)
