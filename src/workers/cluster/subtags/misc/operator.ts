@@ -11,11 +11,10 @@ export class OperatorSubtag extends BaseSubtag {
             name: 'operator',
             aliases: Object.keys(allOperators),
             category: SubtagType.COMPLEX,
-            definition: [
+            definition: [//! overwritten
                 {
                     parameters: ['values+'],
-                    //TODO DOCS DOCS DOCS DOCS
-                    description: 'OVERWRITTEN',
+                    description: '',
                     execute: (ctx, args, subtag) =>
                         this.applyOperation(ctx, args, subtag)
                 }

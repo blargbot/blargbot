@@ -81,17 +81,24 @@ export class ReactAddSubtag extends BaseSubtag {
         embed.fields = [{
             name: 'Usage',
             value: '```\n{reactadd;<reactions...>}```\n' +
-                'Adds `reactions` to the output message of this tag.'
+                'Adds `reactions` to the output message of this tag.\n\n' +
+                '**Example code:**\n> This will have reactions! {reactadd;🤔;👀}\n' +
+                '**Example out:**\n> This will have reactions! (reacted with 🤔 and 👀)'
         },
         {
             name: '\u200b',
             value: '```\n{reactadd;<messageid>;<reactions...>}```\n' +
-                'Adds `reactions` to `messageid` in the current channel.'
+                'Adds `reactions` to `messageid` in the current channel.\n\n' +
+                '**Example code:**\n> {reactadd;11111111111111111;🤔;👀}\n' +
+                '**Example out:**\n> (11111111111111111 now has reactions 🤔 and 👀)'
         },
         {
             name: '\u200b',
             value: '```\n{reactadd;<channelid>;<messageid>;<reactions...>}```\n' +
-                'Adds `reactions` to `messageid` in `channelid`. `channelid` must be an ID, use of `{channelid} is advised`.'
+                'Adds `reactions` to `messageid` in `channelid`. `channelid` must be an ID, use of `{channelid} is advised`.\n\n' +
+                '**Example code:**\n> {reactadd;11111111111111111;22222222222222222;🤔;👀}\n' +
+                '**Example out:**\n> (22222222222222222 in 11111111111111111 now has reactions 🤔 and 👀)'
+
         }];
         return embed;
     }

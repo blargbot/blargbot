@@ -37,8 +37,9 @@ export class BanSubtag extends BaseSubtag {
                     execute: (ctx, args, subtag) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, '', subtag)
                 },
                 {
-                    parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban', 'noperms'],
-                    description: 'Bans `user` for duration `timeToUnban` with `reason`.',
+                    parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban', 'noPerms'],
+                    description: 'Bans `user` for duration `timeToUnban` with `reason`. If `noPerms` is provided and not an empty string, do not check if the command executor is actually able to ban people.' +
+                        'Only provide this if you know what you\'re doing.',
                     exampleCode: '{ban;Stupid cat;;For being stupid;;anythingcangohere}',
                     exampleOut: 'true (anyone can use this cc regardless of perms)',
                     execute: (ctx, args, subtag) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, subtag)
@@ -78,56 +79,3 @@ export class BanSubtag extends BaseSubtag {
         return this.customError(errorMap[response], context, subtag);
     }
 }
-
-// const Builder = require('../structures/TagBuilder');
-
-// module.exports =
-//     Builder.APITag('ban')
-//         .withArgs(a => [
-//             a.required('user'),
-//             a.optional('daysToDelete'),
-//             a.optional('reason'),
-//             a.optional('timeToUnban'),
-//             a.optional('noperms')
-//         ]).withDesc('Bans `user`. ' +
-//             'This functions the same as the ban command. ' +
-//             'If the ban is successful, `Success` will be returned, unless a duration was provided in which case the duration in ms will be returned' +
-//             'If `noperms` is provided, do not check if the command executor is actually able to ban people. ' +
-//             'Only provide this if you know what you\'re doing.'
-//         ).withExample(
-//             '{ban;stupid cat;0;This is a test ban} @stupid cat was banned!',
-//             'Success @stupid cat was banned!'
-//         )
-//         .whenArgs(0, Builder.errors.notEnoughArguments)
-//         .whenArgs('1-5', async function (subtag, context, args) {
-//             const user = await context.getUser(args[0], {
-//                 quiet: true, suppress: context.scope.suppressLookup,
-//                 label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName || 'unknown'}\``
-//             });
-
-//             if (!user)
-//                 return Builder.errors.noUserFound(subtag, context);
-
-//             const noPerms = args[4] ? true : false;
-//             let duration;
-
-//             if (args[3])
-//                 duration = bu.parseDuration(args[3]);
-
-//             const response = await CommandManager.built['ban'].ban(
-//                 context.msg,
-//                 user,
-//                 args[1],
-//                 args[2] || context.scope.reason || undefined,
-//                 duration,
-//                 true,
-//                 noPerms
-//             );
-
-//             if (typeof response[1] === 'string' && response[1].startsWith('`'))
-//                 return Builder.util.error(subtag, context, response[1]);
-
-//             return response[1];
-//         })
-//         .whenDefault(Builder.errors.tooManyArguments)
-//         .build();
