@@ -48,7 +48,7 @@ export class HelpCommand extends BaseGlobalCommand {
             getCommandGroups = async (command) => {
                 const perms = await context.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
                 // TODO perms.rolename can be role id, name or tag
-                const roles = perms?.rolename;
+                const roles = perms?.roles;
                 if (Array.isArray(roles))
                     return roles;
                 return [commandTypeDetails[command.category].name];
@@ -258,6 +258,7 @@ const typeStrings: { [key in CommandVariableType]: { single: string; plural: str
     boolean: { single: 'true/false', plural: 'true/false' },
     channel: { single: 'a channel id, mention or name', plural: 'channel ids, mentions or names' },
     duration: { single: 'a duration', plural: 'durations' },
+    bigint: { single: 'a whole number', plural: 'whole numbers' },
     integer: { single: 'a whole number', plural: 'whole numbers' },
     member: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' },
     number: { single: 'a number', plural: 'numbers' },

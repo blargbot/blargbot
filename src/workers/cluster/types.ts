@@ -539,7 +539,8 @@ export interface CommandProperties {
 
 export type GuildSettingTypeName<T> =
     T extends string ? 'string' | 'channel' | 'role' :
-    T extends number ? 'int' :
+    T extends number ? 'float' | 'int' :
+    T extends bigint ? 'bigint' :
     T extends boolean ? 'bool' : never
 
 export type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {

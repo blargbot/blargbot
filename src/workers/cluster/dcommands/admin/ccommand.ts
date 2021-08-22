@@ -755,7 +755,9 @@ const mapCustomCommandShrinkwrap = mapping.mapObject<CustomCommandShrinkwrap>({
     ),
     help: mapping.mapOptionalString,
     hidden: mapping.mapOptionalBoolean,
-    roles: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined })
+    roles: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined }),
+    disabled: mapping.mapOptionalBoolean,
+    permission: mapping.mapOptionalBigInt
 });
 
 const mapGuildShrinkwrap = mapping.mapObject<GuildShrinkwrap>({

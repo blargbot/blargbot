@@ -628,8 +628,7 @@ export class ClusterUtilities extends BaseUtilities {
             if (await this.database.guilds.getSetting(guildId, 'permoverride') !== true)
                 return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
 
-            const staffperms = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
-            const allow = typeof staffperms === 'string' ? parseInt(staffperms) : staffperms;
+            const allow = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
             return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
         }
 
@@ -639,9 +638,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (member.permissions.has('ADMINISTRATOR')) return true;
 
         if (await this.database.guilds.getSetting(member.guild.id, 'permoverride') === true) {
-            let allow = await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff;
-            if (typeof allow === 'string')
-                allow = parseInt(allow);
+            const allow = await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff;
             if (this.hasPerms(member, allow)) {
                 return true;
             }
@@ -649,9 +646,8 @@ export class ClusterUtilities extends BaseUtilities {
         return false;
     }
 
-    public hasPerms(member: GuildMember, allow?: number | readonly PermissionString[]): boolean {
-        allow ??= defaultStaff;
-        const newPerm = new Permissions(typeof allow === 'number' ? BigInt(Math.floor(allow)) : allow);
+    public hasPerms(member: GuildMember, allow?: bigint | readonly PermissionString[]): boolean {
+        const newPerm = new Permissions(allow ?? defaultStaff);
         return member.permissions.any(newPerm);
     }
 

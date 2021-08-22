@@ -263,6 +263,12 @@ const typeParsers: {
     string(value) {
         return { success: true, value };
     },
+    bigint(value, state) {
+        const result = parse.bigint(value);
+        if (result === undefined)
+            return { success: false, error: state.command.error(`\`${value}\` is not an integer`) };
+        return { success: true, value: result };
+    },
     integer(value, state) {
         const result = parse.int(value);
         if (isNaN(result))

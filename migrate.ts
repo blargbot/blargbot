@@ -8,7 +8,7 @@ import 'module-alias/register';
 
 import config from '@config';
 import { createLogger, Logger } from '@core/Logger';
-import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildTriggerTag, MutableGuildCensor, MutableGuildCensorRule, MutableGuildRolemeEntry, MutableStoredGuild, StoredGuild } from '@core/types';
+import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildTriggerTag, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableGuildRolemeEntry, MutableStoredGuild, MutableStoredGuildSettings, StoredGuild } from '@core/types';
 import { guard, mapping } from '@core/utils';
 import { AnyChannel, Client as Discord } from 'discord.js';
 import * as r from 'rethinkdb';
@@ -127,6 +127,7 @@ async function migrateGuild(guild: any, rethink: r.Connection, logger: Logger): 
         autoresponse: {},
         settings: {},
         censor: {},
+        commandperms: {},
         update: {}
     };
 
@@ -137,7 +138,9 @@ async function migrateGuild(guild: any, rethink: r.Connection, logger: Logger): 
         migrateEverythingAR(guildId, guild, logger, context),
         migrateFilteredARs(guildId, guild, logger, context),
         migrateCensors(guildId, guild, logger, context),
-        migrateRolemes(guildId, guild, logger, context)
+        migrateRolemes(guildId, guild, logger, context),
+        migrateCommandPerms(guildId, guild, logger, context),
+        migrateSettings(guildId, guild, logger, context)
     ].reduce((p, c) => c || p, false);
 
     if (changed) {
@@ -353,6 +356,79 @@ function migrateRolemes(guildId: string, guild: any, logger: Logger, context: Gu
     }
 }
 
+function migrateCommandPerms(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
+    const commandPerms = guild.commandperms;
+    if (commandPerms === undefined)
+        return false;
+
+    let changed = false;
+
+    for (const [commandName, perms] of Object.entries<PropertyKey, any>(commandPerms)) {
+        const newPerm: r.UpdateData<MutableCommandPermissions> = {};
+        switch (typeof perms.permission) {
+            case 'object': // null
+                changed = true;
+                newPerm.permission = r.literal();
+                break;
+            case 'number':
+                logger.debug('[migrateGuild]', guildId, 'migrating command', commandName, 'permissions');
+                changed = true;
+                newPerm.permission = BigInt(perms.permission);
+                break;
+        }
+
+        if (perms.rolename === null) {
+            changed = true;
+            (<any>newPerm).rolename = r.literal();
+        } else if (Array.isArray(perms.rolename)) {
+            changed = true;
+            logger.debug('[migrateGuild]', guildId, 'migrating command', commandName, 'roles');
+            newPerm.roles = perms.rolename;
+            (<any>newPerm).rolename = r.literal();
+        }
+
+        if (Object.keys(newPerm).length > 0)
+            context.commandperms[commandName] = newPerm;
+    }
+
+    if (changed)
+        context.update.commandperms = context.commandperms;
+
+    return changed;
+}
+
+function migrateSettings(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
+    const settings = guild.settings;
+    if (settings === undefined)
+        return false;
+
+    let changed = false;
+    const newSettings: Partial<MutableStoredGuildSettings> = {};
+
+    if (typeof settings.staffperms === 'number') {
+        logger.debug('[migrateGuild]', guildId, 'migrating setting staffperms');
+        changed = true;
+        newSettings.staffperms = BigInt(settings.staffperms);
+    }
+
+    if (typeof settings.kickoverride === 'number') {
+        logger.debug('[migrateGuild]', guildId, 'migrating setting kickoverride');
+        changed = true;
+        newSettings.kickoverride = BigInt(settings.kickoverride);
+    }
+
+    if (typeof settings.banoverride === 'number') {
+        logger.debug('[migrateGuild]', guildId, 'migrating setting banoverride');
+        changed = true;
+        newSettings.banoverride = BigInt(settings.banoverride);
+    }
+
+    if (changed)
+        context.update.settings = context.settings;
+
+    return changed;
+}
+
 const mapGuildTriggerTag = mapping.mapObject<GuildTriggerTag>({
     author: mapping.mapString,
     authorizer: mapping.mapOptionalString,
@@ -392,5 +468,6 @@ interface GuildMigrateContext {
     ccommands: r.UpdateData<MutableStoredGuild['ccommands']>;
     settings: r.UpdateData<MutableStoredGuild['settings']>;
     autoresponse: r.UpdateData<Exclude<MutableStoredGuild['autoresponse'], undefined>>;
+    commandperms: r.UpdateData<Exclude<MutableStoredGuild['commandperms'], undefined>>;
     update: r.UpdateData<MutableStoredGuild>;
 }

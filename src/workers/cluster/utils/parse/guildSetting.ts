@@ -21,12 +21,28 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             value: <StoredGuildSettings[T]>raw,
             display: `\`${raw}\``
         };
+        case 'float': {
+            const val = parse.float(raw);
+            return {
+                success: !isNaN(val),
+                value: <StoredGuildSettings[T]>val,
+                display: `\`${val}\``
+            };
+        }
         case 'int': {
             const val = parse.int(raw);
             return {
-                success: !Number.isNaN(val),
+                success: !isNaN(val),
                 value: <StoredGuildSettings[T]>val,
                 display: `\`${val}\``
+            };
+        }
+        case 'bigint': {
+            const val = parse.bigint(raw);
+            return {
+                success: val !== undefined,
+                value: <StoredGuildSettings[T]>val,
+                display: `\`${val ?? raw}\``
             };
         }
         case 'bool': {

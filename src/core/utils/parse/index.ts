@@ -8,3 +8,4 @@ export * from './float';
 export * from './int';
 export * from './time';
 export * from './string';
+export * from './bigint';

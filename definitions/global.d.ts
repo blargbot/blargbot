@@ -25,6 +25,7 @@ declare global {
     type ClassOf<T> = Function & { prototype: T; };
     type PropertyNamesOfType<T, P> = { [K in keyof T]: T[K] extends P ? K : never }[keyof T];
     type PropertiesOfType<T, P> = { [K in PropertyNamesOfType<T, P>]: T[K] }
+    type Intersect<T1, T2> = { [K in (keyof T1 & keyof T2)]: T1[K] extends T2[K] ? T2[K] extends T1[K] ? T1[K] : never : never };
 
     type LowerLetter = Lowercase<'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'>;
     type UpperLetter = Uppercase<LowerLetter>;

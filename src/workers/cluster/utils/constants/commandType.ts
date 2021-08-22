@@ -54,7 +54,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
         name: 'Social',
         async requirement(context: CommandContext): Promise<boolean> {
             if (!guard.isGuildCommandContext(context))
-                return false;
+                return true;
             return await context.cluster.database.guilds.getSetting(context.channel.guild.id, 'social') ?? false;
         },
         description: 'Social commands for interacting with other people',

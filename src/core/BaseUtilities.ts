@@ -555,6 +555,10 @@ export class BaseUtilities {
     }
 
     public async getRole(guild: string | Guild, roleId: string): Promise<Role | undefined> {
+        roleId = parse.entityId(roleId, '@&', true) ?? '';
+        if (roleId === '')
+            return undefined;
+
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
         if (typeof guild === 'string')

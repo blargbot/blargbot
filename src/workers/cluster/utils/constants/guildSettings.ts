@@ -61,19 +61,19 @@ export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix' 
         key: 'staffperms',
         name: 'Staff permissions',
         desc: 'The numeric value of permissions that designate a staff member. If a user has any of the permissions and permoverride is enabled, allows them to execute any command regardless of role. See <a href=https://discordapi.com/permissions.html>here</a> for a permission calculator.',
-        type: 'int'
+        type: 'bigint'
     },
     kickoverride: {
         key: 'kickoverride',
         name: 'Kick override',
         desc: 'Same as staffperms, but allows users to use the kick command regardless of permissions',
-        type: 'int'
+        type: 'bigint'
     },
     banoverride: {
         key: 'banoverride',
         name: 'Ban override',
         desc: 'Same as staffperms, but allows users to use the ban/hackban/unban commands regardless of permissions',
-        type: 'int'
+        type: 'bigint'
     },
     banat: {
         key: 'banat',

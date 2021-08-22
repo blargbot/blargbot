@@ -1,7 +1,8 @@
 import { Logger } from '@core/Logger';
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableStoredGuild, MutableStoredGuildEventLogConfig, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
 import { guard } from '@core/utils';
 import { Guild } from 'discord.js';
+import { UpdateData } from 'rethinkdb';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';
 
@@ -329,9 +330,40 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return guild?.censor;
     }
 
-    public async getCommandPerms(guildId: string, commandName: string, skipCache = false): Promise<CommandPermissions | undefined> {
+    public async getCommandPerms(guildId: string, skipCache?: boolean): Promise<Readonly<Record<string, CommandPermissions>> | undefined>
+    public async getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<CommandPermissions | undefined>
+    public async getCommandPerms(...args: [string, boolean?] | [string, string, boolean?]): Promise<CommandPermissions | Readonly<Record<string, CommandPermissions>> | undefined> {
+        const [guildId, commandName, skipCache] = args.length === 1
+            ? [args[0], undefined, undefined]
+            : args.length === 3 ? args
+                : typeof args[1] === 'boolean'
+                    ? [args[0], undefined, args[1]]
+                    : [args[0], args[1], undefined];
+
         const guild = await this.rget(guildId, skipCache);
-        return guild?.commandperms?.[commandName];
+
+        if (commandName !== undefined)
+            return guild?.commandperms?.[commandName];
+        return guild?.commandperms;
+    }
+
+    public async setCommandPerms(guildId: string, commands: string[], permissions: Partial<CommandPermissions>): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        const payload = commands.reduce<Record<string, MutableCommandPermissions>>((p, c) => {
+            p[c] = this.updateExpr(<MutableCommandPermissions>permissions);
+            return p;
+        }, {});
+        if (commands.length === 0 || !await this.rupdate(guildId, { commandperms: payload }))
+            return false;
+
+        guild.commandperms ??= {};
+        for (const command of commands)
+            Object.assign(guild.commandperms[command] ??= {}, permissions);
+
+        return true;
     }
 
     public async listCommands(guildId: string, skipCache = false): Promise<readonly NamedGuildCommandTag[]> {
@@ -410,7 +442,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         if (value === undefined)
             delete guild.settings[key];
         else
-            guild.settings[key] = value;
+            guild.settings[key] = <MutableStoredGuildSettings[K]>value;
 
         return true;
     }
@@ -439,6 +471,28 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             return false;
 
         Object.assign(command, partialCommand);
+        return true;
+    }
+
+    public async updateCommands(guildId: string, commandNames: string[], partialCommand: Partial<GuildCommandTag>): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        const commands = commandNames.map(c => [c, guild.ccommands[c.toLowerCase()]] as const);
+        const payload = commands.reduce<UpdateData<Record<string, GuildCommandTag>>>((p, c) => {
+            if (c[1] !== undefined)
+                p[c[0]] = this.updateExpr(partialCommand);
+            return p;
+        }, {});
+
+        if (Object.keys(payload).length === 0 || !await this.rupdate(guildId, { ccommands: payload }))
+            return false;
+
+        for (const [, command] of commands)
+            if (command !== undefined)
+                Object.assign(command, partialCommand);
+
         return true;
     }
 

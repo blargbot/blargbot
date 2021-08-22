@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { BaseCommand, CommandContext } from '@cluster/command';
 import { CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, FlagDefinition, GuildCommandContext } from '@cluster/types';
-import { commandTypeDetails, defaultStaff, guard, humanize } from '@cluster/utils';
+import { commandTypeDetails, defaultStaff, guard, humanize, parse } from '@cluster/utils';
 import { MessageIdQueue } from '@core/MessageIdQueue';
 import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
@@ -72,8 +72,8 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         const permOverride = options.permOverride ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'permoverride');
         if (permOverride === true) {
             const staffPerms = options.staffPerms ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
-            const allow = typeof staffPerms === 'string' ? parseInt(staffPerms) : staffPerms;
-            if ((typeof allow === 'number' ? !isNaN(allow) : allow.length > 0) && this.cluster.util.hasPerms(context.message.member, allow))
+            const allow = typeof staffPerms === 'string' ? parse.bigint(staffPerms) : staffPerms;
+            if ((typeof allow === 'bigint' || allow !== undefined && allow.length > 0) && this.cluster.util.hasPerms(context.message.member, allow))
                 return true; // User has any of the permissions that identify them as a staff member
         }
 
@@ -82,8 +82,8 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
                 return true; // User has any of the permissions for this command
 
             // User has one of the roles this command is linked to?
-            if (Array.isArray(commandPerms.rolename))
-                return await this.cluster.util.hasRoles(context.message, commandPerms.rolename, options.quiet ?? false);
+            if (Array.isArray(commandPerms.roles))
+                return await this.cluster.util.hasRoles(context.message, commandPerms.roles, options.quiet ?? false);
         }
 
         const adminrole = await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'adminrole');

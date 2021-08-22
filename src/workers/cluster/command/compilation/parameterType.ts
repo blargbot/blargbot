@@ -14,6 +14,7 @@ const typeOrder = [
     'user',
     'member',
     'duration',
+    'bigint',
     'integer',
     'number',
     'boolean',
