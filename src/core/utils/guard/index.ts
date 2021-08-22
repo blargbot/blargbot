@@ -17,3 +17,4 @@ export * from './notNull';
 export * from './notUndefined';
 export * from './testMessageFilter';
 export * from './isUrl';
+export * from './hasInvite';
