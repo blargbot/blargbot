@@ -17,6 +17,7 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
             return;
 
         await this.cluster.autoresponses.handleWhitelistApproval(message, maybeReaction.emoji, user);
+        await this.cluster.await.reactions.checkTagReaction(message, user, maybeReaction);
     }
 
     protected async resolveMessage(message: Message | PartialMessage): Promise<Message | undefined> {

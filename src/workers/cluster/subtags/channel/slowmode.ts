@@ -59,7 +59,7 @@ export class SlowmodeSubtag extends BaseSubtag {
 
         if (isNaN(time)) time = 0;
 
-        time = Math.min(time, 120);
+        time = Math.min(time, 21600);
 
         try {
             await channel.edit({
