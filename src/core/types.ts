@@ -1,7 +1,7 @@
 import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
-import { BaseButtonOptions, ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { BaseButtonOptions, ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, GuildMember, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 
@@ -10,6 +10,7 @@ import { WorkerConnection } from './worker';
 
 export type MalformedEmbed = { fields: [EmbedField]; malformed: boolean; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
+export type DMContext = string | Message | User | GuildMember;
 export type SendContext = UserChannelInteraction | ChannelInteraction | TextBasedChannels | string
 export type SendEmbed = MessageEmbedOptions & { asString?: string; }
 export type SendFiles = FileOptions | FileOptions[]

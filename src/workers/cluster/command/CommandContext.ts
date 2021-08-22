@@ -1,10 +1,11 @@
 import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagEngine } from '@cluster/bbtag';
+import { CommandResult } from '@cluster/types';
 import { humanize } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
-import { SendContext, SendPayload } from '@core/types';
-import { Client as Discord, DMChannel, Message, TextBasedChannels, User } from 'discord.js';
+import { DMContext, SendContext, SendPayload } from '@core/types';
+import { Client as Discord, Message, TextBasedChannels, User } from 'discord.js';
 
 export class CommandContext<TChannel extends TextBasedChannels = TextBasedChannels> {
     public readonly commandText: string;
@@ -33,18 +34,34 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
         this.argsString = parts[1] ?? '';
     }
 
-    public async reply(content: SendPayload): Promise<Message & { channel: TChannel; } | undefined> {
-        return <Message & { channel: TChannel; }>await this.cluster.util.send(this.message, content);
-    }
-
-    public async send(content: SendPayload): Promise<Message | undefined>
-    public async send(context: SendContext, content: SendPayload): Promise<Message | undefined>
-    public async send(...args: [SendPayload] | [SendContext, SendPayload]): Promise<Message | undefined> {
-        const [context, content] = args.length === 1 ? [this.channel, args[0]] : args;
+    public async send(content: CommandResult): Promise<Message | undefined>
+    public async send(context: SendContext, content: CommandResult): Promise<Message | undefined>
+    public async send(...args: [CommandResult] | [SendContext, CommandResult]): Promise<Message | undefined> {
+        const [context, content] = args.length === 1 ? [this.channel, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
+        if (content === undefined)
+            return undefined;
         return await this.cluster.util.send(context, content);
     }
 
-    public async replyDM(content: SendPayload): Promise<Message & { channel: DMChannel; } | undefined> {
-        return <Message & { channel: DMChannel; }>await this.cluster.util.sendDM(this.author, content);
+    public async sendDM(content: CommandResult): Promise<Message | undefined>
+    public async sendDM(context: DMContext, content: CommandResult): Promise<Message | undefined>
+    public async sendDM(...args: [CommandResult] | [DMContext, CommandResult]): Promise<Message | undefined> {
+        const [context, content] = args.length === 1 ? [this.author, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
+        if (content === undefined)
+            return undefined;
+        return await this.cluster.util.sendDM(context, content);
+    }
+}
+
+function toSendContent(content: CommandResult): SendPayload | undefined {
+    switch (typeof content) {
+        case 'undefined':
+            return undefined;
+        case 'object':
+            if ('data' in content)
+                return { name: content.fileName, attachment: content.data };
+        // fallthrough
+        default:
+            return content;
     }
 }

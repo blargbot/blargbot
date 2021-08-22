@@ -73,7 +73,7 @@ export class UpdateCommand extends BaseGlobalCommand {
     }
 
     private async showCommand(context: CommandContext, command: string): Promise<string> {
-        const message = await context.reply(this.info(`Command: \`${command}\`\nRunning...`));
+        const message = await context.send(this.info(`Command: \`${command}\`\nRunning...`));
         try {
             await context.channel.sendTyping();
             const result = cleanConsole(await execCommandline(command));

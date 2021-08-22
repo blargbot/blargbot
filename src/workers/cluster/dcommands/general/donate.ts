@@ -21,7 +21,7 @@ export class DonateCommand extends BaseGlobalCommand {
 
     public async donateDetails(context: CommandContext): Promise<string> {
         const owner = context.discord.application.owner;
-        await context.replyDM({
+        await context.sendDM({
             embeds: [
                 {
                     author: owner === null ? undefined : context.util.embedifyAuthor(owner),

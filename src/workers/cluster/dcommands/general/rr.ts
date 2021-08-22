@@ -16,7 +16,7 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
         });
     }
 
-    public async play(context: CommandContext, bullets: number, emote: string | undefined): Promise<string | void> {
+    public async play(context: CommandContext, bullets: number, emote: string | undefined): Promise<string | undefined> {
         emote ??= randChoose(mojiList);
         if (bullets <= 0)
             return this.error('Wimp! You need to load at least one bullet.');
@@ -56,6 +56,8 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
                 query.prompt.edit({ content: `${query.prompt.content}\n*Click!* ${randChoose(liveMsg)}`, components: [] })
             ]);
         }
+
+        return undefined;
     }
 }
 

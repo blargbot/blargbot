@@ -1,4 +1,4 @@
-import { SendContext, SendPayload, StoredUser } from '@core/types';
+import { DMContext, SendContext, SendPayload, StoredUser } from '@core/types';
 import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import moment from 'moment';
 
@@ -189,7 +189,7 @@ export class BaseUtilities {
         }
     }
 
-    public async sendDM(context: Message | User | GuildMember | string, payload: SendPayload): Promise<Message | undefined> {
+    public async sendDM(context: DMContext, payload: SendPayload): Promise<Message | undefined> {
         let user: User | undefined;
         switch (typeof context) {
             case 'string': {

@@ -1,4 +1,4 @@
-import { CommandMiddleware } from '@cluster/types';
+import { CommandMiddleware, CommandResult } from '@cluster/types';
 
 import { CommandContext } from '../CommandContext';
 
@@ -10,19 +10,19 @@ export class SingleThreadMiddleware<TContext extends CommandContext> implements 
         this.locks = {};
     }
 
-    public async execute(context: TContext, next: () => Promise<void>): Promise<void> {
+    public async execute(context: TContext, next: () => Promise<CommandResult>): Promise<CommandResult> {
         const key = this.keySelector(context);
         const lock = this.locks[key];
         if (lock !== undefined) {
             if (!lock.warned) {
                 lock.warned = true;
-                await context.reply('❌ Sorry, this command is already running! Please wait and try again.');
+                return '❌ Sorry, this command is already running! Please wait and try again.';
             }
             return;
         }
         this.locks[key] = { warned: false };
         try {
-            await next();
+            return await next();
         } finally {
             delete this.locks[key];
         }

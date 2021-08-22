@@ -1,5 +1,4 @@
 import { CommandHandler, CommandMiddleware, CommandResult, CommandSignatureHandler } from '@cluster/types';
-import { Message } from 'discord.js';
 
 import { CommandContext } from '../CommandContext';
 import { compileHandler } from '../compilation';
@@ -14,26 +13,7 @@ export class HandlerMiddleware<TContext extends CommandContext> implements Comma
         this.handler = compileHandler(signatures, command);
     }
 
-    public static async send<TContext extends CommandContext>(context: TContext, result: CommandResult): Promise<Message | undefined> {
-        switch (typeof result) {
-            case 'undefined':
-                return undefined;
-            case 'boolean':
-            case 'string':
-                return await context.reply(result);
-            case 'object':
-                if (Array.isArray(result))
-                    return await context.reply({ files: result });
-                if ('attachment' in result)
-                    return await context.reply({ files: [result] });
-                if ('data' in result)
-                    return await context.reply({ files: [{ attachment: result.data, name: result.fileName }] });
-                return await context.reply(result);
-        }
-    }
-
-    public async execute(context: TContext): Promise<void> {
-        const result = await this.handler.execute(context);
-        await HandlerMiddleware.send(context, result);
+    public async execute(context: TContext): Promise<CommandResult> {
+        return await this.handler.execute(context);
     }
 }

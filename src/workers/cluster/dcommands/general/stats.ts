@@ -12,15 +12,13 @@ export class StatsCommand extends BaseGlobalCommand {
                 {
                     parameters: '',
                     description: 'Gives you some information about me',
-                    execute: (ctx) => this.execute(ctx)
+                    execute: (ctx) => this.getStats(ctx)
                 }
             ]
         });
     }
 
-    public async execute(
-        context: CommandContext
-    ): Promise<void> {
+    public async getStats(context: CommandContext): Promise<MessageEmbedOptions> {
         const clusterStats = Object.values(await discordUtil.cluster.getAllStats(context.cluster));
         const mappedStats = clusterStats.reduce<Record<string, number>>((a, c) => {
             return {
@@ -29,9 +27,9 @@ export class StatsCommand extends BaseGlobalCommand {
                 channels: a.channels + c.channels,
                 rss: a.rss + c.rss
             };
-        }, {guilds: 0, users: 0, channels: 0, rss: 0});
+        }, { guilds: 0, users: 0, channels: 0, rss: 0 });
         const version = await context.database.vars.get('version');
-        const embed: MessageEmbedOptions = {
+        return {
             color: randChoose(avatarColours),
             timestamp: moment().toDate(),
             title: 'Bot Statistics',
@@ -91,7 +89,5 @@ export class StatsCommand extends BaseGlobalCommand {
             }
             ]
         };
-
-        await context.reply(embed);
     }
 }

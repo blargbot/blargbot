@@ -5,7 +5,7 @@ import { BaseCommand } from './BaseCommand';
 import { CommandContext } from './CommandContext';
 import { compileSignatures } from './compilation';
 import { HandlerMiddleware } from './middleware';
-import { ErrorHandlerMiddleware } from './middleware/ErrorHandlerMiddleware';
+import { ErrorMiddleware } from './middleware/ErrorMiddleware';
 
 // Circular reference means this needs to be resolved asyncronously;
 const helpCommandPromise = import('@cluster/dcommands/general/help');
@@ -32,7 +32,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
 
         super({ ...options, signatures });
 
-        this.middleware = [new ErrorHandlerMiddleware()];
+        this.middleware = [new ErrorMiddleware(this)];
         this.handler = new HandlerMiddleware(signatures, this);
     }
 
@@ -42,17 +42,18 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
     public async execute(context: CommandContext): Promise<void> {
         if (!this.checkContext(context)) {
             const result = await this.handleInvalidContext(context);
-            await HandlerMiddleware.send(context, result);
+            if (result !== undefined)
+                await context.send(result);
             return;
         }
 
-        const runMiddleware = (index: number): Promise<void> => {
+        const runMiddleware = (index: number): Promise<CommandResult> => {
             if (index < this.middleware.length)
                 return this.middleware[index].execute(context, () => runMiddleware(index + 1));
             return this.handler.execute(context);
         };
 
-        await runMiddleware(0);
+        await context.send(await runMiddleware(0));
     }
 
     protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {

@@ -279,13 +279,8 @@ export interface CommandOptions<TContext extends CommandContext> extends Command
 
 export type CommandResult =
     | ImageResult
-    | MessageEmbedOptions
     | SendPayload
-    | FileOptions
-    | FileOptions[]
-    | string
-    | undefined
-    | void;
+    | undefined;
 
 export type CommandDefinition<TContext extends CommandContext> =
     | CommandHandlerDefinition<TContext>
@@ -648,5 +643,5 @@ export interface CommandBinderState<TContext extends CommandContext> {
 }
 
 export interface CommandMiddleware<TContext extends CommandContext> {
-    execute(context: TContext, next: () => Promise<void>): Promise<void>;
+    execute(context: TContext, next: () => Promise<CommandResult>): Promise<CommandResult>;
 }
