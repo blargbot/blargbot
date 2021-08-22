@@ -314,6 +314,7 @@ export interface StoredGuild {
     readonly censor?: GuildCensors;
     readonly warnings?: GuildWarnings;
     readonly modlog?: readonly GuildModlogEntry[];
+    readonly nextModlogId?: number;
     readonly roleme?: readonly GuildRolemeEntry[];
     readonly autoresponse?: GuildAutoresponses;
     readonly announce?: GuildAnnounceOptions;
@@ -546,6 +547,7 @@ export interface GuildModlogEntry {
     readonly caseid: number;
     readonly modid?: string;
     readonly msgid?: string;
+    readonly channelid?: string;
     readonly reason?: string;
     readonly type: string;
     readonly userid: string;
@@ -679,6 +681,7 @@ export interface MutableStoredGuildEventLogConfig extends StoredGuildEventLogCon
 }
 
 export interface GuildTable {
+    removeModlogCases(guildId: string, ids?: number[]): Promise<readonly GuildModlogEntry[] | undefined>;
     getInterval(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     setInterval(guildId: string, interval: GuildTriggerTag | undefined): Promise<boolean>;
     getFarewell(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
@@ -722,7 +725,7 @@ export interface GuildTable {
     setCommandProp<K extends keyof GuildCommandTag>(guildId: string, commandName: string, key: K, value: GuildCommandTag[K]): Promise<boolean>;
     renameCommand(guildId: string, oldName: string, newName: string): Promise<boolean>;
     getNewModlogCaseId(guildId: string, skipCache?: boolean): Promise<number | undefined>;
-    addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
+    addModlogCase(guildId: string, modlog: GuildModlogEntry): Promise<boolean>;
     getLogIgnores(guildId: string, skipCache?: boolean): Promise<ReadonlySet<string>>;
     getLogChannel(guildId: string, type: StoredGuildEventLogType, skipCache?: boolean): Promise<string | undefined>;
     getLogChannels(guildId: string, skipCache?: boolean): Promise<StoredGuildEventLogConfig>;

@@ -180,10 +180,11 @@ export class ModLogManager {
             embed.author = this.cluster.util.embedifyAuthor(user);
 
         const modlogMessage = await this.cluster.util.send(modlogChannelId, { embeds: [embed] });
-        await this.cluster.database.guilds.addModlog(guildId, {
+        await this.cluster.database.guilds.addModlogCase(guildId, {
             caseid: caseId,
             modid: moderator?.id,
             msgid: modlogMessage?.id,
+            channelid: modlogMessage?.channelId,
             reason: reason,
             type: type,
             userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id

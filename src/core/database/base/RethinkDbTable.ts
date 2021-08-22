@@ -35,31 +35,40 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return await this.rquery(t => t.get(key)) ?? undefined;
     }
 
-    protected async rinsert(value: RethinkTableMap[TableName], applyChanges = false): Promise<boolean> {
-        const result = await this.rquery(t => t.insert(this.addExpr(value), { returnChanges: applyChanges }));
-        if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            Object.assign(value, result.changes?.[0].new_val);
+    protected async rinsert(value: RethinkTableMap[TableName], returnValue?: false): Promise<boolean>
+    protected async rinsert(value: RethinkTableMap[TableName], returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
+    protected async rinsert(value: RethinkTableMap[TableName], returnValue = false): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+        const result = await this.rquery(t => t.insert(this.addExpr(value), { returnChanges: returnValue }));
         throwIfErrored(result);
+
+        if (returnValue)
+            return result.changes?.[0]?.new_val;
+
         return result.inserted > 0;
     }
 
-    protected async rset(key: string, value: RethinkTableMap[TableName], applyChanges = false): Promise<boolean> {
-        const result = await this.rquery(t => t.get(key).replace(this.addExpr(value), { returnChanges: applyChanges }));
-        if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            Object.assign(value, result.changes?.[0].new_val);
+    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue?: false): Promise<boolean>
+    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
+    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue = false): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+        const result = await this.rquery(t => t.get(key).replace(this.addExpr(value), { returnChanges: returnValue }));
         throwIfErrored(result);
+
+        if (returnValue)
+            return result.changes?.[0]?.new_val;
+
         return result.inserted + result.replaced > 0;
     }
 
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, applyChanges = false): Promise<boolean> {
+    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue?: false): Promise<boolean>
+    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
+    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue = false): Promise<boolean | RethinkTableMap[TableName] | undefined> {
         const updater = 'eq' in value || typeof value === 'object' ? () => value : value;
-        const result = await this.rquery(t => t.get(key).update(r => updater(r), { returnChanges: applyChanges }));
-        if (applyChanges && guard.hasValue(result.changes?.[0]?.new_val))
-            // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-            Object.assign(value, result.changes?.[0].new_val);
+        const result = await this.rquery(t => t.get(key).update(r => updater(r), { returnChanges: returnValue }));
         throwIfErrored(result);
+
+        if (returnValue)
+            return result.changes?.[0]?.new_val;
+
         return result.replaced + result.unchanged > 0;
     }
 
@@ -70,10 +79,11 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
             ? await this.rquery(t => t.get(key).delete({ returnChanges }))
             : await this.rquery(t => t.filter(key).delete({ returnChanges }));
         throwIfErrored(result);
+
         if (!returnChanges)
             return result.deleted > 0;
 
-        return result.changes?.map(c => c.old_val).filter((v): v is RethinkTableMap[TableName] => v !== undefined) ?? [];
+        return result.changes?.map(c => c.old_val).filter(guard.hasValue) ?? [];
     }
 
     protected updateExpr<T>(value: T): T {

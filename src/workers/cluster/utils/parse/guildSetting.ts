@@ -46,7 +46,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             return {
                 success: true,
                 value: result.value.id as StoredGuildSettings[T],
-                display: result.toString()
+                display: result.value.toString()
             };
         }
         case 'role': {
@@ -58,7 +58,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             return {
                 success: true,
                 value: result.value.id as StoredGuildSettings[T],
-                display: result.toString()
+                display: result.value.toString()
             };
         }
     }

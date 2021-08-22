@@ -496,10 +496,42 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
 
     public async getNewModlogCaseId(guildId: string, skipCache?: boolean): Promise<number | undefined> {
         const guild = await this.rget(guildId, skipCache);
-        return guild?.modlog?.length;
+        if (guild === undefined)
+            return undefined;
+
+        await this.rupdate(guildId, g => ({
+            nextModlogId: g('nextModlogId').default(
+                g('modlog').default([]).max('caseid').default(0)
+            ).add(1)
+        }));
+
+        return guild.nextModlogId;
     }
 
-    public async addModlog(guildId: string, modlog: GuildModlogEntry): Promise<boolean> {
+    public async removeModlogCases(guildId: string, ids?: number[]): Promise<readonly GuildModlogEntry[] | undefined> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return undefined;
+
+        const result = ids === undefined
+            ? [...guild.modlog ?? []]
+            : guild.modlog?.filter(m => ids.includes(m.caseid)) ?? [];
+
+        const removed = ids === undefined
+            ? await this.rupdate(guildId, { modlog: this.setExpr(undefined) })
+            : await this.rupdate(guildId, g => ({
+                modlog: g('modlog').default([]).filter(c => this.expr(ids).contains(c('caseid')))
+            }));
+
+        if (!removed)
+            return undefined;
+
+        guild.modlog = ids === undefined ? undefined : guild.modlog?.filter(m => ids.includes(m.caseid)) ?? [];
+
+        return result;
+    }
+
+    public async addModlogCase(guildId: string, modlog: GuildModlogEntry): Promise<boolean> {
         const guild = await this.rget(guildId);
         if (guild === undefined)
             return false;

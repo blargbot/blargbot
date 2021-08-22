@@ -312,6 +312,7 @@ declare module 'rethinkdb' {
 
     interface Expression<T> extends Writeable<T>, Operation<T>, HasFields<T, Expression<T>> {
         <K extends string & keyof T>(prop: K): Expression<T[K]>;
+        <R, K extends string & keyof R>(this: Expression<R[]>, prop: K): Expression<Array<R[K]>>;
         merge<R>(query: Expression<R>): Expression<T & R>;
         append(this: Expression<string>, prop: string): Expression<string>;
         append<R>(this: Expression<R[]>, prop: R): Expression<R[]>;
@@ -350,11 +351,15 @@ declare module 'rethinkdb' {
         div(this: Expression<number>, n: number): Expression<number>;
         mod(this: Expression<number>, n: number): Expression<number>;
 
+        max(this: Expression<number[]>): Expression<number>;
+        max<R, K extends PropertyNamesOfType<R, number>>(this: Expression<R[]>, name: K): Expression<number>;
+
         distance(this: Expression<Geometry>, geometry: Geometry, options?: DistanceOptions): Expression<number>;
 
-        default(value: T): Expression<Exclude<T, null | undefined>>;
-        getField<K extends keyof T>(name: K): Expression<T[K]>;
-        getField<R, K extends keyof R>(this: Expression<R[]>, name: K): Expression<Array<R[K]>>;
+        default(value: Exclude<T, null | undefined>): Expression<Exclude<T, null | undefined>>;
+        default(value: Expression<Exclude<T, null | undefined>>): Expression<Exclude<T, null | undefined>>;
+        getField<K extends string & keyof T>(name: K): Expression<T[K]>;
+        getField<R, K extends string & keyof R>(this: Expression<R[]>, name: K): Expression<Array<R[K]>>;
         match(this: Expression<string>, re2: string): Expression<MatchResult | null>;
         spliceAt<R>(this: Expression<R[]>, index: number, replacement: R[]): Expression<T>;
         deleteAt<R>(this: Expression<R[]>, index: number): Expression<T>;
