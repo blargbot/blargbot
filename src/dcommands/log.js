@@ -31,7 +31,8 @@ class LogCommand extends BaseCommand {
                 '\n- role:<id> - when a role gets added or removed' +
                 '\n- all - enables all of the events' +
                 '\n\n`ignore` adds a list of users to ignore from logging. Useful for ignoring bots.' +
-                '\n`track` removes users from the ignore list'
+                '\n`track` removes users from the ignore list' +
+                '\n**Note:** When a webhook is provided for `users`, I must the `Manage Webhooks` permission to recognize them!'
         });
     }
 
@@ -107,10 +108,24 @@ class LogCommand extends BaseCommand {
                     if (words.length >= 3) {
                         args = words.slice(2);
                         if (args.length == 1) {
-                            let user = await bu.getUser(msg, args[0]);
-                            if (user == null)
-                                return;
-                            users = [user.id];
+                            let user = await bu.getUser(msg, args[0], {suppress: true});
+                            if (user == null) {
+                                if (/\d{17,23}/.test(args[0])) {
+                                    let webhook;
+                                    try {
+                                        webhook = await bot.getWebhook(args[0]);
+                                    } catch (e) {
+                                        //do nothing
+                                    }
+                                    if (webhook !== undefined && webhook.guild_id === msg.guild.id)
+                                        users = [webhook.id];
+                                    else
+                                        users = [];
+                                } else
+                                    users = [];
+                            } else {
+                                users = [user.id];
+                            }
                         } else {
                             users = await Promise.all(args.map(async arg => {
                                 return {
@@ -120,8 +135,24 @@ class LogCommand extends BaseCommand {
                             }));
                             let failed = users.filter(u => u.user == null);
                             if (failed.length > 0) {
-                                bu.send(msg, `Unable to find user${failed.length > 1 ? 's' : ''} ${failed.map(f => f.input).join(', ')}`);
-                                break;
+                                let guildWebhooks = [];
+                                try {
+                                    guildWebhooks = (await msg.guild.getWebhooks()).map(w => w.id);
+                                } catch (e) {
+                                    //do nothing
+                                }
+
+                                const failedWithWebhooks = users.filter(u => u.user == null && !guildWebhooks.includes(u.input));
+                                if (failedWithWebhooks.length > 0) {
+                                    bu.send(msg, `Unable to find user${failedWithWebhooks.length > 1 ? 's' : ''} ${failedWithWebhooks.map(f => f.input).join(', ')}`);
+                                    break;
+                                } else {
+                                    users = users.map(u => {
+                                        if (u.user == null)
+                                            return { user: {id: u.input}};
+                                        return u;
+                                    });
+                                }
                             } else {
                                 users = users.filter(u => u.user != null).map(u => u.user.id);
                             }
@@ -142,10 +173,24 @@ class LogCommand extends BaseCommand {
                     if (words.length >= 3) {
                         args = words.slice(2);
                         if (args.length == 1) {
-                            let user = await bu.getUser(msg, args[0]);
-                            if (user == null)
-                                return;
-                            users = [user.id];
+                            let user = await bu.getUser(msg, args[0], {suppress: true});
+                            if (user == null) {
+                                if (/\d{17,23}/.test(args[0])) {
+                                    let webhook;
+                                    try {
+                                        webhook = await bot.getWebhook(args[0]);
+                                    } catch (e) {
+                                        //do nothing
+                                    }
+                                    if (webhook !== undefined && webhook.guild_id === msg.guild.id)
+                                        users = [webhook.id];
+                                    else
+                                        users = [];
+                                } else
+                                    users = [];
+                            } else {
+                                users = [user.id];
+                            }
                         } else {
                             users = await Promise.all(args.map(async arg => {
                                 return {
@@ -155,8 +200,23 @@ class LogCommand extends BaseCommand {
                             }));
                             let failed = users.filter(u => u.user == null);
                             if (failed.length > 0) {
-                                bu.send(msg, `Unable to find user${failed.length > 1 ? 's' : ''} ${failed.map(f => f.input).join(', ')}`);
-                                break;
+                                let guildWebhooks = [];
+                                try {
+                                    guildWebhooks = (await msg.guild.getWebhooks()).map(w => w.id);
+                                } catch (e) {
+                                    //do nothing
+                                }
+                                const failedWithWebhooks = users.filter(u => u.user == null && !guildWebhooks.includes(u.input));
+                                if (failedWithWebhooks.length > 0) {
+                                    bu.send(msg, `Unable to find user${failedWithWebhooks.length > 1 ? 's' : ''} ${failedWithWebhooks.map(f => f.input).join(', ')}`);
+                                    break;
+                                } else {
+                                    users = users.map(u => {
+                                        if (u.user == null)
+                                            return { user: {id: u.input}};
+                                        return u;
+                                    });
+                                }
                             } else {
                                 users = users.filter(u => u.user != null).map(u => u.user.id);
                             }
