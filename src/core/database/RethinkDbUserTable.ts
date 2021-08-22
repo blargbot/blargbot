@@ -84,7 +84,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> i
                 lastspoke: new Date(),
                 discriminator: user.discriminator,
                 todo: []
-            }, true)) {
+            })) {
                 return 'inserted';
             }
         } else {

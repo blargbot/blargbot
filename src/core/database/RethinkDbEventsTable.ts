@@ -20,10 +20,7 @@ export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements Ev
     }
 
     public async add<K extends EventType>(type: K, event: StoredEventOptions<K>): Promise<StoredEvent<K> | undefined> {
-        const insert = populateEvent(type, event);
-        if (!await this.rinsert(insert, true))
-            return undefined;
-        return insert;
+        return <StoredEvent<K> | undefined>await this.rinsert(populateEvent(type, event), true);
     }
 
     public async delete(eventId: string): Promise<boolean>;
