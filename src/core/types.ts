@@ -682,6 +682,8 @@ export interface MutableStoredGuildEventLogConfig extends StoredGuildEventLogCon
 }
 
 export interface GuildTable {
+    updateModlogCase(guildId: string, caseid: number, modlog: Partial<Omit<GuildModlogEntry, 'caseid'>>): Promise<boolean>;
+    getModlogCase(guildId: string, caseId?: number, skipCache?: boolean): Promise<GuildModlogEntry | undefined>;
     removeModlogCases(guildId: string, ids?: number[]): Promise<readonly GuildModlogEntry[] | undefined>;
     getInterval(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     setInterval(guildId: string, interval: GuildTriggerTag | undefined): Promise<boolean>;

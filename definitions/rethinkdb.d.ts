@@ -313,6 +313,7 @@ declare module 'rethinkdb' {
     interface Expression<T> extends Writeable<T>, Operation<T>, HasFields<T, Expression<T>> {
         <K extends string & keyof T>(prop: K): Expression<T[K]>;
         <R, K extends string & keyof R>(this: Expression<R[]>, prop: K): Expression<Array<R[K]>>;
+        merge<R>(query: R): Expression<T & R>;
         merge<R>(query: Expression<R>): Expression<T & R>;
         append(this: Expression<string>, prop: string): Expression<string>;
         append<R>(this: Expression<R[]>, prop: R): Expression<R[]>;
@@ -329,6 +330,7 @@ declare module 'rethinkdb' {
         filter<R>(this: Expression<R[]>, rql: ExpressionFunction<R, boolean>): Expression<T>;
         filter<R>(this: Expression<R[]>, rql: Expression<boolean>): Expression<T>;
         filter<R>(this: Expression<R[]>, obj: FilterMap<R>): Expression<T>;
+        map<R, P>(this: Expression<R[]>, mapexpr: ExpressionFunction<R, P>): Expression<P[]>;
 
         and(this: Expression<boolean>, b: boolean | Expression<boolean>): Expression<boolean>;
         or(this: Expression<boolean>, b: boolean | Expression<boolean>): Expression<boolean>;

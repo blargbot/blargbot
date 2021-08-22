@@ -508,6 +508,38 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return guild.nextModlogId;
     }
 
+    public async getModlogCase(guildId: string, caseId?: number, skipCache?: boolean): Promise<GuildModlogEntry | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        if (guild === undefined)
+            return undefined;
+
+        if (caseId === undefined)
+            return guild.modlog?.[guild.modlog.length - 1];
+        return guild.modlog?.find(m => m.caseid === caseId);
+    }
+
+    public async updateModlogCase(guildId: string, caseid: number, modlog: Partial<Omit<GuildModlogEntry, 'caseid'>>): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        const updated = await this.rupdate(guildId, g => ({
+            modlog: g('modlog').default([]).map(m => this.branchExpr(m,
+                c => c('caseid').eq(caseid),
+                c => c.merge(modlog)
+            ))
+        }));
+
+        if (!updated)
+            return false;
+
+        const entry = guild.modlog?.find(m => m.caseid === caseid);
+        if (entry !== undefined)
+            Object.assign(entry, modlog);
+
+        return true;
+    }
+
     public async removeModlogCases(guildId: string, ids?: number[]): Promise<readonly GuildModlogEntry[] | undefined> {
         const guild = await this.rget(guildId);
         if (guild === undefined)

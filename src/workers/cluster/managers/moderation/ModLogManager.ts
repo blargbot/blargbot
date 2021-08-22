@@ -146,10 +146,38 @@ export class ModLogManager {
             reason: reason
         });
     }
+
+    public async updateReason(guild: Guild, caseId: number | undefined, moderator: User, reason: string): Promise<'SUCCESS' | 'MISSING_CASE' | 'SUCCESS_NO_MESSAGE'> {
+        const modlog = await this.cluster.database.guilds.getModlogCase(guild.id, caseId);
+        if (modlog === undefined)
+            return 'MISSING_CASE';
+
+        await this.cluster.database.guilds.updateModlogCase(guild.id, modlog.caseid, { reason, modid: moderator.id });
+
+        if (modlog.msgid === undefined)
+            return 'SUCCESS_NO_MESSAGE';
+
+        const channelId = modlog.channelid ?? await this.cluster.database.guilds.getSetting(guild.id, 'modlog');
+        if (channelId === undefined)
+            return 'SUCCESS_NO_MESSAGE';
+
+        const message = await this.cluster.util.getMessage(channelId, modlog.msgid);
+        if (message === undefined || !message.editable)
+            return 'SUCCESS_NO_MESSAGE';
+
+        await message.edit({
+            embeds: message.embeds.map(e => {
+                return e.setFooter(`${humanize.fullName(moderator)} (${moderator.id})`, moderator.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }))
+                    .spliceFields(e.fields.findIndex(f => f.name === 'Reason'), 1, { name: 'Reason', value: reason, inline: true });
+            })
+        });
+        return 'SUCCESS';
+    }
+
     private async logAction({ guildId, user, reason, fields = [], color = 0x17c484, type = 'Generic', moderator }: ModerationLogOptions): Promise<void> {
         // TODO modlog setting can be channel id or tag
         const modlogChannelId = await this.cluster.database.guilds.getSetting(guildId, 'modlog');
-        if (!guard.hasValue(modlogChannelId))
+        if (!guard.hasValue(modlogChannelId)) // TODO Should this still create the modlog entry in the db?
             return;
 
         const caseId = await this.cluster.database.guilds.getNewModlogCaseId(guildId);
