@@ -8,6 +8,7 @@ export class ChannelCategoriesSubtag extends BaseSubtag {
             name: 'channelcategories',
             category: SubtagType.API,
             desc: 'Returns an array of category IDs on the current guild.',
+            aliases: ['categories'],
             definition: [
                 {
                     parameters: [],

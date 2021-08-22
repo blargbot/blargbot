@@ -7,7 +7,6 @@ export class RandIntSubtag extends BaseSubtag {
         super({
             name: 'randint',
             category: SubtagType.COMPLEX,
-            aliases: ['absolute'],
             definition: [
                 {
                     parameters: ['min?:0', 'max'],

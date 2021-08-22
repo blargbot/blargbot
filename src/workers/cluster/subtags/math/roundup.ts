@@ -6,6 +6,7 @@ export class RoundUpSubtag extends BaseSubtag {
         super({
             name: 'roundup',
             category: SubtagType.COMPLEX,
+            aliases: ['ceil'],
             definition: [
                 {
                     parameters: ['number'],

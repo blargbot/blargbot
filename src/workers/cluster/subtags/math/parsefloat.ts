@@ -6,7 +6,6 @@ export class ParseFloattSubtag extends BaseSubtag {
         super({
             name: 'parsefloat',
             category: SubtagType.COMPLEX,
-            aliases: ['absolute'],
             definition: [
                 {
                     parameters: ['number'],

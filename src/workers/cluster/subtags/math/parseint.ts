@@ -6,7 +6,6 @@ export class ParseIntSubtag extends BaseSubtag {
         super({
             name: 'parseint',
             category: SubtagType.COMPLEX,
-            aliases: ['absolute'],
             definition: [
                 {
                     parameters: ['number'],

@@ -32,6 +32,7 @@ export class FunctionSubtag extends BaseSubtag {
         super({
             name: 'function',
             category: SubtagType.COMPLEX,
+            aliases: ['func'],
             definition: [
                 {
                     parameters: ['name', '~code'],
