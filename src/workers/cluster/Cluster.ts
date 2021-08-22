@@ -12,7 +12,7 @@ import moment, { duration, Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AutoresponseManager, BotStaffManager, CommandManager, ContributorManager, DomainManager, GreetingManager, IntervalManager, ModerationManager, PollManager } from './managers';
+import { AutoresponseManager, BotStaffManager, CommandManager, ContributorManager, DomainManager, GreetingManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, ReactionAwaitManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -34,6 +34,7 @@ export class Cluster extends BaseClient {
     public readonly greetings: GreetingManager;
     public readonly polls: PollManager;
     public readonly intervals: IntervalManager;
+    public readonly await: {reactions: ReactionAwaitManager; messages: MessageAwaitManager;};
 
     public constructor(
         logger: Logger,
@@ -72,7 +73,7 @@ export class Cluster extends BaseClient {
                 'DIRECT_MESSAGES',
                 'DIRECT_MESSAGE_REACTIONS'
             ],
-            partials: ['CHANNEL']
+            partials: ['CHANNEL', 'MESSAGE', 'REACTION']
         });
         this.id = options.id;
         this.createdAt = Object.freeze(moment());
@@ -93,6 +94,10 @@ export class Cluster extends BaseClient {
         this.greetings = new GreetingManager(this);
         this.bbtag = new BBTagEngine(this);
         this.intervals = new IntervalManager(this, duration(10, 's'));
+        this.await = {
+            reactions: new ReactionAwaitManager(this),
+            messages: new MessageAwaitManager(this)
+        };
 
         this.services.on('add', (module: BaseService) => void module.start());
         this.services.on('remove', (module: BaseService) => void module.stop());

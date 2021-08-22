@@ -44,8 +44,10 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
 
         if (message.author.bot) {
             // NOOP
-        } else if (await this.cluster.commands.tryExecute(message) || await tryHandleCleverbot(this.cluster, message)) {
-            return result;
+        } else if (!await this.cluster.await.messages.checkMessage(message)) {
+            if (await this.cluster.commands.tryExecute(message) || await tryHandleCleverbot(this.cluster, message)) {
+                return result;
+            }
         }
 
         result.push(this.cluster.autoresponses.execute(message, false));

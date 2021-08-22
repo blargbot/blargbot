@@ -1,4 +1,4 @@
-export const filter = [
+const generalApiOverrides = [
     // API subtags
     'dm',
     'send',
@@ -23,5 +23,12 @@ export const filter = [
     // Misc subtags
     'embed',
     'waitmessage',
-    'waitreact'
+    'waitreact',
+    'sleep'
 ];
+
+export {
+    generalApiOverrides as filter,
+    generalApiOverrides as waitmessage,
+    generalApiOverrides as waitreaction
+};

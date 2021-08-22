@@ -3,7 +3,7 @@ import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildMessage, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterWorker } from './ClusterWorker';
@@ -644,4 +644,10 @@ export interface CommandBinderState<TContext extends CommandContext> {
 
 export interface CommandMiddleware<TContext extends CommandContext> {
     execute(context: TContext, next: () => Promise<CommandResult>): Promise<CommandResult>;
+}
+
+export interface AwaitReactionsResponse {
+    message: GuildMessage;
+    reaction: MessageReaction;
+    user: User;
 }
