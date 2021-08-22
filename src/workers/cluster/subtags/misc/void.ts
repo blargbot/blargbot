@@ -6,6 +6,7 @@ export class VoidSubtag extends BaseSubtag {
         super({
             name: 'void',
             category: SubtagType.COMPLEX,
+            aliases: ['null'],
             definition: [
                 {
                     parameters: ['code?'],

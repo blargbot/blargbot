@@ -6,6 +6,7 @@ export class RoundDownSubtag extends BaseSubtag {
         super({
             name: 'rounddown',
             category: SubtagType.COMPLEX,
+            aliases: ['floor'],
             definition: [
                 {
                     parameters: ['number'],
