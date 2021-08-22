@@ -10,7 +10,7 @@ export class SlowmodeCommand extends BaseGuildCommand {
             definitions: [
                 {
                     parameters: '{time:integer} {channel:channel+?}',
-                    description: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 120',
+                    description: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 6 hours',
                     execute: (ctx, [time, channel]) => this.setSlowmode(time, channel ?? ctx.channel)
                 },
                 {
@@ -24,7 +24,7 @@ export class SlowmodeCommand extends BaseGuildCommand {
 
     public async setSlowmode(time: number, channel: GuildTextBasedChannels): Promise<string> {
         if (time > 120)
-            return this.error('`time` must be less than 120');
+            return this.error('`time` must be less than 6 hours');
 
         if (time <= 0)
             return await this.disableSlowmode(channel);
