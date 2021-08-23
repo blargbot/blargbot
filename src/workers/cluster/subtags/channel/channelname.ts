@@ -7,7 +7,7 @@ export class ChannelNameSubtag extends BaseSubtag {
         super({
             name: 'channelname',
             aliases: ['categoryname'],
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: [],

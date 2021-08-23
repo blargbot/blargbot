@@ -6,7 +6,7 @@ export class RandIntSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'randint',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['min?:0', 'max'],

@@ -5,7 +5,7 @@ export class UserTimezoneSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'usertimezone',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             definition: [
                 {
                     parameters: [],

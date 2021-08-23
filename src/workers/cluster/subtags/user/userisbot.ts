@@ -5,7 +5,7 @@ export class UserIsBotSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userisbot',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             aliases: ['userbot'],
             definition: [
                 {

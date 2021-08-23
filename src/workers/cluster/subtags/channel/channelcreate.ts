@@ -7,7 +7,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channelcreate',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             desc: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
             definition: [
                 {

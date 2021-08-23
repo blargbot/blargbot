@@ -5,7 +5,7 @@ export class RoundUpSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'roundup',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             aliases: ['ceil'],
             definition: [
                 {

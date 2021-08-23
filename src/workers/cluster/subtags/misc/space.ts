@@ -6,6 +6,7 @@ export class SpaceSubtag extends BaseSubtag {
         super({
             name: 'space',
             category: SubtagType.COMPLEX,
+            aliases: ['s'],
             definition: [
                 {
                     parameters: ['count?:1'],

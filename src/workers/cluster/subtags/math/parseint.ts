@@ -5,7 +5,7 @@ export class ParseIntSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'parseint',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['number'],

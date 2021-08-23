@@ -8,7 +8,7 @@ export class ChannelIsThread extends BaseSubtag {
         super({
             name: 'channelisthread',
             aliases: ['isthread'],
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: [],

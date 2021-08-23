@@ -9,7 +9,7 @@ export class ChannelPosSubtag extends BaseSubtag {
         super({
             name: 'channelpos',
             aliases: ['categorypos'],
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             desc: 'The position is the index per channel type (text, voice or category) in the channel list.',
             definition: [
                 {

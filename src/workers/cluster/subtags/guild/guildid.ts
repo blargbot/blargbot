@@ -5,7 +5,7 @@ export class GuildIdSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'guildid',
-            category: SubtagType.API,
+            category: SubtagType.GUILD,
             desc: 'Returns the id of the current guild.',
             definition: [
                 {

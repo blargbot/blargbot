@@ -5,7 +5,7 @@ export class ParseFloattSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'parsefloat',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['number'],

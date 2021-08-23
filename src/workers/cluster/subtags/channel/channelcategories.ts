@@ -6,7 +6,7 @@ export class ChannelCategoriesSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channelcategories',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             desc: 'Returns an array of category IDs on the current guild.',
             aliases: ['categories'],
             definition: [

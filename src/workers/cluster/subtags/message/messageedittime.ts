@@ -8,7 +8,7 @@ export class MessageEditTimeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'messageedittime',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             desc: 'If the message is not edited, this will return the current time instead.\n\n**Note:** there are plans to change this behaviour, but due to backwards-compatibility this remains unchanged.', //TODO Change this
             definition: [//!Overwritten
                 {

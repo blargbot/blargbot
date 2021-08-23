@@ -9,7 +9,7 @@ export class WaitMessageSubtags extends BaseSubtag {
     public constructor() {
         super({
             name: 'waitmessage',
-            category: SubtagType.BOT,
+            category: SubtagType.MESSAGE,
             desc: 'Pauses the command until one of the given users sends a message in any of the given channels. ' +
             'When a message is sent, `condition` will be run to determine if the message can be accepted. ' +
             'If no message has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +

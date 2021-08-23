@@ -10,7 +10,7 @@ export class WarnSubtag extends BaseSubtag {
     ) {
         super({
             name: 'warn',
-            category: SubtagType.BOT,
+            category: SubtagType.USER,
             desc: '`user` defaults to the executing user.',
             definition: [
                 {

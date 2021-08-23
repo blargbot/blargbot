@@ -6,7 +6,7 @@ export class GuildBansSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'guildbans',
-            category: SubtagType.API,
+            category: SubtagType.GUILD,
             desc: 'Returns an array of banned users in the current guild.',
             definition: [
                 {

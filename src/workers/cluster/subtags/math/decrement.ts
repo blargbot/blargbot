@@ -6,7 +6,7 @@ export class DecrementSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'decrement',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['varName'],

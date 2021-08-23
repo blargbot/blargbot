@@ -5,7 +5,7 @@ export class ChannelDeleteSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channeldelete',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: ['id'],

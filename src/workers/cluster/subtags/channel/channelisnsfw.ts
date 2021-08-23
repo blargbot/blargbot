@@ -6,7 +6,7 @@ export class ChannelIsNsfw extends BaseSubtag {
     public constructor() {
         super({
             name: 'channelisnsfw',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             aliases: ['isnsfw'],
             definition: [
                 {

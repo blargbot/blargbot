@@ -5,7 +5,7 @@ export class EmojiDeleteSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'emojidelete',
-            category: SubtagType.API,
+            category: SubtagType.GUILD,
             definition: [
                 {
                     parameters: ['id'], //TODO possibly an emote lookup for emote names? Would be neat, would allow not relying on the try/catch for unknown emojis too

@@ -5,8 +5,7 @@ export class RandUserSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'randuser',
-            category: SubtagType.API,
-            aliases: ['absolute'],
+            category: SubtagType.USER,
             definition: [
                 {
                     parameters: [],

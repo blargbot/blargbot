@@ -6,7 +6,7 @@ export class RoleSetMentionableSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'rolesetmentionable',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             definition: [
                 {
                     parameters: ['role'],

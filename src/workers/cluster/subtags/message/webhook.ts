@@ -7,7 +7,7 @@ export class WebhookSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'webhook',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             desc: 'Please assign your webhook credentials to private variables! Do not leave them in your code.',
             definition: [
                 {

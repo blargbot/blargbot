@@ -5,7 +5,7 @@ export class OutputSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'output',
-            category: SubtagType.BOT,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: ['text?'],

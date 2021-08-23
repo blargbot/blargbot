@@ -6,7 +6,7 @@ export class UnbanSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'unban',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             definition: [
                 {
                     parameters: ['user'],

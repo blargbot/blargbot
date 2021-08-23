@@ -7,7 +7,7 @@ export class JsonStringifySubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'jsonstringify',
-            category: SubtagType.ARRAY,
+            category: SubtagType.JSON,
             aliases: ['jstringify'],
             definition: [
                 {

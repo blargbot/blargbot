@@ -16,7 +16,7 @@ export class UserGameTypeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'usergametype',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             desc: 'Game types can be any of `' + Object.values(gameTypes).filter(type => type).join(', ') + '`',
             definition: [
                 {

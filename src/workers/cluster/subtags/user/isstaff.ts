@@ -9,7 +9,7 @@ export class IsStaffSubtag extends BaseSubtag {
         super({
             name: 'isstaff',
             aliases: ['ismod'],
-            category: SubtagType.API,
+            category: SubtagType.USER,
             definition: [
                 {
                     parameters: [],

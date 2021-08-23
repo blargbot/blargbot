@@ -7,7 +7,7 @@ export class ReactListSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'reactlist',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             aliases: ['listreact'],
             definition: [//! overwritten
                 {

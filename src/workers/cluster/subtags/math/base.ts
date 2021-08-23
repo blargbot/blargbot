@@ -7,7 +7,7 @@ export class BaseNumberSubtag extends BaseSubtag {
         super({
             name: 'base',
             aliases: ['radix'],
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['integer', 'origin?:10', 'radix'],

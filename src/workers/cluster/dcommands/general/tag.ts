@@ -718,11 +718,12 @@ export class TagCommand extends BaseGuildCommand {
         return { name: tag.name, tag };
     }
 
-    private showDocs(ctx: GuildCommandContext, topic: string | undefined): SendPayload | string {
-        const embed = getDocsEmbed(ctx, topic);
+    private async showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
+        const embed = await getDocsEmbed(ctx, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`);
-
+        if (typeof embed === 'string')
+            return embed;
         return { embeds: [embed], isHelp: true };
     }
 

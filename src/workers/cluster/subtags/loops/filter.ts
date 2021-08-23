@@ -6,7 +6,7 @@ export class FilterSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'filter',
-            category: SubtagType.ARRAY,
+            category: SubtagType.LOOPS,
             definition: [
                 {
                     parameters: ['variable', 'array', '~code'],

@@ -5,7 +5,7 @@ export class RoleSizeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'rolesize',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             aliases: ['inrole'],
             definition: [
                 {

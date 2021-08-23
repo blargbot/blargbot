@@ -5,7 +5,7 @@ export class UserStatusSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userstatus',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             desc: 'Returned status can be one of `online`, `idle`, `dnd` or `offline`',
             definition: [
                 {

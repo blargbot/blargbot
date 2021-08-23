@@ -5,7 +5,7 @@ export class MessageIdSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'messageid',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             desc: 'Returns the ID of the invoking message.',
             definition: [
                 {

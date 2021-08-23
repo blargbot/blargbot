@@ -19,7 +19,7 @@ export class BanSubtag extends BaseSubtag {
     ) {
         super({
             name: 'ban',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             desc: '`daysToDelete` is the number of days to delete messages for. `duration`',
             definition: [
                 {

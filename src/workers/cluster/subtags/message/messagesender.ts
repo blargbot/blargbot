@@ -7,7 +7,7 @@ export class MessageSenderSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'messagesender',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             aliases: ['sender'],
             definition: [
                 {

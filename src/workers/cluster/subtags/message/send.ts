@@ -8,7 +8,7 @@ export class SendSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'send',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: ['channel', 'message', 'embed', 'fileContent', 'fileName?:file.txt'],

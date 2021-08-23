@@ -5,7 +5,7 @@ export class RoleDeleteSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'roledelete',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             definition: [
                 {
                     parameters: ['role', 'quiet?'],

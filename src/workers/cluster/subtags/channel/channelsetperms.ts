@@ -8,7 +8,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channelsetperms',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: ['channel', 'type', 'memberid|roleid'], //TODO allow member/role names

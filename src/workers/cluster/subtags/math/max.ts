@@ -5,7 +5,7 @@ export class MaxSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'max',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['numbers+'],

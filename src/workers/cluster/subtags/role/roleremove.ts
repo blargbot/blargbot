@@ -6,7 +6,7 @@ export class RoleRemoveSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'roleremove',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             aliases: ['removerole'],
             desc: '`role` can be either a roleID or role mention.',
             definition: [

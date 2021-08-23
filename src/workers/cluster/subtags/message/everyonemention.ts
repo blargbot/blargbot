@@ -6,7 +6,7 @@ export class EveryoneMentionSubtag extends BaseSubtag {
         super({
             name: 'everyonemention',
             aliases: ['everyone'],
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: ['mention?'],

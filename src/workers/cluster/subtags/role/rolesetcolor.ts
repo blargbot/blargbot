@@ -6,7 +6,7 @@ export class RoleSetColorSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'rolesetcolor',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             definition: [
                 {
                     parameters: ['role'],

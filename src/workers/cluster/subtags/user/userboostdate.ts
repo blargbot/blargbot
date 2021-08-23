@@ -7,7 +7,7 @@ export class UserBoostDataSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userboostdate',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             desc: 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information about formats. ' +
                 'If user is not boosting the guild, returns `User not boosting`',
             definition: [

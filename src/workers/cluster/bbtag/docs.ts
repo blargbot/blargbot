@@ -7,51 +7,35 @@ import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 import { BaseSubtag } from './BaseSubtag';
 import { limits } from './limits';
 
-export function getDocsEmbed(context: CommandContext, topic: string | undefined): MessageEmbedOptions | undefined {
-    const embed = getTopicBody(context, topic);
+export async function getDocsEmbed(context: CommandContext, topic: string | undefined): Promise<MessageEmbedOptions | string | undefined> {
+    const embed = await getTopicBody(context, topic);
     if (embed === undefined)
         return undefined;
-
+    if (typeof embed === 'string')
+        return embed;
     embed.title = `BBTag documentation${embed.title ?? ''}`;
     embed.url = context.cluster.util.websiteLink(`tags${embed.url ?? ''}`);
     embed.color ??= 0xefff00;
     return embed;
 }
 
-function getTopicBody(context: CommandContext, topic: string | undefined): MessageEmbedOptions | undefined {
+async function getTopicBody(context: CommandContext, topic: string | undefined): Promise<MessageEmbedOptions | string | undefined> {
     const words = topic === undefined ? [] : humanize.smartSplit(topic);
 
     switch (words[0]?.toLowerCase()) {
         case undefined:
         case 'index': return {
-            description: `Please use \`${context.prefix}${context.commandName} docs [topic]\` to view available information on a topic.\n\n` +
-                'Available Topics:\n' +
-                '- subtags <category>\n' +
-                '- variables\n' +
-                '- argTypes\n' +
-                '- terminology\n' +
-                '- dynamic\n\n' +
-                'Available Subtag Categories:\n' +
-                Object.values(tagTypeDetails).map(k => `- ${k.name}`).join('\n')
+            title: 'BBTag documentation',
+            description: 'Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE](' + context.util.websiteLink('tags/editor') + ') which should make developing a little easier.',
+            fields: [
+                {
+                    name: 'Topics',
+                    value: 'For specific information about a topic, please use' + context.prefix + 'docs <topic>` (like ' + context.prefix + 'docs subtags`\n- `terminology`, for more information about terms like \'subtags\', \'tags\', etc.  \n- `variables`, for more information about variables and the different variable scopes.\n- `argTypes`, for more information about the syntax of parameters\n- `dynamic`, for information about dynamic subtags\n- `subtags`, arguably the most important topic on this list. `' + context.prefix + 'docs subtags` displays a list of subtag categories.'
+                }
+            ]
         };
-        case 'subtags': {
-            const category = Object.values(SubtagType)
-                .filter((p): p is SubtagType => typeof p !== 'string')
-                .find(p => tagTypeDetails[p].name.toLowerCase() === words[1]?.toLowerCase());
-            if (category === undefined) {
-                return {
-                    description: 'Available Subtag Categories:\n' +
-                        Object.values(tagTypeDetails).map(k => `- ${k.name} - ${k.desc}`).join('\n')
-                };
-            }
-
-            const props = tagTypeDetails[category];
-            const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
-            return {
-                description: `**${props.name} Subtags** - ${props.desc}\n` +
-                    codeBlock(subtags.join(','))
-            };
-        }
+        case 'subtags':
+            return subtagsEmbed(context, words[1]);
         case 'variables':
         case 'variable':
         case 'vars':
@@ -61,8 +45,13 @@ function getTopicBody(context: CommandContext, topic: string | undefined): Messa
             description: `In BBTag there are ${0} different scopes that can be used for storing your data. ` +
                 'These scopes are determined by the first character of your variable name, so choose carefully!\nThe available scopes are as follows:',
             fields: [
-                // TODO Need variable scopes here!
-                {
+                ...variablesScopes.map(scope => {
+                    return {
+                        name: `${scope.name} variables (prefix: ${scope.prefix})`,
+                        value: scope.description
+                    };
+                })
+                , {
                     name: '{commit} and {rollback}',
                     value: 'For performance reasons, when a value is `{set}` it wont be immediately populated to the database. ' +
                         '`{commit}` and `{rollback}` can be used to manipulate when variables are sent to the database, if at all. ' +
@@ -177,45 +166,10 @@ function getTopicBody(context: CommandContext, topic: string | undefined): Messa
                 'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.'
         };
         default: {
-            const subtagName = words[0].replace(/[{}]/g, '').toLowerCase();
-            const subtag = context.cluster.subtags.get(subtagName);
+            const subtag = await lookupSubtag(context, words[0]);
             if (subtag === undefined)
-                return undefined;
-
-            const description = [];
-            if (typeof subtag.deprecated === 'string')
-                description.push(`**This subtag is deprecated and has been replaced by {${subtag.deprecated}}**`);
-            else if (subtag.deprecated)
-                description.push('**This subtag is deprecated**');
-            if (subtag.aliases.length > 0)
-                description.push('**Aliases:**', codeBlock(subtag.aliases.join(', ')));
-            if (subtag.desc !== undefined)
-                description.push(subtag.desc);
-
-            const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
-            const limitField: EmbedFieldData = { name: '__Usage limits__', value: '' };
-
-            for (const key of Object.keys(limits)) {
-                const limit = new limits[key]();
-                const text = limit.rulesFor(subtag.name).join('\n');
-                if (text.length > 0) {
-                    limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}\n\n`;
-                }
-            }
-
-            if (limitField.value.length > 0)
-                fields.push(limitField);
-
-            return subtag.enrichDocs({
-                title: ` - {${subtag.name}}`,
-                url: `/#${encodeURIComponent(subtag.name)}`,
-                description: description.length === 0 ? undefined : description.join('\n'),
-                color: subtag.deprecated !== false ? 0xff0000 : undefined,
-                fields,
-                footer: {
-                    text: `For detailed info about the argument syntax, use: ${context.prefix}${context.commandName} docs arguments`
-                }
-            });
+                return;
+            return subtagDocs(context, subtag);
         }
     }
 }
@@ -240,3 +194,165 @@ function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, inde
         description += `**Example output:**${quote(signature.exampleOut)}`;
     return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
 }
+
+function subtagDocs(context: CommandContext, subtag: BaseSubtag): MessageEmbedOptions {
+    const description = [];
+    if (typeof subtag.deprecated === 'string')
+        description.push(`**This subtag is deprecated and has been replaced by {${subtag.deprecated}}**`);
+    else if (subtag.deprecated)
+        description.push('**This subtag is deprecated**');
+    if (subtag.aliases.length > 0)
+        description.push('**Aliases:**', codeBlock(subtag.aliases.join(', ')));
+    if (subtag.desc !== undefined)
+        description.push(subtag.desc);
+
+    const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
+    const limitField: EmbedFieldData = { name: '__Usage limits__', value: '' };
+
+    for (const key of Object.keys(limits)) {
+        const limit = new limits[key]();
+        const text = limit.rulesFor(subtag.name).join('\n');
+        if (text.length > 0) {
+            limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}\n\n`;
+        }
+    }
+
+    if (limitField.value.length > 0)
+        fields.push(limitField);
+
+    return subtag.enrichDocs({
+        title: ` - {${subtag.name}}`,
+        url: `/#${encodeURIComponent(subtag.name)}`,
+        description: description.length === 0 ? undefined : description.join('\n'),
+        color: subtag.deprecated !== false ? 0xff0000 : undefined,
+        fields,
+        footer: {
+            text: `For detailed info about the argument syntax, use: ${context.prefix}${context.commandName} docs arguments`
+        }
+    });
+}
+async function lookupSubtag(context: CommandContext, input: string): Promise<BaseSubtag | undefined> {
+    input = input.replace(/[{}]/, '').toLowerCase();
+    const matchedSubtags = [...context.cluster.subtags.list()].filter(subtag => {
+        return subtag.name.includes(input) ? true : subtag.aliases.reduce<boolean>((acc, alias) => alias.includes(input) || acc, false);
+    });
+    if (matchedSubtags.find(s => s.name === input) !== undefined)
+        return matchedSubtags.find(s => s.name === input);
+    if (matchedSubtags.length === 1)
+        return matchedSubtags[0];
+
+    const result = await context.util.queryChoice({
+        context: context.message,
+        actors: context.author,
+        prompt: 'ℹ️ Multiple subtags found, please select one from the drop down.',
+        placeholder: 'Select a subtag',
+        choices: matchedSubtags.map(subtag => {
+            return {
+                label: '{' + subtag.name + '}',
+                value: subtag.name
+            };
+        })
+    });
+
+    if (result.state !== 'SUCCESS')
+        return undefined;
+    return matchedSubtags.find(v => v.name === result.value);
+}
+
+async function subtagsEmbed(context: CommandContext, input?: string): Promise<MessageEmbedOptions | string> {
+    const categories = Object.values(SubtagType)
+        .filter((p): p is SubtagType => typeof p !== 'string');
+    if (input === undefined) {
+        return categoriesEmbed();
+    }
+    const matchedCategories = categories.filter(c => tagTypeDetails[c].name.toLowerCase().includes(input.toLowerCase().toString()));
+    if (matchedCategories.length === 0) {
+        return categoriesEmbed();
+    }
+
+    if (matchedCategories.length === 1) {
+        const category = matchedCategories[0];
+        const props = tagTypeDetails[category];
+        const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
+        return {
+            description: `**${props.name} Subtags** - ${props.desc}\n` +
+                codeBlock(subtags.join(', '))
+        };
+    }
+
+    const queryResponse = await context.util.queryChoice({
+        context: context.message,
+        actors: context.author,
+        placeholder: 'Select a category',
+        prompt: 'ℹ️ Multiple categories found, please select one from the drop down.',
+        choices: matchedCategories.map(c => {
+            const catName = tagTypeDetails[c].name;
+            return {
+                label: catName[0].toUpperCase() + catName.slice(1),
+                value: c
+            };
+        })
+    });
+
+    switch (queryResponse.state) {
+        case 'CANCELLED':
+            return '✅ Cancelled drop down';
+        case 'TIMED_OUT':
+            return '❌ Drop down timed out';
+        case 'FAILED':
+            return '❌ Drop down failed';
+        case 'NO_OPTIONS':
+            return '❌ No categories provided';
+        case 'SUCCESS': {
+            const category = queryResponse.value;
+            const props = tagTypeDetails[category];
+            const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
+            return {
+                description: `**${props.name} Subtags** - ${props.desc}\n` +
+                codeBlock(subtags.join(', '))
+            };
+        }
+    }
+
+}
+
+function categoriesEmbed(): MessageEmbedOptions {
+    return {
+        description: '__**Available Subtag Categories**__:\n' +
+                Object.values(tagTypeDetails).map(k => `- **${k.name}** - ${k.desc}`).join('\n')
+    };
+}
+const variablesScopes = [
+    {
+        name: 'Server',
+        prefix: '_',
+        description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
+            'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
+            'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.'
+    },
+    {
+        name: 'Author',
+        prefix: '@',
+        description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
+            'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.'
+    },
+    {
+        name: 'Global',
+        prefix: '*',
+        description: 'Global variables are completely public, anyone can read **OR EDIT** your global variables.\n' +
+            'These are very useful if you like pain.'
+    },
+    {
+        name: 'Temporary',
+        prefix: '~',
+        description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
+            'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type'
+    },
+    {
+        name: 'Local',
+        prefix: '',
+        description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
+            'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
+            'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag'
+    }
+];

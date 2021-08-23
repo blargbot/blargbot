@@ -6,7 +6,7 @@ export class GuildSizeSubtag extends BaseSubtag {
         super({
             name: 'guildsize',
             aliases: ['inguild'],
-            category: SubtagType.API,
+            category: SubtagType.GUILD,
             desc: 'Returns the number of members on the current guild.',
             definition: [
                 {
