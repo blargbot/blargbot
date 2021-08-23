@@ -704,7 +704,7 @@ export interface GuildTable {
     setGreeting(guildId: string, greeting: GuildTriggerTag | undefined): Promise<boolean>;
     setAnnouncements(guildId: string, options: GuildAnnounceOptions | undefined): Promise<boolean>;
     getAnnouncements(guildId: string, skipCache?: boolean): Promise<GuildAnnounceOptions | undefined>;
-    clearVoteBans(guildId: string, userId: string): Promise<void>;
+    clearVoteBans(guildId: string, userId?: string): Promise<void>;
     getVoteBans(guildId: string, skipCache?: boolean): Promise<GuildVotebans | undefined>;
     getVoteBans(guildId: string, target: string, skipCache?: boolean): Promise<readonly string[] | undefined>;
     hasVoteBanned(guildId: string, target: string, signee: string, skipCache?: boolean): Promise<boolean>;

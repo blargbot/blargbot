@@ -37,10 +37,17 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
     public async send(content: CommandResult): Promise<Message | undefined>
     public async send(context: SendContext, content: CommandResult): Promise<Message | undefined>
     public async send(...args: [CommandResult] | [SendContext, CommandResult]): Promise<Message | undefined> {
-        const [context, content] = args.length === 1 ? [this.channel, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
+        const [context, content] = args.length === 1 ? [this.message, toSendContent(args[0])] : [args[0], toSendContent(args[1])];
         if (content === undefined)
             return undefined;
         return await this.cluster.util.send(context, content);
+    }
+
+    public async reply(content: CommandResult): Promise<Message | undefined> {
+        content = toSendContent(content);
+        if (content === undefined)
+            return undefined;
+        return await this.cluster.util.send(this.message, content);
     }
 
     public async sendDM(content: CommandResult): Promise<Message | undefined>
