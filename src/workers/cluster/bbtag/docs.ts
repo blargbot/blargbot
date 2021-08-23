@@ -25,7 +25,6 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
     switch (words[0]?.toLowerCase()) {
         case undefined:
         case 'index': return {
-            title: 'BBTag documentation',
             description: 'Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE](' + context.util.websiteLink('tags/editor') + ') which should make developing a little easier.',
             fields: [
                 {
@@ -169,6 +168,8 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
             const subtag = await lookupSubtag(context, words[0]);
             if (subtag === undefined)
                 return;
+            if (typeof subtag === 'string')
+                return subtag;
             return subtagDocs(context, subtag);
         }
     }
@@ -231,7 +232,7 @@ function subtagDocs(context: CommandContext, subtag: BaseSubtag): MessageEmbedOp
         }
     });
 }
-async function lookupSubtag(context: CommandContext, input: string): Promise<BaseSubtag | undefined> {
+async function lookupSubtag(context: CommandContext, input: string): Promise<BaseSubtag | string | undefined> {
     input = input.replace(/[{}]/, '').toLowerCase();
     const matchedSubtags = [...context.cluster.subtags.list()].filter(subtag => {
         return subtag.name.includes(input) ? true : subtag.aliases.reduce<boolean>((acc, alias) => alias.includes(input) || acc, false);
@@ -254,9 +255,18 @@ async function lookupSubtag(context: CommandContext, input: string): Promise<Bas
         })
     });
 
-    if (result.state !== 'SUCCESS')
-        return undefined;
-    return matchedSubtags.find(v => v.name === result.value);
+    switch (result.state) {
+        case 'CANCELLED':
+            return '✅ Cancelled subtag lookup';
+        case 'FAILED':
+            return '❌ Drop down failed!';
+        case 'NO_OPTIONS':
+            return '❌ I wasn\'t able to find any subtags...'; //how
+        case 'TIMED_OUT':
+            return '❌ Drop down timed out!';
+        case 'SUCCESS':
+            return matchedSubtags.find(v => v.name === result.value);
+    }
 }
 
 async function subtagsEmbed(context: CommandContext, input?: string): Promise<MessageEmbedOptions | string> {
@@ -296,7 +306,7 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Me
 
     switch (queryResponse.state) {
         case 'CANCELLED':
-            return '✅ Cancelled drop down';
+            return '✅ Cancelled category lookup';
         case 'TIMED_OUT':
             return '❌ Drop down timed out';
         case 'FAILED':
