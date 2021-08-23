@@ -32,6 +32,8 @@ export class GeneralAutoResponseLimit extends BaseRuntimeLimit {
             .addRules('channeledit', StaffOnlyRule.instance)
             .addRules('channelsetperms', StaffOnlyRule.instance)
             .addRules('channelsetpos', StaffOnlyRule.instance)
+            .addRules('threadcreate', StaffOnlyRule.instance)
+            .addRules('deletethread', StaffOnlyRule.instance)
             .addRules('dm', StaffOnlyRule.instance, new UseCountRule(1))
             .addRules('send', StaffOnlyRule.instance, new UseCountRule(1))
             .addRules('edit', StaffOnlyRule.instance, new UseCountRule(1))

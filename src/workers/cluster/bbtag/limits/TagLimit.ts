@@ -31,6 +31,8 @@ export class TagLimit extends BaseRuntimeLimit {
             .addRules('channeledit', DisabledRule.instance)
             .addRules('channelsetperms', DisabledRule.instance)
             .addRules('channelsetpos', DisabledRule.instance)
+            .addRules('threadcreate', DisabledRule.instance)
+            .addRules('deletethread', DisabledRule.instance)
             .addRules('dm', DisabledRule.instance)
             .addRules('send', DisabledRule.instance)
             .addRules('timer', DisabledRule.instance)

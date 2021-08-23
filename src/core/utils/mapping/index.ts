@@ -20,3 +20,4 @@ export * from './result';
 export * from './mapOptionalDate';
 export * from './mapBigInt';
 export * from './mapOptionalBigInt';
+export * from './mapOptionalChoice';

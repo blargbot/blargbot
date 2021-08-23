@@ -18,3 +18,4 @@ export * from './notUndefined';
 export * from './testMessageFilter';
 export * from './isUrl';
 export * from './hasInvite';
+export * from './isThreadableChannel';
