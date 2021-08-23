@@ -38,6 +38,11 @@ export class DocsCommand extends BaseGlobalCommand {
                     parameters: 'subtags {category?}',
                     description: 'Displays a list of categories, or a list of subtags for `category`',
                     execute: (ctx, [cat]) => this.showSubtagsDocs(ctx, cat)
+                },
+                {
+                    parameters: '{subtagName}',
+                    description: 'Displays information about a specific subtag.',
+                    execute: (ctx, [subtagName]) => this.showSubtagDocs(ctx, subtagName)
                 }
             ]
         });
@@ -80,6 +85,13 @@ export class DocsCommand extends BaseGlobalCommand {
 
     public async showSubtagsDocs(context: CommandContext, input?: string): Promise<SendPayload> {
         const embed = await getDocsEmbed(context, `subtags${input !== undefined ? ' ' + input : ''}`);
+        if (embed === undefined)
+            return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
+        return embed;
+    }
+
+    public async showSubtagDocs(context: CommandContext, input: string): Promise<SendPayload> {
+        const embed = await getDocsEmbed(context, input);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;
