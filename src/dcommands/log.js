@@ -32,7 +32,7 @@ class LogCommand extends BaseCommand {
                 '\n- all - enables all of the events' +
                 '\n\n`ignore` adds a list of users to ignore from logging. Useful for ignoring bots.' +
                 '\n`track` removes users from the ignore list' +
-                '\n**Note:** When a webhook is provided for `users`, I must the `Manage Webhooks` permission to recognize them!'
+                '\n**Note:** When a webhook is provided for `users`, I must have the `Manage Webhooks` permission to recognize them!'
         });
     }
 
