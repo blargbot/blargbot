@@ -7,6 +7,11 @@ import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 import { BaseSubtag } from './BaseSubtag';
 import { limits } from './limits';
 
+interface CategoryChoice {
+    label: string;
+    description: string;
+    value: SubtagType | 'all';
+}
 export async function getDocsEmbed(context: CommandContext, topic: string | undefined): Promise<MessageEmbedOptions | string | undefined> {
     const embed = await getTopicBody(context, topic);
     if (embed === undefined)
@@ -273,11 +278,11 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Me
     const categories = Object.values(SubtagType)
         .filter((p): p is SubtagType => typeof p !== 'string');
     if (input === undefined) {
-        return categoriesEmbed();
+        return categoriesEmbed(context, categories);
     }
     const matchedCategories = categories.filter(c => tagTypeDetails[c].name.toLowerCase().includes(input.toLowerCase().toString()));
     if (matchedCategories.length === 0) {
-        return categoriesEmbed();
+        return categoriesEmbed(context, categories);
     }
 
     if (matchedCategories.length === 1) {
@@ -326,11 +331,60 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Me
 
 }
 
-function categoriesEmbed(): MessageEmbedOptions {
-    return {
-        description: '__**Available Subtag Categories**__:\n' +
-                Object.values(tagTypeDetails).map(k => `- **${k.name}** - ${k.desc}`).join('\n')
-    };
+async function categoriesEmbed(context: CommandContext, categories: SubtagType[]): Promise<MessageEmbedOptions | string> {
+    const mappedCategories: CategoryChoice[] = [{
+        label: 'All',
+        description: 'Displays all subtags',
+        value: 'all'
+    }];
+    mappedCategories.push(...categories.map(c => {
+        return {
+            label: tagTypeDetails[c].name,
+            value: c,
+            description: tagTypeDetails[c].desc
+        };
+    }));
+
+    const queryResponse = await context.util.queryChoice({
+        context: context.message,
+        actors: context.author,
+        placeholder: 'Select a category',
+        prompt: 'ℹ️ Please select a category in the drop down below.',
+        choices: mappedCategories
+    });
+
+    switch (queryResponse.state) {
+        case 'CANCELLED':
+            return '✅ Cancelled category lookup';
+        case 'TIMED_OUT':
+            return '❌ Drop down timed out';
+        case 'FAILED':
+            return '❌ Drop down failed';
+        case 'NO_OPTIONS':
+            return '❌ No categories provided';
+        case 'SUCCESS': {
+            const category = queryResponse.value;
+            if (category === 'all') {
+                const subtags = [...context.cluster.subtags.list()];
+                return {
+                    title: 'BBTag documentation - All subtags',
+                    fields: categories.map(c => {
+                        return {
+                            name: tagTypeDetails[c].name,
+                            value: '```\n' + subtags.filter(s => s.category === c).map(s => s.name).join(', ') + '```'
+                        };
+                    })
+                };
+            }
+            const props = tagTypeDetails[category];
+            const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
+            return {
+                description: `**${props.name} Subtags** - ${props.desc}\n` +
+                codeBlock(subtags.join(', '))
+            };
+
+        }
+    }
 }
 const variablesScopes = [
     {

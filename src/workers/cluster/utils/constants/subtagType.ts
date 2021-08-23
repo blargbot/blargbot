@@ -9,7 +9,7 @@ export enum SubtagType {
     LANG,
     LOOPS,
     BOT,
-    API,
+    //API,
     MESSAGE,
     CHANNEL,
     THREAD,
@@ -51,10 +51,10 @@ export const tagTypeDetails: SubtagPropertiesSet = {
         name: 'Blargbot',
         desc: 'Subtags that integrate with blargbots custom functions.'
     },
-    [SubtagType.API]: {
-        name: 'API',
-        desc: 'Subtags that access the discord API to perform operations.'
-    },
+    // [SubtagType.API]: {
+    //     name: 'API',
+    //     desc: 'Subtags that access the discord API to perform operations.'
+    // },
     [SubtagType.MESSAGE]: {
         name: 'Message',
         desc: 'Subtags that interact with messages.'
