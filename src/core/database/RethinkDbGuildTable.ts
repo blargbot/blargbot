@@ -179,7 +179,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
             votebans: {
                 [target]: this.branchExpr(g('votebans').default({})(target).default([]),
                     x => x.getField('id').contains(signee).not(),
-                    x => x.append({ id: signee, reason })
+                    x => x.append(this.addExpr({ id: signee, reason }))
                 )
             }
         }));

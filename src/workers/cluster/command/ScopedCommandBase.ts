@@ -43,7 +43,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
         if (!this.checkContext(context)) {
             const result = await this.handleInvalidContext(context);
             if (result !== undefined)
-                await context.send(result);
+                await context.reply(result);
             return;
         }
 
@@ -53,7 +53,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             return this.handler.execute(context);
         };
 
-        await context.send(await runMiddleware(0));
+        await context.reply(await runMiddleware(0));
     }
 
     protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {

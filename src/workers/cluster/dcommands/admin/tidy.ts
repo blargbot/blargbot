@@ -104,7 +104,7 @@ export class TidyCommand extends BaseGuildCommand {
         if (!commandDeleted)
             return resultMessage;
 
-        const toDelete = await context.send(resultMessage);
+        const toDelete = await context.reply(resultMessage);
         setTimeout(() => void toDelete?.delete(), 10000);
         return undefined;
     }

@@ -313,17 +313,13 @@ declare module 'rethinkdb' {
     interface Expression<T> extends Writeable<T>, Operation<T>, HasFields<T, Expression<T>> {
         <K extends string & keyof T>(prop: K): Expression<T[K]>;
         <R, K extends string & keyof R>(this: Expression<R[]>, prop: K): Expression<Array<R[K]>>;
-        merge<R>(query: R): Expression<T & R>;
-        merge<R>(query: Expression<R>): Expression<T & R>;
-        append(this: Expression<string>, prop: string): Expression<string>;
-        append<R>(this: Expression<R[]>, prop: R): Expression<R[]>;
+        merge<R>(query: R | Expression<R>): Expression<T & R>;
+        append(this: Expression<string>, prop: string | Expression<string>): Expression<string>;
+        append<R>(this: Expression<R[]>, prop: R | Expression<R>): Expression<R[]>;
         setInsert<R>(this: Expression<R[]>, prop: R): Expression<R[]>;
-        setUnion<R>(this: Expression<R[]>, prop: R[]): Expression<R[]>;
-        setUnion<R>(this: Expression<R[]>, prop: Expression<R[]>): Expression<R[]>;
-        setIntersection<R>(this: Expression<R[]>, prop: R[]): Expression<R[]>;
-        setIntersection<R>(this: Expression<R[]>, prop: Expression<R[]>): Expression<R[]>;
-        setDifference<R>(this: Expression<R[]>, prop: R[]): Expression<R[]>;
-        setDifference<R>(this: Expression<R[]>, prop: Expression<R[]>): Expression<R[]>;
+        setUnion<R>(this: Expression<R[]>, prop: R[] | Expression<R[]>): Expression<R[]>;
+        setIntersection<R>(this: Expression<R[]>, prop: R[] | Expression<R[]>): Expression<R[]>;
+        setDifference<R>(this: Expression<R[]>, prop: R[] | Expression<R[]>): Expression<R[]>;
         contains(this: Expression<string>, prop: string): Expression<boolean>;
         contains<R>(this: Expression<R[]>, prop: R | Expression<R>): Expression<boolean>;
 

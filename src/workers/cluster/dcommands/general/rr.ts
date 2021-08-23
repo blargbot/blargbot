@@ -39,7 +39,7 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
             return this.error('Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...');
         }
 
-        const you = await context.send(`${emote}🔫`);
+        const you = await context.reply(`${emote}🔫`);
         if (await query.getResult()) {
             await Promise.all([
                 query.prompt.edit({ content: 'You chicken out and put the gun down', components: [] }),
