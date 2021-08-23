@@ -29,7 +29,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
             fields: [
                 {
                     name: 'Topics',
-                    value: 'For specific information about a topic, please use' + context.prefix + 'docs <topic>` (like ' + context.prefix + 'docs subtags`\n- `terminology`, for more information about terms like \'subtags\', \'tags\', etc.  \n- `variables`, for more information about variables and the different variable scopes.\n- `argTypes`, for more information about the syntax of parameters\n- `dynamic`, for information about dynamic subtags\n- `subtags`, arguably the most important topic on this list. `' + context.prefix + 'docs subtags` displays a list of subtag categories.'
+                    value: 'For specific information about a topic, please use `' + context.prefix + 'docs <topic>` (like `' + context.prefix + 'docs subtags`\n- `terminology`, for more information about terms like \'subtags\', \'tags\', etc.  \n- `variables`, for more information about variables and the different variable scopes.\n- `argTypes`, for more information about the syntax of parameters\n- `dynamic`, for information about dynamic subtags\n- `subtags`, arguably the most important topic on this list. `' + context.prefix + 'docs subtags` displays a list of subtag categories.'
                 }
             ]
         };
