@@ -72,6 +72,9 @@ async function execute(bbtag, context) {
                 continue;
             }
 
+            if (context.subtagCount++ % 1000 === 0)
+                await sleep(10);
+
             try {
                 result.push(await runSubtag(subtag, context));
             } catch (err) {

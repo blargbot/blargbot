@@ -30,6 +30,7 @@ class Context {
      * @param {Context} parent The parent scope to initialize this one from
      */
     constructor(options) {
+        this.subtagCount = 0;
         this.message = this.msg = options.msg;
         if (Array.isArray(options.input)) {
             this.input = options.input;
