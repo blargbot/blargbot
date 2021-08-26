@@ -33,7 +33,7 @@ bot.on('guildBanRemove', async function (guild, user) {
 
             msg2.edit({
                 content: ' ',
-                embed: embed
+                embeds: [embed]
             });
         } else {
             bu.logAction(guild, user, mod, type || 'Unban', reason, bu.ModLogColour.UNBAN);
