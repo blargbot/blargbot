@@ -6,7 +6,7 @@ class RespondCommand extends BaseCommand {
     constructor(cluster) {
         super({
             name: 'respond',
-            category: newbutils.commandTypes.CAT
+            category: newbutils.commandTypes.SUPPORT
         });
 
         this.airtable = new Airtable({
