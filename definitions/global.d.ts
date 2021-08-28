@@ -39,8 +39,10 @@ declare global {
     type FilteredKeys<T, U> = { [P in keyof T]: T[P] extends U ? P : never }[keyof T];
 
     interface ObjectConstructor {
-        keys<T>(value: T): Array<string & keyof T>;
-        values<T>(value: T): Array<T[(string | number) & keyof T]>;
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        keys<T>(value: Exclude<T, undefined | null>): Array<string & keyof T>;
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        values<T>(value: Exclude<T, undefined | null>): Array<T[(string | number) & keyof T]>;
         entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[string & TKey, TValue]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
         create<T extends object>(value: T): T;
@@ -68,6 +70,8 @@ declare global {
     }
 
     type Awaitable<T> = T | PromiseLike<T>;
+    type Awaited<T> = T extends PromiseLike<infer R> ? Awaited<R> : T;
+    type ExcludeExact<T, U> = T extends U ? U extends T ? never : T : T;
 
     namespace NodeJS {
         type WorkerProcess = Process & Required<Pick<Process, 'send'>>;

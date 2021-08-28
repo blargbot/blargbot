@@ -315,7 +315,7 @@ export class TagCommand extends BaseGuildCommand {
         ];
 
         if (author !== undefined) {
-            const result = await context.util.queryMember(context.channel, context.author, { guild: context.channel.guild, filter: author });
+            const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, author);
             if (result.state !== 'SUCCESS')
                 return undefined;
 

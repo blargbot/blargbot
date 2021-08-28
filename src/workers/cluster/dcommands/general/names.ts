@@ -67,7 +67,7 @@ export class NamesCommand extends BaseGlobalCommand {
         const countStr = names.length === 0 ? '**all usernames**' : `${usernames.length} ${p(usernames.length, 'username')}`;
         const confirmed = await context.util.queryConfirm({
             context: context.channel,
-            users: context.author,
+            actors: context.author,
             prompt: this.warning(`Are you sure you want to remove ${countStr}`),
             confirm: 'Yes',
             cancel: 'No',

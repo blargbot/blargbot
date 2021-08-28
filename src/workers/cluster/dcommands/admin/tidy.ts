@@ -74,7 +74,7 @@ export class TidyCommand extends BaseGuildCommand {
 
         const confirmed = await context.util.queryConfirm({
             context: context.message,
-            users: context.author,
+            actors: context.author,
             prompt: this.info(`I am about to attempt to delete ${queryText}. Are you sure you wish to continue?\n${buildSummary(messages)}`),
             cancel: 'Cancel',
             confirm: 'Continue',
@@ -150,7 +150,7 @@ async function buildFilter(context: GuildCommandContext, options: TidyOptions): 
     if (options.users !== undefined) {
         const users = new Set<string>();
         for (const user of new Set(options.users)) {
-            const match = await context.util.queryMember(context.channel, context.author, { guild: context.channel.guild, filter: user });
+            const match = await context.util.queryMember(context.channel, context.author, context.channel.guild, user);
             if (match.state !== 'SUCCESS')
                 return 'INVALID_USER';
             users.add(match.value.id);

@@ -1,8 +1,9 @@
 import { MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, SendPayload } from '@core/types';
-import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, SendPayload, TextQuery, TextQueryOptions, TextQueryResult } from '@core/types';
+import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
+import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-types';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -92,7 +93,7 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
-                await prompt.delete();
+                cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
@@ -106,6 +107,7 @@ export class ClusterUtilities extends BaseUtilities {
             },
             cancel() {
                 awaiter.cancel();
+                cleanupQuery(prompt);
             }
         };
     }
@@ -171,7 +173,7 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
-                await prompt.delete();
+                cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
@@ -185,6 +187,7 @@ export class ClusterUtilities extends BaseUtilities {
             },
             cancel() {
                 awaiter.cancel();
+                cleanupQuery(prompt);
             }
         };
     }
@@ -215,7 +218,7 @@ export class ClusterUtilities extends BaseUtilities {
         };
 
         const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const awaiter = this.createComponentAwaiter(channel, options.users, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, {
             [component.confirmId]: () => true,
             [component.cancelId]: () => true
         });
@@ -230,6 +233,7 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
+                cleanupQuery(prompt, interaction);
                 switch (interaction?.customId) {
                     case component.confirmId: return true;
                     case undefined: return options.fallback;
@@ -238,13 +242,87 @@ export class ClusterUtilities extends BaseUtilities {
             },
             cancel() {
                 awaiter.cancel();
+                cleanupQuery(prompt);
+            }
+        };
+    }
+
+    public async queryText<T>(options: TextQueryOptions<T>): Promise<TextQueryResult<T>>
+    public async queryText(options: TextQueryOptions<string>): Promise<TextQueryResult<string>>
+    public async queryText<T>(options: TextQueryOptions<T>): Promise<TextQueryResult<T>> {
+        const query = await this.createTextQuery<T>(options);
+        return await query.getResult();
+    }
+
+    public async createTextQuery<T>(options: TextQueryOptions<T>): Promise<TextQuery<T>>
+    public async createTextQuery(options: TextQueryOptions<string>): Promise<TextQuery<string>>
+    public async createTextQuery<T>(options: TextQueryOptions<T>): Promise<TextQuery<T>> {
+        const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
+        const component: TextComponentOptions = {
+            cancelId: snowflake.create().toString(),
+            cancelButton: options.cancel ?? 'Cancel'
+        };
+
+        let parsed: { success: true; value: T; } | { success: false; } | undefined;
+        const messages: Message[] = [];
+        const parse = options.parse;
+        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const componentAwaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, { [component.cancelId]: () => true });
+        const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, parse === undefined ? () => true : async message => {
+            const parseResult = await parse(message);
+            if (!parseResult.success && parseResult.error !== undefined) {
+                messages.push(message);
+                const prompt = await this.send(message, parseResult.error);
+                if (prompt !== undefined)
+                    messages.push(prompt);
+            }
+
+            if (parseResult.success)
+                parsed = parseResult;
+
+            return parseResult.success;
+        });
+
+        const prompt = await this.send(options.context, { ...payload, ...createTextBody(component) });
+        if (prompt === undefined) {
+            return {
+                messages: messages,
+                getResult() { return Promise.resolve({ state: 'FAILED', related: messages }); },
+                cancel() { /* NOOP */ }
+            };
+        }
+
+        messages.push(prompt);
+
+        return {
+            messages: messages,
+            async getResult() {
+                const result = await Promise.race([componentAwaiter.result, messageAwaiter.result]);
+                componentAwaiter.cancel();
+                messageAwaiter.cancel();
+                cleanupQuery(prompt, result);
+                if (result === undefined)
+                    return { state: 'TIMED_OUT' };
+
+                if ('customId' in result)
+                    return { state: 'CANCELLED' };
+
+                messages.push(result);
+                if (parsed?.success === true)
+                    return { state: 'SUCCESS', value: parsed.value };
+                return { state: 'CANCELLED' };
+            },
+            cancel() {
+                componentAwaiter.cancel();
+                messageAwaiter.cancel();
+                cleanupQuery(prompt);
             }
         };
     }
 
     public createComponentAwaiter(
         channel: TextBasedChannels,
-        users: Iterable<string | User> | string | User,
+        actors: Iterable<string | User> | string | User,
         rejectMessage: string,
         timeout: number | undefined,
         options: Record<string, (interaction: MessageComponentInteraction) => boolean | Promise<boolean>>
@@ -252,33 +330,16 @@ export class ClusterUtilities extends BaseUtilities {
         readonly result: Promise<MessageComponentInteraction | undefined>;
         cancel(): void;
     } {
-        const shouldReject = (() => {
-            const userIds = typeof users === 'string' ? [users]
-                : users instanceof User ? [users.id]
-                    : [...users].map(u => typeof u === 'string' ? u : u.id);
-
-            switch (userIds.length) {
-                case 0: return () => false;
-                case 1: {
-                    const check = userIds[0];
-                    return (id: string) => id !== check;
-                }
-                default: {
-                    const lookup = new Set(userIds);
-                    return (id: string) => !lookup.has(id);
-                }
-            }
-        })();
-
+        const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
         const collector = channel.createMessageComponentCollector({
-            time: timeout,
+            time: timeout ?? 60000,
             max: 1,
             filter: async (interaction) => {
                 if (!validIds.has(interaction.customId))
                     return false;
 
-                if (shouldReject(interaction.user.id)) {
+                if (!actorFilter(interaction.user)) {
                     await interaction.reply({ content: rejectMessage, ephemeral: true });
                     return false;
                 }
@@ -288,22 +349,47 @@ export class ClusterUtilities extends BaseUtilities {
         });
 
         return {
-            result: new Promise<MessageComponentInteraction | undefined>(resolve => collector.once('end', c => resolve(c.first()))),
+            result: new Promise(resolve => collector.once('end', c => resolve(c.first()))),
             cancel() {
                 collector.stop();
             }
         };
     }
-    public async queryUser(
-        context: TextBasedChannels | Message,
+
+    public createMessageAwaiter(
+        channel: TextBasedChannels,
         actors: Iterable<string | User> | string | User,
-        users: Iterable<User>,
-        timeout?: number
-    ): Promise<ChoiceResult<User>> {
+        timeout: number | undefined,
+        filter: (message: Message) => Promise<boolean> | boolean
+    ): {
+        readonly result: Promise<Message | undefined>;
+        cancel(): void;
+    } {
+        const actorFilter = createActorFilter(actors);
+        const collector = channel.createMessageCollector({
+            time: timeout ?? 60000,
+            max: 1,
+            filter: async (message) => {
+                if (!actorFilter(message.author))
+                    return false;
+
+                return await filter(message);
+            }
+        });
+
+        return {
+            result: new Promise(resolve => collector.once('end', c => resolve(c.first()))),
+            cancel() {
+                collector.stop();
+            }
+        };
+    }
+
+    public async queryUser(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, users: Iterable<User>, filter: string, timeout?: number): Promise<ChoiceResult<User>> {
         return await this.queryChoice({
             context,
             actors,
-            prompt: 'ℹ️ Multiple users found! Please select one from the drop down.',
+            prompt: `ℹ️ Multiple users matching \`${filter}\` found! Please select one from the drop down.`,
             placeholder: 'Select a user',
             timeout,
             choices: [...users].map(u => ({
@@ -314,17 +400,14 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryMember(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        members: { guild: string | Guild; filter: string; } | Iterable<GuildMember>,
-        timeout?: number
-    ): Promise<ChoiceResult<GuildMember>> {
-        const matches = 'guild' in members ? await this.findMembers(members.guild, members.filter) : [...members];
+    public async queryMember(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, guild: string | Guild, filter: string, timeout?: number): Promise<ChoiceResult<GuildMember>>
+    public async queryMember(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, members: Iterable<GuildMember>, filter: string, timeout?: number): Promise<ChoiceResult<GuildMember>>
+    public async queryMember(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, members: string | Guild | Iterable<GuildMember>, filter: string, timeout?: number): Promise<ChoiceResult<GuildMember>> {
+        const matches = typeof members === 'string' || 'members' in members ? await this.findMembers(members, filter) : [...members];
         return await this.queryChoice({
             context,
             actors,
-            prompt: 'ℹ️ Multiple users found! Please select one from the drop down.',
+            prompt: `ℹ️ Multiple users matching \`${filter}\` found! Please select one from the drop down.`,
             placeholder: 'Select a user',
             timeout,
             choices: matches.map(m => ({
@@ -335,17 +418,14 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryRole(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        roles: { guild: string | Guild; filter: string; } | Iterable<Role>,
-        timeout?: number
-    ): Promise<ChoiceResult<Role>> {
-        const matches = 'guild' in roles ? await this.findRoles(roles.guild, roles.filter) : [...roles];
+    public async queryRole(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, guild: string | Guild, filter: string, timeout?: number): Promise<ChoiceResult<Role>>
+    public async queryRole(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, roles: Iterable<Role>, filter: string, timeout?: number): Promise<ChoiceResult<Role>>
+    public async queryRole(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, roles: string | Guild | Iterable<Role>, filter: string, timeout?: number): Promise<ChoiceResult<Role>> {
+        const matches = typeof roles === 'string' || 'roles' in roles ? await this.findRoles(roles, filter) : [...roles];
         return await this.queryChoice({
             context,
             actors,
-            prompt: 'ℹ️ Multiple roles found! Please select one from the drop down.',
+            prompt: `ℹ️ Multiple roles matching \`${filter}\` found! Please select one from the drop down.`,
             placeholder: 'Select a role',
             timeout,
             choices: matches.map(r => ({
@@ -356,29 +436,14 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryChannel(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        query: { guild: string | Guild; filter: string; },
-        timeout?: number
-    ): Promise<ChoiceResult<GuildChannels>>;
-    public async queryChannel<T extends KnownChannel>(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        channels: Iterable<T>,
-        timeout?: number
-    ): Promise<ChoiceResult<T>>;
-    public async queryChannel(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        channels: { guild: string | Guild; filter: string; } | Iterable<KnownChannel>,
-        timeout?: number
-    ): Promise<ChoiceResult<KnownChannel>> {
-        const matches = 'guild' in channels ? await this.findChannels(channels.guild, channels.filter) : [...channels];
+    public async queryChannel(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, guild: string | Guild, filter: string, timeout?: number): Promise<ChoiceResult<GuildChannels>>;
+    public async queryChannel<T extends KnownChannel>(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, channels: Iterable<T>, filter: string, timeout?: number): Promise<ChoiceResult<T>>;
+    public async queryChannel(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, channels: string | Guild | Iterable<KnownChannel>, filter: string, timeout?: number): Promise<ChoiceResult<KnownChannel>> {
+        const matches = typeof channels === 'string' || 'channels' in channels ? await this.findChannels(channels, filter) : [...channels];
         return await this.queryChoice({
             context,
             actors,
-            prompt: 'ℹ️ Multiple channels found! Please select one from the drop down.',
+            prompt: `ℹ️ Multiple channels matching \`${filter}\` found! Please select one from the drop down.`,
             placeholder: 'Select a channel',
             timeout,
             choices: matches.map(c => ({
@@ -720,23 +785,50 @@ interface MultipleComponentOptions {
 interface ConfirmComponentOptions {
     readonly confirmId: string;
     readonly cancelId: string;
-    readonly confirmButton: ConfirmQueryButton;
-    readonly cancelButton: ConfirmQueryButton;
+    readonly confirmButton: QueryButton;
+    readonly cancelButton: QueryButton;
 }
 
-function createConfirmBody(options: ConfirmComponentOptions): { components: MessageActionRowOptions[]; } {
+interface TextComponentOptions {
+    readonly cancelId: string;
+    readonly cancelButton: QueryButton;
+}
+
+function createActorFilter(actors: Iterable<string | User | GuildMember> | string | User | GuildMember): (user: User) => boolean {
+    const userIds = new Set();
+    if (typeof actors === 'string')
+        userIds.add(actors);
+    else {
+        if ('id' in actors)
+            actors = [actors];
+        for (const actor of actors)
+            userIds.add(typeof actor === 'string' ? actor : actor.id);
+    }
+
+    switch (userIds.size) {
+        case 0: return () => false;
+        case 1: {
+            const check = [...userIds][0];
+            return user => user.id === check;
+        }
+        default:
+            return user => userIds.has(user.id);
+    }
+}
+
+function createConfirmBody(options: ConfirmComponentOptions): Pick<MessageOptions, 'components'> {
 
     const confirm: MessageButtonOptions = {
+        style: 'SUCCESS',
         ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
         type: 'BUTTON',
-        customId: options.confirmId,
-        style: 'SUCCESS'
+        customId: options.confirmId
     };
     const cancel: MessageButtonOptions = {
+        style: 'DANGER',
         ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
         type: 'BUTTON',
-        customId: options.cancelId,
-        style: 'DANGER'
+        customId: options.cancelId
     };
 
     return {
@@ -749,7 +841,7 @@ function createConfirmBody(options: ConfirmComponentOptions): { components: Mess
     };
 }
 
-function createMultipleBody(options: MultipleComponentOptions): { components: MessageActionRowOptions[]; } {
+function createMultipleBody(options: MultipleComponentOptions): Pick<MessageOptions, 'components'> {
     const select: MessageSelectMenuOptions = {
         type: 'SELECT_MENU',
         customId: options.selectId,
@@ -773,7 +865,7 @@ function createMultipleBody(options: MultipleComponentOptions): { components: Me
     };
 }
 
-function createChoiceBody(options: ChoiceComponentOptions): { content: string; components: MessageActionRowOptions[]; } {
+function createChoiceBody(options: ChoiceComponentOptions): Pick<MessageOptions, 'components' | 'content'> {
     const select: MessageSelectMenuOptions = {
         type: 'SELECT_MENU',
         customId: options.selectId,
@@ -800,7 +892,7 @@ function createChoiceBody(options: ChoiceComponentOptions): { content: string; c
     const prev: MessageButtonOptions = {
         type: 'BUTTON',
         customId: options.prevId,
-        emoji: ':bigarrowleft:876227640976097351',
+        emoji: ':bigarrowleft:876227640976097351', // TODO config
         style: 'PRIMARY',
         disabled: options.page === 0
     };
@@ -809,7 +901,7 @@ function createChoiceBody(options: ChoiceComponentOptions): { content: string; c
 
         type: 'BUTTON',
         customId: options.nextId,
-        emoji: ':bigarrowright:876227816998461511',
+        emoji: ':bigarrowright:876227816998461511', // TODO config
         style: 'PRIMARY',
         disabled: options.page === options.lastPage
     };
@@ -819,6 +911,25 @@ function createChoiceBody(options: ChoiceComponentOptions): { content: string; c
         components: [
             { type: 'ACTION_ROW', components: [select] },
             { type: 'ACTION_ROW', components: [prev, cancel, next] }
+        ]
+    };
+}
+
+function createTextBody(options: TextComponentOptions, disabled = false): Pick<MessageOptions, 'components'> {
+    const cancel: MessageButtonOptions = {
+        style: 'DANGER',
+        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton, emoji: '✖️' } : options.cancelButton,
+        type: 'BUTTON',
+        customId: options.cancelId,
+        disabled: disabled
+    };
+
+    return {
+        components: [
+            {
+                type: 'ACTION_ROW',
+                components: [cancel]
+            }
         ]
     };
 }
@@ -837,4 +948,79 @@ function getChannelLookupName(channel: KnownChannel): string {
         case 'GUILD_TEXT': return `# ${channel.name}`;
         case 'GUILD_VOICE': return `🔈 ${channel.name}`;
     }
+}
+
+function cleanupQuery(...items: Array<Message | MessageComponentInteraction | undefined>): void {
+    const promises = [];
+    for (const item of items) {
+        if (item instanceof MessageComponentInteraction)
+            promises.push(item.update({ components: disableComponents(item.message.components ?? []) }));
+        else if (item?.editable === true && item.components.length > 0)
+            promises.push(item.edit({ components: disableComponents(item.components) }));
+    }
+
+    void Promise.allSettled(promises);
+}
+
+function disableComponents(components: Iterable<MessageActionRow | APIActionRowComponent>): MessageActionRowOptions[] {
+    return [...disableComponentsCore(components)];
+}
+
+function* disableComponentsCore(components: Iterable<MessageActionRow | APIActionRowComponent>): Generator<MessageActionRowOptions> {
+    for (const component of components) {
+        switch (component.type) {
+            case 'ACTION_ROW':
+                yield component.spliceComponents(0, Infinity, component.components.map(c => c.setDisabled(true)));
+                break;
+            case 1:
+                yield {
+                    type: 'ACTION_ROW',
+                    components: component.components.map<MessageActionRowComponentResolvable>(c => {
+                        switch (c.type) {
+                            case ComponentType.SelectMenu: return new MessageSelectMenu({
+                                customId: c.custom_id,
+                                disabled: true,
+                                maxValues: c.max_values,
+                                minValues: c.min_values,
+                                placeholder: c.placeholder,
+                                type: 'SELECT_MENU',
+                                options: c.options.map<MessageSelectOptionData>(op => ({
+                                    label: op.label,
+                                    value: op.value,
+                                    default: op.default,
+                                    description: op.description,
+                                    emoji: op.emoji?.id
+                                }))
+                            });
+                            case ComponentType.Button: return new MessageButton({
+                                disabled: true,
+                                label: c.label,
+                                emoji: c.emoji?.id,
+                                type: 'BUTTON',
+                                ...c.style === ButtonStyle.Link
+                                    ? { style: convertStyle(c.style), url: c.url }
+                                    : { style: convertStyle(c.style), customId: c.custom_id }
+                            });
+                            default: {
+                                const x: never = c;
+                                return x;
+                            }
+                        }
+                    })
+                };
+                break;
+        }
+    }
+}
+
+const dumbTypes: { [P in keyof typeof ButtonStyle as number & typeof ButtonStyle[P]]: Uppercase<P> } = {
+    [ButtonStyle.Link]: 'LINK',
+    [ButtonStyle.Danger]: 'DANGER',
+    [ButtonStyle.Primary]: 'PRIMARY',
+    [ButtonStyle.Secondary]: 'SECONDARY',
+    [ButtonStyle.Success]: 'SUCCESS'
+} as const;
+
+function convertStyle<T extends ButtonStyle>(apiStyle: T): (typeof dumbTypes)[T] {
+    return dumbTypes[apiStyle];
 }

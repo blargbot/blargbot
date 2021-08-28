@@ -320,9 +320,30 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return true;
     }
 
-    public async getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]> {
+    public async getRolemes(guildId: string, skipCache?: boolean): Promise<{ readonly [id: string]: GuildRolemeEntry | undefined; } | undefined> {
         const guild = await this.rget(guildId, skipCache);
-        return guild?.roleme ?? [];
+        return guild?.roleme;
+    }
+
+    public async getRoleme(guildId: string, id: number, skipCache?: boolean): Promise<GuildRolemeEntry | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.roleme?.[id];
+    }
+
+    public async setRoleme(guildId: string, id: number, roleme: GuildRolemeEntry | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { roleme: { [id.toString()]: this.setExpr(roleme) } }))
+            return false;
+
+        if (roleme === undefined)
+            delete guild.roleme?.[id];
+        else
+            (guild.roleme ??= {})[id] = roleme;
+
+        return true;
     }
 
     public async getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined> {

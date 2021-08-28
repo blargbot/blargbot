@@ -51,7 +51,7 @@ export class PatchCommand extends BaseGlobalCommand {
 
         const confirmed = await context.util.queryConfirm({
             context: context.channel,
-            users: context.author,
+            actors: context.author,
             prompt: { content: 'This is a preview of what the patch will look like', embeds: [embed] },
             confirm: 'Looks good, post it!',
             cancel: 'Nah let me change something'

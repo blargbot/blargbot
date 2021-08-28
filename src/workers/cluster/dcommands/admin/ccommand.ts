@@ -426,7 +426,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const roles = [];
         for (const roleName of roleNames) {
-            const role = await context.cluster.util.queryRole(context.channel, context.author, { guild: context.channel.guild, filter: roleName });
+            const role = await context.cluster.util.queryRole(context.channel, context.author, context.channel.guild, roleName);
             if (role.state !== 'SUCCESS')
                 return;
             roles.push(role.value);
@@ -481,7 +481,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const shouldExport = await context.cluster.util.queryConfirm({
             context: context.channel,
-            users: context.author,
+            actors: context.author,
             prompt: confirm.join('\n'),
             confirm: 'Continue',
             cancel: 'Cancel',
@@ -558,7 +558,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const shouldImport = await context.cluster.util.queryConfirm({
             context: context.channel,
-            users: context.author,
+            actors: context.author,
             prompt: confirm.join('\n'),
             confirm: 'Continue',
             cancel: 'Cancel',

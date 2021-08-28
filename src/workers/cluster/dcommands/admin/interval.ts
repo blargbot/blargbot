@@ -11,9 +11,9 @@ export class IntervalCommand extends BaseGuildCommand {
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: 'set {~code+}',
-                    description: 'Sets the code to run every 15 minutes',
-                    execute: (ctx, [code]) => this.setInterval(ctx, code)
+                    parameters: 'set {~bbtag+}',
+                    description: 'Sets the bbtag to run every 15 minutes',
+                    execute: (ctx, [bbtag]) => this.setInterval(ctx, bbtag)
                 },
                 {
                     parameters: 'raw',

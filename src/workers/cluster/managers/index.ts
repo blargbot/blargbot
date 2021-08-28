@@ -9,3 +9,4 @@ export * from './PollManager';
 export * from './IntervalManager';
 export * from './ReactionAwaitManager';
 export * from './MessageAwaitManager';
+export * from './RolemeManager';

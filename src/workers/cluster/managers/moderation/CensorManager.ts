@@ -16,10 +16,10 @@ export class CensorManager extends ModerationManagerBase {
             return true;
 
         const censors = await this.cluster.database.guilds.getCensors(message.channel.guild.id);
-        if (censors === undefined || censors.list.length === 0 || this.isCensorExempt(message, censors.exception))
+        if (censors === undefined || this.isCensorExempt(message, censors.exception))
             return false;
 
-        const censor = censors.list.find(c => guard.testMessageFilter(c, message));
+        const censor = Object.values(censors.list).find(c => guard.testMessageFilter(c, message));
         if (censor === undefined)
             return false;
 

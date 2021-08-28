@@ -20,32 +20,32 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
         findChannel: createLookup(
             command, 'channel',
             async query => (await context.util.findChannels(context.channel.guild, query)).filter(guard.isTextableChannel),
-            async options => {
-                const result = await context.util.queryChannel(context.channel, context.author, options);
+            async (options, query) => {
+                const result = await context.util.queryChannel(context.channel, context.author, options, query);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findUser: createLookup(
             command, 'user',
             async query => (await context.util.findMembers(context.channel.guild, query)).map(m => m.user),
-            async options => {
-                const result = await context.util.queryUser(context.channel, context.author, options);
+            async (options, query) => {
+                const result = await context.util.queryUser(context.channel, context.author, options, query);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findRole: createLookup(
             command, 'role',
             query => context.util.findRoles(context.channel.guild, query),
-            async options => {
-                const result = await context.util.queryRole(context.channel, context.author, options);
+            async (options, query) => {
+                const result = await context.util.queryRole(context.channel, context.author, options, query);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
         findMember: createLookup(
             command, 'member',
             query => context.util.findMembers(context.channel.guild, query),
-            async options => {
-                const result = await context.util.queryMember(context.channel, context.author, options);
+            async (options, query) => {
+                const result = await context.util.queryMember(context.channel, context.author, options, query);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         )
@@ -59,8 +59,8 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
             query => [
                 context.channel
             ].filter(c => context.util.channelMatchScore(c, query) > 0),
-            async options => {
-                const result = await context.util.queryChannel(context.message, context.author, options);
+            async (options, query) => {
+                const result = await context.util.queryChannel(context.message, context.author, options, query);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
@@ -70,8 +70,8 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
                 context.channel.recipient,
                 context.discord.user
             ].filter(u => context.util.userMatchScore(u, query) > 0),
-            async options => {
-                const result = await context.util.queryUser(context.message, context.author, options);
+            async (options, query) => {
+                const result = await context.util.queryUser(context.message, context.author, options, query);
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
@@ -92,7 +92,7 @@ function createLookup<TResult>(
     command: BaseCommand,
     type: string,
     search: (query: string) => TResult[] | Promise<TResult[]>,
-    select: (options: TResult[]) => Promise<TResult | undefined> | TResult | undefined
+    select: (options: TResult[], query: string) => Promise<TResult | undefined> | TResult | undefined
 ): (query: string) => Awaitable<CommandBinderParseResult<TResult>> {
     const cache = new Map<string, CommandBinderParseResult<TResult>>();
     return async query => {
@@ -118,7 +118,7 @@ function createLookup<TResult>(
                         if (current !== undefined && current.success !== 'deferred')
                             return current;
 
-                        const value = await select(matches);
+                        const value = await select(matches, query);
                         const result = value === undefined
                             ? { success: false, error: command.error(`I could not find a ${type} matching \`${query}\``) } as const
                             : { success: true, value: value } as const;

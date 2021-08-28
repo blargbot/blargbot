@@ -4,7 +4,7 @@ import { metrics } from '@core/Metrics';
 import { DiscordEventService } from '@core/serviceTypes';
 import { Message, TextBasedChannels, User } from 'discord.js';
 
-import { handleRoleme, handleTableFlip, tryHandleCleverbot } from '../features';
+import { handleTableFlip, tryHandleCleverbot } from '../features';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
     public constructor(
@@ -37,7 +37,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             return result;
 
         result.push(
-            handleRoleme(this.cluster, message),
+            this.cluster.rolemes.execute(message),
             this.cluster.autoresponses.execute(message, true),
             handleTableFlip(this.cluster, message)
         );

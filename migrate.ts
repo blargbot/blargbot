@@ -8,7 +8,7 @@ import 'module-alias/register';
 
 import config from '@config';
 import { createLogger, Logger } from '@core/Logger';
-import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildTriggerTag, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableGuildRolemeEntry, MutableStoredGuild, MutableStoredGuildSettings, StoredGuild } from '@core/types';
+import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildRolemeEntry, GuildTriggerTag, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableStoredGuild, MutableStoredGuildSettings, StoredGuild } from '@core/types';
 import { guard, mapping } from '@core/utils';
 import { AnyChannel, Client as Discord } from 'discord.js';
 import * as r from 'rethinkdb';
@@ -297,16 +297,17 @@ function migrateCensors(guildId: string, guild: any, logger: Logger, context: Gu
         if (!Array.isArray(guild.censor.list)) {
             logger.error('[migrateGuild]', guildId, 'migrating censor list: not an array');
         } else if (guild.censor.list.length > 0) {
-            const list: MutableGuildCensor[] = guild.censor.list.map((censor: any, i: number) => {
-                const update = { ...censor } as MutableGuildCensor;
+            const list = (<any[]>guild.censor.list).reduce<Record<string, MutableGuildCensor>>((record, censor, i) => {
+                const update = record[i] = { ...censor } as MutableGuildCensor;
                 for (const key of ['deleteMessage', 'banMessage', 'kickMessage'] as const) {
                     if (censor[key] !== undefined) {
                         logger.debug('[migrateGuild]', guildId, 'migrating censor list', i, key);
                         update[key] = { content: censor[key], author: '' };
                     }
                 }
-                return update;
-            });
+                return record;
+            }, {});
+
             try {
                 context.censor.list = r.literal(list);
                 context.update.censor = context.censor;
@@ -332,8 +333,8 @@ function migrateRolemes(guildId: string, guild: any, logger: Logger, context: Gu
         return false;
 
     let changed = false as boolean;
-    const update = roleme.map((roleme: any, i) => {
-        const update = { ...roleme } as MutableGuildRolemeEntry;
+    const update = (<any[]>roleme).reduce<Record<string, GuildRolemeEntry>>((record, roleme: any, i) => {
+        const update = record[i] = { ...roleme } as Mutable<GuildRolemeEntry>;
 
         if (typeof roleme.output === 'string') {
             logger.debug('[migrateGuild]', guildId, 'migrating roleme', i);
@@ -341,8 +342,8 @@ function migrateRolemes(guildId: string, guild: any, logger: Logger, context: Gu
             update.output = { content: roleme.output, author: '' };
         }
 
-        return update;
-    });
+        return record;
+    }, {});
 
     if (!changed)
         return false;
