@@ -1,6 +1,13 @@
 import { EventEmitter } from 'eventemitter3';
 
-export class MultiKeyMap<TKey, TValue> extends EventEmitter {
+interface MultiKeyMapEvents<TKey, TValue> {
+    'remove': [value: TValue];
+    'add': [value: TValue];
+    'unlink': [value: TValue, key: TKey];
+    'link': [value: TValue, key: TKey];
+}
+
+export class MultiKeyMap<TKey, TValue> extends EventEmitter<MultiKeyMapEvents<TKey, TValue>> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #kv: Map<TKey, TValue>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

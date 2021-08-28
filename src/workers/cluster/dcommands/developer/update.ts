@@ -77,7 +77,7 @@ export class UpdateCommand extends BaseGlobalCommand {
         try {
             await context.channel.sendTyping();
             const result = cleanConsole(await execCommandline(command));
-            await message?.edit({
+            const payload = {
                 content: this.success(`Command: \`${command}\``),
                 files: [
                     {
@@ -85,30 +85,21 @@ export class UpdateCommand extends BaseGlobalCommand {
                         name: 'output.txt'
                     }
                 ]
-            });
+            };
+            await (message?.edit(payload) ?? context.reply(payload));
             return result;
         } catch (err: unknown) {
-            if (err instanceof Error)
-                await message?.edit({
-                    content: this.error(`Command: \`${command}\``),
-                    files: [
-                        {
-                            // eslint-disable-next-line no-control-regex
-                            attachment: Buffer.from(cleanConsole(err.toString())),
-                            name: 'output.txt'
-                        }
-                    ]
-                });
-            else
-                await message?.edit({
-                    content: this.error(`Command: \`${command}\``),
-                    files: [
-                        {
-                            attachment: Buffer.from(cleanConsole(Object.prototype.toString.call(err))),
-                            name: 'output.txt'
-                        }
-                    ]
-                });
+            const payload = {
+                content: this.error(`Command: \`${command}\``),
+                files: [
+                    {
+                        // eslint-disable-next-line no-control-regex
+                        attachment: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
+                        name: 'output.txt'
+                    }
+                ]
+            };
+            await (message?.edit(payload) ?? context.reply(payload));
             throw err;
         }
     }

@@ -101,10 +101,10 @@ export class Cluster extends BaseClient {
             messages: new MessageAwaitManager(this)
         };
 
-        this.services.on('add', (module: BaseService) => void module.start());
-        this.services.on('remove', (module: BaseService) => void module.stop());
-        this.events.on('add', (module: BaseService) => void module.start());
-        this.events.on('remove', (module: BaseService) => void module.stop());
+        this.services.on('add', module => void module.start());
+        this.services.on('remove', module => void module.stop());
+        this.events.on('add', module => void module.start());
+        this.events.on('remove', module => void module.stop());
     }
 
     public async start(): Promise<void> {

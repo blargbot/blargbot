@@ -7,17 +7,21 @@ import { UpdateRequest } from 'rethinkdb';
 import { RethinkDb } from './RethinkDb';
 import { RethinkDbTable } from './RethinkDbTable';
 
-export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableMap, Key extends keyof PropertiesOfType<RethinkTableMap[TableName], string>> extends RethinkDbTable<TableName> {
+export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableMap, KeyName extends keyof PropertiesOfType<RethinkTableMap[TableName], string>> extends RethinkDbTable<TableName> {
     protected readonly cache: Cache<string, RethinkTableMap[TableName]>;
 
     protected constructor(
         table: TableName,
-        protected readonly keyName: Key,
+        private readonly keyName: KeyName,
         rethinkDb: RethinkDb,
         logger: Logger
     ) {
         super(table, rethinkDb, logger);
         this.cache = new Cache(5, 'minutes');
+    }
+
+    protected getKey(value: RethinkTableMap[TableName]): string {
+        return value[this.keyName];
     }
 
     protected async rget(
@@ -42,7 +46,7 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
 
         const result = await super.rinsert(value, true);
         if (result !== undefined)
-            this.cache.set(result[this.keyName], value);
+            this.cache.set(this.getKey(result), value);
 
         return returnValue === true ? result : result !== undefined;
     }
@@ -59,9 +63,9 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
             if (old !== undefined) {
                 Object.assign(old, result);
                 this.cache.delete(key);
-                this.cache.set(result[this.keyName], old);
+                this.cache.set(this.getKey(result), old);
             } else {
-                this.cache.set(result[this.keyName], result);
+                this.cache.set(this.getKey(result), result);
             }
         }
 
@@ -81,9 +85,9 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
             if (old !== undefined) {
                 Object.assign(old, result);
                 this.cache.delete(key);
-                this.cache.set(result[this.keyName], old);
+                this.cache.set(this.getKey(result), old);
             } else {
-                this.cache.set(result[this.keyName], result);
+                this.cache.set(this.getKey(result), result);
             }
         }
 
@@ -98,12 +102,12 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
 
         const result = await super.rdelete(key, true);
         for (const entry of result)
-            this.cache.delete(entry[this.keyName]);
+            this.cache.delete(this.getKey(entry));
 
         return returnValue === true ? result : result.length > 0;
     }
 
-    public async watchChanges(shouldCache: (id: RethinkTableMap[TableName][Key]) => boolean = () => true): Promise<void> {
+    public async watchChanges(shouldCache: (id: string) => boolean = () => true): Promise<void> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
         while (true) {
@@ -112,9 +116,9 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
                 for await (const data of changefeed) {
                     if (!guard.hasValue(data.new_val)) {
                         if (guard.hasValue(data.old_val))
-                            this.cache.delete(data.old_val[this.keyName]);
+                            this.cache.delete(this.getKey(data.old_val));
                     } else {
-                        const id = data.new_val[this.keyName];
+                        const id = this.getKey(data.new_val);
                         if (this.cache.has(id) || shouldCache(id))
                             this.cache.set(id, data.new_val);
                     }

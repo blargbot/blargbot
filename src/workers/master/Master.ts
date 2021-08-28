@@ -36,10 +36,10 @@ export class Master extends BaseClient {
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
         // TODO Add websites
 
-        this.services.on('add', (module: BaseService) => void module.start());
-        this.services.on('remove', (module: BaseService) => void module.stop());
-        this.eventHandlers.on('add', (module: BaseService) => void module.start());
-        this.eventHandlers.on('remove', (module: BaseService) => void module.stop());
+        this.services.on('add', module => void module.start());
+        this.services.on('remove', module => void module.stop());
+        this.eventHandlers.on('add', module => void module.start());
+        this.eventHandlers.on('remove', module => void module.stop());
     }
 
     public async start(): Promise<void> {

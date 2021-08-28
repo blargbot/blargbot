@@ -34,16 +34,20 @@ export function mapObject<T, R>(mappings: TypeMappings<T>, options: TypeMappingO
         }
 
         for (const resultKey of Object.keys(mappings)) {
-            const mapping = mappings[resultKey];
-            const [sourceKey, mapFunc] = typeof mapping !== 'object'
-                ? [resultKey, mapping]
-                : mapping.length === 1
-                    ? [undefined, () => ({ valid: true, value: mapping[0] })]
-                    : mapping;
-            if (!checkKey(resultKey, sourceKey, mapFunc))
+            if (!checkKey(resultKey, ...splitMapping(resultKey, mappings[resultKey])))
                 return _result.never;
         }
 
         return { valid: true, value: <T>result };
     };
+}
+
+function splitMapping<T, K extends string & keyof T>(key: K, mapping: TypeMappings<T>[K]): [string | undefined, TypeMapping<T[K]>] {
+    if (typeof mapping !== 'object')
+        return [key, mapping];
+
+    if (mapping.length === 1)
+        return [undefined, () => ({ valid: true, value: mapping[0] })];
+
+    return mapping;
 }
