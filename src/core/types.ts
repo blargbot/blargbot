@@ -105,25 +105,25 @@ export interface MultipleQueryOptions<T> extends ChoiceQueryOptions<T> {
 export interface ChoiceQuery<T> {
     prompt: Message | undefined;
     getResult(): Promise<ChoiceQueryResult<T>>;
-    cancel(): void;
+    cancel(): void | Promise<void>;
 }
 
 export interface MultipleQuery<T> {
     prompt: Message | undefined;
     getResult(): Promise<MultipleResult<T>>;
-    cancel(): void;
+    cancel(): void | Promise<void>;
 }
 
 export interface ConfirmQuery<T extends boolean | undefined = undefined> {
     prompt: Message | undefined;
     getResult(): Promise<T>;
-    cancel(): void;
+    cancel(): void | Promise<void>;
 }
 
 export interface TextQuery<T> {
     messages: readonly Message[];
     getResult(): Promise<TextQueryResult<T>>;
-    cancel(): void;
+    cancel(): void | Promise<void>;
 }
 
 export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;

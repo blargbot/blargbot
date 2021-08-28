@@ -93,7 +93,7 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
-                cleanupQuery(prompt, interaction);
+                await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
@@ -105,9 +105,9 @@ export class ClusterUtilities extends BaseUtilities {
 
                 return { state: 'TIMED_OUT' };
             },
-            cancel() {
+            async cancel() {
                 awaiter.cancel();
-                cleanupQuery(prompt);
+                await cleanupQuery(prompt);
             }
         };
     }
@@ -173,7 +173,7 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
-                cleanupQuery(prompt, interaction);
+                await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
@@ -185,9 +185,9 @@ export class ClusterUtilities extends BaseUtilities {
 
                 return { state: 'TIMED_OUT' };
             },
-            cancel() {
+            async cancel() {
                 awaiter.cancel();
-                cleanupQuery(prompt);
+                await cleanupQuery(prompt);
             }
         };
     }
@@ -233,16 +233,16 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
-                cleanupQuery(prompt, interaction);
+                await cleanupQuery(prompt, interaction);
                 switch (interaction?.customId) {
                     case component.confirmId: return true;
                     case undefined: return options.fallback;
                     default: return false;
                 }
             },
-            cancel() {
+            async cancel() {
                 awaiter.cancel();
-                cleanupQuery(prompt);
+                await cleanupQuery(prompt);
             }
         };
     }
@@ -300,7 +300,7 @@ export class ClusterUtilities extends BaseUtilities {
                 const result = await Promise.race([componentAwaiter.result, messageAwaiter.result]);
                 componentAwaiter.cancel();
                 messageAwaiter.cancel();
-                cleanupQuery(prompt, result);
+                await cleanupQuery(prompt, result);
                 if (result === undefined)
                     return { state: 'TIMED_OUT' };
 
@@ -312,10 +312,10 @@ export class ClusterUtilities extends BaseUtilities {
                     return { state: 'SUCCESS', value: parsed.value };
                 return { state: 'CANCELLED' };
             },
-            cancel() {
+            async cancel() {
                 componentAwaiter.cancel();
                 messageAwaiter.cancel();
-                cleanupQuery(prompt);
+                await cleanupQuery(prompt);
             }
         };
     }
@@ -950,7 +950,7 @@ function getChannelLookupName(channel: KnownChannel): string {
     }
 }
 
-function cleanupQuery(...items: Array<Message | MessageComponentInteraction | undefined>): void {
+async function cleanupQuery(...items: Array<Message | MessageComponentInteraction | undefined>): Promise<void> {
     const promises = [];
     for (const item of items) {
         if (item instanceof MessageComponentInteraction)
@@ -959,7 +959,7 @@ function cleanupQuery(...items: Array<Message | MessageComponentInteraction | un
             promises.push(item.edit({ components: disableComponents(item.components) }));
     }
 
-    void Promise.allSettled(promises);
+    await Promise.allSettled(promises);
 }
 
 function disableComponents(components: Iterable<MessageActionRow | APIActionRowComponent>): MessageActionRowOptions[] {
