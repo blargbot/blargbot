@@ -1,18 +1,12 @@
-import { Cluster } from '@cluster/Cluster';
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { FlagResult } from '@cluster/types';
 import { CommandType, guard } from '@cluster/utils';
 import { humanize } from '@core/utils';
-import Airtable, { FieldSet, Record, Table } from 'airtable';
-import { AirtableBase } from 'airtable/lib/airtable_base';
-import AirtableError from 'airtable/lib/airtable_error';
-import { Records } from 'airtable/lib/records';
 import moment from 'moment-timezone';
 
 export class FeedbackCommand extends BaseGlobalCommand {
-    private readonly client: AirtableBase;
 
-    public constructor(cluster: Cluster) {
+    public constructor() {
         super({
             name: 'feedback',
             category: CommandType.GENERAL,
@@ -45,10 +39,6 @@ export class FeedbackCommand extends BaseGlobalCommand {
                 { flag: 'o', word: 'other', description: 'Signify your feedack is for other functionality' }
             ]
         });
-
-        this.client = new Airtable({
-            apiKey: cluster.config.airtable.key
-        }).base(cluster.config.airtable.base);
     }
 
     public async submitFeedback(context: CommandContext, description: string, flags: FlagResult): Promise<string> {
@@ -81,13 +71,13 @@ export class FeedbackCommand extends BaseGlobalCommand {
 
         await context.channel.sendTyping();
 
-        const suggestion = await this.findById<SuggestionsTable>('Suggestions', caseNumber);
+        const suggestion = await context.database.suggestions.get(caseNumber);
 
         if (suggestion === undefined)
             return this.error(`I couldnt find any feedback with the case number ${caseNumber}!`);
 
-        const suggestor = await this.getSuggestor(context);
-        if (!suggestion.fields.Author.includes(suggestor))
+        const suggestor = await context.database.suggestors.upsert(context.author.id, humanize.fullName(context.author));
+        if (suggestor === undefined || !suggestion.Author.includes(suggestor))
             return this.error('You cant edit someone elses suggestion.');
 
         const res = await this.getSuggestionDetails(context, description, flags);
@@ -97,17 +87,17 @@ export class FeedbackCommand extends BaseGlobalCommand {
         const { title, subTypes } = res;
         description = res.description;
 
-        await this.queryAirtable<SuggestionsTable>('Suggestions', t => t.update(suggestion.id, {
+        await context.database.suggestions.update(caseNumber, {
             /* eslint-disable @typescript-eslint/naming-convention */
             Type: subTypes,
             Title: title,
             Description: description,
             Message: context.message.id,
             Channel: context.channel.id,
-            Edits: suggestion.fields.Edits + 1,
+            Edits: (suggestion.Edits ?? 0) + 1,
             'Last Edited': moment().valueOf()
             /* eslint-enable @typescript-eslint/naming-convention */
-        }));
+        });
 
         return this.success('Your case has been updated.');
     }
@@ -154,22 +144,26 @@ export class FeedbackCommand extends BaseGlobalCommand {
         const { title, subTypes } = res;
         description = res.description;
 
-        const suggestor = await this.getSuggestor(context);
+        const suggestor = await context.database.suggestors.upsert(context.author.id, humanize.fullName(context.author));
+        if (suggestor === undefined)
+            return this.error('Something went wrong while trying to submit that! Please try again');
 
-        const record = await this.queryAirtable<SuggestionsTable>('Suggestions', t => t.create({
+        const record = await context.database.suggestions.create({
             /* eslint-disable @typescript-eslint/naming-convention */
             AA: true,
             Bug: isBug,
             Title: title,
-            Description: description.length === 0 ? undefined : description,
+            Description: description.length === 0 ? '' : description,
             Type: subTypes,
             Author: [suggestor],
             Channel: context.channel.id,
             Message: context.message.id
             /* eslint-enable @typescript-eslint/naming-convention */
-        }));
+        });
+        if (record === undefined)
+            return this.error('Something went wrong while trying to submit that! Please try again');
 
-        const websiteLink = context.util.websiteLink(`feedback/${record.id}`);
+        const websiteLink = context.util.websiteLink(`feedback/${record}`);
         await context.send(channelId, {
             title: type,
             url: websiteLink,
@@ -187,36 +181,11 @@ export class FeedbackCommand extends BaseGlobalCommand {
             ],
             timestamp: new Date(),
             footer: {
-                text: `Case ${record.fields.ID} | ${context.message.id}`
+                text: `Case ${record} | ${context.message.id}`
             }
         });
 
-        return this.success(`${type} has been sent with the ID ${record.fields.ID}! 👌\n\nYou can view your ${type.toLowerCase()} here: <${websiteLink}>`);
-    }
-
-    private async getSuggestor(context: CommandContext): Promise<string> {
-        const username = humanize.fullName(context.author);
-        const current = await this.findById<SuggestorsTable>('Suggestors', context.author.id);
-
-        if (current === undefined) {
-            const created = await this.queryAirtable<SuggestorsTable>('Suggestors', t => t.create({
-                /* eslint-disable @typescript-eslint/naming-convention */
-                ID: context.author.id,
-                Username: username
-                /* eslint-enable @typescript-eslint/naming-convention */
-            }, { typecast: true }));
-
-            return created.id;
-        }
-
-        if (current.fields.Username === username)
-            return current.id;
-
-        await this.queryAirtable<SuggestorsTable>('Suggestors', t => t.update(current.id, {
-            /* eslint-disable-next-line @typescript-eslint/naming-convention */
-            Username: username
-        }));
-        return current.id;
+        return this.success(`${type} has been sent with the ID ${record}! 👌\n\nYou can view your ${type.toLowerCase()} here: <${websiteLink}>`);
     }
 
     private async getSubtypes(context: CommandContext, flags: FlagResult): Promise<string[]> {
@@ -301,56 +270,5 @@ export class FeedbackCommand extends BaseGlobalCommand {
             return 'GUILD';
 
         return false;
-    }
-
-    private async findById<T extends FieldSet>(table: string, id: string | number): Promise<Record<T> | undefined> {
-        const records = await this.queryAirtable<T, Records<T>>(table, t => t.select({
-            maxRecords: 1,
-            filterByFormula: `{ID} = '${id}'`
-        }).firstPage());
-
-        return records[0];
-    }
-
-    private async queryAirtable<T extends FieldSet, R = Record<T>>(table: string, query: (table: Table<T>) => R | Promise<R>): Promise<R> {
-        try {
-            return await query(this.client<T>(table));
-        } catch (ex: unknown) {
-            if (ex instanceof AirtableError)
-                throw new BetterAirtableError(ex);
-            throw ex;
-        }
-    }
-}
-
-/* eslint-disable @typescript-eslint/naming-convention */
-interface SuggestorsTable extends FieldSet {
-    ID: string;
-    Username: string;
-}
-
-interface SuggestionsTable extends FieldSet {
-    ID: string;
-    AA: boolean;
-    Bug: boolean;
-    Type: string[];
-    Title: string;
-    Description: string;
-    Message: string;
-    Channel: string;
-    Author: string[];
-    Edits: number;
-    'Last Edited': number;
-}
-/* eslint-enable @typescript-eslint/naming-convention */
-
-class BetterAirtableError extends Error {
-    public readonly error: string;
-    public readonly statusCode: number;
-
-    public constructor(ex: AirtableError) {
-        super(ex.message);
-        this.error = ex.error;
-        this.statusCode = ex.statusCode;
     }
 }

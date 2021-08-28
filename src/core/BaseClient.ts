@@ -23,7 +23,8 @@ export class BaseClient {
             discord: this.discord,
             rethinkDb: this.config.rethink,
             cassandra: this.config.cassandra,
-            postgres: this.config.postgres
+            postgres: this.config.postgres,
+            airtable: this.config.airtable
         });
     }
 

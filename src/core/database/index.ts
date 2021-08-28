@@ -1,10 +1,12 @@
 import { Logger } from '@core/Logger';
-import { ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
+import { AirtableTableMap, ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, SuggestionsTable, SuggestorsTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
 import { sleep } from '@core/utils';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
 import { Client as Discord } from 'discord.js';
 
-import { PostgresDb, RethinkDb } from './base';
+import { AirtableSuggestionsTable } from './AirtableSuggestionsTable';
+import { AirtableSuggestorsTable } from './AirtableSuggestorsTable';
+import { AirtableDb, PostgresDb, RethinkDb } from './base';
 import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
 import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
 import { PostgresDbTagVariablesTable } from './PostgresDbTagVariablesTable';
@@ -38,6 +40,12 @@ export class Database {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #tagVariables: PostgresDbTagVariablesTable;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #airtable: AirtableDb<AirtableTableMap>;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #suggestors: AirtableSuggestorsTable;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #suggestions: AirtableSuggestionsTable;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #logger: Logger;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #discord: Discord<true>;
@@ -50,8 +58,11 @@ export class Database {
     public get chatlogs(): ChatlogsTable { return this.#chatlogs; }
     public get dumps(): DumpsTable { return this.#dumps; }
     public get tagVariables(): TagVariablesTable { return this.#tagVariables; }
+    public get suggestors(): SuggestorsTable { return this.#suggestors; }
+    public get suggestions(): SuggestionsTable { return this.#suggestions; }
 
     public constructor(options: DatabaseOptions) {
+        this.#airtable = new AirtableDb<AirtableTableMap>(options.airtable);
         this.#rethinkDb = new RethinkDb(options.rethinkDb);
         this.#postgres = new PostgresDb(options.logger, options.postgres);
         this.#cassandra = new Cassandra({
@@ -73,6 +84,8 @@ export class Database {
         this.#chatlogs = new CassandraDbChatlogTable(this.#cassandra, this.#logger);
         this.#dumps = new CassandraDbDumpsTable(this.#cassandra, this.#logger);
         this.#tagVariables = new PostgresDbTagVariablesTable(this.#postgres, this.#logger);
+        this.#suggestors = new AirtableSuggestorsTable(this.#airtable);
+        this.#suggestions = new AirtableSuggestionsTable(this.#airtable);
     }
 
     public async connect(): Promise<void> {
@@ -81,7 +94,8 @@ export class Database {
         await Promise.all([
             this.retryConnect('rethinkDb', () => this.#rethinkDb.connect(), 5000, 10),
             this.retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
-            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
+            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10),
+            this.retryConnect('airtable', () => this.#airtable.connect(), 5000, 10)
         ]);
 
         await Promise.all([

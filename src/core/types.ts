@@ -169,6 +169,33 @@ export type RethinkTableMap = {
     'events': StoredEvent;
 }
 
+/* eslint-disable @typescript-eslint/naming-convention */
+export type AirtableTableMap = {
+    'Suggestors': Suggestor;
+    'Suggestions': Suggestion;
+}
+
+export interface Suggestor {
+    ID: string;
+    Username: string;
+}
+
+export interface Suggestion {
+    ID?: number;
+    AA: boolean;
+    Bug: boolean;
+    Type: string[];
+    Title: string;
+    Description: string;
+    Message: string;
+    Channel: string;
+    Author: string[];
+    Edits?: number;
+    Notes?: string;
+    'Last Edited'?: number;
+}
+/* eslint-enable @typescript-eslint/naming-convention */
+
 export interface MessageFilter {
     readonly term: string;
     readonly regex: boolean;
@@ -688,6 +715,7 @@ export interface DatabaseOptions {
     readonly rethinkDb: RethinkDbOptions;
     readonly cassandra: CassandraDbOptions;
     readonly postgres: PostgresDbOptions;
+    readonly airtable: AirtableOptions;
 }
 
 export interface RethinkDbOptions {
@@ -711,6 +739,11 @@ export interface PostgresDbOptions {
     readonly pass: string;
     readonly host: string;
     readonly sequelize: SequelizeOptions;
+}
+
+export interface AirtableOptions {
+    readonly key: string;
+    readonly base: string;
 }
 
 export interface StoredGuildEventLogConfig {
@@ -852,6 +885,18 @@ export interface TagVariablesTable {
     upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void>;
     get(name: string, type: SubtagVariableType, scope: string): Promise<JToken>;
 }
+
+export interface SuggestorsTable {
+    get(id: string): Promise<Suggestor | undefined>;
+    upsert(userid: string, username: string): Promise<string | undefined>;
+}
+
+export interface SuggestionsTable {
+    get(id: number): Promise<Suggestion | undefined>;
+    create(suggestion: Suggestion): Promise<number | undefined>;
+    update(id: number, suggestion: Partial<Suggestion>): Promise<boolean>;
+}
+
 export type TypeMappingResult<T> = { valid: false; } | { valid: true; value: T; };
 export type TypeMapping<T, TArgs extends unknown[] = []> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
 export type TypeMappings<T> = { readonly [P in keyof T]-?: TypeMapping<T[P]> | [string, TypeMapping<T[P]>] | [T[P]] };
