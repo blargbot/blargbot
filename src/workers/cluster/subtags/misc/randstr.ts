@@ -7,7 +7,6 @@ export class RandStrSubtag extends BaseSubtag {
         super({
             name: 'randstr',
             category: SubtagType.COMPLEX,
-            aliases: ['absolute'],
             definition: [
                 {
                     parameters: ['chars', 'length'],

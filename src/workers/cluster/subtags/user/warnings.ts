@@ -6,7 +6,7 @@ export class WarningsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'warnings',
-            category: SubtagType.BOT,
+            category: SubtagType.USER,
             definition: [
                 {
                     parameters: ['user?'],

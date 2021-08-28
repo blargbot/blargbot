@@ -6,7 +6,7 @@ export class ChannelsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channels',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: [],

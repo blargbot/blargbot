@@ -10,7 +10,7 @@ export class PardonSubtag extends BaseSubtag {
     ) {
         super({
             name: 'pardon',
-            category: SubtagType.BOT,
+            category: SubtagType.USER,
             desc: '`user` defaults to the executing user. Returns the new warning count',
             definition: [
                 {

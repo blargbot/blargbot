@@ -6,7 +6,7 @@ export class ForSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'for',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.LOOPS,
             definition: [
                 {
                     parameters: ['variable', 'initial', 'comparison', 'limit', 'increment?:1', '~code'],

@@ -8,7 +8,7 @@ export class MessageTimeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'messagetime',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             aliases: ['timestamp'],
             definition: [//! overwritten
                 {

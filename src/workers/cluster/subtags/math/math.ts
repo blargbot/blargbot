@@ -8,7 +8,7 @@ export class MathSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'math',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['numbers+'],

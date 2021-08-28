@@ -5,7 +5,7 @@ export class ForeachSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'foreach',
-            category: SubtagType.ARRAY,
+            category: SubtagType.LOOPS,
             definition: [
                 {
                     parameters: ['variable', 'array', '~code'],

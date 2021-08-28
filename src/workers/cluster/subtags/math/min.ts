@@ -5,7 +5,7 @@ export class MinSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'min',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['numbers+'],

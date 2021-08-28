@@ -168,11 +168,12 @@ export class CustomCommand extends BaseGuildCommand {
         return debug ? bbtagUtil.createDebugOutput(result) : undefined;
     }
 
-    public showDocs(context: GuildCommandContext, topic: string | undefined): SendPayload | string {
-        const embed = getDocsEmbed(context, topic);
+    public async showDocs(context: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
+        const embed = await getDocsEmbed(context, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`);
-
+        if (typeof embed === 'string')
+            return embed;
         return { embeds: [embed], isHelp: true };
     }
 

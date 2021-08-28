@@ -6,7 +6,7 @@ export class UserSetNickSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'usersetnick',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             aliases: ['setnick'],
             definition: [
                 {

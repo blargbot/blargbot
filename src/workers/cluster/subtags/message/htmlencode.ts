@@ -8,7 +8,7 @@ export class HtmlDecodeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'htmlencode',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: ['text+'],

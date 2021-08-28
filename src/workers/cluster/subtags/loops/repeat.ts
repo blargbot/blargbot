@@ -5,7 +5,7 @@ export class RepeatSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'repeat',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.LOOPS,
             aliases: ['loop'],
             definition: [
                 {

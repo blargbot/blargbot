@@ -5,7 +5,7 @@ export class RolePermsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'roleperms',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             aliases: ['rolepermissions'],
             definition: [
                 {

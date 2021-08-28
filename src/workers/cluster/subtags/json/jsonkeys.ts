@@ -7,7 +7,7 @@ export class JsonKeysSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'jsonkeys',
-            category: SubtagType.ARRAY,
+            category: SubtagType.JSON,
             aliases: ['jkeys'],
             definition: [
                 {

@@ -8,7 +8,7 @@ export class DMSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'dm',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             definition: [
                 {
                     parameters: ['user', 'message|embed', 'embed?'],

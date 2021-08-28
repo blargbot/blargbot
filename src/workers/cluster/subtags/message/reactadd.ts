@@ -7,7 +7,7 @@ export class ReactAddSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'reactadd',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             aliases: ['addreact'],
             desc: 'Please note that to be able to add a reaction, I must be on the server that you got that reaction from. ' +
                 'If I am not, then I will return an error if you are trying to apply the reaction to another message.',

@@ -6,7 +6,7 @@ export class WhileSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'while',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.LOOPS,
             definition: [
                 {
                     parameters: ['~boolean', '~code'],

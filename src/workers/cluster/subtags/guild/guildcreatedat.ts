@@ -6,7 +6,7 @@ export class GuildCreateDat extends BaseSubtag {
     public constructor() {
         super({
             name: 'guildcreatedat',
-            category: SubtagType.API,
+            category: SubtagType.GUILD,
             definition: [
                 {
                     parameters: ['format?'],

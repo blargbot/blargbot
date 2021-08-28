@@ -6,7 +6,7 @@ export class UserHasRolesSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userhasroles',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             aliases: ['hasroles'],
             desc: 'This subtag checks if a user has *all* of the provided `roleids`. Use `{userhasrole}` to check if a user has *any* of the provided `roleids`. `roleids` can be an array of role IDs, or a single role ID. For a list of roles and their corresponding IDs, use `b!roles`' +  //TODO context.getRole instead
                 '\nReturns a boolean.',

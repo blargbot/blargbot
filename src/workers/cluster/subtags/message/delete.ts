@@ -8,7 +8,7 @@ export class DeleteSubtag extends BaseSubtag {
         super({
             name: 'delete',
             desc: 'Only ccommands can delete other messages.',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: [],

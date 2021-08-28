@@ -5,7 +5,7 @@ export class RoleSetPosSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'rolesetpos',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             definition: [
                 {
                     parameters: ['role', 'position', 'quiet?'],

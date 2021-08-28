@@ -5,7 +5,8 @@ export class NewlineSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'newline',
-            category: SubtagType.SIMPLE,
+            category: SubtagType.COMPLEX,
+            aliases: ['n'],
             definition: [
                 {
                     parameters: ['count?:1'],

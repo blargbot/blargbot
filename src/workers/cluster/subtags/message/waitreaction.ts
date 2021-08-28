@@ -7,7 +7,7 @@ export class WaitReactionSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'waitreaction',
-            category: SubtagType.BOT,
+            category: SubtagType.MESSAGE,
             aliases: ['waitreact'],
             desc: 'Pauses the command until one of the given `users` adds any given `reaction` on any of the given `messages`. ' +
                 'When a `reaction` is added, `condition` will be run to determine if the reaction can be accepted. ' +

@@ -8,7 +8,7 @@ export class JsonSetSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'jsonset',
-            category: SubtagType.ARRAY,
+            category: SubtagType.JSON,
             aliases: ['jset'],
             definition: [
                 {

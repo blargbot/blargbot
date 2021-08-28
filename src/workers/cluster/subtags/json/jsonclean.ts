@@ -5,7 +5,7 @@ export class JsonCleanSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'jsonclean',
-            category: SubtagType.ARRAY,
+            category: SubtagType.JSON,
             aliases: ['jclean'],
             definition: [
                 {

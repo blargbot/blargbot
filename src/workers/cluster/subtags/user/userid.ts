@@ -5,7 +5,7 @@ export class UserIdSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userid',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             definition: [
                 {
                     parameters: [],

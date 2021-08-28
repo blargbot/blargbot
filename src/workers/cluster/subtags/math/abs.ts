@@ -6,7 +6,7 @@ export class AbsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'abs',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             aliases: ['absolute'],
             definition: [
                 {

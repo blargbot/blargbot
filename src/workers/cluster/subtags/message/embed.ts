@@ -5,7 +5,7 @@ export class EmbedSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'embed',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: ['embed'],

@@ -7,7 +7,7 @@ export class MessageEmbedsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'messageembeds',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: [],

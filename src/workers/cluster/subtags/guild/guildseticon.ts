@@ -6,7 +6,7 @@ export class GuildSetIconSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'guildseticon',
-            category: SubtagType.API,
+            category: SubtagType.GUILD,
             definition: [
                 {
                     parameters: ['image'],

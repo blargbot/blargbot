@@ -6,7 +6,7 @@ export class KickSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'kick',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             desc: 'If the kick is successful, `Success` will be returned, otherwise the error will be given. ',
             definition: [
                 {

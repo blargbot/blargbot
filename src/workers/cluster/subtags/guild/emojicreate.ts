@@ -13,7 +13,7 @@ export class EmojiCreateSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'emojicreate',
-            category: SubtagType.API,
+            category: SubtagType.GUILD,
             definition: [
                 {
                     parameters: ['name', 'image'],

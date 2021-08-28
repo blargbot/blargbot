@@ -9,7 +9,7 @@ export class ChannelEditSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channeledit',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: ['channel', 'options?:{}'],

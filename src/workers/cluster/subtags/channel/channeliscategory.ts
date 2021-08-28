@@ -8,7 +8,7 @@ export class ChannelIsCategorySubtag extends BaseSubtag {
         super({
             name: 'channeliscategory',
             aliases: ['iscategory'],
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: ['channel', 'quiet?'],

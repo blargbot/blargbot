@@ -5,7 +5,7 @@ export class LangSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'lang',
-            category: SubtagType.BOT,
+            category: SubtagType.LANG,
             deprecated: true,
             definition: [
                 {

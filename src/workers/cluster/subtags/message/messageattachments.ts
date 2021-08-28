@@ -11,7 +11,7 @@ export class MessageAttachmentsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'messageattachments',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             aliases: ['attachments'],
             definition: [
                 {

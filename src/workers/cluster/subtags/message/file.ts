@@ -5,7 +5,7 @@ export class FileSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'file',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: ['file', 'filename'],

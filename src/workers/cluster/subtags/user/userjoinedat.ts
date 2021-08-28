@@ -7,7 +7,7 @@ export class UserJoinedAtSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userjoinedat',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             desc: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
             definition: [
                 {

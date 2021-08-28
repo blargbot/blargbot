@@ -5,7 +5,7 @@ export class UserDiscrimSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'userdiscrim',
-            category: SubtagType.API,
+            category: SubtagType.USER,
             desc: 'If no game is being played, this will return \'nothing\'',
             definition: [
                 {

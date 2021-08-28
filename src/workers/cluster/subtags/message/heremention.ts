@@ -6,7 +6,7 @@ export class HereMentionSubtag extends BaseSubtag {
         super({
             name: 'heremention',
             aliases: ['here'],
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             definition: [
                 {
                     parameters: ['mention?'],

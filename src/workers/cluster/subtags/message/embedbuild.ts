@@ -63,7 +63,7 @@ export class EmbedBuildSubag extends BaseSubtag {
     public constructor() {
         super({
             name: 'embedbuild',
-            category: SubtagType.BOT,
+            category: SubtagType.MESSAGE,
             aliases: ['buildembed'],
             desc: 'This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
             'This tag uses a key/value system, with each entry in `values` looking like `key:value`.\n\n' +

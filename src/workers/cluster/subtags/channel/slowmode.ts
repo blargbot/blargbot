@@ -6,7 +6,7 @@ export class SlowmodeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'slowmode',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: [],

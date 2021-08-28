@@ -5,7 +5,7 @@ export class RoundSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'rounddown',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MATH,
             definition: [
                 {
                     parameters: ['number'],

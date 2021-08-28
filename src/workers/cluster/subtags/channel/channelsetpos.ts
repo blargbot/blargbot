@@ -6,7 +6,7 @@ export class ChannelSetPosSubtag extends BaseSubtag {
         super({
             name: 'channelsetpos',
             aliases: ['channelsetposition'],
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             definition: [
                 {
                     parameters: ['channel', 'position'],

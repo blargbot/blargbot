@@ -7,7 +7,7 @@ export class RoleCreateSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'rolecreate',
-            category: SubtagType.API,
+            category: SubtagType.ROLE,
             desc: '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. ' +
                 'Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
                 '`hoisted` is if the role should be displayed separately from other roles.\n' +

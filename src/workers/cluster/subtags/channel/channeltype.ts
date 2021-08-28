@@ -7,7 +7,7 @@ export class ChannelTypeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'channeltype',
-            category: SubtagType.API,
+            category: SubtagType.CHANNEL,
             desc: 'Possible results: ' + Object.values(channelTypes).map(t => '`' + t + '`').join(', '),
             definition: [
                 {

@@ -7,7 +7,7 @@ export class JsonSortSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'jsonsort',
-            category: SubtagType.ARRAY,
+            category: SubtagType.JSON,
             aliases: ['jsort'],
             definition: [
                 {

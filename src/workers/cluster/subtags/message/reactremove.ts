@@ -7,7 +7,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'reactremove',
-            category: SubtagType.API,
+            category: SubtagType.MESSAGE,
             aliases: ['removereact'],
             definition: [//! overwritten
                 {
