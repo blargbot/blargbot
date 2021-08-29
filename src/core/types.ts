@@ -54,40 +54,56 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
     ? { fallback?: undefined; }
     : { fallback: boolean; };
 
-export interface ConfirmQueryOptionsBase {
+export interface QueryOptionsBase {
     context: TextBasedChannels | Message;
     actors: Iterable<string | User> | string | User;
-    prompt: string | Omit<SendOptions, 'components'>;
+    prompt?: string | Omit<SendOptions, 'components'>;
+    timeout?: number;
+}
+
+export interface QueryBase<T> {
+    getResult(): Promise<T>;
+    cancel(): void | Promise<void>;
+}
+
+export type QueryResult<TStates extends string, TResult> = QueryBaseResult<TStates> | QuerySuccess<TResult>;
+
+export interface QueryBaseResult<T extends string> {
+    readonly state: T;
+}
+
+export interface QuerySuccess<T> extends QueryBaseResult<'SUCCESS'> {
+    readonly value: T;
+}
+
+export interface ConfirmQueryOptionsBase extends QueryOptionsBase {
     confirm: QueryButton;
     cancel: QueryButton;
-    timeout?: number;
 }
 
 export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase & ConfirmQueryOptionsFallback<T>;
 
-export interface ChoiceQueryOptions<T> {
-    context: TextBasedChannels | Message;
-    actors: Iterable<string | User> | string | User;
-    prompt: string | Omit<SendOptions, 'components'>;
+export interface ChoiceQueryOptions<T> extends QueryOptionsBase {
     placeholder: string;
     choices: Iterable<Omit<MessageSelectOptionData, 'value'> & { value: T; }>;
-    timeout?: number;
 }
 
-export type TextQueryOptions<T = string> = (T extends string ? string extends T ? TextQueryOptionsBase<T> : never : never) | TextQueryOptionsParsed<T>;
-
-export interface TextQueryOptionsBase<T> {
-    context: TextBasedChannels | Message;
-    actors: Iterable<string | User> | string | User;
-    prompt: string | Omit<SendOptions, 'components'>;
+export interface TextQueryOptionsBase<T> extends QueryOptionsBase {
     cancel?: QueryButton;
-    timeout?: number;
-    parse?: (T extends string ? string extends T ? undefined : never : never) | TextQueryOptionsParser<T>;
+    parse?: TextQueryOptionsParser<T>;
 }
 
 export interface TextQueryOptionsParsed<T> extends TextQueryOptionsBase<T> {
     parse: TextQueryOptionsParser<T>;
 }
+
+export type SlimTextQueryOptionsParsed<T> = Omit<TextQueryOptionsParsed<T>, 'context' | 'actors'>;
+
+export interface TextQueryOptions extends TextQueryOptionsBase<string> {
+    parse?: undefined;
+}
+
+export type SlimTextQueryOptions = Omit<TextQueryOptions, 'context' | 'actors'>;
 
 export interface TextQueryOptionsParser<T> {
     (message: Message): Promise<TextQueryOptionsParseResult<T>> | TextQueryOptionsParseResult<T>;
@@ -102,47 +118,55 @@ export interface MultipleQueryOptions<T> extends ChoiceQueryOptions<T> {
     maxCount?: number;
 }
 
-export interface ChoiceQuery<T> {
+export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
     prompt: Message | undefined;
-    getResult(): Promise<ChoiceQueryResult<T>>;
-    cancel(): void | Promise<void>;
 }
 
-export interface MultipleQuery<T> {
+export interface MultipleQuery<T> extends QueryBase<MultipleResult<T>> {
     prompt: Message | undefined;
-    getResult(): Promise<MultipleResult<T>>;
-    cancel(): void | Promise<void>;
 }
 
-export interface ConfirmQuery<T extends boolean | undefined = undefined> {
+export interface ConfirmQuery<T extends boolean | undefined = undefined> extends QueryBase<T> {
     prompt: Message | undefined;
-    getResult(): Promise<T>;
-    cancel(): void | Promise<void>;
 }
 
-export interface TextQuery<T> {
+export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
     messages: readonly Message[];
-    getResult(): Promise<TextQueryResult<T>>;
-    cancel(): void | Promise<void>;
 }
 
 export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;
 export type MultipleResult<T> = QueryResult<'NO_OPTIONS' | 'EXCESS_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T[]>;
 export type TextQueryResult<T> = QueryResult<'FAILED' | 'TIMED_OUT' | 'CANCELLED', T>;
 
-export interface QueryBaseResult<T extends string> {
-    readonly state: T;
-}
-
-export interface QuerySuccess<T> extends QueryBaseResult<'SUCCESS'> {
-    readonly value: T;
-}
-
-export type QueryResult<TStates extends string, TResult> = QueryBaseResult<TStates> | QuerySuccess<TResult>;
-
 export type QueryButton =
     | string
     | Partial<Omit<InteractionButtonOptions, 'disabled' | 'type' | 'customId'>>
+
+export type EntityQueryOptions<T> =
+    | EntityPickQueryOptions<T>
+    | EntityFindQueryOptions
+
+export type SlimEntityQueryOptions<T> =
+    | SlimEntityPickQueryOptions<T>
+    | SlimEntityFindQueryOptions
+
+export interface BaseEntityQueryOptions extends QueryOptionsBase {
+    placeholder?: string;
+}
+
+export interface EntityPickQueryOptions<T> extends BaseEntityQueryOptions {
+    choices: Iterable<T>;
+    filter?: string;
+}
+
+export type SlimEntityPickQueryOptions<T> = Omit<EntityPickQueryOptions<T>, 'context' | 'actors'>;
+
+export interface EntityFindQueryOptions extends BaseEntityQueryOptions {
+    guild: string | Guild;
+    filter?: string;
+}
+
+export type SlimEntityFindQueryOptions = Omit<EntityFindQueryOptions, 'context' | 'actors'>;
 
 export interface BindingSuccess<TState> {
     readonly success: true;

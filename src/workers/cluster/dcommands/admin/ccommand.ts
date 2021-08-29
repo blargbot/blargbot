@@ -427,7 +427,7 @@ export class CustomCommand extends BaseGuildCommand {
 
         const roles = [];
         for (const roleName of roleNames) {
-            const role = await context.cluster.util.queryRole(context.channel, context.author, context.channel.guild, roleName);
+            const role = await context.queryRole({ filter: roleName });
             if (role.state !== 'SUCCESS')
                 return;
             roles.push(role.value);
@@ -608,7 +608,7 @@ export class CustomCommand extends BaseGuildCommand {
     private async requestCommandName(
         context: GuildCommandContext,
         name: string | undefined,
-        query = 'Enter the name of the custom command or type `c` to cancel:'
+        query = 'Enter the name of the custom command:'
     ): Promise<string | undefined> {
         if (name !== undefined) {
             name = normalizeName(name);
@@ -619,11 +619,11 @@ export class CustomCommand extends BaseGuildCommand {
         if (query.length === 0)
             return undefined;
 
-        name = (await context.util.awaitQuery(context.channel, context.author, query))?.content;
-        if (name === undefined || name === 'c')
+        const nameResult = await context.queryText({ prompt: query });
+        if (nameResult.state !== 'SUCCESS')
             return undefined;
 
-        name = normalizeName(name);
+        name = normalizeName(nameResult.value);
         return name.length > 0 ? name : undefined;
     }
 
@@ -634,11 +634,11 @@ export class CustomCommand extends BaseGuildCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        content = (await context.util.awaitQuery(context.channel, context.author, 'Enter the custom command\'s contents or type `c` to cancel:'))?.content;
-        if (content === undefined || content === 'c')
+        const contentResult = await context.queryText({ prompt: 'Enter the custom command\'s contents:' });
+        if (contentResult.state !== 'SUCCESS')
             return undefined;
 
-        return content.length > 0 ? content : undefined;
+        return contentResult.value;
     }
 
     private async requestSettableCommand(

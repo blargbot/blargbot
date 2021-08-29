@@ -21,7 +21,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
             command, 'channel',
             async query => (await context.util.findChannels(context.channel.guild, query)).filter(guard.isTextableChannel),
             async (options, query) => {
-                const result = await context.util.queryChannel(context.channel, context.author, options, query);
+                const result = await context.queryChannel({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
@@ -29,7 +29,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
             command, 'user',
             async query => (await context.util.findMembers(context.channel.guild, query)).map(m => m.user),
             async (options, query) => {
-                const result = await context.util.queryUser(context.channel, context.author, options, query);
+                const result = await context.queryUser({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
@@ -37,7 +37,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
             command, 'role',
             query => context.util.findRoles(context.channel.guild, query),
             async (options, query) => {
-                const result = await context.util.queryRole(context.channel, context.author, options, query);
+                const result = await context.queryRole({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
@@ -45,7 +45,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
             command, 'member',
             query => context.util.findMembers(context.channel.guild, query),
             async (options, query) => {
-                const result = await context.util.queryMember(context.channel, context.author, options, query);
+                const result = await context.queryMember({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         )
@@ -60,7 +60,7 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
                 context.channel
             ].filter(c => context.util.channelMatchScore(c, query) > 0),
             async (options, query) => {
-                const result = await context.util.queryChannel(context.message, context.author, options, query);
+                const result = await context.queryChannel({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
@@ -71,7 +71,7 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
                 context.discord.user
             ].filter(u => context.util.userMatchScore(u, query) > 0),
             async (options, query) => {
-                const result = await context.util.queryUser(context.message, context.author, options, query);
+                const result = await context.queryUser({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),

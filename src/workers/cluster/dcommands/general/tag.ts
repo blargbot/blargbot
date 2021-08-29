@@ -315,7 +315,7 @@ export class TagCommand extends BaseGuildCommand {
         ];
 
         if (author !== undefined) {
-            const result = await context.util.queryMember(context.channel, context.author, context.channel.guild, author);
+            const result = await context.queryMember({ filter: author });
             if (result.state !== 'SUCCESS')
                 return undefined;
 
@@ -332,9 +332,14 @@ export class TagCommand extends BaseGuildCommand {
     }
 
     public async searchTags(context: GuildCommandContext, query?: string): Promise<string | undefined> {
-        if (query === undefined || query.length === 0)
-            query = (await context.util.awaitQuery(context.channel, context.author, 'What would you like to search for?'))?.content;
-        if (query === undefined || query.length === 0)
+        if (query === undefined || query.length === 0) {
+            const queryResult = await context.queryText({ prompt: 'What would you like to search for?' });
+            if (queryResult.state !== 'SUCCESS')
+                return undefined;
+
+            query = queryResult.value;
+        }
+        if (query.length === 0)
             return undefined;
 
         const _query = query;
@@ -495,9 +500,11 @@ export class TagCommand extends BaseGuildCommand {
                 await context.database.users.setTagReport(context.author.id, match.name, undefined);
                 return this.success(`The \`${match.name}\` tag is no longer being reported by you.`);
             }
-            reason = (await context.util.awaitQuery(context.channel, context.author, 'Please provide a reason for your report or type `c` to cancel:'))?.content;
-            if (reason === undefined || reason === 'c')
+            const reasonResult = await context.queryText({ prompt: 'Please provide a reason for your report:' });
+            if (reasonResult.state !== 'SUCCESS')
                 return;
+
+            reason = reasonResult.value;
         }
 
         if (user.reports?.[match.name] !== undefined)
@@ -609,11 +616,11 @@ export class TagCommand extends BaseGuildCommand {
         if (query.length === 0)
             return undefined;
 
-        name = (await context.util.awaitQuery(context.channel, context.author, query))?.content;
-        if (name === undefined || name === 'c')
+        const nameResult = await context.queryText({ prompt: query });
+        if (nameResult.state !== 'SUCCESS')
             return undefined;
 
-        name = normalizeName(name);
+        name = normalizeName(nameResult.value);
         return name.length > 0 ? name : undefined;
     }
 
@@ -621,11 +628,11 @@ export class TagCommand extends BaseGuildCommand {
         if (content !== undefined && content.length > 0)
             return content;
 
-        content = (await context.util.awaitQuery(context.channel, context.author, 'Enter the tag\'s contents or type `c` to cancel:'))?.content;
-        if (content === undefined || content === 'c')
+        const contentResult = await context.queryText({ prompt: 'Enter the tag\'s contents:' });
+        if (contentResult.state !== 'SUCCESS')
             return undefined;
 
-        return content.length > 0 ? content : undefined;
+        return contentResult.value;
     }
 
     private async requestSettableTag(

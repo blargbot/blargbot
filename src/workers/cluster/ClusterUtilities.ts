@@ -1,10 +1,8 @@
-import { MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, SendPayload, TextQuery, TextQueryOptions, TextQueryResult } from '@core/types';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
 import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
 import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-types';
-import moment from 'moment';
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster';
@@ -56,7 +54,7 @@ export class ClusterUtilities extends BaseUtilities {
             options.prompt = { content: options.prompt };
 
         const component: ChoiceComponentOptions = {
-            content: options.prompt.content ?? '',
+            content: options.prompt?.content ?? '',
             get select(): MessageSelectOptionData[] {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
@@ -247,28 +245,30 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    public async queryText<T>(options: TextQueryOptions<T>): Promise<TextQueryResult<T>>
-    public async queryText(options: TextQueryOptions<string>): Promise<TextQueryResult<string>>
-    public async queryText<T>(options: TextQueryOptions<T>): Promise<TextQueryResult<T>> {
-        const query = await this.createTextQuery<T>(options);
+    public async queryText<T>(options: TextQueryOptionsParsed<T>): Promise<TextQueryResult<T>>
+    public async queryText(options: TextQueryOptions): Promise<TextQueryResult<string>>
+    public async queryText<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQueryResult<T | string>>
+    public async queryText<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQueryResult<T | string>> {
+        const query = await this.createTextQuery(options);
         return await query.getResult();
     }
 
-    public async createTextQuery<T>(options: TextQueryOptions<T>): Promise<TextQuery<T>>
-    public async createTextQuery(options: TextQueryOptions<string>): Promise<TextQuery<string>>
-    public async createTextQuery<T>(options: TextQueryOptions<T>): Promise<TextQuery<T>> {
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<T>): Promise<TextQuery<T>>
+    public async createTextQuery(options: TextQueryOptions): Promise<TextQuery<string>>
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQuery<T | string>>
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQuery<T | string>> {
         const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
         const component: TextComponentOptions = {
             cancelId: snowflake.create().toString(),
             cancelButton: options.cancel ?? 'Cancel'
         };
 
-        let parsed: { success: true; value: T; } | { success: false; } | undefined;
+        let parsed: { success: true; value: T | string; } | { success: false; } | undefined;
         const messages: Message[] = [];
-        const parse = options.parse;
+        const parse = options.parse ?? (m => ({ success: true, value: m.content }));
         const channel = options.context instanceof Message ? options.context.channel : options.context;
         const componentAwaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, { [component.cancelId]: () => true });
-        const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, parse === undefined ? () => true : async message => {
+        const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, async message => {
             const parseResult = await parse(message);
             if (!parseResult.success && parseResult.error !== undefined) {
                 messages.push(message);
@@ -385,14 +385,14 @@ export class ClusterUtilities extends BaseUtilities {
         };
     }
 
-    public async queryUser(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, users: Iterable<User>, filter: string, timeout?: number): Promise<ChoiceResult<User>> {
+    public async queryUser(options: EntityPickQueryOptions<User>): Promise<ChoiceResult<User>> {
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: `ℹ️ Multiple users matching \`${filter}\` found! Please select one from the drop down.`,
-            placeholder: 'Select a user',
-            timeout,
-            choices: [...users].map(u => ({
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a user from the drop down'
+                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a user',
+            choices: [...options.choices].map(u => ({
                 label: humanize.fullName(u),
                 value: u,
                 description: `Id: ${u.id}`
@@ -400,16 +400,17 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryMember(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, guild: string | Guild, filter: string, timeout?: number): Promise<ChoiceResult<GuildMember>>
-    public async queryMember(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, members: Iterable<GuildMember>, filter: string, timeout?: number): Promise<ChoiceResult<GuildMember>>
-    public async queryMember(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, members: string | Guild | Iterable<GuildMember>, filter: string, timeout?: number): Promise<ChoiceResult<GuildMember>> {
-        const matches = typeof members === 'string' || 'members' in members ? await this.findMembers(members, filter) : [...members];
+    public async queryMember(options: EntityFindQueryOptions): Promise<ChoiceResult<GuildMember>>
+    public async queryMember(options: EntityPickQueryOptions<GuildMember>): Promise<ChoiceResult<GuildMember>>
+    public async queryMember(options: EntityQueryOptions<GuildMember>): Promise<ChoiceResult<GuildMember>> {
+        const matches = 'guild' in options ? await this.findMembers(options.guild, options.filter) : [...options.choices];
+
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: `ℹ️ Multiple users matching \`${filter}\` found! Please select one from the drop down.`,
-            placeholder: 'Select a user',
-            timeout,
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a user from the drop down'
+                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a user',
             choices: matches.map(m => ({
                 label: `${m.displayName} (${humanize.fullName(m.user)})`,
                 value: m,
@@ -418,16 +419,17 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryRole(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, guild: string | Guild, filter: string, timeout?: number): Promise<ChoiceResult<Role>>
-    public async queryRole(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, roles: Iterable<Role>, filter: string, timeout?: number): Promise<ChoiceResult<Role>>
-    public async queryRole(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, roles: string | Guild | Iterable<Role>, filter: string, timeout?: number): Promise<ChoiceResult<Role>> {
-        const matches = typeof roles === 'string' || 'roles' in roles ? await this.findRoles(roles, filter) : [...roles];
+    public async queryRole(options: EntityFindQueryOptions): Promise<ChoiceResult<Role>>
+    public async queryRole(options: EntityPickQueryOptions<Role>): Promise<ChoiceResult<Role>>
+    public async queryRole(options: EntityQueryOptions<Role>): Promise<ChoiceResult<Role>> {
+        const matches = 'guild' in options ? await this.findRoles(options.guild, options.filter) : [...options.choices];
+
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: `ℹ️ Multiple roles matching \`${filter}\` found! Please select one from the drop down.`,
-            placeholder: 'Select a role',
-            timeout,
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a role from the drop down'
+                : `ℹ️ Multiple roles matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a role',
             choices: matches.map(r => ({
                 label: `${r.name}`,
                 value: r,
@@ -436,16 +438,17 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryChannel(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, guild: string | Guild, filter: string, timeout?: number): Promise<ChoiceResult<GuildChannels>>;
-    public async queryChannel<T extends KnownChannel>(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, channels: Iterable<T>, filter: string, timeout?: number): Promise<ChoiceResult<T>>;
-    public async queryChannel(context: TextBasedChannels | Message, actors: Iterable<string | User> | string | User, channels: string | Guild | Iterable<KnownChannel>, filter: string, timeout?: number): Promise<ChoiceResult<KnownChannel>> {
-        const matches = typeof channels === 'string' || 'channels' in channels ? await this.findChannels(channels, filter) : [...channels];
+    public async queryChannel(options: EntityFindQueryOptions): Promise<ChoiceResult<GuildChannels>>;
+    public async queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<T>): Promise<ChoiceResult<T>>;
+    public async queryChannel(options: EntityQueryOptions<KnownChannel>): Promise<ChoiceResult<KnownChannel>> {
+        const matches = 'guild' in options ? await this.findChannels(options.guild, options.filter) : [...options.choices];
+
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: `ℹ️ Multiple channels matching \`${filter}\` found! Please select one from the drop down.`,
-            placeholder: 'Select a channel',
-            timeout,
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a channel from the drop down'
+                : `ℹ️ Multiple channels matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a channel',
             choices: matches.map(c => ({
                 label: getChannelLookupName(c),
                 description: `Id: ${c.id}${guard.isGuildChannel(c) && c.parent !== null ? ` Parent: ${getChannelLookupName(c.parent)}` : ''}`,
@@ -470,91 +473,29 @@ export class ClusterUtilities extends BaseUtilities {
                 return false;
             const total = await itemCount();
             const pageCount = Math.ceil(total / pageSize);
-            const query = await this.createQuery(channel, user,
-                `Found ${items.length}/${total}${filterText}.\n` +
-                `Page **#${page + 1}/${pageCount}**\n` +
-                `${codeBlock(items.join(separator), 'fix')}\n` +
-                `Type a number between **1 and ${pageCount}** to view that page, or type \`c\` to cancel.`,
-                reply => {
-                    page = parse.int(reply.content) - 1;
-                    return page >= 0 && page < pageCount
-                        || reply.content.toLowerCase() === 'c';
-                });
+            const pageQuery = await this.createTextQuery<number>({
+                context: channel,
+                actors: user,
+                prompt: `Found ${items.length}/${total}${filterText}.\n` +
+                    `Page **#${page + 1}/${pageCount}**\n` +
+                    `${codeBlock(items.join(separator), 'fix')}\n` +
+                    `Type a number between **1 and ${pageCount}** to view that page.`,
+                parse: message => {
+                    const pageNumber = parse.int(message.content) + 1;
+                    if (isNaN(pageNumber))
+                        return { success: false };
+                    return { success: true, value: pageNumber };
+                }
+            });
 
-            const response = await query.response;
-            try {
-                await query.prompt?.delete();
-            } catch (err: unknown) {
-                this.logger.error(`Failed to delete paging prompt (channel: ${query.prompt?.channel.id ?? 'UNKNOWN'} message: ${query.prompt?.id ?? 'UNKNOWN'}):`, err);
-            }
-            if (response === undefined)
+            const response = await pageQuery.getResult();
+            await Promise.allSettled(pageQuery.messages.map(m => m.delete()));
+            if (response.state !== 'SUCCESS')
                 return undefined;
+
+            page = response.value;
         }
         return true;
-    }
-
-    public async awaitQuery(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check?: ((message: Message) => boolean),
-        timeoutMS?: number,
-        label?: string
-    ): Promise<Message | undefined> {
-        const query = await this.createQuery(channel, user, content, check, timeoutMS, label);
-        return await query.response;
-    }
-
-    public async createQuery(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check?: ((message: Message) => boolean),
-        timeoutMS = 300000,
-        label?: string
-    ): Promise<MessagePrompt> {
-        const timeoutMessage = `Query canceled${label !== undefined ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
-        return this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
-    }
-
-    public async awaitPrompt(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check?: ((message: Message) => boolean),
-        timeoutMS?: number,
-        timeoutMessage?: SendPayload
-    ): Promise<Message | undefined> {
-        const prompt = await this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
-        return await prompt.response;
-    }
-
-    public async createPrompt(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check: ((message: Message) => boolean) = () => true,
-        timeoutMS = 300000,
-        timeoutMessage?: SendPayload
-    ): Promise<MessagePrompt> {
-        const prompt = await this.send(channel, content);
-        const response = channel.awaitMessages({
-            filter: msg => msg.author.id === user.id && check(msg),
-            max: 1,
-            time: timeoutMS
-        }).then(c => c.first());
-
-        if (timeoutMessage !== undefined) {
-            void response.then(async m => {
-                if (m === undefined)
-                    await this.send(channel, timeoutMessage);
-            });
-        }
-
-        return {
-            prompt,
-            response
-        };
     }
 
     /* eslint-disable @typescript-eslint/naming-convention */
@@ -917,8 +858,8 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<MessageOptions,
 
 function createTextBody(options: TextComponentOptions, disabled = false): Pick<MessageOptions, 'components'> {
     const cancel: MessageButtonOptions = {
-        style: 'DANGER',
-        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton, emoji: '✖️' } : options.cancelButton,
+        style: 'SECONDARY',
+        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
         type: 'BUTTON',
         customId: options.cancelId,
         disabled: disabled

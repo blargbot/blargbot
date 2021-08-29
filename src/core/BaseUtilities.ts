@@ -391,11 +391,15 @@ export class BaseUtilities {
         }
     }
 
-    public async findChannels(guild: string | Guild, query: string): Promise<GuildChannels[]> {
+    public async findChannels(guild: string | Guild, query?: string): Promise<GuildChannels[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return [];
+
+        if (query === undefined)
+            return [...guild.channels.cache.values()] as GuildChannels[];
 
         const channel = await this.getChannel(guild, query);
         if (channel !== undefined)
@@ -499,6 +503,7 @@ export class BaseUtilities {
 
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return undefined;
 
@@ -517,11 +522,15 @@ export class BaseUtilities {
         }
     }
 
-    public async findMembers(guild: string | Guild, query: string): Promise<GuildMember[]> {
+    public async findMembers(guild: string | Guild, query?: string): Promise<GuildMember[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return [];
+
+        if (query === undefined)
+            return [...guild.members.cache.values()];
 
         const member = await this.getMember(guild, query);
         if (member !== undefined)
@@ -573,11 +582,15 @@ export class BaseUtilities {
         }
     }
 
-    public async findRoles(guild: string | Guild, query: string): Promise<Role[]> {
+    public async findRoles(guild: string | Guild, query?: string): Promise<Role[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return [];
+
+        if (query === undefined)
+            return [...guild.roles.cache.values()];
 
         const role = await this.getRole(guild, query);
         if (role !== undefined)

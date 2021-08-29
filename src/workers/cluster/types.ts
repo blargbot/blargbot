@@ -490,11 +490,6 @@ export interface LookupMatch<T> {
     value: T;
 }
 
-export interface MessagePrompt {
-    prompt: Message | undefined;
-    response: Promise<Message | undefined>;
-}
-
 export interface BanDetails {
     mod: User;
     reason: string;

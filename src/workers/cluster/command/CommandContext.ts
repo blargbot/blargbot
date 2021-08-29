@@ -1,11 +1,12 @@
 import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagEngine } from '@cluster/bbtag';
-import { CommandResult } from '@cluster/types';
+import { CommandResult, GuildCommandContext } from '@cluster/types';
 import { humanize } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
-import { DMContext, SendContext, SendPayload } from '@core/types';
-import { Client as Discord, Message, TextBasedChannels, User } from 'discord.js';
+import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@core/types';
+import { guard } from '@core/utils';
+import { Client as Discord, GuildChannels, GuildMember, KnownChannel, Message, Role, TextBasedChannels, User } from 'discord.js';
 
 export class CommandContext<TChannel extends TextBasedChannels = TextBasedChannels> {
     public readonly commandText: string;
@@ -57,6 +58,65 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
         if (content === undefined)
             return undefined;
         return await this.cluster.util.sendDM(context, content);
+    }
+
+    public async queryChannel(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<GuildChannels>>;
+    public async queryChannel(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<GuildChannels>>;
+    public async queryChannel<T extends KnownChannel>(options: SlimEntityPickQueryOptions<T>): Promise<ChoiceQueryResult<T>>;
+    public async queryChannel(options: SlimEntityQueryOptions<KnownChannel> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<KnownChannel>> {
+        if ('choices' in options)
+            return await this.util.queryChannel({ ...options, context: this.message, actors: this.author });
+
+        if ('guild' in options)
+            return await this.util.queryChannel({ ...options, context: this.message, actors: this.author });
+
+        if (guard.isGuildChannel(this.channel))
+            return await this.util.queryChannel({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
+
+        throw new Error('Cannot queryChannel without a guild!');
+    }
+
+    public async queryRole(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<Role>>;
+    public async queryRole(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<Role>>;
+    public async queryRole(options: SlimEntityPickQueryOptions<Role>): Promise<ChoiceQueryResult<Role>>;
+    public async queryRole(options: SlimEntityQueryOptions<Role> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<Role>> {
+        if ('choices' in options)
+            return await this.util.queryRole({ ...options, context: this.message, actors: this.author });
+
+        if ('guild' in options)
+            return await this.util.queryRole({ ...options, context: this.message, actors: this.author });
+
+        if (guard.isGuildChannel(this.channel))
+            return await this.util.queryRole({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
+
+        throw new Error('Cannot queryRole without a guild!');
+    }
+
+    public async queryMember(options: SlimEntityFindQueryOptions): Promise<ChoiceQueryResult<GuildMember>>;
+    public async queryMember(this: GuildCommandContext, options: Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<GuildMember>>;
+    public async queryMember(options: SlimEntityPickQueryOptions<GuildMember>): Promise<ChoiceQueryResult<GuildMember>>;
+    public async queryMember(options: SlimEntityQueryOptions<GuildMember> | Omit<SlimEntityFindQueryOptions, 'guild'>): Promise<ChoiceQueryResult<GuildMember>> {
+        if ('choices' in options)
+            return await this.util.queryMember({ ...options, context: this.message, actors: this.author });
+
+        if ('guild' in options)
+            return await this.util.queryMember({ ...options, context: this.message, actors: this.author });
+
+        if (guard.isGuildChannel(this.channel))
+            return await this.util.queryMember({ ...options, context: this.message, actors: this.author, guild: this.channel.guild });
+
+        throw new Error('Cannot queryMember without a guild!');
+    }
+
+    public async queryUser(options: SlimEntityPickQueryOptions<User>): Promise<ChoiceQueryResult<User>> {
+        return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
+    }
+
+    public async queryText<T>(options: SlimTextQueryOptionsParsed<T>): Promise<TextQueryResult<T>>
+    public async queryText(options: SlimTextQueryOptions): Promise<TextQueryResult<string>>
+    public async queryText<T>(options: SlimTextQueryOptionsParsed<T> | SlimTextQueryOptions): Promise<TextQueryResult<T | string>>
+    public async queryText<T>(options: SlimTextQueryOptionsParsed<T> | SlimTextQueryOptions): Promise<TextQueryResult<T | string>> {
+        return await this.util.queryText({ ...options, context: this.message, actors: this.author });
     }
 }
 

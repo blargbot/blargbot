@@ -163,7 +163,7 @@ export class RolemeCommand extends BaseGuildCommand {
         if (roleme.channels.length > 0) {
             const channels = [];
             for (const channelStr of roleme.channels) {
-                const channel = await context.util.queryChannel(context.message, context.author, context.channel.guild, channelStr);
+                const channel = await context.queryChannel({ filter: channelStr });
                 if (channel.state === 'SUCCESS' && guard.isTextableChannel(channel.value))
                     channels.push(channel.value.id);
             }
@@ -204,7 +204,7 @@ export class RolemeCommand extends BaseGuildCommand {
         } else {
             const toAdd = [];
             for (const roleStr of result.add) {
-                const role = await context.util.queryRole(context.message, context.author, context.channel.guild.id, roleStr);
+                const role = await context.queryRole({ filter: roleStr });
                 if (role.state === 'SUCCESS')
                     toAdd.push(role.value.id);
             }
@@ -212,7 +212,7 @@ export class RolemeCommand extends BaseGuildCommand {
 
             const toRemove = [];
             for (const roleStr of result.remove) {
-                const role = await context.util.queryRole(context.message, context.author, context.channel.guild.id, roleStr);
+                const role = await context.queryRole({ filter: roleStr });
                 if (role.state === 'SUCCESS')
                     toRemove.push(role.value.id);
             }
@@ -358,7 +358,7 @@ export class RolemeCommand extends BaseGuildCommand {
             parse: async message => {
                 const roles = [];
                 for (const line of message.content.split('\n')) {
-                    const role = await context.util.queryRole(context.message, context.author, context.channel.guild, line);
+                    const role = await context.queryRole({ filter: line });
                     if (role.state === 'SUCCESS')
                         roles.push(role.value.id);
                 }

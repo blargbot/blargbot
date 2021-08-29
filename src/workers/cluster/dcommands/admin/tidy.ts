@@ -150,7 +150,7 @@ async function buildFilter(context: GuildCommandContext, options: TidyOptions): 
     if (options.users !== undefined) {
         const users = new Set<string>();
         for (const user of new Set(options.users)) {
-            const match = await context.util.queryMember(context.channel, context.author, context.channel.guild, user);
+            const match = await context.queryMember({ filter: user });
             if (match.state !== 'SUCCESS')
                 return 'INVALID_USER';
             users.add(match.value.id);

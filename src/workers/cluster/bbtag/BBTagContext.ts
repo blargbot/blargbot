@@ -5,7 +5,7 @@ import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { ChoiceQueryResult, NamedGuildCommandTag, StoredTag } from '@core/types';
+import { ChoiceQueryResult, EntityPickQueryOptions, NamedGuildCommandTag, StoredTag } from '@core/types';
 import { Base, Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
@@ -153,7 +153,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             query, 'user', 'User',
             async id => await this.util.getMember(this.guild, id),
             async query => await this.util.findMembers(this.guild, query),
-            async (options, query) => await this.util.queryMember(this.channel, this.user, options, query),
+            async options => await this.util.queryMember(options),
             options
         );
         return member?.user;
@@ -164,7 +164,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             query, 'role', 'Role',
             async id => await this.util.getRole(this.guild, id),
             async query => await this.util.findRoles(this.guild, query),
-            async (options, query) => await this.util.queryRole(this.channel, this.user, options, query),
+            async options => await this.util.queryRole(options),
             options
         );
     }
@@ -174,7 +174,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             query, 'channel', 'Channel',
             async id => await this.util.getChannel(this.guild, id),
             async query => await this.util.findChannels(this.guild, query),
-            async (options, query) => await this.util.queryChannel(this.channel, this.user, options, query),
+            async options => await this.util.queryChannel(options),
             options
         );
     }
@@ -185,7 +185,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         type: string,
         fetch: (id: string) => Promise<T | undefined>,
         find: (query: string) => Promise<T[]>,
-        query: (options: T[], query: string) => Promise<ChoiceQueryResult<T>>,
+        query: (options: EntityPickQueryOptions<T>) => Promise<ChoiceQueryResult<T>>,
         options: FindEntityOptions
     ): Promise<T | undefined> {
         const cached = this.state.query[cacheKey][queryString];
@@ -199,7 +199,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         }
 
         const noErrors = this.scope.noLookupErrors ?? options.noErrors ?? false;
-        const result = await query(entities, queryString);
+        const result = await query({ context: this.channel, actors: this.author, choices: entities, filter: queryString });
         switch (result.state) {
             case 'FAILED':
             case 'NO_OPTIONS':
