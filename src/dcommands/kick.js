@@ -12,40 +12,46 @@ class KickCommand extends BaseCommand {
     }
 
     async execute(msg, words, text) {
-        if (!words[1]) {
-            bu.send(msg, `You didn't tell me who to kick!`);
-            return;
-        }
+        if (words[1]) {
+            let input = bu.parseInput(this.flags, words);
+            
+            var user = await bu.getUser(msg, input.undefined[0]);
+            if (!user) {
+                return await bu.send(msg, `I couldn't find that user. Try again with their ID or a mention instead.`);
+            }
+            if (!context.guild.members.get(user.id)) return this.userNotInGuild(subtag, context);   //checking if user is in guild; if not then returning user not in guild error
+            
+            let target = await bu.getUser(msg, words[1]);
+            let reason = bu.parseInput(this.flags, words).r;
 
-        let target = await bu.getUser(msg, words[1]);
-        let reason = bu.parseInput(this.flags, words).r;
+            if (!target) return;
 
-        if (!target) return;
-
-        let state = await this.kick(msg, target, reason, false, false);
-        let response;
-        switch (state) {
-            case 0: //Successful
-                response = `:ok_hand:`;
+            let state = await this.kick(msg, target, reason, false, false);
+            let response;
+            switch (state) {
+                case 0: //Successful
+                    response = `Kicked ${target.username}. Reason: ${reason}`;
+                    break;
+                case 1: //Bot doesnt have perms
+                    response = `I don't have permission to kick users!`;
+                    break;
+                case 2: //Bot cannot kick target
+                    response = `I don't have permission to kick ${target.username}!`;
                 break;
-            case 1: //Bot doesnt have perms
-                response = `I don't have permission to kick users!`;
-                break;
-            case 2: //Bot cannot kick target
-                response = `I don't have permission to kick ${target.username}!`;
-                break;
-            case 3: //User doesnt have perms
-                response = `You don't have permission to kick users!`;
-                break;
-            case 4: //User cannot kick target
-                response = `You don't have permission to kick ${target.username}!`;
-                break;
-            default: //Error occurred
-                response = `Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${state.message}\n${state.response}\`\`\``;
-                break;
+                case 3: //User doesnt have perms
+                    response = `You don't have permission to kick users!`;
+                    break;
+                case 4: //User cannot kick target
+                    response = `You don't have permission to kick ${target.username}!`;
+                    break;
+                default: //Error occurred
+                    response = `Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${state.message}\n${state.response}\`\`\``;
+                    break;
         }
 
         bu.send(msg, response);
+            
+        } else bu.send(msg, `You didn't tell me who to kick!`);
     }
 
     async kick(msg, target, reason, tag = false, noPerms = false) {
