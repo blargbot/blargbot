@@ -5,7 +5,7 @@ import { User } from 'discord.js';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';
 
-export class RethinkDbUserTable extends RethinkDbCachedTable<'user', 'userid'> implements UserTable {
+export class RethinkDbUserTable extends RethinkDbCachedTable<MutableStoredUser, 'userid'> implements UserTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger

@@ -237,7 +237,7 @@ export class EventLogManager {
         if ('content' in message)
             return { ...message, authorId: message.author.id, channelId: message.channel.id };
 
-        const chatlog = await this.cluster.database.chatlogs.get(message.id);
+        const chatlog = await this.cluster.database.chatlogs.getByMessageId(message.id);
         if (chatlog === undefined) {
             return {
                 id: message.id,

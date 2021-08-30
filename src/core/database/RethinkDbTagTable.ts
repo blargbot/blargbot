@@ -3,7 +3,7 @@ import { StoredTag, TagsTable } from '@core/types';
 
 import { RethinkDb, RethinkDbTable } from './base';
 
-export class RethinkDbTagTable extends RethinkDbTable<'tag'> implements TagsTable {
+export class RethinkDbTagTable extends RethinkDbTable<StoredTag> implements TagsTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger

@@ -3,7 +3,7 @@ import { GetStoredVar, KnownStoredVars, MutableKnownStoredVars, VarsTable } from
 
 import { RethinkDb, RethinkDbTable } from './base';
 
-export class RethinkDbVarsTable extends RethinkDbTable<'vars'> implements VarsTable {
+export class RethinkDbVarsTable extends RethinkDbTable<MutableKnownStoredVars> implements VarsTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger

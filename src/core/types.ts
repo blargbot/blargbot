@@ -185,20 +185,7 @@ export interface BinderResult<TState> {
     readonly state: TState;
 }
 
-export type RethinkTableMap = {
-    'guild': MutableStoredGuild;
-    'tag': StoredTag;
-    'user': MutableStoredUser;
-    'vars': MutableKnownStoredVars;
-    'events': StoredEvent;
-}
-
 /* eslint-disable @typescript-eslint/naming-convention */
-export type AirtableTableMap = {
-    'Suggestors': Suggestor;
-    'Suggestions': Suggestion;
-}
-
 export interface Suggestor {
     ID: string;
     Username: string;
@@ -717,13 +704,30 @@ export interface ChatlogMessage {
     readonly msgid: string;
     readonly channelid: string;
     readonly guildid: string;
-    readonly embeds: string;
+    readonly embeds: unknown[];
 }
 
 export interface Chatlog extends ChatlogMessage {
     readonly id: Snowflake;
     readonly msgtime: Date;
     readonly type: ChatlogType;
+}
+
+export interface ChatlogIndex<T = string> {
+    readonly keycode: string;
+    readonly channel: string;
+    readonly users: readonly string[];
+    readonly types: readonly ChatlogType[];
+    readonly ids: readonly T[];
+    readonly limit: number;
+}
+
+export interface ChatlogSearchOptions {
+    readonly channelId: string;
+    readonly types: readonly ChatlogType[];
+    readonly users: readonly string[];
+    readonly exclude: readonly string[];
+    readonly count: number;
 }
 
 export interface BBTagVariable {
@@ -898,7 +902,14 @@ export interface TagsTable {
 
 export interface ChatlogsTable {
     add(message: ChatlogMessage, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
-    get(messageId: string): Promise<Chatlog | undefined>;
+    getByMessageId(messageId: string): Promise<Chatlog | undefined>;
+    findAll(options: ChatlogSearchOptions): Promise<readonly Chatlog[]>;
+    getAll(channelId: string, ids: readonly string[]): Promise<readonly Chatlog[]>;
+}
+
+export interface ChatlogIndexTable {
+    add(index: ChatlogIndex): Promise<boolean>;
+    get(id: string): Promise<ChatlogIndex | undefined>;
 }
 
 export interface DumpsTable {

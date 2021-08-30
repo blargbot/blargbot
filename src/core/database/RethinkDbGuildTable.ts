@@ -6,7 +6,7 @@ import { UpdateData } from 'rethinkdb';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';
 
-export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'> implements GuildTable {
+export class RethinkDbGuildTable extends RethinkDbCachedTable<MutableStoredGuild, 'guildid'> implements GuildTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger

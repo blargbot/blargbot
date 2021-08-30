@@ -1,43 +1,42 @@
 import { Logger } from '@core/Logger';
-import { RethinkTableMap } from '@core/types';
 import { guard } from '@core/utils';
 import { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
 
 import { RethinkDb } from './RethinkDb';
 
-export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
+export abstract class RethinkDbTable<Table> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #rethinkDb: RethinkDb;
 
     protected constructor(
-        protected readonly table: TableName,
+        protected readonly table: string,
         rethinkDb: RethinkDb,
         protected readonly logger: Logger
     ) {
         this.#rethinkDb = rethinkDb;
     }
 
-    protected async rquery<T>(query: TableQuery<T, RethinkTableMap[TableName]>): Promise<T>;
-    protected async rquery<T>(query: TableQuery<T | undefined, RethinkTableMap[TableName]>): Promise<T | undefined>;
-    protected async rquery<T>(query: TableQuery<T | undefined, RethinkTableMap[TableName]>): Promise<T | undefined> {
+    protected async rquery<T>(query: TableQuery<T, Table>): Promise<T>;
+    protected async rquery<T>(query: TableQuery<T | undefined, Table>): Promise<T | undefined>;
+    protected async rquery<T>(query: TableQuery<T | undefined, Table>): Promise<T | undefined> {
         return await this.#rethinkDb.query(r => query(r.table(this.table), r));
     }
 
-    protected async rqueryAll<T>(query: TableQuery<Cursor<T>, RethinkTableMap[TableName]>): Promise<T[]> {
+    protected async rqueryAll<T>(query: TableQuery<Cursor<T>, Table>): Promise<T[]> {
         return await this.#rethinkDb.queryAll(r => query(r.table(this.table), r));
     }
 
-    protected rstream<T>(query: TableQuery<Cursor<T>, RethinkTableMap[TableName]>): AsyncIterableIterator<T> {
+    protected rstream<T>(query: TableQuery<Cursor<T>, Table>): AsyncIterableIterator<T> {
         return this.#rethinkDb.stream(r => query(r.table(this.table), r));
     }
 
-    protected async rget(key: string): Promise<RethinkTableMap[TableName] | undefined> {
+    protected async rget(key: string): Promise<Table | undefined> {
         return await this.rquery(t => t.get(key)) ?? undefined;
     }
 
-    protected async rinsert(value: RethinkTableMap[TableName], returnValue?: false): Promise<boolean>
-    protected async rinsert(value: RethinkTableMap[TableName], returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
-    protected async rinsert(value: RethinkTableMap[TableName], returnValue = false): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+    protected async rinsert(value: Table, returnValue?: false): Promise<boolean>
+    protected async rinsert(value: Table, returnValue: true): Promise<Table | undefined>
+    protected async rinsert(value: Table, returnValue = false): Promise<boolean | Table | undefined> {
         const result = await this.rquery(t => t.insert(this.addExpr(value), { returnChanges: returnValue }));
         throwIfErrored(result);
 
@@ -47,9 +46,9 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return result.inserted > 0;
     }
 
-    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue?: false): Promise<boolean>
-    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
-    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue = false): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+    protected async rset(key: string, value: Table, returnValue?: false): Promise<boolean>
+    protected async rset(key: string, value: Table, returnValue: true): Promise<Table | undefined>
+    protected async rset(key: string, value: Table, returnValue = false): Promise<boolean | Table | undefined> {
         const result = await this.rquery(t => t.get(key).replace(this.addExpr(value), { returnChanges: returnValue }));
         throwIfErrored(result);
 
@@ -59,9 +58,9 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return result.inserted + result.replaced > 0;
     }
 
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue?: false): Promise<boolean>
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue = false): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+    protected async rupdate(key: string, value: UpdateRequest<Table>, returnValue?: false): Promise<boolean>
+    protected async rupdate(key: string, value: UpdateRequest<Table>, returnValue: true): Promise<Table | undefined>
+    protected async rupdate(key: string, value: UpdateRequest<Table>, returnValue = false): Promise<boolean | Table | undefined> {
         const updater = 'eq' in value || typeof value === 'object' ? () => value : value;
         const result = await this.rquery(t => t.get(key).update(r => updater(r), { returnChanges: returnValue }));
         throwIfErrored(result);
@@ -72,9 +71,9 @@ export abstract class RethinkDbTable<TableName extends keyof RethinkTableMap> {
         return result.replaced + result.unchanged > 0;
     }
 
-    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges?: false): Promise<boolean>
-    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges: true): Promise<Array<RethinkTableMap[TableName]>>
-    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges = false): Promise<boolean | Array<RethinkTableMap[TableName]>> {
+    protected async rdelete(key: string | Partial<Table>, returnChanges?: false): Promise<boolean>
+    protected async rdelete(key: string | Partial<Table>, returnChanges: true): Promise<Table[]>
+    protected async rdelete(key: string | Partial<Table>, returnChanges = false): Promise<boolean | Table[]> {
         const result = typeof key === 'string'
             ? await this.rquery(t => t.get(key).delete({ returnChanges }))
             : await this.rquery(t => t.filter(key).delete({ returnChanges }));

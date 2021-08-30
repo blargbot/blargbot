@@ -1,17 +1,16 @@
 import { Cache } from '@core/Cache';
 import { Logger } from '@core/Logger';
-import { RethinkTableMap } from '@core/types';
 import { guard, sleep } from '@core/utils';
 import { UpdateRequest } from 'rethinkdb';
 
 import { RethinkDb } from './RethinkDb';
 import { RethinkDbTable } from './RethinkDbTable';
 
-export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableMap, KeyName extends keyof PropertiesOfType<RethinkTableMap[TableName], string>> extends RethinkDbTable<TableName> {
-    protected readonly cache: Cache<string, RethinkTableMap[TableName]>;
+export abstract class RethinkDbCachedTable<Table, KeyName extends keyof PropertiesOfType<Table, string>> extends RethinkDbTable<Table> {
+    protected readonly cache: Cache<string, Table>;
 
     protected constructor(
-        table: TableName,
+        table: string,
         private readonly keyName: KeyName,
         rethinkDb: RethinkDb,
         logger: Logger
@@ -20,14 +19,14 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
         this.cache = new Cache(5, 'minutes');
     }
 
-    protected getKey(value: RethinkTableMap[TableName]): string {
+    protected getKey(value: Table): string {
         return value[this.keyName];
     }
 
     protected async rget(
         key: string,
         skipCache = false
-    ): Promise<RethinkTableMap[TableName] | undefined> {
+    ): Promise<Table | undefined> {
         if (skipCache || !this.cache.has(key)) {
             const result = await super.rget(key);
             if (result !== undefined)
@@ -38,9 +37,9 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
         return this.cache.get(key, true);
     }
 
-    protected async rinsert(value: RethinkTableMap[TableName], returnValue?: false): Promise<boolean>
-    protected async rinsert(value: RethinkTableMap[TableName], returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
-    protected async rinsert(value: RethinkTableMap[TableName], returnValue?: boolean): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+    protected async rinsert(value: Table, returnValue?: false): Promise<boolean>
+    protected async rinsert(value: Table, returnValue: true): Promise<Table | undefined>
+    protected async rinsert(value: Table, returnValue?: boolean): Promise<boolean | Table | undefined> {
         if (returnValue === false)
             return await super.rinsert(value, false);
 
@@ -51,9 +50,9 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
         return returnValue === true ? result : result !== undefined;
     }
 
-    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue?: false): Promise<boolean>
-    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
-    protected async rset(key: string, value: RethinkTableMap[TableName], returnValue?: boolean): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+    protected async rset(key: string, value: Table, returnValue?: false): Promise<boolean>
+    protected async rset(key: string, value: Table, returnValue: true): Promise<Table | undefined>
+    protected async rset(key: string, value: Table, returnValue?: boolean): Promise<boolean | Table | undefined> {
         if (returnValue === false)
             return await super.rset(key, value, false);
 
@@ -73,9 +72,9 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
 
     }
 
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue?: false): Promise<boolean>
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue: true): Promise<RethinkTableMap[TableName] | undefined>
-    protected async rupdate(key: string, value: UpdateRequest<RethinkTableMap[TableName]>, returnValue?: boolean): Promise<boolean | RethinkTableMap[TableName] | undefined> {
+    protected async rupdate(key: string, value: UpdateRequest<Table>, returnValue?: false): Promise<boolean>
+    protected async rupdate(key: string, value: UpdateRequest<Table>, returnValue: true): Promise<Table | undefined>
+    protected async rupdate(key: string, value: UpdateRequest<Table>, returnValue?: boolean): Promise<boolean | Table | undefined> {
         if (returnValue === false)
             return await super.rupdate(key, value, false);
 
@@ -94,9 +93,9 @@ export abstract class RethinkDbCachedTable<TableName extends keyof RethinkTableM
         return returnValue === true ? result : result !== undefined;
     }
 
-    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges?: false): Promise<boolean>
-    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnChanges: true): Promise<Array<RethinkTableMap[TableName]>>
-    protected async rdelete(key: string | Partial<RethinkTableMap[TableName]>, returnValue?: boolean): Promise<boolean | Array<RethinkTableMap[TableName]>> {
+    protected async rdelete(key: string | Partial<Table>, returnChanges?: false): Promise<boolean>
+    protected async rdelete(key: string | Partial<Table>, returnChanges: true): Promise<Table[]>
+    protected async rdelete(key: string | Partial<Table>, returnValue?: boolean): Promise<boolean | Table[]> {
         if (returnValue === false)
             return await super.rdelete(key, false);
 

@@ -259,7 +259,7 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         if (!message.partial)
             author = humanize.fullName(message.author);
         else {
-            const chatlog = await this.cluster.database.chatlogs.get(message.id);
+            const chatlog = await this.cluster.database.chatlogs.getByMessageId(message.id);
             if (chatlog !== undefined) {
                 author = (await this.cluster.util.getUser(chatlog.userid))?.username;
             }

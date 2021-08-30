@@ -1,28 +1,29 @@
-import { AirtableTableMap, Suggestion, SuggestionsTable } from '@core/types';
+import { Logger } from '@core/Logger';
+import { Suggestion, SuggestionsTable } from '@core/types';
+import { AirtableBase } from 'airtable/lib/airtable_base';
 
-import { AirtableDb } from './base';
+import { AirtableDbTable } from './base';
 
-export class AirtableSuggestionsTable implements SuggestionsTable {
-    public constructor(
-        private readonly db: AirtableDb<AirtableTableMap>
-    ) {
+export class AirtableSuggestionsTable extends AirtableDbTable<Suggestion> implements SuggestionsTable {
+    public constructor(client: AirtableBase, logger: Logger) {
+        super(client, 'Suggestions', logger);
     }
 
     public async get(id: number): Promise<Suggestion | undefined> {
-        const record = await this.db.find('Suggestions', 'ID', id);
+        const record = await this.afind('ID', id);
         return record?.fields;
     }
 
     public async create(suggestion: Suggestion): Promise<number | undefined> {
-        const record = await this.db.create('Suggestions', suggestion);
+        const record = await this.acreate(suggestion);
         return record?.fields.ID;
     }
 
     public async update(id: number, suggestion: Partial<Suggestion>): Promise<boolean> {
-        const record = await this.db.find('Suggestions', 'ID', id);
+        const record = await this.afind('ID', id);
         if (record === undefined)
             return false;
 
-        return await this.db.update('Suggestions', record.id, suggestion) !== undefined;
+        return await this.aupdate(record.id, suggestion) !== undefined;
     }
 }
