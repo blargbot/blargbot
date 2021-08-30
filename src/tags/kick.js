@@ -42,9 +42,10 @@ module.exports =
                 true,
                 noPerms
             );
-            if (typeof response[1] == 'string' && response[1].startsWith('`'))
-            return Builder.util.error(subtag, context, response[1]);
-            return response[1];
+            if (typeof state[1] == 'string' && state[1].startsWith('`'))
+                return Builder.util.error(subtag, context, state[1]);
+    
+            return state[1];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
