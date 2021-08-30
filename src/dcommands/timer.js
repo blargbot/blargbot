@@ -18,23 +18,23 @@ class TimerCommand extends BaseCommand {
         if (duration.asMilliseconds() == 0) {
             await bu.send(msg, 'Hey, you didn\'t give me a period of time to set the timer to!\nExample: `timer 1 day, two hours`');
         } else {
+            let endUnix = moment().add(duration).unix();
             await bu.events.insert({
                 type: 'timer',
                 source: msg.guild ? msg.guild.id : msg.author.id,
                 user: msg.author.id,
                 channel: msg.channel.id,
                 starttime: r.epochTime(moment().unix()),
-                endtime: r.epochTime(moment().add(duration).unix())
+                endtime: r.epochTime(endUnix)
             });
-            await bu.send(msg, `:alarm_clock: Ok! The timer will go off ${duration.humanize(true)}! :alarm_clock: `);
+            await bu.send(msg, `:alarm_clock: Ok! The timer will go off at <t:${endUnix}> :alarm_clock: `);
         }
     }
 
     async event(args) {
-        let duration = moment.duration(moment() - moment(args.starttime));
-        duration.subtract(duration * 2);
+        let startUnix = moment(args.starttime).unix();
         bu.send(args.channel, {
-            content: `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set ${duration.humanize(true)} has gone off! *Bzzt!* :alarm_clock:`,
+            content: `:alarm_clock: *Bzzt!* <@${args.user}>, the timer you set <t:${startUnix}:R> has gone off! *Bzzt!* :alarm_clock:`,
             allowedMentions: {
                 users: [args.user]
             }

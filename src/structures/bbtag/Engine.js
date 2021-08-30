@@ -235,8 +235,8 @@ async function runTag(content, context) {
         let cdDate = context.cooldowns[context.tagName] + (context.cooldown || 0);
         let diff = Date.now() - cdDate;
         if (diff < 0) {
-            let f = Math.floor(diff / 100) / 10;
-            await bu.send(context.msg, `This ${context.isCC ? 'tag' : 'custom command'} is currently under cooldown. Please try again in ${f * -1} seconds.`);
+            let retry_after = Math.floor(cdDate / 1000);
+            await bu.send(context.msg, `This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${retry_after}:R>.`);
             return;
         }
     }
