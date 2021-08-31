@@ -15,7 +15,7 @@ class KickCommand extends BaseCommand {
         if (words[1]) {
             let input = bu.parseInput(this.flags, words);
             
-            var user = await bu.getUser(msg, input.undefined[0]);
+            let user = await bu.getUser(msg, input.undefined[0]);
             if (!user) {
                 return await bu.send(msg, `I couldn't find that user. Try again with their ID or a mention instead.`);
             }
@@ -68,9 +68,9 @@ class KickCommand extends BaseCommand {
         let member = msg.guild.members.get(user.id);
         
         if(member) {
-            var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-            var userPos = bu.getPosition(msg.member);
-            var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
+            let botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+            let userPos = bu.getPosition(msg.member);
+            let targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
             if (targetPos >= botPos) {
                 return [`I don't have permission to kick ${user.username}!`, '`Bot has no permissions`'];
             }
