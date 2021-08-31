@@ -86,7 +86,7 @@ class BanCommand extends BaseCommand {
                     endtime: r.epochTime(moment().add(duration).unix()),
                     starttime: r.epochTime(moment().unix())
                 });
-                return [`:ok_hand: The user will be unbanned ${duration.humanize(true)}. Ban reason: ${reason}`, duration.asMilliseconds()];
+                return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>). Ban reason: ${reason}`, duration.asMilliseconds()];
             } else {
                 return [`:ok_hand:`, true];
             }
