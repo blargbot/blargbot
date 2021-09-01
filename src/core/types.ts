@@ -490,14 +490,14 @@ export interface MutableGuildWarnings {
 }
 
 export interface GuildCensors {
-    readonly list: { readonly [censorId: string]: GuildCensor; };
+    readonly list?: { readonly [censorId: string]: GuildCensor | undefined; };
     readonly exception?: GuildCensorExceptions;
     readonly rule?: GuildCensorRule;
 }
 
 export interface MutableGuildCensors extends GuildCensors {
-    list: { [censorId: string]: GuildCensor; };
-    exception?: GuildCensorExceptions;
+    list?: { [censorId: string]: MutableGuildCensor | undefined; };
+    exception?: MutableGuildCensorExceptions;
     rule?: MutableGuildCensorRule;
 }
 
@@ -524,9 +524,15 @@ export interface MutableGuildCensor extends MutableGuildCensorRule, MessageFilte
 }
 
 export interface GuildCensorExceptions {
-    readonly channel: readonly string[]; // channelids
-    readonly user: readonly string[]; // userids
-    readonly role: readonly string[]; // roleids
+    readonly channel?: readonly string[]; // channelids
+    readonly user?: readonly string[]; // userids
+    readonly role?: readonly string[]; // roleids
+}
+
+export interface MutableGuildCensorExceptions extends GuildCensorExceptions {
+    channel?: string[]; // channelids
+    user?: string[]; // userids
+    role?: string[]; // roleids
 }
 
 export interface GuildTagBase {
@@ -815,6 +821,13 @@ export interface GuildTable {
     setChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, value: ChannelSettings[K]): Promise<boolean>;
     getRolemes(guildId: string, skipCache?: boolean): Promise<{ readonly [id: string]: GuildRolemeEntry | undefined; } | undefined>;
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
+    getCensor(guildId: string, id: number, skipCache?: boolean): Promise<GuildCensor | undefined>;
+    setCensor(guildId: string, id: number, censor: GuildCensor | undefined): Promise<boolean>;
+    censorIgnoreUser(guildId: string, userId: string, ignored: boolean): Promise<boolean>;
+    censorIgnoreChannel(guildId: string, channelId: string, ignored: boolean): Promise<boolean>;
+    censorIgnoreRole(guildId: string, roleId: string, ignored: boolean): Promise<boolean>;
+    setCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', code: GuildTriggerTag | undefined): Promise<boolean>;
+    getCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedGuildCommandTag[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
     upsert(guild: Guild): Promise<'inserted' | 'updated' | false>;

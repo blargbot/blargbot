@@ -1,14 +1,18 @@
 import { CustomCommandLimit } from '@cluster/bbtag';
-import { guard, ModerationType } from '@cluster/utils';
-import { GuildCensorExceptions, GuildTriggerTag } from '@core/types';
+import { bbtagUtil, guard, ModerationType } from '@cluster/utils';
+import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@core/types';
 import { GuildMessage } from 'discord.js';
 
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
 export class CensorManager extends ModerationManagerBase {
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
+
     public constructor(manager: ModerationManager) {
         super(manager);
+        this.#debugOutput = {};
     }
 
     public async censor(message: GuildMessage): Promise<boolean> {
@@ -19,8 +23,11 @@ export class CensorManager extends ModerationManagerBase {
         if (censors === undefined || this.isCensorExempt(message, censors.exception))
             return false;
 
-        const censor = Object.values(censors.list).find(c => guard.testMessageFilter(c, message));
-        if (censor === undefined)
+        const [id, censor] = Object.entries(censors.list ?? {})
+            .filter((e): e is [string, GuildCensor] => e[1] !== undefined)
+            .find(c => guard.testMessageFilter(c[1], message)) ?? [];
+
+        if (censor === undefined || id === undefined)
             return false;
 
         try {
@@ -31,20 +38,24 @@ export class CensorManager extends ModerationManagerBase {
 
         const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');
         let tag: GuildTriggerTag | undefined;
+        let type: 'ban' | 'delete' | 'kick';
         switch (result.type) {
             case ModerationType.BAN:
                 tag = censor.banMessage ?? censors.rule?.banMessage;
+                type = 'ban';
                 break;
             case ModerationType.KICK:
                 tag = censor.kickMessage ?? censors.rule?.kickMessage;
+                type = 'kick';
                 break;
             case ModerationType.WARN:
                 tag = censor.deleteMessage ?? censors.rule?.deleteMessage;
+                type = 'delete';
                 break;
         }
 
         if (tag !== undefined) {
-            await this.cluster.bbtag.execute(tag.content, {
+            const result = await this.cluster.bbtag.execute(tag.content, {
                 message: message,
                 rootTagName: 'censor',
                 limit: new CustomCommandLimit(),
@@ -53,6 +64,16 @@ export class CensorManager extends ModerationManagerBase {
                 author: tag.author,
                 authorizer: tag.authorizer
             });
+
+            const key = this.getDebugKey(message.channel.guild.id, parseInt(id), message.author.id, type);
+            const debugCtx = this.#debugOutput[key];
+            if (debugCtx !== undefined) {
+                delete this.#debugOutput[key];
+                await this.cluster.util.send(debugCtx.channelId, {
+                    ...bbtagUtil.createDebugOutput(result),
+                    reply: { messageReference: debugCtx.messageId }
+                });
+            }
         }
 
         return true;
@@ -84,11 +105,20 @@ export class CensorManager extends ModerationManagerBase {
         if (exemptions === undefined)
             return false;
 
-        const channels = typeof exemptions.channel === 'string' ? [exemptions.channel] : exemptions.channel;
-        const users = typeof exemptions.user === 'string' ? [exemptions.user] : exemptions.user;
-        const roles = typeof exemptions.role === 'string' ? [exemptions.role] : exemptions.role;
+        const channels = exemptions.channel ?? [];
+        const users = exemptions.user ?? [];
+        const roles = exemptions.role ?? [];
+
         return channels.includes(message.channel.id)
             || users.includes(message.author.id)
             || roles.some(r => message.member.roles.cache.has(r));
+    }
+
+    public setDebug(guildId: string, id: number, userId: string, channelId: string, messageId: string, type: 'ban' | 'delete' | 'kick'): void {
+        this.#debugOutput[this.getDebugKey(guildId, id, userId, type)] = { channelId, messageId };
+    }
+
+    private getDebugKey(guildId: string, id: number, userId: string, type: 'ban' | 'delete' | 'kick'): string {
+        return `${guildId}|${id}|${userId}|${type}`;
     }
 }

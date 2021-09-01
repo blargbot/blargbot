@@ -172,8 +172,8 @@ export class HelpCommand extends BaseGlobalCommand {
 
         for (const signature of signatures) {
             fields.push({
-                name: `__\`${context.prefix}${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}\`__`,
-                value: `${signature.notes.join('\n')}\n\n${signature.description}`.trim()
+                name: `ℹ️  ${context.prefix}${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}`,
+                value: `${signature.notes.map(n => `> ${n}`).join('\n')}\n\n${signature.description}`.trim()
             });
         }
 
@@ -212,8 +212,8 @@ function stringifyParameter(parameter: CommandParameter): string {
             return `[${parameter.name}]`;
         case 'concatVar':
             if (parameter.required)
-                return `<...${parameter.name}>`;
-            return `[...${parameter.name}]`;
+                return `<${parameter.name}>`;
+            return `[${parameter.name}]`;
         case 'greedyVar':
             if (parameter.minLength === 0)
                 return `[...${parameter.name}]`;
