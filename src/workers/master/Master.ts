@@ -5,6 +5,7 @@ import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
 import { EvalResult } from '@core/types';
 import { MasterOptions } from '@master/types';
+import { WebsitePool } from '@website';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -18,6 +19,7 @@ export class Master extends BaseClient {
     public readonly worker: MasterWorker;
     public readonly logHistory: ClusterLogManager;
     public readonly clusterStats: ClusterStatsManager;
+    public readonly website: WebsitePool;
 
     public constructor(
         logger: Logger,
@@ -32,9 +34,9 @@ export class Master extends BaseClient {
         this.logHistory = new ClusterLogManager(30);
         this.clusterStats = new ClusterStatsManager();
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
+        this.website = new WebsitePool(this.logger);
         this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
-        // TODO Add websites
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());

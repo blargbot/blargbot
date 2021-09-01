@@ -4,6 +4,9 @@
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "out/index.js",
     "dependencies": {
+        "@nuxt/types": "^2.15.8",
+        "@nuxt/typescript-build": "^2.1.0",
+        "@nuxt/typescript-runtime": "^2.1.0",
         "@nuxtjs/axios": "^5.3.3",
         "airtable": "^0.11.1",
         "better-cleverbot-io": "^1.0.2",
@@ -18,6 +21,7 @@
         "cookieparser": "^0.1.0",
         "cron": "^1.4.1",
         "crypto": "^1.0.1",
+        "del-cli": "^4.0.1",
         "discord.js": "^13.0.1",
         "eventemitter3": "^4.0.7",
         "express": "^4.16.3",
@@ -42,7 +46,7 @@
         "moment-timezone": "^0.5.21",
         "node-emoji": "^1.4.1",
         "node-fetch": "^2.6.1",
-        "nuxt": "^1.4.2",
+        "nuxt": "^2.15.8",
         "passport": "^0.3.2",
         "passport-discord": "^0.1.1",
         "pg": "^8.7.1",
@@ -97,24 +101,23 @@
         "eslint-plugin-simple-import-sort": "^7.0.0",
         "eslint-plugin-vue": "^7.17.0",
         "husky": "^7.0.1",
-        "rimraf": "^3.0.2",
         "sass-lint": "^1.12.1",
         "typescript": "^4.4.2",
         "yarn": "^1.22.10"
     },
     "scripts": {
-        "start": "node ./out/index.js",
+        "start": "node index.js",
         "test": "echo \"Error: no test specified\" && exit 1",
         "check": "yarn run lint && yarn run build:check",
-        "build": "tsc --outDir ./out",
-        "build:watch": "tsc -w --outDir ./out",
+        "build": "tsc",
+        "build:watch": "tsc -w",
         "build:check": "tsc --noemit",
         "build:check:watch": "tsc -w --noemit",
         "rebuild": "yarn clean && yarn build",
-        "lint": "eslint --ext .ts,.vue,.js ./",
-        "lint-fix": "eslint --ext .ts,.vue,.js ./ --fix",
+        "lint": "eslint --ext .ts,.vue ./",
+        "lint-fix": "eslint --ext .ts,.vue ./ --fix",
         "prepare": "husky install",
-        "clean": "rimraf out"
+        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"!node_modules\""
     },
     "repository": {
         "type": "git",
@@ -130,12 +133,11 @@
         "@config": "config.json",
         "@package": "package.json",
         "@res": "res",
-        "@core": "out/src/core",
-        "@cluster": "out/src/workers/cluster",
-        "@master": "out/src/workers/master",
-        "@image": "out/src/workers/image",
-        "@website": "out/src/workers/website",
-        "@website-old": "out/src/workers/website_old",
-        "@entrypoints": "out/src/entrypoints"
+        "@core": "src/core",
+        "@cluster": "src/workers/cluster",
+        "@master": "src/workers/master",
+        "@image": "src/workers/image",
+        "@website": "src/workers/website",
+        "@workers": "src/workers"
     }
 }

@@ -44,7 +44,7 @@ export abstract class WorkerConnection extends IPCEvents {
         this.created = moment();
         this.args = [...process.execArgv];
         this.env = { ...process.env };
-        this.file = require.resolve(`@entrypoints/${this.worker}`);
+        this.file = require.resolve(`@workers/${this.worker}`);
         this.#killed = false;
         this.on('alive', () => this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive`));
         this.on('error', err => this.logger.error(`${this.worker} worker (ID: ${this.id}) error: `, err));

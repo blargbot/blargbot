@@ -3,7 +3,7 @@ import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { GuildChannels, GuildMessage, User } from 'discord.js';
 
-import { Statement } from './../../types';
+import { Statement } from '../../types';
 
 export class WaitMessageSubtags extends BaseSubtag {
     public constructor() {
@@ -11,16 +11,16 @@ export class WaitMessageSubtags extends BaseSubtag {
             name: 'waitmessage',
             category: SubtagType.MESSAGE,
             desc: 'Pauses the command until one of the given users sends a message in any of the given channels. ' +
-            'When a message is sent, `condition` will be run to determine if the message can be accepted. ' +
-            'If no message has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +
-            'the channel Id, then the message Id. ' +
-            '\n\n`channels` defaults to the current channel.' +
-            '\n`users` defaults to the current user.' +
-            '\n`condition` must return `true` or `false` and defaults to `true`' +
-            '\n`timeout` is a number of seconds. This defaults to 60 and is limited to 300' +
-            '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + overrides.waitmessage.join(', ') + '`' +
-            '\nAlso, the current message becomes the users message that is to be checked. This means that ' +
-            '`{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.',
+                'When a message is sent, `condition` will be run to determine if the message can be accepted. ' +
+                'If no message has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +
+                'the channel Id, then the message Id. ' +
+                '\n\n`channels` defaults to the current channel.' +
+                '\n`users` defaults to the current user.' +
+                '\n`condition` must return `true` or `false` and defaults to `true`' +
+                '\n`timeout` is a number of seconds. This defaults to 60 and is limited to 300' +
+                '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + overrides.waitmessage.join(', ') + '`' +
+                '\nAlso, the current message becomes the users message that is to be checked. This means that ' +
+                '`{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.',
             definition: [
                 {
                     parameters: [],
@@ -60,7 +60,7 @@ export class WaitMessageSubtags extends BaseSubtag {
         if (channelStr !== '') {
             let flattenedChannels;
             flattenedChannels = bbtagUtil.tagArray.flattenArray([channelStr]).map(i => parse.string(i));
-            flattenedChannels = await Promise.all(flattenedChannels.map(async input => await context.queryChannel(input, {noLookup: true})));
+            flattenedChannels = await Promise.all(flattenedChannels.map(async input => await context.queryChannel(input, { noLookup: true })));
             channels = flattenedChannels.filter((channel): channel is GuildChannels => channel !== undefined);
             if (flattenedChannels.length !== channels.length)
                 return this.channelNotFound(context, subtag);
@@ -73,7 +73,7 @@ export class WaitMessageSubtags extends BaseSubtag {
         if (userStr !== '') {
             let flattenedUsers;
             flattenedUsers = bbtagUtil.tagArray.flattenArray([userStr]).map(i => parse.string(i));
-            flattenedUsers = await Promise.all(flattenedUsers.map(async input => await context.queryUser(input, { noLookup: true})));
+            flattenedUsers = await Promise.all(flattenedUsers.map(async input => await context.queryUser(input, { noLookup: true })));
             users = flattenedUsers.filter((user): user is User => user !== undefined);
             if (users.length !== flattenedUsers.length)
                 return this.noUserFound(context, subtag);
@@ -114,7 +114,7 @@ export class WaitMessageSubtags extends BaseSubtag {
         }
 
         const checkFunc = async (message: GuildMessage): Promise<boolean> => {
-            const childContext = context.makeChild({message});
+            const childContext = context.makeChild({ message });
             const result = parse.boolean(await childContext.eval(condition));
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
         };

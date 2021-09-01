@@ -55,14 +55,8 @@
             "@website/*": [
                 "./src/workers/website/*"
             ],
-            "@website-old": [
-                "./src/workers/website_old"
-            ],
-            "@website-old/*": [
-                "./src/workers/website_old/*"
-            ],
-            "@entrypoints/*": [
-                "./src/entrypoints/*"
+            "@workers/*": [
+                "./src/workers/*"
             ],
             "@config": [
                 "./config.json"

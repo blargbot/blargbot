@@ -6,7 +6,7 @@ import { BaseClient } from '@core/BaseClient';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
-import { ImagePool } from '@image/ImagePool';
+import { ImagePool } from '@image';
 import { Options, Util } from 'discord.js';
 import moment, { duration, Moment } from 'moment-timezone';
 
@@ -114,8 +114,7 @@ export class Cluster extends BaseClient {
         await Promise.all([
             super.start(),
             this.commands.init(),
-            this.subtags.init(),
-            this.images.spawnAll()
+            this.subtags.init()
         ]);
 
         this.logger.init(this.moduleStats(this.commands, 'Commands', c => c.category, c => commandTypeDetails[c].name));
