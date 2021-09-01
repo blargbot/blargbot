@@ -3,6 +3,7 @@ import { guard, sleep } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { Message } from 'discord.js';
 import fetch from 'node-fetch';
+import { URLSearchParams } from 'url';
 
 export async function tryHandleCleverbot(cluster: Cluster, msg: Message): Promise<boolean> {
     if (!guard.isGuildMessage(msg)
