@@ -51,7 +51,7 @@ class KickCommand extends BaseCommand {
 
             bu.send(msg, response);*/
             
-            bu.send(await this.kick(msg, user, reason));
+            bu.send((await this.kick(msg, user, reason))[0]);
             
         } else bu.send(msg, `You didn't tell me who to kick!`);
     }
@@ -62,21 +62,22 @@ class KickCommand extends BaseCommand {
         }
         let kickPerms = await bu.guildSettings.get(msg.guild.id, 'kickoverride') || 0;
         if (!noPerms && !bu.comparePerms(msg.member, kickPerms) && !msg.member.permissions.json.kickMembers) {
-            return [`You don't have permission to ban users!`, '`User has no permissions`'];
+            return [`You don't have permission to kick users!`, '`User has no permissions`'];
         }
         
         let member = msg.guild.members.get(user.id);
         
-        if(member) {
-            let botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-            let userPos = bu.getPosition(msg.member);
-            let targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
-            if (targetPos >= botPos) {
-                return [`I don't have permission to kick ${user.username}!`, '`Bot has no permissions`'];
-            }
-            if (!noPerms && targetPos >= userPos && msg.author.id != msg.guild.ownerID) {
-                return [`You don't have permission to kick ${user.username}!`, '`User has no permissions`'];
-            }
+        if(!member) {
+            return [`${user.username} isnt on this server!`, '`User not in guild`'];
+        }
+        let botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+        let userPos = bu.getPosition(msg.member);
+        let targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
+        if (targetPos >= botPos) {
+            return [`I don't have permission to kick ${user.username}!`, '`Bot has no permissions`'];
+        }
+        if (!noPerms && targetPos >= userPos && msg.author.id != msg.guild.ownerID) {
+            return [`You don't have permission to kick ${user.username}!`, '`User has no permissions`'];
         }
 
         try {
@@ -91,7 +92,7 @@ class KickCommand extends BaseCommand {
 
             return [`:ok_hand: Kicked ${user.username}. Reason: ${reason}`];
         } catch (err) {
-            //console.error(err);
+            console.error(err);
             //return err;
             return [`Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
         }
