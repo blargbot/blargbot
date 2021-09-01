@@ -75,11 +75,12 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
     public async add(message: ChatlogMessage, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {
         metrics.chatlogCounter.labels(stringifyType(type)).inc();
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
-        const chatlog: Chatlog = {
+        const chatlog = {
             ...message,
             id: snowflake.create().toString(),
             msgtime: new Date(),
-            type: type
+            type: type,
+            embeds: JSON.stringify(message.embeds)
         };
         await this.cassandra.execute(
             'INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\n' +

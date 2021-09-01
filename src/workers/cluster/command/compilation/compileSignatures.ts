@@ -1,8 +1,8 @@
-import { CommandConcatParameter, CommandDefinition, CommandGreedyParameter, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter } from '@cluster/types';
+import { CommandDefinition, CommandGreedyParameter, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableType, CommandVariableTypeName } from '@cluster/types';
 import { guard } from '@cluster/utils';
 
 import { CommandContext } from '../CommandContext';
-import { CommandVariableType, isCommandVariableType } from './parameterType';
+import { parseParameterType } from './parameterType';
 
 export function compileSignatures<TContext extends CommandContext>(definitions: ReadonlyArray<CommandDefinition<TContext>>): ReadonlyArray<CommandSignatureHandler<TContext>> {
     return [...compileSignaturesIter(definitions, '', false)];
@@ -45,7 +45,7 @@ function compileSignature<TContext extends CommandContext>(signature: FlatComman
 
 function parseParameters(parameters: string): CommandParameter[] {
     const result = [];
-    let parameter;
+    let parameter: CommandParameter;
 
     for (let i = 0; i < parameters.length; i++) {
         switch (parameters[i]) {
@@ -66,7 +66,7 @@ function parseParameters(parameters: string): CommandParameter[] {
     return result;
 }
 
-type CommandVariableParameter = CommandSingleParameter | CommandGreedyParameter | CommandConcatParameter;
+type CommandVariableParameter<T extends CommandVariableTypeName = CommandVariableTypeName> = CommandSingleParameter<T, boolean> | CommandGreedyParameter<T>;
 
 function readVariable(parameters: string, i: number): { parameter: CommandVariableParameter; i: number; } {
     let name;
@@ -103,9 +103,9 @@ function readVariableName(parameters: string, i: number): { name: string; i: num
     throw new Error(`Unterminated parameter '${name}'`);
 }
 
-function readVariableType(name: string, parameters: string, i: number): { type: CommandVariableType; i: number; } {
+function readVariableType(name: string, parameters: string, i: number): { type: CommandVariableType<CommandVariableTypeName>; i: number; } {
     if (parameters[i] !== ':')
-        return { type: 'string', i: i };
+        return { type: parseParameterType('string'), i: i };
 
     let type = '';
     for (i++; i < parameters.length; i++) {
@@ -118,9 +118,7 @@ function readVariableType(name: string, parameters: string, i: number): { type: 
             case '[':
                 if (type === '')
                     type = 'string';
-                if (isCommandVariableType(type))
-                    return { type, i: i };
-                throw new Error(`'${type}' is not a supported variable type`);
+                return { type: parseParameterType(type), i: i };
             case '\\':
                 if (++i >= parameters.length)
                     break;
@@ -132,7 +130,7 @@ function readVariableType(name: string, parameters: string, i: number): { type: 
     throw new Error(`Unterminated parameter '${name}'`);
 }
 
-function readVariableKind(name: string, type: CommandVariableType, parameters: string, i: number): { parameter: CommandVariableParameter; i: number; } {
+function readVariableKind(name: string, type: CommandVariableType<CommandVariableTypeName>, parameters: string, i: number): { parameter: CommandVariableParameter; i: number; } {
     let required = true;
     let fallback: string | undefined = undefined;
     const result = { name, type, raw: false };

@@ -1,17 +1,16 @@
-import { CommandBinderParseResult, CommandBinderState, CommandSingleParameter } from '@cluster/types';
+import { CommandBinderState, CommandSingleParameter, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
 
-export class SingleBinding<TContext extends CommandContext, TResult> extends CommandBindingBase<TContext, TResult | undefined> {
+export class SingleBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext, CommandVariableTypeMap[Name] | undefined> {
     public readonly name: string;
 
     public constructor(
-        protected readonly parameter: CommandSingleParameter,
-        protected readonly next: ReadonlyArray<Binding<CommandBinderState<TContext>>>,
-        protected readonly parse: (value: string, state: CommandBinderState<TContext>) => Awaitable<CommandBinderParseResult<TResult>>
+        public readonly parameter: CommandSingleParameter<Name, false>,
+        protected readonly next: ReadonlyArray<Binding<CommandBinderState<TContext>>>
     ) {
         super();
         this.name = parameter.name;
@@ -27,14 +26,14 @@ export class SingleBinding<TContext extends CommandContext, TResult> extends Com
     public async *[Binder.binder](state: CommandBinderState<TContext>): BindingResultAsyncIterator<CommandBinderState<TContext>> {
         const arg = state.flags._.get(state.argIndex);
         if (arg !== undefined) {
-            const result = await this.parse(this.parameter.raw ? arg.raw : arg.value, state);
+            const result = await this.parameter.type.parse(this.parameter.raw ? arg.raw : arg.value, state);
             yield this.getBindingResult(state, this.next, 1, result);
         }
 
         if (this.parameter.required)
             yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
         else if (this.parameter.fallback !== undefined)
-            yield this.getBindingResult(state, this.next, 0, await this.parse(this.parameter.fallback, state));
+            yield this.getBindingResult(state, this.next, 0, await this.parameter.type.parse(this.parameter.fallback, state));
         else
             yield this.getBindingResult(state, this.next, 0, { success: true, value: undefined });
     }

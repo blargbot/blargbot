@@ -9,8 +9,8 @@ export class EvalCommand extends BaseGlobalCommand {
             category: CommandType.OWNER,
             definitions: [
                 {
-                    parameters: '{code+}',
-                    execute: (ctx) => this.eval(ctx, ctx.author.id, ctx.argsString),
+                    parameters: '{~code+}',
+                    execute: (ctx, [code]) => this.eval(ctx, ctx.author.id, code),
                     description: 'Runs the code you enter on the current cluster'
                 },
                 {

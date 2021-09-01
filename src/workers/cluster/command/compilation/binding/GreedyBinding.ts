@@ -1,24 +1,23 @@
-import { CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandResult } from '@cluster/types';
+import { CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandResult, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
-import { CommandVariableType } from '../parameterType';
 import { CommandBindingBase } from './CommandBindingBase';
 
-export class GreedyBinding<TContext extends CommandContext, TResult> extends CommandBindingBase<TContext, TResult[]> {
+export class GreedyBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext, Array<CommandVariableTypeMap[Name]>> {
+    public readonly name: string;
+
     public constructor(
-        public readonly name: string,
-        protected readonly raw: boolean,
-        protected readonly next: Readonly<Record<number, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>,
-        protected readonly parse: (value: string, state: CommandBinderState<TContext>) => Awaitable<CommandBinderParseResult<TResult>>,
-        protected readonly type: CommandVariableType
+        protected readonly parameter: CommandGreedyParameter<Name>,
+        protected readonly next: Readonly<Record<number, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>
     ) {
         super();
+        this.name = parameter.name;
     }
 
     public * debugView(): Generator<string> {
-        yield `Greedy ${this.raw ? 'raw ' : ''}values into array variable '${this.name}'`;
+        yield `Greedy ${this.parameter.raw ? 'raw ' : ''}values into array variable '${this.name}'`;
         for (const key of Object.keys(this.next) as number[]) {
             yield `    When ${key} or more values:`;
             const next = this.next[key];
@@ -34,19 +33,19 @@ export class GreedyBinding<TContext extends CommandContext, TResult> extends Com
 
     public async *[Binder.binder](state: CommandBinderState<TContext>): BindingResultAsyncIterator<CommandBinderState<TContext>> {
 
-        const results: Array<CommandBinderParseResult<TResult>> = [];
+        const results = [];
         const next = [...this.next[0] ?? []];
         const optional = next.length > 0;
         let i = 0;
         let arg;
-        let parsed: CommandBinderParseResult<TResult> | undefined = undefined;
-        let aggregated: CommandBinderParseResult<TResult[]> | undefined = undefined;
+        let parsed = undefined;
+        let aggregated = undefined;
 
-        if (optional && this.type === 'string')
+        if (optional && this.parameter.type.priority === -Infinity)
             yield this.getBindingResult(state, next, 0, { success: true, value: [] });
 
         while ((arg = state.flags._.get(state.argIndex + i++)) !== undefined) {
-            parsed = memoize(await this.parse(this.raw ? arg.raw : arg.value, state));
+            parsed = memoize(await this.parameter.type.parse(this.parameter.raw ? arg.raw : arg.value, state));
             if (parsed.success === false)
                 break;
             results.push(parsed);
@@ -59,7 +58,7 @@ export class GreedyBinding<TContext extends CommandContext, TResult> extends Com
             }
         }
 
-        if (optional && this.type !== 'string')
+        if (optional && this.parameter.type.priority !== -Infinity)
             yield this.getBindingResult(state, next, 0, { success: true, value: [] });
 
         if (parsed?.success === false)

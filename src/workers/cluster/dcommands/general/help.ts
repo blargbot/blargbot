@@ -1,4 +1,4 @@
-import { BaseCommand, BaseGlobalCommand, CommandContext, CommandVariableType } from '@cluster/command';
+import { BaseCommand, BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandParameter, GuildCommandContext } from '@cluster/types';
 import { codeBlock, CommandType, commandTypeDetails, guard, humanize } from '@cluster/utils';
 import { GuildCommandTag, SendPayload } from '@core/types';
@@ -230,8 +230,8 @@ function* getParameterNotes(parameter: CommandParameter): Generator<string> {
         case 'concatVar':
         case 'singleVar': {
             const result = [];
-            if (parameter.type !== 'string')
-                result.push(` should be ${typeStrings[parameter.type].single}`);
+            if (parameter.type.descriptionSingular !== undefined)
+                result.push(` should be ${parameter.type.descriptionSingular}`);
             if (parameter.fallback !== undefined && parameter.fallback.length > 0)
                 result.push(`defaults to \`${parameter.fallback}\``);
             if (result.length > 0)
@@ -242,8 +242,8 @@ function* getParameterNotes(parameter: CommandParameter): Generator<string> {
             const result = [];
             if (parameter.minLength > 1)
                 result.push(`${parameter.minLength} or more`);
-            if (parameter.type !== 'string')
-                result.push(typeStrings[parameter.type].plural);
+            if (parameter.type.descriptionPlural !== undefined)
+                result.push(parameter.type.descriptionPlural);
             if (result.length > 0)
                 yield `\`${parameter.name}\` are ${result.join(' ')}`;
             break;
@@ -252,16 +252,3 @@ function* getParameterNotes(parameter: CommandParameter): Generator<string> {
 
     }
 }
-
-const typeStrings: { [key in CommandVariableType]: { single: string; plural: string; } } = {
-    get string(): never { throw new Error('AAAAAA'); },
-    boolean: { single: 'true/false', plural: 'true/false' },
-    channel: { single: 'a channel id, mention or name', plural: 'channel ids, mentions or names' },
-    duration: { single: 'a duration', plural: 'durations' },
-    bigint: { single: 'a whole number', plural: 'whole numbers' },
-    integer: { single: 'a whole number', plural: 'whole numbers' },
-    member: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' },
-    number: { single: 'a number', plural: 'numbers' },
-    role: { single: 'a role id, mention or name', plural: 'role ids, mentions or names' },
-    user: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' }
-};

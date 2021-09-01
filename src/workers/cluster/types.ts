@@ -1,9 +1,10 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
-import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster/command';
+import { CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildMessage, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
+import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterWorker } from './ClusterWorker';
@@ -288,9 +289,8 @@ export type CommandDefinition<TContext extends CommandContext> =
     | CommandHandlerDefinition<TContext> & SubcommandDefinitionHolder<TContext>;
 
 export type CommandParameter =
-    | CommandSingleParameter
-    | CommandConcatParameter
-    | CommandGreedyParameter
+    | CommandSingleParameter<keyof CommandVariableTypeMap, boolean>
+    | CommandGreedyParameter<keyof CommandVariableTypeMap>
     | CommandLiteralParameter;
 
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
@@ -307,24 +307,60 @@ export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
     readonly subcommands: ReadonlyArray<CommandDefinition<TContext>>;
 }
 
-export interface CommandSingleParameter<T extends string = 'singleVar'> {
-    readonly kind: T;
+export type CommandVariableTypeMap = {
+    'literal': string;
+    'bigint': bigint;
+    'integer': number;
+    'number': number;
+    'role': Role;
+    'channel': KnownChannel;
+    'user': User;
+    'member': GuildMember;
+    'duration': Duration;
+    'boolean': boolean;
+    'string': string;
+}
+
+export type CommandVariableTypeName = keyof CommandVariableTypeMap;
+
+export interface CommandVariableTypeBase<Name extends CommandVariableTypeName, T extends CommandVariableTypeMap[Name] = CommandVariableTypeMap[Name]> {
+    readonly name: Name;
+    readonly descriptionSingular?: string;
+    readonly descriptionPlural?: string;
+    readonly priority: number;
+    parse<TContext extends CommandContext>(this: void, value: string, state: CommandBinderState<TContext>): Awaitable<CommandBinderParseResult<T>>;
+}
+
+export interface LiteralCommandVariableType<T extends string> extends CommandVariableTypeBase<'literal', T> {
+    readonly choices: readonly T[];
+}
+
+export type UnmappedCommandVariableTypes = Exclude<CommandVariableTypeName, MappedCommandVariableTypes['name']>;
+export type MappedCommandVariableTypes =
+    | LiteralCommandVariableType<string>;
+
+export type CommandVariableTypes =
+    | MappedCommandVariableTypes
+    | { [Name in UnmappedCommandVariableTypes]: CommandVariableTypeBase<Name> }[UnmappedCommandVariableTypes]
+
+export type CommandVariableType<TName extends CommandVariableTypeName> = Extract<CommandVariableTypes, CommandVariableTypeBase<TName>>
+
+export interface CommandSingleParameter<T extends CommandVariableTypeName, Concat extends boolean> {
+    readonly kind: Concat extends false ? 'singleVar' : 'concatVar';
     readonly name: string;
     readonly raw: boolean;
-    readonly type: CommandVariableType;
+    readonly type: CommandVariableType<T>;
     readonly required: boolean;
     readonly fallback: undefined | string;
 }
 
-export interface CommandGreedyParameter {
+export interface CommandGreedyParameter<T extends CommandVariableTypeName> {
     readonly kind: 'greedyVar';
     readonly name: string;
     readonly raw: boolean;
-    readonly type: CommandVariableType;
+    readonly type: CommandVariableType<T>;
     readonly minLength: number;
 }
-
-export type CommandConcatParameter = CommandSingleParameter<'concatVar'>
 
 export interface CommandLiteralParameter {
     readonly kind: 'literal';
