@@ -3,14 +3,14 @@ import { ClusterEventService } from '@cluster/serviceTypes';
 import { CommandListResult } from '@cluster/types';
 import { ProcessMessageHandler } from '@core/types';
 
-export class ClusterCommandListHandler extends ClusterEventService {
+export class ClusterGetCommandListHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'commandList');
+        super(cluster, 'getCommandList');
     }
 
-    protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
+    protected execute(...[, , reply]: Parameters<ProcessMessageHandler>): void {
         const commands: CommandListResult = {};
         for (const c of this.cluster.commands.list()) {
             commands[c.name] = {
