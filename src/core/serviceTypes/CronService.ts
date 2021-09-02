@@ -28,7 +28,7 @@ export abstract class CronService extends BaseService {
         });
     }
 
-    protected abstract execute(): unknown;
+    public abstract execute(): unknown;
 
     public start(): void {
         this.#cronJob.start();

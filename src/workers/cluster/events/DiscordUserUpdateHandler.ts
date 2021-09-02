@@ -8,7 +8,7 @@ export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> 
         super(cluster.discord, 'userUpdate', cluster.logger);
     }
 
-    protected async execute(oldUser: PartialUser | User, user: User): Promise<void> {
+    public async execute(oldUser: PartialUser | User, user: User): Promise<void> {
         if (user.id === this.cluster.discord.user.id)
             return;
 

@@ -1,22 +1,32 @@
 import { ClusterConnection } from '@cluster';
-import { parse } from '@cluster/utils';
+import { mapping, parse } from '@cluster/utils';
 import { WorkerPoolEventService } from '@core/serviceTypes';
-import { EvalRequest, EvalResult, MasterEvalRequest, MasterEvalResult, WorkerPoolEventHandler } from '@core/types';
+import { EvalRequest, EvalResult, EvalType, MasterEvalRequest, MasterEvalResult } from '@core/types';
 import { Master } from '@master';
 
-export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, MasterEvalRequest, MasterEvalResult | EvalResult> {
     public constructor(private readonly master: Master) {
-        super(master.clusters, 'meval');
+        super(
+            master.clusters,
+            'meval',
+            mapping.mapObject({
+                code: mapping.mapString,
+                type: mapping.mapRegex<EvalType>(/master|global|cluster\d+/),
+                userId: mapping.mapString
+            }),
+            async ({ data, reply }) => {
+                reply(await this.eval(data.type, data.userId, data.code));
+            }
+        );
     }
 
-    protected async execute(...[, data, , reply]: Parameters<WorkerPoolEventHandler<ClusterConnection>>): Promise<void> {
-        const { type, userId, code } = data as MasterEvalRequest;
+    public async eval(type: EvalType, userId: string, code: string): Promise<MasterEvalResult | EvalResult> {
         switch (type) {
             case 'master': {
                 try {
-                    return reply(await this.master.eval(userId, code));
+                    return await this.master.eval(userId, code);
                 } catch (ex: unknown) {
-                    return reply({ success: false, error: ex });
+                    return { success: false, error: ex };
                 }
             }
             case 'global': {
@@ -25,11 +35,11 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
                 this.master.clusters.forEach(id => promises[`${id}`] = this.getClusterResult(id, { userId, code }));
                 for (const [key, promise] of Object.entries(promises))
                     results[key] = await promise;
-                return reply(results);
+                return results;
             }
             default: {
                 const clusterId = parse.int(type.slice(7));
-                reply(await this.getClusterResult(clusterId, { userId, code }));
+                return await this.getClusterResult(clusterId, { userId, code });
             }
         }
     }
@@ -38,7 +48,22 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
         const cluster = this.master.clusters.tryGet(clusterId);
         if (cluster === undefined)
             return { success: false, error: `Cluster ${clusterId} doesnt exist!` };
-        return await cluster.request<EvalRequest, EvalResult>('ceval', request);
 
+        const result = mapEvalResult(await cluster.request('ceval', request));
+        if (result.valid)
+            return result.value;
+
+        return { success: false, error: 'Invalid response from cluster' };
     }
 }
+
+const mapEvalResult = mapping.mapChoice<EvalResult[]>(
+    mapping.mapObject({
+        success: mapping.mapIn(true),
+        result: mapping.mapUnknown
+    }),
+    mapping.mapObject({
+        success: mapping.mapIn(false),
+        error: mapping.mapUnknown
+    })
+);

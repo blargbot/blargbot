@@ -15,7 +15,7 @@ export class ImageWorker extends BaseWorker {
 
         this.renderers = new ModuleLoader<BaseImageGenerator<keyof ImageGeneratorMap>>(`${__dirname}/generators`, BaseImageGenerator, [this.logger, config], this.logger, g => [g.key]);
 
-        this.on('img', fafo(async (data, _, reply) => {
+        this.on('img', fafo(async ({ data, reply }) => {
             const request = mapData(data);
             if (!request.valid) {
                 reply(null);

@@ -14,7 +14,7 @@ export const enum WorkerState {
     EXITED
 }
 
-export abstract class WorkerConnection extends IPCEvents {
+export abstract class WorkerConnection<T extends string> extends IPCEvents {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #process?: ChildProcess;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -37,7 +37,7 @@ export abstract class WorkerConnection extends IPCEvents {
 
     protected constructor(
         public readonly id: number,
-        public readonly worker: string,
+        public readonly worker: T,
         public readonly logger: Logger
     ) {
         super();

@@ -7,7 +7,7 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
         super(cluster.discord, 'messageReactionAdd', cluster.logger);
     }
 
-    protected async execute(maybeReaction: MessageReaction | PartialMessageReaction, maybeUser: User | PartialUser): Promise<void> {
+    public async execute(maybeReaction: MessageReaction | PartialMessageReaction, maybeUser: User | PartialUser): Promise<void> {
         const message = await this.resolveMessage(maybeReaction.message);
         if (message === undefined)
             return;

@@ -1,9 +1,9 @@
-import { ProcessMessageHandler } from '@core/types';
+import { ProcessMessageHandler, TypeMapping, WorkerPoolEventHandler } from '@core/types';
 import { WorkerConnection, WorkerPool } from '@core/worker';
 
 import { BaseService } from './BaseService';
 
-export abstract class WorkerPoolEventService<TWorker extends WorkerConnection> extends BaseService {
+export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<string>, TData, TReply = never> extends BaseService {
     public readonly type: string;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #attach: (worker: TWorker) => void;
@@ -14,7 +14,9 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection> e
 
     public constructor(
         public readonly workers: WorkerPool<TWorker>,
-        public readonly event: string
+        public readonly event: string,
+        protected readonly mapping: TypeMapping<TData>,
+        protected readonly execute: WorkerPoolEventHandler<TWorker, TData, TReply>
     ) {
         super();
         this.type = `WorkerPool:Worker:${event}`;
@@ -34,13 +36,17 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection> e
     }
 
     private attach(worker: TWorker): void {
-        const handler: ProcessMessageHandler = (...args) => void (async () => {
+        const handler: ProcessMessageHandler = ({ data, id, reply }) => {
+            const mapped = this.mapping(data);
+            if (!mapped.valid)
+                return this.workers.logger.error(`${this.workers.type} worker pool event handler ${this.name} got invalid arguments`, data);
+
             try {
-                await this.execute(worker, ...args);
-            } catch (ex: unknown) {
-                this.workers.logger.error(ex);
+                this.execute({ worker, data: mapped.value, id, reply });
+            } catch (err: unknown) {
+                this.workers.logger.error(`${this.workers.type} worker pool event handler ${this.name} threw an error`, err);
             }
-        })();
+        };
         this.#handlers.set(worker, handler);
         worker.on(this.event, handler);
     }
@@ -52,6 +58,4 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection> e
         worker.off(this.event, handler);
         this.#handlers.delete(worker);
     }
-
-    protected abstract execute(worker: TWorker, ...args: Parameters<ProcessMessageHandler>): Promise<void> | void;
 }

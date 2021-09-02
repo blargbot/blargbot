@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { WorkerConnection } from '@core/worker';
 
-export class ClusterConnection extends WorkerConnection {
+export class ClusterConnection extends WorkerConnection<'cluster'> {
 
     public constructor(
         id: number,

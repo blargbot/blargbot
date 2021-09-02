@@ -27,7 +27,7 @@ export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeM
         this.#execute = event => void execute(event);
     }
 
-    protected abstract execute(event: StoredEvent<TEvent>): Promise<void> | void;
+    public abstract execute(event: StoredEvent<TEvent>): Promise<void> | void;
 
     public start(): void {
         this.timeouts.on(this.event, this.#execute);

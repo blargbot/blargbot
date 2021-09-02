@@ -7,7 +7,7 @@ export class DiscordGuildMemeberAddHandler extends DiscordEventService<'guildMem
         super(cluster.discord, 'guildMemberAdd', cluster.logger);
     }
 
-    protected async execute(member: GuildMember): Promise<void> {
+    public async execute(member: GuildMember): Promise<void> {
         await Promise.all([
             this.cluster.database.users.upsert(member.user),
             this.cluster.moderation.eventLog.userJoined(member),

@@ -16,7 +16,7 @@ export class AvatarInterval extends CronService {
         this.#avatars = avatars;
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         this.logger.info('!=! Performing the avatar interval !=!');
         if (this.master.config.general.isbeta)
             return;

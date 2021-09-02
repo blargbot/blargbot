@@ -1,14 +1,20 @@
 import { ClusterConnection } from '@cluster';
+import { ClusterStats } from '@cluster/types';
 import { WorkerPoolEventService } from '@core/serviceTypes';
-import { WorkerPoolEventHandler } from '@core/types';
+import { mapping } from '@core/utils';
 import { Master } from '@master';
 
-export class ClusterGetClusterStatsHandler extends WorkerPoolEventService<ClusterConnection> {
+export class ClusterGetClusterStatsHandler extends WorkerPoolEventService<ClusterConnection, unknown, Record<number, ClusterStats | undefined>> {
     public constructor(private readonly master: Master) {
-        super(master.clusters, 'getClusterStats');
+        super(
+            master.clusters,
+            'getClusterStats',
+            mapping.mapUnknown,
+            ({ reply }) => reply(this.getStats())
+        );
     }
 
-    protected execute(...[, , , reply]: Parameters<WorkerPoolEventHandler<ClusterConnection>>): void {
-        return reply(this.master.clusterStats.getAll());
+    protected getStats(): Record<number, ClusterStats | undefined> {
+        return this.master.clusterStats.getAll();
     }
 }

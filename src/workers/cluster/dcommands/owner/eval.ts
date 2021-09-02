@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { codeBlock, CommandType } from '@cluster/utils';
-import { EvalResult, EvalType } from '@core/types';
+import { codeBlock, CommandType, mapping } from '@cluster/utils';
+import { EvalResult, MasterEvalRequest, MasterEvalResult } from '@core/types';
 
 export class EvalCommand extends BaseGlobalCommand {
     public constructor() {
@@ -35,10 +35,10 @@ export class EvalCommand extends BaseGlobalCommand {
     public async eval(context: CommandContext, userId: string, code: string): Promise<string> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
-        const { success, result } = await context.cluster.eval(userId, code);
-        return success
-            ? `Input:${codeBlock(code, 'js')}Output:${codeBlock(result)}`
-            : `An error occured!${codeBlock(result)}`;
+        const result = await context.cluster.eval(userId, code);
+        return result.success
+            ? `Input:${codeBlock(code, 'js')}Output:${codeBlock(result.result)}`
+            : `An error occured!${codeBlock(result.error)}`;
     }
 
     public async mastereval(context: CommandContext, userId: string, code: string): Promise<string> {
@@ -53,15 +53,16 @@ export class EvalCommand extends BaseGlobalCommand {
     public async globaleval(context: CommandContext, userId: string, code: string): Promise<string> {
         [, code] = /^```(?:\w*?\s*\n|)(.*)\n```$/s.exec(code) ?? [undefined, code];
 
-        const response = await this.requestEval<Record<string, EvalResult>>(context, { type: 'global', userId, code });
-        if (!response.success)
+        const response = await this.requestEval(context, { type: 'global', userId, code });
+        if (response.success === false)
             return `An error occured!${codeBlock(response.error)}`;
 
-        return `Global eval input:${codeBlock(code, 'js')}${Object.keys(response).map(id => {
-            const clusterResponse = response.result[id];
-            return clusterResponse.success
-                ? `Cluster ${id} output:${codeBlock(clusterResponse.result)}`
-                : `Cluster ${id}: An error occured!${codeBlock(clusterResponse.error)}`;
+        const masterResponse = <MasterEvalResult>response;
+
+        return `Global eval input:${codeBlock(code, 'js')}${Object.entries(masterResponse).map(([id, response]) => {
+            return response.success
+                ? `Cluster ${id} output:${codeBlock(response.result)}`
+                : `Cluster ${id}: An error occured!${codeBlock(response.error)}`;
         }).join('')}`;
     }
 
@@ -74,11 +75,32 @@ export class EvalCommand extends BaseGlobalCommand {
             : `An error occured!${codeBlock(response.error)}`;
     }
 
-    private async requestEval<T>(context: CommandContext, data: { type: EvalType; userId: string; code: string; }): Promise<EvalResult<T>> {
+    private async requestEval(context: CommandContext, data: MasterEvalRequest & { type: `cluster${number}` | 'master'; }): Promise<EvalResult>
+    private async requestEval(context: CommandContext, data: MasterEvalRequest & { type: 'global'; }): Promise<MasterEvalResult | Extract<EvalResult, { success: false; }>>
+    private async requestEval(context: CommandContext, data: MasterEvalRequest): Promise<MasterEvalResult | EvalResult> {
         try {
-            return await context.cluster.worker.request('meval', data);
+            const result = masterEvalResultMapping(await context.cluster.worker.request('meval', data));
+            if (result.valid)
+                return result.value;
+            return { success: false, error: 'Invalid response from master' };
         } catch (err: unknown) {
             return { success: false, error: err };
         }
     }
 }
+
+const evalResultMapping = mapping.mapChoice<EvalResult[]>(
+    mapping.mapObject({
+        success: mapping.mapIn(true),
+        result: mapping.mapUnknown
+    }),
+    mapping.mapObject({
+        success: mapping.mapIn(false),
+        error: mapping.mapUnknown
+    })
+);
+
+const masterEvalResultMapping = mapping.mapChoice<[EvalResult, MasterEvalResult]>(
+    evalResultMapping,
+    mapping.mapRecord(evalResultMapping)
+);

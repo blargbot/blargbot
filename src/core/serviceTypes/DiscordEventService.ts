@@ -26,7 +26,7 @@ export abstract class DiscordEventService<T extends keyof ClientEvents> extends 
         this.#execute = (...args) => void execute(...args);
     }
 
-    protected abstract execute(...args: ClientEvents[T]): Promise<void> | void;
+    public abstract execute(...args: ClientEvents[T]): Promise<void> | void;
 
     public start(): void {
         this.discord.on<T>(this.event, this.#execute);

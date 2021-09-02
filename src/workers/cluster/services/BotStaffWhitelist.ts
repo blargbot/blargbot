@@ -8,7 +8,7 @@ export class BotStaffWhitelistInterval extends IntervalService {
         super(1, 'day', cluster.logger, true);
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         await this.cluster.botStaff.refresh();
     }
 }

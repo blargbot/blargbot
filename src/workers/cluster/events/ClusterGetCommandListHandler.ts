@@ -1,16 +1,16 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
 import { CommandListResult } from '@cluster/types';
-import { ProcessMessageHandler } from '@core/types';
+import { mapping } from '@core/utils';
 
-export class ClusterGetCommandListHandler extends ClusterEventService {
+export class ClusterGetCommandListHandler extends ClusterEventService<unknown, CommandListResult> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getCommandList');
+        super(cluster, 'getCommandList', mapping.mapUnknown, ({ reply }) => reply(this.getCommandList()));
     }
 
-    protected execute(...[, , reply]: Parameters<ProcessMessageHandler>): void {
+    public getCommandList(): CommandListResult {
         const commands: CommandListResult = {};
         for (const c of this.cluster.commands.list()) {
             commands[c.name] = {
@@ -25,6 +25,6 @@ export class ClusterGetCommandListHandler extends ClusterEventService {
                 hidden: c.hidden
             };
         }
-        reply(commands);
+        return commands;
     }
 }

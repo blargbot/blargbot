@@ -4,7 +4,7 @@ import EventEmitter from 'eventemitter3';
 
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
-export abstract class WorkerPool<TWorker extends WorkerConnection> {
+export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #workers: Map<number, TWorker>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

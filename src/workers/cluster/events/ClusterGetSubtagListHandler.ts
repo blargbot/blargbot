@@ -1,16 +1,16 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
 import { SubtagListResult } from '@cluster/types';
-import { ProcessMessageHandler } from '@core/types';
+import { mapping } from '@core/utils';
 
-export class ClusterGetSubtagListHandler extends ClusterEventService {
+export class ClusterGetSubtagListHandler extends ClusterEventService<unknown, SubtagListResult> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getSubtagList');
+        super(cluster, 'getSubtagList', mapping.mapUnknown, ({ reply }) => reply(this.getSubtagList()));
     }
 
-    protected execute(...[, , reply]: Parameters<ProcessMessageHandler>): void {
+    public getSubtagList(): SubtagListResult {
         const tags: SubtagListResult = {};
         for (const t of this.cluster.subtags.list()) {
             tags[t.name] = {
@@ -22,6 +22,6 @@ export class ClusterGetSubtagListHandler extends ClusterEventService {
                 aliases: t.aliases
             };
         }
-        reply(tags);
+        return tags;
     }
 }

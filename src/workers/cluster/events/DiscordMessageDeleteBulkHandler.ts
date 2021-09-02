@@ -9,7 +9,7 @@ export class DiscordMessageDeleteBulkHandler extends DiscordEventService<'messag
         super(cluster.discord, 'messageDeleteBulk', cluster.logger);
     }
 
-    protected async execute(messages: Collection<string, Message | PartialMessage>): Promise<void> {
+    public async execute(messages: Collection<string, Message | PartialMessage>): Promise<void> {
         await Promise.all([
             ...messages.map(message => [
                 this.cluster.commands.messageDeleted(message),

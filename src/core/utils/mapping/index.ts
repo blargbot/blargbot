@@ -21,3 +21,6 @@ export * from './mapOptionalDate';
 export * from './mapBigInt';
 export * from './mapOptionalBigInt';
 export * from './mapOptionalChoice';
+export * from './mapGuard';
+export * from './mapRegex';
+export * from './mapCast';

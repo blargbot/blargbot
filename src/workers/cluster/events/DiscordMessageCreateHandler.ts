@@ -13,7 +13,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         super(cluster.discord, 'messageCreate', cluster.logger);
     }
 
-    protected async execute(message: Message): Promise<void> {
+    public async execute(message: Message): Promise<void> {
         await Promise.all(await this.executeIter(message));
     }
 

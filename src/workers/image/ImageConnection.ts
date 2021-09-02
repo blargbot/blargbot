@@ -1,8 +1,9 @@
 import { Logger } from '@core/Logger';
+import { mapping } from '@core/utils';
 import { WorkerConnection } from '@core/worker';
-import { ImageGeneratorMap, ImageRequest, ImageResult } from '@image/types';
+import { ImageGeneratorMap, ImageResult } from '@image/types';
 
-export class ImageConnection extends WorkerConnection {
+export class ImageConnection extends WorkerConnection<'image'> {
     public constructor(
         id: number,
         logger: Logger
@@ -13,13 +14,14 @@ export class ImageConnection extends WorkerConnection {
 
     public async render<T extends keyof ImageGeneratorMap>(command: T, data: ImageGeneratorMap[T]): Promise<ImageResult | undefined> {
         try {
-            const result = await this.request<ImageRequest<T>, ImageResult<string> | null>('img', { command, data });
-            if (result === null)
+            const result = await this.request('img', { command, data });
+            const mapped = mapImageResult(result);
+            if (!mapped.valid)
                 return undefined;
 
             return {
-                data: Buffer.from(result.data, 'base64'),
-                fileName: result.fileName
+                data: Buffer.from(mapped.value.data, 'base64'),
+                fileName: mapped.value.fileName
             };
         } catch (err: unknown) {
             this.logger.error(err);
@@ -27,3 +29,8 @@ export class ImageConnection extends WorkerConnection {
         return undefined;
     }
 }
+
+const mapImageResult = mapping.mapObject<ImageResult<string>>({
+    data: mapping.mapString,
+    fileName: mapping.mapString
+});

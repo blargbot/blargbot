@@ -7,7 +7,7 @@ export class TimeoutUnbanEventService extends TimeoutEventService<'unban'> {
         super(cluster.timeouts, 'unban', cluster.logger);
     }
 
-    protected async execute(event: StoredEvent<'unban'>): Promise<void> {
+    public async execute(event: StoredEvent<'unban'>): Promise<void> {
         await this.cluster.moderation.bans.banExpired(event);
     }
 }

@@ -7,7 +7,7 @@ export class DiscordGuildMemeberRemoveHandler extends DiscordEventService<'guild
         super(cluster.discord, 'guildMemberRemove', cluster.logger);
     }
 
-    protected async execute(member: GuildMember): Promise<void> {
+    public async execute(member: GuildMember): Promise<void> {
         await Promise.all([
             this.cluster.moderation.bans.userLeft(member),
             this.cluster.moderation.eventLog.userLeft(member),

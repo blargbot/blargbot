@@ -9,7 +9,7 @@ export class CustomCommandIntervalCron extends CronService {
         super({ cronTime: '*/15 * * * *' }, cluster.logger);
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         await this.cluster.intervals.invokeAll();
     }
 }

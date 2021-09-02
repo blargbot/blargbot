@@ -7,7 +7,7 @@ export class TimeoutPollEventService extends TimeoutEventService<'poll'> {
         super(cluster.timeouts, 'poll', cluster.logger);
     }
 
-    protected async execute(event: StoredEvent<'poll'>): Promise<void> {
+    public async execute(event: StoredEvent<'poll'>): Promise<void> {
         await this.cluster.polls.pollExpired(event);
     }
 }

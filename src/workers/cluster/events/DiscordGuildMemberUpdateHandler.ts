@@ -8,7 +8,7 @@ export class DiscordGuildMemberUpdateHandler extends DiscordEventService<'guildM
         super(cluster.discord, 'guildMemberUpdate', cluster.logger);
     }
 
-    protected async execute(oldMember: GuildMember | PartialGuildMember, member: GuildMember): Promise<void> {
+    public async execute(oldMember: GuildMember | PartialGuildMember, member: GuildMember): Promise<void> {
         if (member.id === this.cluster.discord.user.id)
             return;
 

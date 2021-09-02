@@ -7,7 +7,7 @@ export class DiscordGuildBanAddEventService extends DiscordEventService<'guildBa
         super(cluster.discord, 'guildBanAdd', cluster.logger);
     }
 
-    protected async execute(ban: GuildBan): Promise<void> {
+    public async execute(ban: GuildBan): Promise<void> {
         await Promise.all([
             this.cluster.moderation.bans.userBanned(ban.guild, ban.user),
             this.cluster.moderation.eventLog.userBanned(ban.guild, ban.user),

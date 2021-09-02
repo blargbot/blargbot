@@ -1,14 +1,15 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
+import { mapping } from '@core/utils';
 
-export class ClusterKillShardHandler extends ClusterEventService {
+export class ClusterKillShardHandler extends ClusterEventService<number> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'killshard');
+        super(cluster, 'killshard', mapping.mapNumber, ({ data }) => this.killShard(data));
     }
 
-    protected execute(shardId: number): void {
+    protected killShard(shardId: number): void {
         this.cluster.logger.cluster('Killing shard', shardId, 'without a reconnect.');
         const shard = this.cluster.discord.ws.shards.get(shardId);
         if (shard === undefined)

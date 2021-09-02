@@ -12,7 +12,7 @@ export class TimeoutRefresh extends IntervalService {
         this.#timeouts = cluster.timeouts;
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         await this.#timeouts.obtain(this.period);
     }
 }

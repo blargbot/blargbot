@@ -8,7 +8,7 @@ export class AutoResponseWhitelistInterval extends IntervalService {
         super(15, 'minutes', cluster.logger, true);
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         await this.cluster.autoresponses.refresh();
     }
 }

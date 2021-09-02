@@ -1,16 +1,24 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
-import { ProcessMessageHandler } from '@core/types';
+import { EvalRequest, EvalResult } from '@core/types';
+import { mapping } from '@core/utils';
 
-export class ClusterEvalHandler extends ClusterEventService {
+export class ClusterEvalHandler extends ClusterEventService<EvalRequest, EvalResult> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'ceval');
+        super(
+            cluster,
+            'ceval',
+            mapping.mapObject({
+                userId: mapping.mapString,
+                code: mapping.mapString
+            }),
+            async ({ data, reply }) => reply(await this.eval(data.userId, data.code))
+        );
     }
 
-    protected async execute(...[data, , reply]: Parameters<ProcessMessageHandler>): Promise<void> {
-        const { userId, code } = <{ userId: string; code: string; }>data;
-        reply(await this.cluster.eval(userId, code));
+    protected async eval(userId: string, code: string): Promise<EvalResult> {
+        return await this.cluster.eval(userId, code);
     }
 }

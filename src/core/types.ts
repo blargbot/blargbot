@@ -23,13 +23,15 @@ export type SendPayload = SendOptions | MessageEmbedOptions | string | FileOptio
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ProcessMessageHandler = (data: unknown, id: Snowflake, reply: <T = unknown>(data: T) => void) => Awaitable<unknown>;
-export type AnyProcessMessageHandler = (event: string, ...args: Parameters<ProcessMessageHandler>) => Awaitable<unknown>;
-export type WorkerPoolEventHandler<TWorker extends WorkerConnection> = (worker: TWorker, ...args: Parameters<ProcessMessageHandler>) => Awaitable<unknown>;
+export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
+export type WorkerPoolEventContext<TWorker extends WorkerConnection<string>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
+export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => void;
+export type AnyProcessMessageHandler = (event: string, ...args: Parameters<ProcessMessageHandler>) => void;
+export type WorkerPoolEventHandler<TWorker extends WorkerConnection<string>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => void;
 export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };
-export type MasterEvalResult<T = unknown> = Record<string, EvalResult<T>>;
-export type EvalResult<T = unknown> = { success: false; error: unknown; } | { success: true; result: T; };
+export type MasterEvalResult = Record<string, EvalResult>;
+export type EvalResult = { success: false; error: unknown; } | { success: true; result: unknown; };
 export type EvalType = 'master' | 'global' | `cluster${number}`
 
 export interface Binding<TState> {

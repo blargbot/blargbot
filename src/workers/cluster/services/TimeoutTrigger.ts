@@ -12,7 +12,7 @@ export class TimeoutTrigger extends IntervalService {
         this.#timeouts = cluster.timeouts;
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         await this.#timeouts.process();
     }
 }

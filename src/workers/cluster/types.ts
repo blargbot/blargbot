@@ -373,9 +373,9 @@ export interface CommandHandler<TContext extends CommandContext> {
     readonly execute: (context: TContext) => Promise<CommandResult> | CommandResult;
 }
 
-export interface CommandSignature {
+export interface CommandSignature<TParameter = CommandParameter> {
     readonly description: string;
-    readonly parameters: readonly CommandParameter[];
+    readonly parameters: readonly TParameter[];
     readonly hidden: boolean;
 }
 
@@ -424,6 +424,24 @@ export interface SubtagDetails {
     readonly aliases: readonly string[];
 }
 
+export interface GuildDetails {
+    readonly id: string;
+    readonly name: string;
+    readonly iconUrl: string;
+}
+
+export interface GuildPermissionDetails {
+    readonly userId: string;
+    readonly guild: GuildDetails;
+    readonly ccommands: boolean;
+    readonly censors: boolean;
+    readonly autoresponses: boolean;
+    readonly rolemes: boolean;
+    readonly intervals: boolean;
+    readonly greeting: boolean;
+    readonly farewell: boolean;
+}
+
 export interface CommandListResult {
     [commandName: string]: CommandDetails | undefined;
 }
@@ -442,7 +460,7 @@ export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentVa
 }
 
 export interface CommandDetails extends Readonly<Required<CommandOptionsBase>> {
-    readonly signatures: readonly CommandSignature[];
+    readonly signatures: ReadonlyArray<CommandSignature<Omit<CommandParameter, 'parse' | 'priority'>>>;
 }
 
 export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;

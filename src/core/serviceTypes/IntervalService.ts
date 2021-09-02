@@ -39,7 +39,7 @@ export abstract class IntervalService extends BaseService {
         };
     }
 
-    protected abstract execute(): Promise<void> | void;
+    public abstract execute(): Promise<void> | void;
 
     public start(): void {
         if (this.#interval !== undefined)

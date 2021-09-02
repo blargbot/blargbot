@@ -1,21 +1,21 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
 import { CommandDetails } from '@cluster/types';
-import { ProcessMessageHandler } from '@core/types';
+import { mapping } from '@core/utils';
 
-export class ClusterGetCommandHandler extends ClusterEventService {
+export class ClusterGetCommandHandler extends ClusterEventService<string, CommandDetails | undefined> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getCommand');
+        super(cluster, 'getCommand', mapping.mapString, ({ data, reply }) => reply(this.getCommand(data)));
     }
 
-    protected execute(...[name, , reply]: Parameters<ProcessMessageHandler>): void {
-        const command = this.cluster.commands.get(name as string);
+    public getCommand(name: string): CommandDetails | undefined {
+        const command = this.cluster.commands.get(name);
         if (command === undefined)
-            return reply(undefined);
+            return undefined;
 
-        return reply<CommandDetails>({
+        return {
             name: command.name,
             description: command.description,
             category: command.category,
@@ -25,6 +25,6 @@ export class ClusterGetCommandHandler extends ClusterEventService {
             signatures: command.signatures,
             cannotDisable: command.cannotDisable,
             hidden: command.hidden
-        });
+        };
     }
 }

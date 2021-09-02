@@ -6,6 +6,7 @@ import { BaseClient } from '@core/BaseClient';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
+import { EvalResult } from '@core/types';
 import { ImagePool } from '@image';
 import { Options, Util } from 'discord.js';
 import moment, { duration, Moment } from 'moment-timezone';
@@ -124,7 +125,7 @@ export class Cluster extends BaseClient {
         this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
     }
 
-    public async eval(this: Cluster, author: string, text: string): Promise<{ success: boolean; result: unknown; }> {
+    public async eval(this: Cluster, author: string, text: string): Promise<EvalResult> {
         if (this.util.isBotOwner(author) === false)
             throw new Error(`User ${author} does not have permission to run eval`);
 
@@ -135,7 +136,7 @@ export class Cluster extends BaseClient {
             const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
         } catch (err: unknown) {
-            return { success: false, result: err };
+            return { success: false, error: err };
         }
     }
 }

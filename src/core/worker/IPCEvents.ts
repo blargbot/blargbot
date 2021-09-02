@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { AnyProcessMessageHandler, ProcessMessage, ProcessMessageHandler } from '@core/types';
+import { AnyProcessMessageHandler, ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@core/types';
 import { snowflake } from '@core/utils';
 import { ChildProcess } from 'child_process';
 import EventEmitter from 'eventemitter3';
@@ -37,9 +37,9 @@ export class IPCEvents {
     }
 
     protected emit(type: string, data: unknown, id: Snowflake): boolean {
-        const args: Parameters<ProcessMessageHandler> = [data, id, reply => this.send(type, reply, id)];
-        const result = this.#events.emit(`message_${type}`, ...args);
-        return this.#events.emit('any', type, ...args) || result;
+        const context: ProcessMessageContext<unknown, unknown> = { data, id, reply: (data) => this.send(type, data, id) };
+        const result = this.#events.emit(`message_${type}`, context);
+        return this.#events.emit('any', type, context) || result;
     }
 
     public on(type: string, handler: ProcessMessageHandler): this {
@@ -72,13 +72,13 @@ export class IPCEvents {
         return this;
     }
 
-    public async request<T = unknown, R = unknown>(type: string, data: T, timeoutMS = 10000): Promise<R> {
+    public async request(type: string, data: unknown, timeoutMS = 10000): Promise<unknown> {
         const requestId = snowflake.create();
-        const result = await new Promise<{ success: true; data: R; } | { success: false; }>(res => {
-            const handler: ProcessMessageHandler = (data, id) => {
+        const result = await new Promise<{ success: true; data: unknown; } | { success: false; }>(res => {
+            const handler: ProcessMessageHandler = ({ data, id }) => {
                 if (id === requestId) {
                     this.off(type, handler);
-                    res({ success: true, data: <R>data } as const);
+                    res({ success: true, data: data } as const);
                 }
             };
 

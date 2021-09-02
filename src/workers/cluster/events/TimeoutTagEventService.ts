@@ -7,7 +7,7 @@ export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
     public constructor(protected readonly cluster: Cluster) {
         super(cluster.timeouts, 'tag', cluster.logger);
     }
-    protected async execute(event: StoredEvent<'tag'>): Promise<void> {
+    public async execute(event: StoredEvent<'tag'>): Promise<void> {
         const migratedEvent = this.migrateEvent(event);
         if (migratedEvent === undefined)
             return;
