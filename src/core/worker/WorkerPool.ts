@@ -52,9 +52,6 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
     }
 
     public tryGet(id: number): TWorker | undefined {
-        if (id >= this.workerCount)
-            throw new Error(`${this.type} ${id} doesnt exist`);
-
         return this.#workers.get(id);
     }
 

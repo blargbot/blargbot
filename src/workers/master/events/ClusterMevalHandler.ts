@@ -14,9 +14,9 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
         switch (type) {
             case 'master': {
                 try {
-                    return reply<EvalResult>(await this.master.eval(userId, code));
+                    return reply(await this.master.eval(userId, code));
                 } catch (ex: unknown) {
-                    return reply<EvalResult>({ success: false, error: ex });
+                    return reply({ success: false, error: ex });
                 }
             }
             case 'global': {
@@ -25,11 +25,11 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
                 this.master.clusters.forEach(id => promises[`${id}`] = this.getClusterResult(id, { userId, code }));
                 for (const [key, promise] of Object.entries(promises))
                     results[key] = await promise;
-                return reply<MasterEvalResult>(results);
+                return reply(results);
             }
             default: {
                 const clusterId = parse.int(type.slice(7));
-                reply<EvalResult>(await this.getClusterResult(clusterId, { userId, code }));
+                reply(await this.getClusterResult(clusterId, { userId, code }));
             }
         }
     }

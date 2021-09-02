@@ -3,14 +3,14 @@ import { ClusterEventService } from '@cluster/serviceTypes';
 import { SubtagListResult } from '@cluster/types';
 import { ProcessMessageHandler } from '@core/types';
 
-export class ClusterTagListHandler extends ClusterEventService {
+export class ClusterGetSubtagListHandler extends ClusterEventService {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'tagList');
+        super(cluster, 'getSubtagList');
     }
 
-    protected execute([, , reply]: Parameters<ProcessMessageHandler>): void {
+    protected execute(...[, , reply]: Parameters<ProcessMessageHandler>): void {
         const tags: SubtagListResult = {};
         for (const t of this.cluster.subtags.list()) {
             tags[t.name] = {
