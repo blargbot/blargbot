@@ -19,6 +19,12 @@ export abstract class BaseWorker extends IPCEvents {
         this.#process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise', err));
 
+        this.on('stop', async (...[, , reply]) => {
+            await this.stop();
+            reply(undefined);
+            this.#process.exit();
+        });
+
         this.logger.addPostHook(({ text, level, timestamp }: LogEntry) => {
             this.send('log', { text, level, timestamp });
             return null;
@@ -29,5 +35,9 @@ export abstract class BaseWorker extends IPCEvents {
 
     public start(): void {
         this.send('ready', `Hello from process ${this.id}!`);
+    }
+
+    public stop(): Promise<void> | void {
+        // NOOP
     }
 }

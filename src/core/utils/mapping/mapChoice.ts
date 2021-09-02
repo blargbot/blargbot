@@ -2,7 +2,7 @@ import { TypeMapping } from '@core/types';
 
 import { result } from './result';
 
-export function mapChoice<T>(...mappings: Array<TypeMapping<T>>): TypeMapping<T> {
+export function mapChoice<T extends unknown[]>(...mappings: { [P in keyof T]: TypeMapping<T[P]> }): TypeMapping<T[number]> {
     return value => {
         for (const mapping of mappings) {
             const mapped = mapping(value);

@@ -122,9 +122,6 @@ export class Cluster extends BaseClient {
 
         await this.services.init();
         this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
-        //? Caches home guild and bot user perms for logging channels
-        const homeGuild = await this.discord.guilds.fetch(this.config.discord.guilds.home);
-        await homeGuild.members.fetch(this.discord.user.id);
     }
 
     public async eval(this: Cluster, author: string, text: string): Promise<{ success: boolean; result: unknown; }> {

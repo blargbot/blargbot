@@ -35,6 +35,9 @@ export class BaseClient {
             this.discord.login(this.config.discord.token).then(() => this.logger.init('discord connected'))
         ]);
         await this.discord.application.fetch();
+        //? Caches home guild and bot user perms for logging channels
+        const homeGuild = await this.discord.guilds.fetch(this.config.discord.guilds.home);
+        await homeGuild.members.fetch(this.discord.user.id);
     }
 
     protected moduleStats<TModule, TKey extends string | number>(

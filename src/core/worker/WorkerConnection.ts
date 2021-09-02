@@ -43,7 +43,8 @@ export abstract class WorkerConnection extends IPCEvents {
         super();
         this.created = moment();
         this.args = [...process.execArgv];
-        this.env = { ...process.env };
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        this.env = { ...process.env, WORKER_ID: id.toString() };
         this.file = require.resolve(`@workers/${this.worker}`);
         this.#killed = false;
         this.on('alive', () => this.logger.worker(`${this.worker} worker (ID: ${this.id}) is alive`));
@@ -97,12 +98,19 @@ export abstract class WorkerConnection extends IPCEvents {
         }
     }
 
-    public kill(code: NodeJS.Signals | number = 'SIGTERM'): void {
+    public async kill(code: NodeJS.Signals | number = 'SIGTERM'): Promise<void> {
         if (this.#process === undefined || !this.#process.connected)
             throw new Error('The child process is not connected');
 
         this.logger.worker(`Killing ${this.worker} worker (ID: ${this.id} PID: ${this.#process.pid ?? 'NOT RUNNING'})`);
-        this.#process.kill(code);
+
+        try {
+            await this.request('stop', undefined);
+        } catch { /* NOOP */ }
+
+        if (<boolean>this.#process.connected)
+            this.#process.kill(code);
+
         this.#killed = true;
     }
 }

@@ -762,7 +762,7 @@ export class TagCommand extends BaseGuildCommand {
                     author: {
                         name: humanize.fullName(user),
                         icon_url: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
-                        url: `${context.config.website.secure ? 'https' : 'http'}://${context.config.website.host}/user/${user.id}`
+                        url: context.util.websiteLink(`user/${user.id}`)
                     },
                     timestamp: new Date(),
                     footer: {

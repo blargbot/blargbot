@@ -35,7 +35,7 @@ export function deserialize(value: string): BBTagArray | undefined {
 }
 
 const mapBBArray = mapping.mapJson(
-    mapping.mapChoice<JToken[] | BBTagArray>(
+    mapping.mapChoice(
         mapping.mapArray(mapping.mapJToken),
         mapping.mapObject<BBTagArray>({
             n: mapping.mapOptionalString,

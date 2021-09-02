@@ -24,8 +24,8 @@ export class ClusterSpawner extends BaseService {
         }
     }
 
-    public stop(): void {
-        this.master.clusters.killAll();
+    public async stop(): Promise<void> {
+        await this.master.clusters.killAll();
     }
 
 }

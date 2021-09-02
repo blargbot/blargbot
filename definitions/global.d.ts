@@ -39,11 +39,9 @@ declare global {
     type FilteredKeys<T, U> = { [P in keyof T]: T[P] extends U ? P : never }[keyof T];
 
     interface ObjectConstructor {
-        // eslint-disable-next-line @typescript-eslint/ban-types
         keys<T>(value: Exclude<T, undefined | null>): Array<string & keyof T>;
-        // eslint-disable-next-line @typescript-eslint/ban-types
         values<T>(value: Exclude<T, undefined | null>): Array<T[(string | number) & keyof T]>;
-        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[string & TKey, TValue]>;
+        entries<T>(value: Exclude<T, undefined | null>): Array<[string & keyof T, T[string & keyof T]]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
         create<T extends object>(value: T): T;
         fromEntries<TKey extends PropertyKey, TValue>(entries: Iterable<readonly [TKey, TValue]>): Record<TKey, TValue>;

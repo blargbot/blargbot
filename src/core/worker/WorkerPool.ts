@@ -75,7 +75,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
             if (oldWorker !== undefined) {
                 this.#events.emit('killingworker', oldWorker);
                 if (oldWorker.state === WorkerState.RUNNING)
-                    oldWorker.kill();
+                    await oldWorker.kill();
                 this.#events.emit('killedworker', worker);
             }
             this.#events.emit('spawnedworker', worker);
@@ -87,7 +87,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
 
     protected abstract createWorker(id: number): TWorker;
 
-    public kill(id: number): void {
+    public async kill(id: number): Promise<void> {
         const worker = this.#workers.get(id);
         if (worker === undefined)
             return;
@@ -96,7 +96,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
 
         this.#events.emit('killingworker', worker);
         if (worker.state === WorkerState.RUNNING)
-            worker.kill();
+            await worker.kill();
         this.#events.emit('killedworker', worker);
     }
 
@@ -105,9 +105,9 @@ export abstract class WorkerPool<TWorker extends WorkerConnection> {
             .map(id => this.spawn(id, timeoutMS)));
     }
 
-    public killAll(): void {
-        for (let i = 0; i < this.workerCount; i++)
-            this.kill(i);
+    public async killAll(): Promise<void> {
+        await Promise.all(getRange(0, this.workerCount - 1)
+            .map(id => this.kill(id)));
     }
 
     public forEach(callback: (id: number, worker: TWorker | undefined) => void): void;

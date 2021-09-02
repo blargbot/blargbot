@@ -364,7 +364,7 @@ function migrateCommandPerms(guildId: string, guild: any, logger: Logger, contex
 
     let changed = false;
 
-    for (const [commandName, perms] of Object.entries<PropertyKey, any>(commandPerms)) {
+    for (const [commandName, perms] of Object.entries(commandPerms)) {
         const newPerm: r.UpdateData<MutableCommandPermissions> = {};
         switch (typeof perms.permission) {
             case 'object': // null
@@ -436,7 +436,7 @@ const mapGuildTriggerTag = mapping.mapObject<GuildTriggerTag>({
     content: mapping.mapString
 });
 
-const mapStringOrGuildTriggerTag = mapping.mapChoice<string | GuildTriggerTag>(
+const mapStringOrGuildTriggerTag = mapping.mapChoice(
     mapping.mapString,
     mapping.mapObject<GuildTriggerTag>({
         author: mapping.mapString,

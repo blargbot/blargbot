@@ -48,7 +48,8 @@ export class BaseUtilities {
         path = path?.replace(/^[/\\]+/, '');
         const scheme = this.config.website.secure ? 'https' : 'http';
         const host = this.config.website.host;
-        return `${scheme}://${host}/${path ?? ''}`;
+        const port = this.config.website.port === 80 ? '' : `:${this.config.website.port}`;
+        return `${scheme}://${host}${port}/${path ?? ''}`;
     }
 
     public embedifyAuthor(target: GuildMember | User | Guild | Team | StoredUser): MessageEmbedAuthor {

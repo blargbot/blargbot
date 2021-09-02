@@ -12,11 +12,10 @@ export class ImageSpawner extends BaseService {
 
     public async start(): Promise<void> {
         await this.cluster.images.spawnAll();
-        this.cluster.logger.info('All clusters are spawned!');
+        this.cluster.logger.info('All image workers are spawned!');
     }
 
-    public stop(): void {
-        this.cluster.images.killAll();
+    public async stop(): Promise<void> {
+        await this.cluster.images.killAll();
     }
-
 }

@@ -4,18 +4,22 @@
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "out/index.js",
     "dependencies": {
+        "@types/express": "^4.17.13",
         "airtable": "^0.11.1",
         "brainfuck-node": "^1.0.1",
         "canvas": "^2.8.0",
         "cassandra-driver": "^4.6.3",
         "cat-loggr": "^1.1.0",
         "catflake": "^1.0.0",
+        "color": "^4.0.1",
         "color-thief-jimp": "^2.0.2",
         "cron": "^1.4.1",
         "crypto": "^1.0.1",
         "del-cli": "^4.0.1",
         "discord.js": "^13.0.1",
         "eventemitter3": "^4.0.7",
+        "express": "^4.17.1",
+        "express-promise-router": "^4.1.0",
         "gifencoder": "^2.0.1",
         "gm": "^1.23.1",
         "html-entities": "^1.2.1",
@@ -105,7 +109,7 @@
         "@cluster": "src/workers/cluster",
         "@master": "src/workers/master",
         "@image": "src/workers/image",
-        "@website": "src/workers/website",
+        "@api": "src/workers/api",
         "@workers": "src/workers"
     }
 }

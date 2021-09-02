@@ -23,9 +23,9 @@ export type SendPayload = SendOptions | MessageEmbedOptions | string | FileOptio
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ProcessMessageHandler = (data: unknown, id: Snowflake, reply: <T = unknown>(data: T) => void) => void;
-export type AnyProcessMessageHandler = (event: string, ...args: Parameters<ProcessMessageHandler>) => void;
-export type WorkerPoolEventHandler<TWorker extends WorkerConnection> = (worker: TWorker, ...args: Parameters<ProcessMessageHandler>) => void;
+export type ProcessMessageHandler = (data: unknown, id: Snowflake, reply: <T = unknown>(data: T) => void) => Awaitable<unknown>;
+export type AnyProcessMessageHandler = (event: string, ...args: Parameters<ProcessMessageHandler>) => Awaitable<unknown>;
+export type WorkerPoolEventHandler<TWorker extends WorkerConnection> = (worker: TWorker, ...args: Parameters<ProcessMessageHandler>) => Awaitable<unknown>;
 export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };
 export type MasterEvalResult<T = unknown> = Record<string, EvalResult<T>>;
@@ -952,4 +952,5 @@ export interface TypeMappingOptions<T, R> {
     initial?: () => T;
     ifNull?: TypeMappingResult<T | R>;
     ifUndefined?: TypeMappingResult<T | R>;
+    strict?: boolean;
 }

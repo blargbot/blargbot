@@ -17,12 +17,13 @@ export function mapObject<T, R>(mappings: TypeMappings<T>, options: TypeMappingO
 
         const objValue = <Record<string, unknown>>value;
         const result = options.initial?.() ?? {} as Partial<T>;
+        const remainingKeys = new Set(Object.keys(objValue));
 
         function checkKey<K extends string & keyof T>(resultKey: K, sourceKey: string | undefined, mapping: TypeMapping<T[K]>): boolean {
             if (sourceKey !== undefined) {
-                if (!guard.hasProperty(objValue, sourceKey)) {
+                if (!guard.hasProperty(objValue, sourceKey))
                     return mapping(undefined).valid;
-                }
+                remainingKeys.delete(sourceKey);
             }
             const val = sourceKey === undefined ? undefined : objValue[sourceKey];
             const mapped = mapping(val);
@@ -37,6 +38,9 @@ export function mapObject<T, R>(mappings: TypeMappings<T>, options: TypeMappingO
             if (!checkKey(resultKey, ...splitMapping(resultKey, mappings[resultKey])))
                 return _result.never;
         }
+
+        if (options.strict === true && remainingKeys.size > 0)
+            return _result.never;
 
         return { valid: true, value: <T>result };
     };

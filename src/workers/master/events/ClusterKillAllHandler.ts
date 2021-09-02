@@ -7,9 +7,9 @@ export class ClusterKillAllHandler extends WorkerPoolEventService<ClusterConnect
         super(master.clusters, 'killAll');
     }
 
-    protected execute(): never {
+    protected async execute(): Promise<never> {
         this.master.logger.fatal('We all deserve to die. Even you, mister cat. Even I.');
-        this.master.clusters.killAll();
+        await this.master.clusters.killAll();
         process.exit(0);
     }
 }

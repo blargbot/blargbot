@@ -17,20 +17,20 @@ export class RestartCommand extends BaseGlobalCommand {
                 {
                     parameters: 'kill',
                     execute: (ctx) => this.restart(ctx),
-                    description: 'Restarts all the clusters'
+                    description: 'Kills the master process, ready for pm2 to restart it'
                 },
                 {
-                    parameters: 'frontend',
+                    parameters: 'api',
                     execute: (ctx) => this.restartWebsites(ctx),
-                    description: 'Restarts all the clusters'
+                    description: 'Restarts the api process'
                 }
             ]
         });
     }
 
-    private restartWebsites(context: CommandContext): string {
-        context.cluster.worker.send('respawnFrontend', context.channel.id);
-        return this.success('Frontend has been respawned.');
+    private async restartWebsites(context: CommandContext): Promise<string> {
+        await context.cluster.worker.request('respawnApi', context.channel.id);
+        return this.success('Api has been respawned.');
     }
 
     private async restart(context: CommandContext): Promise<undefined> {

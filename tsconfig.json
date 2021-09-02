@@ -48,11 +48,11 @@
             "@image/*": [
                 "./src/workers/image/*"
             ],
-            "@website": [
-                "./src/workers/website"
+            "@api": [
+                "./src/workers/api"
             ],
-            "@website/*": [
-                "./src/workers/website/*"
+            "@api/*": [
+                "./src/workers/api/*"
             ],
             "@workers/*": [
                 "./src/workers/*"

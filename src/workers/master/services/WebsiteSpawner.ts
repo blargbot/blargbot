@@ -11,12 +11,12 @@ export class WebsiteSpawner extends BaseService {
     }
 
     public async start(): Promise<void> {
-        await this.master.website.spawnAll();
+        await this.master.api.spawnAll();
         this.master.logger.info('The website is spawned!');
     }
 
-    public stop(): void {
-        this.master.website.killAll();
+    public async stop(): Promise<void> {
+        await this.master.api.killAll();
     }
 
 }
