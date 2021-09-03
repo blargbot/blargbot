@@ -1,14 +1,14 @@
 import { Cluster } from '@cluster';
 import { CustomCommandLimit } from '@cluster/bbtag';
 import { BaseCommand, CommandContext } from '@cluster/command';
-import { CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, FlagDefinition, GuildCommandContext } from '@cluster/types';
+import { CanExecuteCustomCommandOptions, CanExecuteDefaultCommandOptions, CommandPermissionContext, FlagDefinition, GuildCommandContext, GuildCommandPermissionContext } from '@cluster/types';
 import { commandTypeDetails, defaultStaff, guard, humanize, parse } from '@cluster/utils';
 import { MessageIdQueue } from '@core/MessageIdQueue';
 import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { GuildCommandTag, GuildImportedCommandTag, GuildSourceCommandTag } from '@core/types';
-import { DiscordAPIError, Message, PartialMessage } from 'discord.js';
+import { CommandPermissions, GuildCommandTag, GuildImportedCommandTag, GuildSourceCommandTag } from '@core/types';
+import { Channel, DiscordAPIError, Guild, GuildMember, Message, PartialMessage, PermissionString, TextBasedChannels } from 'discord.js';
 
 export class CommandManager extends ModuleLoader<BaseCommand> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -43,57 +43,93 @@ export class CommandManager extends ModuleLoader<BaseCommand> {
         return false;
     }
 
-    public async canExecuteCustomCommand(context: GuildCommandContext, command: GuildCommandTag, options: CanExecuteCustomCommandOptions = {}): Promise<boolean> {
-        return command.hidden !== true
-            && (command.roles === undefined || await this.cluster.util.hasRoles(context.message, command.roles, options.quiet ?? false));
+    public async hasPermissions(
+        context: CommandPermissionContext,
+        member: GuildMember,
+        permissions: CommandPermissions,
+        channel?: TextBasedChannels,
+        permOverride?: boolean,
+        staffPerms?: bigint | string | readonly PermissionString[]
+    ): Promise<boolean | undefined> {
+        if (member.guild.ownerId === member.id || context.util.isBotOwner(member.id))
+            return true;
+
+        if (permissions.disabled === true)
+            // Command is disabled
+            return false;
+
+        permOverride ??= await context.util.database.guilds.getSetting(member.guild.id, 'permoverride');
+        if (permOverride === true) {
+            staffPerms ??= await context.util.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff;
+            const allow = typeof staffPerms === 'string' ? parse.bigint(staffPerms) : staffPerms;
+            if ((typeof allow === 'bigint' || allow !== undefined && allow.length > 0) && context.util.hasPerms(member, allow))
+                // User has any of the permissions that identify them as a staff member
+                return true;
+        }
+
+        if (guard.hasValue(permissions.permission) && context.util.hasPerms(member, permissions.permission))
+            // User has any of the permissions for this command
+            return true;
+
+        if (Array.isArray(permissions.roles))
+            // User has one of the roles this command is linked to?
+            return await context.util.hasRoles(member, permissions.roles, channel);
+
+        const adminrole = await context.util.database.guilds.getSetting(member.guild.id, 'adminrole');
+        if (adminrole !== undefined)
+            // User has the configured admin role?
+            return await context.util.hasRoles(member, [adminrole], channel);
+
+        return undefined;
     }
 
-    public async canExecuteDefaultCommand(context: CommandContext, command: BaseCommand, options: CanExecuteDefaultCommandOptions = {}): Promise<boolean> {
-        if (command.onlyOn !== null && (!guard.isGuildCommandContext(context) || command.onlyOn !== context.channel.guild.id))
-            return false; // Command only works on the specific guild
+    public async canExecuteCustomCommand(context: GuildCommandPermissionContext, command: GuildCommandTag, options: CanExecuteCustomCommandOptions = {}): Promise<boolean> {
+        const { location, author } = context;
+        const [guild, channel] = location instanceof Guild ? [location, undefined] : [location.guild, location];
+        const member = await this.cluster.util.getMember(guild, author.id);
+        if (member === undefined)
+            return false; // User isnt a member of this guild
+
+        return await this.hasPermissions(context, member, command, options.quiet !== true ? channel : undefined, undefined, undefined) ?? true;
+    }
+
+    public async canExecuteDefaultCommand(context: CommandPermissionContext, command: BaseCommand, options: CanExecuteDefaultCommandOptions = {}): Promise<boolean> {
+        const { location, author } = context;
+        if (command.onlyOn !== null) {
+            const ids = [location.id];
+            if (location instanceof Channel && guard.isGuildChannel(location))
+                ids.push(location.guild.id);
+
+            if (!ids.includes(command.onlyOn))
+                return false; // Command only works on the specific guild/channel
+        }
 
         const category = commandTypeDetails[command.category];
         if (!await category.requirement(context))
             return false; // Context doesnt meet the category requirements
 
-        if (context.util.isBotOwner(context.author.id))
-            return true; // The owner can execute any command anywhere
+        const [guild, channel] = location instanceof Guild ? [location, undefined]
+            : guard.isGuildChannel(location) ? [location.guild, location]
+                : [undefined, location];
 
-        if (!guard.isGuildCommandContext(context))
+        if (guild === undefined)
             return true; // No configurable restrictions outside of guilds
 
-        if (context.channel.guild.ownerId === context.author.id)
-            return true; // Guild owner can execute all commands
+        const member = await this.cluster.util.getMember(guild, author.id);
+        if (member === undefined)
+            return false; // User isnt a member of this guild
 
-        const commandPerms = await this.cluster.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
-        if (commandPerms?.disabled === true && !command.cannotDisable)
-            return false; // Command is disabled
+        const commandPerms = { ...await this.cluster.database.guilds.getCommandPerms(guild.id, command.name) };
+        if (command.cannotDisable)
+            commandPerms.disabled = false;
 
-        const permOverride = options.permOverride ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'permoverride');
-        if (permOverride === true) {
-            const staffPerms = options.staffPerms ?? await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'staffperms') ?? defaultStaff;
-            const allow = typeof staffPerms === 'string' ? parse.bigint(staffPerms) : staffPerms;
-            if ((typeof allow === 'bigint' || allow !== undefined && allow.length > 0) && this.cluster.util.hasPerms(context.message.member, allow))
-                return true; // User has any of the permissions that identify them as a staff member
-        }
-
-        if (commandPerms !== undefined) {
-            if (guard.hasValue(commandPerms.permission) && this.cluster.util.hasPerms(context.message.member, commandPerms.permission))
-                return true; // User has any of the permissions for this command
-
-            // User has one of the roles this command is linked to?
-            if (Array.isArray(commandPerms.roles))
-                return await this.cluster.util.hasRoles(context.message, commandPerms.roles, options.quiet ?? false);
-        }
-
-        const adminrole = await this.cluster.database.guilds.getSetting(context.channel.guild.id, 'adminrole');
-        if (adminrole !== undefined)
-            // User has the configured admin role?
-            return await this.cluster.util.hasRoles(context.message, [adminrole], options.quiet ?? false);
+        const hasPerms = await this.hasPermissions(context, member, commandPerms, options.quiet !== true ? channel : undefined, options.permOverride, options.staffPerms);
+        if (typeof hasPerms === 'boolean')
+            return hasPerms;
 
         if (category.defaultPerms !== undefined)
             // User has any of the permissions declared by the category?
-            return this.cluster.util.hasPerms(context.message.member, category.defaultPerms);
+            return this.cluster.util.hasPerms(member, category.defaultPerms);
 
         return true;
     }

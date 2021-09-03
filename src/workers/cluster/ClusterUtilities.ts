@@ -657,17 +657,7 @@ export class ClusterUtilities extends BaseUtilities {
         return member.permissions.any(newPerm);
     }
 
-    public async hasRoles(msg: GuildMember | Message, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
-        let member: GuildMember;
-        let channel: TextBasedChannels | undefined;
-        if (msg instanceof GuildMember) {
-            member = msg;
-        } else {
-            if (!guard.isGuildMessage(msg))
-                return true;
-            member = msg.member;
-            channel = msg.channel;
-        }
+    public async hasRoles(member: GuildMember, roles: readonly string[], channel?: TextBasedChannels, override = true): Promise<boolean> {
         if (override
             && (this.isBotOwner(member.id)
                 || member.guild.ownerId === member.id
@@ -684,7 +674,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (guildRoles.some(r => member.roles.cache.has(r.id)))
             return true;
 
-        if (channel !== undefined && !quiet) {
+        if (channel !== undefined) {
             if (await this.database.guilds.getSetting(member.guild.id, 'disablenoperms') !== true) {
                 const permString = roles.map(m => '`' + m + '`').join(', or ');
                 void this.send(channel, `You need the role ${permString} in order to use this command!`);

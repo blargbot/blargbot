@@ -1,6 +1,6 @@
-import { CommandContext } from '@cluster/command';
 import { CommandPropertiesSet } from '@cluster/types';
 import { guard } from '@cluster/utils';
+import { Guild } from 'discord.js';
 
 import { defaultStaff } from './defaultStaff';
 
@@ -25,12 +25,12 @@ export const commandTypeDetails: CommandPropertiesSet = {
     },
     [CommandType.NSFW]: {
         name: 'NSFW',
-        requirement: (context: CommandContext) => {
-            if (guard.isPrivateCommandContext(context))
+        requirement({ location }) {
+            if (location instanceof Guild || guard.isPrivateChannel(location))
                 return true;
 
-            if ('nsfw' in context.channel)
-                return context.channel.nsfw;
+            if ('nsfw' in location)
+                return location.nsfw;
 
             return false;
         },
@@ -52,42 +52,46 @@ export const commandTypeDetails: CommandPropertiesSet = {
     },
     [CommandType.SOCIAL]: {
         name: 'Social',
-        async requirement(context: CommandContext): Promise<boolean> {
-            if (!guard.isGuildCommandContext(context))
+        async requirement({ location, util }) {
+            if (location instanceof Guild)
+                return await util.database.guilds.getSetting(location.id, 'social') ?? false;
+
+            if (!guard.isGuildChannel(location))
                 return true;
-            return await context.cluster.database.guilds.getSetting(context.channel.guild.id, 'social') ?? false;
+
+            return await util.database.guilds.getSetting(location.guild.id, 'social') ?? false;
         },
         description: 'Social commands for interacting with other people',
         color: 0xefff00
     },
     [CommandType.OWNER]: {
         name: 'Blargbot Owner',
-        requirement(context: CommandContext): boolean {
-            return context.util.isBotOwner(context.author.id);
+        requirement({ author, util }) {
+            return util.isBotOwner(author.id);
         },
         description: 'MREOW MEOWWWOW! **purr**',
         color: 0xff0000
     },
     [CommandType.DEVELOPER]: {
         name: 'Blargbot Developer',
-        requirement(context: CommandContext): boolean {
-            return context.cluster.util.isBotDeveloper(context.author.id);
+        requirement({ author, util }) {
+            return util.isBotDeveloper(author.id);
         },
         description: 'Commands that can only be executed by blargbot developers.',
         color: 0xff0000
     },
     [CommandType.STAFF]: {
         name: 'Blargbot Staff',
-        requirement(context: CommandContext): boolean {
-            return context.cluster.util.isBotStaff(context.author.id);
+        requirement({ author, util }) {
+            return util.isBotStaff(author.id);
         },
         description: 'Commands that can only be executed by staff on the official support server.',
         color: 0xff0000
     },
     [CommandType.SUPPORT]: {
         name: 'Blargbot Support',
-        requirement(context: CommandContext): boolean {
-            return context.cluster.util.isBotSupport(context.author.id);
+        requirement({ author, util }) {
+            return util.isBotSupport(author.id);
         },
         description: 'Commands that can only be executed by support members on the official support server.',
         color: 0xff0000

@@ -107,8 +107,8 @@ export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
             .map(id => this.kill(id)));
     }
 
-    public forEach(callback: (id: number, worker: TWorker | undefined) => void): void;
     public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void>): Promise<void>;
+    public forEach(callback: (id: number, worker: TWorker | undefined) => void): void;
     public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void> | void): Promise<void> | void {
         const results: Array<PromiseLike<void>> = [];
         let i = 0;

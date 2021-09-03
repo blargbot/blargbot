@@ -442,6 +442,7 @@ export class BaseUtilities {
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         this.logger.error('Error while getting user', userId, err);
                     // fallthrough
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.UNKNOWN_USER:
                         return undefined;
                 }
@@ -463,6 +464,7 @@ export class BaseUtilities {
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         this.logger.error('Error while getting guild', guildId, err);
                     // fallthrough
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.UNKNOWN_GUILD:
                         return undefined;
                 }
@@ -489,6 +491,7 @@ export class BaseUtilities {
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         this.logger.error('Error while getting message', messageId, 'in channel', foundChannel.id, err);
                     // fallthrough
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.UNKNOWN_MESSAGE:
                         return undefined;
                 }
@@ -515,6 +518,7 @@ export class BaseUtilities {
                 switch (error.code) {
                     case Constants.APIErrors.UNKNOWN_MEMBER:
                     case Constants.APIErrors.UNKNOWN_USER:
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         return undefined;
                 }

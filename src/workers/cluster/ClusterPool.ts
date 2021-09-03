@@ -15,6 +15,22 @@ export class ClusterPool extends WorkerPool<ClusterConnection> {
             logger);
     }
 
+    public getForGuild(guildId: string): ClusterConnection {
+        const shardId = Number(BigInt(guildId) >> 22n) % this.config.max;
+        return this.getForShard(shardId);
+    }
+
+    public getForShard(shardId: number): ClusterConnection {
+        if (shardId > this.config.max)
+            throw new Error(`Shard ${shardId} doesnt exist!`);
+
+        const clusterId = Math.floor(shardId / this.config.perCluster);
+        if (clusterId > this.workerCount)
+            throw new Error(`Cluster ${clusterId} doesnt exist!`);
+
+        return this.get(clusterId);
+    }
+
     protected createWorker(id: number): ClusterConnection {
         const cluster = new ClusterConnection(
             id,

@@ -3,10 +3,11 @@ import { CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
+import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 
 export type Statement = Array<string | SubtagCall>;
@@ -427,7 +428,7 @@ export interface SubtagDetails {
 export interface GuildDetails {
     readonly id: string;
     readonly name: string;
-    readonly iconUrl: string;
+    readonly iconUrl?: string;
 }
 
 export interface GuildPermissionDetails {
@@ -437,7 +438,7 @@ export interface GuildPermissionDetails {
     readonly censors: boolean;
     readonly autoresponses: boolean;
     readonly rolemes: boolean;
-    readonly intervals: boolean;
+    readonly interval: boolean;
     readonly greeting: boolean;
     readonly farewell: boolean;
 }
@@ -577,12 +578,22 @@ export interface RuntimeLimitRule {
 export type GuildCommandContext<TChannel extends GuildTextBasedChannels = GuildTextBasedChannels> = CommandContext<TChannel> & { message: { member: GuildMember; guildID: string; }; };
 export type PrivateCommandContext<TChannel extends PrivateTextBasedChannels = PrivateTextBasedChannels> = CommandContext<TChannel>;
 
+export interface CommandPermissionContext {
+    readonly author: User;
+    readonly location: Guild | TextBasedChannels;
+    readonly util: ClusterUtilities;
+}
+
+export interface GuildCommandPermissionContext extends CommandPermissionContext {
+    readonly location: Guild | GuildTextBasedChannels;
+}
+
 export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
 export interface CommandProperties {
     readonly name: string;
     readonly description: string;
     readonly defaultPerms?: readonly PermissionString[];
-    readonly requirement: (context: CommandContext) => boolean | Promise<boolean>;
+    readonly requirement: (context: CommandPermissionContext) => boolean | Promise<boolean>;
     readonly color: number;
 }
 
