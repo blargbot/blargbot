@@ -1,7 +1,6 @@
 import { BaseUtilities } from '@core/BaseUtilities';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
-import { BaseModuleLoader } from '@core/modules';
 import { Client as Discord, ClientOptions as DiscordOptions } from 'discord.js';
 
 export class BaseClient {
@@ -38,23 +37,5 @@ export class BaseClient {
         //? Caches home guild and bot user perms for logging channels
         const homeGuild = await this.discord.guilds.fetch(this.config.discord.guilds.home);
         await homeGuild.members.fetch(this.discord.user.id);
-    }
-
-    protected moduleStats<TModule, TKey extends string | number>(
-        loader: BaseModuleLoader<TModule>,
-        type: string,
-        getKey: (module: TModule) => TKey,
-        friendlyKey: (key: TKey) => string = k => k.toString()
-    ): string {
-        const items = [...loader.list()];
-        const groups = new Map<TKey, number>();
-        const result = [];
-        for (const item of items) {
-            const key = getKey(item);
-            groups.set(key, (groups.get(key) ?? 0) + 1);
-        }
-        for (const [key, count] of groups)
-            result.push(`${friendlyKey(key)}: ${count}`);
-        return `${type}: ${items.length} [${result.join(' | ')}]`;
     }
 }

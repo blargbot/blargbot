@@ -28,6 +28,8 @@ export class BBTagEngine {
         this.cooldowns = new TagCooldownManager();
     }
 
+    public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult>
+    public async execute(source: string, options: BBTagContext, caller: SubtagCall): Promise<ExecutionResult>
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
         this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
         const timer = new Timer().start();

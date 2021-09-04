@@ -374,7 +374,7 @@ function migrateCommandPerms(guildId: string, guild: any, logger: Logger, contex
             case 'number':
                 logger.debug('[migrateGuild]', guildId, 'migrating command', commandName, 'permissions');
                 changed = true;
-                newPerm.permission = BigInt(perms.permission);
+                newPerm.permission = perms.permission.toString();
                 break;
         }
 
@@ -409,19 +409,19 @@ function migrateSettings(guildId: string, guild: any, logger: Logger, context: G
     if (typeof settings.staffperms === 'number') {
         logger.debug('[migrateGuild]', guildId, 'migrating setting staffperms');
         changed = true;
-        newSettings.staffperms = BigInt(settings.staffperms);
+        newSettings.staffperms = settings.staffperms.toString();
     }
 
     if (typeof settings.kickoverride === 'number') {
         logger.debug('[migrateGuild]', guildId, 'migrating setting kickoverride');
         changed = true;
-        newSettings.kickoverride = BigInt(settings.kickoverride);
+        newSettings.kickoverride = settings.kickoverride.toString();
     }
 
     if (typeof settings.banoverride === 'number') {
         logger.debug('[migrateGuild]', guildId, 'migrating setting banoverride');
         changed = true;
-        newSettings.banoverride = BigInt(settings.banoverride);
+        newSettings.banoverride = settings.banoverride.toString();
     }
 
     if (changed)

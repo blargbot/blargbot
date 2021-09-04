@@ -7,22 +7,23 @@ export class ClusterGetCommandListHandler extends ClusterEventService<unknown, C
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getCommandList', mapping.mapUnknown, ({ reply }) => reply(this.getCommandList()));
+        super(cluster, 'getCommandList', mapping.mapUnknown, async ({ reply }) => reply(await this.getCommandList()));
     }
 
-    public getCommandList(): CommandListResult {
+    public async getCommandList(): Promise<CommandListResult> {
         const commands: CommandListResult = {};
-        for (const c of this.cluster.commands.list()) {
+        for await (const c of this.cluster.commands.default.list()) {
             commands[c.name] = {
-                name: c.name,
-                description: c.description,
-                category: c.category,
                 aliases: c.aliases,
+                category: c.category,
+                description: c.description,
+                disabled: c.disabled,
                 flags: c.flags,
-                onlyOn: c.onlyOn,
-                signatures: c.signatures,
-                cannotDisable: c.cannotDisable,
-                hidden: c.hidden
+                hidden: c.hidden,
+                name: c.name,
+                permission: c.permission,
+                roles: c.roles,
+                signatures: c.signatures
             };
         }
         return commands;

@@ -51,30 +51,37 @@ export class EditCommandCommand extends BaseGuildCommand {
     }
 
     public async list(context: GuildCommandContext): Promise<string | MessageEmbedOptions> {
-        const dcommandPerms = await context.database.guilds.getCommandPerms(context.channel.guild.id) ?? {};
-        const ccommands = await context.database.guilds.listCommands(context.channel.guild.id);
-
-        const result = {} as Record<string, CommandPermissions>;
-        for (const command of ccommands)
-            result[command.name] = command;
-        for (const [command, perms] of Object.entries(dcommandPerms))
-            result[command] ??= perms;
-
         const lines = [];
-        for (const [command, perms] of Object.entries(result)) {
-            lines.push(`**${command}**`);
+        const commandNames = new Set<string>();
+        const defaultPerms = new Map<unknown, string>();
+        for await (const command of context.cluster.commands.list()) {
+            defaultPerms.set(command.implementation, command.permission);
+        }
+
+        for await (const command of context.cluster.commands.list(context.channel, context.author)) {
+            const name = [command.name, ...command.aliases].find(n => commandNames.size < commandNames.add(n).size);
+            if (name === undefined)
+                continue;
+
+            lines.push(`**${name}**`);
             const len = lines.length;
-            if (perms.roles !== undefined) {
-                const roles = await Promise.all(perms.roles.map(r => context.util.findRoles(context.channel.guild, r)));
-                lines.push(`- Roles: ${roles.flat().map(r => r.toString()).join(', ')}`);
+            const roles = [];
+            for (const roleStr of command.roles) {
+                const role = await context.util.getRole(context.channel.guild, roleStr)
+                    ?? context.channel.guild.roles.cache.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
+                if (role !== undefined)
+                    roles.push(role);
             }
 
-            if (perms.permission !== undefined)
-                lines.push(`- Permissions: ${perms.permission}`);
+            if (roles.length > 0)
+                lines.push(`- Roles: ${roles.map(r => r.toString()).join(', ')}`);
+
+            if (command.permission !== (defaultPerms.get(command.implementation) ?? '0'))
+                lines.push(`- Permissions: ${command.permission}`);
 
             const tagged = [
-                perms.disabled === true ? 'Disabled' : undefined,
-                perms.hidden === true ? 'Hidden' : undefined
+                command.disabled === true ? 'Disabled' : undefined,
+                command.hidden === true ? 'Hidden' : undefined
             ].filter(guard.hasValue);
             if (tagged.length > 0)
                 lines.push(`- ${tagged.join(', ')}`);
@@ -105,7 +112,7 @@ export class EditCommandCommand extends BaseGuildCommand {
     }
 
     public async setPermissions(context: GuildCommandContext, commands: string[], permissions: bigint | undefined): Promise<string> {
-        const updatedCommands = await this.editCommands(context, commands, { permission: permissions });
+        const updatedCommands = await this.editCommands(context, commands, { permission: permissions?.toString() });
 
         if (permissions === undefined)
             return this.success(`Removed the permissions for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
@@ -129,23 +136,7 @@ export class EditCommandCommand extends BaseGuildCommand {
     }
 
     private async editCommands(context: GuildCommandContext, commands: string[], update: Partial<CommandPermissions>): Promise<string> {
-        const dcommands: string[] = [];
-        const ccommands: string[] = [];
-
-        const ccommandNames = new Set((await context.database.guilds.listCommands(context.channel.guild.id)).map(c => c.name.toLowerCase()));
-        for (const command of commands.map(c => c.toLowerCase())) {
-            if (ccommandNames.has(command))
-                ccommands.push(command);
-            else if (context.cluster.commands.get(command) !== undefined)
-                dcommands.push(command);
-        }
-
-        if (dcommands.length > 0)
-            await context.database.guilds.setCommandPerms(context.channel.guild.id, dcommands, update);
-
-        if (ccommands.length > 0)
-            await context.database.guilds.updateCommands(context.channel.guild.id, ccommands, update);
-
-        return [...dcommands, ...ccommands].join(', ');
+        const changed = await context.cluster.commands.configure(commands, context.channel.guild, update);
+        return changed.join(', ');
     }
 }

@@ -1,4 +1,5 @@
 import { BaseGlobalCommand } from '@cluster/command';
+import { ICommandManager } from '@cluster/types';
 import { CommandType, pluralise as p } from '@cluster/utils';
 import { ModuleLoader } from '@core/modules';
 
@@ -32,13 +33,13 @@ export class ReloadCommand extends BaseGlobalCommand {
         });
     }
 
-    public async reloadModules<T>(loader: ModuleLoader<T>, members: string[], type: string): Promise<string> {
+    public async reloadModules<T>(loader: ModuleLoader<T> | ICommandManager, members: string[], type: string): Promise<string> {
         let count = members.length;
         if (members.length === 0) {
-            await loader.reload(true);
+            await (loader instanceof ModuleLoader ? loader.reload(true) : loader.load());
             count = loader.size;
         } else {
-            loader.reload(loader.source(members));
+            await (loader instanceof ModuleLoader ? loader.reload(loader.source(members)) : loader.load(members));
         }
 
         return this.success(`Successfully reloaded ${count} ${p(count, type)}`);

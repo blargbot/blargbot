@@ -1,4 +1,5 @@
 import { Cluster } from '@cluster';
+import { CommandContext } from '@cluster/command';
 import { guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { DiscordEventService } from '@core/serviceTypes';
@@ -45,8 +46,12 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         if (message.author.bot) {
             // NOOP
         } else if (!await this.cluster.await.messages.checkMessage(message)) {
-            if (await this.cluster.commands.tryExecute(message) || await tryHandleCleverbot(this.cluster, message)) {
-                return result;
+            const prefix = await this.cluster.prefixes.findPrefix(message);
+            if (prefix !== undefined) {
+                const context = new CommandContext(this.cluster, message, prefix);
+                if (!await this.cluster.commands.execute(context) || await tryHandleCleverbot(this.cluster, message)) {
+                    return result;
+                }
             }
         }
 

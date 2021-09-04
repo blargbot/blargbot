@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { MultiKeyMap } from '@core/MultiKeyMap';
 import { ModuleResult } from '@core/types';
-import { guard } from '@core/utils';
+import { guard, pluralise as p } from '@core/utils';
 import { EventEmitter } from 'eventemitter3';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -59,6 +59,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     }
 
     private load(fileNames: Iterable<string>, loader = require): void {
+        const loaded = new Set<TModule>();
         if (typeof fileNames === 'string')
             fileNames = [fileNames];
 
@@ -68,8 +69,10 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
                 const modules = this.activate(fileName, rawModule);
                 for (const { names, module } of modules) {
                     const entry = { module, location: fileName };
-                    for (const name of names)
+                    for (const name of names) {
+                        loaded.add(module);
                         this.#modules.set(name, entry);
+                    }
                 }
             } catch (err: unknown) {
                 if (err instanceof Error)
@@ -77,6 +80,8 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
                 this.logger.module(this.root, 'Error while loading module', fileName);
             }
         }
+
+        this.logger.init(`Loaded ${loaded.size} ${p(loaded.size, 'module')} from ${this.#root}`);
     }
 
     public foreach(action: (module: TModule) => void): void;
@@ -95,15 +100,16 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoade
     public reload(rediscover?: false): void
     public reload(rediscover: true): Promise<void>
     public reload(fileNames: Iterable<string>): void
-    public reload(...[arg]: [fileNames: Iterable<string>] | [rediscover?: boolean]): void | Promise<void> {
-        switch (arg) {
+    public reload(fileNames?: Iterable<string> | boolean): void | Promise<void>
+    public reload(fileNames?: Iterable<string> | boolean): void | Promise<void> {
+        switch (fileNames) {
             case true:
                 return toArray(this.findFiles()).then(files => this.load(files));
             case undefined:
             case false:
                 return this.load(this.sources());
             default:
-                return this.load(arg, reload);
+                return this.load(fileNames, reload);
         }
     }
 

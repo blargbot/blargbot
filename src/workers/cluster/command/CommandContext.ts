@@ -20,7 +20,6 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
     public get discord(): Discord<true> { return this.cluster.discord; }
     public get database(): Database { return this.cluster.database; }
     public get channel(): TChannel { return this.message.channel; }
-    public get location(): TChannel { return this.message.channel; }
     public get author(): User { return this.message.author; }
     public get id(): string { return this.message.id; }
     public get timestamp(): number { return this.message.createdTimestamp; }

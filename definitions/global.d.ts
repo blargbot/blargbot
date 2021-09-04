@@ -40,7 +40,7 @@ declare global {
 
     interface ObjectConstructor {
         keys<T>(value: Exclude<T, undefined | null>): Array<string & keyof T>;
-        values<T>(value: Exclude<T, undefined | null>): Array<T[(string | number) & keyof T]>;
+        values<T>(value: Exclude<T, undefined | null>): Array<T[keyof T]>;
         entries<T>(value: Exclude<T, undefined | null>): Array<[string & keyof T, T[string & keyof T]]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
         create<T extends object>(value: T): T;

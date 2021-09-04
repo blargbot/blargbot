@@ -544,11 +544,11 @@ export interface GuildTagBase {
 
 export interface GuildCommandTagBase extends GuildTagBase, CommandPermissions {
     readonly help?: string;
-    readonly flags?: readonly FlagDefinition[];
     readonly cooldown?: number;
 }
 
 export interface GuildSourceCommandTag extends GuildCommandTagBase {
+    readonly flags?: readonly FlagDefinition[];
     readonly content: string;
 }
 
@@ -573,15 +573,17 @@ export type NamedGuildCommandTag = NamedGuildImportedCommandTag | NamedGuildSour
 
 export interface CommandPermissions {
     readonly disabled?: boolean;
-    readonly permission?: bigint;
-    readonly roles?: readonly string[]; // roleIds or role names or role tags
+    readonly permission?: string;
+    /** Role ids, names or mentions */
+    readonly roles?: readonly string[];
     readonly hidden?: boolean;
 }
 
 export interface MutableCommandPermissions extends CommandPermissions {
     disabled?: boolean;
-    permission?: bigint;
-    roles?: string[]; // roleIds or role names or role tags
+    permission?: string;
+    /** Role ids, names or mentions */
+    roles?: string[];
     hidden?: boolean;
 }
 
@@ -607,7 +609,7 @@ export interface StoredGuildSettings {
     readonly adminrole?: string; // role tag or role name
     readonly antimention?: number;
     readonly banat?: number;
-    readonly banoverride?: bigint;
+    readonly banoverride?: string;
     readonly cahnsfw?: boolean;
     readonly deletenotif?: boolean;
     readonly disableeveryone?: boolean;
@@ -616,7 +618,7 @@ export interface StoredGuildSettings {
     readonly farewellchan?: string; // channelid
     readonly greetChan?: string; // channelid
     readonly kickat?: number;
-    readonly kickoverride?: bigint;
+    readonly kickoverride?: string;
     readonly makelogs?: boolean;
     readonly modlog?: string; // channelid or channel tag
     readonly mutedrole?: string; // roleid or role tag
@@ -624,7 +626,7 @@ export interface StoredGuildSettings {
     readonly permoverride?: boolean;
     readonly prefix?: readonly string[];
     readonly social?: boolean;
-    readonly staffperms?: bigint;
+    readonly staffperms?: string;
     readonly tableflip?: boolean;
 }
 
@@ -830,7 +832,8 @@ export interface GuildTable {
     censorIgnoreRole(guildId: string, roleId: string, ignored: boolean): Promise<boolean>;
     setCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', code: GuildTriggerTag | undefined): Promise<boolean>;
     getCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
-    listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedGuildCommandTag[]>;
+    getCustomCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedGuildCommandTag[]>;
+    getCustomCommandNames(guildId: string, skipCache?: boolean): Promise<readonly string[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
     upsert(guild: Guild): Promise<'inserted' | 'updated' | false>;
     exists(guildId: string, skipCache?: boolean): Promise<boolean>;
@@ -842,7 +845,7 @@ export interface GuildTable {
     getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<NamedGuildCommandTag | undefined>;
     getIntervals(skipCache?: boolean): Promise<ReadonlyArray<{ readonly guildId: string; readonly interval: GuildTriggerTag; }>>;
     updateCommand(guildId: string, commandName: string, command: Partial<GuildCommandTag>): Promise<boolean>;
-    updateCommands(guildId: string, commandNames: string[], command: Partial<GuildCommandTag>): Promise<boolean>;
+    updateCommands(guildId: string, commandNames: string[], command: Partial<GuildCommandTag>): Promise<readonly string[]>;
     setCommand(guildId: string, commandName: string, command: GuildCommandTag | undefined): Promise<boolean>;
     setCommandProp<K extends keyof GuildSourceCommandTag>(guildId: string, commandName: string, key: K, value: GuildSourceCommandTag[K]): Promise<boolean>;
     setCommandProp<K extends keyof GuildImportedCommandTag>(guildId: string, commandName: string, key: K, value: GuildImportedCommandTag[K]): Promise<boolean>;
@@ -860,7 +863,7 @@ export interface GuildTable {
     setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
     getCommandPerms(guildId: string, skipCache?: boolean): Promise<Readonly<Record<string, CommandPermissions>> | undefined>;
     getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<CommandPermissions | undefined>;
-    setCommandPerms(guildId: string, commands: string[], permissions: Partial<CommandPermissions>): Promise<boolean>;
+    setCommandPerms(guildId: string, commands: string[], permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
 }
 
 export interface UserTable {

@@ -1,11 +1,10 @@
 import { ApiConnection } from '@api';
-import { CommandDetails, FlagDefinition } from '@cluster/types';
-import { CommandType } from '@cluster/utils';
+import { FlagDefinition, ICommandDetails } from '@cluster/types';
 import { WorkerPoolEventService } from '@core/serviceTypes';
 import { guard, mapping } from '@core/utils';
 import { Master } from '@master';
 
-export class ApiGetCommandHandler extends WorkerPoolEventService<ApiConnection, string, CommandDetails | undefined> {
+export class ApiGetCommandHandler extends WorkerPoolEventService<ApiConnection, string, ICommandDetails | undefined> {
     private nextCluster: number;
 
     public constructor(private readonly master: Master) {
@@ -17,7 +16,7 @@ export class ApiGetCommandHandler extends WorkerPoolEventService<ApiConnection, 
         this.nextCluster = 0;
     }
 
-    protected async getCommand(commandName: string): Promise<CommandDetails | undefined> {
+    protected async getCommand(commandName: string): Promise<ICommandDetails | undefined> {
         const cluster = this.master.clusters.tryGet(this.nextCluster);
         if (cluster === undefined) {
             if (this.nextCluster === 0)
@@ -39,11 +38,10 @@ export class ApiGetCommandHandler extends WorkerPoolEventService<ApiConnection, 
 
 const mapCommandDetails = mapping.mapChoice(
     mapping.mapIn(undefined),
-    mapping.mapObject<CommandDetails>({
+    mapping.mapObject<ICommandDetails>({
         aliases: mapping.mapArray(mapping.mapString),
-        cannotDisable: mapping.mapBoolean,
-        category: mapping.mapIn(...Object.values(CommandType)),
-        description: mapping.mapChoice(mapping.mapIn(null), mapping.mapString),
+        category: mapping.mapString,
+        description: mapping.mapOptionalString,
         flags: mapping.mapArray(mapping.mapObject<FlagDefinition>({
             description: mapping.mapString,
             flag: mapping.mapGuard((v): v is Letter => typeof v === 'string' && guard.isLetter(v)),
@@ -51,7 +49,9 @@ const mapCommandDetails = mapping.mapChoice(
         })),
         hidden: mapping.mapBoolean,
         name: mapping.mapString,
-        onlyOn: mapping.mapChoice(mapping.mapIn(null), mapping.mapString),
-        signatures: mapping.mapFake
+        signatures: mapping.mapFake,
+        disabled: mapping.mapBoolean,
+        permission: mapping.mapString,
+        roles: mapping.mapArray(mapping.mapString)
     })
 );

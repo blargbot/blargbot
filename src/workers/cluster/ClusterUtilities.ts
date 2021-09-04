@@ -1,7 +1,7 @@
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
-import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
+import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, Role, TextBasedChannels, User } from 'discord.js';
 import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-types';
 import fetch from 'node-fetch';
 
@@ -631,11 +631,13 @@ export class ClusterUtilities extends BaseUtilities {
         } else {
             const guildId = typeof args[0] === 'string' ? args[0] : args[0].id;
 
-            if (await this.database.guilds.getSetting(guildId, 'permoverride') !== true)
-                return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
+            if (await this.database.guilds.getSetting(guildId, 'permoverride') === true) {
+                const allow = parse.bigint(await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff);
+                if (allow !== undefined)
+                    return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
+            }
 
-            const allow = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
-            return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
+            return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
         }
 
         if (member === undefined) return false;
@@ -644,16 +646,16 @@ export class ClusterUtilities extends BaseUtilities {
         if (member.permissions.has('ADMINISTRATOR')) return true;
 
         if (await this.database.guilds.getSetting(member.guild.id, 'permoverride') === true) {
-            const allow = await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff;
-            if (this.hasPerms(member, allow)) {
+            const allow = parse.bigint(await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff);
+            if (allow !== undefined && this.hasPerms(member, allow)) {
                 return true;
             }
         }
         return false;
     }
 
-    public hasPerms(member: GuildMember, allow?: bigint | readonly PermissionString[]): boolean {
-        const newPerm = new Permissions(allow ?? defaultStaff);
+    public hasPerms(member: GuildMember, allow: bigint): boolean {
+        const newPerm = new Permissions(allow);
         return member.permissions.any(newPerm);
     }
 

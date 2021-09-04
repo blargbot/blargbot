@@ -1,7 +1,7 @@
-import { BaseCommand, BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandParameter, GuildCommandContext } from '@cluster/types';
-import { codeBlock, CommandType, commandTypeDetails, guard, humanize } from '@cluster/utils';
-import { GuildCommandTag, SendPayload } from '@core/types';
+import { BaseGlobalCommand, CommandContext } from '@cluster/command';
+import { CommandParameter, ICommand } from '@cluster/types';
+import { codeBlock, CommandType, guard, humanize } from '@cluster/utils';
+import { SendPayload } from '@core/types';
 import { EmbedFieldData } from 'discord.js';
 
 export class HelpCommand extends BaseGlobalCommand {
@@ -27,69 +27,28 @@ export class HelpCommand extends BaseGlobalCommand {
     public async listCommands(context: CommandContext): Promise<SendPayload> {
         const fields: EmbedFieldData[] = [];
 
-        let getCommandGroups = (command: BaseCommand): Promise<readonly string[]> =>
-            Promise.resolve([commandTypeDetails[command.category].name]);
-
-        let prefix = context.config.discord.defaultPrefix;
-        const customCommands = new Map<string, GuildCommandTag | undefined>();
-        if (guard.isGuildCommandContext(context)) {
-            for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
-                if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
-                    customCommands.set(command.name, undefined);
-                else
-                    customCommands.set(command.name, command);
-            }
-            let prefixes = await context.database.guilds.getSetting(context.channel.guild.id, 'prefix');
-            if (typeof prefixes === 'string')
-                prefixes = [prefixes];
-            if (prefixes !== undefined)
-                prefix = prefixes[0];
-
-            getCommandGroups = async (command) => {
-                const perms = await context.database.guilds.getCommandPerms(context.channel.guild.id, command.name);
-                // TODO perms.rolename can be role id, name or tag
-                const roles = perms?.roles;
-                if (Array.isArray(roles))
-                    return roles;
-                return [commandTypeDetails[command.category].name];
-            };
-        }
-
-        const commandGroups = new Map<string, Set<string>>();
-        for (const command of context.cluster.commands.list()) {
-            if (!command.checkContext(context) || !await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
+        const allNames = new Set<string>();
+        const groupedCommands: Record<string, string[] | undefined> = {};
+        for await (const command of context.cluster.commands.list(context.channel, context.author)) {
+            const name = [command.name, ...command.aliases].find(n => allNames.size < allNames.add(n).size);
+            if (name === undefined)
                 continue;
 
-            const commandName = command.names.find(n => !customCommands.has(n));
-            if (commandName === undefined)
-                continue;
-
-            for (const groupName of await getCommandGroups(command)) {
-                const group = commandGroups.get(groupName) ?? new Set();
-                if (group.size === 0)
-                    commandGroups.set(groupName, group);
-                group.add(commandName);
-            }
+            for await (const category of this.getCategories(context, command))
+                (groupedCommands[category] ??= []).push(name);
         }
 
-        const groups = [...commandGroups.entries()].sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
-        for (const [name, commandNames] of groups) {
+        const groups = Object.entries(groupedCommands).sort(([a], [b]) => a < b ? -1 : a > b ? 1 : 0);
+        for (const [name, commands] of groups) {
             fields.push({
                 name: `${name} commands`,
-                value: codeBlock([...commandNames].sort().join(', '))
-            });
-        }
-        if (customCommands.size > 0) {
-            const commandNames = [...customCommands.entries()].filter(e => e[1] !== undefined).map(e => e[0]);
-            fields.push({
-                name: 'Custom commands',
-                value: codeBlock(commandNames.sort().join(', '))
+                value: codeBlock(commands?.sort().join(', '))
             });
         }
 
         fields.push({
             name: '\u200B',
-            value: `For more information about commands, do \`${prefix}help <commandname>\` or visit <${context.util.websiteLink('/commands')}>.\n` +
+            value: `For more information about commands, do \`${context.prefix}help <commandname>\` or visit <${context.util.websiteLink('/commands')}>.\n` +
                 'Want to support the bot? Consider donating to <https://patreon.com/blargbot> - all donations go directly towards recouping hosting costs.'
         });
 
@@ -104,47 +63,37 @@ export class HelpCommand extends BaseGlobalCommand {
         };
     }
 
-    public async viewCommand(context: CommandContext, commandName: string, page: number, subcommand: string | undefined): Promise<SendPayload> {
-        if (guard.isGuildCommandContext(context)) {
-            const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
-            if (command !== undefined)
-                return this.viewCustomCommand(context, commandName, command);
+    public async viewCommand(context: CommandContext, commandName: string, page: number, subcommand = ''): Promise<SendPayload> {
+        const result = await context.cluster.commands.get(commandName, context.channel, context.author);
+        switch (result.state) {
+            case 'ALLOWED': break;
+            case 'BLACKLISTED':
+            case 'DISABLED':
+            case 'NOT_FOUND':
+            case 'NOT_IN_GUILD':
+                return this.error(`The command \`${commandName}\` could not be found`);
+            case 'MISSING_PERMISSIONS':
+            case 'MISSING_ROLE':
+                return this.error(`You dont have permission to run the \`${commandName}\` command`);
         }
 
-        const command = context.cluster.commands.get(commandName);
-        if (command !== undefined)
-            return this.viewDefaultCommand(context, command, page, subcommand);
-
-        return this.error(`The command \`${commandName}\` could not be found`);
-    }
-
-    public async viewCustomCommand(context: GuildCommandContext, commandName: string, command: GuildCommandTag): Promise<SendPayload> {
-        if (!await context.cluster.commands.canExecuteCustomCommand(context, command, { quiet: true }))
-            return this.error(`You dont have permission to run the \`${commandName}\` command`);
-
-        return {
-            embeds: [
-                {
-                    title: `Help for ${commandName} (Custom Command)`,
-                    description: command.help ?? '_No help text has been supplied_',
-                    color: 0x7289da
-                }
-            ],
-            isHelp: true
-        };
-    }
-
-    public async viewDefaultCommand(context: CommandContext, command: BaseCommand, page: number, subcommand = ''): Promise<SendPayload> {
-        if (!await context.cluster.commands.canExecuteDefaultCommand(context, command, { quiet: true }))
-            return this.error(`You dont have permission to run the \`${command.name}\` command`);
+        let name = result.detail.name;
+        if (name.toLowerCase() !== commandName.toLowerCase()) {
+            const byName = await context.cluster.commands.get(result.detail.name, context.channel, context.author);
+            if (byName.state !== 'ALLOWED' || byName.detail.implementation !== result.detail.implementation)
+                name = commandName;
+        }
 
         if (page < 0)
             return this.error('Page the page number must be 1 or higher');
 
         const fields: EmbedFieldData[] = [];
+        const { detail: command } = result;
 
-        if (command.aliases.length > 0)
-            fields.push({ name: '**Aliases**', value: command.aliases.join(', ') });
+        const aliases = [...command.aliases].filter(a => a !== name);
+
+        if (aliases.length > 0)
+            fields.push({ name: '**Aliases**', value: aliases.join(', ') });
 
         if (command.flags.length > 0)
             fields.push({ name: '**Flags**', value: humanize.flags(command.flags).join('\n') });
@@ -163,16 +112,16 @@ export class HelpCommand extends BaseGlobalCommand {
 
         const signatures = filteredSignatures.slice(0, 10);
 
-        if (signatures.length === 0) {
+        if (allSignatures.length > 0 && signatures.length === 0) {
             if (filteredSignatures.length === 0)
-                return this.error(`No subcommands for \`${command.name}\` matching \`${subcommand}\` were found`);
+                return this.error(`No subcommands for \`${name}\` matching \`${subcommand}\` were found`);
             if (page !== 0)
-                return this.error(`Page ${page + 1} is empty for \`${command.name}\`!`);
+                return this.error(`Page ${page + 1} is empty for \`${name}\`!`);
         }
 
         for (const signature of signatures) {
             fields.push({
-                name: `ℹ️  ${context.prefix}${command.name}${signature.usage !== '' ? ` ${signature.usage}` : ''}`,
+                name: `ℹ️  ${context.prefix}${name}${signature.usage !== '' ? ` ${signature.usage}` : ''}`,
                 value: `${signature.notes.map(n => `> ${n}`).join('\n')}\n\n${signature.description}`.trim()
             });
         }
@@ -180,22 +129,53 @@ export class HelpCommand extends BaseGlobalCommand {
         if (filteredSignatures.length > signatures.length) {
             fields.push({
                 name: `... and ${filteredSignatures.length - signatures.length} more`,
-                value: `Use \`${context.prefix}help ${command.name}${subcommand.length === 0 ? '' : ` ${subcommand}`} ${page + 2}\` for more`
+                value: `Use \`${context.prefix}help ${name}${subcommand.length === 0 ? '' : ` ${subcommand}`} ${page + 2}\` for more`
             });
         }
 
         return {
             embeds: [
                 {
-                    title: `Help for ${command.name} ${subcommand}`,
+                    title: `Help for ${name} ${subcommand}`,
                     url: context.util.websiteLink(`/commands#${command.name}`),
-                    description: command.description ?? undefined,
-                    color: commandTypeDetails[command.category].color,
+                    description: command.description,
+                    color: getColor(command.category),
                     fields: fields
                 }
             ],
             isHelp: true
         };
+    }
+
+    private async * getCategories(context: CommandContext, command: ICommand): AsyncGenerator<string> {
+        if (command.roles.length === 0)
+            yield command.category;
+
+        if (guard.isGuildCommandContext(context)) {
+            for (const roleStr of command.roles) {
+                const role = await context.util.getRole(context.channel.guild, roleStr)
+                    ?? context.channel.guild.roles.cache.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
+
+                if (role !== undefined)
+                    yield role.name;
+            }
+        }
+    }
+}
+
+function getColor(type: string): number {
+    switch (type.toLowerCase()) {
+        case 'custom': return 0x7289da;
+        case 'general': return 0xefff00;
+        case 'nsfw': return 0x010101;
+        case 'image': return 0xefff00;
+        case 'admin': return 0xff0000;
+        case 'social': return 0xefff00;
+        case 'owner': return 0xff0000;
+        case 'developer': return 0xff0000;
+        case 'staff': return 0xff0000;
+        case 'support': return 0xff0000;
+        default: return 0;
     }
 }
 

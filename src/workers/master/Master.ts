@@ -46,7 +46,6 @@ export class Master extends BaseClient {
 
     public async start(): Promise<void> {
         await this.eventHandlers.init();
-        this.logger.init(this.moduleStats(this.eventHandlers, 'Events', ev => ev.type));
 
         await Promise.all([
             super.start(),
@@ -54,7 +53,6 @@ export class Master extends BaseClient {
         ]);
 
         await this.services.init();
-        this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
     }
 
     private async hello(): Promise<void> {

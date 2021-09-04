@@ -39,15 +39,8 @@ export class ClusterGetGuildPermssionHandler extends ClusterEventService<{ userI
                 ['interval', 'interval'] as const,
                 ['rolemes', 'roleme'] as const
             ].map(async ([key, commandName]) => {
-                const command = this.cluster.commands.get(commandName);
-                if (command === undefined)
-                    return [key, false] as const;
-
-                return [key, await this.cluster.commands.canExecuteDefaultCommand({
-                    author: member.user,
-                    location: member.guild,
-                    util: this.cluster.util
-                }, command)] as const;
+                const command = await this.cluster.commands.default.get(commandName, member.guild, member.user);
+                return [key, command.state === 'ALLOWED'] as const;
             })))
         };
     }

@@ -1,14 +1,71 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
-import { CommandContext, ScopedCommandBase } from '@cluster/command';
+import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
-import { GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
+import { CommandPermissions, GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
+
+export interface ICommandManager<T = unknown> {
+    readonly size: number;
+    execute(context: CommandContext): Promise<boolean>;
+    get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>>;
+    list(location?: Guild | TextBasedChannels, user?: User): AsyncIterable<ICommand<T>>;
+    configure(names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    messageDeleted(message: Message | PartialMessage): Promise<void>;
+    load(commands?: Iterable<string> | boolean): Promise<void>;
+}
+
+export interface ICommandDetails extends Required<CommandPermissions> {
+    readonly name: string;
+    readonly aliases: readonly string[];
+    readonly category: string;
+    readonly description: string | undefined;
+    readonly flags: readonly FlagDefinition[];
+    readonly signatures: readonly CommandSignature[];
+}
+
+export interface ICommand<T = unknown> extends ICommandDetails {
+    readonly implementation: T;
+    execute(context: CommandContext): Promise<void>;
+}
+
+export interface ICommandPermissionEvaluator {
+    checkPermissions(user: User, location: Guild | TextBasedChannels, permissions?: CommandPermissions): Promise<PermissionCheckResult>;
+}
+
+export type Result<State, Detail = undefined, Optional extends boolean = Detail extends undefined ? true : false> = Optional extends false
+    ? { readonly state: State; readonly detail: Detail; }
+    : { readonly state: State; readonly detail?: Detail; };
+
+export type PermissionCheckResult =
+    | Result<'ALLOWED'>
+    | Result<'BLACKLISTED', string>
+    | Result<'DISABLED'>
+    | Result<'NOT_IN_GUILD'>
+    | Result<'MISSING_ROLE', readonly string[]>
+    | Result<'MISSING_PERMISSIONS', bigint>;
+
+export type CommandGetResult<T = unknown> =
+    | Result<'NOT_FOUND'>
+    | Exclude<PermissionCheckResult, { state: 'ALLOWED'; }>
+    | Result<'ALLOWED', ICommand<T>, false>;
+
+export type CommandGetCoreResult<T = unknown> =
+    | CommandGetResult<T>
+    | Result<'FOUND', ICommand<T>, false>;
+
+export type CommandManagerTypeMap = {
+    custom: NamedGuildCommandTag;
+    default: BaseCommand;
+};
+
+export type CommandManagers = { [P in keyof CommandManagerTypeMap]: ICommandManager<CommandManagerTypeMap[P]> }
+export type CommandManagerTypes = CommandManagerTypeMap[keyof CommandManagerTypeMap];
 
 export type Statement = Array<string | SubtagCall>;
 
@@ -265,9 +322,8 @@ export interface CommandOptionsBase {
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly description?: string | null;
+    readonly description?: string;
     readonly flags?: readonly FlagDefinition[];
-    readonly onlyOn?: string | null;
     readonly hidden?: boolean;
 }
 
@@ -444,7 +500,7 @@ export interface GuildPermissionDetails {
 }
 
 export interface CommandListResult {
-    [commandName: string]: CommandDetails | undefined;
+    [commandName: string]: ICommandDetails | undefined;
 }
 
 export interface SubtagArgumentValue {
@@ -458,10 +514,6 @@ export interface SubtagArgumentValue {
 
 export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentValue> {
     readonly subtagName: string;
-}
-
-export interface CommandDetails extends Readonly<Required<CommandOptionsBase>> {
-    readonly signatures: ReadonlyArray<CommandSignature<Omit<CommandParameter, 'parse' | 'priority'>>>;
 }
 
 export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
@@ -578,29 +630,18 @@ export interface RuntimeLimitRule {
 export type GuildCommandContext<TChannel extends GuildTextBasedChannels = GuildTextBasedChannels> = CommandContext<TChannel> & { message: { member: GuildMember; guildID: string; }; };
 export type PrivateCommandContext<TChannel extends PrivateTextBasedChannels = PrivateTextBasedChannels> = CommandContext<TChannel>;
 
-export interface CommandPermissionContext {
-    readonly author: User;
-    readonly location: Guild | TextBasedChannels;
-    readonly util: ClusterUtilities;
-}
-
-export interface GuildCommandPermissionContext extends CommandPermissionContext {
-    readonly location: Guild | GuildTextBasedChannels;
-}
-
 export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
 export interface CommandProperties {
     readonly name: string;
     readonly description: string;
-    readonly defaultPerms?: readonly PermissionString[];
-    readonly requirement: (context: CommandPermissionContext) => boolean | Promise<boolean>;
+    readonly defaultPerms?: bigint;
+    readonly isVisible: (util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User) => boolean | Promise<boolean>;
     readonly color: number;
 }
 
 export type GuildSettingTypeName<T> =
-    T extends string ? 'string' | 'channel' | 'role' :
+    T extends string ? 'string' | 'channel' | 'role' | 'permission' :
     T extends number ? 'float' | 'int' :
-    T extends bigint ? 'bigint' :
     T extends boolean ? 'bool' : never
 
 export type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {

@@ -1,6 +1,5 @@
 import { ApiConnection } from '@api';
-import { CommandDetails, CommandListResult, FlagDefinition } from '@cluster/types';
-import { CommandType } from '@cluster/utils';
+import { CommandListResult, FlagDefinition, ICommandDetails } from '@cluster/types';
 import { WorkerPoolEventService } from '@core/serviceTypes';
 import { guard, mapping } from '@core/utils';
 import { Master } from '@master';
@@ -37,11 +36,10 @@ export class ApiGetCommandListHandler extends WorkerPoolEventService<ApiConnecti
     }
 }
 
-const mapCommandListResult = mapping.mapRecord(mapping.mapObject<CommandDetails>({
+const mapCommandListResult = mapping.mapRecord(mapping.mapObject<ICommandDetails>({
     aliases: mapping.mapArray(mapping.mapString),
-    cannotDisable: mapping.mapBoolean,
-    category: mapping.mapIn(...Object.values(CommandType)),
-    description: mapping.mapChoice(mapping.mapIn(null), mapping.mapString),
+    category: mapping.mapString,
+    description: mapping.mapOptionalString,
     flags: mapping.mapArray(mapping.mapObject<FlagDefinition>({
         description: mapping.mapString,
         flag: mapping.mapGuard((v): v is Letter => typeof v === 'string' && guard.isLetter(v)),
@@ -49,6 +47,8 @@ const mapCommandListResult = mapping.mapRecord(mapping.mapObject<CommandDetails>
     })),
     hidden: mapping.mapBoolean,
     name: mapping.mapString,
-    onlyOn: mapping.mapChoice(mapping.mapIn(null), mapping.mapString),
-    signatures: mapping.mapFake
+    signatures: mapping.mapFake,
+    disabled: mapping.mapBoolean,
+    permission: mapping.mapString,
+    roles: mapping.mapArray(mapping.mapString)
 }));

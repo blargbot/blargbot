@@ -148,7 +148,7 @@ function resolveRole(guild: Guild, roleId: string | undefined): string | undefin
     return `${role.name} (${role.id})`;
 }
 
-function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | undefined | boolean | number | bigint]>): string {
+function settingGroup(values: Array<[key: string & keyof typeof guildSettings, value: string | undefined | boolean | number]>): string {
     const mapped = values.map(([key, value]) => {
         const setting = guildSettings[key];
         return [

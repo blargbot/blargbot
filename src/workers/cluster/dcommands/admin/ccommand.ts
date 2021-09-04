@@ -1,7 +1,7 @@
 import { Cluster } from '@cluster';
 import { CustomCommandLimit, getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand } from '@cluster/command';
-import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, SignedGuildShrinkwrap } from '@cluster/types';
+import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
 import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
@@ -10,7 +10,9 @@ import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
-export class CustomCommand extends BaseGuildCommand {
+export class CustomCommandCommand extends BaseGuildCommand {
+    public static readonly reservedCommandNames = new Set<string>(['ccommand', 'editcommand']);
+
     public constructor(cluster: Cluster) {
         super({
             name: 'ccommand',
@@ -285,10 +287,8 @@ export class CustomCommand extends BaseGuildCommand {
 
     public async listCommands(context: GuildCommandContext): Promise<{ embeds: [MessageEmbedOptions]; } | string | undefined> {
         const grouped: Record<string, string[]> = {};
-        for (const command of await context.database.guilds.listCommands(context.channel.guild.id)) {
-            // TODO command.roles can be role id, name or tag
-            const roles = command.roles === undefined || command.roles.length === 0 ? ['All Roles'] : command.roles;
-            for (const role of roles) {
+        for await (const command of context.cluster.commands.custom.list(context.channel.guild)) {
+            for await (const role of this.getRoles(context, command)) {
                 (grouped[role] ??= []).push(command.name);
             }
         }
@@ -306,6 +306,21 @@ export class CustomCommand extends BaseGuildCommand {
                 }
             ]
         };
+    }
+
+    private async * getRoles(context: GuildCommandContext, command: ICommand): AsyncGenerator<string> {
+        if (command.roles.length === 0)
+            yield 'All Roles';
+
+        if (guard.isGuildCommandContext(context)) {
+            for (const roleStr of command.roles) {
+                const role = await context.util.getRole(context.channel.guild, roleStr)
+                    ?? context.channel.guild.roles.cache.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
+
+                if (role !== undefined)
+                    yield role.name;
+            }
+        }
     }
 
     public async setCommandCooldown(context: GuildCommandContext, commandName: string, cooldown?: Duration): Promise<string | undefined> {
@@ -437,8 +452,11 @@ export class CustomCommand extends BaseGuildCommand {
         return this.success(`Roles for custom command \`${match.name}\` set to ${humanize.smartJoin(roles.map(r => `\`${r.name}\``), ', ', ' and ')}.`);
     }
 
-    public async importCommand(context: GuildCommandContext, tagName: string, commandName: string | undefined): Promise<string> {
-        commandName = normalizeName(commandName ?? tagName);
+    public async importCommand(context: GuildCommandContext, tagName: string, commandName: string | undefined): Promise<string | undefined> {
+        commandName = await this.requestCommandName(context, commandName ?? tagName);
+        if (commandName === undefined)
+            return undefined;
+
         if (await context.database.guilds.getCommand(context.channel.guild.id, commandName) !== undefined)
             return this.error(`The \`${commandName}\` custom command already exists!`);
 
@@ -463,7 +481,7 @@ export class CustomCommand extends BaseGuildCommand {
             'If you decide to proceed, this will:'
         ];
 
-        const commands = new Map((await context.database.guilds.listCommands(context.channel.guild.id)).map(c => [c.name, c] as const));
+        const commands = new Map((await context.database.guilds.getCustomCommands(context.channel.guild.id)).map(c => [c.name, c] as const));
         for (let commandName of commandNames) {
             commandName = commandName.toLowerCase();
             const command = commands.get(commandName);
@@ -531,7 +549,7 @@ export class CustomCommand extends BaseGuildCommand {
         );
 
         const guildId = context.channel.guild.id;
-        const commandNames = new Set((await context.database.guilds.listCommands(guildId)).map(c => c.name));
+        const commandNames = new Set((await context.database.guilds.getCustomCommands(guildId)).map(c => c.name));
         const shrinkwrap = signedShrinkwrap.value.payload;
         for (const commandName of Object.keys(shrinkwrap.cc)) {
             if (commandNames.has(commandName.toLowerCase())) {
@@ -612,6 +630,11 @@ export class CustomCommand extends BaseGuildCommand {
     ): Promise<string | undefined> {
         if (name !== undefined) {
             name = normalizeName(name);
+            if (CustomCommandCommand.reservedCommandNames.has(name)) {
+                await context.reply(this.error(`The command name \`${name}\` is reserved and cannot be overwritten`));
+                return undefined;
+            }
+
             if (name.length > 0)
                 return name;
         }
@@ -624,6 +647,10 @@ export class CustomCommand extends BaseGuildCommand {
             return undefined;
 
         name = normalizeName(nameResult.value);
+        if (CustomCommandCommand.reservedCommandNames.has(name)) {
+            await context.reply(this.error(`The command name \`${name}\` is reserved and cannot be overwritten`));
+            return undefined;
+        }
         return name.length > 0 ? name : undefined;
     }
 
@@ -708,7 +735,7 @@ export class CustomCommand extends BaseGuildCommand {
     ): Promise<{ name: string; command?: NamedGuildCommandTag; } | string | undefined> {
         commandName = await this.requestCommandName(context, commandName, allowQuery ? undefined : '');
         if (commandName === undefined)
-            return;
+            return undefined;
 
         const command = await context.database.guilds.getCommand(context.channel.guild.id, commandName);
         if (command === undefined)
@@ -758,7 +785,7 @@ const mapCustomCommandShrinkwrap = mapping.mapObject<CustomCommandShrinkwrap>({
     hidden: mapping.mapOptionalBoolean,
     roles: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined }),
     disabled: mapping.mapOptionalBoolean,
-    permission: mapping.mapOptionalBigInt
+    permission: mapping.mapOptionalString
 });
 
 const mapGuildShrinkwrap = mapping.mapObject<GuildShrinkwrap>({

@@ -1,5 +1,8 @@
+import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { CommandDefinition, CommandMiddleware, CommandOptions, CommandResult } from '@cluster/types';
+import { commandTypeDetails } from '@cluster/utils';
 import { SendPayload } from '@core/types';
+import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommand } from './BaseCommand';
 import { CommandContext } from './CommandContext';
@@ -36,11 +39,15 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
         this.handler = new HandlerMiddleware(signatures, this);
     }
 
-    public abstract checkContext(context: CommandContext): context is TContext;
+    public async isVisible(util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User): Promise<boolean> {
+        return await commandTypeDetails[this.category].isVisible(util, location, user);
+    }
+
+    protected abstract guardContext(context: CommandContext): context is TContext;
     protected abstract handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult;
 
     public async execute(context: CommandContext): Promise<void> {
-        if (!this.checkContext(context)) {
+        if (!this.guardContext(context)) {
             const result = await this.handleInvalidContext(context);
             if (result !== undefined)
                 await context.reply(result);
@@ -57,10 +64,11 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
     }
 
     protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {
+        // TODO transition to using a worker
         const { HelpCommand: helpCommandClass } = await helpCommandPromise;
-        const help = context.cluster.commands.get('help');
-        if (help instanceof helpCommandClass)
-            return await help.viewDefaultCommand(context, command, page, subcommand);
+        const help = await context.cluster.commands.default.get('help');
+        if (help.state === 'ALLOWED' && help.detail.implementation instanceof helpCommandClass)
+            return await help.detail.implementation.viewCommand(context, command.name, page, subcommand);
         return this.error('Unable to load help, please try again later');
     }
 }

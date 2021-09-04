@@ -4,15 +4,14 @@ import { Timer } from '@core/Timer';
 import { mapping } from '@core/utils';
 import { Master } from '@master';
 
-export class ClusterRespawnAllHandler extends WorkerPoolEventService<ClusterConnection, string, boolean> {
+export class ClusterRespawnAllHandler extends WorkerPoolEventService<ClusterConnection, string> {
     public constructor(private readonly master: Master) {
         super(
             master.clusters,
             'respawnAll',
             mapping.mapString,
-            async ({ data, reply }) => {
+            async ({ data }) => {
                 await this.respawnAll(data);
-                reply(true);
             });
     }
 
