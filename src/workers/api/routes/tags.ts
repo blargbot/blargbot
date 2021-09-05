@@ -8,9 +8,12 @@ export class TagsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
         super('/tags');
 
+        this.addRoute('/', {
+            post: req => this.createTag(req.body, this.getUserId(req))
+        });
+
         this.addRoute('/:tagName', {
             get: req => this.getTag(req.params.tagName),
-            post: req => this.createTag(req.params.tagName, req.body, this.getUserId(req)),
             put: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
             delete: req => this.deleteTag(req.params.tagName, this.getUserId(req))
         });
@@ -28,7 +31,7 @@ export class TagsRoute extends BaseRoute {
         });
     }
 
-    public async createTag(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
+    public async createTag(body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
             return this.badRequest();
 
@@ -36,12 +39,14 @@ export class TagsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
+        const { name: tagName, ...rest } = mapped.value;
+
         const exists = await this.api.database.tags.get(tagName);
         if (exists !== undefined)
             return this.forbidden(`A tag with the name ${tagName} already exists`);
 
         const tag: StoredTag = {
-            ...mapped.value,
+            ...rest,
             author: author,
             lastmodified: new Date(),
             name: tagName,
@@ -102,7 +107,8 @@ export class TagsRoute extends BaseRoute {
 }
 
 const mapCreateTag = mapping.mapObject({
-    content: mapping.mapString
+    content: mapping.mapString,
+    name: mapping.mapString
 }, { strict: true });
 
 const mapUpdateTag = mapping.mapObject({

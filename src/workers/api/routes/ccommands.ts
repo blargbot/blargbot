@@ -9,12 +9,12 @@ export class CCommandsRoute extends BaseRoute {
         super('/guilds');
 
         this.addRoute('/:guildId/ccommands', {
-            get: (req) => this.listCCommands(req.params.guildId, this.getUserId(req))
+            get: (req) => this.listCCommands(req.params.guildId, this.getUserId(req)),
+            post: (req) => this.createCommand(req.params.guildId, req.body, this.getUserId(req))
         });
         this.addRoute('/:guildId/ccommands/:commandName', {
             get: (req) => this.getCommand(req.params.guildId, req.params.commandName, this.getUserId(req)),
             delete: (req) => this.deleteCommand(req.params.guildId, req.params.commandName, this.getUserId(req)),
-            post: (req) => this.createCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req)),
             put: (req) => this.editCommand(req.params.guildId, req.params.commandName, req.body, this.getUserId(req))
         });
     }
@@ -43,7 +43,7 @@ export class CCommandsRoute extends BaseRoute {
         return this.ok(command);
     }
 
-    public async createCommand(guildId: string, commandName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
+    public async createCommand(guildId: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
             return this.badRequest();
 
@@ -55,19 +55,22 @@ export class CCommandsRoute extends BaseRoute {
         if (!mapped.valid)
             return this.badRequest();
 
+        const { name: commandName, ...rest } = mapped.value;
+
+        const command: Mutable<GuildSourceCommandTag> = {
+            ...rest,
+            author
+        };
+
         const exists = await this.api.database.guilds.getCommand(guildId, commandName);
         if (exists !== undefined)
             return this.forbidden(`A custom command with the name ${commandName} already exists`);
 
-        const command: GuildSourceCommandTag = {
-            ...mapped.value,
-            author
-        };
         const success = await this.api.database.guilds.setCommand(guildId, commandName, command);
         if (!success)
             return this.internalServerError('Failed to create custom command');
 
-        return this.created(command);
+        return this.created({ ...command, name: commandName });
     }
 
     public async editCommand(guildId: string, commandName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
@@ -136,7 +139,8 @@ export class CCommandsRoute extends BaseRoute {
 }
 
 const mapCreateCommand = mapping.mapObject({
-    content: mapping.mapString
+    content: mapping.mapString,
+    name: mapping.mapString
 });
 
 const mapUpdateCommand = mapping.mapObject({
