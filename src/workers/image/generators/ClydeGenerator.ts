@@ -1,15 +1,14 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ImageWorker } from '@image/ImageWorker';
 import { ClydeOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
-    public constructor(logger: Logger) {
-        super('clyde', logger, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('clyde', worker);
     }
 
-    public async executeCore({ text }: ClydeOptions): Promise<ImageResult> {
+    public async execute({ text }: ClydeOptions): Promise<ImageResult> {
         const originalText = await this.renderJimpText(text, {
             font: 'whitney.ttf',
             fontsize: 20,
@@ -34,7 +33,3 @@ export class ClydeGenerator extends BaseImageGenerator<'clyde'> {
     }
 
 }
-
-const mapOptions = mapping.mapObject<ClydeOptions>({
-    text: mapping.mapString
-});

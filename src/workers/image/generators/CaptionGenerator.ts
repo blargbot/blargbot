@@ -1,15 +1,14 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { CaptionOptions, ImageResult, ValidFont } from '@image/types';
+import { ImageWorker } from '@image/ImageWorker';
+import { CaptionOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class CaptionGenerator extends BaseImageGenerator<'caption'> {
-    public constructor(logger: Logger) {
-        super('caption', logger, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('caption', worker);
     }
 
-    public async executeCore({ url, input, font }: CaptionOptions): Promise<ImageResult> {
+    public async execute({ url, input, font }: CaptionOptions): Promise<ImageResult> {
         const img = await this.getRemoteJimp(url);
         img.scaleToFit(800, 800);
 
@@ -44,27 +43,3 @@ export class CaptionGenerator extends BaseImageGenerator<'caption'> {
         };
     }
 }
-
-const supportedFonts = Object.keys<{ [P in ValidFont]: true }>({
-    ['ARCENA.ttf']: true,
-    ['AnnieUseYourTelescope.ttf']: true,
-    ['IndieFlower.ttf']: true,
-    ['Roboto-Regular.ttf']: true,
-    ['SFToontime.ttf']: true,
-    ['Ubuntu-Regular.ttf']: true,
-    ['animeace.ttf']: true,
-    ['arial.ttf']: true,
-    ['comicjens.ttf']: true,
-    ['comicsans.ttf']: true,
-    ['delius.ttf']: true,
-    ['impact.ttf']: true
-});
-
-const mapOptions = mapping.mapObject<CaptionOptions>({
-    font: mapping.mapIn(...supportedFonts),
-    url: mapping.mapString,
-    input: mapping.mapObject({
-        top: mapping.mapOptionalString,
-        bottom: mapping.mapOptionalString
-    })
-});

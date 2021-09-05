@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { codeBlock, CommandType, mapping } from '@cluster/utils';
-import { EvalResult, MasterEvalRequest, MasterEvalResult } from '@core/types';
+import { codeBlock, CommandType } from '@cluster/utils';
+import { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@core/types';
 
 export class EvalCommand extends BaseGlobalCommand {
     public constructor() {
@@ -57,7 +57,7 @@ export class EvalCommand extends BaseGlobalCommand {
         if (response.success === false)
             return `An error occured!${codeBlock(response.error)}`;
 
-        const masterResponse = <MasterEvalResult>response;
+        const masterResponse = <GlobalEvalResult>response;
 
         return `Global eval input:${codeBlock(code, 'js')}${Object.entries(masterResponse).map(([id, response]) => {
             return response.success
@@ -76,31 +76,8 @@ export class EvalCommand extends BaseGlobalCommand {
     }
 
     private async requestEval(context: CommandContext, data: MasterEvalRequest & { type: `cluster${number}` | 'master'; }): Promise<EvalResult>
-    private async requestEval(context: CommandContext, data: MasterEvalRequest & { type: 'global'; }): Promise<MasterEvalResult | Extract<EvalResult, { success: false; }>>
-    private async requestEval(context: CommandContext, data: MasterEvalRequest): Promise<MasterEvalResult | EvalResult> {
-        try {
-            const result = masterEvalResultMapping(await context.cluster.worker.request('meval', data));
-            if (result.valid)
-                return result.value;
-            return { success: false, error: 'Invalid response from master' };
-        } catch (err: unknown) {
-            return { success: false, error: err };
-        }
+    private async requestEval(context: CommandContext, data: MasterEvalRequest & { type: 'global'; }): Promise<GlobalEvalResult | Extract<EvalResult, { success: false; }>>
+    private async requestEval(context: CommandContext, data: MasterEvalRequest): Promise<GlobalEvalResult | EvalResult> {
+        return await context.cluster.worker.request('meval', data);
     }
 }
-
-const evalResultMapping = mapping.mapChoice<EvalResult[]>(
-    mapping.mapObject({
-        success: mapping.mapIn(true),
-        result: mapping.mapUnknown
-    }),
-    mapping.mapObject({
-        success: mapping.mapIn(false),
-        error: mapping.mapUnknown
-    })
-);
-
-const masterEvalResultMapping = mapping.mapChoice<[EvalResult, MasterEvalResult]>(
-    evalResultMapping,
-    mapping.mapRecord(evalResultMapping)
-);

@@ -11,7 +11,7 @@ export default async function start(): Promise<void> {
     const logger = createLogger(config, `IM${process.env.IMAGE_ID ?? ''}(${process.pid})`);
     logger.setGlobal();
 
-    await new ImageWorker(config, logger)
+    await new ImageWorker(process, config, logger)
         .start();
 }
 

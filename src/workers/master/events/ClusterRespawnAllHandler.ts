@@ -1,17 +1,15 @@
 import { ClusterConnection } from '@cluster';
 import { WorkerPoolEventService } from '@core/serviceTypes';
 import { Timer } from '@core/Timer';
-import { mapping } from '@core/utils';
 import { Master } from '@master';
 
-export class ClusterRespawnAllHandler extends WorkerPoolEventService<ClusterConnection, string> {
+export class ClusterRespawnAllHandler extends WorkerPoolEventService<ClusterConnection, 'respawnAll'> {
     public constructor(private readonly master: Master) {
         super(
             master.clusters,
             'respawnAll',
-            mapping.mapString,
             async ({ data }) => {
-                await this.respawnAll(data);
+                await this.respawnAll(data.channelId);
             });
     }
 

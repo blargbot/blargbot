@@ -1,14 +1,8 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseApiImageGenerator } from '@image/BaseApiImageGenerator';
-import { PCCheckOptions } from 'blargbot-api';
+import { ImageWorker } from '@image/ImageWorker';
 
 export class PCCheckGenerator extends BaseApiImageGenerator<'pccheck'> {
-    public constructor(logger: Logger, config: Configuration) {
-        super('pccheck', logger, config.blargbot_api.token, config.blargbot_api.base, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('pccheck', worker);
     }
 }
-
-const mapOptions = mapping.mapObject<PCCheckOptions>({
-    text: mapping.mapString
-});

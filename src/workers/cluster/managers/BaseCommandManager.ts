@@ -38,6 +38,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
                 if (guard.isGuildCommandContext(context))
                     this.#commandMessages.push(context.channel.guild.id, context.message.channel.id);
 
+                await context.channel.sendTyping();
                 await result.detail.execute(context);
                 return true;
             }

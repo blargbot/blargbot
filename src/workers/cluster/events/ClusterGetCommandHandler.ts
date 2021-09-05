@@ -1,13 +1,12 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
 import { ICommandDetails } from '@cluster/types';
-import { mapping } from '@core/utils';
 
-export class ClusterGetCommandHandler extends ClusterEventService<string, ICommandDetails | undefined> {
+export class ClusterGetCommandHandler extends ClusterEventService<'getCommand'> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getCommand', mapping.mapString, async ({ data, reply }) => reply(await this.getCommand(data)));
+        super(cluster, 'getCommand', async ({ data, reply }) => reply(await this.getCommand(data)));
     }
 
     public async getCommand(name: string): Promise<ICommandDetails | undefined> {

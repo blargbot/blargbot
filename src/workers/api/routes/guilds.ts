@@ -17,7 +17,7 @@ export class GuildsRoute extends BaseRoute {
         if (userId === undefined)
             return this.forbidden();
 
-        const result = await this.api.worker.request('getGuildPermssionList', { userId });
+        const result = await this.api.worker.request('getGuildPermissionList', { userId });
         return this.ok(result);
     }
 
@@ -25,7 +25,7 @@ export class GuildsRoute extends BaseRoute {
         if (userId === undefined)
             return this.forbidden();
 
-        const result = await this.api.worker.request('getGuildPermssion', { userId, guildId });
+        const result = await this.api.worker.request('getGuildPermission', { userId, guildId });
         if (result === undefined)
             return this.notFound();
 

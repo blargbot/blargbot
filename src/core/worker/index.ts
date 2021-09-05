@@ -1,4 +1,4 @@
 export * from './BaseWorker';
-export * from './IPCEvents';
+export * from './IPCMessageEmitter';
 export * from './WorkerConnection';
 export * from './WorkerPool';

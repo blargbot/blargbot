@@ -29,7 +29,7 @@ export class RestartCommand extends BaseGlobalCommand {
     }
 
     private async restartWebsites(context: CommandContext): Promise<string> {
-        await context.cluster.worker.request('respawnApi', context.channel.id);
+        await context.cluster.worker.request('respawnApi', undefined);
         return this.success('Api has been respawned.');
     }
 
@@ -41,12 +41,12 @@ export class RestartCommand extends BaseGlobalCommand {
                 time: moment().valueOf()
             }
         });
-        context.cluster.worker.send('killAll', context.channel.id);
+        context.cluster.worker.send('killAll', undefined);
         return undefined;
     }
 
     private respawnClusters(context: CommandContext): string {
-        context.cluster.worker.send('respawnAll', context.channel.id);
+        context.cluster.worker.send('respawnAll', { channelId: context.channel.id });
         return 'Ah! You\'ve killed me but in a way that minimizes downtime! D:';
     }
 }

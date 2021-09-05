@@ -1,14 +1,8 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseApiImageGenerator } from '@image/BaseApiImageGenerator';
-import { DeleteOptions } from 'blargbot-api';
+import { ImageWorker } from '@image/ImageWorker';
 
 export class DeleteGenerator extends BaseApiImageGenerator<'delete'> {
-    public constructor(logger: Logger, config: Configuration) {
-        super('delete', logger, config.blargbot_api.token, config.blargbot_api.base, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('delete', worker);
     }
 }
-
-const mapOptions = mapping.mapObject<DeleteOptions>({
-    text: mapping.mapString
-});

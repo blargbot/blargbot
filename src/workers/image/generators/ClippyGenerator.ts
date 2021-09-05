@@ -1,15 +1,14 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ImageWorker } from '@image/ImageWorker';
 import { ClippyOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
-    public constructor(logger: Logger) {
-        super('clippy', logger, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('clippy', worker);
     }
 
-    public async executeCore({ text }: ClippyOptions): Promise<ImageResult> {
+    public async execute({ text }: ClippyOptions): Promise<ImageResult> {
         const caption = await this.renderJimpText(text, {
             font: 'arial.ttf',
             size: '290x130',
@@ -23,7 +22,3 @@ export class ClippyGenerator extends BaseImageGenerator<'clippy'> {
         };
     }
 }
-
-const mapOptions = mapping.mapObject<ClippyOptions>({
-    text: mapping.mapString
-});

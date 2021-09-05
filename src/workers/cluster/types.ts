@@ -1,14 +1,35 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
-import { CommandPermissions, GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
+import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
 import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
 import { Duration } from 'moment-timezone';
+import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
+
+export type ClusterIPCContract = {
+    'shardReady': { masterGets: number; workerGets: never; };
+    'meval': { masterGets: MasterEvalRequest; workerGets: GlobalEvalResult | EvalResult; };
+    'killshard': { masterGets: never; workerGets: number; };
+    'ceval': { masterGets: EvalResult; workerGets: EvalRequest; };
+    'getSubtagList': { masterGets: SubtagListResult; workerGets: undefined; };
+    'getSubtag': { masterGets: SubtagDetails | undefined; workerGets: string; };
+    'getGuildPermissionList': { masterGets: GuildPermissionDetails[]; workerGets: { userId: string; }; };
+    'getGuildPermission': { masterGets: GuildPermissionDetails | undefined; workerGets: { userId: string; guildId: string; }; };
+    'respawn': { masterGets: { id?: number; channel: string; }; workerGets: boolean; };
+    'respawnApi': { masterGets: undefined; workerGets: boolean; };
+    'respawnAll': { masterGets: { channelId: string; }; workerGets: boolean; };
+    'killAll': { masterGets: undefined; workerGets: undefined; };
+    'clusterStats': { masterGets: ClusterStats; workerGets: never; };
+    'getClusterStats': { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
+    'getCommandList': { masterGets: CommandListResult; workerGets: undefined; };
+    'getCommand': { masterGets: ICommandDetails | undefined; workerGets: string; };
+    'metrics': { masterGets: metric[]; workerGets: undefined; };
+}
 
 export interface ICommandManager<T = unknown> {
     readonly size: number;

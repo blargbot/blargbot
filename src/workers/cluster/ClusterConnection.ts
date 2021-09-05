@@ -1,8 +1,9 @@
 import { Logger } from '@core/Logger';
 import { WorkerConnection } from '@core/worker';
 
-export class ClusterConnection extends WorkerConnection<'cluster'> {
+import { ClusterIPCContract } from './types';
 
+export class ClusterConnection extends WorkerConnection<'cluster', ClusterIPCContract> {
     public constructor(
         id: number,
         public readonly shardRange: [number, number],

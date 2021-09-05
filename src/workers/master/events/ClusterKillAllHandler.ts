@@ -1,16 +1,10 @@
 import { ClusterConnection } from '@cluster';
 import { WorkerPoolEventService } from '@core/serviceTypes';
-import { mapping } from '@core/utils';
 import { Master } from '@master';
 
-export class ClusterKillAllHandler extends WorkerPoolEventService<ClusterConnection, unknown> {
+export class ClusterKillAllHandler extends WorkerPoolEventService<ClusterConnection, 'killAll'> {
     public constructor(private readonly master: Master) {
-        super(
-            master.clusters,
-            'killAll',
-            mapping.mapUnknown,
-            async () => this.killAll()
-        );
+        super(master.clusters, 'killAll', async () => this.killAll());
     }
 
     protected async killAll(): Promise<never> {

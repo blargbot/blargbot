@@ -1,13 +1,12 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
 import { SubtagDetails } from '@cluster/types';
-import { mapping } from '@core/utils';
 
-export class ClusterGetSubtagHandler extends ClusterEventService<string, SubtagDetails | undefined> {
+export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'getSubtag', mapping.mapString, ({ data, reply }) => reply(this.getSubtag(data)));
+        super(cluster, 'getSubtag', ({ data, reply }) => reply(this.getSubtag(data)));
     }
 
     protected getSubtag(name: string): SubtagDetails | undefined {

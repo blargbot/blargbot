@@ -1,15 +1,14 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ImageWorker } from '@image/ImageWorker';
 import { ImageResult, TruthOptions } from '@image/types';
 import Jimp from 'jimp';
 
 export class TruthGenerator extends BaseImageGenerator<'truth'> {
-    public constructor(logger: Logger) {
-        super('truth', logger, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('truth', worker);
     }
 
-    public async executeCore({ text }: TruthOptions): Promise<ImageResult> {
+    public async execute({ text }: TruthOptions): Promise<ImageResult> {
         const caption = await this.renderJimpText(text, {
             font: 'AnnieUseYourTelescope.ttf',
             size: '96x114',
@@ -24,7 +23,3 @@ export class TruthGenerator extends BaseImageGenerator<'truth'> {
         };
     }
 }
-
-const mapOptions = mapping.mapObject<TruthOptions>({
-    text: mapping.mapString
-});

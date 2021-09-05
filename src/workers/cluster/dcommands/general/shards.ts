@@ -38,8 +38,8 @@ export class ShardsCommand extends BaseGlobalCommand {
     public async showAllShards(context: CommandContext, downOnly: boolean): Promise<string | MessageEmbedOptions> {
         const shardConfig = context.config.discord.shards;
         const clusterCount = Math.ceil(shardConfig.max / shardConfig.perCluster);
-        const clusterData: Record<number, ClusterStats> = Object.assign({}, await context.cluster.worker.request('getClusterStats', {}));
-        let clusters: ClusterStats[] = Object.values(clusterData);
+        const clusterData = await context.cluster.worker.request('getClusterStats', undefined);
+        let clusters = Object.values(clusterData).filter(guard.hasValue);
         if (downOnly) {
             clusters = clusters.filter(cluster => {
                 const downedShards = cluster.shards.filter(shard => shard.status !== 'READY');

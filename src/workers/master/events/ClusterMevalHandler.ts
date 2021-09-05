@@ -1,26 +1,21 @@
 import { ClusterConnection } from '@cluster';
-import { mapping, parse } from '@cluster/utils';
+import { parse } from '@cluster/utils';
 import { WorkerPoolEventService } from '@core/serviceTypes';
-import { EvalRequest, EvalResult, EvalType, MasterEvalRequest, MasterEvalResult } from '@core/types';
+import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@core/types';
 import { Master } from '@master';
 
-export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, MasterEvalRequest, MasterEvalResult | EvalResult> {
+export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, 'meval'> {
     public constructor(private readonly master: Master) {
         super(
             master.clusters,
             'meval',
-            mapping.mapObject({
-                code: mapping.mapString,
-                type: mapping.mapRegex<EvalType>(/master|global|cluster\d+/),
-                userId: mapping.mapString
-            }),
             async ({ data, reply }) => {
                 reply(await this.eval(data.type, data.userId, data.code));
             }
         );
     }
 
-    public async eval(type: EvalType, userId: string, code: string): Promise<MasterEvalResult | EvalResult> {
+    public async eval(type: EvalType, userId: string, code: string): Promise<GlobalEvalResult | EvalResult> {
         switch (type) {
             case 'master': {
                 try {
@@ -30,7 +25,7 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
                 }
             }
             case 'global': {
-                const results: MasterEvalResult = {};
+                const results: GlobalEvalResult = {};
                 const promises: Record<string, Promise<EvalResult>> = {};
                 this.master.clusters.forEach(id => promises[`${id}`] = this.getClusterResult(id, { userId, code }));
                 for (const [key, promise] of Object.entries(promises))
@@ -49,21 +44,6 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
         if (cluster === undefined)
             return { success: false, error: `Cluster ${clusterId} doesnt exist!` };
 
-        const result = mapEvalResult(await cluster.request('ceval', request));
-        if (result.valid)
-            return result.value;
-
-        return { success: false, error: 'Invalid response from cluster' };
+        return await cluster.request('ceval', request);
     }
 }
-
-const mapEvalResult = mapping.mapChoice<EvalResult[]>(
-    mapping.mapObject({
-        success: mapping.mapIn(true),
-        result: mapping.mapUnknown
-    }),
-    mapping.mapObject({
-        success: mapping.mapIn(false),
-        error: mapping.mapUnknown
-    })
-);

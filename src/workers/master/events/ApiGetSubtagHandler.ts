@@ -1,18 +1,15 @@
 import { ApiConnection } from '@api';
 import { SubtagDetails } from '@cluster/types';
-import { SubtagType } from '@cluster/utils';
 import { WorkerPoolEventService } from '@core/serviceTypes';
-import { mapping } from '@core/utils';
 import { Master } from '@master';
 
-export class ApiGetSubtagHandler extends WorkerPoolEventService<ApiConnection, string, SubtagDetails | undefined> {
+export class ApiGetSubtagHandler extends WorkerPoolEventService<ApiConnection, 'getSubtag'> {
     private nextCluster: number;
 
     public constructor(private readonly master: Master) {
         super(
             master.api,
             'getSubtag',
-            mapping.mapString,
             async ({ data, reply }) => reply(await this.getSubtag(data)));
         this.nextCluster = 0;
     }
@@ -27,24 +24,6 @@ export class ApiGetSubtagHandler extends WorkerPoolEventService<ApiConnection, s
         }
         this.nextCluster++;
 
-        const response = await cluster.request('getSubtag', name);
-        const mapped = mapSubtagDetails(response);
-        if (mapped.valid)
-            return mapped.value;
-
-        this.master.logger.error(`Cluster ${this.nextCluster - 1} returned an invalid response to 'getSubtag'`, response);
-        return undefined;
+        return await cluster.request('getSubtag', name);
     }
 }
-
-const mapSubtagDetails = mapping.mapChoice(
-    mapping.mapIn(undefined),
-    mapping.mapObject<SubtagDetails>({
-        aliases: mapping.mapArray(mapping.mapString),
-        category: mapping.mapIn(...Object.values(SubtagType)),
-        deprecated: mapping.mapChoice(mapping.mapBoolean, mapping.mapString),
-        name: mapping.mapString,
-        staff: mapping.mapBoolean,
-        signatures: mapping.mapFake
-    })
-);

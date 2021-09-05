@@ -1,14 +1,8 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseApiImageGenerator } from '@image/BaseApiImageGenerator';
-import { ClintOptions } from 'blargbot-api';
+import { ImageWorker } from '@image/ImageWorker';
 
 export class ClintGenerator extends BaseApiImageGenerator<'clint'> {
-    public constructor(logger: Logger, config: Configuration) {
-        super('clint', logger, config.blargbot_api.token, config.blargbot_api.base, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('clint', worker);
     }
 }
-
-const mapOptions = mapping.mapObject<ClintOptions>({
-    image: mapping.mapString
-});

@@ -2,6 +2,10 @@ import { CommandMap } from 'blargbot-api';
 import gm from 'gm';
 import Jimp from 'jimp';
 
+export type ImageIPCContract = {
+    [P in keyof ImageGeneratorMap]: { masterGets: ImageResult<string> | null; workerGets: ImageGeneratorMap[P]; };
+}
+
 export type MagickSource = string | Jimp | Buffer | gm.State | [width: number, height: number, color?: string];
 
 export interface TextOptions {

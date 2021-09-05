@@ -1,12 +1,11 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
-import { mapping } from '@core/utils';
 
-export class ClusterKillShardHandler extends ClusterEventService<number> {
+export class ClusterKillShardHandler extends ClusterEventService<'killshard'> {
     public constructor(
         cluster: Cluster
     ) {
-        super(cluster, 'killshard', mapping.mapNumber, ({ data }) => this.killShard(data));
+        super(cluster, 'killshard', ({ data }) => this.killShard(data));
     }
 
     protected killShard(shardId: number): void {

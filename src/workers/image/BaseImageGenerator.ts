@@ -1,6 +1,3 @@
-import { Logger } from '@core/Logger';
-import { TypeMapping } from '@core/types';
-import { CommandMap } from 'blargbot-api';
 import gm from 'gm';
 import Jimp from 'jimp';
 import fetch from 'node-fetch';
@@ -8,32 +5,34 @@ import path from 'path';
 import phantom from 'phantom';
 import { inspect } from 'util';
 
+import { ImageWorker } from './ImageWorker';
 import { ImageGeneratorMap, ImageResult, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
 const imgDir = path.join(path.dirname(require.resolve('@config')), 'res/img');
 
-export abstract class BaseImageGenerator<T extends keyof R, R extends CommandMap = ImageGeneratorMap> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #mapping: TypeMapping<R[T]>;
-
+export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
     public constructor(
         public readonly key: T,
-        public readonly logger: Logger,
-        mapping: TypeMapping<R[T]>
+        protected readonly worker: ImageWorker
     ) {
-        this.#mapping = mapping;
+        worker.on(key, async ({ data, reply }) => {
+            worker.logger.worker(`${key} Requested`);
+            try {
+                const result = await this.execute(<ImageGeneratorMap[T]>data);
+                worker.logger.worker(`${key} finished, submitting as base64. Size: ${result?.data.length ?? 'NaN'}`);
+                reply(result === undefined ? null : {
+                    data: result.data.toString('base64'),
+                    fileName: result.fileName
+                });
+            } catch (err: unknown) {
+                worker.logger.error(`An error occurred while generating ${key}:`, err);
+                reply(null);
+            }
+        });
     }
 
-    public async execute(message: JToken): Promise<ImageResult | undefined> {
-        const mapped = this.#mapping(message);
-        if (!mapped.valid)
-            return undefined;
-
-        return await this.executeCore(mapped.value);
-    }
-
-    protected abstract executeCore(message: R[T]): Promise<ImageResult | undefined>;
+    public abstract execute(message: ImageGeneratorMap[T]): Promise<ImageResult | undefined>;
 
     protected getLocalResourcePath(...segments: string[]): string {
         return path.join(imgDir, ...segments);
@@ -72,7 +71,7 @@ export abstract class BaseImageGenerator<T extends keyof R, R extends CommandMap
             url = url.substring(1, url.length - 1);
         }
 
-        this.logger.debug(url);
+        this.worker.logger.debug(url);
         const response = await fetch(url);
 
         switch (response.headers.get('content-type')) {
@@ -117,7 +116,7 @@ export abstract class BaseImageGenerator<T extends keyof R, R extends CommandMap
         options.fill ??= 'black';
         options.gravity ??= 'Center';
 
-        this.logger.debug(`Generating caption for text '${text}'`);
+        this.worker.logger.debug(`Generating caption for text '${text}'`);
 
         const { fill, gravity, font, fontsize, size, stroke, strokewidth } = options;
 
@@ -157,8 +156,8 @@ export abstract class BaseImageGenerator<T extends keyof R, R extends CommandMap
         const page = await instance.createPage();
 
         const dPath = this.getLocalResourcePath(file).replace(/\\/g, '/').replace(/^\w:/, '');
-        await page.on('onConsoleMessage', (msg) => this.logger.debug('[IM]', msg));
-        await page.on('onResourceError', (resourceError) => this.logger.error(`${resourceError.url}: ${resourceError.errorString}`));
+        await page.on('onConsoleMessage', (msg) => this.worker.logger.debug('[IM]', msg));
+        await page.on('onResourceError', (resourceError) => this.worker.logger.error(`${resourceError.url}: ${resourceError.errorString}`));
         await page.open(dPath);
         await page.on('viewportSize', { width: 1440, height: 900 });
         await page.on('zoomFactor', scale);

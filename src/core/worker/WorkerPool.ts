@@ -1,18 +1,19 @@
 import { Logger } from '@core/Logger';
+import { IPCContracts } from '@core/types';
 import { getRange } from '@core/utils';
 import EventEmitter from 'eventemitter3';
 
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
-export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
+export abstract class WorkerPool<Worker extends WorkerConnection<string, IPCContracts>> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #workers: Map<number, TWorker>;
+    readonly #workers: Map<number, Worker>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #events: EventEmitter;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #inProgress: Map<number, boolean>;
 
-    public *[Symbol.iterator](): IterableIterator<TWorker | undefined> {
+    public *[Symbol.iterator](): IterableIterator<Worker | undefined> {
         for (let i = 0; i < this.workerCount; i++)
             yield this.#workers.get(i);
     }
@@ -28,22 +29,22 @@ export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
         this.#inProgress = new Map();
     }
 
-    public on(type: string, handler: (worker: TWorker) => void): this {
+    public on(type: string, handler: (worker: Worker) => void): this {
         this.#events.on(type, handler);
         return this;
     }
 
-    public once(type: string, handler: (worker: TWorker) => void): this {
+    public once(type: string, handler: (worker: Worker) => void): this {
         this.#events.once(type, handler);
         return this;
     }
 
-    public off(type: string, handler: (worker: TWorker) => void): this {
+    public off(type: string, handler: (worker: Worker) => void): this {
         this.#events.off(type, handler);
         return this;
     }
 
-    public get(id: number): TWorker {
+    public get(id: number): Worker {
         const worker = this.tryGet(id);
         if (worker === undefined)
             throw new Error(`${this.type} ${id} has not yet been spawned`);
@@ -51,11 +52,11 @@ export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
         return worker;
     }
 
-    public tryGet(id: number): TWorker | undefined {
+    public tryGet(id: number): Worker | undefined {
         return this.#workers.get(id);
     }
 
-    public async spawn(id: number, timeoutMS = this.defaultTimeout): Promise<TWorker> {
+    public async spawn(id: number, timeoutMS = this.defaultTimeout): Promise<Worker> {
         if (id >= this.workerCount)
             throw new Error(`${this.type} ${id} doesnt exist`);
         if (this.#inProgress.get(id) === true)
@@ -82,7 +83,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
         }
     }
 
-    protected abstract createWorker(id: number): TWorker;
+    protected abstract createWorker(id: number): Worker;
 
     public async kill(id: number): Promise<void> {
         const worker = this.#workers.get(id);
@@ -97,7 +98,7 @@ export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
         this.#events.emit('killedworker', worker);
     }
 
-    public async spawnAll(timeoutMS = this.defaultTimeout): Promise<TWorker[]> {
+    public async spawnAll(timeoutMS = this.defaultTimeout): Promise<Worker[]> {
         return await Promise.all(getRange(0, this.workerCount - 1)
             .map(id => this.spawn(id, timeoutMS)));
     }
@@ -107,9 +108,9 @@ export abstract class WorkerPool<TWorker extends WorkerConnection<string>> {
             .map(id => this.kill(id)));
     }
 
-    public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void>): Promise<void>;
-    public forEach(callback: (id: number, worker: TWorker | undefined) => void): void;
-    public forEach(callback: (id: number, worker: TWorker | undefined) => Promise<void> | void): Promise<void> | void {
+    public forEach(callback: (id: number, worker: Worker | undefined) => Promise<void>): Promise<void>;
+    public forEach(callback: (id: number, worker: Worker | undefined) => void): void;
+    public forEach(callback: (id: number, worker: Worker | undefined) => Promise<void> | void): Promise<void> | void {
         const results: Array<PromiseLike<void>> = [];
         let i = 0;
         for (const worker of this) {

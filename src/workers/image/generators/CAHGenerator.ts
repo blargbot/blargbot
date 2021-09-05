@@ -1,15 +1,14 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ImageWorker } from '@image/ImageWorker';
 import { CAHOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class CAHGenerator extends BaseImageGenerator<'cah'> {
-    public constructor(logger: Logger) {
-        super('cah', logger, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('cah', worker);
     }
 
-    public async executeCore({ white, black }: CAHOptions): Promise<ImageResult> {
+    public async execute({ white, black }: CAHOptions): Promise<ImageResult> {
         const blackCard = await this.getLocalJimp('blackcard.png');
         const whiteCard = await this.getLocalJimp('whitecard.png');
 
@@ -44,8 +43,3 @@ export class CAHGenerator extends BaseImageGenerator<'cah'> {
         };
     }
 }
-
-const mapOptions = mapping.mapObject<CAHOptions>({
-    white: mapping.mapArray(mapping.mapString),
-    black: mapping.mapString
-});

@@ -1,16 +1,16 @@
-import { Logger } from '@core/Logger';
-import { mapping, randInt } from '@core/utils';
+import { randInt } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ImageWorker } from '@image/ImageWorker';
 import { JimpGifEncoder } from '@image/JimpGifEncoder';
 import { FreeOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class FreeGenerator extends BaseImageGenerator<'free'> {
-    public constructor(logger: Logger) {
-        super('free', logger, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('free', worker);
     }
 
-    public async executeCore({ top, bottom }: FreeOptions): Promise<ImageResult> {
+    public async execute({ top, bottom }: FreeOptions): Promise<ImageResult> {
         const topCaption = await this.renderJimpText(top, {
             font: 'impact.ttf',
             fill: 'white',
@@ -47,8 +47,3 @@ export class FreeGenerator extends BaseImageGenerator<'free'> {
     }
 
 }
-
-const mapOptions = mapping.mapObject<FreeOptions>({
-    top: mapping.mapString,
-    bottom: mapping.mapOptionalString
-});

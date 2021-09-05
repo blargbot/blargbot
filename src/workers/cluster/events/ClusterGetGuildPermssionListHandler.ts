@@ -1,18 +1,15 @@
 import { Cluster } from '@cluster';
 import { ClusterEventService } from '@cluster/serviceTypes';
 import { GuildPermissionDetails } from '@cluster/types';
-import { guard, mapping } from '@core/utils';
+import { guard } from '@core/utils';
 
-export class ClusterGetGuildPermssionListHandler extends ClusterEventService<{ userId: string; }, GuildPermissionDetails[]> {
+export class ClusterGetGuildPermssionListHandler extends ClusterEventService<'getGuildPermissionList'> {
     public constructor(
         cluster: Cluster
     ) {
         super(
             cluster,
-            'getGuildPermssionList',
-            mapping.mapObject({
-                userId: mapping.mapString
-            }),
+            'getGuildPermissionList',
             async ({ data, reply }) => reply(await this.getGuildPermissionList(data.userId))
         );
     }

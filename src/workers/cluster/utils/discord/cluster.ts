@@ -1,7 +1,6 @@
 import { Cluster } from '@cluster';
 import { ClusterStats, ShardStats } from '@cluster/types';
 import { cpuLoad } from '@cluster/utils';
-import { mapping } from '@core/utils';
 import { ConstantsStatus, WebSocketShard } from 'discord.js';
 import moment, { Moment } from 'moment';
 
@@ -64,22 +63,20 @@ export function getStats(cluster: Cluster): ClusterStats {
         }))
     };
 }
-export async function getAllStats(cluster: Cluster): Promise<Record<number, ClusterStats>> {
-    const result = clusterStatsMapping(await cluster.worker.request('getClusterStats', undefined));
-    return result.valid ? result.value : {};
-}
 
 export async function getGuildClusterStats(cluster: Cluster, guildID: string): Promise<{ cluster: ClusterStats; shard: ShardStats; }> {
     const id = BigInt(guildID);
     const shardID = Number((id >> BigInt(22)) % BigInt(cluster.config.discord.shards.max));
-    let clusterData: ClusterStats;
+    let clusterData: ClusterStats | undefined;
 
     if (Math.floor(shardID / cluster.config.discord.shards.perCluster) === cluster.id) {
         clusterData = getStats(cluster);
     } else {
-        const allClusterData = await getAllStats(cluster);
+        const allClusterData = await cluster.worker.request('getClusterStats', undefined);
         const clusterID = Math.floor(shardID / cluster.config.discord.shards.perCluster);
         clusterData = allClusterData[clusterID];
+        if (clusterData === undefined)
+            throw new Error(`Invalid cluster ${clusterID}`);
     }
 
     const shard = clusterData.shards.find(s => s.id === shardID) as ShardStats;
@@ -90,27 +87,6 @@ export async function getGuildClusterStats(cluster: Cluster, guildID: string): P
 }
 
 export async function getClusterStats(cluster: Cluster, clusterID: number): Promise<ClusterStats | undefined> {
-    const allClusterData = await getAllStats(cluster);
+    const allClusterData = await cluster.worker.request('getClusterStats', undefined);
     return allClusterData[clusterID];
 }
-
-const clusterStatsMapping = mapping.mapObject({
-    channels: mapping.mapNumber,
-    guilds: mapping.mapNumber,
-    id: mapping.mapNumber,
-    readyTime: mapping.mapNumber,
-    rss: mapping.mapNumber,
-    shardCount: mapping.mapNumber,
-    shards: mapping.mapArray(mapping.mapObject({
-        id: mapping.mapNumber,
-        status: mapping.mapIn('READY', 'CONNECTING', 'RECONNECTING', 'IDLE', 'NEARLY', 'DISCONNECTED'),
-        latency: mapping.mapNumber,
-        guilds: mapping.mapNumber,
-        cluster: mapping.mapNumber,
-        time: mapping.mapNumber
-    })),
-    systemCpu: mapping.mapNumber,
-    time: mapping.mapNumber,
-    userCpu: mapping.mapNumber,
-    users: mapping.mapNumber
-});

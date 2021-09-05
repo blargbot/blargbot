@@ -5,3 +5,7 @@ export interface MasterOptions {
     readonly holidays: { readonly [key: string]: string; };
     readonly worker: MasterWorker;
 }
+
+export type MasterIPCContract = {
+
+}

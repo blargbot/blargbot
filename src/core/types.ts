@@ -24,15 +24,47 @@ export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
-export type WorkerPoolEventContext<TWorker extends WorkerConnection<string>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
-export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => void;
-export type AnyProcessMessageHandler = (event: string, ...args: Parameters<ProcessMessageHandler>) => void;
-export type WorkerPoolEventHandler<TWorker extends WorkerConnection<string>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => void;
+export type WorkerPoolEventContext<TWorker extends WorkerConnection<string, IPCContracts>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
+export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => unknown;
+export type WorkerPoolEventHandler<TWorker extends WorkerConnection<string, IPCContracts>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => unknown;
 export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };
-export type MasterEvalResult = Record<string, EvalResult>;
+export type GlobalEvalResult = Record<string, EvalResult>;
 export type EvalResult = { success: false; error: unknown; } | { success: true; result: unknown; };
 export type EvalType = 'master' | 'global' | `cluster${number}`
+
+export type IPCContract<Worker, Master> = { workerGets: Worker; masterGets: Master; };
+export type IPCContracts<ContractNames extends string = string> = { [ContractName in ContractNames]: IPCContract<unknown, unknown> }
+export type IPCContractNames<Contracts extends IPCContracts> = string & keyof (Contracts & BaseIPCContract);
+
+export type IPCContractMasterGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract]['masterGets']
+export type IPCContractWorkerGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract]['workerGets']
+
+export type GetMasterProcessMessageHandler<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> =
+    ProcessMessageHandler<IPCContractMasterGets<Contracts, Contract>, IPCContractWorkerGets<Contracts, Contract>>
+export type GetWorkerProcessMessageHandler<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> =
+    ProcessMessageHandler<IPCContractWorkerGets<Contracts, Contract>, IPCContractMasterGets<Contracts, Contract>>
+export type GetWorkerPoolEventHandler<Worker extends WorkerConnection<string, IPCContracts>, Contract extends WorkerIPCContractNames<Worker>> =
+    Worker extends WorkerConnection<string, infer Contracts>
+    ? WorkerPoolEventHandler<Worker, IPCContractMasterGets<Contracts, Contract>, IPCContractWorkerGets<Contracts, Contract>>
+    : never;
+
+export type WorkerIPCContractNames<Worker extends WorkerConnection<string, IPCContracts>> =
+    Worker extends WorkerConnection<string, infer Contracts>
+    ? IPCContractNames<Contracts>
+    : never;
+
+export type BaseIPCContract = {
+    'stop': { masterGets: undefined; workerGets: undefined; };
+    'ready': { masterGets: string; workerGets: never; };
+    'log': { masterGets: LogEntry; workerGets: never; };
+    'alive': { masterGets: Date; workerGets: never; };
+    'exit': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
+    'close': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
+    'disconnect': { masterGets: undefined; workerGets: never; };
+    'kill': { masterGets: unknown; workerGets: never; };
+    'error': { masterGets: Error; workerGets: never; };
+}
 
 export interface Binding<TState> {
     [Binder.binder](state: TState): BindingResult<TState>;

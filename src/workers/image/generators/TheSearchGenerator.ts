@@ -1,14 +1,8 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseApiImageGenerator } from '@image/BaseApiImageGenerator';
-import { TheSearchOptions } from 'blargbot-api';
+import { ImageWorker } from '@image/ImageWorker';
 
 export class TheSearchGenerator extends BaseApiImageGenerator<'thesearch'> {
-    public constructor(logger: Logger, config: Configuration) {
-        super('thesearch', logger, config.blargbot_api.token, config.blargbot_api.base, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('thesearch', worker);
     }
 }
-
-const mapOptions = mapping.mapObject<TheSearchOptions>({
-    text: mapping.mapString
-});

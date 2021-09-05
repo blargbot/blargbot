@@ -1,15 +1,14 @@
-import { Logger } from '@core/Logger';
-import { mapping } from '@core/utils';
 import { BaseImageGenerator } from '@image/BaseImageGenerator';
+import { ImageWorker } from '@image/ImageWorker';
 import { ArtOptions, ImageResult } from '@image/types';
 import Jimp from 'jimp';
 
 export class ArtGenerator extends BaseImageGenerator<'art'> {
-    public constructor(logger: Logger) {
-        super('art', logger, mapOptions);
+    public constructor(worker: ImageWorker) {
+        super('art', worker);
     }
 
-    public async executeCore({ avatar }: ArtOptions): Promise<ImageResult> {
+    public async execute({ avatar }: ArtOptions): Promise<ImageResult> {
         const avatarImg = await this.getRemoteJimp(avatar);
         avatarImg.resize(370, 370);
         const foreground = await this.getLocalJimp('art.png');
@@ -23,7 +22,3 @@ export class ArtGenerator extends BaseImageGenerator<'art'> {
         };
     }
 }
-
-const mapOptions = mapping.mapObject<ArtOptions>({
-    avatar: mapping.mapString
-});

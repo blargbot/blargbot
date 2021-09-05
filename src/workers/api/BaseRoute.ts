@@ -42,35 +42,35 @@ export class BaseRoute {
         };
     }
 
-    protected notFound(body?: unknown): ApiResponse {
+    protected notFound<T>(body?: Awaited<T>): ApiResponse {
         return this.status(404, body);
     }
 
-    protected badRequest(body?: unknown): ApiResponse {
+    protected badRequest<T>(body?: Awaited<T>): ApiResponse {
         return this.status(401, body);
     }
 
-    protected ok(body: unknown): ApiResponse {
+    protected ok<T>(body: Awaited<T>): ApiResponse {
         return this.status(200, body);
     }
 
-    protected created(record: unknown): ApiResponse {
-        return this.status(200, record);
+    protected created<T>(body: Awaited<T>): ApiResponse {
+        return this.status(200, body);
     }
 
     protected noContent(): ApiResponse {
         return this.status(204);
     }
 
-    protected unauthorized(body?: unknown): ApiResponse {
+    protected unauthorized<T>(body?: Awaited<T>): ApiResponse {
         return this.status(401, body);
     }
 
-    protected forbidden(body?: unknown): ApiResponse {
+    protected forbidden<T>(body?: Awaited<T>): ApiResponse {
         return this.status(403, body);
     }
 
-    protected internalServerError(body?: unknown): ApiResponse {
+    protected internalServerError<T>(body?: Awaited<T>): ApiResponse {
         return this.status(500, body);
     }
 }

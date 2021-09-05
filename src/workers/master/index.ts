@@ -13,7 +13,7 @@ export default async function start(): Promise<void> {
     const logger = createLogger(config, `MS (${process.pid})`);
     logger.setGlobal();
 
-    await new MasterWorker(logger, config, { avatars, holidays })
+    await new MasterWorker(process, logger, config, { avatars, holidays })
         .start();
 }
 

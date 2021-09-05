@@ -1,37 +1,35 @@
 import { Logger } from '@core/Logger';
-import { LogEntry } from '@core/types';
-import { fafo } from '@core/utils';
+import { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets, LogEntry } from '@core/types';
 
-import { IPCEvents } from './IPCEvents';
+import { IPCMessageEmitter } from './IPCMessageEmitter';
 
-export abstract class BaseWorker extends IPCEvents {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #process: NodeJS.Process;
-    public get id(): number { return this.#process.pid; }
-    public get env(): NodeJS.ProcessEnv { return this.#process.env; }
-    public get memoryUsage(): NodeJS.MemoryUsage { return this.#process.memoryUsage(); }
+export abstract class BaseWorker<Contracts extends IPCContracts> {
+    protected readonly ipc: IPCMessageEmitter;
+    public get id(): number { return this.process.pid; }
+    public get env(): NodeJS.ProcessEnv { return this.process.env; }
+    public get memoryUsage(): NodeJS.MemoryUsage { return this.process.memoryUsage(); }
 
     public constructor(
+        private readonly process: NodeJS.Process,
         public readonly logger: Logger
     ) {
-        super(process);
+        this.ipc = new IPCMessageEmitter(process);
 
-        this.#process = process;
-        this.#process.on('unhandledRejection', (err) =>
+        this.process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise', err));
 
-        this.on('stop', fafo(async ({ reply }) => {
+        this.on('stop', async ({ reply }) => {
             await this.stop();
             reply(undefined);
-            this.#process.exit();
-        }));
+            this.process.exit();
+        });
 
         this.logger.addPostHook(({ text, level, timestamp }: LogEntry) => {
             this.send('log', { text, level, timestamp });
             return null;
         });
 
-        this.send('alive');
+        this.send('alive', new Date());
     }
 
     public start(): void {
@@ -40,5 +38,29 @@ export abstract class BaseWorker extends IPCEvents {
 
     public stop(): Promise<void> | void {
         // NOOP
+    }
+
+    public on<Event extends IPCContractNames<Contracts>>(event: Event, handler: GetWorkerProcessMessageHandler<Contracts, Event>): this {
+        this.ipc.on(event, handler);
+        return this;
+    }
+
+    public once<Event extends IPCContractNames<Contracts>>(event: Event, handler: GetWorkerProcessMessageHandler<Contracts, Event>): this {
+        this.ipc.once(event, handler);
+        return this;
+    }
+
+    public off<Event extends IPCContractNames<Contracts>>(event: Event, handler: GetWorkerProcessMessageHandler<Contracts, Event>): this {
+        this.ipc.off(event, handler);
+        return this;
+    }
+
+    public send<Event extends IPCContractNames<Contracts>>(event: Event, data: IPCContractMasterGets<Contracts, Event>): this {
+        this.ipc.send(event, data);
+        return this;
+    }
+
+    public async request<Event extends IPCContractNames<Contracts>>(event: Event, data: IPCContractMasterGets<Contracts, Event>, timeoutMS?: number): Promise<IPCContractWorkerGets<Contracts, Event>> {
+        return await this.ipc.request(event, data, timeoutMS);
     }
 }

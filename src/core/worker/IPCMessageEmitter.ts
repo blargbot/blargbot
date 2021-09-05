@@ -1,25 +1,36 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
-import { AnyProcessMessageHandler, ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@core/types';
+import { ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@core/types';
 import { snowflake } from '@core/utils';
 import { ChildProcess } from 'child_process';
 import EventEmitter from 'eventemitter3';
 
-export class IPCEvents {
+export class IPCMessageEmitter {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #events: EventEmitter;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    #process?: NodeJS.Process | ChildProcess;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #sender?: (message: ProcessMessage) => boolean;
 
-    public constructor(process?: NodeJS.Process) {
+    public get process(): NodeJS.Process | ChildProcess | undefined { return this.#process; }
+    public set process(value: NodeJS.Process | ChildProcess | undefined) {
+        if (this.#process !== undefined)
+            throw new Error('Already attached to a process!');
+        if (value === undefined)
+            return;
+        this.attach(value);
+    }
+
+    public constructor(process?: NodeJS.Process | ChildProcess) {
         this.#events = new EventEmitter();
+
         if (process !== undefined)
             this.attach(process);
     }
 
-    protected attach(process: NodeJS.Process | ChildProcess): void {
-        if (this.#sender !== undefined)
-            throw new Error('Already attached to a process!');
+    private attach(process: NodeJS.Process | ChildProcess): void {
+        this.#process = process;
 
         process.on('message', ({ type, data, id }: ProcessMessage) =>
             this.emit(type, data, id));
@@ -27,6 +38,17 @@ export class IPCEvents {
         this.#sender = isWorkerProcess(process)
             ? message => process.send(message)
             : () => false;
+
+        if (!('execPath' in process)) {
+            const relay = (code: string, data?: unknown): void => {
+                this.emit(code, data, snowflake.create());
+            };
+            process.on('exit', (code, signal) => relay('exit', { code, signal }));
+            process.on('close', (code, signal) => relay('close', { code, signal }));
+            process.on('disconnect', () => relay('disconnect'));
+            process.on('kill', code => relay('kill', code));
+            process.on('error', error => relay('error', error));
+        }
     }
 
     public send(type: string, data?: unknown, id?: Snowflake): boolean {
@@ -47,28 +69,13 @@ export class IPCEvents {
         return this;
     }
 
-    public onAny(handler: AnyProcessMessageHandler): this {
-        this.#events.on('any', handler);
-        return this;
-    }
-
     public once(type: string, handler: ProcessMessageHandler): this {
         this.#events.once(`message_${type}`, handler);
         return this;
     }
 
-    public onceAny(handler: AnyProcessMessageHandler): this {
-        this.#events.once('any', handler);
-        return this;
-    }
-
     public off(type: string, handler: ProcessMessageHandler): this {
         this.#events.off(`message_${type}`, handler);
-        return this;
-    }
-
-    public offAny(handler: AnyProcessMessageHandler): this {
-        this.#events.off('any', handler);
         return this;
     }
 

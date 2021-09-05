@@ -1,20 +1,15 @@
 import { ClusterConnection } from '@cluster';
-import { codeBlock, mapping } from '@cluster/utils';
+import { codeBlock } from '@cluster/utils';
 import { WorkerPoolEventService } from '@core/serviceTypes';
 import { WorkerState } from '@core/worker';
 import { Master } from '@master';
 import moment from 'moment';
 
-export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection, unknown> {
+export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection, 'exit'> {
     public constructor(
         public readonly master: Master
     ) {
-        super(
-            master.clusters,
-            'exit',
-            mapping.mapUnknown,
-            ({ worker }) => this.alertExit(worker)
-        );
+        super(master.clusters, 'exit', ({ worker }) => this.alertExit(worker));
     }
 
     public async alertExit(worker: ClusterConnection): Promise<void> {
