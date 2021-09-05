@@ -942,6 +942,7 @@ export interface TagsTable {
     top(count: number): Promise<readonly StoredTag[]>;
     get(tagName: string): Promise<StoredTag | undefined>;
     set(tag: StoredTag): Promise<boolean>;
+    update(tagName: string, tag: Partial<StoredTag>): Promise<boolean>;
     setProp<K extends keyof StoredTag>(tagName: string, key: K, value: StoredTag[K]): Promise<boolean>;
     add(tag: StoredTag): Promise<boolean>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;

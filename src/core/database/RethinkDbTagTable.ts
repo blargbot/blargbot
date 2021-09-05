@@ -66,7 +66,11 @@ export class RethinkDbTagTable extends RethinkDbTable<StoredTag> implements Tags
     }
 
     public async set(tag: StoredTag): Promise<boolean> {
-        return await this.rset(tag.name, tag);
+        return await this.rset(tag.name, { ...tag, lastmodified: new Date() });
+    }
+
+    public async update(name: string, tag: Partial<StoredTag>): Promise<boolean> {
+        return await this.rupdate(name, { ...tag, lastmodified: new Date() });
     }
 
     public async add(tag: StoredTag): Promise<boolean> {

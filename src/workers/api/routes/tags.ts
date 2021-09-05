@@ -9,13 +9,14 @@ export class TagsRoute extends BaseRoute {
         super('/tags');
 
         this.addRoute('/:tagName', {
-            get: req => this.getTagByName(req.params.tagName),
-            put: req => this.setTagByName(req.params.tagName, req.body, this.getUserId(req)),
-            delete: req => this.deleteTagByName(req.params.tagName, this.getUserId(req))
+            get: req => this.getTag(req.params.tagName),
+            post: req => this.createTag(req.params.tagName, req.body, this.getUserId(req)),
+            put: req => this.editTag(req.params.tagName, req.body, this.getUserId(req)),
+            delete: req => this.deleteTag(req.params.tagName, this.getUserId(req))
         });
     }
 
-    public async getTagByName(tagName: string): Promise<ApiResponse> {
+    public async getTag(tagName: string): Promise<ApiResponse> {
         const tag = await this.api.database.tags.get(tagName);
         if (tag === undefined)
             return this.notFound();
@@ -27,56 +28,62 @@ export class TagsRoute extends BaseRoute {
         });
     }
 
-    public async setTagByName(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
+    public async createTag(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
             return this.badRequest();
 
-        const mapped = tagBodyMapping(body);
+        const mapped = mapCreateTag(body);
+        if (!mapped.valid)
+            return this.badRequest();
+
+        const exists = await this.api.database.tags.get(tagName);
+        if (exists !== undefined)
+            return this.forbidden(`A tag with the name ${tagName} already exists`);
+
+        const tag: StoredTag = {
+            ...mapped.value,
+            author: author,
+            lastmodified: new Date(),
+            name: tagName,
+            uses: 0
+        };
+        const success = await this.api.database.tags.set(tag);
+
+        if (!success)
+            return this.internalServerError('Failed to save tag');
+
+        return this.created(tag);
+    }
+
+    public async editTag(tagName: string, body: unknown, author: string | undefined): Promise<ApiResponse> {
+        if (author === undefined)
+            return this.badRequest();
+
+        const mapped = mapUpdateTag(body);
         if (!mapped.valid)
             return this.badRequest();
 
         const current = await this.api.database.tags.get(tagName);
-        if (current !== undefined && current.author !== author)
-            return this.forbidden('You are not the author of this tag');
+        if (current === undefined)
+            return this.notFound();
 
-        const tag: Mutable<StoredTag> = {
-            uses: 0,
-            author: author,
-            name: tagName,
-            content: '',
-            ...current,
-            lastmodified: new Date()
+        if (current.author !== author)
+            return this.forbidden(`You are not the author of the tag ${tagName}`);
+
+        const tag: Partial<StoredTag> = {
+            ...mapped.value,
+            author: author
         };
+        if (tag.name !== undefined && tag.name !== tagName && await this.api.database.tags.get(tag.name) !== undefined)
+            return this.badRequest(`The tag ${tag.name} already exists`);
 
-        if ('name' in mapped.value && mapped.value.name !== tagName) {
-            // Rename
-            if (current === undefined)
-                return this.notFound();
-
-            if (await this.api.database.tags.get(mapped.value.name) !== undefined)
-                return this.badRequest(`The tag ${mapped.value.name} already exists`);
-
-            tag.name = mapped.value.name;
-        }
-
-        tag.content = mapped.value.content ?? tag.content;
-
-        if (!await this.api.database.tags.set(tag))
+        if (!await this.api.database.tags.update(tagName, tag))
             return this.internalServerError('Failed to update');
 
-        if (tagName !== tag.name)
-            await this.api.database.tags.delete(tagName);
-
-        const result = {
-            name: tag.name,
-            content: tag.content,
-            author: tag.author
-        };
-
-        return current === undefined ? this.created(result) : this.ok(result);
+        return this.ok(await this.api.database.tags.get(tag.name ?? tagName));
     }
 
-    public async deleteTagByName(name: string, author: string | undefined): Promise<ApiResponse> {
+    public async deleteTag(name: string, author: string | undefined): Promise<ApiResponse> {
         if (author === undefined)
             return this.badRequest();
 
@@ -94,12 +101,11 @@ export class TagsRoute extends BaseRoute {
     }
 }
 
-const tagBodyMapping = mapping.mapChoice(
-    mapping.mapObject({
-        content: mapping.mapOptionalString,
-        name: mapping.mapString
-    }, { strict: true }),
-    mapping.mapObject({
-        content: mapping.mapString
-    }, { strict: true })
-);
+const mapCreateTag = mapping.mapObject({
+    content: mapping.mapString
+}, { strict: true });
+
+const mapUpdateTag = mapping.mapObject({
+    content: mapping.mapOptionalString,
+    name: mapping.mapOptionalString
+});
