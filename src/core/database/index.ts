@@ -1,57 +1,62 @@
 import { Logger } from '@core/Logger';
-import { ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
+import { ChatlogIndexTable, ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, SuggestionsTable, SuggestorsTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
 import { sleep } from '@core/utils';
+import Airtable from 'airtable';
+import { AirtableBase } from 'airtable/lib/airtable_base';
+import AirtableError from 'airtable/lib/airtable_error';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
 import { Client as Discord } from 'discord.js';
 
+import { AirtableSuggestionsTable } from './AirtableSuggestionsTable';
+import { AirtableSuggestorsTable } from './AirtableSuggestorsTable';
 import { PostgresDb, RethinkDb } from './base';
 import { CassandraDbChatlogTable } from './CassandraDbChatlogTable';
 import { CassandraDbDumpsTable } from './CassandraDbDumpsTable';
 import { PostgresDbTagVariablesTable } from './PostgresDbTagVariablesTable';
 import { RethinkDbEventsTable } from './RethinkDbEventsTable';
 import { RethinkDbGuildTable } from './RethinkDbGuildTable';
+import { RethinkDbLogsTable } from './RethinkDbLogsTable';
 import { RethinkDbTagTable } from './RethinkDbTagTable';
 import { RethinkDbUserTable } from './RethinkDbUserTable';
 import { RethinkDbVarsTable } from './RethinkDbVarsTable';
 
 export class Database {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #rethinkDb: RethinkDb;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cassandra: Cassandra;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #postgres: PostgresDb;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #guilds: RethinkDbGuildTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #users: RethinkDbUserTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #vars: RethinkDbVarsTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #events: RethinkDbEventsTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #tags: RethinkDbTagTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #logIndex: RethinkDbLogsTable;
     readonly #chatlogs: CassandraDbChatlogTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #dumps: CassandraDbDumpsTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #tagVariables: PostgresDbTagVariablesTable;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #airtable: AirtableBase;
+    readonly #suggestors: AirtableSuggestorsTable;
+    readonly #suggestions: AirtableSuggestionsTable;
     readonly #logger: Logger;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #discord: Discord<true>;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get guilds(): GuildTable { return this.#guilds; }
     public get users(): UserTable { return this.#users; }
     public get vars(): VarsTable { return this.#vars; }
     public get events(): EventsTable { return this.#events; }
     public get tags(): TagsTable { return this.#tags; }
+    public get chatlogIndex(): ChatlogIndexTable { return this.#logIndex; }
     public get chatlogs(): ChatlogsTable { return this.#chatlogs; }
     public get dumps(): DumpsTable { return this.#dumps; }
     public get tagVariables(): TagVariablesTable { return this.#tagVariables; }
+    public get suggestors(): SuggestorsTable { return this.#suggestors; }
+    public get suggestions(): SuggestionsTable { return this.#suggestions; }
 
     public constructor(options: DatabaseOptions) {
+        this.#airtable = new Airtable({
+            apiKey: options.airtable.key
+        }).base(options.airtable.base);
         this.#rethinkDb = new RethinkDb(options.rethinkDb);
         this.#postgres = new PostgresDb(options.logger, options.postgres);
         this.#cassandra = new Cassandra({
@@ -70,9 +75,12 @@ export class Database {
         this.#vars = new RethinkDbVarsTable(this.#rethinkDb, this.#logger);
         this.#events = new RethinkDbEventsTable(this.#rethinkDb, this.#logger);
         this.#tags = new RethinkDbTagTable(this.#rethinkDb, this.#logger);
+        this.#logIndex = new RethinkDbLogsTable(this.#rethinkDb, this.#logger);
         this.#chatlogs = new CassandraDbChatlogTable(this.#cassandra, this.#logger);
         this.#dumps = new CassandraDbDumpsTable(this.#cassandra, this.#logger);
         this.#tagVariables = new PostgresDbTagVariablesTable(this.#postgres, this.#logger);
+        this.#suggestors = new AirtableSuggestorsTable(this.#airtable, this.#logger);
+        this.#suggestions = new AirtableSuggestionsTable(this.#airtable, this.#logger);
     }
 
     public async connect(): Promise<void> {
@@ -81,7 +89,16 @@ export class Database {
         await Promise.all([
             this.retryConnect('rethinkDb', () => this.#rethinkDb.connect(), 5000, 10),
             this.retryConnect('cassandra', () => this.#cassandra.connect(), 5000, 10),
-            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10)
+            this.retryConnect('postgresdb', () => this.#postgres.connect(), 5000, 10),
+            this.retryConnect('airtable', async () => {
+                try {
+                    await this.#airtable.makeRequest({ path: '/_' });
+                } catch (err: unknown) {
+                    if (err instanceof AirtableError && err.message.startsWith('Could not find table _ in application'))
+                        return;
+                    throw err;
+                }
+            }, 5000, 10)
         ]);
 
         await Promise.all([
@@ -94,8 +111,8 @@ export class Database {
             this.#dumps.migrate()
         ]);
 
-        void this.#guilds.watchChanges(id => this.#discord.guilds.cache.get(id) !== undefined);
-        void this.#users.watchChanges(id => this.#discord.users.cache.get(id) !== undefined);
+        this.#guilds.watchChanges(id => this.#discord.guilds.cache.get(id) !== undefined);
+        this.#users.watchChanges(id => this.#discord.users.cache.get(id) !== undefined);
     }
 
     private async retryConnect(dbName: string, connect: () => Promise<unknown>, intervalMs: number, maxAttempts = Infinity): Promise<void> {

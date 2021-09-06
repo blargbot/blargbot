@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { TimeoutManager } from '@cluster/TimeoutManager';
+import { TimeoutManager } from '@cluster/managers';
 import { IntervalService } from '@core/serviceTypes';
 
 export class TimeoutTrigger extends IntervalService {
@@ -12,7 +12,7 @@ export class TimeoutTrigger extends IntervalService {
         this.#timeouts = cluster.timeouts;
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         await this.#timeouts.process();
     }
 }

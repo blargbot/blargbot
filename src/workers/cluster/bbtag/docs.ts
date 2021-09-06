@@ -12,6 +12,7 @@ interface CategoryChoice {
     description: string;
     value: SubtagType | 'all';
 }
+
 export async function getDocsEmbed(context: CommandContext, topic: string | undefined): Promise<MessageEmbedOptions | string | undefined> {
     const embed = await getTopicBody(context, topic);
     if (embed === undefined)
@@ -324,7 +325,7 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Me
             const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
-                codeBlock(subtags.join(', '))
+                    codeBlock(subtags.join(', '))
             };
         }
     }
@@ -380,7 +381,7 @@ async function categoriesEmbed(context: CommandContext, categories: SubtagType[]
             const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
-                codeBlock(subtags.join(', '))
+                    codeBlock(subtags.join(', '))
             };
 
         }

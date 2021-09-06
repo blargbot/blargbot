@@ -8,7 +8,7 @@ export class ContributorInterval extends IntervalService {
         super(1, 'hour', cluster.logger, true);
     }
 
-    protected async execute(): Promise<void> {
+    public async execute(): Promise<void> {
         await this.cluster.contributors.refresh();
     }
 }

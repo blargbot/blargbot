@@ -2,15 +2,17 @@ import { Logger } from '@core/Logger';
 import { BaseWorker } from '@core/worker';
 
 import { Cluster } from './Cluster';
+import { ClusterIPCContract } from './types';
 
-export class ClusterWorker extends BaseWorker {
+export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public readonly cluster: Cluster;
 
     public constructor(
+        process: NodeJS.Process,
         logger: Logger,
         public readonly config: Configuration
     ) {
-        super(logger);
+        super(process, logger);
         const clusterId = envNumber(this.env, 'CLUSTER_ID');
 
         this.logger.init(`CLUSTER ${clusterId} (pid ${this.id}) PROCESS INITIALIZED`);

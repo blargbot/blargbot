@@ -75,5 +75,5 @@ const wordApiMapping = mapping.mapObject({
         synonyms: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined })
     })),
     frequency: mapping.mapNumber,
-    pronunciation: mapping.mapRecord(mapping.mapString)
+    pronunciation: mapping.mapRecord(mapping.mapChoice(mapping.mapIn(undefined), mapping.mapString))
 });

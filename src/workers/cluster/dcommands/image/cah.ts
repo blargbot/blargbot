@@ -1,8 +1,9 @@
+import { ClusterUtilities } from '@cluster';
 import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
 import { CommandType, commandTypeDetails, guard, randChoose } from '@cluster/utils';
 import { ImageResult } from '@image/types';
 import cahData from '@res/cah.json';
-import { MessageOptions } from 'discord.js';
+import { Guild, MessageOptions, TextBasedChannels, User } from 'discord.js';
 
 export class CAHCommand extends BaseGlobalImageCommand {
     public constructor() {
@@ -26,12 +27,21 @@ export class CAHCommand extends BaseGlobalImageCommand {
         });
     }
 
+    public async isVisible(util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User): Promise<boolean> {
+        if (!await super.isVisible(util, location, user))
+            return false;
+
+        if (location === undefined)
+            return true;
+
+        const guild = location instanceof Guild ? location : guard.isGuildChannel(location) ? location.guild : undefined;
+        if (guild === undefined || await util.database.guilds.getSetting(guild.id, 'cahnsfw') !== true)
+            return true;
+
+        return await commandTypeDetails[CommandType.NSFW].isVisible(util, location, user);
+    }
+
     public async render(context: CommandContext, unofficial: boolean): Promise<string | ImageResult> {
-        const isNsfw = guard.isGuildCommandContext(context) && await context.database.guilds.getSetting(context.channel.guild.id, 'cahnsfw') !== false;
-
-        if (isNsfw && !await commandTypeDetails[CommandType.NSFW].requirement(context))
-            return this.error('CAH is considered a NSFW command here, and cannot be used in this channel.');
-
         const cardIds = unofficial ? packLookup.all : packLookup.official;
         const black = cahData.black[randChoose(cardIds.black)];
 

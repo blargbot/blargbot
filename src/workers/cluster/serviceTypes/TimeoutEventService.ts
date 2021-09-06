@@ -3,7 +3,7 @@ import { BaseService } from '@core/serviceTypes';
 import { EventOptionsTypeMap, StoredEvent } from '@core/types';
 import { inspect } from 'util';
 
-import { TimeoutManager } from '../TimeoutManager';
+import { TimeoutManager } from '../managers/TimeoutManager';
 
 export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeMap> extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -19,6 +19,7 @@ export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeM
         this.type = `timeout:${this.event}`;
         const execute = async (event: StoredEvent<TEvent>): Promise<void> => {
             try {
+                logger.debug(`Executing Timeout event handler ${this.name}`);
                 await this.execute(event);
             } catch (err: unknown) {
                 logger.error(`Timeout event handler ${this.name} threw an error: ${inspect(err)}`);
@@ -27,7 +28,7 @@ export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeM
         this.#execute = event => void execute(event);
     }
 
-    protected abstract execute(event: StoredEvent<TEvent>): Promise<void> | void;
+    public abstract execute(event: StoredEvent<TEvent>): Promise<void> | void;
 
     public start(): void {
         this.timeouts.on(this.event, this.#execute);

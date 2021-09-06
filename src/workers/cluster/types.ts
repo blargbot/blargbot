@@ -1,12 +1,92 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
-import { CommandContext, CommandVariableType, ScopedCommandBase } from '@cluster/command';
+import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
-import { GuildSourceCommandTag, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
+import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, GuildMember, GuildMessage, GuildTextBasedChannels, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PermissionString, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
+import { Duration } from 'moment-timezone';
+import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
 
+import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
+
+export type ClusterIPCContract = {
+    'shardReady': { masterGets: number; workerGets: never; };
+    'meval': { masterGets: MasterEvalRequest; workerGets: GlobalEvalResult | EvalResult; };
+    'killshard': { masterGets: never; workerGets: number; };
+    'ceval': { masterGets: EvalResult; workerGets: EvalRequest; };
+    'getSubtagList': { masterGets: SubtagListResult; workerGets: undefined; };
+    'getSubtag': { masterGets: SubtagDetails | undefined; workerGets: string; };
+    'getGuildPermissionList': { masterGets: GuildPermissionDetails[]; workerGets: { userId: string; }; };
+    'getGuildPermission': { masterGets: GuildPermissionDetails | undefined; workerGets: { userId: string; guildId: string; }; };
+    'respawn': { masterGets: { id?: number; channel: string; }; workerGets: boolean; };
+    'respawnApi': { masterGets: undefined; workerGets: boolean; };
+    'respawnAll': { masterGets: { channelId: string; }; workerGets: boolean; };
+    'killAll': { masterGets: undefined; workerGets: undefined; };
+    'clusterStats': { masterGets: ClusterStats; workerGets: never; };
+    'getClusterStats': { masterGets: undefined; workerGets: Record<number, ClusterStats | undefined>; };
+    'getCommandList': { masterGets: CommandListResult; workerGets: undefined; };
+    'getCommand': { masterGets: ICommandDetails | undefined; workerGets: string; };
+    'metrics': { masterGets: metric[]; workerGets: undefined; };
+}
+
+export interface ICommandManager<T = unknown> {
+    readonly size: number;
+    execute(message: Message, prefix: string, middleware?: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>): Promise<boolean>;
+    get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>>;
+    list(location?: Guild | TextBasedChannels, user?: User): AsyncIterable<ICommand<T>>;
+    configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    messageDeleted(message: Message | PartialMessage): Promise<void>;
+    load(commands?: Iterable<string> | boolean): Promise<void>;
+}
+
+export interface ICommandDetails extends Required<CommandPermissions> {
+    readonly name: string;
+    readonly aliases: readonly string[];
+    readonly category: string;
+    readonly description: string | undefined;
+    readonly flags: readonly FlagDefinition[];
+    readonly signatures: readonly CommandSignature[];
+}
+
+export interface ICommand<T = unknown> extends ICommandDetails {
+    readonly implementation: T;
+    execute(context: CommandContext): Promise<void>;
+}
+
+export interface ICommandPermissionEvaluator {
+    checkPermissions(user: User, location: Guild | TextBasedChannels, permissions?: CommandPermissions): Promise<PermissionCheckResult>;
+}
+
+export type Result<State, Detail = undefined, Optional extends boolean = Detail extends undefined ? true : false> = Optional extends false
+    ? { readonly state: State; readonly detail: Detail; }
+    : { readonly state: State; readonly detail?: Detail; };
+
+export type PermissionCheckResult =
+    | Result<'ALLOWED'>
+    | Result<'BLACKLISTED', string>
+    | Result<'DISABLED'>
+    | Result<'NOT_IN_GUILD'>
+    | Result<'MISSING_ROLE', readonly string[]>
+    | Result<'MISSING_PERMISSIONS', bigint>;
+
+export type CommandGetResult<T = unknown> =
+    | Result<'NOT_FOUND'>
+    | Exclude<PermissionCheckResult, { state: 'ALLOWED'; }>
+    | Result<'ALLOWED', ICommand<T>>;
+
+export type CommandGetCoreResult<T = unknown> =
+    | CommandGetResult<T>
+    | Result<'FOUND', ICommand<T>>;
+
+export type CommandManagerTypeMap = {
+    custom: NamedGuildCommandTag;
+    default: BaseCommand;
+};
+
+export type CommandManagers = { [P in keyof CommandManagerTypeMap]: ICommandManager<CommandManagerTypeMap[P]> }
+export type CommandManagerTypes = CommandManagerTypeMap[keyof CommandManagerTypeMap];
 
 export type Statement = Array<string | SubtagCall>;
 
@@ -263,9 +343,8 @@ export interface CommandOptionsBase {
     readonly aliases?: readonly string[];
     readonly category: CommandType;
     readonly cannotDisable?: boolean;
-    readonly description?: string | null;
+    readonly description?: string;
     readonly flags?: readonly FlagDefinition[];
-    readonly onlyOn?: string | null;
     readonly hidden?: boolean;
 }
 
@@ -288,9 +367,8 @@ export type CommandDefinition<TContext extends CommandContext> =
     | CommandHandlerDefinition<TContext> & SubcommandDefinitionHolder<TContext>;
 
 export type CommandParameter =
-    | CommandSingleParameter
-    | CommandConcatParameter
-    | CommandGreedyParameter
+    | CommandSingleParameter<keyof CommandVariableTypeMap, boolean>
+    | CommandGreedyParameter<keyof CommandVariableTypeMap>
     | CommandLiteralParameter;
 
 export interface CommandHandlerDefinition<TContext extends CommandContext> {
@@ -307,24 +385,61 @@ export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
     readonly subcommands: ReadonlyArray<CommandDefinition<TContext>>;
 }
 
-export interface CommandSingleParameter<T extends string = 'singleVar'> {
-    readonly kind: T;
+export type CommandVariableTypeMap = {
+    'literal': string;
+    'bigint': bigint;
+    'integer': number;
+    'number': number;
+    'role': Role;
+    'channel': KnownChannel;
+    'user': User;
+    'sender': User | Webhook;
+    'member': GuildMember;
+    'duration': Duration;
+    'boolean': boolean;
+    'string': string;
+}
+
+export type CommandVariableTypeName = keyof CommandVariableTypeMap;
+
+export interface CommandVariableTypeBase<Name extends CommandVariableTypeName, T extends CommandVariableTypeMap[Name] = CommandVariableTypeMap[Name]> {
+    readonly name: Name;
+    readonly descriptionSingular?: string;
+    readonly descriptionPlural?: string;
+    readonly priority: number;
+    parse<TContext extends CommandContext>(this: void, value: string, state: CommandBinderState<TContext>): Awaitable<CommandBinderParseResult<T>>;
+}
+
+export interface LiteralCommandVariableType<T extends string> extends CommandVariableTypeBase<'literal', T> {
+    readonly choices: readonly T[];
+}
+
+export type UnmappedCommandVariableTypes = Exclude<CommandVariableTypeName, MappedCommandVariableTypes['name']>;
+export type MappedCommandVariableTypes =
+    | LiteralCommandVariableType<string>;
+
+export type CommandVariableTypes =
+    | MappedCommandVariableTypes
+    | { [Name in UnmappedCommandVariableTypes]: CommandVariableTypeBase<Name> }[UnmappedCommandVariableTypes]
+
+export type CommandVariableType<TName extends CommandVariableTypeName> = Extract<CommandVariableTypes, CommandVariableTypeBase<TName>>
+
+export interface CommandSingleParameter<T extends CommandVariableTypeName, Concat extends boolean> {
+    readonly kind: Concat extends false ? 'singleVar' : 'concatVar';
     readonly name: string;
     readonly raw: boolean;
-    readonly type: CommandVariableType;
+    readonly type: CommandVariableType<T>;
     readonly required: boolean;
     readonly fallback: undefined | string;
 }
 
-export interface CommandGreedyParameter {
+export interface CommandGreedyParameter<T extends CommandVariableTypeName> {
     readonly kind: 'greedyVar';
     readonly name: string;
     readonly raw: boolean;
-    readonly type: CommandVariableType;
+    readonly type: CommandVariableType<T>;
     readonly minLength: number;
 }
-
-export type CommandConcatParameter = CommandSingleParameter<'concatVar'>
 
 export interface CommandLiteralParameter {
     readonly kind: 'literal';
@@ -337,9 +452,9 @@ export interface CommandHandler<TContext extends CommandContext> {
     readonly execute: (context: TContext) => Promise<CommandResult> | CommandResult;
 }
 
-export interface CommandSignature {
+export interface CommandSignature<TParameter = CommandParameter> {
     readonly description: string;
-    readonly parameters: readonly CommandParameter[];
+    readonly parameters: readonly TParameter[];
     readonly hidden: boolean;
 }
 
@@ -388,8 +503,26 @@ export interface SubtagDetails {
     readonly aliases: readonly string[];
 }
 
+export interface GuildDetails {
+    readonly id: string;
+    readonly name: string;
+    readonly iconUrl?: string;
+}
+
+export interface GuildPermissionDetails {
+    readonly userId: string;
+    readonly guild: GuildDetails;
+    readonly ccommands: boolean;
+    readonly censors: boolean;
+    readonly autoresponses: boolean;
+    readonly rolemes: boolean;
+    readonly interval: boolean;
+    readonly greeting: boolean;
+    readonly farewell: boolean;
+}
+
 export interface CommandListResult {
-    [commandName: string]: CommandDetails | undefined;
+    [commandName: string]: ICommandDetails | undefined;
 }
 
 export interface SubtagArgumentValue {
@@ -403,10 +536,6 @@ export interface SubtagArgumentValue {
 
 export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentValue> {
     readonly subtagName: string;
-}
-
-export interface CommandDetails extends Readonly<Required<CommandOptionsBase>> {
-    readonly signatures: readonly CommandSignature[];
 }
 
 export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
@@ -490,11 +619,6 @@ export interface LookupMatch<T> {
     value: T;
 }
 
-export interface MessagePrompt {
-    prompt: Message | undefined;
-    response: Promise<Message | undefined>;
-}
-
 export interface BanDetails {
     mod: User;
     reason: string;
@@ -532,15 +656,14 @@ export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
 export interface CommandProperties {
     readonly name: string;
     readonly description: string;
-    readonly defaultPerms?: readonly PermissionString[];
-    readonly requirement: (context: CommandContext) => boolean | Promise<boolean>;
+    readonly defaultPerms: bigint;
+    readonly isVisible: (util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User) => boolean | Promise<boolean>;
     readonly color: number;
 }
 
 export type GuildSettingTypeName<T> =
-    T extends string ? 'string' | 'channel' | 'role' :
+    T extends string ? 'string' | 'channel' | 'role' | 'permission' :
     T extends number ? 'float' | 'int' :
-    T extends bigint ? 'bigint' :
     T extends boolean ? 'bool' : never
 
 export type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof StoredGuildSettings> = {
@@ -627,6 +750,7 @@ export interface CommandBinderDeferred<TResult> {
 
 export interface CommandBinderStateLookupCache {
     findUser(userString: string): Awaitable<CommandBinderParseResult<User>>;
+    findSender(userString: string): Awaitable<CommandBinderParseResult<User | Webhook>>;
     findMember(memberString: string): Awaitable<CommandBinderParseResult<GuildMember>>;
     findRole(roleString: string): Awaitable<CommandBinderParseResult<Role>>;
     findChannel(channelString: string): Awaitable<CommandBinderParseResult<TextBasedChannels>>;
@@ -641,10 +765,6 @@ export interface CommandBinderState<TContext extends CommandContext> {
     readonly bindIndex: number;
     readonly result: CommandResult;
     readonly lookupCache: CommandBinderStateLookupCache;
-}
-
-export interface CommandMiddleware<TContext extends CommandContext> {
-    execute(context: TContext, next: () => Promise<CommandResult>): Promise<CommandResult>;
 }
 
 export interface AwaitReactionsResponse {

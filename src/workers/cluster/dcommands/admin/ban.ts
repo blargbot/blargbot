@@ -2,6 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { FlagResult, GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize, parse } from '@cluster/utils';
 import { GuildMember } from 'discord.js';
+import moment from 'moment';
 
 export class BanCommand extends BaseGuildCommand {
     public constructor() {
@@ -43,7 +44,7 @@ export class BanCommand extends BaseGuildCommand {
                     return this.success(`**${humanize.fullName(member.user)}** has been banned.`);
                 if (duration === undefined)
                     return this.warning(`**${humanize.fullName(member.user)}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`);
-                return this.success(`**${humanize.fullName(member.user)}** has been banned and will be unbanned after **${humanize.duration(duration)}**`);
+                return this.success(`**${humanize.fullName(member.user)}** has been banned and will be unbanned in **<t:${moment().add(duration).unix()}:R>**`);
         }
     }
 }

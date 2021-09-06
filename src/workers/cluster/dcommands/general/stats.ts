@@ -1,5 +1,5 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { avatarColours, CommandType, discordUtil, humanize, randChoose } from '@cluster/utils';
+import { avatarColours, CommandType, humanize, randChoose } from '@cluster/utils';
 import discordjs, { MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
 
@@ -19,15 +19,14 @@ export class StatsCommand extends BaseGlobalCommand {
     }
 
     public async getStats(context: CommandContext): Promise<MessageEmbedOptions> {
-        const clusterStats = Object.values(await discordUtil.cluster.getAllStats(context.cluster));
-        const mappedStats = clusterStats.reduce<Record<string, number>>((a, c) => {
-            return {
-                guilds: a.guilds + c.guilds,
-                users: a.users + c.users,
-                channels: a.channels + c.channels,
-                rss: a.rss + c.rss
-            };
-        }, { guilds: 0, users: 0, channels: 0, rss: 0 });
+        const clusterStats = Object.values(await context.cluster.worker.request('getClusterStats', undefined));
+        const mappedStats = { guilds: 0, users: 0, channels: 0, rss: 0 };
+        clusterStats.forEach(c => {
+            mappedStats.guilds += c?.guilds ?? 0;
+            mappedStats.users += c?.users ?? 0;
+            mappedStats.channels += c?.channels ?? 0;
+            mappedStats.rss += c?.rss ?? 0;
+        });
         const version = await context.database.vars.get('version');
         return {
             color: randChoose(avatarColours),

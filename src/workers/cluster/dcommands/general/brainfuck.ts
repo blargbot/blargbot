@@ -30,12 +30,11 @@ export class BrainfuckCommand extends BaseGlobalCommand {
     public async eval(context: CommandContext, code: string, showPointers: boolean): Promise<string> {
         let input = '';
         if (code.includes(',')) {
-            const reply = await context.util.awaitQuery(
-                context.channel,
-                context.author,
-                'This brainfuck code requires user input. Please say what you want to use:'
-            );
-            input = reply?.content ?? '';
+            const reply = await context.queryText({ prompt: 'This brainfuck code requires user input. Please say what you want to use:' });
+            if (reply.state !== 'SUCCESS')
+                return this.error('No input was provided!');
+
+            input = reply.value;
         }
 
         try {

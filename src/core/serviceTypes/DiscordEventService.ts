@@ -15,18 +15,17 @@ export abstract class DiscordEventService<T extends keyof ClientEvents> extends 
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;
-        const execute = async (...args: ClientEvents[T]): Promise<void> => {
+        this.#execute = async (...args: ClientEvents[T]): Promise<void> => {
             try {
+                this.logger.debug(`Executing Discord event handler ${this.name}`);
                 await this.execute(...args);
             } catch (err: unknown) {
                 this.logger.error(`Discord event handler ${this.name} threw an error:`, err);
             }
         };
-
-        this.#execute = (...args) => void execute(...args);
     }
 
-    protected abstract execute(...args: ClientEvents[T]): Promise<void> | void;
+    public abstract execute(...args: ClientEvents[T]): Promise<void> | void;
 
     public start(): void {
         this.discord.on<T>(this.event, this.#execute);

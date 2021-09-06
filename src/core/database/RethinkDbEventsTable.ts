@@ -5,7 +5,7 @@ import { Moment } from 'moment-timezone';
 
 import { RethinkDb, RethinkDbTable } from './base';
 
-export class RethinkDbEventsTable extends RethinkDbTable<'events'> implements EventsTable {
+export class RethinkDbEventsTable extends RethinkDbTable<StoredEvent> implements EventsTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger

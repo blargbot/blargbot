@@ -1,18 +1,18 @@
 import { BaseSubtag, BBTagEngine } from '@cluster/bbtag';
-import { TimeoutManager } from '@cluster/TimeoutManager';
 import { ClusterOptions } from '@cluster/types';
-import { commandTypeDetails, getRange, tagTypeDetails } from '@cluster/utils';
+import { getRange } from '@cluster/utils';
 import { BaseClient } from '@core/BaseClient';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
-import { ImagePool } from '@image/ImagePool';
+import { EvalResult } from '@core/types';
+import { ImagePool } from '@image';
 import { Options, Util } from 'discord.js';
 import moment, { duration, Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AutoresponseManager, BotStaffManager, CommandManager, ContributorManager, DomainManager, GreetingManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, ReactionAwaitManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, PrefixManager, ReactionAwaitManager, RolemeManager, TimeoutManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -29,12 +29,14 @@ export class Cluster extends BaseClient {
     public readonly events: ModuleLoader<BaseService>;
     public readonly botStaff: BotStaffManager;
     public readonly moderation: ModerationManager;
-    public readonly commands: CommandManager;
+    public readonly prefixes: PrefixManager;
+    public readonly commands: AggregateCommandManager;
     public readonly domains: DomainManager;
     public readonly greetings: GreetingManager;
     public readonly polls: PollManager;
     public readonly intervals: IntervalManager;
-    public readonly await: {reactions: ReactionAwaitManager; messages: MessageAwaitManager;};
+    public readonly rolemes: RolemeManager;
+    public readonly await: { reactions: ReactionAwaitManager; messages: MessageAwaitManager; };
 
     public constructor(
         logger: Logger,
@@ -80,7 +82,11 @@ export class Cluster extends BaseClient {
         this.worker = options.worker;
         this.domains = new DomainManager(this.database.vars);
         this.images = new ImagePool(this.id, config.discord.images, this.logger);
-        this.commands = new CommandManager(`${__dirname}/dcommands`, this);
+        this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users);
+        this.commands = new AggregateCommandManager({
+            custom: new CustomCommandManager(this),
+            default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
+        });
         this.subtags = new ModuleLoader(`${__dirname}/subtags`, BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
@@ -94,39 +100,31 @@ export class Cluster extends BaseClient {
         this.greetings = new GreetingManager(this);
         this.bbtag = new BBTagEngine(this);
         this.intervals = new IntervalManager(this, duration(10, 's'));
+        this.rolemes = new RolemeManager(this);
         this.await = {
             reactions: new ReactionAwaitManager(this),
             messages: new MessageAwaitManager(this)
         };
 
-        this.services.on('add', (module: BaseService) => void module.start());
-        this.services.on('remove', (module: BaseService) => void module.stop());
-        this.events.on('add', (module: BaseService) => void module.start());
-        this.events.on('remove', (module: BaseService) => void module.stop());
+        this.services.on('add', module => void module.start());
+        this.services.on('remove', module => void module.stop());
+        this.events.on('add', module => void module.start());
+        this.events.on('remove', module => void module.stop());
     }
 
     public async start(): Promise<void> {
         await this.events.init();
-        this.logger.init(this.moduleStats(this.events, 'Events', ev => ev.type));
 
         await Promise.all([
             super.start(),
-            this.commands.init(),
-            this.subtags.init(),
-            this.images.spawnAll()
+            this.commands.load(),
+            this.subtags.init()
         ]);
 
-        this.logger.init(this.moduleStats(this.commands, 'Commands', c => c.category, c => commandTypeDetails[c].name));
-        this.logger.init(this.moduleStats(this.subtags, 'Tags', c => c.category, c => tagTypeDetails[c].name));
-
         await this.services.init();
-        this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
-        //? Caches home guild and bot user perms for logging channels
-        const homeGuild = await this.discord.guilds.fetch(this.config.discord.guilds.home);
-        await homeGuild.members.fetch(this.discord.user.id);
     }
 
-    public async eval(this: Cluster, author: string, text: string): Promise<{ success: boolean; result: unknown; }> {
+    public async eval(this: Cluster, author: string, text: string): Promise<EvalResult> {
         if (this.util.isBotOwner(author) === false)
             throw new Error(`User ${author} does not have permission to run eval`);
 
@@ -137,7 +135,7 @@ export class Cluster extends BaseClient {
             const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
         } catch (err: unknown) {
-            return { success: false, result: err };
+            return { success: false, error: err };
         }
     }
 }

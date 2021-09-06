@@ -419,6 +419,6 @@ declare module 'rethinkdb' {
 
     type Query<T> = (rethink: typeof import('rethinkdb')) => Operation<T>;
     type TableQuery<T, R> = (table: Table<R>, rethink: typeof import('rethinkdb')) => Operation<T>;
-    type UpdateData<T> = { [P in keyof T]?: T[P] | Expression<T[P]> | UpdateData<T[P]> };
+    type UpdateData<T> = { [P in keyof T]?: T[P] | UpdateData<T[P]> | Expression<T[P]> };
     type UpdateRequest<T> = UpdateData<T> | ((r: Expression<T>) => UpdateData<T> | Expression<T>);
 }

@@ -5,6 +5,7 @@ import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
 import { EvalResult } from '@core/types';
 import { MasterOptions } from '@master/types';
+import { ApiPool } from '@workers/api';
 import moment from 'moment';
 import fetch from 'node-fetch';
 
@@ -18,6 +19,7 @@ export class Master extends BaseClient {
     public readonly worker: MasterWorker;
     public readonly logHistory: ClusterLogManager;
     public readonly clusterStats: ClusterStatsManager;
+    public readonly api: ApiPool;
 
     public constructor(
         logger: Logger,
@@ -32,19 +34,18 @@ export class Master extends BaseClient {
         this.logHistory = new ClusterLogManager(30);
         this.clusterStats = new ClusterStatsManager();
         this.clusters = new ClusterPool(this.config.discord.shards, this.logger);
+        this.api = new ApiPool(this.logger);
         this.eventHandlers = new ModuleLoader(`${__dirname}/events`, BaseService, [this, options], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this, options], this.logger, e => e.name);
-        // TODO Add websites
 
-        this.services.on('add', (module: BaseService) => void module.start());
-        this.services.on('remove', (module: BaseService) => void module.stop());
-        this.eventHandlers.on('add', (module: BaseService) => void module.start());
-        this.eventHandlers.on('remove', (module: BaseService) => void module.stop());
+        this.services.on('add', module => void module.start());
+        this.services.on('remove', module => void module.stop());
+        this.eventHandlers.on('add', module => void module.start());
+        this.eventHandlers.on('remove', module => void module.stop());
     }
 
     public async start(): Promise<void> {
         await this.eventHandlers.init();
-        this.logger.init(this.moduleStats(this.eventHandlers, 'Events', ev => ev.type));
 
         await Promise.all([
             super.start(),
@@ -52,7 +53,6 @@ export class Master extends BaseClient {
         ]);
 
         await this.services.init();
-        this.logger.init(this.moduleStats(this.services, 'Services', ev => ev.type));
     }
 
     private async hello(): Promise<void> {

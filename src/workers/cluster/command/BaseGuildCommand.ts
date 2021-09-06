@@ -5,7 +5,7 @@ import { CommandContext } from './CommandContext';
 import { ScopedCommandBase } from './ScopedCommandBase';
 
 export abstract class BaseGuildCommand extends ScopedCommandBase<GuildCommandContext> {
-    public checkContext(context: CommandContext): context is GuildCommandContext {
+    public guardContext(context: CommandContext): context is GuildCommandContext {
         return guard.isGuildCommandContext(context);
     }
 

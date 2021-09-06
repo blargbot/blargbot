@@ -1,9 +1,0 @@
-<ul class='collection with-header'>
-    <li class='collection-header blue-grey darken-2'>Available Guilds</li>
-    {{#each guilds}}
-    <li class='collection-item avatar blue-grey darken-3'>
-        <img src='https://cdn.discordapp.com/icons/{{id}}/{{icon}}.jpg' alt='{{name}}' class='circle'> {{name}}
-        <a href="#!" class="secondary-content" onclick='sendData("displayGuild", {guild: "{{id}}"})'><i class="material-icons">settings</i></a>
-    </li>
-    {{/each}}
-</ul>

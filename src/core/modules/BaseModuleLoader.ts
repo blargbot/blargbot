@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { MultiKeyMap } from '@core/MultiKeyMap';
 import { ModuleResult } from '@core/types';
-import { guard } from '@core/utils';
+import { guard, pluralise as p } from '@core/utils';
 import { EventEmitter } from 'eventemitter3';
 import { promises as fs } from 'fs';
 import path from 'path';
@@ -10,24 +10,33 @@ import reloadFactory from 'require-reload';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 const reload = reloadFactory(require);
 
-export abstract class BaseModuleLoader<TModule> extends EventEmitter {
+interface ModuleLoaderEvents<TModule> {
+    'add': [module: TModule];
+    'remove': [module: TModule];
+    'unlink': [module: TModule, key: string];
+    'link': [module: TModule, key: string];
+}
+
+export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoaderEvents<TModule>> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #root: string;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #modules: MultiKeyMap<string, TModule>;
+    readonly #modules: MultiKeyMap<string, { module: TModule; location: string; }>;
+
+    public get size(): number { return this.#modules.size; }
 
     public constructor(
-        public readonly source: string,
+        public readonly root: string,
         public readonly logger: Logger
     ) {
         super();
-        this.#root = getAbsolutePath(source);
-        this.#modules = new MultiKeyMap<string, TModule>();
+        this.#root = getAbsolutePath(root);
+        this.#modules = new MultiKeyMap<string, { module: TModule; location: string; }>();
 
-        this.#modules.on('add', (...args: unknown[]) => this.emit('add', ...args));
-        this.#modules.on('remove', (...args: unknown[]) => this.emit('remove', ...args));
-        this.#modules.on('link', (...args: unknown[]) => this.emit('link', ...args));
-        this.#modules.on('unlink', (...args: unknown[]) => this.emit('unlink', ...args));
+        this.#modules.on('add', ({ module }) => this.emit('add', module));
+        this.#modules.on('remove', ({ module }) => this.emit('remove', module));
+        this.#modules.on('link', ({ module }, key) => this.emit('link', module, key));
+        this.#modules.on('unlink', ({ module }, key) => this.emit('unlink', module, key));
     }
 
     public list(): Generator<TModule>;
@@ -35,14 +44,14 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     public * list(filter?: (module: TModule) => boolean): Generator<TModule> {
         filter ??= () => true;
         for (const module of this.#modules.values()) {
-            if (filter(module)) {
-                yield module;
+            if (filter(module.module)) {
+                yield module.module;
             }
         }
     }
 
     public get(name: string): TModule | undefined {
-        return this.#modules.get(name);
+        return this.#modules.get(name)?.module;
     }
 
     public async init(): Promise<void> {
@@ -50,6 +59,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     }
 
     private load(fileNames: Iterable<string>, loader = require): void {
+        const loaded = new Set<TModule>();
         if (typeof fileNames === 'string')
             fileNames = [fileNames];
 
@@ -57,15 +67,21 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
             try {
                 const rawModule = loader(path.join(this.#root, fileName)) as unknown;
                 const modules = this.activate(fileName, rawModule);
-                for (const { names, module } of modules)
-                    for (const name of names)
-                        this.#modules.set(name, module);
+                for (const { names, module } of modules) {
+                    const entry = { module, location: fileName };
+                    for (const name of names) {
+                        loaded.add(module);
+                        this.#modules.set(name, entry);
+                    }
+                }
             } catch (err: unknown) {
                 if (err instanceof Error)
                     this.logger.error(err.stack);
-                this.logger.module(this.source, 'Error while loading module', fileName);
+                this.logger.module(this.root, 'Error while loading module', fileName);
             }
         }
+
+        this.logger.init(`Loaded ${loaded.size} ${p(loaded.size, 'module')} from ${this.#root}`);
     }
 
     public foreach(action: (module: TModule) => void): void;
@@ -73,7 +89,7 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
     public foreach(action: (module: TModule) => void | Promise<void>): Promise<void> | void {
         const results: Array<PromiseLike<void>> = [];
         for (const module of this.#modules.values()) {
-            const result = action(module);
+            const result = action(module.module);
             if (isPromiseLike(result))
                 results.push(result);
         }
@@ -81,13 +97,34 @@ export abstract class BaseModuleLoader<TModule> extends EventEmitter {
             return Promise.all(results).then(x => void x);
     }
 
-    public reload(): Promise<void>
+    public reload(rediscover?: false): void
+    public reload(rediscover: true): Promise<void>
     public reload(fileNames: Iterable<string>): void
-    public reload(fileNames?: Iterable<string>): void | Promise<void> {
-        if (fileNames === undefined)
-            return toArray(this.findFiles()).then(files => this.load(files, reload));
+    public reload(fileNames?: Iterable<string> | boolean): void | Promise<void>
+    public reload(fileNames?: Iterable<string> | boolean): void | Promise<void> {
+        switch (fileNames) {
+            case true:
+                return toArray(this.findFiles()).then(files => this.load(files));
+            case undefined:
+            case false:
+                return this.load(this.sources());
+            default:
+                return this.load(fileNames, reload);
+        }
+    }
 
-        this.load(fileNames, reload);
+    public source(module: string): string | undefined;
+    public source(modules: Iterable<string>): Iterable<string>;
+    public source(modules: string | Iterable<string>): string | Iterable<string> | undefined {
+        if (typeof modules === 'string')
+            return this.#modules.get(modules)?.location;
+
+        return mapIter(modules, m => this.#modules.get(m)?.location, guard.hasValue);
+    }
+
+    public * sources(): Iterable<string> {
+        for (const { location } of this.#modules.values())
+            yield location;
     }
 
     protected activate(fileName: string, rawModule: unknown): Array<ModuleResult<TModule>> {
@@ -144,4 +181,13 @@ async function toArray<T>(source: AsyncIterable<T>): Promise<T[]> {
     for await (const item of source)
         result.push(item);
     return result;
+}
+
+function* mapIter<T, I, R extends I>(source: Iterable<T>, mapping: (value: T, index: number) => I, check: (value: I) => value is R): Generator<R> {
+    let i = 0;
+    for (const item of source) {
+        const val = mapping(item, i++);
+        if (check(val))
+            yield val;
+    }
 }

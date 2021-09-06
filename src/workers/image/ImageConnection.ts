@@ -1,8 +1,8 @@
 import { Logger } from '@core/Logger';
 import { WorkerConnection } from '@core/worker';
-import { ImageGeneratorMap, ImageRequest, ImageResult } from '@image/types';
+import { ImageGeneratorMap, ImageIPCContract, ImageResult } from '@image/types';
 
-export class ImageConnection extends WorkerConnection {
+export class ImageConnection extends WorkerConnection<'image', ImageIPCContract> {
     public constructor(
         id: number,
         logger: Logger
@@ -13,7 +13,7 @@ export class ImageConnection extends WorkerConnection {
 
     public async render<T extends keyof ImageGeneratorMap>(command: T, data: ImageGeneratorMap[T]): Promise<ImageResult | undefined> {
         try {
-            const result = await this.request<ImageRequest<T>, ImageResult<string> | null>('img', { command, data });
+            const result = await this.request(command, data);
             if (result === null)
                 return undefined;
 

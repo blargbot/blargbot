@@ -5,7 +5,7 @@ import { CommandContext } from './CommandContext';
 import { ScopedCommandBase } from './ScopedCommandBase';
 
 export abstract class BasePrivateCommand extends ScopedCommandBase<PrivateCommandContext> {
-    public checkContext(context: CommandContext): context is PrivateCommandContext {
+    public guardContext(context: CommandContext): context is PrivateCommandContext {
         return guard.isPrivateCommandContext(context);
     }
 

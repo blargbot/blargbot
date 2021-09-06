@@ -131,50 +131,29 @@ export class AnnounceCommand extends BaseGuildCommand {
 
     private async configureCore(context: GuildCommandContext, channel: GuildChannels | undefined, role: Role | undefined): Promise<boolean | string> {
         if (channel === undefined) {
-            const response = await context.util.awaitQuery(
-                context.channel,
-                context.author,
-                this.info('Please mention the channel that announcements should be put in.'));
+            const result = await context.queryChannel({
+                choices: context.channel.guild.channels.cache.filter(guard.isTextableChannel).values(),
+                prompt: this.info('Please select the channel that announcements should be put in.')
+            });
 
-            if (response === undefined)
+            if (result.state !== 'SUCCESS')
                 return false;
 
-            const mentioned = response.mentions.channels.first();
-            if (mentioned !== undefined) {
-                if (!guard.isGuildChannel(mentioned) || mentioned.guild.id !== context.channel.guild.id)
-                    return this.error(`${mentioned.toString()} is not a channel on this guild!`);
-                channel = mentioned;
-            } else {
-                const found = await context.util.queryChannel(context.channel, context.author, { guild: context.channel.guild, filter: response.content });
-                if (found.state !== 'SUCCESS')
-                    return this.error('I couldnt find a channel with that name or id!');
+            channel = result.value;
 
-                channel = found.value;
-            }
-
-            if (!guard.isTextableChannel(channel))
-                return this.error(`${channel.toString()} is not a text channel!`);
+            if (channel === undefined)
+                return false;
         }
 
         if (role === undefined) {
-            const response = await context.util.awaitQuery(
-                context.channel,
-                context.author,
-                this.info('Please type the name or ID of the role to announce to.'));
+            const result = await context.queryRole({
+                prompt: this.info('Please select the role to mention when announcing.')
+            });
 
-            if (response === undefined)
+            if (result.state !== 'SUCCESS')
                 return false;
 
-            const mentioned = response.mentions.roles.first();
-            if (mentioned !== undefined)
-                role = mentioned;
-            else {
-                const found = await context.util.queryRole(context.channel, context.author, { guild: context.channel.guild, filter: response.content });
-                if (found.state !== 'SUCCESS')
-                    return this.error('I couldnt find a role with that name or id!');
-
-                role = found.value;
-            }
+            role = result.value;
         }
 
         await context.database.guilds.setAnnouncements(context.channel.guild.id, {

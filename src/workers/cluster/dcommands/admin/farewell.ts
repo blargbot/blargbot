@@ -10,9 +10,9 @@ export class FarewellCommand extends BaseGuildCommand {
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: 'set {~message+}',
-                    description: 'Sets the message to send when someone leaves the server. This is bbtag compatible',
-                    execute: (ctx, [message]) => this.setFarewell(ctx, message)
+                    parameters: 'set {~bbtag+}',
+                    description: 'Sets the bbtag to send when someone leaves the server',
+                    execute: (ctx, [bbtag]) => this.setFarewell(ctx, bbtag)
                 },
                 {
                     parameters: 'raw',

@@ -20,8 +20,7 @@
         "allowUnusedLabels": false,
         "moduleResolution": "node",
         "lib": [
-            "ES2021",
-            "dom.iterable"
+            "ES2021"
         ],
         // "noUncheckedIndexedAccess": true
         "paths": {
@@ -49,20 +48,14 @@
             "@image/*": [
                 "./src/workers/image/*"
             ],
-            "@website": [
-                "./src/workers/website"
+            "@api": [
+                "./src/workers/api"
             ],
-            "@website/*": [
-                "./src/workers/website/*"
+            "@api/*": [
+                "./src/workers/api/*"
             ],
-            "@website-old": [
-                "./src/workers/website_old"
-            ],
-            "@website-old/*": [
-                "./src/workers/website_old/*"
-            ],
-            "@entrypoints/*": [
-                "./src/entrypoints/*"
+            "@workers/*": [
+                "./src/workers/*"
             ],
             "@config": [
                 "./config.json"

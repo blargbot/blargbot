@@ -1,6 +1,6 @@
-import { CommandContext } from '@cluster/command';
 import { CommandPropertiesSet } from '@cluster/types';
 import { guard } from '@cluster/utils';
+import { Guild } from 'discord.js';
 
 import { defaultStaff } from './defaultStaff';
 
@@ -19,77 +19,89 @@ export enum CommandType {
 export const commandTypeDetails: CommandPropertiesSet = {
     [CommandType.GENERAL]: {
         name: 'General',
-        requirement: () => true,
+        isVisible: () => true,
         description: 'General commands.',
-        color: 0xefff00
+        color: 0xefff00,
+        defaultPerms: 0n
     },
     [CommandType.NSFW]: {
         name: 'NSFW',
-        requirement: (context: CommandContext) => {
-            if (guard.isPrivateCommandContext(context))
+        isVisible(...[, location]) {
+            if (location instanceof Guild || location === undefined || guard.isPrivateChannel(location))
                 return true;
 
-            if ('nsfw' in context.channel)
-                return context.channel.nsfw;
+            if ('nsfw' in location)
+                return location.nsfw;
 
             return false;
         },
         description: 'Commands that can only be executed in NSFW channels.',
-        color: 0x010101
+        color: 0x010101,
+        defaultPerms: 0n
     },
     [CommandType.IMAGE]: {
         name: 'Image',
-        requirement: () => true,
+        isVisible: () => true,
         description: 'Commands that generate or display images.',
-        color: 0xefff00
+        color: 0xefff00,
+        defaultPerms: 0n
     },
     [CommandType.ADMIN]: {
         name: 'Admin',
-        requirement: () => true,
+        isVisible: () => true,
         defaultPerms: defaultStaff,
         description: 'Powerful commands that require an `admin` role or special permissions.',
         color: 0xff0000
     },
     [CommandType.SOCIAL]: {
         name: 'Social',
-        async requirement(context: CommandContext): Promise<boolean> {
-            if (!guard.isGuildCommandContext(context))
+        async isVisible(util, location) {
+            if (location instanceof Guild)
+                return await util.database.guilds.getSetting(location.id, 'social') ?? false;
+
+            if (location === undefined || !guard.isGuildChannel(location))
                 return true;
-            return await context.cluster.database.guilds.getSetting(context.channel.guild.id, 'social') ?? false;
+
+            return await util.database.guilds.getSetting(location.guild.id, 'social') ?? false;
         },
         description: 'Social commands for interacting with other people',
-        color: 0xefff00
+        color: 0xefff00,
+        defaultPerms: 0n
     },
     [CommandType.OWNER]: {
         name: 'Blargbot Owner',
-        requirement(context: CommandContext): boolean {
-            return context.util.isBotOwner(context.author.id);
+        isVisible(...[util, , author]) {
+            return author !== undefined && util.isBotOwner(author.id);
         },
         description: 'MREOW MEOWWWOW! **purr**',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     },
     [CommandType.DEVELOPER]: {
         name: 'Blargbot Developer',
-        requirement(context: CommandContext): boolean {
-            return context.cluster.util.isBotDeveloper(context.author.id);
+        isVisible(...[util, , author]) {
+            return author !== undefined && util.isBotDeveloper(author.id);
         },
         description: 'Commands that can only be executed by blargbot developers.',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     },
     [CommandType.STAFF]: {
         name: 'Blargbot Staff',
-        requirement(context: CommandContext): boolean {
-            return context.cluster.util.isBotStaff(context.author.id);
+        isVisible(...[util, , author]) {
+            return author !== undefined && util.isBotStaff(author.id);
         },
         description: 'Commands that can only be executed by staff on the official support server.',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     },
     [CommandType.SUPPORT]: {
         name: 'Blargbot Support',
-        requirement(context: CommandContext): boolean {
-            return context.cluster.util.isBotSupport(context.author.id);
+        isVisible(...[util, , author]) {
+            return author !== undefined && util.isBotSupport(author.id);
         },
         description: 'Commands that can only be executed by support members on the official support server.',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     }
 };

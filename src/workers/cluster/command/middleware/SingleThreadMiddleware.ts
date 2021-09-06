@@ -1,8 +1,9 @@
-import { CommandMiddleware, CommandResult } from '@cluster/types';
+import { CommandResult } from '@cluster/types';
+import { IMiddleware } from '@core/types';
 
 import { CommandContext } from '../CommandContext';
 
-export class SingleThreadMiddleware<TContext extends CommandContext> implements CommandMiddleware<TContext> {
+export class SingleThreadMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     private readonly locks: Record<string, { warned: boolean; } | undefined>;
     public constructor(
         protected readonly keySelector: (context: TContext) => string

@@ -11,9 +11,9 @@ export class GreetingCommand extends BaseGuildCommand {
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: 'set {~message+}',
-                    description: 'Sets the message to send when someone joins the server. This is bbtag compatible',
-                    execute: (ctx, [message]) => this.setGreeting(ctx, message)
+                    parameters: 'set {~bbtag+}',
+                    description: 'Sets the message to send when someone joins the server',
+                    execute: (ctx, [bbtag]) => this.setGreeting(ctx, bbtag)
                 },
                 {
                     parameters: 'raw',

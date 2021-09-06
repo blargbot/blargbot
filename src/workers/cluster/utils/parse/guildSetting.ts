@@ -37,11 +37,11 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
                 display: `\`${val}\``
             };
         }
-        case 'bigint': {
+        case 'permission': {
             const val = parse.bigint(raw);
             return {
                 success: val !== undefined,
-                value: <StoredGuildSettings[T]>val,
+                value: <StoredGuildSettings[T]>val?.toString(),
                 display: `\`${val ?? raw}\``
             };
         }
@@ -56,7 +56,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
         case 'channel': {
             if (!guard.isGuildRelated(msg))
                 return { success: false };
-            const result = await util.queryChannel(msg.channel, msg.author, { guild: msg.channel.guild, filter: raw });
+            const result = await util.queryChannel({ context: msg.channel, actors: msg.author, guild: msg.channel.guild, filter: raw });
             if (result.state !== 'SUCCESS')
                 return { success: false };
             return {
@@ -68,7 +68,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
         case 'role': {
             if (!guard.isGuildRelated(msg))
                 return { success: false };
-            const result = await util.queryRole(msg.channel, msg.author, { guild: msg.channel.guild, filter: raw });
+            const result = await util.queryRole({ context: msg.channel, actors: msg.author, guild: msg.channel.guild, filter: raw });
             if (result.state !== 'SUCCESS')
                 return { success: false };
             return {

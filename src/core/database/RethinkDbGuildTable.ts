@@ -1,12 +1,12 @@
 import { Logger } from '@core/Logger';
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableGuildCensorExceptions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
 import { guard } from '@core/utils';
 import { Guild } from 'discord.js';
 import { UpdateData } from 'rethinkdb';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';
 
-export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'> implements GuildTable {
+export class RethinkDbGuildTable extends RethinkDbCachedTable<MutableStoredGuild, 'guildid'> implements GuildTable {
     public constructor(
         rethinkDb: RethinkDb,
         logger: Logger
@@ -320,14 +320,145 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return true;
     }
 
-    public async getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]> {
+    public async getRolemes(guildId: string, skipCache?: boolean): Promise<{ readonly [id: string]: GuildRolemeEntry | undefined; } | undefined> {
         const guild = await this.rget(guildId, skipCache);
-        return guild?.roleme ?? [];
+        return guild?.roleme;
+    }
+
+    public async getRoleme(guildId: string, id: number, skipCache?: boolean): Promise<GuildRolemeEntry | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.roleme?.[id];
+    }
+
+    public async setRoleme(guildId: string, id: number, roleme: GuildRolemeEntry | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { roleme: { [id.toString()]: this.setExpr(roleme) } }))
+            return false;
+
+        if (roleme === undefined)
+            delete guild.roleme?.[id];
+        else
+            (guild.roleme ??= {})[id] = roleme;
+
+        return true;
     }
 
     public async getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined> {
         const guild = await this.rget(guildId, skipCache);
         return guild?.censor;
+    }
+
+    public async getCensor(guildId: string, id: number, skipCache?: boolean): Promise<GuildCensor | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        return guild?.censor?.list?.[id];
+    }
+
+    public async setCensor(guildId: string, id: number, censor: GuildCensor | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (!await this.rupdate(guildId, { censor: { list: { [id]: this.setExpr(censor) } } }))
+            return false;
+
+        if (censor === undefined)
+            delete guild.censor?.list?.[id];
+        else
+            ((guild.censor ??= {}).list ??= {})[id] = censor;
+
+        return true;
+    }
+
+    public async censorIgnoreUser(guildId: string, userId: string, ignored: boolean): Promise<boolean> {
+        return await this.censorIgnoreCore(guildId, 'user', userId, ignored);
+    }
+
+    public async censorIgnoreChannel(guildId: string, channelId: string, ignored: boolean): Promise<boolean> {
+        return await this.censorIgnoreCore(guildId, 'channel', channelId, ignored);
+    }
+
+    public async censorIgnoreRole(guildId: string, roleId: string, ignored: boolean): Promise<boolean> {
+        return await this.censorIgnoreCore(guildId, 'role', roleId, ignored);
+    }
+
+    private async censorIgnoreCore(guildId: string, type: keyof MutableGuildCensorExceptions, id: string, ignored: boolean): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        const success = await this.rupdate(guildId, g => {
+            const exceptions = g.getField('censor').default({ list: {} })
+                .getField('exception').default({ user: [], role: [], channel: [] })
+                .getField(type).default([]);
+            return {
+                censor: {
+                    exception: {
+                        [type]: ignored ? exceptions.setInsert(id) : exceptions.setDifference(this.expr([id]))
+                    }
+                }
+            };
+        });
+
+        if (!success)
+            return false;
+
+        const exclusions = (guild.censor ??= { list: {} }).exception ??= { channel: [], role: [], user: [] };
+        const excluded = new Set(exclusions[type]);
+
+        if (ignored)
+            excluded.delete(id);
+        else
+            excluded.add(id);
+
+        exclusions[type] = [...excluded];
+        return true;
+    }
+
+    public async setCensorRule(guildId: string, id: number | undefined, ruleType: 'delete' | 'kick' | 'ban', code: GuildTriggerTag | undefined): Promise<boolean> {
+        const guild = await this.rget(guildId);
+        if (guild === undefined)
+            return false;
+
+        if (id !== undefined && guild.censor?.list?.[id] === undefined)
+            return false;
+
+        const ruleMessage = `${ruleType}Message` as const;
+        const success = id === undefined
+            ? await this.rupdate(guildId, { censor: { rule: { [ruleMessage]: this.setExpr(code) } } })
+            : await this.rupdate(guildId, { censor: { list: { [id]: { [ruleMessage]: this.setExpr(code) } } } });
+        if (!success)
+            return false;
+
+        if (code === undefined) {
+            if (id === undefined) {
+                delete guild.censor?.rule?.[ruleMessage];
+            } else {
+                const censor = guild.censor?.list?.[id];
+                delete censor?.[ruleMessage];
+            }
+        } else if (id === undefined) {
+            if (guild.censor?.rule?.[ruleMessage] !== undefined)
+                guild.censor.rule[ruleMessage] = code;
+        } else {
+            const censor = guild.censor?.list?.[id];
+            if (censor !== undefined)
+                censor[ruleMessage] = code;
+        }
+
+        return true;
+    }
+
+    public async getCensorRule(guildId: string, id: number | undefined, ruleType: 'delete' | 'kick' | 'ban', skipCache?: boolean): Promise<GuildTriggerTag | undefined> {
+        const guild = await this.rget(guildId, skipCache);
+        const ruleMessage = `${ruleType}Message` as const;
+        if (id === undefined)
+            return guild?.censor?.rule?.[ruleMessage];
+
+        const censor = guild?.censor?.list?.[id];
+        return censor?.[ruleMessage];
     }
 
     public async getCommandPerms(guildId: string, skipCache?: boolean): Promise<Readonly<Record<string, CommandPermissions>> | undefined>
@@ -347,26 +478,26 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return guild?.commandperms;
     }
 
-    public async setCommandPerms(guildId: string, commands: string[], permissions: Partial<CommandPermissions>): Promise<boolean> {
+    public async setCommandPerms(guildId: string, commands: string[], permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         const guild = await this.rget(guildId);
         if (guild === undefined)
-            return false;
+            return [];
 
         const payload = commands.reduce<Record<string, MutableCommandPermissions>>((p, c) => {
             p[c] = this.updateExpr(<MutableCommandPermissions>permissions);
             return p;
         }, {});
         if (commands.length === 0 || !await this.rupdate(guildId, { commandperms: payload }))
-            return false;
+            return [];
 
         guild.commandperms ??= {};
         for (const command of commands)
             Object.assign(guild.commandperms[command] ??= {}, permissions);
 
-        return true;
+        return Object.keys(payload);
     }
 
-    public async listCommands(guildId: string, skipCache = false): Promise<readonly NamedGuildCommandTag[]> {
+    public async getCustomCommands(guildId: string, skipCache = false): Promise<readonly NamedGuildCommandTag[]> {
         const guild = await this.rget(guildId, skipCache);
         if (guild?.ccommands === undefined)
             return [];
@@ -374,6 +505,13 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return Object.entries(guild.ccommands)
             .filter((v): v is [string, GuildCommandTag] => guard.hasValue(v[1]))
             .map(v => ({ ...v[1], name: v[0] }));
+    }
+
+    public async getCustomCommandNames(guildId: string, skipCache?: boolean): Promise<readonly string[]> {
+        const guild = await this.rget(guildId, skipCache);
+        if (guild?.ccommands === undefined)
+            return [];
+        return Object.keys(guild.ccommands);
     }
 
     public async get(guildId: string, skipCache = false): Promise<StoredGuild | undefined> {
@@ -474,10 +612,10 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         return true;
     }
 
-    public async updateCommands(guildId: string, commandNames: string[], partialCommand: Partial<GuildCommandTag>): Promise<boolean> {
+    public async updateCommands(guildId: string, commandNames: string[], partialCommand: Partial<GuildCommandTag>): Promise<readonly string[]> {
         const guild = await this.rget(guildId);
         if (guild === undefined)
-            return false;
+            return [];
 
         const commands = commandNames.map(c => [c, guild.ccommands[c.toLowerCase()]] as const);
         const payload = commands.reduce<UpdateData<Record<string, GuildCommandTag>>>((p, c) => {
@@ -487,13 +625,13 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<'guild', 'guildid'
         }, {});
 
         if (Object.keys(payload).length === 0 || !await this.rupdate(guildId, { ccommands: payload }))
-            return false;
+            return [];
 
         for (const [, command] of commands)
             if (command !== undefined)
                 Object.assign(command, partialCommand);
 
-        return true;
+        return Object.keys(payload);
     }
 
     public async setCommandProp<K extends keyof GuildCommandTag>(guildId: string, commandName: string, key: K, value: GuildCommandTag[K]): Promise<boolean> {

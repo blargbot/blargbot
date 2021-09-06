@@ -28,6 +28,8 @@ export class BBTagEngine {
         this.cooldowns = new TagCooldownManager();
     }
 
+    public async execute(source: string, options: BBTagContextOptions): Promise<ExecutionResult>
+    public async execute(source: string, options: BBTagContext, caller: SubtagCall): Promise<ExecutionResult>
     public async execute(source: string, options: BBTagContextOptions | BBTagContext, caller?: SubtagCall): Promise<ExecutionResult> {
         this.logger.bbtag(`Start running ${options.isCC ? 'CC' : 'tag'} ${options.rootTagName ?? ''}`);
         const timer = new Timer().start();
@@ -39,7 +41,7 @@ export class BBTagEngine {
         if (context.cooldowns.get(context).isAfter(moment())) {
             const remaining = moment.duration(context.cooldowns.get(context).diff(moment()));
             if (context.state.stackSize === 0)
-                await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again in ${remaining.asSeconds()} seconds.`);
+                await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
             context.state.return = RuntimeReturnState.ALL;
             content = context.addError(`Cooldown: ${remaining.asMilliseconds()}`, caller);
         } else if (context.state.stackSize > 200) {

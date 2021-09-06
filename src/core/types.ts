@@ -1,7 +1,7 @@
 import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
-import { BaseButtonOptions, ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, GuildMember, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, GuildMember, InteractionButtonOptions, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import { Duration, Moment } from 'moment-timezone';
 import { Options as SequelizeOptions } from 'sequelize';
 
@@ -23,14 +23,48 @@ export type SendPayload = SendOptions | MessageEmbedOptions | string | FileOptio
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-export type ProcessMessageHandler = (data: unknown, id: Snowflake, reply: <T = unknown>(data: T) => void) => void;
-export type AnyProcessMessageHandler = (event: string, ...args: Parameters<ProcessMessageHandler>) => void;
-export type WorkerPoolEventHandler<TWorker extends WorkerConnection> = (worker: TWorker, ...args: Parameters<ProcessMessageHandler>) => void;
+export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
+export type WorkerPoolEventContext<TWorker extends WorkerConnection<string, IPCContracts>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
+export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => unknown;
+export type WorkerPoolEventHandler<TWorker extends WorkerConnection<string, IPCContracts>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => unknown;
 export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };
-export type MasterEvalResult<T = unknown> = Record<string, EvalResult<T>>;
-export type EvalResult<T = unknown> = { success: false; error: unknown; } | { success: true; result: T; };
+export type GlobalEvalResult = Record<string, EvalResult>;
+export type EvalResult = { success: false; error: unknown; } | { success: true; result: unknown; };
 export type EvalType = 'master' | 'global' | `cluster${number}`
+
+export type IPCContract<Worker, Master> = { workerGets: Worker; masterGets: Master; };
+export type IPCContracts<ContractNames extends string = string> = { [ContractName in ContractNames]: IPCContract<unknown, unknown> }
+export type IPCContractNames<Contracts extends IPCContracts> = string & keyof (Contracts & BaseIPCContract);
+
+export type IPCContractMasterGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract]['masterGets']
+export type IPCContractWorkerGets<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> = (Contracts & BaseIPCContract)[Contract]['workerGets']
+
+export type GetMasterProcessMessageHandler<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> =
+    ProcessMessageHandler<IPCContractMasterGets<Contracts, Contract>, IPCContractWorkerGets<Contracts, Contract>>
+export type GetWorkerProcessMessageHandler<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> =
+    ProcessMessageHandler<IPCContractWorkerGets<Contracts, Contract>, IPCContractMasterGets<Contracts, Contract>>
+export type GetWorkerPoolEventHandler<Worker extends WorkerConnection<string, IPCContracts>, Contract extends WorkerIPCContractNames<Worker>> =
+    Worker extends WorkerConnection<string, infer Contracts>
+    ? WorkerPoolEventHandler<Worker, IPCContractMasterGets<Contracts, Contract>, IPCContractWorkerGets<Contracts, Contract>>
+    : never;
+
+export type WorkerIPCContractNames<Worker extends WorkerConnection<string, IPCContracts>> =
+    Worker extends WorkerConnection<string, infer Contracts>
+    ? IPCContractNames<Contracts>
+    : never;
+
+export type BaseIPCContract = {
+    'stop': { masterGets: undefined; workerGets: undefined; };
+    'ready': { masterGets: string; workerGets: never; };
+    'log': { masterGets: LogEntry; workerGets: never; };
+    'alive': { masterGets: Date; workerGets: never; };
+    'exit': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
+    'close': { masterGets: { code: number | null; signal: NodeJS.Signals | null; }; workerGets: never; };
+    'disconnect': { masterGets: undefined; workerGets: never; };
+    'kill': { masterGets: unknown; workerGets: never; };
+    'error': { masterGets: Error; workerGets: never; };
+}
 
 export interface Binding<TState> {
     [Binder.binder](state: TState): BindingResult<TState>;
@@ -54,63 +88,119 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
     ? { fallback?: undefined; }
     : { fallback: boolean; };
 
-export interface ConfirmQueryOptionsBase {
+export interface QueryOptionsBase {
     context: TextBasedChannels | Message;
-    users: Iterable<string | User> | string | User;
-    prompt: string | Omit<SendOptions, 'components'>;
-    confirm: ConfirmQueryButton;
-    cancel: ConfirmQueryButton;
+    actors: Iterable<string | User> | string | User;
+    prompt?: string | Omit<SendOptions, 'components'>;
     timeout?: number;
+}
+
+export interface QueryBase<T> {
+    getResult(): Promise<T>;
+    cancel(): void | Promise<void>;
+}
+
+export type QueryResult<TStates extends string, TResult> = QueryBaseResult<TStates> | QuerySuccess<TResult>;
+
+export interface QueryBaseResult<T extends string> {
+    readonly state: T;
+}
+
+export interface QuerySuccess<T> extends QueryBaseResult<'SUCCESS'> {
+    readonly value: T;
+}
+
+export interface ConfirmQueryOptionsBase extends QueryOptionsBase {
+    confirm: QueryButton;
+    cancel: QueryButton;
 }
 
 export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = ConfirmQueryOptionsBase & ConfirmQueryOptionsFallback<T>;
 
-export interface ChoiceQueryOptions<T> {
-    context: TextBasedChannels | Message;
-    actors: Iterable<string | User> | string | User;
-    prompt: string | Omit<SendOptions, 'components'>;
+export interface ChoiceQueryOptions<T> extends QueryOptionsBase {
     placeholder: string;
     choices: Iterable<Omit<MessageSelectOptionData, 'value'> & { value: T; }>;
-    timeout?: number;
 }
+
+export interface TextQueryOptionsBase<T> extends QueryOptionsBase {
+    cancel?: QueryButton;
+    parse?: TextQueryOptionsParser<T>;
+}
+
+export interface TextQueryOptionsParsed<T> extends TextQueryOptionsBase<T> {
+    parse: TextQueryOptionsParser<T>;
+}
+
+export type SlimTextQueryOptionsParsed<T> = Omit<TextQueryOptionsParsed<T>, 'context' | 'actors'>;
+
+export interface TextQueryOptions extends TextQueryOptionsBase<string> {
+    parse?: undefined;
+}
+
+export type SlimTextQueryOptions = Omit<TextQueryOptions, 'context' | 'actors'>;
+
+export interface TextQueryOptionsParser<T> {
+    (message: Message): Promise<TextQueryOptionsParseResult<T>> | TextQueryOptionsParseResult<T>;
+}
+
+export type TextQueryOptionsParseResult<T> =
+    | { readonly success: true; readonly value: T; }
+    | { readonly success: false; readonly error?: string | Omit<SendOptions, 'components'>; }
 
 export interface MultipleQueryOptions<T> extends ChoiceQueryOptions<T> {
     minCount?: number;
     maxCount?: number;
 }
 
-export interface ChoiceQuery<T> {
+export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
     prompt: Message | undefined;
-    getResult(): Promise<ChoiceQueryResult<T>>;
-    cancel(): void;
 }
 
-export interface MultipleQuery<T> {
+export interface MultipleQuery<T> extends QueryBase<MultipleResult<T>> {
     prompt: Message | undefined;
-    getResult(): Promise<MultipleResult<T>>;
-    cancel(): void;
 }
 
-export interface ConfirmQuery<T extends boolean | undefined = undefined> {
+export interface ConfirmQuery<T extends boolean | undefined = undefined> extends QueryBase<T> {
     prompt: Message | undefined;
-    getResult(): Promise<T>;
-    cancel(): void;
 }
 
-export type ChoiceQueryResult<T> = ChoiceQueryBaseResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED'> | ChoiceQuerySuccess<T>;
-export type MultipleResult<T> = ChoiceQueryBaseResult<'NO_OPTIONS' | 'EXCESS_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED'> | ChoiceQuerySuccess<T[]>;
-
-export interface ChoiceQueryBaseResult<T extends string> {
-    readonly state: T;
+export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
+    messages: readonly Message[];
 }
 
-export interface ChoiceQuerySuccess<T> extends ChoiceQueryBaseResult<'SUCCESS'> {
-    readonly value: T;
-}
+export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;
+export type MultipleResult<T> = QueryResult<'NO_OPTIONS' | 'EXCESS_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T[]>;
+export type TextQueryResult<T> = QueryResult<'FAILED' | 'TIMED_OUT' | 'CANCELLED', T>;
 
-export type ConfirmQueryButton =
+export type QueryButton =
     | string
-    | Omit<BaseButtonOptions, 'disabled' | 'type'>
+    | Partial<Omit<InteractionButtonOptions, 'disabled' | 'type' | 'customId'>>
+
+export type EntityQueryOptions<T> =
+    | EntityPickQueryOptions<T>
+    | EntityFindQueryOptions
+
+export type SlimEntityQueryOptions<T> =
+    | SlimEntityPickQueryOptions<T>
+    | SlimEntityFindQueryOptions
+
+export interface BaseEntityQueryOptions extends QueryOptionsBase {
+    placeholder?: string;
+}
+
+export interface EntityPickQueryOptions<T> extends BaseEntityQueryOptions {
+    choices: Iterable<T>;
+    filter?: string;
+}
+
+export type SlimEntityPickQueryOptions<T> = Omit<EntityPickQueryOptions<T>, 'context' | 'actors'>;
+
+export interface EntityFindQueryOptions extends BaseEntityQueryOptions {
+    guild: string | Guild;
+    filter?: string;
+}
+
+export type SlimEntityFindQueryOptions = Omit<EntityFindQueryOptions, 'context' | 'actors'>;
 
 export interface BindingSuccess<TState> {
     readonly success: true;
@@ -129,13 +219,27 @@ export interface BinderResult<TState> {
     readonly state: TState;
 }
 
-export type RethinkTableMap = {
-    'guild': MutableStoredGuild;
-    'tag': StoredTag;
-    'user': MutableStoredUser;
-    'vars': MutableKnownStoredVars;
-    'events': StoredEvent;
+/* eslint-disable @typescript-eslint/naming-convention */
+export interface Suggestor {
+    ID: string;
+    Username: string;
 }
+
+export interface Suggestion {
+    ID?: number;
+    AA: boolean;
+    Bug: boolean;
+    Type: string[];
+    Title: string;
+    Description: string;
+    Message: string;
+    Channel: string;
+    Author: string[];
+    Edits?: number;
+    Notes?: string;
+    'Last Edited'?: number;
+}
+/* eslint-enable @typescript-eslint/naming-convention */
 
 export interface MessageFilter {
     readonly term: string;
@@ -316,7 +420,7 @@ export interface StoredGuild {
     readonly warnings?: GuildWarnings;
     readonly modlog?: readonly GuildModlogEntry[];
     readonly nextModlogId?: number;
-    readonly roleme?: readonly GuildRolemeEntry[];
+    readonly roleme?: GuildRolemes;
     readonly autoresponse?: GuildAutoresponses;
     readonly announce?: GuildAnnounceOptions;
     readonly log?: { readonly [key: string]: string | undefined; /* channelid */ };
@@ -349,7 +453,7 @@ export interface MutableStoredGuild extends StoredGuild {
     warnings?: MutableGuildWarnings;
     modlog?: GuildModlogEntry[];
     censor?: MutableGuildCensors;
-    roleme?: MutableGuildRolemeEntry[];
+    roleme?: MutableGuildRolemes;
     log?: { [key: string]: string | undefined; };
     logIgnore?: string[];
     autoresponse?: MutableGuildAutoresponses;
@@ -395,22 +499,21 @@ export interface GuildAutoresponse {
 export interface GuildFilteredAutoresponse extends GuildAutoresponse, MessageFilter {
 }
 
+export interface GuildRolemes {
+    readonly [id: string]: GuildRolemeEntry | undefined;
+}
+
 export interface GuildRolemeEntry {
     readonly channels: readonly string[]; // channelids
     readonly casesensitive: boolean;
     readonly message: string;
-    readonly add?: readonly string[]; // roleids
-    readonly remove?: readonly string[]; // roleids
+    readonly add: readonly string[]; // roleids
+    readonly remove: readonly string[]; // roleids
     readonly output?: GuildTriggerTag;
 }
 
-export interface MutableGuildRolemeEntry extends GuildRolemeEntry {
-    channels: string[];
-    casesensitive: boolean;
-    message: string;
-    add?: string[];
-    remove?: string[];
-    output?: GuildTriggerTag;
+export interface MutableGuildRolemes extends GuildRolemes {
+    [id: string]: GuildRolemeEntry | undefined;
 }
 
 export interface GuildWarnings {
@@ -421,14 +524,14 @@ export interface MutableGuildWarnings {
 }
 
 export interface GuildCensors {
-    readonly list: readonly GuildCensor[];
+    readonly list?: { readonly [censorId: string]: GuildCensor | undefined; };
     readonly exception?: GuildCensorExceptions;
     readonly rule?: GuildCensorRule;
 }
 
 export interface MutableGuildCensors extends GuildCensors {
-    list: GuildCensor[];
-    exception?: GuildCensorExceptions;
+    list?: { [censorId: string]: MutableGuildCensor | undefined; };
+    exception?: MutableGuildCensorExceptions;
     rule?: MutableGuildCensorRule;
 }
 
@@ -455,9 +558,15 @@ export interface MutableGuildCensor extends MutableGuildCensorRule, MessageFilte
 }
 
 export interface GuildCensorExceptions {
-    readonly channel: readonly string[]; // channelids
-    readonly user: readonly string[]; // userids
-    readonly role: readonly string[]; // roleids
+    readonly channel?: readonly string[]; // channelids
+    readonly user?: readonly string[]; // userids
+    readonly role?: readonly string[]; // roleids
+}
+
+export interface MutableGuildCensorExceptions extends GuildCensorExceptions {
+    channel?: string[]; // channelids
+    user?: string[]; // userids
+    role?: string[]; // roleids
 }
 
 export interface GuildTagBase {
@@ -467,11 +576,11 @@ export interface GuildTagBase {
 
 export interface GuildCommandTagBase extends GuildTagBase, CommandPermissions {
     readonly help?: string;
-    readonly flags?: readonly FlagDefinition[];
     readonly cooldown?: number;
 }
 
 export interface GuildSourceCommandTag extends GuildCommandTagBase {
+    readonly flags?: readonly FlagDefinition[];
     readonly content: string;
 }
 
@@ -496,15 +605,17 @@ export type NamedGuildCommandTag = NamedGuildImportedCommandTag | NamedGuildSour
 
 export interface CommandPermissions {
     readonly disabled?: boolean;
-    readonly permission?: bigint;
-    readonly roles?: readonly string[]; // roleIds or role names or role tags
+    readonly permission?: string;
+    /** Role ids, names or mentions */
+    readonly roles?: readonly string[];
     readonly hidden?: boolean;
 }
 
 export interface MutableCommandPermissions extends CommandPermissions {
     disabled?: boolean;
-    permission?: bigint;
-    roles?: string[]; // roleIds or role names or role tags
+    permission?: string;
+    /** Role ids, names or mentions */
+    roles?: string[];
     hidden?: boolean;
 }
 
@@ -530,7 +641,7 @@ export interface StoredGuildSettings {
     readonly adminrole?: string; // role tag or role name
     readonly antimention?: number;
     readonly banat?: number;
-    readonly banoverride?: bigint;
+    readonly banoverride?: string;
     readonly cahnsfw?: boolean;
     readonly deletenotif?: boolean;
     readonly disableeveryone?: boolean;
@@ -539,7 +650,7 @@ export interface StoredGuildSettings {
     readonly farewellchan?: string; // channelid
     readonly greetChan?: string; // channelid
     readonly kickat?: number;
-    readonly kickoverride?: bigint;
+    readonly kickoverride?: string;
     readonly makelogs?: boolean;
     readonly modlog?: string; // channelid or channel tag
     readonly mutedrole?: string; // roleid or role tag
@@ -547,7 +658,7 @@ export interface StoredGuildSettings {
     readonly permoverride?: boolean;
     readonly prefix?: readonly string[];
     readonly social?: boolean;
-    readonly staffperms?: bigint;
+    readonly staffperms?: string;
     readonly tableflip?: boolean;
 }
 
@@ -635,13 +746,30 @@ export interface ChatlogMessage {
     readonly msgid: string;
     readonly channelid: string;
     readonly guildid: string;
-    readonly embeds: string;
+    readonly embeds: unknown[];
 }
 
 export interface Chatlog extends ChatlogMessage {
     readonly id: Snowflake;
     readonly msgtime: Date;
     readonly type: ChatlogType;
+}
+
+export interface ChatlogIndex<T = string> {
+    readonly keycode: string;
+    readonly channel: string;
+    readonly users: readonly string[];
+    readonly types: readonly ChatlogType[];
+    readonly ids: readonly T[];
+    readonly limit: number;
+}
+
+export interface ChatlogSearchOptions {
+    readonly channelId: string;
+    readonly types: readonly ChatlogType[];
+    readonly users: readonly string[];
+    readonly exclude: readonly string[];
+    readonly count: number;
 }
 
 export interface BBTagVariable {
@@ -657,6 +785,7 @@ export interface DatabaseOptions {
     readonly rethinkDb: RethinkDbOptions;
     readonly cassandra: CassandraDbOptions;
     readonly postgres: PostgresDbOptions;
+    readonly airtable: AirtableOptions;
 }
 
 export interface RethinkDbOptions {
@@ -682,6 +811,11 @@ export interface PostgresDbOptions {
     readonly sequelize: SequelizeOptions;
 }
 
+export interface AirtableOptions {
+    readonly key: string;
+    readonly base: string;
+}
+
 export interface StoredGuildEventLogConfig {
     readonly events: { readonly [P in StoredGuildEventLogType]?: string | undefined; };
     readonly roles: { readonly [roleId: string]: string | undefined; };
@@ -693,6 +827,8 @@ export interface MutableStoredGuildEventLogConfig extends StoredGuildEventLogCon
 }
 
 export interface GuildTable {
+    getRoleme(guildId: string, id: number, skipCache?: boolean): Promise<GuildRolemeEntry | undefined>;
+    setRoleme(guildId: string, id: number, roleme: GuildRolemeEntry | undefined): Promise<boolean>;
     updateModlogCase(guildId: string, caseid: number, modlog: Partial<Omit<GuildModlogEntry, 'caseid'>>): Promise<boolean>;
     getModlogCase(guildId: string, caseId?: number, skipCache?: boolean): Promise<GuildModlogEntry | undefined>;
     removeModlogCases(guildId: string, ids?: number[]): Promise<readonly GuildModlogEntry[] | undefined>;
@@ -719,9 +855,17 @@ export interface GuildTable {
     setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>;
     getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined>;
     setChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, value: ChannelSettings[K]): Promise<boolean>;
-    getRolemes(guildId: string, skipCache?: boolean): Promise<readonly GuildRolemeEntry[]>;
+    getRolemes(guildId: string, skipCache?: boolean): Promise<{ readonly [id: string]: GuildRolemeEntry | undefined; } | undefined>;
     getCensors(guildId: string, skipCache?: boolean): Promise<GuildCensors | undefined>;
-    listCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedGuildCommandTag[]>;
+    getCensor(guildId: string, id: number, skipCache?: boolean): Promise<GuildCensor | undefined>;
+    setCensor(guildId: string, id: number, censor: GuildCensor | undefined): Promise<boolean>;
+    censorIgnoreUser(guildId: string, userId: string, ignored: boolean): Promise<boolean>;
+    censorIgnoreChannel(guildId: string, channelId: string, ignored: boolean): Promise<boolean>;
+    censorIgnoreRole(guildId: string, roleId: string, ignored: boolean): Promise<boolean>;
+    setCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', code: GuildTriggerTag | undefined): Promise<boolean>;
+    getCensorRule(guildId: string, id: number | undefined, ruleType: 'kick' | 'ban' | 'delete', skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
+    getCustomCommands(guildId: string, skipCache?: boolean): Promise<readonly NamedGuildCommandTag[]>;
+    getCustomCommandNames(guildId: string, skipCache?: boolean): Promise<readonly string[]>;
     get(guildId: string, skipCache?: boolean): Promise<StoredGuild | undefined>;
     upsert(guild: Guild): Promise<'inserted' | 'updated' | false>;
     exists(guildId: string, skipCache?: boolean): Promise<boolean>;
@@ -733,7 +877,7 @@ export interface GuildTable {
     getCommand(guildId: string, commandName: string, skipCache?: boolean): Promise<NamedGuildCommandTag | undefined>;
     getIntervals(skipCache?: boolean): Promise<ReadonlyArray<{ readonly guildId: string; readonly interval: GuildTriggerTag; }>>;
     updateCommand(guildId: string, commandName: string, command: Partial<GuildCommandTag>): Promise<boolean>;
-    updateCommands(guildId: string, commandNames: string[], command: Partial<GuildCommandTag>): Promise<boolean>;
+    updateCommands(guildId: string, commandNames: string[], command: Partial<GuildCommandTag>): Promise<readonly string[]>;
     setCommand(guildId: string, commandName: string, command: GuildCommandTag | undefined): Promise<boolean>;
     setCommandProp<K extends keyof GuildSourceCommandTag>(guildId: string, commandName: string, key: K, value: GuildSourceCommandTag[K]): Promise<boolean>;
     setCommandProp<K extends keyof GuildImportedCommandTag>(guildId: string, commandName: string, key: K, value: GuildImportedCommandTag[K]): Promise<boolean>;
@@ -751,7 +895,7 @@ export interface GuildTable {
     setWarnings(guildId: string, userId: string, count: number | undefined): Promise<boolean>;
     getCommandPerms(guildId: string, skipCache?: boolean): Promise<Readonly<Record<string, CommandPermissions>> | undefined>;
     getCommandPerms(guildId: string, commandName: string, skipCache?: boolean): Promise<CommandPermissions | undefined>;
-    setCommandPerms(guildId: string, commands: string[], permissions: Partial<CommandPermissions>): Promise<boolean>;
+    setCommandPerms(guildId: string, commands: string[], permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
 }
 
 export interface UserTable {
@@ -798,6 +942,7 @@ export interface TagsTable {
     top(count: number): Promise<readonly StoredTag[]>;
     get(tagName: string): Promise<StoredTag | undefined>;
     set(tag: StoredTag): Promise<boolean>;
+    update(tagName: string, tag: Partial<StoredTag>): Promise<boolean>;
     setProp<K extends keyof StoredTag>(tagName: string, key: K, value: StoredTag[K]): Promise<boolean>;
     add(tag: StoredTag): Promise<boolean>;
     incrementUses(tagName: string, count?: number): Promise<boolean>;
@@ -808,7 +953,14 @@ export interface TagsTable {
 
 export interface ChatlogsTable {
     add(message: ChatlogMessage, type: ChatlogType, lifespan?: number | Duration): Promise<void>;
-    get(messageId: string): Promise<Chatlog | undefined>;
+    getByMessageId(messageId: string): Promise<Chatlog | undefined>;
+    findAll(options: ChatlogSearchOptions): Promise<readonly Chatlog[]>;
+    getAll(channelId: string, ids: readonly string[]): Promise<readonly Chatlog[]>;
+}
+
+export interface ChatlogIndexTable {
+    add(index: ChatlogIndex): Promise<boolean>;
+    get(id: string): Promise<ChatlogIndex | undefined>;
 }
 
 export interface DumpsTable {
@@ -819,6 +971,18 @@ export interface TagVariablesTable {
     upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void>;
     get(name: string, type: SubtagVariableType, scope: string): Promise<JToken>;
 }
+
+export interface SuggestorsTable {
+    get(id: string): Promise<Suggestor | undefined>;
+    upsert(userid: string, username: string): Promise<string | undefined>;
+}
+
+export interface SuggestionsTable {
+    get(id: number): Promise<Suggestion | undefined>;
+    create(suggestion: Suggestion): Promise<number | undefined>;
+    update(id: number, suggestion: Partial<Suggestion>): Promise<boolean>;
+}
+
 export type TypeMappingResult<T> = { valid: false; } | { valid: true; value: T; };
 export type TypeMapping<T, TArgs extends unknown[] = []> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
 export type TypeMappings<T> = { readonly [P in keyof T]-?: TypeMapping<T[P]> | [string, TypeMapping<T[P]>] | [T[P]] };
@@ -826,4 +990,9 @@ export interface TypeMappingOptions<T, R> {
     initial?: () => T;
     ifNull?: TypeMappingResult<T | R>;
     ifUndefined?: TypeMappingResult<T | R>;
+    strict?: boolean;
+}
+
+export interface IMiddleware<Context, Result = void> {
+    execute(context: Context, next: (context?: Context) => Promise<Result>): Promise<Result>;
 }

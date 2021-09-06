@@ -17,20 +17,20 @@ export class RestartCommand extends BaseGlobalCommand {
                 {
                     parameters: 'kill',
                     execute: (ctx) => this.restart(ctx),
-                    description: 'Restarts all the clusters'
+                    description: 'Kills the master process, ready for pm2 to restart it'
                 },
                 {
-                    parameters: 'frontend',
+                    parameters: 'api',
                     execute: (ctx) => this.restartWebsites(ctx),
-                    description: 'Restarts all the clusters'
+                    description: 'Restarts the api process'
                 }
             ]
         });
     }
 
-    private restartWebsites(context: CommandContext): string {
-        context.cluster.worker.send('respawnFrontend', context.channel.id);
-        return this.success('Frontend has been respawned.');
+    private async restartWebsites(context: CommandContext): Promise<string> {
+        await context.cluster.worker.request('respawnApi', undefined);
+        return this.success('Api has been respawned.');
     }
 
     private async restart(context: CommandContext): Promise<undefined> {
@@ -41,12 +41,12 @@ export class RestartCommand extends BaseGlobalCommand {
                 time: moment().valueOf()
             }
         });
-        context.cluster.worker.send('killAll', context.channel.id);
+        context.cluster.worker.send('killAll', undefined);
         return undefined;
     }
 
     private respawnClusters(context: CommandContext): string {
-        context.cluster.worker.send('respawnAll', context.channel.id);
+        context.cluster.worker.send('respawnAll', { channelId: context.channel.id });
         return 'Ah! You\'ve killed me but in a way that minimizes downtime! D:';
     }
 }

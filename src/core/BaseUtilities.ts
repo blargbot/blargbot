@@ -1,5 +1,5 @@
 import { DMContext, SendContext, SendPayload, StoredUser } from '@core/types';
-import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction, Webhook } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -48,7 +48,8 @@ export class BaseUtilities {
         path = path?.replace(/^[/\\]+/, '');
         const scheme = this.config.website.secure ? 'https' : 'http';
         const host = this.config.website.host;
-        return `${scheme}://${host}/${path ?? ''}`;
+        const port = this.config.website.port === 80 ? '' : `:${this.config.website.port}`;
+        return `${scheme}://${host}${port}/${path ?? ''}`;
     }
 
     public embedifyAuthor(target: GuildMember | User | Guild | Team | StoredUser): MessageEmbedAuthor {
@@ -171,7 +172,7 @@ export class BaseUtilities {
                 return undefined;
             }
 
-            let result = sendErrors[code](this, channel, payload, error);
+            let result = await sendErrors[code](this, channel, payload, error);
             if (typeof result === 'string' && author !== undefined && await this.canDmErrors(author.id)) {
                 if (guard.isGuildChannel(channel))
                     result += `\nGuild: ${channel.guild.name} (${channel.guild.id})`;
@@ -391,11 +392,15 @@ export class BaseUtilities {
         }
     }
 
-    public async findChannels(guild: string | Guild, query: string): Promise<GuildChannels[]> {
+    public async findChannels(guild: string | Guild, query?: string): Promise<GuildChannels[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return [];
+
+        if (query === undefined)
+            return [...guild.channels.cache.values()] as GuildChannels[];
 
         const channel = await this.getChannel(guild, query);
         if (channel !== undefined)
@@ -437,6 +442,7 @@ export class BaseUtilities {
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         this.logger.error('Error while getting user', userId, err);
                     // fallthrough
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.UNKNOWN_USER:
                         return undefined;
                 }
@@ -458,6 +464,7 @@ export class BaseUtilities {
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         this.logger.error('Error while getting guild', guildId, err);
                     // fallthrough
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.UNKNOWN_GUILD:
                         return undefined;
                 }
@@ -484,6 +491,7 @@ export class BaseUtilities {
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         this.logger.error('Error while getting message', messageId, 'in channel', foundChannel.id, err);
                     // fallthrough
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.UNKNOWN_MESSAGE:
                         return undefined;
                 }
@@ -499,6 +507,7 @@ export class BaseUtilities {
 
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return undefined;
 
@@ -509,6 +518,7 @@ export class BaseUtilities {
                 switch (error.code) {
                     case Constants.APIErrors.UNKNOWN_MEMBER:
                     case Constants.APIErrors.UNKNOWN_USER:
+                    case Constants.APIErrors.MISSING_ACCESS:
                     case Constants.APIErrors.INVALID_FORM_BODY:
                         return undefined;
                 }
@@ -517,17 +527,106 @@ export class BaseUtilities {
         }
     }
 
-    public async findMembers(guild: string | Guild, query: string): Promise<GuildMember[]> {
+    public async findMembers(guild: string | Guild, query?: string): Promise<GuildMember[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return [];
+
+        if (query === undefined)
+            return [...guild.members.cache.values()];
 
         const member = await this.getMember(guild, query);
         if (member !== undefined)
             return [member];
 
         return findBest(guild.members.cache.values(), m => this.memberMatchScore(m, query));
+    }
+
+    public async getWebhook(guild: string | Guild, webhookId: string): Promise<Webhook | undefined> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return undefined;
+
+        try {
+            const webhooks = await guild.fetchWebhooks();
+            return webhooks.get(webhookId);
+        } catch (error: unknown) {
+            if (error instanceof DiscordAPIError) {
+                switch (error.code) {
+                    case Constants.APIErrors.MISSING_PERMISSIONS:
+                    case Constants.APIErrors.MISSING_ACCESS:
+                        return undefined;
+                }
+            }
+            throw error;
+        }
+    }
+
+    public async findWebhooks(guild: string | Guild, query?: string): Promise<Webhook[]> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return [];
+
+        let webhooks;
+        try {
+            webhooks = await guild.fetchWebhooks();
+        } catch (error: unknown) {
+            if (error instanceof DiscordAPIError) {
+                switch (error.code) {
+                    case Constants.APIErrors.MISSING_PERMISSIONS:
+                    case Constants.APIErrors.MISSING_ACCESS:
+                        return [];
+                }
+            }
+            throw error;
+        }
+
+        if (query === undefined)
+            return [...webhooks.values()];
+
+        return findBest(webhooks.values(), w => this.webhookMatchScore(w, query));
+    }
+
+    public async getSender(guild: string | Guild, senderId: string): Promise<GuildMember | Webhook | undefined> {
+        senderId = parse.entityId(senderId) ?? '';
+        if (senderId === '')
+            return undefined;
+
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return undefined;
+
+        const member = await this.getMember(guild, senderId);
+        if (member !== undefined)
+            return member;
+
+        return await this.getWebhook(guild, senderId);
+    }
+
+    public async findSenders(guild: string | Guild, query?: string): Promise<Array<GuildMember | Webhook>> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return [];
+
+        const result = await Promise.all([
+            this.findMembers(guild),
+            this.findWebhooks(guild)
+        ]);
+
+        if (query === undefined)
+            return result.flat();
+
+        return findBest(result.flat(), s => s instanceof GuildMember ? this.memberMatchScore(s, query) : this.webhookMatchScore(s, query));
     }
 
     public memberMatchScore(member: GuildMember, query: string): number {
@@ -554,6 +653,18 @@ export class BaseUtilities {
         return score;
     }
 
+    public webhookMatchScore(webhook: Webhook, query: string): number {
+        let score = 0;
+        const normalizedName = webhook.name.toLowerCase();
+        const normalizedQuery = query.toLowerCase();
+
+        if (webhook.name === query) return Infinity;
+        if (webhook.name.startsWith(query)) score += 100;
+        if (normalizedName.startsWith(normalizedQuery)) score += 10;
+        if (normalizedName.includes(normalizedQuery)) score += 1;
+        return score;
+    }
+
     public async getRole(guild: string | Guild, roleId: string): Promise<Role | undefined> {
         roleId = parse.entityId(roleId, '@&', true) ?? '';
         if (roleId === '')
@@ -573,11 +684,15 @@ export class BaseUtilities {
         }
     }
 
-    public async findRoles(guild: string | Guild, query: string): Promise<Role[]> {
+    public async findRoles(guild: string | Guild, query?: string): Promise<Role[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
+
         if (typeof guild === 'string')
             return [];
+
+        if (query === undefined)
+            return [...guild.roles.cache.values()];
 
         const role = await this.getRole(guild, query);
         if (role !== undefined)
@@ -616,9 +731,9 @@ const sendErrors = {
             'but didn\'t have permission to see the channel. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Read Messages` permission.';
     },
-    [Constants.APIErrors.EMBED_DISABLED]: (util: BaseUtilities, channel: TextBasedChannels) => {
+    [Constants.APIErrors.EMBED_DISABLED]: async (util: BaseUtilities, channel: TextBasedChannels) => {
         util.logger.warn('50004: Tried embeding a link, but had no permissions!');
-        void util.send(channel, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
+        await util.send(channel, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to create embeds. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Embed Links` permission.';

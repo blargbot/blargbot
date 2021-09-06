@@ -1,18 +1,19 @@
 import { Logger } from '@core/Logger';
 import { BaseWorker } from '@core/worker';
-import { MasterOptions } from '@master/types';
+import { MasterIPCContract, MasterOptions } from '@master/types';
 
 import { Master } from './Master';
 
-export class MasterWorker extends BaseWorker {
+export class MasterWorker extends BaseWorker<MasterIPCContract> {
     public readonly master: Master;
 
     public constructor(
+        process: NodeJS.Process,
         logger: Logger,
         config: Configuration,
         options: Omit<MasterOptions, 'worker'>
     ) {
-        super(logger);
+        super(process, logger);
 
         logger.info(`
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@

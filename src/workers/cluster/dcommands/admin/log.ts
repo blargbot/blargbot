@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, guard, humanize } from '@cluster/utils';
 import { StoredGuildEventLogType } from '@core/types';
-import { EmbedFieldData, GuildTextBasedChannels, MessageEmbedOptions, Role, User } from 'discord.js';
+import { EmbedFieldData, GuildTextBasedChannels, MessageEmbedOptions, Role, User, Webhook } from 'discord.js';
 
 export class LogCommand extends BaseGuildCommand {
     public constructor() {
@@ -48,12 +48,12 @@ export class LogCommand extends BaseGuildCommand {
                     execute: (ctx, [roles]) => this.setEventChannel(ctx, roles.map((r: Role) => `role:${r.id}`), undefined)
                 },
                 {
-                    parameters: 'ignore {users:user[]}',
+                    parameters: 'ignore {users:sender[]}',
                     description: 'Ignores any tracked events concerning the users',
                     execute: (ctx, [users]) => this.ignoreUsers(ctx, users, true)
                 },
                 {
-                    parameters: 'track {users:user[]}',
+                    parameters: 'track {users:sender[]}',
                     description: 'Removes the users from the list of ignored users and begins tracking events from them again',
                     execute: (ctx, [users]) => this.ignoreUsers(ctx, users, false)
                 }
@@ -127,10 +127,10 @@ export class LogCommand extends BaseGuildCommand {
         };
     }
 
-    public async ignoreUsers(context: GuildCommandContext, users: User[], ignore: boolean): Promise<string> {
-        await context.database.guilds.setLogIgnores(context.channel.guild.id, users.map(u => u.id), ignore);
+    public async ignoreUsers(context: GuildCommandContext, senders: Array<User | Webhook>, ignore: boolean): Promise<string> {
+        await context.database.guilds.setLogIgnores(context.channel.guild.id, senders.map(u => u.id), ignore);
 
-        const mentions = users.map(u => u.toString());
+        const mentions = senders.map(s => `<@${s.id}>`);
         if (ignore)
             return this.success(`I will now ignore events from ${humanize.smartJoin(mentions, ', ', ' and ')}`);
         return this.success(`I will no longer ignore events from ${humanize.smartJoin(mentions, ', ', ' and ')}`);

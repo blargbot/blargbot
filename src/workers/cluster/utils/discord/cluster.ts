@@ -63,21 +63,20 @@ export function getStats(cluster: Cluster): ClusterStats {
         }))
     };
 }
-export async function getAllStats(cluster: Cluster): Promise<Record<number, ClusterStats>> {
-    return cluster.worker.request('getClusterStats', {});
-}
 
-export async function getGuildClusterStats(cluster: Cluster, guildID: string): Promise<{cluster: ClusterStats; shard: ShardStats;}> {
+export async function getGuildClusterStats(cluster: Cluster, guildID: string): Promise<{ cluster: ClusterStats; shard: ShardStats; }> {
     const id = BigInt(guildID);
     const shardID = Number((id >> BigInt(22)) % BigInt(cluster.config.discord.shards.max));
-    let clusterData: ClusterStats;
+    let clusterData: ClusterStats | undefined;
 
     if (Math.floor(shardID / cluster.config.discord.shards.perCluster) === cluster.id) {
         clusterData = getStats(cluster);
     } else {
-        const allClusterData: Record<number, ClusterStats> = await cluster.worker.request('getClusterStats', {});
+        const allClusterData = await cluster.worker.request('getClusterStats', undefined);
         const clusterID = Math.floor(shardID / cluster.config.discord.shards.perCluster);
         clusterData = allClusterData[clusterID];
+        if (clusterData === undefined)
+            throw new Error(`Invalid cluster ${clusterID}`);
     }
 
     const shard = clusterData.shards.find(s => s.id === shardID) as ShardStats;
@@ -88,6 +87,6 @@ export async function getGuildClusterStats(cluster: Cluster, guildID: string): P
 }
 
 export async function getClusterStats(cluster: Cluster, clusterID: number): Promise<ClusterStats | undefined> {
-    const allClusterData: Record<number, ClusterStats | undefined> = await cluster.worker.request('getClusterStats', {});
+    const allClusterData = await cluster.worker.request('getClusterStats', undefined);
     return allClusterData[clusterID];
 }

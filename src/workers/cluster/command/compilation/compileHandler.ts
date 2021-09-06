@@ -1,4 +1,4 @@
-import { CommandBinderParseResult, CommandBinderState, CommandConcatParameter, CommandGreedyParameter, CommandHandler, CommandParameter, CommandSignatureHandler, CommandSingleParameter } from '@cluster/types';
+import { CommandBinderState, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@cluster/types';
 import { parse } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding } from '@core/types';
@@ -7,7 +7,6 @@ import { CommandContext } from '../CommandContext';
 import { ScopedCommandBase } from '../ScopedCommandBase';
 import * as bindings from './binding';
 import { getLookupCache } from './lookupCache';
-import { CommandVariableType, getSortOrder } from './parameterType';
 
 export function compileHandler<TContext extends CommandContext>(
     signatures: ReadonlyArray<CommandSignatureHandler<TContext>>,
@@ -50,7 +49,7 @@ export function compileHandler<TContext extends CommandContext>(
 }
 
 interface BindingBuilder<TContext extends CommandContext> {
-    create(): Binding<CommandBinderState<TContext>>;
+    create(): Iterable<{ binding: Binding<CommandBinderState<TContext>>; sort: string; }>;
     add(parameter: CommandParameter | undefined, signature: CommandSignatureHandler<TContext>): void;
 }
 
@@ -58,95 +57,60 @@ function buildBindings<TContext extends CommandContext>(
     signatures: Iterable<CommandSignatureHandler<TContext>>,
     depth: number
 ): ReadonlyArray<Binding<CommandBinderState<TContext>>> {
-    const results = new Map<string, BindingBuilder<TContext>>();
+    const results = new Map<CommandParameter['kind'] | 'execute', BindingBuilder<TContext>>();
 
     for (const signature of signatures) {
         const parameter = signature.parameters[depth] as CommandParameter | undefined;
-        switch (parameter?.kind) {
-            case undefined: {
-                const key = sortKeys.execute();
-                let builder = results.get(key);
-                if (builder === undefined)
-                    results.set(key, builder = createExecuteBindingBuilder());
-                builder.add(undefined, signature);
-                break;
-            }
-            case 'literal': {
-                const key = sortKeys.literal();
-                let builder = results.get(key);
-                if (builder === undefined)
-                    results.set(key, builder = createLiteralBindingBuilder(depth));
-                builder.add(parameter, signature);
-                break;
-            }
-            case 'singleVar': {
-                const key = sortKeys.single(parameter);
-                let builder = results.get(key);
-                if (builder === undefined)
-                    results.set(key, builder = createSingleVarBindingBuilder(parameter, depth));
-                builder.add(parameter, signature);
-                break;
-            }
-            case 'concatVar': {
-                const key = sortKeys.concat(parameter);
-                let builder = results.get(key);
-                if (builder === undefined)
-                    results.set(key, builder = createConcatVarBindingBuilder(parameter, depth));
-                builder.add(parameter, signature);
-                break;
-            }
-            case 'greedyVar': {
-                const key = sortKeys.greedy(parameter);
-                let builder = results.get(key);
-                if (builder === undefined)
-                    results.set(key, builder = createGreedyVarBindingBuilder(parameter, depth));
-                builder.add(parameter, signature);
-                break;
-            }
-        }
+        const key = parameter?.kind ?? 'execute';
+
+        let builder = results.get(key);
+        if (builder === undefined)
+            results.set(key, builder = bindingBuilderMap[key](depth));
+
+        builder.add(parameter, signature);
     }
 
-    return [...results.entries()]
-        .sort((a, b) => a[0] > b[0] ? 1 : -1)
-        .map(x => x[1].create());
-
+    return [...results.values()]
+        .flatMap(builder => [...builder.create()])
+        .sort((a, b) => a.sort > b.sort ? 1 : a.sort === b.sort ? 0 : -1)
+        .map(x => x.binding);
 }
 
-const sortKeys = {
-    literal() {
-        return '0';
-    },
-    single(parameter: CommandSingleParameter) {
-        const typeOrder = getSortOrder(parameter.type);
-        const fallbackOrder = parameter.fallback?.length.toString().padStart(10, '0') ?? ''.padStart(10, '-');
-        const rawOrder = parameter.raw ? '0' : '1';
-        return `1_${typeOrder}_0_${fallbackOrder}_${rawOrder}_${parameter.fallback ?? ''}`;
-    },
-    concat(parameter: CommandConcatParameter) {
-        const typeOrder = getSortOrder(parameter.type);
-        const fallbackOrder = parameter.fallback?.length.toString().padStart(10, '0') ?? ''.padStart(10, '-');
-        const rawOrder = parameter.raw ? '0' : '1';
-        return `1_${typeOrder}_1_${fallbackOrder}_${rawOrder}_${parameter.fallback ?? ''}`;
-    },
-    greedy(parameter: CommandGreedyParameter) {
-        const typeOrder = getSortOrder(parameter.type);
-        const minOrder = parameter.minLength.toString().padStart(10, '0');
-        const rawOrder = parameter.raw ? '0' : '1';
-        return `1_${typeOrder}_2_${minOrder}_${rawOrder}`;
-    },
-    execute() {
-        return '9';
+function getSortKey(parameter: CommandParameter | undefined): string {
+    let kindOrder;
+    switch (parameter?.kind) {
+        case undefined: return '9';
+        case 'literal': return '0';
+        case 'singleVar':
+            kindOrder = '1';
+            break;
+        case 'concatVar':
+            kindOrder = '2';
+            break;
+        case 'greedyVar':
+            kindOrder = `3(${parameter.minLength.toString().padStart(10, '0')})`;
+            break;
     }
+
+    return `1/${parameter.type.priority}/${kindOrder}/${parameter.raw ? 0 : 1}`;
+}
+
+const bindingBuilderMap: { [P in CommandParameter['kind'] | 'execute']: <TContext extends CommandContext>(depth: number) => BindingBuilder<TContext> } = {
+    execute: createExecuteBindingBuilder,
+    literal: createLiteralBindingBuilder,
+    singleVar: createSingleVarBindingBuilder,
+    concatVar: createConcatVarBindingBuilder,
+    greedyVar: createGreedyVarBindingBuilder
 };
 
 function createExecuteBindingBuilder<TContext extends CommandContext>(): BindingBuilder<TContext> {
     let signature: CommandSignatureHandler<TContext> | undefined = undefined;
 
     return {
-        create() {
+        * create() {
             if (signature === undefined)
                 throw new Error('No signature has been set');
-            return new bindings.ExecuteCommandBinding(signature);
+            yield { binding: new bindings.ExecuteCommandBinding(signature), sort: getSortKey(undefined) };
         },
         add(_, s) {
             if (signature !== undefined)
@@ -159,87 +123,100 @@ function createExecuteBindingBuilder<TContext extends CommandContext>(): Binding
 function createLiteralBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
     const signatureMap = {} as Record<string, Set<CommandSignatureHandler<TContext>> | undefined>;
     const aliasMap = {} as Record<string, Set<string> | undefined>;
+    let aggregateParameter: CommandLiteralParameter | undefined;
+
     return {
-        create() {
+        * create() {
             const options = mapKeys(signatureMap, (value) => buildBindings(value, depth + 1));
             const aliases = mapKeys(aliasMap, value => [...value]);
-            return new bindings.SwitchBinding(options, aliases);
+            yield { binding: new bindings.SwitchBinding(options, aliases), sort: getSortKey(aggregateParameter) };
         },
         add(parameter, signature) {
             if (parameter === undefined)
                 return;
             if (parameter.kind !== 'literal')
                 throw new Error('Cannot merge a variable with a literal');
+
             (signatureMap[parameter.name] ??= new Set()).add(signature);
             for (const alias of parameter.alias)
                 (aliasMap[alias] ??= new Set()).add(parameter.name);
+
+            aggregateParameter ??= { kind: 'literal', alias: [], name: parameter.name };
+            aggregateParameter.alias.push(parameter.name, ...parameter.alias);
         }
     };
 }
 
-function createSingleVarBindingBuilder<TContext extends CommandContext>(parameter: CommandSingleParameter, depth: number): BindingBuilder<TContext> {
-    const next: Array<CommandSignatureHandler<TContext>> = [];
+function createSingleVarBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
+    const parameters: Record<string, {
+        parameter: CommandSingleParameter<CommandVariableTypeName, false>;
+        handlers: Array<CommandSignatureHandler<TContext>>;
+    }> = {};
 
     return {
-        create() {
-            return new bindings.SingleBinding(
-                parameter,
-                buildBindings(next, depth + 1),
-                typeParsers[parameter.type]
-            );
+        * create() {
+            for (const [sort, { parameter, handlers }] of Object.entries(parameters))
+                yield { binding: new bindings.SingleBinding(parameter, buildBindings(handlers, depth + 1)), sort };
         },
         add(parameter, signature) {
             if (parameter === undefined)
                 return;
+
             if (parameter.kind !== 'singleVar')
                 throw new Error('Can only merge single variables');
-            next.push(signature);
+
+            (parameters[getSortKey(parameter)] ??= { parameter, handlers: [] })
+                .handlers.push(signature);
         }
     };
 }
 
-function createConcatVarBindingBuilder<TContext extends CommandContext>(parameter: CommandConcatParameter, depth: number): BindingBuilder<TContext> {
-    const next: Array<CommandSignatureHandler<TContext>> = [];
+function createConcatVarBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
+    const parameters: Record<string, {
+        parameter: CommandSingleParameter<CommandVariableTypeName, true>;
+        handlers: Array<CommandSignatureHandler<TContext>>;
+    }> = {};
 
     return {
-        create() {
-            return new bindings.ConcatBinding(
-                parameter,
-                buildBindings(next, depth + 1),
-                typeParsers[parameter.type]
-            );
+        * create() {
+            for (const [sort, { parameter, handlers }] of Object.entries(parameters))
+                yield { binding: new bindings.ConcatBinding(parameter, buildBindings(handlers, depth + 1)), sort };
         },
         add(parameter, signature) {
             if (parameter === undefined)
                 return;
+
             if (parameter.kind !== 'concatVar')
                 throw new Error('Can only merge concat variables');
-            next.push(signature);
+
+            (parameters[getSortKey(parameter)] ??= { parameter, handlers: [] })
+                .handlers.push(signature);
         }
     };
 }
 
-function createGreedyVarBindingBuilder<TContext extends CommandContext>(parameter: CommandGreedyParameter, depth: number): BindingBuilder<TContext> {
-    const nextMap: { [greedyMin: number]: Array<CommandSignatureHandler<TContext>>; } = {};
+function createGreedyVarBindingBuilder<TContext extends CommandContext>(depth: number): BindingBuilder<TContext> {
+    const parameters: Record<string, {
+        parameter: CommandGreedyParameter<CommandVariableTypeName>;
+        handlers: {
+            [greedyMin: number]: Array<CommandSignatureHandler<TContext>>;
+        };
+    }> = {};
 
     return {
-        create() {
-            const next = mapKeys(nextMap, value => buildBindings(value, depth + 1));
-            return new bindings.GreedyBinding(
-                parameter.name,
-                parameter.raw,
-                next,
-                typeParsers[parameter.type],
-                parameter.type
-            );
+        * create() {
+            for (const [sort, { parameter, handlers }] of Object.entries(parameters))
+                yield { binding: new bindings.GreedyBinding(parameter, mapKeys(handlers, value => buildBindings(value, depth + 1))), sort };
         },
         add(parameter, signature) {
             if (parameter === undefined)
                 return;
+
             if (parameter.kind !== 'greedyVar')
                 throw new Error('Can only merge greedy variables');
 
-            (nextMap[parameter.minLength] ??= []).push(signature);
+            const { handlers } = parameters[getSortKey(parameter)] ??= { parameter, handlers: {} };
+            (handlers[parameter.minLength] ??= []).push(signature);
         }
     };
 }
@@ -256,53 +233,3 @@ function mapKeys<TKey extends string | number, TValue, TResult>(
             return r;
         }, {});
 }
-
-const typeParsers: {
-    [P in CommandVariableType]: <TContext extends CommandContext>(value: string, state: CommandBinderState<TContext>) => Awaitable<CommandBinderParseResult<unknown>>
-} = {
-    string(value) {
-        return { success: true, value };
-    },
-    bigint(value, state) {
-        const result = parse.bigint(value);
-        if (result === undefined)
-            return { success: false, error: state.command.error(`\`${value}\` is not an integer`) };
-        return { success: true, value: result };
-    },
-    integer(value, state) {
-        const result = parse.int(value);
-        if (isNaN(result))
-            return { success: false, error: state.command.error(`\`${value}\` is not an integer`) };
-        return { success: true, value: result };
-    },
-    number(value, state) {
-        const result = parse.float(value);
-        if (isNaN(result))
-            return { success: false, error: state.command.error(`\`${value}\` is not a number`) };
-        return { success: true, value: result };
-    },
-    boolean(value, state) {
-        const result = parse.boolean(value);
-        if (result === undefined)
-            return { success: false, error: state.command.error(`\`${value}\` is not a boolean`) };
-        return { success: true, value: result };
-    },
-    duration(value, state) {
-        const result = parse.duration(value);
-        if (result === undefined)
-            return { success: false, error: state.command.error(`\`${value}\` is not a valid duration`) };
-        return { success: true, value: result };
-    },
-    channel(value, state) {
-        return state.lookupCache.findChannel(value);
-    },
-    user(value, state) {
-        return state.lookupCache.findUser(value);
-    },
-    member(value, state) {
-        return state.lookupCache.findMember(value);
-    },
-    role(value, state) {
-        return state.lookupCache.findRole(value);
-    }
-};

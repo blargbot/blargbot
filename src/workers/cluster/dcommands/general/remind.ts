@@ -39,7 +39,7 @@ export class TimerCommand extends BaseGlobalCommand {
             content: message
         });
 
-        return this.success(`Ok, ill ping you ${channel === context.channel ? 'here' : 'in a DM'} ${duration.humanize(true)}`);
+        return this.success(`Ok, ill ping you ${channel === context.channel ? 'here' : 'in a DM'} <t:${moment().add(duration).unix()}:R>`);
     }
 
 }

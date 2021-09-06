@@ -9,13 +9,13 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     readonly #getNames: (module: TModule) => Iterable<string>;
 
     public constructor(
-        public readonly source: string,
+        public readonly root: string,
         public readonly type: ClassOf<TModule>,
         public readonly constructorArguments: unknown[],
         public readonly logger: Logger,
         getNames: (module: TModule) => Iterable<string>
     ) {
-        super(source, logger);
+        super(root, logger);
         this.#getNames = module => {
             let names = getNames(module);
             if (typeof names === 'string')

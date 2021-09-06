@@ -1,9 +1,8 @@
-import { MessagePrompt } from '@cluster/types';
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryButton, ConfirmQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, SendPayload } from '@core/types';
-import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRowOptions, MessageButtonOptions, MessageComponentInteraction, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, PermissionString, Role, TextBasedChannels, User } from 'discord.js';
-import moment from 'moment';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
+import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, Role, TextBasedChannels, User, Webhook } from 'discord.js';
+import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-types';
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster';
@@ -55,7 +54,7 @@ export class ClusterUtilities extends BaseUtilities {
             options.prompt = { content: options.prompt };
 
         const component: ChoiceComponentOptions = {
-            content: options.prompt.content ?? '',
+            content: options.prompt?.content ?? '',
             get select(): MessageSelectOptionData[] {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
@@ -92,7 +91,7 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
-                await prompt.delete();
+                await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
@@ -104,8 +103,9 @@ export class ClusterUtilities extends BaseUtilities {
 
                 return { state: 'TIMED_OUT' };
             },
-            cancel() {
+            async cancel() {
                 awaiter.cancel();
+                await cleanupQuery(prompt);
             }
         };
     }
@@ -171,7 +171,7 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
-                await prompt.delete();
+                await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
@@ -183,8 +183,9 @@ export class ClusterUtilities extends BaseUtilities {
 
                 return { state: 'TIMED_OUT' };
             },
-            cancel() {
+            async cancel() {
                 awaiter.cancel();
+                await cleanupQuery(prompt);
             }
         };
     }
@@ -215,7 +216,7 @@ export class ClusterUtilities extends BaseUtilities {
         };
 
         const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const awaiter = this.createComponentAwaiter(channel, options.users, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, {
             [component.confirmId]: () => true,
             [component.cancelId]: () => true
         });
@@ -230,21 +231,98 @@ export class ClusterUtilities extends BaseUtilities {
             prompt,
             async getResult() {
                 const interaction = await awaiter.result;
+                await cleanupQuery(prompt, interaction);
                 switch (interaction?.customId) {
                     case component.confirmId: return true;
                     case undefined: return options.fallback;
                     default: return false;
                 }
             },
-            cancel() {
+            async cancel() {
                 awaiter.cancel();
+                await cleanupQuery(prompt);
+            }
+        };
+    }
+
+    public async queryText<T>(options: TextQueryOptionsParsed<T>): Promise<TextQueryResult<T>>
+    public async queryText(options: TextQueryOptions): Promise<TextQueryResult<string>>
+    public async queryText<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQueryResult<T | string>>
+    public async queryText<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQueryResult<T | string>> {
+        const query = await this.createTextQuery(options);
+        return await query.getResult();
+    }
+
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<T>): Promise<TextQuery<T>>
+    public async createTextQuery(options: TextQueryOptions): Promise<TextQuery<string>>
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQuery<T | string>>
+    public async createTextQuery<T>(options: TextQueryOptionsParsed<T> | TextQueryOptions): Promise<TextQuery<T | string>> {
+        const payload = typeof options.prompt === 'string' ? { content: options.prompt } : options.prompt;
+        const component: TextComponentOptions = {
+            cancelId: snowflake.create().toString(),
+            cancelButton: options.cancel ?? 'Cancel'
+        };
+
+        let parsed: { success: true; value: T | string; } | { success: false; } | undefined;
+        const messages: Message[] = [];
+        const parse = options.parse ?? (m => ({ success: true, value: m.content }));
+        const channel = options.context instanceof Message ? options.context.channel : options.context;
+        const componentAwaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, { [component.cancelId]: () => true });
+        const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, async message => {
+            const parseResult = await parse(message);
+            if (!parseResult.success && parseResult.error !== undefined) {
+                messages.push(message);
+                const prompt = await this.send(message, parseResult.error);
+                if (prompt !== undefined)
+                    messages.push(prompt);
+            }
+
+            if (parseResult.success)
+                parsed = parseResult;
+
+            return parseResult.success;
+        });
+
+        const prompt = await this.send(options.context, { ...payload, ...createTextBody(component) });
+        if (prompt === undefined) {
+            return {
+                messages: messages,
+                getResult() { return Promise.resolve({ state: 'FAILED', related: messages }); },
+                cancel() { /* NOOP */ }
+            };
+        }
+
+        messages.push(prompt);
+
+        return {
+            messages: messages,
+            async getResult() {
+                const result = await Promise.race([componentAwaiter.result, messageAwaiter.result]);
+                componentAwaiter.cancel();
+                messageAwaiter.cancel();
+                await cleanupQuery(prompt, result);
+                if (result === undefined)
+                    return { state: 'TIMED_OUT' };
+
+                if ('customId' in result)
+                    return { state: 'CANCELLED' };
+
+                messages.push(result);
+                if (parsed?.success === true)
+                    return { state: 'SUCCESS', value: parsed.value };
+                return { state: 'CANCELLED' };
+            },
+            async cancel() {
+                componentAwaiter.cancel();
+                messageAwaiter.cancel();
+                await cleanupQuery(prompt);
             }
         };
     }
 
     public createComponentAwaiter(
         channel: TextBasedChannels,
-        users: Iterable<string | User> | string | User,
+        actors: Iterable<string | User> | string | User,
         rejectMessage: string,
         timeout: number | undefined,
         options: Record<string, (interaction: MessageComponentInteraction) => boolean | Promise<boolean>>
@@ -252,33 +330,16 @@ export class ClusterUtilities extends BaseUtilities {
         readonly result: Promise<MessageComponentInteraction | undefined>;
         cancel(): void;
     } {
-        const shouldReject = (() => {
-            const userIds = typeof users === 'string' ? [users]
-                : users instanceof User ? [users.id]
-                    : [...users].map(u => typeof u === 'string' ? u : u.id);
-
-            switch (userIds.length) {
-                case 0: return () => false;
-                case 1: {
-                    const check = userIds[0];
-                    return (id: string) => id !== check;
-                }
-                default: {
-                    const lookup = new Set(userIds);
-                    return (id: string) => !lookup.has(id);
-                }
-            }
-        })();
-
+        const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
         const collector = channel.createMessageComponentCollector({
-            time: timeout,
+            time: timeout ?? 60000,
             max: 1,
             filter: async (interaction) => {
                 if (!validIds.has(interaction.customId))
                     return false;
 
-                if (shouldReject(interaction.user.id)) {
+                if (!actorFilter(interaction.user)) {
                     await interaction.reply({ content: rejectMessage, ephemeral: true });
                     return false;
                 }
@@ -288,66 +349,105 @@ export class ClusterUtilities extends BaseUtilities {
         });
 
         return {
-            result: new Promise<MessageComponentInteraction | undefined>(resolve => collector.once('end', c => resolve(c.first()))),
+            result: new Promise(resolve => collector.once('end', c => resolve(c.first()))),
             cancel() {
                 collector.stop();
             }
         };
     }
-    public async queryUser(
-        context: TextBasedChannels | Message,
+
+    public createMessageAwaiter(
+        channel: TextBasedChannels,
         actors: Iterable<string | User> | string | User,
-        users: Iterable<User>,
-        timeout?: number
-    ): Promise<ChoiceResult<User>> {
+        timeout: number | undefined,
+        filter: (message: Message) => Promise<boolean> | boolean
+    ): {
+        readonly result: Promise<Message | undefined>;
+        cancel(): void;
+    } {
+        const actorFilter = createActorFilter(actors);
+        const collector = channel.createMessageCollector({
+            time: timeout ?? 60000,
+            max: 1,
+            filter: async (message) => {
+                if (!actorFilter(message.author))
+                    return false;
+
+                return await filter(message);
+            }
+        });
+
+        return {
+            result: new Promise(resolve => collector.once('end', c => resolve(c.first()))),
+            cancel() {
+                collector.stop();
+            }
+        };
+    }
+
+    public async queryUser(options: EntityPickQueryOptions<User>): Promise<ChoiceResult<User>> {
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: 'ℹ️ Multiple users found! Please select one from the drop down.',
-            placeholder: 'Select a user',
-            timeout,
-            choices: [...users].map(u => ({
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a user from the drop down'
+                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a user',
+            choices: [...options.choices].map(u => ({
                 label: humanize.fullName(u),
+                emoji: u.bot ? '🤖' : '👤',
                 value: u,
                 description: `Id: ${u.id}`
             }))
         });
     }
 
-    public async queryMember(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        members: { guild: string | Guild; filter: string; } | Iterable<GuildMember>,
-        timeout?: number
-    ): Promise<ChoiceResult<GuildMember>> {
-        const matches = 'guild' in members ? await this.findMembers(members.guild, members.filter) : [...members];
+    public async querySender(options: EntityPickQueryOptions<User | Webhook>): Promise<ChoiceResult<User | Webhook>> {
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: 'ℹ️ Multiple users found! Please select one from the drop down.',
-            placeholder: 'Select a user',
-            timeout,
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a user or webhook from the drop down'
+                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a user',
+            choices: [...options.choices].map(u => ({
+                label: u instanceof User ? humanize.fullName(u) : u.name,
+                emoji: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝',
+                value: u,
+                description: `Id: ${u.id}`
+            }))
+        });
+    }
+
+    public async queryMember(options: EntityFindQueryOptions): Promise<ChoiceResult<GuildMember>>
+    public async queryMember(options: EntityPickQueryOptions<GuildMember>): Promise<ChoiceResult<GuildMember>>
+    public async queryMember(options: EntityQueryOptions<GuildMember>): Promise<ChoiceResult<GuildMember>> {
+        const matches = 'guild' in options ? await this.findMembers(options.guild, options.filter) : [...options.choices];
+
+        return await this.queryChoice({
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a user from the drop down'
+                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a user',
             choices: matches.map(m => ({
                 label: `${m.displayName} (${humanize.fullName(m.user)})`,
+                emoji: m.user.bot ? '🤖' : '👤',
                 value: m,
                 description: `Id: ${m.id}`
             }))
         });
     }
 
-    public async queryRole(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        roles: { guild: string | Guild; filter: string; } | Iterable<Role>,
-        timeout?: number
-    ): Promise<ChoiceResult<Role>> {
-        const matches = 'guild' in roles ? await this.findRoles(roles.guild, roles.filter) : [...roles];
+    public async queryRole(options: EntityFindQueryOptions): Promise<ChoiceResult<Role>>
+    public async queryRole(options: EntityPickQueryOptions<Role>): Promise<ChoiceResult<Role>>
+    public async queryRole(options: EntityQueryOptions<Role>): Promise<ChoiceResult<Role>> {
+        const matches = 'guild' in options ? await this.findRoles(options.guild, options.filter) : [...options.choices];
+
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: 'ℹ️ Multiple roles found! Please select one from the drop down.',
-            placeholder: 'Select a role',
-            timeout,
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a role from the drop down'
+                : `ℹ️ Multiple roles matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a role',
             choices: matches.map(r => ({
                 label: `${r.name}`,
                 value: r,
@@ -356,33 +456,19 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryChannel(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        query: { guild: string | Guild; filter: string; },
-        timeout?: number
-    ): Promise<ChoiceResult<GuildChannels>>;
-    public async queryChannel<T extends KnownChannel>(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        channels: Iterable<T>,
-        timeout?: number
-    ): Promise<ChoiceResult<T>>;
-    public async queryChannel(
-        context: TextBasedChannels | Message,
-        actors: Iterable<string | User> | string | User,
-        channels: { guild: string | Guild; filter: string; } | Iterable<KnownChannel>,
-        timeout?: number
-    ): Promise<ChoiceResult<KnownChannel>> {
-        const matches = 'guild' in channels ? await this.findChannels(channels.guild, channels.filter) : [...channels];
+    public async queryChannel(options: EntityFindQueryOptions): Promise<ChoiceResult<GuildChannels>>;
+    public async queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<T>): Promise<ChoiceResult<T>>;
+    public async queryChannel(options: EntityQueryOptions<KnownChannel>): Promise<ChoiceResult<KnownChannel>> {
+        const matches = 'guild' in options ? await this.findChannels(options.guild, options.filter) : [...options.choices];
+
         return await this.queryChoice({
-            context,
-            actors,
-            prompt: 'ℹ️ Multiple channels found! Please select one from the drop down.',
-            placeholder: 'Select a channel',
-            timeout,
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a channel from the drop down'
+                : `ℹ️ Multiple channels matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a channel',
             choices: matches.map(c => ({
-                label: getChannelLookupName(c),
+                ...getChannelLookupSelect(c),
                 description: `Id: ${c.id}${guard.isGuildChannel(c) && c.parent !== null ? ` Parent: ${getChannelLookupName(c.parent)}` : ''}`,
                 value: c
             }))
@@ -405,91 +491,29 @@ export class ClusterUtilities extends BaseUtilities {
                 return false;
             const total = await itemCount();
             const pageCount = Math.ceil(total / pageSize);
-            const query = await this.createQuery(channel, user,
-                `Found ${items.length}/${total}${filterText}.\n` +
-                `Page **#${page + 1}/${pageCount}**\n` +
-                `${codeBlock(items.join(separator), 'fix')}\n` +
-                `Type a number between **1 and ${pageCount}** to view that page, or type \`c\` to cancel.`,
-                reply => {
-                    page = parse.int(reply.content) - 1;
-                    return page >= 0 && page < pageCount
-                        || reply.content.toLowerCase() === 'c';
-                });
+            const pageQuery = await this.createTextQuery<number>({
+                context: channel,
+                actors: user,
+                prompt: `Found ${items.length}/${total}${filterText}.\n` +
+                    `Page **#${page + 1}/${pageCount}**\n` +
+                    `${codeBlock(items.join(separator), 'fix')}\n` +
+                    `Type a number between **1 and ${pageCount}** to view that page.`,
+                parse: message => {
+                    const pageNumber = parse.int(message.content) + 1;
+                    if (isNaN(pageNumber))
+                        return { success: false };
+                    return { success: true, value: pageNumber };
+                }
+            });
 
-            const response = await query.response;
-            try {
-                await query.prompt?.delete();
-            } catch (err: unknown) {
-                this.logger.error(`Failed to delete paging prompt (channel: ${query.prompt?.channel.id ?? 'UNKNOWN'} message: ${query.prompt?.id ?? 'UNKNOWN'}):`, err);
-            }
-            if (response === undefined)
+            const response = await pageQuery.getResult();
+            await Promise.allSettled(pageQuery.messages.map(m => m.delete()));
+            if (response.state !== 'SUCCESS')
                 return undefined;
+
+            page = response.value;
         }
         return true;
-    }
-
-    public async awaitQuery(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check?: ((message: Message) => boolean),
-        timeoutMS?: number,
-        label?: string
-    ): Promise<Message | undefined> {
-        const query = await this.createQuery(channel, user, content, check, timeoutMS, label);
-        return await query.response;
-    }
-
-    public async createQuery(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check?: ((message: Message) => boolean),
-        timeoutMS = 300000,
-        label?: string
-    ): Promise<MessagePrompt> {
-        const timeoutMessage = `Query canceled${label !== undefined ? ' in ' + label : ''} after ${moment.duration(timeoutMS).humanize()}.`;
-        return this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
-    }
-
-    public async awaitPrompt(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check?: ((message: Message) => boolean),
-        timeoutMS?: number,
-        timeoutMessage?: SendPayload
-    ): Promise<Message | undefined> {
-        const prompt = await this.createPrompt(channel, user, content, check, timeoutMS, timeoutMessage);
-        return await prompt.response;
-    }
-
-    public async createPrompt(
-        channel: TextBasedChannels,
-        user: User,
-        content: SendPayload,
-        check: ((message: Message) => boolean) = () => true,
-        timeoutMS = 300000,
-        timeoutMessage?: SendPayload
-    ): Promise<MessagePrompt> {
-        const prompt = await this.send(channel, content);
-        const response = channel.awaitMessages({
-            filter: msg => msg.author.id === user.id && check(msg),
-            max: 1,
-            time: timeoutMS
-        }).then(c => c.first());
-
-        if (timeoutMessage !== undefined) {
-            void response.then(async m => {
-                if (m === undefined)
-                    await this.send(channel, timeoutMessage);
-            });
-        }
-
-        return {
-            prompt,
-            response
-        };
     }
 
     /* eslint-disable @typescript-eslint/naming-convention */
@@ -625,11 +649,13 @@ export class ClusterUtilities extends BaseUtilities {
         } else {
             const guildId = typeof args[0] === 'string' ? args[0] : args[0].id;
 
-            if (await this.database.guilds.getSetting(guildId, 'permoverride') !== true)
-                return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
+            if (await this.database.guilds.getSetting(guildId, 'permoverride') === true) {
+                const allow = parse.bigint(await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff);
+                if (allow !== undefined)
+                    return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
+            }
 
-            const allow = await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff;
-            return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
+            return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
         }
 
         if (member === undefined) return false;
@@ -638,30 +664,20 @@ export class ClusterUtilities extends BaseUtilities {
         if (member.permissions.has('ADMINISTRATOR')) return true;
 
         if (await this.database.guilds.getSetting(member.guild.id, 'permoverride') === true) {
-            const allow = await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff;
-            if (this.hasPerms(member, allow)) {
+            const allow = parse.bigint(await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff);
+            if (allow !== undefined && this.hasPerms(member, allow)) {
                 return true;
             }
         }
         return false;
     }
 
-    public hasPerms(member: GuildMember, allow?: bigint | readonly PermissionString[]): boolean {
-        const newPerm = new Permissions(allow ?? defaultStaff);
+    public hasPerms(member: GuildMember, allow: bigint): boolean {
+        const newPerm = new Permissions(allow);
         return member.permissions.any(newPerm);
     }
 
-    public async hasRoles(msg: GuildMember | Message, roles: readonly string[], quiet: boolean, override = true): Promise<boolean> {
-        let member: GuildMember;
-        let channel: TextBasedChannels | undefined;
-        if (msg instanceof GuildMember) {
-            member = msg;
-        } else {
-            if (!guard.isGuildMessage(msg))
-                return true;
-            member = msg.member;
-            channel = msg.channel;
-        }
+    public async hasRoles(member: GuildMember, roles: readonly string[], channel?: TextBasedChannels, override = true): Promise<boolean> {
         if (override
             && (this.isBotOwner(member.id)
                 || member.guild.ownerId === member.id
@@ -678,7 +694,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (guildRoles.some(r => member.roles.cache.has(r.id)))
             return true;
 
-        if (channel !== undefined && !quiet) {
+        if (channel !== undefined) {
             if (await this.database.guilds.getSetting(member.guild.id, 'disablenoperms') !== true) {
                 const permString = roles.map(m => '`' + m + '`').join(', or ');
                 void this.send(channel, `You need the role ${permString} in order to use this command!`);
@@ -720,23 +736,50 @@ interface MultipleComponentOptions {
 interface ConfirmComponentOptions {
     readonly confirmId: string;
     readonly cancelId: string;
-    readonly confirmButton: ConfirmQueryButton;
-    readonly cancelButton: ConfirmQueryButton;
+    readonly confirmButton: QueryButton;
+    readonly cancelButton: QueryButton;
 }
 
-function createConfirmBody(options: ConfirmComponentOptions): { components: MessageActionRowOptions[]; } {
+interface TextComponentOptions {
+    readonly cancelId: string;
+    readonly cancelButton: QueryButton;
+}
+
+function createActorFilter(actors: Iterable<string | User | GuildMember> | string | User | GuildMember): (user: User) => boolean {
+    const userIds = new Set();
+    if (typeof actors === 'string')
+        userIds.add(actors);
+    else {
+        if ('id' in actors)
+            actors = [actors];
+        for (const actor of actors)
+            userIds.add(typeof actor === 'string' ? actor : actor.id);
+    }
+
+    switch (userIds.size) {
+        case 0: return () => false;
+        case 1: {
+            const check = [...userIds][0];
+            return user => user.id === check;
+        }
+        default:
+            return user => userIds.has(user.id);
+    }
+}
+
+function createConfirmBody(options: ConfirmComponentOptions): Pick<MessageOptions, 'components'> {
 
     const confirm: MessageButtonOptions = {
+        style: 'SUCCESS',
         ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
         type: 'BUTTON',
-        customId: options.confirmId,
-        style: 'SUCCESS'
+        customId: options.confirmId
     };
     const cancel: MessageButtonOptions = {
+        style: 'DANGER',
         ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
         type: 'BUTTON',
-        customId: options.cancelId,
-        style: 'DANGER'
+        customId: options.cancelId
     };
 
     return {
@@ -749,7 +792,7 @@ function createConfirmBody(options: ConfirmComponentOptions): { components: Mess
     };
 }
 
-function createMultipleBody(options: MultipleComponentOptions): { components: MessageActionRowOptions[]; } {
+function createMultipleBody(options: MultipleComponentOptions): Pick<MessageOptions, 'components'> {
     const select: MessageSelectMenuOptions = {
         type: 'SELECT_MENU',
         customId: options.selectId,
@@ -773,7 +816,7 @@ function createMultipleBody(options: MultipleComponentOptions): { components: Me
     };
 }
 
-function createChoiceBody(options: ChoiceComponentOptions): { content: string; components: MessageActionRowOptions[]; } {
+function createChoiceBody(options: ChoiceComponentOptions): Pick<MessageOptions, 'components' | 'content'> {
     const select: MessageSelectMenuOptions = {
         type: 'SELECT_MENU',
         customId: options.selectId,
@@ -800,7 +843,7 @@ function createChoiceBody(options: ChoiceComponentOptions): { content: string; c
     const prev: MessageButtonOptions = {
         type: 'BUTTON',
         customId: options.prevId,
-        emoji: ':bigarrowleft:876227640976097351',
+        emoji: ':bigarrowleft:876227640976097351', // TODO config
         style: 'PRIMARY',
         disabled: options.page === 0
     };
@@ -809,7 +852,7 @@ function createChoiceBody(options: ChoiceComponentOptions): { content: string; c
 
         type: 'BUTTON',
         customId: options.nextId,
-        emoji: ':bigarrowright:876227816998461511',
+        emoji: ':bigarrowright:876227816998461511', // TODO config
         style: 'PRIMARY',
         disabled: options.page === options.lastPage
     };
@@ -823,18 +866,117 @@ function createChoiceBody(options: ChoiceComponentOptions): { content: string; c
     };
 }
 
+function createTextBody(options: TextComponentOptions, disabled = false): Pick<MessageOptions, 'components'> {
+    const cancel: MessageButtonOptions = {
+        style: 'SECONDARY',
+        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
+        type: 'BUTTON',
+        customId: options.cancelId,
+        disabled: disabled
+    };
+
+    return {
+        components: [
+            {
+                type: 'ACTION_ROW',
+                components: [cancel]
+            }
+        ]
+    };
+}
+
 function getChannelLookupName(channel: KnownChannel): string {
+    const opt = getChannelLookupSelect(channel);
+    return `${opt.emoji} ${opt.label}`;
+}
+
+function getChannelLookupSelect(channel: KnownChannel): { label: string; emoji: string; } {
     switch (channel.type) {
-        case 'DM': return '🕵️ DM';
-        case 'GROUP_DM': return '👥 Group DM';
-        case 'GUILD_CATEGORY': return `📁 ${channel.name}`;
-        case 'GUILD_NEWS': return `📰 ${channel.name}`;
-        case 'GUILD_NEWS_THREAD': return `# ${channel.name}`;
-        case 'GUILD_PRIVATE_THREAD': return `# ${channel.name}`;
-        case 'GUILD_PUBLIC_THREAD': return `# ${channel.name}`;
-        case 'GUILD_STAGE_VOICE': return `🔈 ${channel.name}`;
-        case 'GUILD_STORE': return `🛒 ${channel.name}`;
-        case 'GUILD_TEXT': return `# ${channel.name}`;
-        case 'GUILD_VOICE': return `🔈 ${channel.name}`;
+        case 'DM': return { emoji: '🕵️', label: 'DM' };
+        case 'GROUP_DM': return { emoji: '👥', label: 'Group DM' };
+        case 'GUILD_CATEGORY': return { emoji: '📁', label: channel.name };
+        case 'GUILD_NEWS': return { emoji: '📰', label: channel.name };
+        case 'GUILD_NEWS_THREAD': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_PRIVATE_THREAD': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_PUBLIC_THREAD': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_STAGE_VOICE': return { emoji: '🔈', label: channel.name };
+        case 'GUILD_STORE': return { emoji: '🛒', label: channel.name };
+        case 'GUILD_TEXT': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_VOICE': return { emoji: '🔈', label: channel.name };
     }
+}
+
+async function cleanupQuery(...items: Array<Message | MessageComponentInteraction | undefined>): Promise<void> {
+    const promises = [];
+    for (const item of items) {
+        if (item instanceof MessageComponentInteraction)
+            promises.push(item.update({ components: disableComponents(item.message.components ?? []) }));
+        else if (item?.editable === true && item.components.length > 0)
+            promises.push(item.edit({ components: disableComponents(item.components) }));
+    }
+
+    await Promise.allSettled(promises);
+}
+
+function disableComponents(components: Iterable<MessageActionRow | APIActionRowComponent>): MessageActionRowOptions[] {
+    return [...disableComponentsCore(components)];
+}
+
+function* disableComponentsCore(components: Iterable<MessageActionRow | APIActionRowComponent>): Generator<MessageActionRowOptions> {
+    for (const component of components) {
+        switch (component.type) {
+            case 'ACTION_ROW':
+                yield component.spliceComponents(0, Infinity, component.components.map(c => c.setDisabled(true)));
+                break;
+            case 1:
+                yield {
+                    type: 'ACTION_ROW',
+                    components: component.components.map<MessageActionRowComponentResolvable>(c => {
+                        switch (c.type) {
+                            case ComponentType.SelectMenu: return new MessageSelectMenu({
+                                customId: c.custom_id,
+                                disabled: true,
+                                maxValues: c.max_values,
+                                minValues: c.min_values,
+                                placeholder: c.placeholder,
+                                type: 'SELECT_MENU',
+                                options: c.options.map<MessageSelectOptionData>(op => ({
+                                    label: op.label,
+                                    value: op.value,
+                                    default: op.default,
+                                    description: op.description,
+                                    emoji: op.emoji?.id
+                                }))
+                            });
+                            case ComponentType.Button: return new MessageButton({
+                                disabled: true,
+                                label: c.label,
+                                emoji: c.emoji?.id,
+                                type: 'BUTTON',
+                                ...c.style === ButtonStyle.Link
+                                    ? { style: convertStyle(c.style), url: c.url }
+                                    : { style: convertStyle(c.style), customId: c.custom_id }
+                            });
+                            default: {
+                                const x: never = c;
+                                return x;
+                            }
+                        }
+                    })
+                };
+                break;
+        }
+    }
+}
+
+const dumbTypes: { [P in keyof typeof ButtonStyle as number & typeof ButtonStyle[P]]: Uppercase<P> } = {
+    [ButtonStyle.Link]: 'LINK',
+    [ButtonStyle.Danger]: 'DANGER',
+    [ButtonStyle.Primary]: 'PRIMARY',
+    [ButtonStyle.Secondary]: 'SECONDARY',
+    [ButtonStyle.Success]: 'SUCCESS'
+} as const;
+
+function convertStyle<T extends ButtonStyle>(apiStyle: T): (typeof dumbTypes)[T] {
+    return dumbTypes[apiStyle];
 }

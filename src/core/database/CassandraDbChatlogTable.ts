@@ -1,17 +1,9 @@
 import { Logger } from '@core/Logger';
 import { metrics } from '@core/Metrics';
-import { Chatlog, ChatlogMessage, ChatlogsTable, ChatlogType } from '@core/types';
+import { Chatlog, ChatlogMessage, ChatlogSearchOptions, ChatlogsTable, ChatlogType, TypeMappingResult } from '@core/types';
 import { mapping, snowflake } from '@core/utils';
 import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
-
-function stringifyType(type: ChatlogType): string {
-    switch (type) {
-        case ChatlogType.CREATE: return 'create';
-        case ChatlogType.UPDATE: return 'update';
-        case ChatlogType.DELETE: return 'delete';
-    }
-}
 
 export class CassandraDbChatlogTable implements ChatlogsTable {
     public constructor(
@@ -20,7 +12,45 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
     ) {
 
     }
-    public async get(messageId: string): Promise<Chatlog | undefined> {
+
+    public async findAll(options: ChatlogSearchOptions): Promise<Chatlog[]> {
+        const chatlogs = await this.cassandra.execute(
+            'SELECT * FROM chatlogs ' +
+            'WHERE channelid = :channelid',
+            { channelid: options.channelId },
+            { prepare: true, readTimeout: 200000 });
+
+        const typeLookup = new Set(options.types);
+        const userLookup = new Set(options.users);
+        const excludeLookup = new Set(options.exclude);
+        const result = [];
+        for (const row of chatlogs.rows) {
+            const chatlog = mapChatlog(row);
+            if (!chatlog.valid) continue;
+            if (typeLookup.size > 0 && !typeLookup.has(chatlog.value.type)) continue;
+            if (userLookup.size > 0 && !userLookup.has(chatlog.value.userid)) continue;
+            if (excludeLookup.has(chatlog.value.msgid)) continue;
+            result.push(chatlog.value);
+            if (result.length >= options.count)
+                break;
+        }
+        return result;
+    }
+
+    public async getAll(channelId: string, ids: string[]): Promise<Chatlog[]> {
+        const chatlogs = await this.cassandra.execute(
+            'SELECT * FROM chatlogs ' +
+            'WHERE channelid = :channelid ' +
+            'AND id IN :ids',
+            { channelid: channelId, ids: ids },
+            { prepare: true, readTimeout: 200000 });
+
+        return chatlogs.rows.map(mapChatlog)
+            .filter((c): c is Extract<TypeMappingResult<Chatlog>, { valid: true; }> => c.valid)
+            .map(c => c.value);
+    }
+
+    public async getByMessageId(messageId: string): Promise<Chatlog | undefined> {
         const map = await this.cassandra.execute(
             'SELECT channelid, id ' +
             'FROM chatlogs_map ' +
@@ -45,11 +75,12 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
     public async add(message: ChatlogMessage, type: ChatlogType, lifespanS: number | Duration = 604800): Promise<void> {
         metrics.chatlogCounter.labels(stringifyType(type)).inc();
         const lifespan = typeof lifespanS === 'number' ? lifespanS : lifespanS.asSeconds();
-        const chatlog: Chatlog = {
+        const chatlog = {
             ...message,
             id: snowflake.create().toString(),
             msgtime: new Date(),
-            type: type
+            type: type,
+            embeds: JSON.stringify(message.embeds)
         };
         await this.cassandra.execute(
             'INSERT INTO chatlogs (id, content, attachment, userid, msgid, channelid, guildid, msgtime, type, embeds)\n' +
@@ -101,7 +132,7 @@ const mapChatlog = mapping.mapObject<Chatlog>({
     attachment: mapping.mapOptionalString,
     channelid: mapping.mapString,
     content: mapping.mapString,
-    embeds: mapping.mapString,
+    embeds: mapping.mapJson(mapping.mapArray(mapping.mapUnknown)),
     guildid: mapping.mapString,
     id: mapping.mapString,
     msgid: mapping.mapString,
@@ -109,3 +140,11 @@ const mapChatlog = mapping.mapObject<Chatlog>({
     type: mapping.mapIn(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
     userid: mapping.mapString
 });
+
+function stringifyType(type: ChatlogType): string {
+    switch (type) {
+        case ChatlogType.CREATE: return 'create';
+        case ChatlogType.UPDATE: return 'update';
+        case ChatlogType.DELETE: return 'delete';
+    }
+}

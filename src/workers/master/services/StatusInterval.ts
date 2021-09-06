@@ -17,7 +17,7 @@ export class StatusInterval extends CronService {
         this.#holidays = holidays;
     }
 
-    protected execute(): void {
+    public execute(): void {
         const date = moment().format('MM-DD');
         this.master.discord.user.setActivity({
             name: this.#holidays[date] ?? randChoose(games),

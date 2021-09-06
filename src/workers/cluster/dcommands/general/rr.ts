@@ -27,7 +27,7 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
 
         const query = await context.util.createConfirmQuery({
             context: context.message,
-            users: context.author,
+            actors: context.author,
             prompt: `You load ${p(bullets, 'a', numMap[bullets])} ${p(bullets, 'bullet')} into your revolver, give it a spin, and place it against your head`,
             confirm: { label: 'Put the gun down', emoji: '😅' },
             cancel: { label: 'Pull the trigger', emoji: '😖' },
@@ -35,25 +35,25 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
         });
 
         if (query.prompt === undefined) {
-            query.cancel();
+            await query.cancel();
             return this.error('Your revolver jams when you try to close the barrel. Maybe you should try somewhere else...');
         }
 
-        const you = await context.reply(`${emote}🔫`);
+        const you = await context.send(context.channel, `${emote}🔫`);
         if (await query.getResult()) {
             await Promise.all([
-                query.prompt.edit({ content: 'You chicken out and put the gun down', components: [] }),
+                query.prompt.edit({ content: `You chicken out and put the gun down.\n${randChoose(chickenMsg)}`, components: [] }),
                 you?.edit('🐔')
             ]);
         } else if (randInt(1, 6) <= bullets) {
             await Promise.all([
                 you?.edit('💥🔫'),
-                query.prompt.edit({ content: `${query.prompt.content}\n***BOOM!*** ${randChoose(deathMsg)}`, components: [] })
+                query.prompt.edit({ content: `***BOOM!*** ${randChoose(deathMsg)}`, components: [] })
             ]);
         } else {
             await Promise.all([
                 you?.edit('😌🔫'),
-                query.prompt.edit({ content: `${query.prompt.content}\n*Click!* ${randChoose(liveMsg)}`, components: [] })
+                query.prompt.edit({ content: `*Click!* ${randChoose(liveMsg)}`, components: [] })
             ]);
         }
 
@@ -62,31 +62,11 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
 }
 
 const numMap = ['zero', 'one', 'two', 'three', 'four', 'five'] as const;
-const mojiList = [
-    '😀',
-    '😬',
-    '😂',
-    '😃',
-    '😄',
-    '😉',
-    '😨',
-    '😣',
-    '😖',
-    '😫',
-    '😤',
-    '😳',
-    '😐',
-    '😑',
-    '😷',
-    '😭',
-    '😪',
-    '😜',
-    '😊',
-    '😺'
+const mojiList = ['😀', '😬', '😂', '😃', '😄', '😉', '😨', '😣', '😖', '😫', '😤', '😳', '😐', '😑', '😷', '😭', '😪', '😜', '😊', '😺'
 ];
 const deathMsg = [
     'The gun goes off, splattering your brains across the wall. Unlucky!',
-    ':skull_crossbones::boom::coffin::dizzy_face::skull::skull::skull_crossbones:',
+    '☠️💥⚰️😵💀💀☠️',
     'Before you know it, it\'s all over.',
     'At least you had chicken!',
     'I\'m ***not*** cleaning that up.',
@@ -102,6 +82,10 @@ const liveMsg = [
     'You breath a sign of relief as you realize that you aren\'t going to die today.',
     'As if it would ever go off! Luck is on your side.',
     'You thank RNGesus as you lower the gun.',
-    ':angel::pray::no_entry_sign::coffin::ok_hand::thumbsup::angel:',
+    '👼🙏🚫⚰️👌👍👼',
     'You smirk as you realize you survived.'
+];
+const chickenMsg = [
+    'Maybe try again when youre not feeling so wimpy.',
+    'Its ok, fun isnt for everyone!'
 ];
