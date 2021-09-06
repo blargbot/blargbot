@@ -4,7 +4,7 @@ import { parse, SubtagType } from '@cluster/utils';
 export class RoundSubtag extends BaseSubtag {
     public constructor() {
         super({
-            name: 'rounddown',
+            name: 'round',
             category: SubtagType.MATH,
             definition: [
                 {
