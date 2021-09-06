@@ -98,7 +98,7 @@
         "lint": "eslint --ext .ts,.vue ./",
         "lint-fix": "eslint --ext .ts,.vue ./ --fix",
         "prepare": "husky install",
-        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"!node_modules\""
+        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
     },
     "repository": {
         "type": "git",
