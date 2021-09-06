@@ -3,8 +3,8 @@ import EventEmitter from 'eventemitter3';
 import moment from 'moment';
 import { Duration, duration } from 'moment-timezone';
 
-import { Cluster } from './Cluster';
-import { guard } from './utils';
+import { Cluster } from '../Cluster';
+import { guard } from '../utils';
 
 export class TimeoutManager {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility

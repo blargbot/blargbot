@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { TimeoutManager } from '@cluster/TimeoutManager';
+import { TimeoutManager } from '@cluster/managers';
 import { IntervalService } from '@core/serviceTypes';
 
 export class TimeoutTrigger extends IntervalService {

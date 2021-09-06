@@ -1,5 +1,4 @@
 import { BaseSubtag, BBTagEngine } from '@cluster/bbtag';
-import { TimeoutManager } from '@cluster/TimeoutManager';
 import { ClusterOptions } from '@cluster/types';
 import { getRange } from '@cluster/utils';
 import { BaseClient } from '@core/BaseClient';
@@ -13,7 +12,7 @@ import moment, { duration, Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, PrefixManager, ReactionAwaitManager, RolemeManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, PrefixManager, ReactionAwaitManager, RolemeManager, TimeoutManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
