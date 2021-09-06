@@ -49,7 +49,7 @@ export class AvatarCommand extends BaseGlobalCommand {
 
         return {
             content: this.success(`${user.toString()}'s avatar`),
-            files: [{ attachment: avatar.body, name: new URL(avatarUrl).pathname.split('/').pop() }]
+            files: [{ attachment: await avatar.buffer(), name: new URL(avatarUrl).pathname.split('/').pop() }]
         };
     }
 }

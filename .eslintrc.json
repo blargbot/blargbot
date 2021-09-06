@@ -136,20 +136,6 @@
         },
         {
             "files": [
-                "*.vue"
-            ],
-            "env": {
-                "browser": true
-            },
-            "plugins": [
-                "vue"
-            ],
-            "extends": [
-                "plugin:vue/essential"
-            ]
-        },
-        {
-            "files": [
                 "*.ts"
             ],
             "env": {
