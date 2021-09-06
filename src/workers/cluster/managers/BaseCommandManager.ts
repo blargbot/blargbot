@@ -1,15 +1,17 @@
 import { Cluster } from '@cluster';
-import { CommandContext } from '@cluster/command';
-import { CommandGetCoreResult, CommandGetResult, ICommand, ICommandManager, PermissionCheckResult } from '@cluster/types';
+import { CommandContext, InvokeCommandMiddleware } from '@cluster/command';
+import { CommandGetCoreResult, CommandGetResult, CommandResult, ICommand, ICommandManager, PermissionCheckResult } from '@cluster/types';
 import { defaultStaff, guard, humanize } from '@cluster/utils';
 import { MessageIdQueue } from '@core/MessageIdQueue';
-import { CommandPermissions } from '@core/types';
-import { parse } from '@core/utils';
+import { CommandPermissions, IMiddleware } from '@core/types';
+import { parse, runMiddleware } from '@core/utils';
 import { Guild, Message, PartialMessage, Permissions, TextBasedChannels, User } from 'discord.js';
 
 export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #commandMessages: MessageIdQueue;
+    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    readonly #handler: InvokeCommandMiddleware;
     public abstract readonly size: number;
 
     protected constructor(
@@ -18,6 +20,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
         messageQueueSize = 100
     ) {
         this.#commandMessages = new MessageIdQueue(messageQueueSize);
+        this.#handler = new InvokeCommandMiddleware(this.type, this.#commandMessages, this.cluster.logger);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -26,20 +29,22 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     protected abstract allCommandNames(location?: Guild | TextBasedChannels): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
     public abstract configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
 
-    public async execute(context: CommandContext): Promise<boolean> {
-        const result = await this.get(context.commandName, context.channel, context.author);
+    public async execute(message: Message, prefix: string, middleware?: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>): Promise<boolean> {
+        const commandText = message.content.slice(prefix.length);
+        const parts = humanize.smartSplit(commandText, 2);
+        const commandName = parts[0].toLowerCase();
+        const argsString = parts[1] ?? '';
+
+        const result = await this.get(commandName, message.channel, message.author);
         switch (result.state) {
             case 'ALLOWED': {
-                const outputLog = guard.isGuildCommandContext(context)
-                    ? `${this.type} command '${context.commandText}' executed by ${context.author.username} (${context.author.id}) on server ${context.channel.guild.name} (${context.channel.guild.id})`
-                    : `${this.type} command '${context.commandText}' executed by ${context.author.username} (${context.author.id}) in a PM (${context.channel.id}) Message ID: ${context.id}`;
-                this.cluster.logger.command(outputLog);
+                const context = new CommandContext(this.cluster, message, commandText, prefix, commandName, argsString, result.detail);
+                const output = await runMiddleware<CommandContext, CommandResult>([...middleware ?? [], this.#handler], context, undefined);
+                if (output !== undefined) {
+                    await context.reply(output);
+                    return true;
+                }
 
-                if (guard.isGuildCommandContext(context))
-                    this.#commandMessages.push(context.channel.guild.id, context.message.channel.id);
-
-                await context.channel.sendTyping();
-                await result.detail.execute(context);
                 return true;
             }
             case 'DISABLED':
@@ -47,14 +52,14 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
             case 'NOT_IN_GUILD':
                 return false;
             case 'BLACKLISTED':
-                await context.reply(`❌ You have been blacklisted from the bot for the following reason: ${result.detail}`);
+                await this.cluster.util.send(message, `❌ You have been blacklisted from the bot for the following reason: ${result.detail}`);
                 return true;
             case 'MISSING_ROLE':
-                await context.reply(`❌ You need the role ${humanize.smartJoin(result.detail.map(r => `<@&${r}>`), ', ', ' or ')} in order to use this command!`);
+                await this.cluster.util.send(message, `❌ You need the role ${humanize.smartJoin(result.detail.map(r => `<@&${r}>`), ', ', ' or ')} in order to use this command!`);
                 return true;
             case 'MISSING_PERMISSIONS': {
                 const permissions = new Permissions(result.detail);
-                await context.reply(`❌ You need permission to ${permissions.bitfield} in order to use this command!`);
+                await this.cluster.util.send(message, `❌ You need permission to ${permissions.bitfield} in order to use this command!`);
                 return true;
             }
         }

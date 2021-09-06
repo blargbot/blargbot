@@ -7,7 +7,7 @@ export class CensorMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly censors: CensorManager) {
     }
 
-    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: () => Promise<boolean>): Promise<boolean> {
         if (!guard.isGuildMessage(context))
             return await next();
 

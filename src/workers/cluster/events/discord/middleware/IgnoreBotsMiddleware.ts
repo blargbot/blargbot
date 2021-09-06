@@ -2,9 +2,9 @@ import { IMiddleware } from '@core/types';
 import { Message } from 'discord.js';
 
 export class IgnoreBotsMiddleware implements IMiddleware<Message, boolean> {
-    public execute(context: Message, next: (context?: Message) => Awaitable<boolean>): Awaitable<boolean> {
+    public async execute(context: Message, next: () => Promise<boolean>): Promise<boolean> {
         if (context.author.bot)
             return false;
-        return next();
+        return await next();
     }
 }

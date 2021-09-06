@@ -99,7 +99,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         this.hidden = this.implementation.hidden ?? false;
     }
 
-    public async execute(context: CommandContext<TextBasedChannels>): Promise<void> {
+    public async execute(context: CommandContext): Promise<void> {
         if (!guard.isGuildCommandContext(context))
             return;
 

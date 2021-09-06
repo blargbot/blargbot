@@ -1,20 +1,19 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { CommandDefinition, CommandOptions, CommandResult } from '@cluster/types';
-import { commandTypeDetails } from '@cluster/utils';
+import { commandTypeDetails, runMiddleware } from '@cluster/utils';
 import { IMiddleware, SendPayload } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommand } from './BaseCommand';
 import { CommandContext } from './CommandContext';
 import { compileSignatures } from './compilation';
-import { HandlerMiddleware } from './middleware';
-import { ErrorMiddleware } from './middleware/ErrorMiddleware';
+import { ErrorMiddleware, InvokeCommandHandlerMiddleware } from './middleware';
 
 // Circular reference means this needs to be resolved asyncronously;
 const helpCommandPromise = import('@cluster/dcommands/general/help');
 
 export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
-    private readonly handler: HandlerMiddleware<TContext>;
+    private readonly handler: InvokeCommandHandlerMiddleware<TContext>;
     protected readonly middleware: Array<IMiddleware<TContext, CommandResult>>;
 
     public get debugView(): string { return this.handler.debugView; }
@@ -36,7 +35,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
         super({ ...options, signatures });
 
         this.middleware = [new ErrorMiddleware(this)];
-        this.handler = new HandlerMiddleware(signatures, this);
+        this.handler = new InvokeCommandHandlerMiddleware(signatures, this);
     }
 
     public async isVisible(util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User): Promise<boolean> {
@@ -54,13 +53,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             return;
         }
 
-        const runMiddleware = (context: TContext, index: number): Awaitable<CommandResult> => {
-            if (index < this.middleware.length)
-                return this.middleware[index].execute(context, (ctx) => runMiddleware(ctx ?? context, index + 1));
-            return this.handler.execute(context);
-        };
-
-        await context.reply(await runMiddleware(context, 0));
+        await context.reply(await runMiddleware([...this.middleware, this.handler], context, undefined));
     }
 
     protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {

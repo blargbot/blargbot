@@ -5,7 +5,7 @@ import { CommandContext } from '../CommandContext';
 import { compileHandler } from '../compilation';
 import { ScopedCommandBase } from '../ScopedCommandBase';
 
-export class HandlerMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
+export class InvokeCommandHandlerMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     private readonly handler: CommandHandler<TContext>;
 
     public get debugView(): string { return this.handler.debugView; }

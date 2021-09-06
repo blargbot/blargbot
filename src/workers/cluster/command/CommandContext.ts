@@ -1,7 +1,6 @@
 import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagEngine } from '@cluster/bbtag';
-import { CommandResult, GuildCommandContext } from '@cluster/types';
-import { humanize } from '@cluster/utils';
+import { CommandResult, GuildCommandContext, ICommand } from '@cluster/types';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@core/types';
@@ -9,10 +8,6 @@ import { guard } from '@core/utils';
 import { Client as Discord, GuildChannels, GuildMember, KnownChannel, Message, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 
 export class CommandContext<TChannel extends TextBasedChannels = TextBasedChannels> {
-    public readonly commandText: string;
-    public readonly commandName: string;
-    public readonly argsString: string;
-
     public get logger(): Logger { return this.cluster.logger; }
     public get bbtag(): BBTagEngine { return this.cluster.bbtag; }
     public get util(): ClusterUtilities { return this.cluster.util; }
@@ -27,12 +22,12 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
     public constructor(
         public readonly cluster: Cluster,
         public readonly message: Message & { channel: TChannel; },
-        public readonly prefix: string
+        public readonly commandText: string,
+        public readonly prefix: string,
+        public readonly commandName: string,
+        public readonly argsString: string,
+        public readonly command: ICommand
     ) {
-        this.commandText = message.content.slice(prefix.length);
-        const parts = humanize.smartSplit(this.commandText, 2);
-        this.commandName = parts[0].toLowerCase();
-        this.argsString = parts[1] ?? '';
     }
 
     public async send(content: CommandResult): Promise<Message | undefined>

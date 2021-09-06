@@ -1,7 +1,7 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
-import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
+import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
 import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 import { Duration } from 'moment-timezone';
@@ -33,7 +33,7 @@ export type ClusterIPCContract = {
 
 export interface ICommandManager<T = unknown> {
     readonly size: number;
-    execute(context: CommandContext): Promise<boolean>;
+    execute(message: Message, prefix: string, middleware?: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>): Promise<boolean>;
     get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>>;
     list(location?: Guild | TextBasedChannels, user?: User): AsyncIterable<ICommand<T>>;
     configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
@@ -74,11 +74,11 @@ export type PermissionCheckResult =
 export type CommandGetResult<T = unknown> =
     | Result<'NOT_FOUND'>
     | Exclude<PermissionCheckResult, { state: 'ALLOWED'; }>
-    | Result<'ALLOWED', ICommand<T>, false>;
+    | Result<'ALLOWED', ICommand<T>>;
 
 export type CommandGetCoreResult<T = unknown> =
     | CommandGetResult<T>
-    | Result<'FOUND', ICommand<T>, false>;
+    | Result<'FOUND', ICommand<T>>;
 
 export type CommandManagerTypeMap = {
     custom: NamedGuildCommandTag;

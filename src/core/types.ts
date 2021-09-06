@@ -994,5 +994,5 @@ export interface TypeMappingOptions<T, R> {
 }
 
 export interface IMiddleware<Context, Result = void> {
-    execute(context: Context, next: (context?: Context) => Awaitable<Result>): Awaitable<Result>;
+    execute(context: Context, next: (context?: Context) => Promise<Result>): Promise<Result>;
 }

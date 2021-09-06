@@ -1,6 +1,6 @@
 import { BaseCommand, CommandContext } from '@cluster/command';
-import { CommandGetResult, CommandManagers, ICommand, ICommandManager } from '@cluster/types';
-import { CommandPermissions, NamedGuildCommandTag } from '@core/types';
+import { CommandGetResult, CommandManagers, CommandResult, ICommand, ICommandManager } from '@cluster/types';
+import { CommandPermissions, IMiddleware, NamedGuildCommandTag } from '@core/types';
 import { Guild, Message, PartialMessage, TextBasedChannels, User } from 'discord.js';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
@@ -21,9 +21,9 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         await Promise.all(this.managersArr.map(m => m.load(commands)));
     }
 
-    public async execute(context: CommandContext): Promise<boolean> {
+    public async execute(message: Message, prefix: string, middleware?: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>): Promise<boolean> {
         for (const manager of this.managersArr) {
-            if (await manager.execute(context))
+            if (await manager.execute(message, prefix, middleware))
                 return true;
         }
         return false;
