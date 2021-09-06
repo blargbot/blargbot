@@ -1,9 +1,10 @@
-import { CommandMiddleware, CommandResult } from '@cluster/types';
+import { CommandResult } from '@cluster/types';
+import { IMiddleware } from '@core/types';
 import moment, { Duration, Moment } from 'moment-timezone';
 
 import { CommandContext } from '../CommandContext';
 
-export class RatelimitMiddleware<TContext extends CommandContext> implements CommandMiddleware<TContext> {
+export class RatelimitMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     private readonly cooldowns: Record<string, { timestamp: Moment; warned: boolean; } | undefined>;
     public constructor(
         protected readonly cooldown: Duration,

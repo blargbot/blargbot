@@ -37,6 +37,7 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<st
     private attach(worker: TWorker): void {
         const handler: ProcessMessageHandler = ({ data, id, reply }) => {
             try {
+                this.workers.logger.debug(`Executing ${this.workers.type} worker pool event handler ${this.name}`);
                 this.execute({ worker, data, id, reply });
             } catch (err: unknown) {
                 this.workers.logger.error(`${this.workers.type} worker pool event handler ${this.name} threw an error`, err);

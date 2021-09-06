@@ -8,7 +8,7 @@ export abstract class IntervalService extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #interval?: NodeJS.Timeout;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #execute: () => Promise<void>;
+    readonly #execute: () => void;
     public readonly period: Duration;
     public readonly logger: Logger;
     private readonly immediate: boolean;
@@ -31,7 +31,7 @@ export abstract class IntervalService extends BaseService {
 
         this.#execute = async () => {
             try {
-                this.logger.debug(`Executing ${this.name}`);
+                this.logger.debug(`Executing Interval ${this.name}`);
                 await this.execute();
             } catch (err: unknown) {
                 this.logger.error(`Interval ${this.name} threw an error: ${inspect(err)}`);
@@ -45,9 +45,9 @@ export abstract class IntervalService extends BaseService {
         if (this.#interval !== undefined)
             throw new Error(`Interval ${this.name} is already running`);
 
+        this.#interval = setInterval(this.#execute, this.period.asMilliseconds());
         if (this.immediate)
-            void this.#execute();
-        this.#interval = setInterval(() => void this.#execute(), this.period.asMilliseconds());
+            this.#execute();
     }
 
     public stop(): void {

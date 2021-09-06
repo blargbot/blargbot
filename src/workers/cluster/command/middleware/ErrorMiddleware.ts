@@ -1,10 +1,11 @@
-import { CommandMiddleware, CommandResult } from '@cluster/types';
+import { CommandResult } from '@cluster/types';
+import { IMiddleware } from '@core/types';
 import { snowflake } from '@core/utils';
 
 import { BaseCommand } from '../BaseCommand';
 import { CommandContext } from '../CommandContext';
 
-export class ErrorMiddleware<TContext extends CommandContext> implements CommandMiddleware<TContext> {
+export class ErrorMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
     public constructor(private readonly command: BaseCommand) {
 
     }

@@ -106,7 +106,11 @@ export abstract class RethinkDbCachedTable<Table, KeyName extends keyof Properti
         return returnValue === true ? result : result.length > 0;
     }
 
-    public async watchChanges(shouldCache: (id: string) => boolean = () => true): Promise<void> {
+    public watchChanges(shouldCache: (id: string) => boolean = () => true): void {
+        void this.watchChangesCore(shouldCache);
+    }
+
+    private async watchChangesCore(shouldCache: (id: string) => boolean = () => true): Promise<never> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
         while (true) {

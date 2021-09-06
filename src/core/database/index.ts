@@ -111,8 +111,8 @@ export class Database {
             this.#dumps.migrate()
         ]);
 
-        void this.#guilds.watchChanges(id => this.#discord.guilds.cache.get(id) !== undefined);
-        void this.#users.watchChanges(id => this.#discord.users.cache.get(id) !== undefined);
+        this.#guilds.watchChanges(id => this.#discord.guilds.cache.get(id) !== undefined);
+        this.#users.watchChanges(id => this.#discord.users.cache.get(id) !== undefined);
     }
 
     private async retryConnect(dbName: string, connect: () => Promise<unknown>, intervalMs: number, maxAttempts = Infinity): Promise<void> {

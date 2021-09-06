@@ -1,7 +1,7 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
-import { CommandDefinition, CommandMiddleware, CommandOptions, CommandResult } from '@cluster/types';
+import { CommandDefinition, CommandOptions, CommandResult } from '@cluster/types';
 import { commandTypeDetails } from '@cluster/utils';
-import { SendPayload } from '@core/types';
+import { IMiddleware, SendPayload } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommand } from './BaseCommand';
@@ -15,7 +15,7 @@ const helpCommandPromise = import('@cluster/dcommands/general/help');
 
 export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
     private readonly handler: HandlerMiddleware<TContext>;
-    protected readonly middleware: Array<CommandMiddleware<TContext>>;
+    protected readonly middleware: Array<IMiddleware<TContext, CommandResult>>;
 
     public get debugView(): string { return this.handler.debugView; }
 
@@ -54,13 +54,13 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             return;
         }
 
-        const runMiddleware = (index: number): Promise<CommandResult> => {
+        const runMiddleware = (context: TContext, index: number): Awaitable<CommandResult> => {
             if (index < this.middleware.length)
-                return this.middleware[index].execute(context, () => runMiddleware(index + 1));
+                return this.middleware[index].execute(context, (ctx) => runMiddleware(ctx ?? context, index + 1));
             return this.handler.execute(context);
         };
 
-        await context.reply(await runMiddleware(0));
+        await context.reply(await runMiddleware(context, 0));
     }
 
     protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {

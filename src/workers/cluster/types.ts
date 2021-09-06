@@ -767,10 +767,6 @@ export interface CommandBinderState<TContext extends CommandContext> {
     readonly lookupCache: CommandBinderStateLookupCache;
 }
 
-export interface CommandMiddleware<TContext extends CommandContext> {
-    execute(context: TContext, next: () => Promise<CommandResult>): Promise<CommandResult>;
-}
-
 export interface AwaitReactionsResponse {
     message: GuildMessage;
     reaction: MessageReaction;

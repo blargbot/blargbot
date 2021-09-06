@@ -992,3 +992,7 @@ export interface TypeMappingOptions<T, R> {
     ifUndefined?: TypeMappingResult<T | R>;
     strict?: boolean;
 }
+
+export interface IMiddleware<Context, Result = void> {
+    execute(context: Context, next: (context?: Context) => Awaitable<Result>): Awaitable<Result>;
+}

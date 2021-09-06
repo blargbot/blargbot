@@ -19,6 +19,7 @@ export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeM
         this.type = `timeout:${this.event}`;
         const execute = async (event: StoredEvent<TEvent>): Promise<void> => {
             try {
+                logger.debug(`Executing Timeout event handler ${this.name}`);
                 await this.execute(event);
             } catch (err: unknown) {
                 logger.error(`Timeout event handler ${this.name} threw an error: ${inspect(err)}`);
