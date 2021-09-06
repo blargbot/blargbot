@@ -10,7 +10,7 @@ export * from './Master';
 export * from './MasterWorker';
 
 export default async function start(): Promise<void> {
-    const logger = createLogger(config, `MS (${process.pid})`);
+    const logger = createLogger(config, 'MS');
     logger.setGlobal();
 
     await new MasterWorker(process, logger, config, { avatars, holidays })

@@ -58,7 +58,7 @@ export abstract class WorkerConnection<T extends string, Contracts extends IPCCo
         Object.freeze(this.args);
         Object.freeze(this.env);
 
-        this.logger.worker('Spawning a new', this.worker, 'worker ( ID:', this.id);
+        this.logger.worker('Spawning a new', this.worker, 'worker ( ID:', this.id, ')');
         const timer = new Timer();
         timer.start();
 

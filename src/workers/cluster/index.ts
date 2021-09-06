@@ -11,7 +11,7 @@ export * from './ClusterUtilities';
 export * from './ClusterWorker';
 
 export default async function start(): Promise<void> {
-    const logger = createLogger(config, `CL${process.env.CLUSTER_ID ?? '??'}(${process.pid})`);
+    const logger = createLogger(config, `CL${process.env.CLUSTER_ID ?? '??'}`);
     logger.setGlobal();
 
     await new ClusterWorker(process, logger, config)

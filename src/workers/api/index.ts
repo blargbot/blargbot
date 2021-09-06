@@ -10,7 +10,7 @@ export * from './ApiWorker';
 export * from './Api';
 
 export default async function start(): Promise<void> {
-    const logger = createLogger(config, `API${process.env.WORKER_ID ?? ''}(${process.pid})`);
+    const logger = createLogger(config, `API${process.env.WORKER_ID ?? ''}`);
     logger.setGlobal();
 
     await new ApiWorker(process, config, logger)
