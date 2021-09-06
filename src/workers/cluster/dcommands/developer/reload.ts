@@ -7,7 +7,7 @@ export class ReloadCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'reload',
-            category: CommandType.OWNER,
+            category: CommandType.DEVELOPER,
             definitions: [
                 {
                     parameters: 'commands {commands[0]}',

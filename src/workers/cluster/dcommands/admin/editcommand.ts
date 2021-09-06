@@ -136,7 +136,7 @@ export class EditCommandCommand extends BaseGuildCommand {
     }
 
     private async editCommands(context: GuildCommandContext, commands: string[], update: Partial<CommandPermissions>): Promise<string> {
-        const changed = await context.cluster.commands.configure(commands, context.channel.guild, update);
+        const changed = await context.cluster.commands.configure(context.author, commands, context.channel.guild, update);
         return changed.join(', ');
     }
 }

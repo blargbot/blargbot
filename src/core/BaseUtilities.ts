@@ -1,5 +1,5 @@
 import { DMContext, SendContext, SendPayload, StoredUser } from '@core/types';
-import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction, Webhook } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -544,6 +544,91 @@ export class BaseUtilities {
         return findBest(guild.members.cache.values(), m => this.memberMatchScore(m, query));
     }
 
+    public async getWebhook(guild: string | Guild, webhookId: string): Promise<Webhook | undefined> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return undefined;
+
+        try {
+            const webhooks = await guild.fetchWebhooks();
+            return webhooks.get(webhookId);
+        } catch (error: unknown) {
+            if (error instanceof DiscordAPIError) {
+                switch (error.code) {
+                    case Constants.APIErrors.MISSING_PERMISSIONS:
+                    case Constants.APIErrors.MISSING_ACCESS:
+                        return undefined;
+                }
+            }
+            throw error;
+        }
+    }
+
+    public async findWebhooks(guild: string | Guild, query?: string): Promise<Webhook[]> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return [];
+
+        let webhooks;
+        try {
+            webhooks = await guild.fetchWebhooks();
+        } catch (error: unknown) {
+            if (error instanceof DiscordAPIError) {
+                switch (error.code) {
+                    case Constants.APIErrors.MISSING_PERMISSIONS:
+                    case Constants.APIErrors.MISSING_ACCESS:
+                        return [];
+                }
+            }
+            throw error;
+        }
+
+        if (query === undefined)
+            return [...webhooks.values()];
+
+        return findBest(webhooks.values(), w => this.webhookMatchScore(w, query));
+    }
+
+    public async getSender(guild: string | Guild, senderId: string): Promise<GuildMember | Webhook | undefined> {
+        senderId = parse.entityId(senderId) ?? '';
+        if (senderId === '')
+            return undefined;
+
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return undefined;
+
+        const member = await this.getMember(guild, senderId);
+        if (member !== undefined)
+            return member;
+
+        return await this.getWebhook(guild, senderId);
+    }
+
+    public async findSenders(guild: string | Guild, query?: string): Promise<Array<GuildMember | Webhook>> {
+        if (typeof guild === 'string')
+            guild = await this.getGuild(guild) ?? guild;
+
+        if (typeof guild === 'string')
+            return [];
+
+        const result = await Promise.all([
+            this.findMembers(guild),
+            this.findWebhooks(guild)
+        ]);
+
+        if (query === undefined)
+            return result.flat();
+
+        return findBest(result.flat(), s => s instanceof GuildMember ? this.memberMatchScore(s, query) : this.webhookMatchScore(s, query));
+    }
+
     public memberMatchScore(member: GuildMember, query: string): number {
         let score = this.userMatchScore(member.user, query);
         const normalizedDisplayname = member.displayName.toLowerCase();
@@ -565,6 +650,18 @@ export class BaseUtilities {
         if (user.username.startsWith(query)) score += 100;
         if (normalizedUsername.startsWith(normalizedQuery)) score += 10;
         if (normalizedUsername.includes(normalizedQuery)) score += 1;
+        return score;
+    }
+
+    public webhookMatchScore(webhook: Webhook, query: string): number {
+        let score = 0;
+        const normalizedName = webhook.name.toLowerCase();
+        const normalizedQuery = query.toLowerCase();
+
+        if (webhook.name === query) return Infinity;
+        if (webhook.name.startsWith(query)) score += 100;
+        if (normalizedName.startsWith(normalizedQuery)) score += 10;
+        if (normalizedName.includes(normalizedQuery)) score += 1;
         return score;
     }
 

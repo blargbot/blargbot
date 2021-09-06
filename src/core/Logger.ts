@@ -1,3 +1,4 @@
+import { } from '@sentry/node'; // TODO add sentry
 import CatLoggr, { LogLevel } from 'cat-loggr/ts';
 import Sequelize, { ValidationError } from 'sequelize';
 

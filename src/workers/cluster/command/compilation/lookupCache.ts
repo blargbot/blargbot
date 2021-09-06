@@ -33,6 +33,14 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
+        findSender: createLookup(
+            command, 'sender',
+            async query => (await context.util.findSenders(context.channel.guild, query)).map(s => s instanceof GuildMember ? s.user : s),
+            async (options, query) => {
+                const result = await context.querySender({ choices: options, filter: query });
+                return result.state === 'SUCCESS' ? result.value : undefined;
+            }
+        ),
         findRole: createLookup(
             command, 'role',
             query => context.util.findRoles(context.channel.guild, query),
@@ -64,6 +72,9 @@ function getPrivateLookupCache<TContext extends PrivateCommandContext>(context: 
                 return result.state === 'SUCCESS' ? result.value : undefined;
             }
         ),
+        async findSender(str) {
+            return await this.findUser(str);
+        },
         findUser: createLookup(
             command, 'user',
             query => [

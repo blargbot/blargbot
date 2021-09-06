@@ -24,7 +24,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     public load(_commands?: Iterable<string> | boolean): Promise<void> { return Promise.resolve(); }
     protected abstract getCore(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetCoreResult<T>>;
     protected abstract allCommandNames(location?: Guild | TextBasedChannels): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
-    public abstract configure(names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    public abstract configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
 
     public async execute(context: CommandContext): Promise<boolean> {
         const result = await this.get(context.commandName, context.channel, context.author);

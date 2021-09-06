@@ -6,7 +6,7 @@ export class PatchCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'patch',
-            category: CommandType.OWNER,
+            category: CommandType.DEVELOPER,
             definitions: [
                 {
                     parameters: '{features+?}',

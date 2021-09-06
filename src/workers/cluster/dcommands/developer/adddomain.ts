@@ -5,7 +5,7 @@ export class AddDomainCommand extends BaseGlobalCommand {
     public constructor() {
         super({
             name: 'adddomain',
-            category: CommandType.OWNER,
+            category: CommandType.DEVELOPER,
             aliases: ['addomain'],
             definitions: [
                 {

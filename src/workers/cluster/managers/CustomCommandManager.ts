@@ -5,7 +5,7 @@ import { CommandGetCoreResult, CommandSignature, FlagDefinition, ICommand } from
 import { guard, humanize } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { CommandPermissions, NamedGuildCommandTag, StoredTag } from '@core/types';
-import { Guild, TextBasedChannels } from 'discord.js';
+import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommandManager } from './BaseCommandManager';
 
@@ -49,7 +49,7 @@ export class CustomCommandManager extends BaseCommandManager<NamedGuildCommandTa
         return await this.cluster.database.guilds.getCustomCommandNames(guild.id);
     }
 
-    public async configure(names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(_user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         if (names.length === 0)
             return [];
 

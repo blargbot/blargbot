@@ -6,7 +6,7 @@ import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@core/types';
 import { guard } from '@core/utils';
-import { Client as Discord, GuildChannels, GuildMember, KnownChannel, Message, Role, TextBasedChannels, User } from 'discord.js';
+import { Client as Discord, GuildChannels, GuildMember, KnownChannel, Message, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 
 export class CommandContext<TChannel extends TextBasedChannels = TextBasedChannels> {
     public readonly commandText: string;
@@ -110,6 +110,10 @@ export class CommandContext<TChannel extends TextBasedChannels = TextBasedChanne
 
     public async queryUser(options: SlimEntityPickQueryOptions<User>): Promise<ChoiceQueryResult<User>> {
         return await this.util.queryUser({ ...options, context: this.message, actors: this.author });
+    }
+
+    public async querySender(options: SlimEntityPickQueryOptions<User | Webhook>): Promise<ChoiceQueryResult<User | Webhook>> {
+        return await this.util.querySender({ ...options, context: this.message, actors: this.author });
     }
 
     public async queryText<T>(options: SlimTextQueryOptionsParsed<T>): Promise<TextQueryResult<T>>

@@ -8,9 +8,9 @@ export class TimeoutTimerEventService extends TimeoutEventService<'timer'> {
         super(cluster.timeouts, 'timer', cluster.logger);
     }
     public async execute(event: StoredEvent<'timer'>): Promise<void> {
-        const duration = moment(event.starttime).fromNow();
+        const startTime = moment(event.starttime);
         await this.cluster.util.send(event.channel, {
-            content: `⏰ *Bzzt!* <@${event.user}>, the timer you set ${duration} has gone off! *Bzzt!* ⏰`,
+            content: `⏰ *Bzzt!* <@${event.user}>, the timer you set <t:${startTime.unix()}:R> has gone off! *Bzzt!* ⏰`,
             allowedMentions: { users: [event.user] }
         });
     }

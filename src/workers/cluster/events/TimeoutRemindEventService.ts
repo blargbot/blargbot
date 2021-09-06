@@ -8,9 +8,9 @@ export class TimeoutRemindEventService extends TimeoutEventService<'remind'> {
         super(cluster.timeouts, 'remind', cluster.logger);
     }
     public async execute(event: StoredEvent<'remind'>): Promise<void> {
-        const duration = moment(event.starttime).fromNow();
+        const startTime = moment(event.starttime);
         await this.cluster.util.send(event.channel, {
-            content: `⏰ Hi, <@${event.user}>! You asked me to remind you about this ${duration}:\n${event.content}`,
+            content: `⏰ Hi, <@${event.user}>! You asked me to remind you about this <t:${startTime.unix()}:R>:\n${event.content}`,
             allowedMentions: { users: [event.user] }
         });
     }

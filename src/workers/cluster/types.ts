@@ -3,7 +3,7 @@ import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command
 import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
@@ -36,7 +36,7 @@ export interface ICommandManager<T = unknown> {
     execute(context: CommandContext): Promise<boolean>;
     get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>>;
     list(location?: Guild | TextBasedChannels, user?: User): AsyncIterable<ICommand<T>>;
-    configure(names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
     messageDeleted(message: Message | PartialMessage): Promise<void>;
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
@@ -393,6 +393,7 @@ export type CommandVariableTypeMap = {
     'role': Role;
     'channel': KnownChannel;
     'user': User;
+    'sender': User | Webhook;
     'member': GuildMember;
     'duration': Duration;
     'boolean': boolean;
@@ -655,7 +656,7 @@ export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
 export interface CommandProperties {
     readonly name: string;
     readonly description: string;
-    readonly defaultPerms?: bigint;
+    readonly defaultPerms: bigint;
     readonly isVisible: (util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User) => boolean | Promise<boolean>;
     readonly color: number;
 }
@@ -749,6 +750,7 @@ export interface CommandBinderDeferred<TResult> {
 
 export interface CommandBinderStateLookupCache {
     findUser(userString: string): Awaitable<CommandBinderParseResult<User>>;
+    findSender(userString: string): Awaitable<CommandBinderParseResult<User | Webhook>>;
     findMember(memberString: string): Awaitable<CommandBinderParseResult<GuildMember>>;
     findRole(roleString: string): Awaitable<CommandBinderParseResult<Role>>;
     findChannel(channelString: string): Awaitable<CommandBinderParseResult<TextBasedChannels>>;

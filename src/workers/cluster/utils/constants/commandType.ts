@@ -21,7 +21,8 @@ export const commandTypeDetails: CommandPropertiesSet = {
         name: 'General',
         isVisible: () => true,
         description: 'General commands.',
-        color: 0xefff00
+        color: 0xefff00,
+        defaultPerms: 0n
     },
     [CommandType.NSFW]: {
         name: 'NSFW',
@@ -35,13 +36,15 @@ export const commandTypeDetails: CommandPropertiesSet = {
             return false;
         },
         description: 'Commands that can only be executed in NSFW channels.',
-        color: 0x010101
+        color: 0x010101,
+        defaultPerms: 0n
     },
     [CommandType.IMAGE]: {
         name: 'Image',
         isVisible: () => true,
         description: 'Commands that generate or display images.',
-        color: 0xefff00
+        color: 0xefff00,
+        defaultPerms: 0n
     },
     [CommandType.ADMIN]: {
         name: 'Admin',
@@ -62,7 +65,8 @@ export const commandTypeDetails: CommandPropertiesSet = {
             return await util.database.guilds.getSetting(location.guild.id, 'social') ?? false;
         },
         description: 'Social commands for interacting with other people',
-        color: 0xefff00
+        color: 0xefff00,
+        defaultPerms: 0n
     },
     [CommandType.OWNER]: {
         name: 'Blargbot Owner',
@@ -70,7 +74,8 @@ export const commandTypeDetails: CommandPropertiesSet = {
             return author !== undefined && util.isBotOwner(author.id);
         },
         description: 'MREOW MEOWWWOW! **purr**',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     },
     [CommandType.DEVELOPER]: {
         name: 'Blargbot Developer',
@@ -78,7 +83,8 @@ export const commandTypeDetails: CommandPropertiesSet = {
             return author !== undefined && util.isBotDeveloper(author.id);
         },
         description: 'Commands that can only be executed by blargbot developers.',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     },
     [CommandType.STAFF]: {
         name: 'Blargbot Staff',
@@ -86,7 +92,8 @@ export const commandTypeDetails: CommandPropertiesSet = {
             return author !== undefined && util.isBotStaff(author.id);
         },
         description: 'Commands that can only be executed by staff on the official support server.',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     },
     [CommandType.SUPPORT]: {
         name: 'Blargbot Support',
@@ -94,6 +101,7 @@ export const commandTypeDetails: CommandPropertiesSet = {
             return author !== undefined && util.isBotSupport(author.id);
         },
         description: 'Commands that can only be executed by support members on the official support server.',
-        color: 0xff0000
+        color: 0xff0000,
+        defaultPerms: 0n
     }
 };

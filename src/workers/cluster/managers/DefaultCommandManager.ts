@@ -53,11 +53,18 @@ export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
             yield command.name;
     }
 
-    public async configure(names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         if (names.length === 0)
             return [];
 
-        names = names.map(n => this.modules.get(n)?.name).filter(guard.hasValue);
+        const visible = await Promise.all(
+            names.map(n => this.modules.get(n))
+                .filter(guard.hasValue)
+                .map(async m => ({ isVisible: await m.isVisible(this.cluster.util, guild, user), name: m.name }))
+        );
+
+        names = visible.filter(x => x.isVisible).map(x => x.name);
+
         if (names.length === 0)
             return [];
 
@@ -86,7 +93,7 @@ class NormalizedCommand implements ICommand<BaseCommand> {
         this.description = implementation.description ?? undefined;
         this.signatures = implementation.signatures;
         this.disabled = permissions.disabled === true;
-        this.permission = permissions.permission ?? commandTypeDetails[implementation.category].defaultPerms?.toString() ?? '0';
+        this.permission = permissions.permission ?? commandTypeDetails[implementation.category].defaultPerms.toString();
         this.roles = permissions.roles ?? [];
         this.hidden = permissions.hidden ?? false;
         this.category = commandTypeDetails[implementation.category].name;

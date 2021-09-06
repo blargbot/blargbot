@@ -1,7 +1,7 @@
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
-import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, Role, TextBasedChannels, User } from 'discord.js';
+import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-types';
 import fetch from 'node-fetch';
 
@@ -394,6 +394,23 @@ export class ClusterUtilities extends BaseUtilities {
             placeholder: options.placeholder ?? 'Select a user',
             choices: [...options.choices].map(u => ({
                 label: humanize.fullName(u),
+                emoji: u.bot ? '🤖' : '👤',
+                value: u,
+                description: `Id: ${u.id}`
+            }))
+        });
+    }
+
+    public async querySender(options: EntityPickQueryOptions<User | Webhook>): Promise<ChoiceResult<User | Webhook>> {
+        return await this.queryChoice({
+            ...options,
+            prompt: options.prompt ?? (options.filter === undefined
+                ? 'ℹ️ Please select a user or webhook from the drop down'
+                : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
+            placeholder: options.placeholder ?? 'Select a user',
+            choices: [...options.choices].map(u => ({
+                label: u instanceof User ? humanize.fullName(u) : u.name,
+                emoji: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝',
                 value: u,
                 description: `Id: ${u.id}`
             }))
@@ -413,6 +430,7 @@ export class ClusterUtilities extends BaseUtilities {
             placeholder: options.placeholder ?? 'Select a user',
             choices: matches.map(m => ({
                 label: `${m.displayName} (${humanize.fullName(m.user)})`,
+                emoji: m.user.bot ? '🤖' : '👤',
                 value: m,
                 description: `Id: ${m.id}`
             }))
@@ -450,7 +468,7 @@ export class ClusterUtilities extends BaseUtilities {
                 : `ℹ️ Multiple channels matching \`${options.filter}\` found! Please select one from the drop down.`),
             placeholder: options.placeholder ?? 'Select a channel',
             choices: matches.map(c => ({
-                label: getChannelLookupName(c),
+                ...getChannelLookupSelect(c),
                 description: `Id: ${c.id}${guard.isGuildChannel(c) && c.parent !== null ? ` Parent: ${getChannelLookupName(c.parent)}` : ''}`,
                 value: c
             }))
@@ -868,18 +886,23 @@ function createTextBody(options: TextComponentOptions, disabled = false): Pick<M
 }
 
 function getChannelLookupName(channel: KnownChannel): string {
+    const opt = getChannelLookupSelect(channel);
+    return `${opt.emoji} ${opt.label}`;
+}
+
+function getChannelLookupSelect(channel: KnownChannel): { label: string; emoji: string; } {
     switch (channel.type) {
-        case 'DM': return '🕵️ DM';
-        case 'GROUP_DM': return '👥 Group DM';
-        case 'GUILD_CATEGORY': return `📁 ${channel.name}`;
-        case 'GUILD_NEWS': return `📰 ${channel.name}`;
-        case 'GUILD_NEWS_THREAD': return `# ${channel.name}`;
-        case 'GUILD_PRIVATE_THREAD': return `# ${channel.name}`;
-        case 'GUILD_PUBLIC_THREAD': return `# ${channel.name}`;
-        case 'GUILD_STAGE_VOICE': return `🔈 ${channel.name}`;
-        case 'GUILD_STORE': return `🛒 ${channel.name}`;
-        case 'GUILD_TEXT': return `# ${channel.name}`;
-        case 'GUILD_VOICE': return `🔈 ${channel.name}`;
+        case 'DM': return { emoji: '🕵️', label: 'DM' };
+        case 'GROUP_DM': return { emoji: '👥', label: 'Group DM' };
+        case 'GUILD_CATEGORY': return { emoji: '📁', label: channel.name };
+        case 'GUILD_NEWS': return { emoji: '📰', label: channel.name };
+        case 'GUILD_NEWS_THREAD': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_PRIVATE_THREAD': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_PUBLIC_THREAD': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_STAGE_VOICE': return { emoji: '🔈', label: channel.name };
+        case 'GUILD_STORE': return { emoji: '🛒', label: channel.name };
+        case 'GUILD_TEXT': return { emoji: '✏️', label: channel.name };
+        case 'GUILD_VOICE': return { emoji: '🔈', label: channel.name };
     }
 }
 

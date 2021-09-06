@@ -24,6 +24,7 @@ const typeOrder = [
     'role',
     'channel',
     'user',
+    'sender',
     'member',
     'duration',
     'bigint',
@@ -51,6 +52,7 @@ const typeStrings: { [key in CommandVariableTypeName]: { single: string | undefi
     member: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' },
     number: { single: 'a number', plural: 'numbers' },
     role: { single: 'a role id, mention or name', plural: 'role ids, mentions or names' },
+    sender: { single: 'a user id, mention or name, or a webhook id', plural: 'user ids, mentions or names, or webhook ids' },
     user: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' }
 };
 
@@ -127,6 +129,9 @@ const parameterTypes: ParameterTypeFactories = {
     }),
     user: buildParameter('user', (value, state) => {
         return state.lookupCache.findUser(value);
+    }),
+    sender: buildParameter('sender', (value, state) => {
+        return state.lookupCache.findSender(value);
     }),
     member: buildParameter('member', (value, state) => {
         return state.lookupCache.findMember(value);
