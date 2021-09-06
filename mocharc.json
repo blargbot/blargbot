@@ -1,0 +1,8 @@
+{
+    "require": "ts-node/register",
+    "files": [
+        "test/_setup.ts",
+        "test/**/*.ts"
+    ],
+    "recursive": true
+}

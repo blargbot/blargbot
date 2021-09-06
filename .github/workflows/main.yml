@@ -37,4 +37,11 @@ jobs:
       run: yarn install
     
     - name: Run checks
-      run: yarn run check
+      run: yarn run ci
+
+    - name: Upload code coverage
+      if: hashFiles('coverage/index.html') != ''
+      uses: actions/upload-artifact@v2
+      with:
+        name: coverage
+        path: coverage/
