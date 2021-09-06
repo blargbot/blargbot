@@ -26,7 +26,7 @@ export class RollingRatelimitMiddleware implements IMiddleware<CommandContext, C
 
         let timeout = this.timeouts[key];
         if (timeout !== undefined) {
-            if (timeout.isBefore(moment())) {
+            if (timeout.isAfter(moment())) {
                 timeout.add(this.options.penalty);
                 return;
             }
