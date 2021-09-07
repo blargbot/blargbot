@@ -101,7 +101,7 @@ export class HelpCommand extends BaseGlobalCommand {
         const allSignatures = command.signatures
             .filter(c => !c.hidden)
             .map(signature => ({
-                usage: stringifyParameters(signature.parameters),
+                usage: humanize.commandParameters(signature.parameters),
                 description: signature.description,
                 notes: signature.parameters.flatMap(p => [...getParameterNotes(p)])
             }));
@@ -176,28 +176,6 @@ function getColor(type: string): number {
         case 'staff': return 0xff0000;
         case 'support': return 0xff0000;
         default: return 0;
-    }
-}
-
-function stringifyParameters(parameters: readonly CommandParameter[]): string {
-    return parameters.map(stringifyParameter).join(' ');
-}
-
-function stringifyParameter(parameter: CommandParameter): string {
-    switch (parameter.kind) {
-        case 'literal': return parameter.name;
-        case 'singleVar':
-            if (parameter.required)
-                return `<${parameter.name}>`;
-            return `[${parameter.name}]`;
-        case 'concatVar':
-            if (parameter.required)
-                return `<${parameter.name}>`;
-            return `[${parameter.name}]`;
-        case 'greedyVar':
-            if (parameter.minLength === 0)
-                return `[...${parameter.name}]`;
-            return `<...${parameter.name}>`;
     }
 }
 

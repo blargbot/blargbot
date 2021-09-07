@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { BaseCommand, CommandContext } from '@cluster/command';
+import { BaseCommand, CommandContext, ErrorMiddleware } from '@cluster/command';
 import { CommandGetCoreResult, CommandParameter, CommandSignature, FlagDefinition, ICommand } from '@cluster/types';
 import { commandTypeDetails, guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
@@ -16,7 +16,9 @@ export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
     public get size(): number { return this.modules.size; }
 
     public constructor(source: string, cluster: Cluster) {
-        super('Default', cluster);
+        super('Default', cluster, [
+            new ErrorMiddleware()
+        ]);
         this.modules = new ModuleLoader(source, BaseCommand, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
     }
 

@@ -1,4 +1,5 @@
-import { CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandResult, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
+import { CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
+import { humanize } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
@@ -66,7 +67,7 @@ export class GreedyBinding<TContext extends CommandContext, Name extends Command
         else if (aggregated?.success === false)
             yield this.bindingError(state, aggregated.error);
         else if (next.length === 0)
-            yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
+            yield this.bindingError(state, { notEnoughArgs: [humanize.commandParameter(this.parameter)] });
     }
 }
 
@@ -80,26 +81,25 @@ function memoize<TResult>(
         case 'deferred': {
             let resolved: CommandBinderValue<TResult> | undefined;
             return {
-                get success(): 'deferred' | true | false {
+                get success() {
                     return resolved?.success ?? 'deferred';
                 },
                 async getValue() {
                     return resolved = await result.getValue();
                 },
-                get value(): TResult {
+                get value() {
                     if (resolved === undefined)
                         throw new Error('Value hasnt been resolved yet');
                     if (resolved.success)
                         return resolved.value;
                     throw new Error('Value was not resolved successfully');
                 },
-                get error(): CommandResult {
+                get error() {
                     if (resolved === undefined)
                         throw new Error('Value hasnt been resolved yet');
                     if (resolved.success)
                         throw new Error('Value was resolved successfully');
                     return resolved.error;
-
                 }
             };
         }

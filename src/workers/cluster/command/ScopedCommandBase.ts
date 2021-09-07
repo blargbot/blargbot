@@ -1,13 +1,13 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { CommandDefinition, CommandOptions, CommandResult } from '@cluster/types';
 import { commandTypeDetails, runMiddleware } from '@cluster/utils';
-import { IMiddleware, SendPayload } from '@core/types';
+import { IMiddleware } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommand } from './BaseCommand';
 import { CommandContext } from './CommandContext';
 import { compileSignatures } from './compilation';
-import { ErrorMiddleware, InvokeCommandHandlerMiddleware } from './middleware';
+import { InvokeCommandHandlerMiddleware } from './middleware';
 
 // Circular reference means this needs to be resolved asyncronously;
 const helpCommandPromise = import('@cluster/dcommands/general/help');
@@ -34,7 +34,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
 
         super({ ...options, signatures });
 
-        this.middleware = [new ErrorMiddleware(this)];
+        this.middleware = [];
         this.handler = new InvokeCommandHandlerMiddleware(signatures, this);
     }
 
@@ -53,15 +53,16 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             return;
         }
 
-        await context.reply(await runMiddleware([...this.middleware, this.handler], context, undefined));
+        const result = await runMiddleware([...this.middleware, this.handler], context, undefined);
+        await context.reply(result);
     }
 
-    protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand: string): Promise<SendPayload> {
+    protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand?: string): Promise<CommandResult> {
         // TODO transition to using a worker
         const { HelpCommand: helpCommandClass } = await helpCommandPromise;
-        const help = await context.cluster.commands.default.get('help');
+        const help = await context.cluster.commands.default.get('help', context.channel, context.author);
         if (help.state === 'ALLOWED' && help.detail.implementation instanceof helpCommandClass)
             return await help.detail.implementation.viewCommand(context, command.name, page, subcommand);
-        return this.error('Unable to load help, please try again later');
+        return undefined;
     }
 }

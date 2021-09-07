@@ -1,4 +1,4 @@
-import { CommandBinderParseResult, CommandBinderState, CommandResult } from '@cluster/types';
+import { CommandBinderParseResult, CommandBinderState, CommandBinderStateFailureReason } from '@cluster/types';
 import { Binder } from '@core/Binder';
 import { Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '@core/types';
 
@@ -11,16 +11,16 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
 
     protected bindingError(
         state: CommandBinderState<TContext>,
-        error: CommandResult,
+        error: CommandBinderStateFailureReason,
         argCount = 0
     ): BindingFailure<CommandBinderState<TContext>> {
+        state.addFailure(state.argIndex, error);
         return {
             success: false,
             state: {
                 ...state,
                 argIndex: state.argIndex + argCount,
-                bindIndex: state.bindIndex + 1,
-                result: error
+                bindIndex: state.bindIndex + 1
             }
         };
     }
@@ -29,17 +29,14 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
         state: CommandBinderState<TContext>,
         next: ReadonlyArray<Binding<CommandBinderState<TContext>>>,
         argCount: number,
-        value?: Exclude<CommandBinderParseResult<unknown>, { success: false; }> | CommandResult,
+        value?: Exclude<CommandBinderParseResult<unknown>, { success: false; }>,
         checkNext = true
     ): BindingSuccess<CommandBinderState<TContext>> {
         let args = state.arguments;
-        let result = state.result;
         if (value === undefined) {
             // NOOP
-        } else if (typeof value === 'object' && 'success' in value) {
-            args = [...args, value];
         } else {
-            result = value;
+            args = [...args, value];
         }
         return {
             success: true,
@@ -49,8 +46,7 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
                 ...state,
                 argIndex: state.argIndex + argCount,
                 bindIndex: state.bindIndex + 1,
-                arguments: args,
-                result: result
+                arguments: args
             }
         };
     }

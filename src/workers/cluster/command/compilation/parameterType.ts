@@ -77,7 +77,6 @@ const parameterTypes: ParameterTypeFactories = {
             throw new Error('Literal variable parameters must have at least 1 option');
 
         const lookup = new Map(choices.map(c => [c.toLowerCase(), c]));
-        const errorOptions = humanize.smartJoin(choices.map(c => `\`${c}\``), ', ', ' or ');
 
         return {
             name: 'literal',
@@ -89,39 +88,39 @@ const parameterTypes: ParameterTypeFactories = {
                 const match = lookup.get(value.toLowerCase());
                 return match !== undefined
                     ? { success: true, value: match }
-                    : { success: false, error: `\`${value}\` must be ${errorOptions}` };
+                    : { success: false, error: { parseFailed: { attemptedValue: value, types: choices } } };
             }
         };
     },
     string: buildParameter('string', value => ({ success: true, value })),
-    bigint: buildParameter('bigint', (value, state) => {
+    bigint: buildParameter('bigint', (value) => {
         const result = parse.bigint(value);
         if (result === undefined)
-            return { success: false, error: state.command.error(`\`${value}\` is not an integer`) };
+            return { success: false, error: { parseFailed: { attemptedValue: value, types: ['an integer'] } } };
         return { success: true, value: result };
     }),
-    integer: buildParameter('integer', (value, state) => {
+    integer: buildParameter('integer', (value) => {
         const result = parse.int(value);
         if (isNaN(result))
-            return { success: false, error: state.command.error(`\`${value}\` is not an integer`) };
+            return { success: false, error: { parseFailed: { attemptedValue: value, types: ['an integer'] } } };
         return { success: true, value: result };
     }),
-    number: buildParameter('number', (value, state) => {
+    number: buildParameter('number', (value) => {
         const result = parse.float(value);
         if (isNaN(result))
-            return { success: false, error: state.command.error(`\`${value}\` is not a number`) };
+            return { success: false, error: { parseFailed: { attemptedValue: value, types: ['a number'] } } };
         return { success: true, value: result };
     }),
-    boolean: buildParameter('boolean', (value, state) => {
+    boolean: buildParameter('boolean', (value) => {
         const result = parse.boolean(value);
         if (result === undefined)
-            return { success: false, error: state.command.error(`\`${value}\` is not a boolean`) };
+            return { success: false, error: { parseFailed: { attemptedValue: value, types: ['a boolean'] } } };
         return { success: true, value: result };
     }),
-    duration: buildParameter('duration', (value, state) => {
+    duration: buildParameter('duration', (value) => {
         const result = parse.duration(value);
         if (result === undefined)
-            return { success: false, error: state.command.error(`\`${value}\` is not a valid duration`) };
+            return { success: false, error: { parseFailed: { attemptedValue: value, types: ['a duration'] } } };
         return { success: true, value: result };
     }),
     channel: buildParameter('channel', (value, state) => {

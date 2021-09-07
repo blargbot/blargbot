@@ -1,7 +1,8 @@
-import { CommandBinderState, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@cluster/types';
-import { parse } from '@cluster/utils';
+import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@cluster/types';
+import { parse, pluralise as p } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding } from '@core/types';
+import { humanize } from '@core/utils';
 
 import { CommandContext } from '../CommandContext';
 import { ScopedCommandBase } from '../ScopedCommandBase';
@@ -28,22 +29,65 @@ export function compileHandler<TContext extends CommandContext>(
             return binder.debugView();
         },
         async execute(context: TContext) {
-            const result = await binder.bind({
+            let failure: CommandBinderStateFailureReason = {};
+            let deepestError = 0;
+            const { state } = await binder.bind({
                 argIndex: 0,
                 arguments: [],
                 bindIndex: 0,
-                result: undefined,
                 flags: parse.flags(command.flags, context.argsString, true),
                 context,
                 command,
-                lookupCache: getLookupCache(context, command)
+                lookupCache: getLookupCache(context),
+                addFailure(index, reason) {
+                    if (index < deepestError)
+                        return;
+
+                    if (index > deepestError) {
+                        deepestError = index;
+                        failure = {};
+                    }
+
+                    if (reason.parseFailed !== undefined) {
+                        if (failure.parseFailed === undefined || failure.parseFailed.attemptedValue.length < reason.parseFailed.attemptedValue.length) {
+                            failure.parseFailed = {
+                                attemptedValue: reason.parseFailed.attemptedValue,
+                                types: [...reason.parseFailed.types]
+                            };
+                        } else if (failure.parseFailed.attemptedValue.length === reason.parseFailed.attemptedValue.length) {
+                            failure.parseFailed.types.push(...reason.parseFailed.types);
+                        }
+                    }
+
+                    if (reason.notEnoughArgs !== undefined)
+                        (failure.notEnoughArgs ??= []).push(...reason.notEnoughArgs);
+
+                    if (reason.tooManyArgs === true)
+                        failure.tooManyArgs = true;
+                }
             });
-            switch (result.success) {
-                case true:
-                    return result.state.result;
-                case false:
-                    return result.state.result ?? command.error('I wasnt able to understand those arguments!');
+            if (state.handler === undefined)
+                return resolveFailure(state, failure, deepestError);
+            const args = [];
+            for (let i = 0; i < state.arguments.length; i++) {
+                const arg = state.arguments[i];
+                switch (arg.success) {
+                    case true:
+                        args.push(arg.value);
+                        break;
+                    case 'deferred': {
+                        const result = await arg.getValue();
+                        if (!result.success) {
+                            state.addFailure(i, result.error);
+                            return resolveFailure(state, failure, deepestError);
+                        }
+                        args.push(result.value);
+                        break;
+                    }
+
+                }
             }
+            return await state.handler.execute(context, args, state.flags);
         }
     };
 }
@@ -51,6 +95,27 @@ export function compileHandler<TContext extends CommandContext>(
 interface BindingBuilder<TContext extends CommandContext> {
     create(): Iterable<{ binding: Binding<CommandBinderState<TContext>>; sort: string; }>;
     add(parameter: CommandParameter | undefined, signature: CommandSignatureHandler<TContext>): void;
+}
+
+function resolveFailure<TContext extends CommandContext>(state: CommandBinderState<TContext>, reason: CommandBinderStateFailureReason, depth: number): string {
+    if (reason.parseFailed !== undefined) {
+        const expectedTypes = humanize.smartJoin(reason.parseFailed.types.map(arg => `\`${arg}\``), ', ', ' or ');
+        return state.command.error(`Invalid arguments! \`${reason.parseFailed.attemptedValue}\` isnt ${expectedTypes}`);
+    }
+
+    if (reason.notEnoughArgs !== undefined && reason.notEnoughArgs.length > 0) {
+        const missingParameters = humanize.smartJoin(reason.notEnoughArgs.map(arg => `\`${arg}\``), ', ', ' or ');
+        return state.command.error(`Not enough arguments! You need to provide ${missingParameters}`);
+    }
+
+    if (reason.tooManyArgs !== true)
+        return state.command.error('I couldnt understand those arguments!');
+
+    if (depth === 0)
+        return state.command.error(`Too many arguments! \`${state.command.name}\` doesnt need any arguments`);
+
+    return state.command.error(`Too many arguments! Expected at most ${depth} ${p(depth, 'argument')}, but you gave ${state.flags._.length}`);
+
 }
 
 function buildBindings<TContext extends CommandContext>(
@@ -110,7 +175,7 @@ function createExecuteBindingBuilder<TContext extends CommandContext>(): Binding
         * create() {
             if (signature === undefined)
                 throw new Error('No signature has been set');
-            yield { binding: new bindings.ExecuteCommandBinding(signature), sort: getSortKey(undefined) };
+            yield { binding: new bindings.CommandHandlerBinding(signature), sort: getSortKey(undefined) };
         },
         add(_, s) {
             if (signature !== undefined)
@@ -127,7 +192,7 @@ function createLiteralBindingBuilder<TContext extends CommandContext>(depth: num
 
     return {
         * create() {
-            const options = mapKeys(signatureMap, (value) => buildBindings(value, depth + 1));
+            const options = mapKeys(signatureMap, (value) => ({ bindings: buildBindings(value, depth + 1), hidden: [...value].every(v => v.hidden) }));
             const aliases = mapKeys(aliasMap, value => [...value]);
             yield { binding: new bindings.SwitchBinding(options, aliases), sort: getSortKey(aggregateParameter) };
         },

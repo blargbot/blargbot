@@ -29,7 +29,7 @@
                 "--config",
                 "${workspaceFolder}/mocharc.json"
             ],
-            "internalConsoleOptions": "openOnSessionStart"
+            "autoAttachChildProcesses": true
         },
         {
             "type": "node",

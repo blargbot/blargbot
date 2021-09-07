@@ -4,23 +4,21 @@ import * as mockito from 'ts-mockito';
 import { Mocker } from 'ts-mockito/lib/Mock';
 import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub';
 import { MethodStub } from 'ts-mockito/lib/stub/MethodStub';
+import { isProxy } from 'util/types';
 
-// Shim to allow you to create a promise that returns a mock https://github.com/NagRock/ts-mockito/issues/191
-const mockitoOldInstance = mockito.instance;
-(mockito as Mutable<typeof mockito>).instance = <T>(mock: T) => {
-    if (typeof mock !== 'object')
-        return mockitoOldInstance(mock);
+(mockito as Mutable<typeof mockito>).mock = <T>(obj?: unknown) => {
+    const ctx: Record<PropertyKey, unknown> = {};
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    return new Proxy<T & object>(mockitoOldInstance(<T & object>mock), {
-        get(target, prop, receiver) {
-            if (['Symbol(Symbol.toPrimitive)', 'then', 'catch'].includes(prop.toString())) {
-                return undefined;
-            }
+    if (typeof obj === 'function')
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        Object.setPrototypeOf(ctx, <object | null>obj.prototype);
 
-            return Reflect.get(target, prop, receiver) as unknown;
-        }
-    });
+    for (const symbol of ['Symbol(Symbol.toPrimitive)', 'then', 'catch']) {
+        if (!(symbol in ctx))
+            ctx[symbol] = undefined;
+    }
+
+    return new Mocker(obj, ctx).getMock() as T;
 };
 
 class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
@@ -33,9 +31,9 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
     }
 
     public execute(args: unknown[]): never {
-        if (args.length > 0)
+        if (args.length === 0)
             throw new Error(`The '${this.name}' method/property hasnt been configured to accept 0 arguments`);
-        throw new Error(`The '${this.name}' method hasnt been configured to accept the arguments: ${JSON.stringify(args)}`);
+        throw new Error(`The '${this.name}' method hasnt been configured to accept the arguments: ${JSON.stringify(args.map(arg => isProxy(arg) ? 'PROXY' : arg))}`);
     }
 
     public getValue(): never {
@@ -44,4 +42,6 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
 
 }
 
-Mocker.prototype['getEmptyMethodStub'] = key => new MethodNotConfiguredStub(key);
+Mocker.prototype['getEmptyMethodStub'] = key => {
+    return new MethodNotConfiguredStub(key);
+};

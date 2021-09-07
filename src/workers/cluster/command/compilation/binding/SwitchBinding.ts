@@ -1,28 +1,35 @@
 import { CommandBinderState } from '@cluster/types';
-import { guard, humanize } from '@cluster/utils';
+import { guard } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResult } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
 
+interface SwitchOptions<TContext extends CommandContext> {
+    readonly [key: string]: {
+        bindings: ReadonlyArray<Binding<CommandBinderState<TContext>>>;
+        hidden: boolean;
+    } | undefined;
+}
+
 export class SwitchBinding<TContext extends CommandContext> extends CommandBindingBase<TContext, never> {
-    protected readonly expected: string;
-    protected readonly lookup: Readonly<Record<Lowercase<string>, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>;
+    protected readonly expected: readonly string[];
+    protected readonly lookup: Readonly<Record<string, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>;
 
     public constructor(
-        options: Readonly<Record<string, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>,
+        options: SwitchOptions<TContext>,
         aliases: Readonly<Record<string, readonly string[] | undefined>>
     ) {
         super();
 
-        this.expected = humanize.smartJoin(Object.keys(options).map(opt => `\`${opt}\``), ', ', ' or ');
+        this.expected = Object.entries(options).filter(e => e[1]?.hidden !== true).map(e => e[0]);
 
         this.lookup = Object.fromEntries([
-            ...Object.entries(aliases).map(entry => [entry[0].toLowerCase(), entry[1]?.flatMap(k => options[k]).filter(guard.hasValue)] as const),
-            ...Object.entries(options).map(entry => [entry[0].toLowerCase(), entry[1]] as const),
-            ...Object.entries(aliases).map(entry => [entry[0], entry[1]?.flatMap(k => options[k]).filter(guard.hasValue)] as const),
-            ...Object.entries(options).map(entry => [entry[0], entry[1]] as const)
+            ...Object.entries(aliases).map(entry => [entry[0].toLowerCase(), entry[1]?.flatMap(k => options[k]?.bindings).filter(guard.hasValue)] as const),
+            ...Object.entries(options).map(entry => [entry[0].toLowerCase(), entry[1]?.bindings] as const),
+            ...Object.entries(aliases).map(entry => [entry[0], entry[1]?.flatMap(k => options[k]?.bindings).filter(guard.hasValue)] as const),
+            ...Object.entries(options).map(entry => [entry[0], entry[1]?.bindings] as const)
         ]);
     }
 
@@ -41,7 +48,7 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
     public [Binder.binder](state: CommandBinderState<TContext>): BindingResult<CommandBinderState<TContext>> {
         const arg = state.flags._.get(state.argIndex)?.value;
         if (arg === undefined)
-            return this.bindingError(state, state.command.error(`Not enough arguments! Expected ${this.expected} but got nothing`));
+            return this.bindingError(state, { notEnoughArgs: [...this.expected] });
 
         const nextRequired = this.lookup[arg] ?? this.lookup[arg.toLowerCase()];
         if (nextRequired !== undefined && nextRequired.length > 0)
@@ -51,6 +58,9 @@ export class SwitchBinding<TContext extends CommandContext> extends CommandBindi
         if (nextOptional !== undefined)
             return this.bindingSuccess(state, nextOptional, 0, undefined);
 
-        return this.bindingError(state, state.command.error(`Expected ${this.expected} but got \`${arg}\``));
+        if (this.expected.length > 0)
+            return this.bindingError(state, { parseFailed: { attemptedValue: arg, types: [...this.expected] } });
+
+        return this.bindingError(state, { tooManyArgs: true });
     }
 }

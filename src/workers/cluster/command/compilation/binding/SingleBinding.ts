@@ -1,4 +1,5 @@
 import { CommandBinderState, CommandSingleParameter, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
+import { humanize } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
@@ -31,7 +32,7 @@ export class SingleBinding<TContext extends CommandContext, Name extends Command
         }
 
         if (this.parameter.required)
-            yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
+            yield this.bindingError(state, { notEnoughArgs: [humanize.commandParameter(this.parameter)] });
         else if (this.parameter.fallback !== undefined)
             yield this.getBindingResult(state, this.next, 0, await this.parameter.type.parse(this.parameter.fallback, state));
         else

@@ -17,6 +17,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     protected constructor(
         public readonly type: string,
         protected readonly cluster: Cluster,
+        protected readonly middleware: ReadonlyArray<IMiddleware<CommandContext, CommandResult>> = [],
         messageQueueSize = 100
     ) {
         this.#commandMessages = new MessageIdQueue(messageQueueSize);
@@ -39,7 +40,11 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
         switch (result.state) {
             case 'ALLOWED': {
                 const context = new CommandContext(this.cluster, message, commandText, prefix, commandName, argsString, result.detail);
-                const output = await runMiddleware<CommandContext, CommandResult>([...middleware ?? [], this.#handler], context, undefined);
+                const output = await runMiddleware<CommandContext, CommandResult>([
+                    ...this.middleware,
+                    ...middleware ?? [],
+                    this.#handler
+                ], context, undefined);
                 if (output !== undefined) {
                     await context.reply(output);
                     return true;

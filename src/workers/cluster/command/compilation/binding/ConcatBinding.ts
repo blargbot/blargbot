@@ -1,4 +1,5 @@
 import { CommandBinderState, CommandSingleParameter, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
+import { humanize } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
@@ -45,6 +46,6 @@ export class ConcatBinding<TContext extends CommandContext, Name extends Command
         }
 
         if (this.parameter.required && state.flags._.length === state.argIndex)
-            yield this.bindingError(state, state.command.error(`Not enough arguments! \`${this.name}\` is required`));
+            yield this.bindingError(state, { notEnoughArgs: [humanize.commandParameter(this.parameter)] });
     }
 }

@@ -740,7 +740,7 @@ export interface CommandBinderSuccess<TResult> {
 
 export interface CommandBinderFailure {
     success: false;
-    error: CommandResult;
+    error: CommandBinderStateFailureReason;
 }
 
 export interface CommandBinderDeferred<TResult> {
@@ -763,8 +763,18 @@ export interface CommandBinderState<TContext extends CommandContext> {
     readonly flags: FlagResult;
     readonly argIndex: number;
     readonly bindIndex: number;
-    readonly result: CommandResult;
+    readonly handler?: CommandSignatureHandler<TContext>;
     readonly lookupCache: CommandBinderStateLookupCache;
+    addFailure(index: number, reason: CommandBinderStateFailureReason): void;
+}
+
+export interface CommandBinderStateFailureReason {
+    notEnoughArgs?: string[];
+    tooManyArgs?: boolean;
+    parseFailed?: {
+        attemptedValue: string;
+        types: string[];
+    };
 }
 
 export interface AwaitReactionsResponse {
