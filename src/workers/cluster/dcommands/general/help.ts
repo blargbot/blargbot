@@ -16,9 +16,9 @@ export class HelpCommand extends BaseGlobalCommand {
                     execute: (ctx) => this.listCommands(ctx)
                 },
                 {
-                    parameters: '{commandName} {subcommand+?} {page:number=1}',
+                    parameters: '{commandName} {page:number=1}',
                     description: 'Shows the help text for the given command',
-                    execute: (msg, [commandName, subcommand, page]) => this.viewCommand(msg, commandName, page - 1, subcommand)
+                    execute: (msg, [commandName, page]) => this.viewCommand(msg, commandName, page - 1)
                 }
             ]
         }, true);
@@ -63,7 +63,7 @@ export class HelpCommand extends BaseGlobalCommand {
         };
     }
 
-    public async viewCommand(context: CommandContext, commandName: string, page: number, subcommand = ''): Promise<SendPayload> {
+    public async viewCommand(context: CommandContext, commandName: string, page: number): Promise<SendPayload> {
         const result = await context.cluster.commands.get(commandName, context.channel, context.author);
         switch (result.state) {
             case 'ALLOWED': break;
@@ -106,15 +106,8 @@ export class HelpCommand extends BaseGlobalCommand {
                 notes: signature.parameters.flatMap(p => [...getParameterNotes(p)])
             }));
 
-        const filteredSignatures = subcommand.length > 0
-            ? allSignatures.slice(page * 10)
-            : allSignatures.filter(s => s.usage.startsWith(subcommand.toLowerCase())).slice(page * 10);
-
-        const signatures = filteredSignatures.slice(0, 10);
-
+        const signatures = allSignatures.slice(page * 10).slice(0, 10);
         if (allSignatures.length > 0 && signatures.length === 0) {
-            if (filteredSignatures.length === 0)
-                return this.error(`No subcommands for \`${name}\` matching \`${subcommand}\` were found`);
             if (page !== 0)
                 return this.error(`Page ${page + 1} is empty for \`${name}\`!`);
         }
@@ -126,17 +119,17 @@ export class HelpCommand extends BaseGlobalCommand {
             });
         }
 
-        if (filteredSignatures.length > signatures.length) {
+        if (allSignatures.length > signatures.length) {
             fields.push({
-                name: `... and ${filteredSignatures.length - signatures.length} more`,
-                value: `Use \`${context.prefix}help ${name}${subcommand.length === 0 ? '' : ` ${subcommand}`} ${page + 2}\` for more`
+                name: `... and ${allSignatures.length - signatures.length} more`,
+                value: `Use \`${context.prefix}help ${name} ${page + 2}\` for more`
             });
         }
 
         return {
             embeds: [
                 {
-                    title: `Help for ${name} ${subcommand}`,
+                    title: `Help for ${name}`,
                     url: context.util.websiteLink(`/commands#${command.name}`),
                     description: command.description,
                     color: getColor(command.category),

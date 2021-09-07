@@ -21,9 +21,9 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
     public constructor(options: CommandOptions<TContext>, noHelp = false) {
         const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
             {
-                parameters: 'help {subcommand+?} {page:number=1}',
+                parameters: 'help {page:number=1}',
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                execute: (context, [subcommand, page]) => this.showHelp(context, this, page - 1, subcommand),
+                execute: (context, [page]) => this.showHelp(context, this, page - 1),
                 description: 'Gets the help message for this command',
                 hidden: true
             },
@@ -57,12 +57,12 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
         await context.reply(result);
     }
 
-    protected async showHelp(context: CommandContext, command: BaseCommand, page: number, subcommand?: string): Promise<CommandResult> {
+    protected async showHelp(context: CommandContext, command: BaseCommand, page: number): Promise<CommandResult> {
         // TODO transition to using a worker
         const { HelpCommand: helpCommandClass } = await helpCommandPromise;
         const help = await context.cluster.commands.default.get('help', context.channel, context.author);
         if (help.state === 'ALLOWED' && help.detail.implementation instanceof helpCommandClass)
-            return await help.detail.implementation.viewCommand(context, command.name, page, subcommand);
+            return await help.detail.implementation.viewCommand(context, command.name, page);
         return undefined;
     }
 }
