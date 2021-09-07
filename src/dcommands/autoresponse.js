@@ -142,11 +142,11 @@ class autoresponseCommand extends BaseCommand {
     }
 
     async edit(msg, input, guild) {
-        if (!guild.autoresponse.list || guild.autoresponse.list.length == 0) {
-            bu.send(msg, `There are no autoresponses on this guild!`);
-            return;
-        }
         if (!input.e) {
+            if (!guild.autoresponse.list || guild.autoresponse.list.length == 0) {
+                bu.send(msg, `There are no autoresponses on this guild!`);
+                return;
+            }
             let autoresponseList = this.generateList(guild, "```\nPlease type the number of the autoresponse you wish to remove, or type 'c' to cancel. This prompt will expire in 5 minutes.");
             let response = await bu.awaitQuery(msg, autoresponseList, m => {
                 if (m.content.toLowerCase() == 'c') return true;
@@ -187,11 +187,11 @@ class autoresponseCommand extends BaseCommand {
     }
 
     async remove(msg, input, guild) {
-        if (!guild.autoresponse.list || guild.autoresponse.list.length == 0) {
-            bu.send(msg, `There are no autoresponses on this guild!`);
-            return;
-        }
         if (!input.e) {
+            if (!guild.autoresponse.list || guild.autoresponse.list.length == 0) {
+                bu.send(msg, `There are no autoresponses on this guild!`);
+                return;
+            }
             let autoresponseList = this.generateList(guild, "```\nPlease type the number of the autoresponse you wish to remove, or type 'c' to cancel. This prompt will expire in 5 minutes.");
             let response = await bu.awaitQuery(msg, autoresponseList, m => {
                 if (m.content.toLowerCase() == 'c') return true;
@@ -210,6 +210,10 @@ class autoresponseCommand extends BaseCommand {
             await this.save(guild);
             bu.send(msg, `Autoresponse \`${removed[0].term}\` removed!`);
         } else {
+            if (!guild.autoresponse.everything) {
+                bu.send(msg, `There is no everything autoresponse on this guild!`);
+                return;
+            }
             delete guild.ccommands[guild.autoresponse.everything.executes];
             guild.autoresponse.everything = null;
             await this.save(guild);
