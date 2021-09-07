@@ -41,7 +41,7 @@
         "rwlock": "^5.0.0",
         "safe-regex": "^2.1.1",
         "sequelize": "^6.6.5",
-        "strip-ansi": "^7.0.0",
+        "strip-ansi": "^6.0.0",
         "svg2png": "^4.1.1",
         "twemoji": "13.1.0",
         "unorm": "^1.4.1",

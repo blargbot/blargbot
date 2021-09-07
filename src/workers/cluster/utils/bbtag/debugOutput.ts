@@ -3,7 +3,7 @@ import { codeBlock, humanize } from '@core/utils';
 import { MessageOptions } from 'discord.js';
 import moment from 'moment';
 
-import { bbtagUtil } from '.';
+import { stringify } from './stringify';
 
 export function createDebugOutput(result: ExecutionResult): MessageOptions {
     const performance: Record<string, unknown> = {};
@@ -38,8 +38,8 @@ export function createDebugOutput(result: ExecutionResult): MessageOptions {
                         error: e.error,
                         details: e.debugMessage,
                         subtag: e.subtag === undefined ? undefined : {
-                            name: bbtagUtil.stringify(e.subtag.name),
-                            arguments: e.subtag.args.map(bbtagUtil.stringify),
+                            name: stringify(e.subtag.name),
+                            arguments: e.subtag.args.map(stringify),
                             start: `Index ${e.subtag.start.index}: Line ${e.subtag.start.line}, column ${e.subtag.start.column}`,
                             end: `Index ${e.subtag.end.index}: Line ${e.subtag.end.line}, column ${e.subtag.end.column}`
                         }

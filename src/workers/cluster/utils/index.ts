@@ -1,5 +1,5 @@
 export * from '@core/utils';
-export * from './bbtag';
+export * as bbtagUtil from './bbtag';
 export * from './constants';
 export * as guard from './guard';
 export * as humanize from './humanize';

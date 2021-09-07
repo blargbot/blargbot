@@ -71,7 +71,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     }
 
     public async get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>> {
-        const result = await this.getCore(name, location, user);
+        const result = await this.getCore(name.toLowerCase(), location, user);
         if (result.state !== 'FOUND')
             return result;
 

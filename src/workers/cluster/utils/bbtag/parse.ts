@@ -1,4 +1,3 @@
-import { BBTagError } from '@cluster/bbtag';
 import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '@cluster/types';
 
 export function parse(source: string): Statement {
@@ -31,7 +30,7 @@ export function parse(source: string): Statement {
                 break;
             case SourceTokenType.ENDSUBTAG:
                 if (subtag === undefined)
-                    throw new BBTagError(token.start, `Unexpected '${token.content}'`);
+                    return [`\`Unexpected '${token.content}'\``];
                 trim(builder);
                 subtag.end = token.end;
                 subtag = subtags.pop();
@@ -46,7 +45,7 @@ export function parse(source: string): Statement {
     }
 
     if (subtag !== undefined)
-        throw new BBTagError(subtag.start, 'Subtag is missing a \'}\'');
+        return ['`Subtag is missing a \'}\'`'];
 
     trim(result);
     return result;
