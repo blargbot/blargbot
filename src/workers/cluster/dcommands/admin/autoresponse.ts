@@ -29,9 +29,14 @@ export class AutoResponseCommand extends BaseGuildCommand {
                     execute: (ctx, [reason]) => this.requestWhitelist(ctx, reason)
                 },
                 {
-                    parameters: 'list|info',
+                    parameters: 'list',
                     description: 'Displays information about autoresponses',
                     execute: ctx => this.listAutoresponses(ctx)
+                },
+                {
+                    parameters: 'info {id}',
+                    description: 'Displays information about an autoresponse',
+                    execute: (ctx, [id]) => this.viewAutoresponse(ctx, id)
                 },
                 {
                     parameters: 'add|create {~pattern+?}',
@@ -172,23 +177,22 @@ export class AutoResponseCommand extends BaseGuildCommand {
             title: 'Autoresponses'
         };
 
-        const arField = (id: string, trigger: string, executes: GuildTriggerTag): EmbedFieldData => {
-            const authorizer = executes.authorizer ?? executes.author;
+        const arField = (id: string, trigger: string, triggerType?: string): EmbedFieldData => {
             return {
                 name: `Autoresponse \`${id}\``,
-                value: `**Trigger:** ${trigger}\n**Author:** <@${executes.author}> (${executes.author})\n**Authorizer:** <@${authorizer}> (${authorizer})`,
+                value: `**Trigger${triggerType ?? ''}:**\n${trigger}`,
                 inline: true
             };
         };
 
         if (ars.everything !== undefined)
-            embed.fields.push(arField('everything', 'everything', ars.everything.executes));
+            embed.fields.push(arField('everything', 'everything'));
 
         if (ars.filtered !== undefined) {
             embed.fields.push(
                 ...Object.entries(ars.filtered)
                     .filter((ar): ar is [string, GuildFilteredAutoresponse] => guard.hasValue(ar[1]))
-                    .map((ar) => arField(ar[0], `\`${ar[1].term}\`${ar[1].regex ? ' (regex)' : ''}`, ar[1].executes))
+                    .map((ar) => arField(ar[0], `\`${ar[1].term}\``, ar[1].regex ? ' regex' : ' text'))
             );
         }
 
@@ -196,6 +200,28 @@ export class AutoResponseCommand extends BaseGuildCommand {
             return this.error('There are no autoresponses configured for this server!');
 
         return { embeds: [embed] };
+    }
+
+    public async viewAutoresponse(context: GuildCommandContext, id: string): Promise<SendPayload> {
+        const accessError = this.checkArAccess(context);
+        if (accessError !== undefined)
+            return accessError;
+
+        const match = await this.getAutoresponse(context, id);
+        if (match === undefined)
+            return this.arNotFound(id);
+
+        const authorizer = match.ar.executes.authorizer ?? match.ar.executes.author;
+
+        return {
+            author: context.util.embedifyAuthor(context.channel.guild),
+            title: match.id === 'everything' ? 'Everything autoresponse' : `Autoresponse #${match.id}`,
+            fields: [
+                ...'term' in match.ar ? [{ name: `Trigger ${match.ar.regex ? 'regex' : 'text'}`, value: match.ar.term }] : [],
+                { name: 'Author', value: `<@${match.ar.executes.author}> (${match.ar.executes.author})`, inline: true },
+                { name: 'Authorizer', value: `<@${authorizer}> (${authorizer})`, inline: true }
+            ]
+        };
     }
 
     public async create(context: GuildCommandContext, pattern: string | undefined, isRegex: boolean, isEverything: boolean): Promise<string> {
