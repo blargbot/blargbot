@@ -4,15 +4,15 @@ import { Channel, Message, TextBasedChannels } from 'discord.js';
 import { describe } from 'mocha';
 import { anyString, instance, mock, verify, when } from 'ts-mockito';
 
-import { testHandle, testHelpSubcommand } from '../baseCommandTests';
+import { testExecute, testExecuteHelp } from '../baseCommandTests';
 
 describe('PingCommand', () => {
     const command = new PingCommand();
 
     describe('#execute', () => {
-        testHelpSubcommand(command);
+        testExecuteHelp(command);
 
-        testHandle(command, '', undefined, ['DM', 'GUILD_NEWS', 'GUILD_NEWS_THREAD', 'GUILD_PRIVATE_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_TEXT'],
+        testExecute(command, '', undefined, ['DM', 'GUILD_NEWS', 'GUILD_NEWS_THREAD', 'GUILD_PRIVATE_THREAD', 'GUILD_PUBLIC_THREAD', 'GUILD_TEXT'],
             {
                 replyMock: Message
             },

@@ -20,11 +20,11 @@ type HandleContext<TChannel extends TextBasedChannels['type'], AutoMock extends 
         [P in keyof AutoMock]: AutoMock[P] extends abstract new (...args: infer _) => infer R ? R : Exclude<AutoMock[P], undefined>
     }
 
-export function testHelpSubcommand(command: BaseCommand, pages?: number[]): void {
+export function testExecuteHelp(command: BaseCommand, pages?: number[]): void {
     for (const page of [undefined, 1, ...pages ?? []]) {
         const commandArgs = `help${page === undefined ? '' : ` ${page}`}`;
 
-        testHandle(command, commandArgs, 'This is the help text!', ['GUILD_TEXT'], {
+        testExecute(command, commandArgs, 'This is the help text!', ['GUILD_TEXT'], {
             helpCommandMock: undefined as ICommand<BaseCommand> | undefined,
             helpMock: HelpCommand,
             clusterMock: Cluster,
@@ -46,7 +46,7 @@ export function testHelpSubcommand(command: BaseCommand, pages?: number[]): void
     }
 }
 
-export function testHandle<TChannel extends TextBasedChannels['type'], AutoMock extends Record<string, unknown>>(
+export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock extends Record<string, unknown>>(
     command: BaseCommand,
     argumentString: string,
     expected: CommandResult,
