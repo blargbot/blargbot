@@ -5,6 +5,7 @@ import { AggregateCommandManager, DefaultCommandManager } from '@cluster/manager
 import { CommandResult, ICommand } from '@cluster/types';
 import { Channel } from 'diagnostics_channel';
 import { TextBasedChannels, User } from 'discord.js';
+import { it } from 'mocha';
 import { instance, mock, verify, when } from 'ts-mockito';
 
 interface HandleConfig<TChannel extends TextBasedChannels['type'], AutoMock extends Record<string, unknown>> {
@@ -51,8 +52,8 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
     argumentString: string,
     expected: CommandResult,
     channelTypes: TChannel[],
-    automock: AutoMock,
-    options: HandleConfig<TChannel, AutoMock>
+    automock?: AutoMock,
+    options?: HandleConfig<TChannel, AutoMock>
 ): void {
     for (const channelType of channelTypes) {
         const commandCall = `b!${command.name}${argumentString.length > 0 ? ` ${argumentString}` : ''}`;
@@ -61,7 +62,7 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
             const context = <HandleContext<TChannel, AutoMock>>Object.fromEntries([
                 ['channelMock', mock(Channel)] as const,
                 ['contextMock', mock(CommandContext)] as const,
-                ...Object.entries(automock)
+                ...Object.entries(automock ?? {})
                     .map(e => [e[0], mock(e[1])] as const)
             ]);
 
@@ -70,14 +71,14 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
             when(context.contextMock.channel).thenReturn(instance(context.channelMock));
             when(context.contextMock.reply(expected)).thenResolve(undefined);
 
-            await options.arrange?.(context);
+            await options?.arrange?.(context);
 
             // act
             await command.execute(instance(context.contextMock));
 
             // assert
             verify(context.contextMock.reply(expected)).once();
-            await options.assert?.(context);
+            await options?.assert?.(context);
         });
     }
 }

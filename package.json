@@ -87,6 +87,7 @@
         "yarn": "^1.22.10"
     },
     "scripts": {
+        "postinstall": "sed -i \"/^declare \\(var\\|function\\)/d\" ./node_modules/@types/mocha/index.d.ts && echo dirty dirty mocha",
         "start": "node index.js",
         "test": "mocha --config mocharc.json",
         "check": "yarn rebuild && yarn lint && yarn test",

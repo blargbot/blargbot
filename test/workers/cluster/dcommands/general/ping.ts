@@ -1,7 +1,7 @@
 import { CommandContext } from '@cluster/command';
 import { PingCommand } from '@cluster/dcommands/general/ping';
 import { Channel, Message, TextBasedChannels } from 'discord.js';
-import { describe } from 'mocha';
+import { describe, it } from 'mocha';
 import { anyString, instance, mock, verify, when } from 'ts-mockito';
 
 import { testExecute, testExecuteHelp } from '../baseCommandTests';

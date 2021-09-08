@@ -20,17 +20,7 @@ export class ConcatSubtag extends BaseSubtag {
     }
 
     public concatArrays(values: string[]): string {
-        const parsedArray = values.map((value) => {
-            try {
-                const parsedValue = JSON.parse(value);
-                if (typeof parsedValue === 'number') //TODO better logic for this
-                    return value; //Might be snowflake
-                return parsedValue;
-            } catch (e: unknown) {
-                return value;
-            }
-        });
-        const flattenedArray = bbtagUtil.tagArray.flattenArray(parsedArray);
+        const flattenedArray = bbtagUtil.tagArray.flattenArray(values);
         return JSON.stringify(flattenedArray);
     }
 }
