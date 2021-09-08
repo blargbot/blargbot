@@ -16,9 +16,9 @@ export class HelpCommand extends BaseGlobalCommand {
                     execute: (ctx) => this.listCommands(ctx)
                 },
                 {
-                    parameters: '{commandName} {page:number=1}',
+                    parameters: '{commandName} {page:integer=1}',
                     description: 'Shows the help text for the given command',
-                    execute: (msg, [commandName, page]) => this.viewCommand(msg, commandName, page - 1)
+                    execute: (msg, [commandName, page]) => this.viewCommand(msg, commandName.asString, page.asInteger - 1)
                 }
             ]
         }, true);

@@ -26,7 +26,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
                 {
                     parameters: 'whitelist {~reason+}',
                     description: 'Requests for the current server to have autoresponses whitelisted',
-                    execute: (ctx, [reason]) => this.requestWhitelist(ctx, reason)
+                    execute: (ctx, [reason]) => this.requestWhitelist(ctx, reason.asString)
                 },
                 {
                     parameters: 'list',
@@ -36,42 +36,42 @@ export class AutoResponseCommand extends BaseGuildCommand {
                 {
                     parameters: 'info {id}',
                     description: 'Displays information about an autoresponse',
-                    execute: (ctx, [id]) => this.viewAutoresponse(ctx, id)
+                    execute: (ctx, [id]) => this.viewAutoresponse(ctx, id.asString)
                 },
                 {
                     parameters: 'add|create {~pattern+?}',
                     description: 'Adds a autoresponse which matches the given pattern',
-                    execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.create(ctx, pattern, isRegex !== undefined, isEverything !== undefined)
+                    execute: (ctx, [pattern], { R: isRegex, e: isEverything }) => this.create(ctx, pattern.asOptionalString, isRegex !== undefined, isEverything !== undefined)
                 },
                 {
                     parameters: 'delete|remove {id}',
                     description: 'Deletes an autoresponse. Ids can be seen when using the `list` subcommand',
-                    execute: (ctx, [id]) => this.delete(ctx, id)
+                    execute: (ctx, [id]) => this.delete(ctx, id.asString)
                 },
                 {
                     parameters: 'setpattern {id} {~pattern+}',
                     description: 'Sets the pattern of an autoresponse',
-                    execute: (ctx, [id, pattern], { R: isRegex }) => this.setPattern(ctx, id, pattern, isRegex !== undefined)
+                    execute: (ctx, [id, pattern], { R: isRegex }) => this.setPattern(ctx, id.asString, pattern.asString, isRegex !== undefined)
                 },
                 {
                     parameters: 'set {id} {~bbtag+}',
                     description: 'Sets the bbtag code to run when the autoresponse is triggered',
-                    execute: (ctx, [id, bbtag]) => this.setBBTag(ctx, id, bbtag)
+                    execute: (ctx, [id, bbtag]) => this.setBBTag(ctx, id.asString, bbtag.asString)
                 },
                 {
                     parameters: 'raw {id}',
                     description: 'Gets the bbtag that is executed when the autoresponse is triggered',
-                    execute: (ctx, [id]) => this.getRaw(ctx, id)
+                    execute: (ctx, [id]) => this.getRaw(ctx, id.asString)
                 },
                 {
                     parameters: 'setauthorizer {id}',
                     description: 'Sets the autoresponse to use your permissions for the bbtag when it is triggered',
-                    execute: (ctx, [id]) => this.setAuthorizer(ctx, id)
+                    execute: (ctx, [id]) => this.setAuthorizer(ctx, id.asString)
                 },
                 {
                     parameters: 'debug {id}',
                     description: 'Sets the autoresponse to send you the debug output when it is next triggered by one of your messages',
-                    execute: (ctx, [id]) => this.setDebug(ctx, id)
+                    execute: (ctx, [id]) => this.setDebug(ctx, id.asString)
                 }
             ]
         });

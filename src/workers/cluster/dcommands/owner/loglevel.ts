@@ -10,7 +10,7 @@ export class LoglevelCommand extends BaseGlobalCommand {
                 {
                     parameters: '{loglevel}',
                     description: 'Sets the current log level',
-                    execute: (ctx, [logLevel]) => this.setLogLevel(ctx, logLevel)
+                    execute: (ctx, [logLevel]) => this.setLogLevel(ctx, logLevel.asString)
                 }
             ]
         });

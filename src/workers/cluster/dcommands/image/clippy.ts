@@ -10,7 +10,7 @@ export class ClippyCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+}',
                     description: 'Clippy the paperclip is here to save the day!',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });

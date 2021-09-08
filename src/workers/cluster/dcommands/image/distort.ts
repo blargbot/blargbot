@@ -11,7 +11,7 @@ export class DistortCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'Turns an avatar into modern art.',
-                    execute: (ctx, [user]) => this.renderUser(ctx, user)
+                    execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
                     parameters: '',

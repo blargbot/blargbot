@@ -11,7 +11,7 @@ export class TriggeredCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'Shows everyone how triggered you are.',
-                    execute: (ctx, [user], flags) => this.renderUser(ctx, user, {
+                    execute: (ctx, [user], flags) => this.renderUser(ctx, user.asUser, {
                         blur: flags.b !== undefined,
                         greyscale: flags.g !== undefined,
                         horizontal: flags.h !== undefined,

@@ -43,7 +43,7 @@ export class BanManager extends ModerationManagerBase {
         return 'success';
     }
 
-    public async massBan(guild: Guild, userIds: string[], moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string): Promise<MassBanResult> {
+    public async massBan(guild: Guild, userIds: readonly string[], moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string): Promise<MassBanResult> {
         if (userIds.length === 0)
             return 'noUsers';
 

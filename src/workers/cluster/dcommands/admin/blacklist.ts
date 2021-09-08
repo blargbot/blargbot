@@ -1,7 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { GuildTextBasedChannels } from 'discord.js';
+import { guard } from '@core/utils';
+import { KnownChannel } from 'discord.js';
 
 export class BlacklistCommandBase extends BaseGuildCommand {
     public constructor() {
@@ -12,13 +13,16 @@ export class BlacklistCommandBase extends BaseGuildCommand {
                 {
                     parameters: '{channel:channel+?}',
                     description: 'Blacklists the current channel, or the channel that you mention. The bot will not respond until you do `blacklist` again.',
-                    execute: (ctx, [channel]) => this.blacklist(ctx, channel ?? ctx.channel)
+                    execute: (ctx, [channel]) => this.blacklist(ctx, channel.asOptionalChannel ?? ctx.channel)
                 }
             ]
         });
     }
 
-    public async blacklist(context: GuildCommandContext, channel: GuildTextBasedChannels): Promise<string> {
+    public async blacklist(context: GuildCommandContext, channel: KnownChannel): Promise<string> {
+        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+            return this.error('You cannot blacklist a channel outside of this server');
+
         const wasBlacklisted = await context.cluster.database.guilds.getChannelSetting(context.channel.guild.id, channel.id, 'blacklisted');
         await context.cluster.database.guilds.setChannelSetting(context.channel.guild.id, channel.id, 'blacklisted', wasBlacklisted !== true);
 

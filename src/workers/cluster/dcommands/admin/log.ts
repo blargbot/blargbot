@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, guard, humanize } from '@cluster/utils';
 import { StoredGuildEventLogType } from '@core/types';
-import { EmbedFieldData, GuildTextBasedChannels, MessageEmbedOptions, Role, User, Webhook } from 'discord.js';
+import { EmbedFieldData, KnownChannel, MessageEmbedOptions, Role, User, Webhook } from 'discord.js';
 
 export class LogCommand extends BaseGuildCommand {
     public constructor() {
@@ -19,23 +19,23 @@ export class LogCommand extends BaseGuildCommand {
                     parameters: 'enable {channel:channel} {eventNames[]}',
                     description: 'Sets the channel to log the given events to. Available events are:\n' +
                         Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join('\n'),
-                    execute: (ctx, [channel, eventNames]) => this.setEventChannel(ctx, eventNames, channel)
+                    execute: (ctx, [channel, eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, channel.asChannel)
                 },
                 {
                     parameters: 'enable {channel:channel} all',
                     description: 'Sets the channel to log all events to, except role related events.',
-                    execute: (ctx, [channel]) => this.setEventChannel(ctx, Object.keys(eventDescriptions), channel)
+                    execute: (ctx, [channel]) => this.setEventChannel(ctx, Object.keys(eventDescriptions), channel.asChannel)
                 },
                 {
                     parameters: 'enable {channel:channel} roles|role {roles:role[]}',
                     description: 'Sets the channel to log when someone gets or loses a role.',
-                    execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.map((r: Role) => `role:${r.id}`), channel)
+                    execute: (ctx, [channel, roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), channel.asChannel)
                 },
                 {
                     parameters: 'disable {eventNames[]}',
                     description: 'Disables logging of the given events. Available events are:\n' +
                         Object.entries(eventDescriptions).map(([key, desc]) => `\`${key}\` - ${desc}`).join('\n'),
-                    execute: (ctx, [eventNames]) => this.setEventChannel(ctx, eventNames, undefined)
+                    execute: (ctx, [eventNames]) => this.setEventChannel(ctx, eventNames.asStrings, undefined)
                 },
                 {
                     parameters: 'disable all',
@@ -45,23 +45,29 @@ export class LogCommand extends BaseGuildCommand {
                 {
                     parameters: 'disable roles|role {roles:role[]}',
                     description: 'Stops logging when someone gets or loses a role.',
-                    execute: (ctx, [roles]) => this.setEventChannel(ctx, roles.map((r: Role) => `role:${r.id}`), undefined)
+                    execute: (ctx, [roles]) => this.setEventChannel(ctx, roles.asRoles.map((r: Role) => `role:${r.id}`), undefined)
                 },
                 {
                     parameters: 'ignore {users:sender[]}',
                     description: 'Ignores any tracked events concerning the users',
-                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users, true)
+                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users.asSenders, true)
                 },
                 {
                     parameters: 'track {users:sender[]}',
                     description: 'Removes the users from the list of ignored users and begins tracking events from them again',
-                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users, false)
+                    execute: (ctx, [users]) => this.ignoreUsers(ctx, users.asSenders, false)
                 }
             ]
         });
     }
 
-    public async setEventChannel(context: GuildCommandContext, eventnames: string[], channel: GuildTextBasedChannels | undefined): Promise<string> {
+    public async setEventChannel(context: GuildCommandContext, eventnames: readonly string[], channel: KnownChannel | undefined): Promise<string> {
+        if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
+            return this.error('The log channel must be on this server!');
+
+        if (channel !== undefined && !guard.isTextableChannel(channel))
+            return this.error('The log channel must be a text channel!');
+
         const validEvents: StoredGuildEventLogType[] = [];
         const invalidEvents = [];
         for (const event of eventnames) {
@@ -127,7 +133,7 @@ export class LogCommand extends BaseGuildCommand {
         };
     }
 
-    public async ignoreUsers(context: GuildCommandContext, senders: Array<User | Webhook>, ignore: boolean): Promise<string> {
+    public async ignoreUsers(context: GuildCommandContext, senders: ReadonlyArray<User | Webhook>, ignore: boolean): Promise<string> {
         await context.database.guilds.setLogIgnores(context.channel.guild.id, senders.map(u => u.id), ignore);
 
         const mentions = senders.map(s => `<@${s.id}>`);

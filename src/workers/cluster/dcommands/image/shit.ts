@@ -10,7 +10,7 @@ export class ShitCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+=Your favourite anime}',
                     description: 'Tells everyone what\'s shit.',
-                    execute: (ctx, [text], flags) => this.render(ctx, text, flags.p !== undefined)
+                    execute: (ctx, [text], flags) => this.render(ctx, text.asString, flags.p !== undefined)
                 }
             ],
             flags: [

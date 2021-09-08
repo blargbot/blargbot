@@ -4,7 +4,7 @@ import { Binding, BindingFailure, BindingResult, BindingResultValue, BindingSucc
 
 import { CommandContext } from '../../CommandContext';
 
-export abstract class CommandBindingBase<TContext extends CommandContext, TResult> implements Binding<CommandBinderState<TContext>> {
+export abstract class CommandBindingBase<TContext extends CommandContext> implements Binding<CommandBinderState<TContext>> {
     public abstract [Binder.binder](state: CommandBinderState<TContext>): BindingResult<CommandBinderState<TContext>>
 
     public abstract debugView(): Iterable<string>;
@@ -29,7 +29,7 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
         state: CommandBinderState<TContext>,
         next: ReadonlyArray<Binding<CommandBinderState<TContext>>>,
         argCount: number,
-        value?: Exclude<CommandBinderParseResult<unknown>, { success: false; }>,
+        value?: Exclude<CommandBinderParseResult, { success: false; }>,
         checkNext = true
     ): BindingSuccess<CommandBinderState<TContext>> {
         let args = state.arguments;
@@ -55,7 +55,7 @@ export abstract class CommandBindingBase<TContext extends CommandContext, TResul
         state: CommandBinderState<TContext>,
         next: ReadonlyArray<Binding<CommandBinderState<TContext>>>,
         argCount: number,
-        result: CommandBinderParseResult<TResult>
+        result: CommandBinderParseResult
     ): BindingResultValue<CommandBinderState<TContext>> {
         switch (result.success) {
             case false:

@@ -12,7 +12,7 @@ export class FreeCommand extends BaseGlobalCommand {
                 {
                     parameters: '{caption}',
                     description: 'Tells everyone what you got for free',
-                    execute: (ctx, [caption], flags) => this.render(ctx, caption, flags.b?.merge().value)
+                    execute: (ctx, [caption], flags) => this.render(ctx, caption.asString, flags.b?.merge().value)
                 }
             ],
             flags: [

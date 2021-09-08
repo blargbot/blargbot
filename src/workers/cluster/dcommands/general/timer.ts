@@ -15,7 +15,7 @@ export class TimerCommand extends BaseGlobalCommand {
                 {
                     parameters: '{duration:duration+}',
                     description: 'Sets a timer for the provided duration, formatted as \'1 day 2 hours 3 minutes and 4 seconds\', \'1d2h3m4s\', or some other combination.',
-                    execute: (ctx, [duration], { c: channel }) => this.addTimer(ctx, duration, channel !== undefined)
+                    execute: (ctx, [duration], { c: channel }) => this.addTimer(ctx, duration.asDuration, channel !== undefined)
                 }
             ]
         });

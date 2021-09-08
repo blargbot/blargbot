@@ -20,6 +20,7 @@ describe('{join}', () => {
             { args: ['["hi!"]', '|'], expected: 'hi!' },
             { args: ['{"n":"something","v":[789]}', '|'], expected: '789' },
             { args: ['[1,2,3]', '|'], expected: '1|2|3' },
+            { args: ['[1,2,3]', ''], expected: '123' },
             { args: ['["a","b","c"]', '{}'], expected: 'a{}b{}c' },
             { args: ['{"n":"something","v":["a",123,"b",456,"c"]}', ''], expected: 'a123b456c' }
         ]);

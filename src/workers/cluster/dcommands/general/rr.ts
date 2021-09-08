@@ -8,9 +8,9 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{bullets:number=1} {emote?}',
+                    parameters: '{bullets:integer=1} {emote?}',
                     description: 'Plays russian roulette with a specified number of bullets. If `emote` is specified, uses that specific emote.',
-                    execute: (ctx, [bullets, emote]) => this.play(ctx, bullets, emote)
+                    execute: (ctx, [bullets, emote]) => this.play(ctx, bullets.asInteger, emote.asOptionalString)
                 }
             ]
         });

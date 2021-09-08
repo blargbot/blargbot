@@ -5,7 +5,7 @@ import { BindingResultValue } from '@core/types';
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';
 
-export class CommandHandlerBinding<TContext extends CommandContext> extends CommandBindingBase<TContext, never> {
+export class CommandHandlerBinding<TContext extends CommandContext> extends CommandBindingBase<TContext> {
     public constructor(
         private readonly signature: CommandSignatureHandler<TContext>
     ) {

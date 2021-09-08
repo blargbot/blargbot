@@ -1,12 +1,13 @@
-import { CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
+import { CommandArgument, CommandArrayArgument, CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandVariableTypeName } from '@cluster/types';
 import { humanize } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
+import { createCommandArgument, populateMissingArgumentAccessors } from '../commandArgument';
 import { CommandBindingBase } from './CommandBindingBase';
 
-export class GreedyBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext, Array<CommandVariableTypeMap[Name]>> {
+export class GreedyBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext> {
     public readonly name: string;
 
     public constructor(
@@ -43,7 +44,7 @@ export class GreedyBinding<TContext extends CommandContext, Name extends Command
         let aggregated = undefined;
 
         if (optional && this.parameter.type.priority === -Infinity)
-            yield this.getBindingResult(state, next, 0, { success: true, value: [] });
+            yield this.getBindingResult(state, next, 0, { success: true, value: createCommandArgument(this.parameter.type.name, []) });
 
         while ((arg = state.flags._.get(state.argIndex + i++)) !== undefined) {
             parsed = memoize(await this.parameter.type.parse(this.parameter.raw ? arg.raw : arg.value, state));
@@ -60,7 +61,7 @@ export class GreedyBinding<TContext extends CommandContext, Name extends Command
         }
 
         if (optional && this.parameter.type.priority !== -Infinity)
-            yield this.getBindingResult(state, next, 0, { success: true, value: [] });
+            yield this.getBindingResult(state, next, 0, { success: true, value: createCommandArgument(this.parameter.type.name, []) });
 
         if (parsed?.success === false)
             yield this.bindingError(state, parsed.error);
@@ -71,15 +72,15 @@ export class GreedyBinding<TContext extends CommandContext, Name extends Command
     }
 }
 
-function memoize<TResult>(
-    result: CommandBinderParseResult<TResult>
-): CommandBinderParseResult<TResult> {
+function memoize(
+    result: CommandBinderParseResult
+): CommandBinderParseResult {
     switch (result.success) {
         case true:
         case false:
             return result;
         case 'deferred': {
-            let resolved: CommandBinderValue<TResult> | undefined;
+            let resolved: CommandBinderValue | undefined;
             return {
                 get success() {
                     return resolved?.success ?? 'deferred';
@@ -106,11 +107,11 @@ function memoize<TResult>(
     }
 }
 
-function aggregateResults<TResult>(
-    results: Array<CommandBinderParseResult<TResult>>
-): CommandBinderParseResult<TResult[]> {
-    const deferred: Array<Exclude<CommandBinderParseResult<TResult>, { success: false; }>> = [];
-    const successful: TResult[] = [];
+function aggregateResults(
+    results: CommandBinderParseResult[]
+): CommandBinderParseResult {
+    const deferred: Array<Exclude<CommandBinderParseResult, { success: false; }>> = [];
+    const successful: CommandArgument[] = [];
 
     for (const result of results) {
         switch (result.success) {
@@ -122,12 +123,12 @@ function aggregateResults<TResult>(
     }
 
     if (deferred.length === successful.length)
-        return { success: true, value: successful };
+        return { success: true, value: populateMissingArgumentAccessors(createAggregated(successful)) };
 
     return {
         success: 'deferred',
         async getValue() {
-            const results: TResult[] = [];
+            const results: CommandArgument[] = [];
             for (const result of deferred) {
                 switch (result.success) {
                     case true:
@@ -142,7 +143,24 @@ function aggregateResults<TResult>(
                     }
                 }
             }
-            return { success: true, value: results };
+            return { success: true, value: populateMissingArgumentAccessors(createAggregated(successful)) };
         }
+    };
+}
+
+function createAggregated(results: CommandArgument[]): CommandArrayArgument {
+    return {
+        get asBigints() { return results.map(r => r.asBigint); },
+        get asBooleans() { return results.map(r => r.asBoolean); },
+        get asChannels() { return results.map(r => r.asChannel); },
+        get asDurations() { return results.map(r => r.asDuration); },
+        get asIntegers() { return results.map(r => r.asInteger); },
+        get asLiterals() { return results.map(r => r.asLiteral); },
+        get asMembers() { return results.map(r => r.asMember); },
+        get asNumbers() { return results.map(r => r.asNumber); },
+        get asRoles() { return results.map(r => r.asRole); },
+        get asSenders() { return results.map(r => r.asSender); },
+        get asStrings() { return results.map(r => r.asString); },
+        get asUsers() { return results.map(r => r.asUser); }
     };
 }

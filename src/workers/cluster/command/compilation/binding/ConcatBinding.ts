@@ -1,12 +1,13 @@
-import { CommandBinderState, CommandSingleParameter, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
+import { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@cluster/types';
 import { humanize } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
+import { createCommandArgument } from '../commandArgument';
 import { CommandBindingBase } from './CommandBindingBase';
 
-export class ConcatBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext, CommandVariableTypeMap[Name] | undefined> {
+export class ConcatBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext> {
     public readonly name: string;
 
     public constructor(
@@ -27,7 +28,7 @@ export class ConcatBinding<TContext extends CommandContext, Name extends Command
     public async *[Binder.binder](state: CommandBinderState<TContext>): BindingResultAsyncIterator<CommandBinderState<TContext>> {
         if (!this.parameter.required && this.parameter.type.priority === -Infinity) {
             if (this.parameter.fallback === undefined)
-                yield this.getBindingResult(state, this.next, 0, { success: true, value: undefined });
+                yield this.getBindingResult(state, this.next, 0, { success: true, value: createCommandArgument(this.parameter.type.name, undefined) });
             else
                 yield this.getBindingResult(state, this.next, 0, await this.parameter.type.parse(this.parameter.fallback, state));
         }
@@ -40,7 +41,7 @@ export class ConcatBinding<TContext extends CommandContext, Name extends Command
 
         if (!this.parameter.required && this.parameter.type.priority !== -Infinity) {
             if (this.parameter.fallback === undefined)
-                yield this.getBindingResult(state, this.next, 0, { success: true, value: undefined });
+                yield this.getBindingResult(state, this.next, 0, { success: true, value: createCommandArgument(this.parameter.type.name, undefined) });
             else
                 yield this.getBindingResult(state, this.next, 0, await this.parameter.type.parse(this.parameter.fallback, state));
         }

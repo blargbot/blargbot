@@ -13,7 +13,7 @@ export class RemoveVotebanCommand extends BaseGuildCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'Deletes all the vote bans against the given user',
-                    execute: (ctx, [user]) => this.clearUser(ctx, user)
+                    execute: (ctx, [user]) => this.clearUser(ctx, user.asUser)
                 },
                 {
                     parameters: '',

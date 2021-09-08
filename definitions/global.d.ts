@@ -27,6 +27,8 @@ declare global {
     type PropertiesOfType<T, P> = { [K in PropertyNamesOfType<T, P>]: T[K] }
     type Intersect<T1, T2> = { [K in (keyof T1 & keyof T2)]: T1[K] extends T2[K] ? T2[K] extends T1[K] ? T1[K] : never : never };
 
+    type UppercaseFirst<T extends string> = T extends `${infer L}${infer R}` ? `${Uppercase<L>}${R}` : T;
+    type LowercaseFirst<T extends string> = T extends `${infer L}${infer R}` ? `${Lowercase<L>}${R}` : T;
     type LowerLetter = Lowercase<'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j' | 'k' | 'l' | 'm' | 'n' | 'o' | 'p' | 'q' | 'r' | 's' | 't' | 'u' | 'v' | 'w' | 'x' | 'y' | 'z'>;
     type UpperLetter = Uppercase<LowerLetter>;
     type Letter = LowerLetter | UpperLetter;

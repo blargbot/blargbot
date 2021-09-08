@@ -14,14 +14,14 @@ export class ToDoCommand extends BaseGlobalCommand {
                     execute: ctx => this.viewTodo(ctx)
                 },
                 {
-                    parameters: 'remove {itemId:number}',
+                    parameters: 'remove {itemId:integer}',
                     description: 'Removes an item from your todo list by id',
-                    execute: (ctx, [itemId]) => this.removeItem(ctx, itemId)
+                    execute: (ctx, [itemId]) => this.removeItem(ctx, itemId.asInteger)
                 },
                 {
                     parameters: 'add {item+}',
                     description: 'Adds an item to your todo list',
-                    execute: (ctx, [item]) => this.addItem(ctx, item)
+                    execute: (ctx, [item]) => this.addItem(ctx, item.asString)
                 }
             ]
         });

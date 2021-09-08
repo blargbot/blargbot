@@ -9,7 +9,7 @@ export class ClydeCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+}',
                     description: 'Give everyone a message from Clyde.',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });

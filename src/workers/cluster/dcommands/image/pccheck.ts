@@ -9,7 +9,7 @@ export class PCCheckCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+}',
                     description: 'Tells everyone a reason why they should get their PC checked. Template credits go to Ghosty#8204.',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });

@@ -11,7 +11,7 @@ export class PixelateCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{user:user+} {scale:number=64}',
                     description: 'Pixelates an image.',
-                    execute: (ctx, [user, scale]) => this.renderUser(ctx, user, scale)
+                    execute: (ctx, [user, scale]) => this.renderUser(ctx, user.asUser, scale.asNumber)
                 },
                 {
                     parameters: '{scale:number=64}',
@@ -21,7 +21,7 @@ export class PixelateCommand extends BaseGlobalImageCommand {
                         ctx.message.attachments.first()?.url
                         ?? flags.i?.merge().value
                         ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
-                        scale
+                        scale.asNumber
                     )
                 }
             ],

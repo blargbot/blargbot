@@ -1,5 +1,5 @@
 import { BaseGuildCommand } from '@cluster/command';
-import { FlagResult, GuildCommandContext } from '@cluster/types';
+import { GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize } from '@cluster/utils';
 import { GuildMember } from 'discord.js';
 
@@ -15,15 +15,13 @@ export class KickCommand extends BaseGuildCommand {
                 {
                     parameters: '{user:member+}',
                     description: 'Kicks a user.\nIf mod-logging is enabled, the kick will be logged.',
-                    execute: (ctx, [user], flags) => this.kick(ctx, user, flags)
+                    execute: (ctx, [user], flags) => this.kick(ctx, user.asMember, flags.r?.merge().value)
                 }
             ]
         });
     }
 
-    public async kick(context: GuildCommandContext, member: GuildMember, flags: FlagResult): Promise<string> {
-        const reason = flags.r?.merge().value;
-
+    public async kick(context: GuildCommandContext, member: GuildMember, reason: string | undefined): Promise<string> {
         switch (await context.cluster.moderation.bans.kick(member, context.author, true, reason)) {
             case 'memberTooHigh': return this.error(`I don't have permission to kick **${humanize.fullName(member.user)}**! Their highest role is above my highest role.`);
             case 'moderatorTooLow': return this.error(`You don't have permission to kick **${humanize.fullName(member.user)}**! Their highest role is above your highest role.`);

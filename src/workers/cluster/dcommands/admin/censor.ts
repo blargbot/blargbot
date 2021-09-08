@@ -3,7 +3,7 @@ import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
 import { GuildCensor, GuildTriggerTag } from '@core/types';
 import { codeBlock, guard } from '@core/utils';
-import { GuildTextBasedChannels, MessageEmbedOptions, MessageOptions, Role, User } from 'discord.js';
+import { KnownChannel, MessageEmbedOptions, MessageOptions, Role, User } from 'discord.js';
 
 export class CensorCommand extends BaseGuildCommand {
     public constructor() {
@@ -14,7 +14,7 @@ export class CensorCommand extends BaseGuildCommand {
                 {
                     parameters: 'add|create {~phrase+}',
                     description: 'Creates a censor using the given phrase',
-                    execute: (ctx, [phrase], flags) => this.createCensor(ctx, phrase, {
+                    execute: (ctx, [phrase], flags) => this.createCensor(ctx, phrase.asString, {
                         isRegex: flags.R !== undefined,
                         weight: flags.w?.merge().value,
                         reason: flags.r?.merge().value
@@ -23,7 +23,7 @@ export class CensorCommand extends BaseGuildCommand {
                 {
                     parameters: 'edit {id:integer} {~phrase+?}',
                     description: 'Updates a censor',
-                    execute: (ctx, [id, phrase], flags) => this.updateCensor(ctx, id, phrase, {
+                    execute: (ctx, [id, phrase], flags) => this.updateCensor(ctx, id.asInteger, phrase.asOptionalString, {
                         isRegex: flags.R !== undefined,
                         weight: flags.w?.merge().value,
                         reason: flags.r?.merge().value
@@ -32,7 +32,7 @@ export class CensorCommand extends BaseGuildCommand {
                 {
                     parameters: 'delete|remove {id:integer}',
                     description: 'Deletes a censor',
-                    execute: (ctx, [id]) => this.deleteCensor(ctx, id)
+                    execute: (ctx, [id]) => this.deleteCensor(ctx, id.asInteger)
                 },
                 {
                     parameters: 'exception {action:literal(add|remove)}',
@@ -40,17 +40,17 @@ export class CensorCommand extends BaseGuildCommand {
                         {
                             parameters: 'user {user:user+}',
                             description: 'Adds or removes a user from the list of users which all censors ignore',
-                            execute: (ctx, [action, user]) => this.ignoreUser(ctx, user, action === 'add')
+                            execute: (ctx, [action, user]) => this.ignoreUser(ctx, user.asUser, action.asLiteral === 'add')
                         },
                         {
                             parameters: 'role {role:role+}',
                             description: 'Adds or removes a role from the list of roles which all censors ignore',
-                            execute: (ctx, [action, role]) => this.ignoreRole(ctx, role, action === 'add')
+                            execute: (ctx, [action, role]) => this.ignoreRole(ctx, role.asRole, action.asLiteral === 'add')
                         },
                         {
                             parameters: 'channel {channel:channel+}',
                             description: 'Adds or removes a channel from the list of channels which all censors ignore',
-                            execute: (ctx, [action, channel]) => this.ignoreChannel(ctx, channel, action === 'add')
+                            execute: (ctx, [action, channel]) => this.ignoreChannel(ctx, channel.asChannel, action.asLiteral === 'add')
                         }
                     ]
                 },
@@ -58,22 +58,22 @@ export class CensorCommand extends BaseGuildCommand {
                     parameters: 'setmessage {id:integer?} {type:literal(delete|kick|ban)} {~code+?}',
                     description: 'Sets the message so show when the given censor causes a user to be `kick`ed or `ban`ned, or the message is `delete`d\n' +
                         'If `id` is not provided, the message will be the default message that gets shown if one isnt set for the censor that is triggered',
-                    execute: (ctx, [id, type, code]) => this.setMessage(ctx, id, type, code)
+                    execute: (ctx, [id, type, code]) => this.setMessage(ctx, id.asOptionalInteger, type.asLiteral, code.asOptionalString)
                 },
                 {
                     parameters: 'setauthorizer {id:integer?} {type:literal(delete|kick|ban)}',
                     description: 'Sets the custom censor message to use your permissions when executing.',
-                    execute: (ctx, [id, type]) => this.setAuthorizer(ctx, id, type)
+                    execute: (ctx, [id, type]) => this.setAuthorizer(ctx, id.asOptionalInteger, type.asLiteral)
                 },
                 {
                     parameters: 'rawmessage {id:integer?} {type:literal(delete|kick|ban)}',
                     description: 'Gets the raw code for the given censor',
-                    execute: (ctx, [id, type]) => this.getRawMessage(ctx, id, type)
+                    execute: (ctx, [id, type]) => this.getRawMessage(ctx, id.asInteger, type.asLiteral)
                 },
                 {
                     parameters: 'debug {id:integer} {type:literal(delete|kick|ban)}',
                     description: 'Sets the censor to send you the debug output when it is next triggered by one of your messages. Make sure you arent exempt from censors!',
-                    execute: (ctx, [id, type]) => this.setDebug(ctx, id, type)
+                    execute: (ctx, [id, type]) => this.setDebug(ctx, id.asInteger, type.asLiteral)
                 },
                 {
                     parameters: 'list',
@@ -83,7 +83,7 @@ export class CensorCommand extends BaseGuildCommand {
                 {
                     parameters: 'info {id:integer}',
                     description: 'Gets detailed information about the given censor',
-                    execute: (ctx, [id]) => this.showInfo(ctx, id)
+                    execute: (ctx, [id]) => this.showInfo(ctx, id.asInteger)
                 }
             ],
             flags: [
@@ -168,7 +168,10 @@ export class CensorCommand extends BaseGuildCommand {
         return this.success(`${user.toString()} is now exempt from all censors`);
     }
 
-    public async ignoreChannel(context: GuildCommandContext, channel: GuildTextBasedChannels, ignored: boolean): Promise<string> {
+    public async ignoreChannel(context: GuildCommandContext, channel: KnownChannel, ignored: boolean): Promise<string> {
+        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+            return this.error('The channel must be on this server!');
+
         await context.database.guilds.censorIgnoreChannel(context.channel.guild.id, channel.id, ignored);
         return this.success(`Messages sent in ${channel.toString()} are now exempt from all censors`);
     }
@@ -178,7 +181,10 @@ export class CensorCommand extends BaseGuildCommand {
         return this.success(`Anyone with the role ${role.toString()} is now exempt from all censors`);
     }
 
-    public async setMessage(context: GuildCommandContext, id: number | undefined, type: 'delete' | 'kick' | 'ban', code: string | undefined): Promise<string> {
+    public async setMessage(context: GuildCommandContext, id: number | undefined, type: string, code: string | undefined): Promise<string> {
+        if (!allowedTypes.has(type))
+            return this.error(`\`${type}\` is not a valid type`);
+
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (id !== undefined) {
             const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
@@ -198,7 +204,10 @@ export class CensorCommand extends BaseGuildCommand {
         );
     }
 
-    public async setAuthorizer(context: GuildCommandContext, id: number | undefined, type: 'delete' | 'kick' | 'ban'): Promise<string> {
+    public async setAuthorizer(context: GuildCommandContext, id: number | undefined, type: string): Promise<string> {
+        if (!allowedTypes.has(type))
+            return this.error(`\`${type}\` is not a valid type`);
+
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (rule === undefined) {
             return this.error(id === undefined
@@ -218,7 +227,10 @@ export class CensorCommand extends BaseGuildCommand {
         );
     }
 
-    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: 'delete' | 'kick' | 'ban'): Promise<string | MessageOptions> {
+    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string): Promise<string | MessageOptions> {
+        if (!allowedTypes.has(type))
+            return this.error(`\`${type}\` is not a valid type`);
+
         const rule = await context.database.guilds.getCensorRule(context.channel.guild.id, id, type);
         if (rule === undefined) {
             return this.error(id === undefined
@@ -246,7 +258,10 @@ export class CensorCommand extends BaseGuildCommand {
             };
     }
 
-    public async setDebug(context: GuildCommandContext, id: number, type: 'ban' | 'delete' | 'kick'): Promise<string> {
+    public async setDebug(context: GuildCommandContext, id: number, type: string): Promise<string> {
+        if (!allowedTypes.has(type))
+            return this.error(`\`${type}\` is not a valid type`);
+
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
             return this.error(`Censor \`${id}\` doesnt exist`);
@@ -322,3 +337,5 @@ function stringifyCensorEvent(event: GuildTriggerTag | undefined): string {
 
     return `Author: <@${event.author}>\nAuthorizer: <@${event.authorizer ?? event.author}>`;
 }
+
+const allowedTypes = new Set(['kick', 'ban', 'delete'] as const);

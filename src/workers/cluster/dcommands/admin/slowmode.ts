@@ -1,6 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
-import { Constants, DiscordAPIError, GuildTextBasedChannels } from 'discord.js';
+import { guard } from '@core/utils';
+import { Constants, DiscordAPIError, KnownChannel } from 'discord.js';
 
 export class SlowmodeCommand extends BaseGuildCommand {
     public constructor() {
@@ -11,18 +12,23 @@ export class SlowmodeCommand extends BaseGuildCommand {
                 {
                     parameters: '{time:integer} {channel:channel+?}',
                     description: 'Sets the channel\'s slowmode to 1 message every `time` seconds, with a max of 6 hours',
-                    execute: (ctx, [time, channel]) => this.setSlowmode(time, channel ?? ctx.channel)
+                    execute: (ctx, [time, channel]) => this.setSlowmode(time.asInteger, channel.asOptionalChannel ?? ctx.channel)
                 },
                 {
                     parameters: 'off {channel:channel+?}',
                     description: 'Turns off the channel\'s slowmode',
-                    execute: (ctx, [channel]) => this.disableSlowmode(channel ?? ctx.channel)
+                    execute: (ctx, [channel]) => this.disableSlowmode(channel.asOptionalChannel ?? ctx.channel)
                 }
             ]
         });
     }
 
-    public async setSlowmode(time: number, channel: GuildTextBasedChannels): Promise<string> {
+    public async setSlowmode(time: number, channel: KnownChannel): Promise<string> {
+        if (!guard.isTextableChannel(channel))
+            return this.error('You can only set slowmode on text channels!');
+        if (!guard.isGuildChannel(channel))
+            return this.error('You cant set slowmode on channels outside of a server');
+
         if (time > 120)
             return this.error('`time` must be less than 6 hours');
 
@@ -43,7 +49,12 @@ export class SlowmodeCommand extends BaseGuildCommand {
         }
     }
 
-    public async disableSlowmode(channel: GuildTextBasedChannels): Promise<string> {
+    public async disableSlowmode(channel: KnownChannel): Promise<string> {
+        if (!guard.isTextableChannel(channel))
+            return this.error('You can only set slowmode on text channels!');
+        if (!guard.isGuildChannel(channel))
+            return this.error('You cant set slowmode on channels outside of a server');
+
         try {
             await channel.edit({ rateLimitPerUser: 0 });
             return this.success(`Slowmode has been disabled in ${channel.toString()}`);

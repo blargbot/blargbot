@@ -9,9 +9,9 @@ export class ReasonCommand extends BaseGuildCommand {
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: '{caseId:number?} {reason+}',
+                    parameters: '{caseId:integer?} {reason+}',
                     description: 'Sets the reason for an action on the modlog.',
-                    execute: (ctx, [caseId, reason]) => this.setReason(ctx, caseId, reason)
+                    execute: (ctx, [caseId, reason]) => this.setReason(ctx, caseId.asOptionalInteger, reason.asString)
                 }
             ]
         });

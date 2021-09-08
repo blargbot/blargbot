@@ -11,7 +11,7 @@ export class RespawnCommand extends BaseGlobalCommand {
             definitions: [
                 {
                     parameters: '{clusterId:integer}',
-                    execute: (ctx, [clusterId]) => this.respawn(ctx, clusterId),
+                    execute: (ctx, [clusterId]) => this.respawn(ctx, clusterId.asInteger),
                     description: 'Respawns the cluster specified'
                 }
             ]

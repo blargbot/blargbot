@@ -9,7 +9,7 @@ export class TheSearchCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+}',
                     description: 'Tells everyone about the progress of the search for intelligent life.',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });

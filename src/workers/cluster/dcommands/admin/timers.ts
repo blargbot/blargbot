@@ -12,19 +12,19 @@ export class TimersCommand extends BaseGlobalCommand {
             category: CommandType.ADMIN,
             definitions: [
                 {
-                    parameters: '{page:number=1}',
+                    parameters: '{page:integer=1}',
                     description: 'Lists all the currently active timers here',
-                    execute: (ctx, [page]) => this.listTimers(ctx, page)
+                    execute: (ctx, [page]) => this.listTimers(ctx, page.asInteger)
                 },
                 {
                     parameters: 'info {timerId}',
                     description: 'Shows detailed information about a given timer',
-                    execute: (ctx, [timerId]) => this.getTimer(ctx, timerId)
+                    execute: (ctx, [timerId]) => this.getTimer(ctx, timerId.asString)
                 },
                 {
                     parameters: 'cancel|delete {timerIds[]}',
                     description: 'Cancels currently active timers',
-                    execute: (ctx, [timerIds]) => this.cancelTimers(ctx, timerIds)
+                    execute: (ctx, [timerIds]) => this.cancelTimers(ctx, timerIds.asStrings)
                 },
                 {
                     parameters: 'clear',
@@ -117,7 +117,7 @@ export class TimersCommand extends BaseGlobalCommand {
         return { embeds: [embed] };
     }
 
-    public async cancelTimers(context: CommandContext, timerIds: string[]): Promise<string> {
+    public async cancelTimers(context: CommandContext, timerIds: readonly string[]): Promise<string> {
         const source = guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
         const allTimerIds = await context.database.events.getIds(source);
         const matchIds = allTimerIds.filter(i => timerIds.some(j => i.startsWith(j)));

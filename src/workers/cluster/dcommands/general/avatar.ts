@@ -19,7 +19,7 @@ export class AvatarCommand extends BaseGlobalCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'Gets the avatar of the user you chose',
-                    execute: (ctx, [user], flags) => this.getAvatar(ctx, user, flags.f?.merge().value, flags.s?.merge().value)
+                    execute: (ctx, [user], flags) => this.getAvatar(ctx, user.asUser, flags.f?.merge().value, flags.s?.merge().value)
                 }
             ],
             flags: [

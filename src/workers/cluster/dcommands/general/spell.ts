@@ -12,7 +12,7 @@ export class SpellCommand extends BaseGlobalCommand {
                 {
                     parameters: '{name?}',
                     description: 'Gives you a description for a D&D 5e spell.',
-                    execute: (ctx, [name]) => this.getSpell(ctx, name)
+                    execute: (ctx, [name]) => this.getSpell(ctx, name.asOptionalString)
                 }
             ]
         });

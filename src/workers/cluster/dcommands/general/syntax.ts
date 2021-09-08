@@ -8,9 +8,9 @@ export class SyntaxCommand extends BaseGlobalCommand {
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{command name+=}',
+                    parameters: '{commandName+=}',
                     description: 'Gives you the \'syntax\' for a command 😉',
-                    execute: (ctx, [commandName]) => this.getSyntax(ctx, commandName)
+                    execute: (ctx, [commandName]) => this.getSyntax(ctx, commandName.asString)
                 }
             ]
         });

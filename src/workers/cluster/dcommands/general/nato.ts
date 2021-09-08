@@ -10,7 +10,7 @@ export class NatoCommand extends BaseGlobalCommand {
                 {
                     parameters: '{text+}',
                     description: 'Translates the given text into the NATO phonetic alphabet.',
-                    execute: (_, [text]) => this.natoify(text)
+                    execute: (_, [text]) => this.natoify(text.asString)
                 }
             ]
         });

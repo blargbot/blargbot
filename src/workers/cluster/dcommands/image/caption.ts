@@ -20,7 +20,7 @@ export class CaptionCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{url+}',
                     description: 'Puts captions on the image in the URL.',
-                    execute: (ctx, [url], flags) => this.render(ctx, url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
+                    execute: (ctx, [url], flags) => this.render(ctx, url.asString, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 }
             ],
             flags: [

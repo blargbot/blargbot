@@ -10,9 +10,9 @@ export class StatusCommand extends BaseGlobalCommand {
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{status:number} {animal?}',
+                    parameters: '{status:integer} {animal?}',
                     description: 'Gets you an image of an HTTP status code.',
-                    execute: (_, [status, animal]) => this.getStatus(status, animal)
+                    execute: (_, [status, animal]) => this.getStatus(status.asInteger, animal.asOptionalString)
                 }
             ]
         });

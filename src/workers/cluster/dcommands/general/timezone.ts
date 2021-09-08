@@ -17,7 +17,7 @@ export class TimezoneCommand extends BaseGlobalCommand {
                 {
                     parameters: '{timezone}',
                     description: 'Sets your current timezone',
-                    execute: (ctx, [timezone]) => this.setTimezone(ctx, ctx.author, timezone)
+                    execute: (ctx, [timezone]) => this.setTimezone(ctx, ctx.author, timezone.asString)
                 }
             ]
         });

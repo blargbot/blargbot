@@ -19,32 +19,32 @@ export class EditCommandCommand extends BaseGuildCommand {
                 {
                     parameters: '{commands[]} setrole {roles:role[0]}',
                     description: 'Sets the role required to run the listed commands',
-                    execute: (ctx, [commands, roles]) => this.setRole(ctx, commands, roles)
+                    execute: (ctx, [commands, roles]) => this.setRole(ctx, commands.asStrings, roles.asRoles)
                 },
                 {
                     parameters: '{commands[]} setperm|setperms {permission:bigint?}',
                     description: 'Sets the permssions required to run the listed commands. If a user has any of the permissions, they will be able to use the command.',
-                    execute: (ctx, [commands, permissions]) => this.setPermissions(ctx, commands, permissions)
+                    execute: (ctx, [commands, permissions]) => this.setPermissions(ctx, commands.asStrings, permissions.asOptionalBigint)
                 },
                 {
                     parameters: '{commands[]} disable',
                     description: 'Disables the listed commands, so no one but the owner can use them',
-                    execute: (ctx, [commands]) => this.setDisabled(ctx, commands, true)
+                    execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, true)
                 },
                 {
                     parameters: '{commands[]} enable',
                     description: 'Enables the listed commands, allowing anyone with the correct permissions or roles to use them',
-                    execute: (ctx, [commands]) => this.setDisabled(ctx, commands, false)
+                    execute: (ctx, [commands]) => this.setDisabled(ctx, commands.asStrings, false)
                 },
                 {
                     parameters: '{commands[]} hide',
                     description: 'Hides the listed commands. They can still be executed, but wont show up in help',
-                    execute: (ctx, [commands]) => this.setHidden(ctx, commands, true)
+                    execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, true)
                 },
                 {
                     parameters: '{commands[]} show',
                     description: 'Reveals the listed commands in help',
-                    execute: (ctx, [commands]) => this.setHidden(ctx, commands, false)
+                    execute: (ctx, [commands]) => this.setHidden(ctx, commands.asStrings, false)
                 }
             ]
         });
@@ -100,7 +100,7 @@ export class EditCommandCommand extends BaseGuildCommand {
         };
     }
 
-    public async setRole(context: GuildCommandContext, commands: string[], roles: Role[] | undefined): Promise<string> {
+    public async setRole(context: GuildCommandContext, commands: readonly string[], roles: readonly Role[] | undefined): Promise<string> {
         if (roles?.length === 0)
             roles = undefined;
 
@@ -111,7 +111,7 @@ export class EditCommandCommand extends BaseGuildCommand {
         return this.success(`Set the role requirement for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
     }
 
-    public async setPermissions(context: GuildCommandContext, commands: string[], permissions: bigint | undefined): Promise<string> {
+    public async setPermissions(context: GuildCommandContext, commands: readonly string[], permissions: bigint | undefined): Promise<string> {
         const updatedCommands = await this.editCommands(context, commands, { permission: permissions?.toString() });
 
         if (permissions === undefined)
@@ -119,7 +119,7 @@ export class EditCommandCommand extends BaseGuildCommand {
         return this.success(`Set the permissions for the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
     }
 
-    public async setDisabled(context: GuildCommandContext, commands: string[], disabled: boolean): Promise<string> {
+    public async setDisabled(context: GuildCommandContext, commands: readonly string[], disabled: boolean): Promise<string> {
         const updatedCommands = await this.editCommands(context, commands, { disabled: disabled ? true : undefined });
 
         if (!disabled)
@@ -127,7 +127,7 @@ export class EditCommandCommand extends BaseGuildCommand {
         return this.success(`Disabled the following commands:\n${codeBlock(updatedCommands, 'fix')}`);
     }
 
-    public async setHidden(context: GuildCommandContext, commands: string[], hidden: boolean): Promise<string> {
+    public async setHidden(context: GuildCommandContext, commands: readonly string[], hidden: boolean): Promise<string> {
         const updatedCommands = await this.editCommands(context, commands, { hidden: hidden ? true : undefined });
 
         if (!hidden)
@@ -135,7 +135,7 @@ export class EditCommandCommand extends BaseGuildCommand {
         return this.success(`The following commands are now hidden:\n${codeBlock(updatedCommands, 'fix')}`);
     }
 
-    private async editCommands(context: GuildCommandContext, commands: string[], update: Partial<CommandPermissions>): Promise<string> {
+    private async editCommands(context: GuildCommandContext, commands: readonly string[], update: Partial<CommandPermissions>): Promise<string> {
         const changed = await context.cluster.commands.configure(context.author, commands, context.channel.guild, update);
         return changed.join(', ');
     }

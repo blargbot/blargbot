@@ -36,7 +36,7 @@ export interface ICommandManager<T = unknown> {
     execute(message: Message, prefix: string, middleware?: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>): Promise<boolean>;
     get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>>;
     list(location?: Guild | TextBasedChannels, user?: User): AsyncIterable<ICommand<T>>;
-    configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
+    configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
     messageDeleted(message: Message | PartialMessage): Promise<void>;
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
@@ -375,8 +375,22 @@ export interface CommandHandlerDefinition<TContext extends CommandContext> {
     readonly description: string;
     readonly parameters: string;
     readonly hidden?: boolean;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    readonly execute: (context: TContext, args: readonly any[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
+    readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
+}
+
+export type CommandSingleArgument = {
+    readonly [P in keyof CommandVariableTypeMap as `as${UppercaseFirst<P>}`]: CommandVariableTypeMap[P];
+}
+
+export type CommandOptionalArgument = {
+    readonly [P in keyof CommandVariableTypeMap as `asOptional${UppercaseFirst<P>}`]: CommandVariableTypeMap[P] | undefined;
+}
+
+export type CommandArrayArgument = {
+    readonly [P in keyof CommandVariableTypeMap as `as${UppercaseFirst<P>}s`]: ReadonlyArray<CommandVariableTypeMap[P]>;
+}
+
+export interface CommandArgument extends CommandSingleArgument, CommandArrayArgument, CommandOptionalArgument {
 }
 
 export interface SubcommandDefinitionHolder<TContext extends CommandContext> {
@@ -402,15 +416,17 @@ export type CommandVariableTypeMap = {
 
 export type CommandVariableTypeName = keyof CommandVariableTypeMap;
 
-export interface CommandVariableTypeBase<Name extends CommandVariableTypeName, T extends CommandVariableTypeMap[Name] = CommandVariableTypeMap[Name]> {
+export type CommandVariableParser = <TContext extends CommandContext>(this: void, value: string, state: CommandBinderState<TContext>) => Awaitable<CommandBinderParseResult>
+
+export interface CommandVariableTypeBase<Name extends CommandVariableTypeName> {
     readonly name: Name;
     readonly descriptionSingular?: string;
     readonly descriptionPlural?: string;
     readonly priority: number;
-    parse<TContext extends CommandContext>(this: void, value: string, state: CommandBinderState<TContext>): Awaitable<CommandBinderParseResult<T>>;
+    parse: CommandVariableParser;
 }
 
-export interface LiteralCommandVariableType<T extends string> extends CommandVariableTypeBase<'literal', T> {
+export interface LiteralCommandVariableType<T extends string> extends CommandVariableTypeBase<'literal'> {
     readonly choices: readonly T[];
 }
 
@@ -459,7 +475,7 @@ export interface CommandSignature<TParameter = CommandParameter> {
 }
 
 export interface CommandSignatureHandler<TContext extends CommandContext> extends CommandSignature {
-    readonly execute: (context: TContext, args: readonly unknown[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
+    readonly execute: (context: TContext, args: readonly CommandArgument[], flags: FlagResult) => Promise<CommandResult> | CommandResult;
 }
 
 export type CustomCommandShrinkwrap = {
@@ -725,17 +741,17 @@ export type WarnResult =
     | WarnResultBase<ModerationType.KICK, KickResult>
     | WarnResultBase<ModerationType.WARN, 'success' | 'countNaN' | 'countNegative' | 'countZero'>;
 
-export type CommandBinderParseResult<TResult> =
-    | CommandBinderValue<TResult>
-    | CommandBinderDeferred<TResult>;
+export type CommandBinderParseResult =
+    | CommandBinderValue
+    | CommandBinderDeferred;
 
-export type CommandBinderValue<TResult> =
-    | CommandBinderSuccess<TResult>
+export type CommandBinderValue =
+    | CommandBinderSuccess
     | CommandBinderFailure
 
-export interface CommandBinderSuccess<TResult> {
+export interface CommandBinderSuccess {
     success: true;
-    value: TResult;
+    value: CommandArgument;
 }
 
 export interface CommandBinderFailure {
@@ -743,23 +759,23 @@ export interface CommandBinderFailure {
     error: CommandBinderStateFailureReason;
 }
 
-export interface CommandBinderDeferred<TResult> {
+export interface CommandBinderDeferred {
     success: 'deferred';
-    getValue(): CommandBinderValue<TResult> | Promise<CommandBinderValue<TResult>>;
+    getValue(): CommandBinderValue | Promise<CommandBinderValue>;
 }
 
 export interface CommandBinderStateLookupCache {
-    findUser(userString: string): Awaitable<CommandBinderParseResult<User>>;
-    findSender(userString: string): Awaitable<CommandBinderParseResult<User | Webhook>>;
-    findMember(memberString: string): Awaitable<CommandBinderParseResult<GuildMember>>;
-    findRole(roleString: string): Awaitable<CommandBinderParseResult<Role>>;
-    findChannel(channelString: string): Awaitable<CommandBinderParseResult<TextBasedChannels>>;
+    findUser(userString: string): Awaitable<CommandBinderParseResult>;
+    findSender(userString: string): Awaitable<CommandBinderParseResult>;
+    findMember(memberString: string): Awaitable<CommandBinderParseResult>;
+    findRole(roleString: string): Awaitable<CommandBinderParseResult>;
+    findChannel(channelString: string): Awaitable<CommandBinderParseResult>;
 }
 
 export interface CommandBinderState<TContext extends CommandContext> {
     readonly context: TContext;
     readonly command: ScopedCommandBase<TContext>;
-    readonly arguments: ReadonlyArray<CommandBinderDeferred<unknown> | CommandBinderSuccess<unknown>>;
+    readonly arguments: ReadonlyArray<CommandBinderDeferred | CommandBinderSuccess>;
     readonly flags: FlagResult;
     readonly argIndex: number;
     readonly bindIndex: number;

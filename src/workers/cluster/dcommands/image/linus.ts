@@ -11,7 +11,7 @@ export class LinusCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'Shows a picture of Linus pointing at something on his monitor.',
-                    execute: (ctx, [user]) => this.renderUser(ctx, user)
+                    execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
                     parameters: '',

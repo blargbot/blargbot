@@ -11,9 +11,9 @@ export class CommitCommand extends BaseGlobalCommand {
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{commitNumber:number?}',
+                    parameters: '{commitNumber:integer?}',
                     description: 'Gets a random or specified blargbot commit.',
-                    execute: (_, [commitNumber]) => this.getCommit(commitNumber)
+                    execute: (_, [commitNumber]) => this.getCommit(commitNumber.asInteger)
                 }
             ]
         });

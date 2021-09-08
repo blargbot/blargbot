@@ -11,7 +11,7 @@ export class ArtCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'Shows everyone a work of art.',
-                    execute: (ctx, [user]) => this.renderUser(ctx, user)
+                    execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
                     parameters: '',

@@ -11,7 +11,7 @@ export class PatchCommand extends BaseGlobalCommand {
                 {
                     parameters: '{features+?}',
                     description: 'Makes a patch note',
-                    execute: (ctx, [features], flags) => this.patch(ctx, features, flags.f?.merge().raw, flags.n?.merge().raw)
+                    execute: (ctx, [features], flags) => this.patch(ctx, features.asOptionalString, flags.f?.merge().raw, flags.n?.merge().raw)
                 }
             ],
             flags: [

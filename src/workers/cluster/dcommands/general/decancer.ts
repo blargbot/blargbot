@@ -13,12 +13,12 @@ export class DecancerCommand extends BaseGlobalCommand {
                 {
                     parameters: 'user {user:user+}',
                     description: 'Decancers a users display name. If you have permissions, this will also change their nickname',
-                    execute: (ctx, [user]) => this.decancerUser(ctx, user)
+                    execute: (ctx, [user]) => this.decancerUser(ctx, user.asUser)
                 },
                 {
                     parameters: '{text+}',
                     description: 'Decancers some text to plain ASCII',
-                    execute: (_, [text]) => this.decancerText(text)
+                    execute: (_, [text]) => this.decancerText(text.asString)
                 }
             ]
         });

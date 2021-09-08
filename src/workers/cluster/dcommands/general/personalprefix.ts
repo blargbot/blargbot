@@ -12,12 +12,12 @@ export class PersonalPrefixCommand extends BaseGlobalCommand {
                 {
                     parameters: 'add {prefix}',
                     description: 'Adds a command prefix just for you!',
-                    execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix)
+                    execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: 'remove {prefix}',
                     description: 'Removes one of your personal command prefixes',
-                    execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix)
+                    execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: '',

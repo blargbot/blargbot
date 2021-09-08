@@ -9,13 +9,13 @@ export class ColorCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{colors[]}',
                     description: 'Returns the provided colors.',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asStrings)
                 }
             ]
         });
     }
 
-    public async render(context: CommandContext, colors: string[]): Promise<string | ImageResult> {
+    public async render(context: CommandContext, colors: readonly string[]): Promise<string | ImageResult> {
         return await this.renderImage(context, 'color', { color: colors });
     }
 }

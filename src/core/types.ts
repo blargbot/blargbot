@@ -831,7 +831,7 @@ export interface GuildTable {
     setRoleme(guildId: string, id: number, roleme: GuildRolemeEntry | undefined): Promise<boolean>;
     updateModlogCase(guildId: string, caseid: number, modlog: Partial<Omit<GuildModlogEntry, 'caseid'>>): Promise<boolean>;
     getModlogCase(guildId: string, caseId?: number, skipCache?: boolean): Promise<GuildModlogEntry | undefined>;
-    removeModlogCases(guildId: string, ids?: number[]): Promise<readonly GuildModlogEntry[] | undefined>;
+    removeModlogCases(guildId: string, ids?: readonly number[]): Promise<readonly GuildModlogEntry[] | undefined>;
     getInterval(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
     setInterval(guildId: string, interval: GuildTriggerTag | undefined): Promise<boolean>;
     getFarewell(guildId: string, skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
@@ -994,5 +994,5 @@ export interface TypeMappingOptions<T, R> {
 }
 
 export interface IMiddleware<Context, Result = void> {
-    execute(context: Context, next: (context?: Context) => Promise<Result>): Promise<Result>;
+    execute(context: Context, next: (context?: Context) => Awaitable<Result>): Awaitable<Result>;
 }

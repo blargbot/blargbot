@@ -19,17 +19,17 @@ export class VoteBanCommand extends BaseGuildCommand {
                 {
                     parameters: 'info {user:member+}',
                     description: 'Checks the status of the petition to ban someone.',
-                    execute: (ctx, [user]) => this.getVotes(ctx, user)
+                    execute: (ctx, [user]) => this.getVotes(ctx, user.asMember)
                 },
                 {
                     parameters: '{user:member} {reason+?}',
                     description: 'Signs a petition to ban a someone',
-                    execute: (ctx, [user, reason]) => this.sign(ctx, user, reason)
+                    execute: (ctx, [user, reason]) => this.sign(ctx, user.asMember, reason.asOptionalString)
                 },
                 {
                     parameters: 'forgive {user:member+}',
                     description: 'Removes your signature to ban someone',
-                    execute: (ctx, [user]) => this.unsign(ctx, user)
+                    execute: (ctx, [user]) => this.unsign(ctx, user.asMember)
                 }
             ]
         });

@@ -11,7 +11,7 @@ export class ClintCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'I don\'t even know, to be honest.',
-                    execute: (ctx, [user]) => this.renderUser(ctx, user)
+                    execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
                     parameters: '',

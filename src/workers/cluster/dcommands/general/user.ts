@@ -12,7 +12,7 @@ export class UserCommand extends BaseGlobalCommand {
                 {
                     parameters: '{user:user+?}',
                     description: 'Gets information about a user',
-                    execute: (ctx, [user]) => this.getUser(ctx, user ?? ctx.author)
+                    execute: (ctx, [user]) => this.getUser(ctx, user.asOptionalUser ?? ctx.author)
                 }
             ]
         });

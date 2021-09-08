@@ -24,7 +24,7 @@ export class SettingsCommand extends BaseGuildCommand {
                 {
                     parameters: 'set {key} {~value+?}',
                     description: 'Sets the given setting key to have a certian value. If `value` is omitted, the setting is reverted to its default value',
-                    execute: (ctx, [setting, value]) => this.set(ctx, setting, value)
+                    execute: (ctx, [setting, value]) => this.set(ctx, setting.asString, value.asOptionalString)
                 }
             ]
         });

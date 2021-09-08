@@ -19,7 +19,7 @@ export class LogsCommand extends BaseGuildCommand {
                         'If you want to use multiple of the same type, separate parameters with commas or chain them together. For example:\n' +
                         '`logs 100 -CU -u stupid cat, dumb cat`',
                     execute: (ctx, [number], flags) => this.generateLogs(ctx, {
-                        count: number as number,
+                        count: number.asInteger,
                         users: flags.u?.map(f => f.value) ?? [],
                         types: [
                             flags.C !== undefined ? ChatlogType.CREATE : undefined,

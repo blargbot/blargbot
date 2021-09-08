@@ -1,5 +1,7 @@
-import { CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@cluster/types';
+import { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@cluster/types';
 import { humanize, parse } from '@cluster/utils';
+
+import { createCommandArgument } from './commandArgument';
 
 export function parseParameterType(type: string): CommandVariableTypes {
     const [typeName, details] = getTypeName(type);
@@ -56,7 +58,7 @@ const typeStrings: { [key in CommandVariableTypeName]: { single: string | undefi
     user: { single: 'a user id, mention or name', plural: 'user ids, mentions or names' }
 };
 
-function buildParameter<T extends CommandVariableTypeName>(type: T, parse: CommandVariableTypeBase<T>['parse']): CommandVariableTypeBase<T> {
+function buildParameter<T extends CommandVariableTypeName>(type: T, parse: CommandVariableParser): CommandVariableTypeBase<T> {
     return {
         name: type,
         priority: typeOrderMap[type],
@@ -87,41 +89,41 @@ const parameterTypes: ParameterTypeFactories = {
             parse(value) {
                 const match = lookup.get(value.toLowerCase());
                 return match !== undefined
-                    ? { success: true, value: match }
+                    ? { success: true, value: createCommandArgument('literal', value) }
                     : { success: false, error: { parseFailed: { attemptedValue: value, types: choices } } };
             }
         };
     },
-    string: buildParameter('string', value => ({ success: true, value })),
+    string: buildParameter('string', value => ({ success: true, value: createCommandArgument('string', value) })),
     bigint: buildParameter('bigint', (value) => {
         const result = parse.bigint(value);
         if (result === undefined)
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['an integer'] } } };
-        return { success: true, value: result };
+        return { success: true, value: createCommandArgument('bigint', result) };
     }),
     integer: buildParameter('integer', (value) => {
         const result = parse.int(value);
         if (isNaN(result))
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['an integer'] } } };
-        return { success: true, value: result };
+        return { success: true, value: createCommandArgument('integer', result) };
     }),
     number: buildParameter('number', (value) => {
         const result = parse.float(value);
         if (isNaN(result))
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['a number'] } } };
-        return { success: true, value: result };
+        return { success: true, value: createCommandArgument('number', result) };
     }),
     boolean: buildParameter('boolean', (value) => {
         const result = parse.boolean(value);
         if (result === undefined)
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['a boolean'] } } };
-        return { success: true, value: result };
+        return { success: true, value: createCommandArgument('boolean', result) };
     }),
     duration: buildParameter('duration', (value) => {
         const result = parse.duration(value);
         if (result === undefined)
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['a duration'] } } };
-        return { success: true, value: result };
+        return { success: true, value: createCommandArgument('duration', result) };
     }),
     channel: buildParameter('channel', (value, state) => {
         return state.lookupCache.findChannel(value);

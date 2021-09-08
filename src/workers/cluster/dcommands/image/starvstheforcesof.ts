@@ -11,7 +11,7 @@ export class StarVsTheForcesOfCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'WHO IS STAR BATTLING THIS EPISODE?',
-                    execute: (ctx, [user]) => this.renderUser(ctx, user)
+                    execute: (ctx, [user]) => this.renderUser(ctx, user.asUser)
                 },
                 {
                     parameters: '',

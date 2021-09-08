@@ -9,7 +9,7 @@ export class TruthCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+}',
                     description: 'Shows everyone what is written in the Scroll of Truth.',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });

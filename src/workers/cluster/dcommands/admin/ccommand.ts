@@ -5,7 +5,7 @@ import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandCon
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
 import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
-import { FileOptions, MessageEmbedOptions, MessageOptions } from 'discord.js';
+import { FileOptions, MessageEmbedOptions, MessageOptions, Role } from 'discord.js';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
@@ -31,54 +31,54 @@ export class CustomCommandCommand extends BaseGuildCommand {
                     subcommands: [
                         {
                             parameters: '{~code+}',
-                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', false),
                             description: 'Uses the BBTag engine to execute the content as if it was a custom command'
                         },
                         {
                             parameters: 'debug {~code+}',
-                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', true),
                             description: 'Uses the BBTag engine to execute the content as if it was a custom command and will return the debug output'
                         }
                     ]
                 },
                 {
                     parameters: 'docs {topic+?}',
-                    execute: (ctx, [topic]) => this.showDocs(ctx, topic),
+                    execute: (ctx, [topic]) => this.showDocs(ctx, topic.asOptionalString),
                     description: 'Returns helpful information about the specified topic.'
                 },
                 {
                     parameters: 'debug {commandName} {~args+?}',
-                    execute: (ctx, [commandName, args]) => this.runCommand(ctx, commandName, args, true),
+                    execute: (ctx, [commandName, args]) => this.runCommand(ctx, commandName.asString, args.asOptionalString, true),
                     description: 'Runs a custom command with some arguments. A debug file will be sent in a DM after the command has finished.'
                 },
                 {
                     parameters: 'create|add {commandName?} {~content+?}',
-                    execute: (ctx, [commandName, content]) => this.createCommand(ctx, commandName, content),
+                    execute: (ctx, [commandName, content]) => this.createCommand(ctx, commandName.asOptionalString, content.asOptionalString),
                     description: 'Creates a new custom command with the content you give'
                 },
                 {
                     parameters: 'edit {commandName?} {~content+?}',
-                    execute: (ctx, [commandName, content]) => this.editCommand(ctx, commandName, content),
+                    execute: (ctx, [commandName, content]) => this.editCommand(ctx, commandName.asOptionalString, content.asOptionalString),
                     description: 'Edits an existing custom command to have the content you specify'
                 },
                 {
                     parameters: 'set {commandName?} {~content+?}',
-                    execute: (ctx, [commandName, content]) => this.setCommand(ctx, commandName, content),
+                    execute: (ctx, [commandName, content]) => this.setCommand(ctx, commandName.asOptionalString, content.asOptionalString),
                     description: 'Sets the custom command to have the content you specify. If the custom command doesnt exist it will be created.'
                 },
                 {
                     parameters: 'delete|remove {commandName?}',
-                    execute: (ctx, [commandName]) => this.deleteCommand(ctx, commandName),
+                    execute: (ctx, [commandName]) => this.deleteCommand(ctx, commandName.asOptionalString),
                     description: 'Deletes an existing custom command'
                 },
                 {
                     parameters: 'rename {oldName?} {newName?}',
-                    execute: (ctx, [oldName, newName]) => this.renameCommand(ctx, oldName, newName),
+                    execute: (ctx, [oldName, newName]) => this.renameCommand(ctx, oldName.asOptionalString, newName.asOptionalString),
                     description: 'Renames the custom command'
                 },
                 {
                     parameters: 'raw {commandName?}',
-                    execute: (ctx, [commandName]) => this.getRawCommand(ctx, commandName),
+                    execute: (ctx, [commandName]) => this.getRawCommand(ctx, commandName.asOptionalString),
                     description: 'Gets the raw content of the custom command'
                 },
                 {
@@ -88,12 +88,12 @@ export class CustomCommandCommand extends BaseGuildCommand {
                 },
                 {
                     parameters: 'cooldown {commandName} {duration:duration+=0ms}',
-                    execute: (ctx, [commandName, duration]) => this.setCommandCooldown(ctx, commandName, duration),
+                    execute: (ctx, [commandName, duration]) => this.setCommandCooldown(ctx, commandName.asString, duration.asDuration),
                     description: 'Sets the cooldown of a custom command, in milliseconds'
                 },
                 {
                     parameters: 'author {commandName?}',
-                    execute: (ctx, [commandName]) => this.getCommandAuthor(ctx, commandName),
+                    execute: (ctx, [commandName]) => this.getCommandAuthor(ctx, commandName.asString),
                     description: 'Displays the name of the custom command\'s author'
                 },
                 {
@@ -101,18 +101,18 @@ export class CustomCommandCommand extends BaseGuildCommand {
                     subcommands: [
                         {
                             parameters: '{commandName}',
-                            execute: (ctx, [commandName]) => this.getCommandFlags(ctx, commandName),
+                            execute: (ctx, [commandName]) => this.getCommandFlags(ctx, commandName.asString),
                             description: 'Lists the flags the custom command accepts'
                         },
                         {
                             parameters: 'create|add {commandName} {~flags+}',
-                            execute: (ctx, [commandName, flags]) => this.addCommandFlags(ctx, commandName, flags),
+                            execute: (ctx, [commandName, flags]) => this.addCommandFlags(ctx, commandName.asString, flags.asString),
                             description: 'Adds multiple flags to your custom command. Flags should be of the form `-<f> <flag> [flag description]`\n' +
                                 'e.g. `b!cc flags add myCommand -c category The category you want to use -n name Your name`'
                         },
                         {
                             parameters: 'delete|remove {commandName} {~flags+}',
-                            execute: (ctx, [commandName, flags]) => this.removeCommandFlags(ctx, commandName, flags),
+                            execute: (ctx, [commandName, flags]) => this.removeCommandFlags(ctx, commandName.asString, flags.asString),
                             description: 'Removes multiple flags from your custom command. Flags should be of the form `-<f>`\n' +
                                 'e.g. `b!cc flags remove myCommand -c -n`'
                         }
@@ -120,32 +120,32 @@ export class CustomCommandCommand extends BaseGuildCommand {
                 },
                 {
                     parameters: 'sethelp {commandName} {~helpText+?}',
-                    execute: (ctx, [commandName, helpText]) => this.setCommandHelp(ctx, commandName, helpText),
+                    execute: (ctx, [commandName, helpText]) => this.setCommandHelp(ctx, commandName.asString, helpText.asOptionalString),
                     description: 'Sets the help text to show for the command'
                 },
                 {
                     parameters: 'hide {commandName}',
-                    execute: (ctx, [commandName]) => this.toggleCommandHidden(ctx, commandName),
+                    execute: (ctx, [commandName]) => this.toggleCommandHidden(ctx, commandName.asString),
                     description: 'Toggles whether the command is hidden from the command list or not'
                 },
                 {
-                    parameters: 'setRole {commandName} {roles[0]}',
-                    execute: (ctx, [commandName, roles]) => this.setCommandRoles(ctx, commandName, roles),
+                    parameters: 'setRole {commandName} {roles:role[0]}',
+                    execute: (ctx, [commandName, roles]) => this.setCommandRoles(ctx, commandName.asString, roles.asRoles),
                     description: 'Sets the roles that are allowed to use the command'
                 },
                 {
                     parameters: 'shrinkwrap {commandNames[]}',
-                    execute: (ctx, [commandNames]) => this.shrinkwrapCommands(ctx, commandNames),
+                    execute: (ctx, [commandNames]) => this.shrinkwrapCommands(ctx, commandNames.asStrings),
                     description: 'Bundles up the given commands into a single file that you can download and install into another server'
                 },
                 {
                     parameters: 'install {shrinkwrapUrl?}',
-                    execute: (ctx, [shrinkwrapUrl]) => this.installCommands(ctx, shrinkwrapUrl),
+                    execute: (ctx, [shrinkwrapUrl]) => this.installCommands(ctx, shrinkwrapUrl.asOptionalString),
                     description: 'Bundles up the given commands into a single file that you can download and install into another server'
                 },
                 {
                     parameters: 'import {tagName} {commandName?}',
-                    execute: (ctx, [tagName, commandName]) => this.importCommand(ctx, tagName, commandName ?? tagName),
+                    execute: (ctx, [tagName, commandName]) => this.importCommand(ctx, tagName.asString, commandName.asOptionalString ?? tagName.asString),
                     description: 'Imports a tag as a ccommand, retaining all data such as author variables'
                 }
             ]
@@ -435,18 +435,10 @@ export class CustomCommandCommand extends BaseGuildCommand {
         return this.success(`Custom command \`${match.name}\` is now ${isNowHidden ? 'hidden' : 'visible'}.`);
     }
 
-    public async setCommandRoles(context: GuildCommandContext, commandName: string, roleNames: string[]): Promise<string | undefined> {
+    public async setCommandRoles(context: GuildCommandContext, commandName: string, roles: readonly Role[]): Promise<string | undefined> {
         const match = await this.requestEditableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
-
-        const roles = [];
-        for (const roleName of roleNames) {
-            const role = await context.queryRole({ filter: roleName });
-            if (role.state !== 'SUCCESS')
-                return;
-            roles.push(role.value);
-        }
 
         await context.database.guilds.setCommandProp(context.channel.guild.id, match.name, 'roles', roles.map(r => r.id));
         return this.success(`Roles for custom command \`${match.name}\` set to ${humanize.smartJoin(roles.map(r => `\`${r.name}\``), ', ', ' and ')}.`);
@@ -473,7 +465,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
         return this.success(`The tag \`${tag.name}\` by **${humanize.fullName(author)}** has been imported as \`${commandName}\` and is authorized by **${humanize.fullName(context.author)}**`);
     }
 
-    public async shrinkwrapCommands(context: GuildCommandContext, commandNames: string[]): Promise<CommandResult> {
+    public async shrinkwrapCommands(context: GuildCommandContext, commandNames: readonly string[]): Promise<CommandResult> {
         const shrinkwrap: GuildShrinkwrap = { cc: {} };
         const confirm = [
             'Salutations! You have discovered the super handy ShrinkWrapper9000!',

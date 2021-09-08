@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
 import { guard, humanize } from '@core/utils';
-import { GuildChannels, GuildTextBasedChannels, MessageEmbedOptions, MessageMentionOptions, NewsChannel, Role, TextChannel, ThreadChannel } from 'discord.js';
+import { KnownChannel, MessageEmbedOptions, MessageMentionOptions, NewsChannel, Role, TextChannel, ThreadChannel } from 'discord.js';
 
 export class AnnounceCommand extends BaseGuildCommand {
     public constructor() {
@@ -18,12 +18,12 @@ export class AnnounceCommand extends BaseGuildCommand {
                 {
                     parameters: 'configure {channel:channel?} {role:role?}',
                     description: 'Resets the current configuration for announcements',
-                    execute: (ctx, [channel, role]) => this.configure(ctx, channel, role)
+                    execute: (ctx, [channel, role]) => this.configure(ctx, channel.asOptionalChannel, role.asOptionalRole)
                 },
                 {
                     parameters: '{message+}',
                     description: 'Sends an announcement using the current configuration',
-                    execute: (ctx, [message]) => this.announce(ctx, message)
+                    execute: (ctx, [message]) => this.announce(ctx, message.asString)
                 },
                 {
                     parameters: 'info',
@@ -39,7 +39,7 @@ export class AnnounceCommand extends BaseGuildCommand {
         return this.success(`Announcement configuration reset! Do \`${context.prefix}announce configure\` to reconfigure it.`);
     }
 
-    public async configure(context: GuildCommandContext, channel: GuildTextBasedChannels | undefined, role: Role | undefined): Promise<string | undefined> {
+    public async configure(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<string | undefined> {
         const result = await this.configureCore(context, channel, role);
         switch (result) {
             case true: return this.success('Your announcements have been configured!');
@@ -49,7 +49,6 @@ export class AnnounceCommand extends BaseGuildCommand {
     }
 
     public async announce(context: GuildCommandContext, message: string): Promise<string> {
-
         let config = await this.getConfigSafe(context);
         if (config === undefined || config.channel === undefined || config.role === undefined) {
             const result = await this.configureCore(context, undefined, undefined);
@@ -129,7 +128,7 @@ export class AnnounceCommand extends BaseGuildCommand {
         return { channel, role };
     }
 
-    private async configureCore(context: GuildCommandContext, channel: GuildChannels | undefined, role: Role | undefined): Promise<boolean | string> {
+    private async configureCore(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<boolean | string> {
         if (channel === undefined) {
             const result = await context.queryChannel({
                 choices: context.channel.guild.channels.cache.filter(guard.isTextableChannel).values(),
@@ -144,6 +143,11 @@ export class AnnounceCommand extends BaseGuildCommand {
             if (channel === undefined)
                 return false;
         }
+
+        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+            return this.error('The announcement channel must be on this server!');
+        if (!guard.isTextableChannel(channel))
+            return this.error('The announcement channel must be a text channel!');
 
         if (role === undefined) {
             const result = await context.queryRole({

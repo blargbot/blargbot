@@ -6,7 +6,7 @@ import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { CommandPermissions } from '@core/types';
-import { Constants, DiscordAPIError, Guild, TextBasedChannels, User } from 'discord.js';
+import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommandManager } from './BaseCommandManager';
 
@@ -110,21 +110,8 @@ class NormalizedCommand implements ICommand<BaseCommand> {
             metrics.commandLatency.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).observe(timer.elapsed);
             metrics.commandCounter.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).inc();
         } catch (err: unknown) {
-            context.logger.error(err);
             metrics.commandError.labels(this.name).inc();
-            if (err instanceof DiscordAPIError
-                && err.code === Constants.APIErrors.MISSING_ACCESS
-                && await context.database.users.getSetting(context.author.id, 'dontdmerrors') !== true) {
-                const message = !guard.isGuildChannel(context.channel)
-                    ? '❌ Oops, I dont seem to have permission to do that!'
-                    : '❌ Hi! You asked me to do something, but I didn\'t have permission to do it! Please make sure I have permissions to do what you asked.\n' +
-                    `Guild: ${context.channel.guild.name}\n` +
-                    `Channel: ${context.channel.toString()}\n` +
-                    `Command: ${context.commandText}\n` +
-                    '\n' +
-                    `If you wish to stop seeing these messages, do the command \`${context.prefix}dmerrors\`.`;
-                await context.util.sendDM(context.author, message);
-            }
+            throw err;
         }
     }
 }

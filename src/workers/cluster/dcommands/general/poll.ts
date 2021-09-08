@@ -24,7 +24,7 @@ export class PollCommand extends BaseGuildCommand {
                     execute: (ctx, [title], flags) => this.createPoll(ctx, {
                         time: flags.t?.merge().value,
                         emojis: flags.e?.merge().value,
-                        title: <string>title,
+                        title: title.asString,
                         description: flags.d?.merge().value,
                         color: flags.c?.merge().value,
                         announce: flags.a !== undefined

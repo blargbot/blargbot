@@ -11,13 +11,13 @@ export class AddDomainCommand extends BaseGlobalCommand {
                 {
                     parameters: '{domains[]}',
                     description: 'Toggles multiple domains to the domain whitelist for use with the {request} subtag',
-                    execute: (ctx, [domains]) => this.toggleDomains(ctx, domains)
+                    execute: (ctx, [domains]) => this.toggleDomains(ctx, domains.asStrings)
                 }
             ]
         });
     }
 
-    public async toggleDomains(ctx: CommandContext, domains: string[]): Promise<string> {
+    public async toggleDomains(ctx: CommandContext, domains: readonly string[]): Promise<string> {
         const result = await ctx.cluster.domains.toggle(...domains);
 
         const output = ['Boy howdy, thanks for the domains!\n'];

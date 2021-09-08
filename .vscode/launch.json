@@ -12,16 +12,14 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
-            "program": "${workspaceFolder}/index.ts",
-            "args": [
-                "--async-stack-traces",
-                "--enable-source-maps"
-            ]
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/index.ts"
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Mocha Tests",
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--timeout",
@@ -39,12 +37,9 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}/index.ts",
-            "preLaunchTask": "yarn: build",
-            "args": [
-                "--async-stack-traces",
-                "--enable-source-maps"
-            ]
+            "preLaunchTask": "yarn: build"
         },
         {
             "type": "node",
@@ -54,11 +49,10 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}/src/workers/cluster/index.ts",
             "args": [
-                "--async-stack-traces",
-                "--max-old-space-size=4096",
-                "--enable-source-maps"
+                "--max-old-space-size=4096"
             ],
             "env": {
                 "CLUSTER_ID": "0",
@@ -75,12 +69,11 @@
                 "<node_internals>/**"
             ],
             "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
             "program": "${workspaceFolder}/src/workers/cluster/index.ts",
             "preLaunchTask": "yarn: build",
             "args": [
-                "--async-stack-traces",
-                "--max-old-space-size=4096",
-                "--enable-source-maps"
+                "--max-old-space-size=4096"
             ],
             "env": {
                 "CLUSTER_ID": "0",
@@ -92,16 +85,13 @@
         {
             "name": "Debug current file",
             "type": "node",
+            "console": "integratedTerminal",
             "program": "${file}",
             "request": "launch",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "autoAttachChildProcesses": true,
-            "args": [
-                "--async-stack-traces",
-                "--enable-source-maps"
-            ]
+            "autoAttachChildProcesses": true
         }
     ]
 }

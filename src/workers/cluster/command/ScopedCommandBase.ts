@@ -21,9 +21,9 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
     public constructor(options: CommandOptions<TContext>, noHelp = false) {
         const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
             {
-                parameters: 'help {page:number=1}',
+                parameters: 'help {page:integer=1}',
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                execute: (context, [page]) => this.showHelp(context, this, page - 1),
+                execute: (context, [page]) => this.showHelp(context, this, page.asInteger - 1),
                 description: 'Gets the help message for this command',
                 hidden: true
             },

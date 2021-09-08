@@ -13,7 +13,7 @@ export class RolemeCommand extends BaseGuildCommand {
                 {
                     parameters: 'add|create {~phrase+}',
                     description: 'Adds a new roleme with the given phrase',
-                    execute: (ctx, [phrase], flags) => this.addRoleme(ctx, phrase, {
+                    execute: (ctx, [phrase], flags) => this.addRoleme(ctx, phrase.asString, {
                         caseSensitive: flags.C !== undefined,
                         addRoles: flags.a?.map(v => v.value),
                         removeRoles: flags.r?.map(v => v.value),
@@ -23,12 +23,12 @@ export class RolemeCommand extends BaseGuildCommand {
                 {
                     parameters: 'remove|delete {rolemeId:integer}',
                     description: 'Deletes the given roleme',
-                    execute: (ctx, [id]) => this.deleteRoleme(ctx, id)
+                    execute: (ctx, [id]) => this.deleteRoleme(ctx, id.asInteger)
                 },
                 {
                     parameters: 'edit {rolemeId:integer} {~newPhrase+?}',
                     description: 'Edits the given roleme',
-                    execute: (ctx, [id, phrase], flags) => this.editRoleme(ctx, id, phrase, {
+                    execute: (ctx, [id, phrase], flags) => this.editRoleme(ctx, id.asInteger, phrase.asOptionalString, {
                         caseSensitive: flags.C !== undefined,
                         addRoles: flags.a?.map(v => v.value),
                         removeRoles: flags.r?.map(v => v.value),
@@ -38,27 +38,27 @@ export class RolemeCommand extends BaseGuildCommand {
                 {
                     parameters: 'setmessage {rolemeId:integer} {~bbtag+?}',
                     description: 'Sets the bbtag compatible message to show when the roleme is triggered',
-                    execute: (ctx, [id, bbtag]) => this.setMessage(ctx, id, bbtag)
+                    execute: (ctx, [id, bbtag]) => this.setMessage(ctx, id.asInteger, bbtag.asOptionalString)
                 },
                 {
                     parameters: 'rawmessage {rolemeId:integer}',
                     description: 'Gets the current message that will be sent when the roleme is triggered',
-                    execute: (ctx, [id]) => this.getRawMessage(ctx, id)
+                    execute: (ctx, [id]) => this.getRawMessage(ctx, id.asInteger)
                 },
                 {
                     parameters: 'debugmessage {rolemeId:integer}',
                     description: 'Executes the roleme message as if you triggered the roleme',
-                    execute: (ctx, [id]) => this.debugMessage(ctx, id)
+                    execute: (ctx, [id]) => this.debugMessage(ctx, id.asInteger)
                 },
                 {
                     parameters: 'setauthorizer {rolemeId:integer}',
                     description: 'Sets the roleme message to run using your permissions',
-                    execute: (ctx, [id]) => this.setAuthorizer(ctx, id)
+                    execute: (ctx, [id]) => this.setAuthorizer(ctx, id.asInteger)
                 },
                 {
-                    parameters: 'info {rolemeId:number}',
+                    parameters: 'info {rolemeId:integer}',
                     description: 'Shows information about a roleme',
-                    execute: (ctx, [id]) => this.showInfo(ctx, id)
+                    execute: (ctx, [id]) => this.showInfo(ctx, id.asInteger)
                 },
                 {
                     parameters: 'list',

@@ -9,9 +9,9 @@ export class RollCommand extends BaseGlobalCommand {
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{dice=1d20} {modifier:number?}',
+                    parameters: '{dice=1d20} {modifier:integer?}',
                     description: 'Rolls the dice you tell it to, and adds the modifier',
-                    execute: (ctx, [dice, modifier]) => this.rollDice(ctx, dice, modifier)
+                    execute: (ctx, [dice, modifier]) => this.rollDice(ctx, dice.asString, modifier.asOptionalInteger)
                 }
             ]
         });

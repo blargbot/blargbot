@@ -10,7 +10,7 @@ export class TokenifyCommand extends BaseGlobalCommand {
                 {
                     parameters: '{input+}',
                     description: 'Converts the given input into a token.',
-                    execute: (_, [input]) => this.tokenify(input)
+                    execute: (_, [input]) => this.tokenify(input.asString)
                 }
             ]
         });

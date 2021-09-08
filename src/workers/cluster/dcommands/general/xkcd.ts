@@ -10,9 +10,9 @@ export class XKCDCommand extends BaseGlobalCommand {
             category: CommandType.GENERAL,
             definitions: [
                 {
-                    parameters: '{comicNumber:number?}',
+                    parameters: '{comicNumber:integer?}',
                     description: 'Gets an xkcd comic. If a number is not specified, gets a random one.',
-                    execute: (ctx, [comicNumber]) => this.getComic(ctx, comicNumber)
+                    execute: (ctx, [comicNumber]) => this.getComic(ctx, comicNumber.asOptionalInteger)
                 }
             ]
         });

@@ -10,22 +10,22 @@ export class EvalCommand extends BaseGlobalCommand {
             definitions: [
                 {
                     parameters: '{~code+}',
-                    execute: (ctx, [code]) => this.eval(ctx, ctx.author.id, code),
+                    execute: (ctx, [code]) => this.eval(ctx, ctx.author.id, code.asString),
                     description: 'Runs the code you enter on the current cluster'
                 },
                 {
                     parameters: 'master {~code+}',
-                    execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code),
+                    execute: (ctx, [code]) => this.mastereval(ctx, ctx.author.id, code.asString),
                     description: 'Runs the code you enter on the master process'
                 },
                 {
                     parameters: 'global {~code+}',
-                    execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code),
+                    execute: (ctx, [code]) => this.globaleval(ctx, ctx.author.id, code.asString),
                     description: 'Runs the code you enter on all the clusters and aggregates the result'
                 },
                 {
                     parameters: 'cluster {clusterId:number} {~code+}',
-                    execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId, ctx.author.id, code),
+                    execute: (ctx, [clusterId, code]) => this.clustereval(ctx, clusterId.asNumber, ctx.author.id, code.asString),
                     description: 'Runs the code you enter on all the clusters and aggregates the result'
                 }
             ]

@@ -27,7 +27,7 @@ export class DocsCommand extends BaseGlobalCommand {
                 {
                     parameters: 'terms|terminology|definitions|define {term?}',
                     description: 'Displays information about the terms used in BBTag.',
-                    execute: (ctx, [termName]) => this.showTerminologyDocs(ctx, termName)
+                    execute: (ctx, [termName]) => this.showTerminologyDocs(ctx, termName.asOptionalString)
                 },
                 {
                     parameters: 'dynamic',
@@ -37,12 +37,12 @@ export class DocsCommand extends BaseGlobalCommand {
                 {
                     parameters: 'subtags {category?}',
                     description: 'Displays a list of categories, or a list of subtags for `category`',
-                    execute: (ctx, [cat]) => this.showSubtagsDocs(ctx, cat)
+                    execute: (ctx, [cat]) => this.showSubtagsDocs(ctx, cat.asOptionalString)
                 },
                 {
                     parameters: '{subtagName}',
                     description: 'Displays information about a specific subtag.',
-                    execute: (ctx, [subtagName]) => this.showSubtagDocs(ctx, subtagName)
+                    execute: (ctx, [subtagName]) => this.showSubtagDocs(ctx, subtagName.asString)
                 }
             ]
         });

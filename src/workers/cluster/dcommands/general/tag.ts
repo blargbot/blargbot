@@ -21,7 +21,7 @@ export class TagCommand extends BaseGuildCommand {
             definitions: [
                 {
                     parameters: '{tagName} {~args+?}',
-                    execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, false),
+                    execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName.asString, args.asOptionalString, false),
                     description: 'Runs a user created tag with some arguments'
                 },
                 {
@@ -29,84 +29,84 @@ export class TagCommand extends BaseGuildCommand {
                     subcommands: [
                         {
                             parameters: '{~code+}',
-                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', false),
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', false),
                             description: 'Uses the BBTag engine to execute the content as if it was a tag'
                         },
                         {
                             parameters: 'debug {~code+}',
-                            execute: (ctx, [code]) => this.runRaw(ctx, code, '', true),
+                            execute: (ctx, [code]) => this.runRaw(ctx, code.asString, '', true),
                             description: 'Uses the BBTag engine to execute the content as if it was a tag and will return the debug output'
                         }
                     ]
                 },
                 {
                     parameters: 'docs {topic+?}',
-                    execute: (ctx, [topic]) => this.showDocs(ctx, topic),
+                    execute: (ctx, [topic]) => this.showDocs(ctx, topic.asOptionalString),
                     description: 'Returns helpful information about the specified topic.'
                 },
                 {
                     parameters: 'debug {tagName} {~args+?}',
-                    execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName, args, true),
+                    execute: (ctx, [tagName, args]) => this.runTag(ctx, tagName.asString, args.asOptionalString, true),
                     description: 'Runs a user created tag with some arguments. A debug file will be sent in a DM after the tag has finished.'
                 },
                 {
                     parameters: 'create|add {tagName?} {~content+?}',
-                    execute: (ctx, [tagName, content]) => this.createTag(ctx, tagName, content),
+                    execute: (ctx, [tagName, content]) => this.createTag(ctx, tagName.asOptionalString, content.asOptionalString),
                     description: 'Creates a new tag with the content you give'
                 },
                 {
                     parameters: 'edit {tagName?} {~content+?}',
-                    execute: (ctx, [tagName, content]) => this.editTag(ctx, tagName, content),
+                    execute: (ctx, [tagName, content]) => this.editTag(ctx, tagName.asOptionalString, content.asOptionalString),
                     description: 'Edits an existing tag to have the content you specify'
                 },
                 {
                     parameters: 'set {tagName?} {~content+?}',
-                    execute: (ctx, [tagName, content]) => this.setTag(ctx, tagName, content),
+                    execute: (ctx, [tagName, content]) => this.setTag(ctx, tagName.asOptionalString, content.asOptionalString),
                     description: 'Sets the tag to have the content you specify. If the tag doesnt exist it will be created.'
                 },
                 {
                     parameters: 'delete|remove {tagName?}',
-                    execute: (ctx, [tagName]) => this.deleteTag(ctx, tagName),
+                    execute: (ctx, [tagName]) => this.deleteTag(ctx, tagName.asOptionalString),
                     description: 'Deletes an existing tag'
                 },
                 {
                     parameters: 'rename {oldName?} {newName?}',
-                    execute: (ctx, [oldName, newName]) => this.renameTag(ctx, oldName, newName),
+                    execute: (ctx, [oldName, newName]) => this.renameTag(ctx, oldName.asOptionalString, newName.asOptionalString),
                     description: 'Renames the tag'
                 },
                 {
                     parameters: 'raw {tagName?}',
-                    execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName),
+                    execute: (ctx, [tagName]) => this.getRawTag(ctx, tagName.asOptionalString),
                     description: 'Uses the BBTag engine to execute the content as it was a tag'
                 },
                 {
                     parameters: 'list {author+?}',
-                    execute: (ctx, [author]) => this.listTags(ctx, author !== undefined ? author.join('') : undefined),
+                    execute: (ctx, [author]) => this.listTags(ctx, author.asOptionalString),
                     description: 'Lists all tags, or tags made by a specific author'
                 },
                 {
                     parameters: 'search {tagName?}',
-                    execute: (ctx, [tagName]) => this.searchTags(ctx, tagName),
+                    execute: (ctx, [tagName]) => this.searchTags(ctx, tagName.asOptionalString),
                     description: 'Searches for a tag based on the provided name'
                 },
                 {
                     parameters: 'permdelete {tagName} {reason+}',
-                    execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName, reason.join(' ')),
+                    execute: (ctx, [tagName, reason]) => this.disableTag(ctx, tagName.asString, reason.asString),
                     description: 'Marks the tag name as deleted forever, so no one can ever use it'
                 },
                 {
                     parameters: 'cooldown {tagName} {duration:duration+=0ms}',
-                    execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName, duration),
+                    execute: (ctx, [tagName, duration]) => this.setTagCooldown(ctx, tagName.asString, duration.asDuration),
                     description: 'Sets the cooldown of a tag, in milliseconds'
                 },
                 {
                     parameters: 'author {tagName?}',
-                    execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName),
+                    execute: (ctx, [tagName]) => this.getTagAuthor(ctx, tagName.asOptionalString),
                     description: 'Displays the name of the tag\'s author'
                 },
                 {
                     parameters: 'info {tagName?}',
-                    execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName),
+                    execute: (ctx, [tagName]) => this.getTagInfo(ctx, tagName.asOptionalString),
                     description: 'Displays information about a tag'
                 },
                 {
@@ -116,12 +116,12 @@ export class TagCommand extends BaseGuildCommand {
                 },
                 {
                     parameters: 'report {tagName} {reason+?}',
-                    execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName, reason.join(' ')),
+                    execute: (ctx, [tagName, reason]) => this.reportTag(ctx, tagName.asString, reason.asOptionalString),
                     description: 'Reports a tag as violating the ToS'
                 },
                 {
                     parameters: 'setlang {tagName} {language}',
-                    execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName, language),
+                    execute: (ctx, [tagName, language]) => this.setTagLanguage(ctx, tagName.asString, language.asString),
                     description: 'Sets the language to use when returning the raw text of your tag'
                 },
                 {
@@ -134,7 +134,7 @@ export class TagCommand extends BaseGuildCommand {
                         },
                         {
                             parameters: '{tagName}',
-                            execute: (ctx, [tagName]) => this.toggleFavouriteTag(ctx, tagName),
+                            execute: (ctx, [tagName]) => this.toggleFavouriteTag(ctx, tagName.asString),
                             description: 'Adds or removes a tag from your list of favourites'
                         }
                     ]
@@ -144,18 +144,18 @@ export class TagCommand extends BaseGuildCommand {
                     subcommands: [
                         {
                             parameters: '{tagName}',
-                            execute: (ctx, [tagName]) => this.getTagFlags(ctx, tagName),
+                            execute: (ctx, [tagName]) => this.getTagFlags(ctx, tagName.asString),
                             description: 'Lists the flags the tag accepts'
                         },
                         {
                             parameters: 'create|add {tagName} {~flags+}',
-                            execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName, flags),
+                            execute: (ctx, [tagName, flags]) => this.addTagFlags(ctx, tagName.asString, flags.asString),
                             description: 'Adds multiple flags to your tag. Flags should be of the form `-<f> <flag> [flag description]`\n' +
                                 'e.g. `b!t flags add mytag -c category The category you want to use -n name Your name`'
                         },
                         {
                             parameters: 'delete|remove {tagName} {~flags+}',
-                            execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName, flags),
+                            execute: (ctx, [tagName, flags]) => this.removeTagFlags(ctx, tagName.asString, flags.asString),
                             description: 'Removes multiple flags from your tag. Flags should be of the form `-<f>`\n' +
                                 'e.g. `b!t flags remove mytag -c -n`'
                         }

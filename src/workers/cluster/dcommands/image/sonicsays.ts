@@ -9,7 +9,7 @@ export class SonicSaysCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+}',
                     description: 'Sonic wants to share some words of wisdom.',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });

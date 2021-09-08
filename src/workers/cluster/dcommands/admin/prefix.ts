@@ -16,12 +16,12 @@ export class PrefixCommand extends BaseGuildCommand {
                 {
                     parameters: 'add|set|create {prefix}',
                     description: 'Adds a command prefix to this server',
-                    execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix)
+                    execute: (ctx, [prefix]) => this.addPrefix(ctx, prefix.asString)
                 },
                 {
                     parameters: 'remove|delete {prefix}',
                     description: 'Removes a command prefix from this server',
-                    execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix)
+                    execute: (ctx, [prefix]) => this.removePrefix(ctx, prefix.asString)
                 }
             ]
         });

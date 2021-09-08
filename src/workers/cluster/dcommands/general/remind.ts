@@ -15,7 +15,7 @@ export class TimerCommand extends BaseGlobalCommand {
                 {
                     parameters: '{~message+} in {duration:duration+}',
                     description: 'Reminds you about something after a period of time in a DM.',
-                    execute: (ctx, [message, duration], { c: channel }) => this.addTimer(ctx, duration, message, channel !== undefined)
+                    execute: (ctx, [message, duration], { c: channel }) => this.addTimer(ctx, duration.asDuration, message.asString, channel !== undefined)
                 }
             ]
         });

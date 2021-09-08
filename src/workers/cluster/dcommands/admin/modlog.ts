@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize } from '@cluster/utils';
 import { guard, pluralise as p } from '@core/utils';
-import { Constants, DiscordAPIError, GuildTextBasedChannels } from 'discord.js';
+import { Constants, DiscordAPIError, KnownChannel } from 'discord.js';
 
 export class ModlogCommand extends BaseGuildCommand {
     public constructor() {
@@ -13,7 +13,7 @@ export class ModlogCommand extends BaseGuildCommand {
                 {
                     parameters: '{channel:channel+?}',
                     description: 'Sets the channel to use as the modlog channel',
-                    execute: (ctx, [channel]) => this.setChannel(ctx, channel ?? ctx.channel)
+                    execute: (ctx, [channel]) => this.setChannel(ctx, channel.asOptionalChannel ?? ctx.channel)
                 },
                 {
                     parameters: 'disable',
@@ -23,13 +23,18 @@ export class ModlogCommand extends BaseGuildCommand {
                 {
                     parameters: 'clear|delete {ids:integer[0]}',
                     description: 'Deletes specific modlog entries. If you dont provide any, all the entries will be removed',
-                    execute: (ctx, [count]) => this.clearModlog(ctx, count ?? Infinity)
+                    execute: (ctx, [ids]) => this.clearModlog(ctx, ids.asIntegers)
                 }
             ]
         });
     }
 
-    public async setChannel(context: GuildCommandContext, channel: GuildTextBasedChannels | undefined): Promise<string> {
+    public async setChannel(context: GuildCommandContext, channel: KnownChannel | undefined): Promise<string> {
+        if (channel !== undefined && (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild))
+            return this.error('The modlog channel must be on this server!');
+        if (channel !== undefined && !guard.isTextableChannel(channel))
+            return this.error('The modlog channel must be a text channel!');
+
         await context.database.guilds.setSetting(context.channel.guild.id, 'modlog', channel?.id);
 
         if (channel === undefined)
@@ -37,7 +42,7 @@ export class ModlogCommand extends BaseGuildCommand {
         return this.success(`Modlog entries will now be sent in ${channel.toString()}`);
     }
 
-    public async clearModlog(context: GuildCommandContext, ids: number[]): Promise<string> {
+    public async clearModlog(context: GuildCommandContext, ids: readonly number[]): Promise<string> {
         const modlogs = await context.database.guilds.removeModlogCases(context.channel.guild.id, ids.length === 0 ? undefined : ids);
 
         if (modlogs === undefined || modlogs.length === 0)

@@ -10,7 +10,7 @@ export class InsultCommand extends BaseGlobalCommand {
                 {
                     parameters: '{name+}',
                     description: 'Generates a random insult directed at the name supplied.',
-                    execute: (_, [name]) => this.insult(`${<string>name}'s`)
+                    execute: (_, [name]) => this.insult(`${name.asString}'s`)
                 },
                 {
                     parameters: '',

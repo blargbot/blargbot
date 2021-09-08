@@ -15,7 +15,7 @@ export class UnbanCommand extends BaseGuildCommand {
                     parameters: '{userId}',
                     description: 'Unbans a user.\n' +
                         'If mod-logging is enabled, the ban will be logged.',
-                    execute: (ctx, [user], flags) => this.unban(ctx, user, flags)
+                    execute: (ctx, [user], flags) => this.unban(ctx, user.asString, flags)
                 }
             ]
         });

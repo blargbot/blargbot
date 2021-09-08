@@ -15,7 +15,7 @@ export class TidyCommand extends BaseGuildCommand {
                 {
                     parameters: '{count:integer=100}',
                     description: 'Clears messages from chat',
-                    execute: (ctx, [count], flags) => this.tidy(ctx, count, {
+                    execute: (ctx, [count], flags) => this.tidy(ctx, count.asInteger, {
                         botsOnly: flags.b !== undefined,
                         invites: flags.i !== undefined,
                         links: flags.l !== undefined,

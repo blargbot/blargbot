@@ -27,7 +27,7 @@ export class MuteCommand extends BaseGuildCommand {
                         'If the bot has permissions for it, this command will also voice-mute the user.\n' +
                         'If mod-logging is enabled, the mute will be logged.\n' +
                         'You can also specify a length of time the user should be muted for, using formats such as `1 hour 2 minutes` or `1h2m`.',
-                    execute: (ctx, [user], flags) => this.mute(ctx, user, flags)
+                    execute: (ctx, [user], flags) => this.mute(ctx, user.asMember, flags)
                 }
             ]
         });

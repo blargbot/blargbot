@@ -11,7 +11,7 @@ export class ExecCommand extends BaseGlobalCommand {
                 {
                     parameters: '{~command+}',
                     description: 'Executes a command on the current shell',
-                    execute: (ctx, [command]) => this.commandLine(ctx, command)
+                    execute: (ctx, [command]) => this.commandLine(ctx, command.asString)
                 }
             ]
         });

@@ -13,7 +13,7 @@ interface SwitchOptions<TContext extends CommandContext> {
     } | undefined;
 }
 
-export class SwitchBinding<TContext extends CommandContext> extends CommandBindingBase<TContext, never> {
+export class SwitchBinding<TContext extends CommandContext> extends CommandBindingBase<TContext> {
     protected readonly expected: readonly string[];
     protected readonly lookup: Readonly<Record<string, ReadonlyArray<Binding<CommandBinderState<TContext>>> | undefined>>;
 

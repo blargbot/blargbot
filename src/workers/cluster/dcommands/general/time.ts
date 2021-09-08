@@ -17,17 +17,17 @@ export class TimeCommand extends BaseGlobalCommand {
                 {
                     parameters: '{user:user+}',
                     description: 'Gets the current time for the user',
-                    execute: (ctx, [user]) => this.getUserTime(ctx, user)
+                    execute: (ctx, [user]) => this.getUserTime(ctx, user.asUser)
                 },
                 {
                     parameters: '{timezone}',
                     description: 'Gets the current time in the timezone',
-                    execute: (_, [timezone]) => this.getTime(timezone)
+                    execute: (_, [timezone]) => this.getTime(timezone.asString)
                 },
                 {
                     parameters: '{timezone1} {timezone2} {time+}',
                     description: 'Converts a `time` from `timezone1` to `timezone2`',
-                    execute: (_, [from, to, time]) => this.changeTimezone(time, from, to)
+                    execute: (_, [from, to, time]) => this.changeTimezone(time.asString, from.asString, to.asString)
                 }
             ]
         });

@@ -12,12 +12,12 @@ export class NamesCommand extends BaseGlobalCommand {
                 {
                     parameters: '{user:user+?}',
                     description: 'Returns the names that I\'ve seen the specified user have in the past 30 days.',
-                    execute: (ctx, [user], flags) => this.listNames(ctx, user ?? ctx.author, flags.a !== undefined, flags.v !== undefined)
+                    execute: (ctx, [user], flags) => this.listNames(ctx, user.asOptionalUser ?? ctx.author, flags.a !== undefined, flags.v !== undefined)
                 },
                 {
                     parameters: 'remove {names+?}',
                     description: 'Removes the names ive seen you use in the past 30 days',
-                    execute: (ctx, [names]) => this.removeNames(ctx, names)
+                    execute: (ctx, [names]) => this.removeNames(ctx, names.asOptionalString)
                 }
             ],
             flags: [
@@ -53,18 +53,18 @@ export class NamesCommand extends BaseGlobalCommand {
         return embed;
     }
 
-    public async removeNames(context: CommandContext, names: string): Promise<string> {
+    public async removeNames(context: CommandContext, names: string | undefined): Promise<string> {
         let usernames = await context.database.users.getUsernames(context.author.id);
         if (usernames === undefined || usernames.length === 0)
             return this.info('You dont have any usernames to remove!');
 
-        const nameLookup = names.toLowerCase();
-        usernames = names.length === 0 ? usernames : usernames.filter(u => nameLookup.includes(u.name.toLowerCase()));
+        const nameLookup = names?.toLowerCase();
+        usernames = nameLookup === undefined ? usernames : usernames.filter(u => nameLookup.includes(u.name.toLowerCase()));
 
         if (usernames.length === 0)
             return this.error('I couldnt find any of the usernames you gave!');
 
-        const countStr = names.length === 0 ? '**all usernames**' : `${usernames.length} ${p(usernames.length, 'username')}`;
+        const countStr = nameLookup === undefined ? '**all usernames**' : `${usernames.length} ${p(usernames.length, 'username')}`;
         const confirmed = await context.util.queryConfirm({
             context: context.channel,
             actors: context.author,
@@ -77,7 +77,7 @@ export class NamesCommand extends BaseGlobalCommand {
         if (!confirmed)
             return this.success('I wont remove any usernames then!');
 
-        await context.database.users.removeUsernames(context.author.id, names.length === 0 ? 'all' : usernames.map(u => u.name));
+        await context.database.users.removeUsernames(context.author.id, nameLookup === undefined ? 'all' : usernames.map(u => u.name));
         return this.success(`Successfully removed ${countStr}!`);
     }
 }

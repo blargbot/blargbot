@@ -18,7 +18,7 @@ export class ShardCommand extends BaseGlobalCommand {
                 {
                     parameters: '{guildID}',
                     description: 'Returns information about the shard `guildID` is in, along with cluster stats.',
-                    execute: (ctx, [guildID]) => this.showGuildShard(ctx, guildID)
+                    execute: (ctx, [guildID]) => this.showGuildShard(ctx, guildID.asString)
                 }
             ]
         });

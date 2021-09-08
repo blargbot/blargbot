@@ -1,12 +1,13 @@
-import { CommandBinderState, CommandSingleParameter, CommandVariableTypeMap, CommandVariableTypeName } from '@cluster/types';
+import { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@cluster/types';
 import { humanize } from '@cluster/utils';
 import { Binder } from '@core/Binder';
 import { Binding, BindingResultAsyncIterator } from '@core/types';
 
 import { CommandContext } from '../../CommandContext';
+import { createCommandArgument } from '../commandArgument';
 import { CommandBindingBase } from './CommandBindingBase';
 
-export class SingleBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext, CommandVariableTypeMap[Name] | undefined> {
+export class SingleBinding<TContext extends CommandContext, Name extends CommandVariableTypeName> extends CommandBindingBase<TContext> {
     public readonly name: string;
 
     public constructor(
@@ -36,6 +37,6 @@ export class SingleBinding<TContext extends CommandContext, Name extends Command
         else if (this.parameter.fallback !== undefined)
             yield this.getBindingResult(state, this.next, 0, await this.parameter.type.parse(this.parameter.fallback, state));
         else
-            yield this.getBindingResult(state, this.next, 0, { success: true, value: undefined });
+            yield this.getBindingResult(state, this.next, 0, { success: true, value: createCommandArgument(this.parameter.type.name, undefined) });
     }
 }

@@ -15,13 +15,13 @@ export class Rule34Command extends BaseGlobalCommand {
                 {
                     parameters: '{tags[]}',
                     description: 'Gets three pictures from \'<https://rule34.xxx/>\' using given tags.',
-                    execute: (_, [tags]) => this.getRule34(tags)
+                    execute: (_, [tags]) => this.getRule34(tags.asStrings)
                 }
             ]
         });
     }
 
-    public async getRule34(tags: string[]): Promise<string | MessageOptions> {
+    public async getRule34(tags: readonly string[]): Promise<string | MessageOptions> {
         if (tags.length === 0)
             return this.error('You need to provide some tags');
 

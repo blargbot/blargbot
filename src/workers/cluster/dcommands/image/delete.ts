@@ -9,7 +9,7 @@ export class DeleteCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '{text+}',
                     description: 'Shows that you\'re about to delete something.',
-                    execute: (ctx, [text]) => this.render(ctx, text)
+                    execute: (ctx, [text]) => this.render(ctx, text.asString)
                 }
             ]
         });

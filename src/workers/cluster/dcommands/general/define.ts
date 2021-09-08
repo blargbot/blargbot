@@ -13,7 +13,7 @@ export class DefineCommand extends BaseGlobalCommand {
                 {
                     parameters: '{word}',
                     description: 'Gets the definition for the specified word. The word must be in english.',
-                    execute: (ctx, [word]) => this.define(ctx, word)
+                    execute: (ctx, [word]) => this.define(ctx, word.asString)
                 }
             ]
         }, true);

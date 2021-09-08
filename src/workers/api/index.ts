@@ -17,5 +17,7 @@ export default async function start(): Promise<void> {
         .start();
 }
 
-if (require.main === module)
+if (require.main === module) {
+    Error.stackTraceLimit = 100;
     void start();
+}

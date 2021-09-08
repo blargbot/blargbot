@@ -13,17 +13,17 @@ export class MassBanCommand extends BaseGuildCommand {
             ],
             definitions: [
                 {
-                    parameters: '{userIds[]} {deleteDays:number=1}',
+                    parameters: '{userIds[]} {deleteDays:integer=1}',
                     description: 'Bans a user who isn\'t currently on your guild, where `<userIds...>` is a list of user IDs ' +
                         'or mentions (separated by spaces) and `days` is the number of days to delete messages for.\n' +
                         'If mod-logging is enabled, the ban will be logged.',
-                    execute: (ctx, [users, deleteDays], flags) => this.massBan(ctx, users, deleteDays, flags)
+                    execute: (ctx, [users, deleteDays], flags) => this.massBan(ctx, users.asStrings, deleteDays.asInteger, flags)
                 }
             ]
         });
     }
 
-    public async massBan(context: GuildCommandContext, userIds: string[], deleteDays: number, flags: FlagResult): Promise<string> {
+    public async massBan(context: GuildCommandContext, userIds: readonly string[], deleteDays: number, flags: FlagResult): Promise<string> {
         userIds = userIds.flatMap(u => parse.entityId(u)).filter(guard.hasValue);
 
         const reason = flags.r?.merge().value;

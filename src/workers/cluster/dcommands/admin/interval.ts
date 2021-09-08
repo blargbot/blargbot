@@ -13,7 +13,7 @@ export class IntervalCommand extends BaseGuildCommand {
                 {
                     parameters: 'set {~bbtag+}',
                     description: 'Sets the bbtag to run every 15 minutes',
-                    execute: (ctx, [bbtag]) => this.setInterval(ctx, bbtag)
+                    execute: (ctx, [bbtag]) => this.setInterval(ctx, bbtag.asString)
                 },
                 {
                     parameters: 'raw',

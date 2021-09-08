@@ -14,22 +14,22 @@ export class FeedbackCommand extends BaseGlobalCommand {
                 {
                     parameters: '{description+}',
                     description: 'Give me general feedback about the bot',
-                    execute: (ctx, [description], flags) => this.submitFeedback(ctx, description, flags)
+                    execute: (ctx, [description], flags) => this.submitFeedback(ctx, description.asString, flags)
                 },
                 {
                     parameters: 'suggest|suggestion {description+}',
                     description: 'Tell me something you want to be added or changed',
-                    execute: (ctx, [description], flags) => this.submitSuggestion(ctx, description, flags)
+                    execute: (ctx, [description], flags) => this.submitSuggestion(ctx, description.asString, flags)
                 },
                 {
                     parameters: 'report|bug {description+}',
                     description: 'Let me know about a bug you found',
-                    execute: (ctx, [description], flags) => this.submitBugReport(ctx, description, flags)
+                    execute: (ctx, [description], flags) => this.submitBugReport(ctx, description.asString, flags)
                 },
                 {
-                    parameters: 'edit {caseNumber:number} {description+}',
+                    parameters: 'edit {caseNumber:integer} {description+}',
                     description: 'Edit some feedback you have previously sent',
-                    execute: (ctx, [caseNumber, description], flags) => this.editFeedback(ctx, caseNumber, description, flags)
+                    execute: (ctx, [caseNumber, description], flags) => this.editFeedback(ctx, caseNumber.asInteger, description.asString, flags)
                 }
             ],
             flags: [

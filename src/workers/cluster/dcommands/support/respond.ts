@@ -12,7 +12,7 @@ export class RespondCommand extends BaseGlobalCommand {
                 {
                     parameters: '{id:number} {~response+}',
                     description: 'Responds to a suggestion, bug report or feature request',
-                    execute: (ctx, [id, response]) => this.respond(ctx, id, response)
+                    execute: (ctx, [id, response]) => this.respond(ctx, id.asNumber, response.asString)
                 }
             ]
         });

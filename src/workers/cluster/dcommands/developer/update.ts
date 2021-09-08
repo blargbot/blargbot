@@ -11,7 +11,7 @@ export class UpdateCommand extends BaseGlobalCommand {
                 {
                     parameters: '{semVer:literal(patch|minor|major)=patch}',
                     description: 'Updates the codebase to the latest commit.',
-                    execute: (ctx, [type]) => this.update(ctx, type)
+                    execute: (ctx, [type]) => this.update(ctx, type.asString)
                 }
             ]
         });

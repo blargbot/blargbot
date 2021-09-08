@@ -11,7 +11,7 @@ export class ShipCommand extends BaseGlobalCommand {
                 {
                     parameters: '{user1:user} {user2:user}',
                     description: 'Gives you the ship name for two users.',
-                    execute: (_, [user1, user2]) => this.getShipName(user1, user2)
+                    execute: (_, [user1, user2]) => this.getShipName(user1.asUser, user2.asUser)
                 }
             ]
         });

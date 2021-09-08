@@ -11,10 +11,10 @@ export class RetardedCommand extends BaseGlobalImageCommand {
                     parameters: '{text+}',
                     description: 'Tells everyone who is retarded.',
                     execute: (ctx, [text], flags) => flags.u !== undefined
-                        ? this.renderUser(ctx, text, flags.u.merge().value)
+                        ? this.renderUser(ctx, text.asString, flags.u.merge().value)
                         : this.render(
                             ctx,
-                            text,
+                            text.asString,
                             flags.i?.merge().value
                             ?? ctx.message.attachments.first()?.url
                             ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })

@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
-import { GuildTextBasedChannels, MessageOptions } from 'discord.js';
+import { KnownChannel, MessageOptions } from 'discord.js';
 
 export class GreetingCommand extends BaseGuildCommand {
     public constructor() {
@@ -13,7 +13,7 @@ export class GreetingCommand extends BaseGuildCommand {
                 {
                     parameters: 'set {~bbtag+}',
                     description: 'Sets the message to send when someone joins the server',
-                    execute: (ctx, [bbtag]) => this.setGreeting(ctx, bbtag)
+                    execute: (ctx, [bbtag]) => this.setGreeting(ctx, bbtag.asString)
                 },
                 {
                     parameters: 'raw',
@@ -28,7 +28,7 @@ export class GreetingCommand extends BaseGuildCommand {
                 {
                     parameters: 'setchannel {channel:channel+}',
                     description: 'Sets the channel the greeting message will be sent in.',
-                    execute: (ctx, [channel]) => this.setChannel(ctx, channel)
+                    execute: (ctx, [channel]) => this.setChannel(ctx, channel.asChannel)
                 },
                 {
                     parameters: 'debug',
@@ -111,7 +111,12 @@ export class GreetingCommand extends BaseGuildCommand {
         return this.success('The greeting message will now run using your permissions');
     }
 
-    public async setChannel(context: GuildCommandContext, channel: GuildTextBasedChannels): Promise<string> {
+    public async setChannel(context: GuildCommandContext, channel: KnownChannel): Promise<string> {
+        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+            return this.error('The greeting channel must be on this server!');
+        if (!guard.isTextableChannel(channel))
+            return this.error('The greeting channel must be a text channel!');
+
         await context.database.guilds.setSetting(context.channel.guild.id, 'greetChan', channel.id);
         return this.success(`Greeting messages will now be sent in ${channel.toString()}`);
     }

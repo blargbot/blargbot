@@ -25,12 +25,12 @@ export class ShardsCommand extends BaseGlobalCommand {
                 {
                     parameters: '{guildID}',
                     description: 'Shows information about the shard and cluster `guildID` is in ',
-                    execute: (ctx, [guildID]) => this.showGuildShards(ctx, guildID)
+                    execute: (ctx, [guildID]) => this.showGuildShards(ctx, guildID.asString)
                 },
                 {
                     parameters: '{clusterID:integer}',
                     description: 'Show information about `cluster`',
-                    execute: (ctx, [clusterID]) => this.showClusterShards(ctx, clusterID as number)
+                    execute: (ctx, [clusterID]) => this.showClusterShards(ctx, clusterID.asInteger)
                 }
             ]
         });

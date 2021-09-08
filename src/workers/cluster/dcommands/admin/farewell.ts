@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
-import { GuildTextBasedChannels, MessageOptions } from 'discord.js';
+import { KnownChannel, MessageOptions } from 'discord.js';
 
 export class FarewellCommand extends BaseGuildCommand {
     public constructor() {
@@ -12,7 +12,7 @@ export class FarewellCommand extends BaseGuildCommand {
                 {
                     parameters: 'set {~bbtag+}',
                     description: 'Sets the bbtag to send when someone leaves the server',
-                    execute: (ctx, [bbtag]) => this.setFarewell(ctx, bbtag)
+                    execute: (ctx, [bbtag]) => this.setFarewell(ctx, bbtag.asString)
                 },
                 {
                     parameters: 'raw',
@@ -27,7 +27,7 @@ export class FarewellCommand extends BaseGuildCommand {
                 {
                     parameters: 'setchannel {channel:channel+}',
                     description: 'Sets the channel the farewell message will be sent in.',
-                    execute: (ctx, [channel]) => this.setChannel(ctx, channel)
+                    execute: (ctx, [channel]) => this.setChannel(ctx, channel.asChannel)
                 },
                 {
                     parameters: 'debug',
@@ -110,7 +110,12 @@ export class FarewellCommand extends BaseGuildCommand {
         return this.success('The farewell message will now run using your permissions');
     }
 
-    public async setChannel(context: GuildCommandContext, channel: GuildTextBasedChannels): Promise<string> {
+    public async setChannel(context: GuildCommandContext, channel: KnownChannel): Promise<string> {
+        if (!guard.isGuildChannel(channel) || channel.guild !== context.channel.guild)
+            return this.error('The farewell channel must be on this server!');
+        if (!guard.isTextableChannel(channel))
+            return this.error('The farewell channel must be a text channel!');
+
         await context.database.guilds.setSetting(context.channel.guild.id, 'farewellchan', channel.id);
         return this.success(`Farewell messages will now be sent in ${channel.toString()}`);
     }

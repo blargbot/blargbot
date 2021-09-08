@@ -14,12 +14,12 @@ export class BrainfuckCommand extends BaseGlobalCommand {
                 {
                     parameters: '{code+}',
                     description: 'Executes brainfuck code.',
-                    execute: (ctx, [code]) => this.eval(ctx, code, false)
+                    execute: (ctx, [code]) => this.eval(ctx, code.asString, false)
                 },
                 {
                     parameters: 'debug {code+}',
                     description: 'Executes brainfuck code and returns the pointers.',
-                    execute: (ctx, [code]) => this.eval(ctx, code, true)
+                    execute: (ctx, [code]) => this.eval(ctx, code.asString, true)
                 }
             ]
         });

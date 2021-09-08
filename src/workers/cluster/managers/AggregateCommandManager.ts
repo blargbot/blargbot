@@ -53,7 +53,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         }
     }
 
-    public async configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
+    public async configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]> {
         let remaining = [...names];
         const result = [];
         for (const manager of this.managersArr) {
