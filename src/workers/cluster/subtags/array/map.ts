@@ -16,21 +16,18 @@ export class MapSubtag extends BaseSubtag {
                         ' will be the new value of the element. This will return the new array, and will not modify the original.',
                     exampleCode: '{map;~item;["apples","oranges","pears"];{upper;{get;~item}}}',
                     exampleOut: '["APPLES","ORANGES","PEARS"]',
-                    execute: (context, [variable, array, code], subtag) => this.map(context, variable.value, array.value, code, subtag)
+                    execute: (context, [varName, array, code], subtag) => this.map(context, varName.value, array.value, code, subtag)
                 }
             ]
         });
     }
 
-    public async map(context: BBTagContext, varName: string, arrayString: string, code: SubtagArgumentValue, subtag: SubtagCall): Promise<string> {
-        const bbArr = await bbtagUtil.tagArray.getArray(context, arrayString);
-        let array: JArray;
-        if (bbArr === undefined || !Array.isArray(bbArr.v))
-            array = [];
-        else
-            array = bbArr.v;
-        const result = [];
+    public async map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgumentValue, subtag: SubtagCall): Promise<string> {
+        const { v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
+        if (array === undefined || array.length === 0)
+            return '[]';
 
+        const result = [];
         for (const item of array) {
             const checked = await context.limit.check(context, subtag, 'map:loops');
             if (checked !== undefined) {

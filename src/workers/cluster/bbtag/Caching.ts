@@ -1,4 +1,3 @@
-import { SubtagCall } from '@cluster/types';
 import { Timer } from '@core/Timer';
 
 import { BBTagContext } from './BBTagContext';
@@ -41,7 +40,7 @@ export class VariableCache {
         this.#cache = {};
     }
 
-    private async _get(variable: string, subtag?: SubtagCall): Promise<CacheEntry> {
+    private async _get(variable: string): Promise<CacheEntry> {
         const forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
         const entry = this.#cache[variable];
@@ -53,19 +52,19 @@ export class VariableCache {
             throw new Error('Missing default variable scope!');
         try {
             return this.#cache[variable] = new CacheEntry(this.context, variable,
-                await scope.getter(this.context, subtag, variable.substring(scope.prefix.length)) ?? '');
+                await scope.getter(this.context, variable.substring(scope.prefix.length)) ?? '');
         } catch (err: unknown) {
             this.context.logger.error(err, this.context.isCC, this.context.rootTagName);
             throw err;
         }
     }
 
-    public async get(variable: string, subtag?: SubtagCall): Promise<JToken> {
-        const entry = await this._get(variable, subtag);
+    public async get(variable: string): Promise<JToken> {
+        const entry = await this._get(variable);
         return entry.value;
     }
 
-    public async set(variable: string, value: JToken | CacheEntry, subtag?: SubtagCall): Promise<void> {
+    public async set(variable: string, value: JToken | CacheEntry): Promise<void> {
         if (value instanceof CacheEntry) {
             this.#cache[variable] = value;
             return;
@@ -73,18 +72,18 @@ export class VariableCache {
 
         const forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
-        const entry = await this._get(variable, subtag);
+        const entry = await this._get(variable);
         entry.value = value;
         if (forced)
-            await this.persist([variable], subtag);
+            await this.persist([variable]);
     }
 
-    public async reset(variable: string, subtag?: SubtagCall): Promise<void> {
-        const entry = await this._get(variable, subtag);
+    public async reset(variable: string): Promise<void> {
+        const entry = await this._get(variable);
         entry.reset();
     }
 
-    public async persist(variables?: string[], subtag?: SubtagCall): Promise<void> {
+    public async persist(variables?: string[]): Promise<void> {
         const execRunning = this.context.execTimer.running;
         if (execRunning)
             this.context.execTimer.end();
@@ -109,7 +108,7 @@ export class VariableCache {
                 throw new Error('Missing default variable scope!');
             const objectCount = Object.keys(pool).length;
             this.context.logger.bbtag('Committing', objectCount, 'objects to the', key, 'pool.');
-            await scope.setter(this.context, subtag, pool);
+            await scope.setter(this.context, pool);
             timer.end();
             this.context.logger[timer.elapsed > 3000 ? 'info' : 'bbtag']('Commited', objectCount, 'objects to the', key, 'pool in', timer.elapsed, 'ms.');
             this.context.dbObjectsCommitted += objectCount;

@@ -18,10 +18,10 @@ interface HandleConfig<AutoMock extends Record<string, unknown>, Details> {
 
 type TestCases<Details, T extends Record<string, unknown>> = ReadonlyArray<TestCase<Details, T>>;
 
-type TestCase<Details, T extends Record<string, unknown>> = {
-    args: ReadonlyArray<string | string[] | undefined>;
-    details?: Details;
-} & T
+type TestCase<Details, T extends Record<string, unknown>> =
+    & { args: ReadonlyArray<string | string[] | undefined>; }
+    & (Details extends undefined ? { details?: Details; } : { details: Details; })
+    & T
 
 type HandleContext<AutoMock extends Record<string, unknown>> =
     & {
@@ -31,7 +31,7 @@ type HandleContext<AutoMock extends Record<string, unknown>> =
         [P in keyof AutoMock]: AutoMock[P] extends abstract new (...args: infer _) => infer R ? R : Exclude<AutoMock[P], undefined>
     }
 
-export function testExecuteNotEnoughArgs<AutoMock extends Record<string, unknown> = Record<string, never>, Details = undefined>(
+export function testExecuteNotEnoughArgs<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
     subtag: BaseSubtag,
     cases: TestCases<Details, { debugMessage?: string; expectedCount?: number; }>,
     automock?: AutoMock,
@@ -40,7 +40,7 @@ export function testExecuteNotEnoughArgs<AutoMock extends Record<string, unknown
     testExecuteFail(
         subtag,
         cases.map(_case => ({
-            args: _case.args,
+            ..._case,
             error: 'Not enough arguments',
             debugMessage: _case.debugMessage ?? (_case.expectedCount !== undefined
                 ? `Expected at least ${_case.expectedCount} arguments but got ${_case.args.length}`
@@ -51,7 +51,7 @@ export function testExecuteNotEnoughArgs<AutoMock extends Record<string, unknown
     );
 }
 
-export function testExecuteTooManyArgs<AutoMock extends Record<string, unknown> = Record<string, never>, Details = undefined>(
+export function testExecuteTooManyArgs<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
     subtag: BaseSubtag,
     cases: TestCases<Details, { debugMessage?: string; expectedCount?: number; }>,
     automock?: AutoMock,
@@ -60,7 +60,7 @@ export function testExecuteTooManyArgs<AutoMock extends Record<string, unknown> 
     testExecuteFail(
         subtag,
         cases.map(_case => ({
-            args: _case.args,
+            ..._case,
             error: 'Too many arguments',
             debugMessage: _case.debugMessage ?? (_case.expectedCount !== undefined
                 ? `Expected ${_case.expectedCount} arguments or fewer but got ${_case.args.length}`
@@ -71,31 +71,31 @@ export function testExecuteTooManyArgs<AutoMock extends Record<string, unknown> 
     );
 }
 
-export function testExecuteFail<AutoMock extends Record<string, unknown> = Record<string, never>, Details = undefined>(
+export function testExecuteFail<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
     subtag: BaseSubtag,
     cases: TestCases<Details, { debugMessage?: string; error: string; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details>
 ): void {
-    for (const { args, debugMessage, error, details } of cases) {
-        const expected = snowflake.create().toString();
+    for (const testCase of cases) {
+        const expected = `[${snowflake.create().toString()}]This test should have failed with the error ${testCase.error}`;
         const newOptions: HandleConfig<AutoMock, Details> = {
             arrange(ctx, args, call, details) {
-                when(ctx.contextMock.addError(error, call, debugMessage))
+                when(ctx.contextMock.addError(testCase.error, call, testCase.debugMessage))
                     .thenReturn(expected);
                 options?.arrange?.(ctx, args, call, details);
             },
             assert(ctx, args, call, details) {
-                verify(ctx.contextMock.addError(error, call, debugMessage))
+                verify(ctx.contextMock.addError(testCase.error, call, testCase.debugMessage))
                     .once();
                 options?.assert?.(ctx, args, call, details);
             }
         };
-        testExecute(subtag, [{ args, expected, details, title: error }], automock, newOptions);
+        testExecute(subtag, [{ ...testCase, expected, title: testCase.error }], automock, newOptions);
     }
 }
 
-export function testExecute<AutoMock extends Record<string, unknown> = Record<string, never>, Details = undefined>(
+export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
     subtag: BaseSubtag,
     cases: TestCases<Details, { expected: string; title?: string; }>,
     automock?: AutoMock,
@@ -108,7 +108,7 @@ export function testExecute<AutoMock extends Record<string, unknown> = Record<st
     }
 }
 
-function subtagInvokeTestCase<AutoMock extends Record<string, unknown> = Record<string, never>, Details = undefined>(
+function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
     subtag: BaseSubtag,
     automock: AutoMock | undefined,
     options: HandleConfig<AutoMock, Details>,

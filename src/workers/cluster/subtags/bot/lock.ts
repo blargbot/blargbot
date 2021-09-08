@@ -71,7 +71,6 @@ export class LockSubtag extends BaseSubtag {
 
         const lock = scope.getLock(
             context,
-            subtag,
             key.substring(scope.prefix.length)
         );
 

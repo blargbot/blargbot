@@ -12,14 +12,14 @@ export class IsArraySubtag extends BaseSubtag {
                     description: 'Determines whether `text` is a valid array.',
                     exampleCode: '{isarray;["array?"]} {isarray;array?}',
                     exampleOut: 'true false',
-                    execute: (_, [{ value }]) => this.isArray(value).toString()
+                    execute: (_, [array]) => this.isArray(array.value).toString()
                 }
             ]
         });
     }
 
-    public isArray(value: string): boolean {
-        const input = bbtagUtil.tagArray.deserialize(value);
-        return input !== undefined && Array.isArray(input.v);
+    public isArray(arrayStr: string): boolean {
+        const { v: array } = bbtagUtil.tagArray.deserialize(arrayStr) ?? {};
+        return array !== undefined;
     }
 }

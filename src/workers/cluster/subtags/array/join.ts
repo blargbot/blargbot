@@ -13,18 +13,18 @@ export class JoinSubtag extends BaseSubtag {
                     description: 'Joins the elements of `array` together with `text` as the separator.',
                     exampleCode: '{join;["this", "is", "an", "array"];!}',
                     exampleOut: 'this!is!an!array',
-                    execute: (context, [{ value: inputArray }, { value: text }], subtag) => this.join(context, inputArray, text, subtag)
+                    execute: (context, [array, join], subtag) => this.join(context, array.value, join.value, subtag)
                 }
             ]
         });
     }
 
-    public async join(context: BBTagContext, inputArray: string, separator: string, subtag: SubtagCall): Promise<string> {
-        const array = await bbtagUtil.tagArray.getArray(context, inputArray);
+    public async join(context: BBTagContext, arrayStr: string, separator: string, subtag: SubtagCall): Promise<string> {
+        const { v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
 
-        if (array === undefined || !Array.isArray(array.v))
+        if (array === undefined)
             return this.notAnArray(context, subtag);
 
-        return array.v.join(separator);
+        return array.join(separator);
     }
 }

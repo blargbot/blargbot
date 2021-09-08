@@ -26,6 +26,15 @@ describe('{map}', () => {
             },
             {
                 args: [
+                    '~var',
+                    'this isnt an array',
+                    undefined
+                ],
+                expected: '[]',
+                details: { varSets: [], maxLoops: 10, loopChecks: 0 }
+            },
+            {
+                args: [
                     '~abc',
                     '[1,2,3]',
                     ['A', 'B', 'C'] // return A, then B, then C
@@ -83,7 +92,7 @@ describe('{map}', () => {
                 verify(ctx.stateMock.return)
                     .times(details.varSets.length);
                 verify(ctx.dbMock.reset(args[0].value))
-                    .once();
+                    .times(details.varSets.length === 0 ? 0 : 1);
 
                 for (const value of details.varSets)
                     verify(ctx.dbMock.set(args[0].value, value))
