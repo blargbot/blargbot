@@ -19,10 +19,10 @@ describe('{map}', () => {
                 args: [
                     '~var',
                     '[]',
-                    'A'
+                    undefined
                 ],
                 expected: '[]',
-                details: { values: [], maxLoops: 10, loopChecks: 0 }
+                details: { varSets: [], maxLoops: 10, loopChecks: 0 }
             },
             {
                 args: [
@@ -31,7 +31,7 @@ describe('{map}', () => {
                     ['A', 'B', 'C'] // return A, then B, then C
                 ],
                 expected: '["A","B","C"]',
-                details: { values: [1, 2, 3], maxLoops: 10, loopChecks: 3 }
+                details: { varSets: [1, 2, 3], maxLoops: 10, loopChecks: 3 }
             },
             {
                 args: [
@@ -40,7 +40,7 @@ describe('{map}', () => {
                     ['A', 'B', '1', '2'] // return A, then B, then 1, then 2
                 ],
                 expected: '["A","B","1","2","2"]',
-                details: { values: [1, 2, '3', 4, 5], maxLoops: 5, loopChecks: 5 }
+                details: { varSets: [1, 2, '3', 4, 5], maxLoops: 5, loopChecks: 5 }
             },
             {
                 title: 'Too many loops',
@@ -50,7 +50,7 @@ describe('{map}', () => {
                     ['A', 'B', '1', '2'] // return A, then B, then 1, then 2
                 ],
                 expected: '["A","B","1","2","2","`Nope`"]',
-                details: { values: [1, 2, '3', 4, 5], maxLoops: 5, loopChecks: 6 }
+                details: { varSets: [1, 2, '3', 4, 5], maxLoops: 5, loopChecks: 6 }
             }
         ], {
             limitMock: undefined as RuntimeLimit | undefined,
@@ -68,25 +68,25 @@ describe('{map}', () => {
                     .thenReturn(...checkResults);
                 when(ctx.contextMock.variables)
                     .thenReturn(instance(ctx.dbMock));
-                when(ctx.dbMock.reset(args[0].values[0]))
+                when(ctx.dbMock.reset(args[0].value))
                     .thenResolve();
 
-                for (const value of details.values)
-                    when(ctx.dbMock.set(args[0].values[0], value))
+                for (const value of details.varSets)
+                    when(ctx.dbMock.set(args[0].value, value))
                         .thenResolve();
             },
             assert(ctx, args, call, details) {
                 verify(ctx.limitMock.check(instance(ctx.contextMock), call, 'map:loops'))
                     .times(details.loopChecks);
                 verify(ctx.contextMock.eval(args[2].code))
-                    .times(details.values.length);
+                    .times(details.varSets.length);
                 verify(ctx.stateMock.return)
-                    .times(details.values.length);
-                verify(ctx.dbMock.reset(args[0].values[0]))
+                    .times(details.varSets.length);
+                verify(ctx.dbMock.reset(args[0].value))
                     .once();
 
-                for (const value of details.values)
-                    verify(ctx.dbMock.set(args[0].values[0], value))
+                for (const value of details.varSets)
+                    verify(ctx.dbMock.set(args[0].value, value))
                         .once();
             }
         });

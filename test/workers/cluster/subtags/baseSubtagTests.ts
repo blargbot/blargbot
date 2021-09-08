@@ -5,15 +5,21 @@ import { expect } from 'chai';
 import { it } from 'mocha';
 import { instance, mock, verify, when } from 'ts-mockito';
 
+interface ArgRef {
+    code: Statement;
+    resolveOrder: undefined | string[];
+    value: string;
+}
+
 interface HandleConfig<AutoMock extends Record<string, unknown>, Details> {
-    arrange?: (context: HandleContext<AutoMock>, args: ReadonlyArray<{ code: Statement; values: string[]; }>, subtag: SubtagCall, details: Details) => Awaitable<void>;
-    assert?: (context: HandleContext<AutoMock>, args: ReadonlyArray<{ code: Statement; values: string[]; }>, subtag: SubtagCall, details: Details) => Awaitable<void>;
+    arrange?: (context: HandleContext<AutoMock>, args: readonly ArgRef[], subtag: SubtagCall, details: Details) => Awaitable<void>;
+    assert?: (context: HandleContext<AutoMock>, args: readonly ArgRef[], subtag: SubtagCall, details: Details) => Awaitable<void>;
 }
 
 type TestCases<Details, T extends Record<string, unknown>> = ReadonlyArray<TestCase<Details, T>>;
 
 type TestCase<Details, T extends Record<string, unknown>> = {
-    args: ReadonlyArray<string | string[]>;
+    args: ReadonlyArray<string | string[] | undefined>;
     details?: Details;
 } & T
 
@@ -97,7 +103,7 @@ export function testExecute<AutoMock extends Record<string, unknown> = Record<st
 ): void {
     for (const testCase of cases) {
         const title = testCase.title !== undefined ? ` - ${testCase.title}` : '';
-        it(`Should handle {${[subtag.name, ...testCase.args.map(arg => Array.isArray(arg) ? arg[0] : arg)].join(';')}}${title}`,
+        it(`Should handle {${[subtag.name, ...testCase.args.map(arg => Array.isArray(arg) ? arg[0] : arg ?? '')].join(';')}}${title}`,
             subtagInvokeTestCase(subtag, automock, options ?? {}, testCase));
     }
 }
@@ -118,9 +124,22 @@ function subtagInvokeTestCase<AutoMock extends Record<string, unknown> = Record<
                 .map(e => [e[0], mock(e[1])] as const)
         ]);
 
-        const argRefs = args.map((arg, i) => ({
+        const argRefs = args.map<ArgRef>((arg, i) => ({
             code: [`ARG${i}`],
-            values: Array.isArray(arg) ? arg : [arg]
+            get resolveOrder() {
+                switch (typeof arg) {
+                    case 'undefined': return undefined;
+                    case 'string': return [arg];
+                    default: return arg;
+                }
+            },
+            get value() {
+                switch (typeof arg) {
+                    case 'undefined': throw new Error('Arg should never resolve!');
+                    case 'string': return arg;
+                    default: return arg[0];
+                }
+            }
         }));
 
         const call: SubtagCall = {
@@ -137,8 +156,9 @@ function subtagInvokeTestCase<AutoMock extends Record<string, unknown> = Record<
             .thenReturn({});
 
         for (const arg of argRefs)
-            when(context.contextMock.eval(arg.code))
-                .thenResolve(...arg.values);
+            if (arg.resolveOrder !== undefined)
+                when(context.contextMock.eval(arg.code))
+                    .thenResolve(...arg.resolveOrder);
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         options.arrange?.(context, argRefs, call, details!);
