@@ -46,9 +46,9 @@ describe('{map}', () => {
                 args: [
                     '~def',
                     '{"n":"idk","v":[1,2,"3",4,5]}',
-                    ['A', 'B', '1', '2'] // return A, then B, then 1, then 2
+                    ['A', 'B', '1', '2', 'Z'] // return A, then B, then 1, then 2
                 ],
-                expected: '["A","B","1","2","2"]',
+                expected: '["A","B","1","2","Z"]',
                 details: { varSets: [1, 2, '3', 4, 5], maxLoops: 5, loopChecks: 5 }
             },
             {
@@ -56,9 +56,9 @@ describe('{map}', () => {
                 args: [
                     '~def',
                     '{"n":"idk","v":[1,2,"3",4,5,6,7]}',
-                    ['A', 'B', '1', '2'] // return A, then B, then 1, then 2
+                    ['A', 'B', '1', '2', 'Z'] // return A, then B, then 1, then 2
                 ],
-                expected: '["A","B","1","2","2","`Nope`"]',
+                expected: '["A","B","1","2","Z","`Nope`"]',
                 details: { varSets: [1, 2, '3', 4, 5], maxLoops: 5, loopChecks: 6 }
             }
         ], {

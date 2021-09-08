@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { BBTagContextState, Statement, SubtagCall } from '@cluster/types';
+import { BBTagContextState, Statement, SubtagCall, SubtagResult } from '@cluster/types';
 import { snowflake } from '@core/utils';
 import { expect } from 'chai';
 import { it } from 'mocha';
@@ -97,7 +97,7 @@ export function testExecuteFail<Details = undefined, AutoMock extends Record<str
 
 export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
     subtag: BaseSubtag,
-    cases: TestCases<Details, { expected: string; title?: string; }>,
+    cases: TestCases<Details, { expected: SubtagResult; title?: string; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details>
 ): void {
@@ -112,7 +112,7 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
     subtag: BaseSubtag,
     automock: AutoMock | undefined,
     options: HandleConfig<AutoMock, Details>,
-    testCase: TestCase<Details, { expected: string; }>
+    testCase: TestCase<Details, { expected: SubtagResult; }>
 ): () => Promise<void> {
     const { args, expected, details } = testCase;
     return async () => {
@@ -155,10 +155,18 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
         when(context.stateMock.subtags)
             .thenReturn({});
 
-        for (const arg of argRefs)
-            if (arg.resolveOrder !== undefined)
+        for (const arg of argRefs) {
+            if (arg.resolveOrder !== undefined) {
+                const iter = arg.resolveOrder[Symbol.iterator]();
                 when(context.contextMock.eval(arg.code))
-                    .thenResolve(...arg.resolveOrder);
+                    .thenCall(() => {
+                        const next = iter.next();
+                        if (next.done === true)
+                            throw new Error('Values are exhausted!');
+                        return next.value;
+                    });
+            }
+        }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         options.arrange?.(context, argRefs, call, details!);
