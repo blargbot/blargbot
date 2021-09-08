@@ -6,19 +6,18 @@ import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub';
 import { MethodStub } from 'ts-mockito/lib/stub/MethodStub';
 import { isProxy } from 'util/types';
 
-(mockito as Mutable<typeof mockito>).mock = <T>(obj?: unknown) => {
+(mockito as Mutable<typeof mockito>).mock = (obj?: unknown) => {
     const ctx: Record<PropertyKey, unknown> = {};
 
     if (typeof obj === 'function')
         // eslint-disable-next-line @typescript-eslint/ban-types
         Object.setPrototypeOf(ctx, <object | null>obj.prototype);
 
-    for (const symbol of ['Symbol(Symbol.toPrimitive)', 'then', 'catch']) {
+    for (const symbol of ['Symbol(Symbol.toPrimitive)', 'then', 'catch'])
         if (!(symbol in ctx))
             ctx[symbol] = undefined;
-    }
 
-    return new Mocker(obj, ctx).getMock() as T;
+    return new Mocker(obj, ctx).getMock() as unknown;
 };
 
 class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {

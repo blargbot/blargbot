@@ -1,10 +1,13 @@
 import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '@cluster/types';
 
+type MutableSubtag = { -readonly [P in keyof SubtagCall]: SubtagCall[P] extends readonly Statement[] ? MutableStatement[] : SubtagCall[P] extends Statement ? MutableStatement : SubtagCall[P] };
+type MutableStatement = Array<string | MutableSubtag>;
+
 export function parse(source: string): Statement {
-    const result: Statement = [];
-    const subtags: SubtagCall[] = [];
+    const result: MutableStatement = [];
+    const subtags: MutableSubtag[] = [];
     let builder = result;
-    let subtag: SubtagCall | undefined;
+    let subtag: MutableSubtag | undefined;
 
     for (const token of tokenize(source)) {
         switch (token.type) {
@@ -52,7 +55,7 @@ export function parse(source: string): Statement {
 }
 
 function* tokenize(source: string): IterableIterator<SourceToken> {
-    const marker: SourceMarker = {
+    const marker: Mutable<SourceMarker> = {
         index: 0,
         line: 0,
         column: 0
@@ -97,18 +100,18 @@ function* tokenize(source: string): IterableIterator<SourceToken> {
     yield token(SourceTokenType.CONTENT, previous, marker);
 }
 
-function currentBuilder(subtag: SubtagCall): Statement {
+function currentBuilder(subtag: MutableSubtag): MutableStatement {
     if (subtag.args.length === 0)
         return subtag.name;
     return subtag.args[subtag.args.length - 1];
 }
 
-function trim(str: Statement): void {
+function trim(str: MutableStatement): void {
     modify(str, 0, str => str.trimStart());
     modify(str, str.length - 1, str => str.trimEnd());
 }
 
-function modify(str: Statement, index: number, mod: (str: string) => string): void {
+function modify(str: MutableStatement, index: number, mod: (str: string) => string): void {
     if (str.length === 0)
         return;
 

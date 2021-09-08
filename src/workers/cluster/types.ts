@@ -88,24 +88,24 @@ export type CommandManagerTypeMap = {
 export type CommandManagers = { [P in keyof CommandManagerTypeMap]: ICommandManager<CommandManagerTypeMap[P]> }
 export type CommandManagerTypes = CommandManagerTypeMap[keyof CommandManagerTypeMap];
 
-export type Statement = Array<string | SubtagCall>;
+export type Statement = ReadonlyArray<string | SubtagCall>;
 
 export interface AnalysisResults {
-    errors: AnalysisResult[];
-    warnings: AnalysisResult[];
+    readonly errors: AnalysisResult[];
+    readonly warnings: AnalysisResult[];
 }
 
 export interface AnalysisResult {
-    location: SourceMarker;
-    message: string;
+    readonly location: SourceMarker;
+    readonly message: string;
 }
 
 export interface SubtagCall {
-    name: Statement;
-    args: Statement[];
-    start: SourceMarker;
-    end: SourceMarker;
-    source: string;
+    readonly name: Statement;
+    readonly args: readonly Statement[];
+    readonly start: SourceMarker;
+    readonly end: SourceMarker;
+    readonly source: string;
 }
 
 export const enum SourceTokenType {
@@ -116,9 +116,9 @@ export const enum SourceTokenType {
 }
 
 export interface SourceMarker {
-    index: number;
-    line: number;
-    column: number;
+    readonly index: number;
+    readonly line: number;
+    readonly column: number;
 }
 export type BBTagArray = { n?: string; v: JArray; };
 
