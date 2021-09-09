@@ -38,7 +38,13 @@ export abstract class RethinkDbTable<Table> {
     protected async rinsert(value: Table, returnValue: true): Promise<Table | undefined>
     protected async rinsert(value: Table, returnValue = false): Promise<boolean | Table | undefined> {
         const result = await this.rquery(t => t.insert(this.addExpr(value), { returnChanges: returnValue }));
-        throwIfErrored(result);
+        try {
+            throwIfErrored(result);
+        } catch (err: unknown) {
+            if (err instanceof Error && err.message.startsWith('Duplicate primary key'))
+                return returnValue ? undefined : false;
+            throw err;
+        }
 
         if (returnValue)
             return result.changes?.[0]?.new_val;
