@@ -43,6 +43,9 @@ export function createLogger(config: Configuration, workerId: string): Logger {
 
         sentry.setTag('worker', workerId);
         logger.addPreHook(logEntry => {
+            if (!logEntry.error)
+                return null;
+
             const args: unknown[] = [...logEntry.args as unknown[]];
             const error = logEntry.args.find((arg): arg is Error => arg instanceof Error) ?? args.splice(0, args.length).join(' ');
             const level = logLevelMap[logEntry.level];

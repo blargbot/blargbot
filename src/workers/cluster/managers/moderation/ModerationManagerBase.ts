@@ -51,7 +51,7 @@ export abstract class ModerationManagerBase {
         if (targetMember === undefined)
             return true;
 
-        return this.cluster.util.getPosition(targetMember) < this.cluster.util.getPosition(moderatorMember);
+        return targetMember.roles.highest.position < moderatorMember.roles.highest.position;
     }
 
     private async getStaffPerms(guild: Guild, overrideKey?: keyof StoredGuildSettings): Promise<PermissionResolvable> {

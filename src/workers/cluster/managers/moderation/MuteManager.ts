@@ -24,7 +24,7 @@ export class MuteManager extends ModerationManagerBase {
         if (self?.permissions.has('MANAGE_ROLES') !== true)
             return 'noPerms';
 
-        if (role.position >= this.cluster.util.getPosition(self))
+        if (role.position >= self.roles.highest.position)
             return 'roleTooHigh';
 
         await member.roles.add(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
@@ -49,7 +49,7 @@ export class MuteManager extends ModerationManagerBase {
         if (self?.permissions.has('MANAGE_ROLES') !== true)
             return 'noPerms';
 
-        if (role.position >= this.cluster.util.getPosition(self))
+        if (role.position >= self.roles.highest.position)
             return 'roleTooHigh';
 
         await member.roles.remove(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);

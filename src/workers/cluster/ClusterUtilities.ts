@@ -593,42 +593,11 @@ export class ClusterUtilities extends BaseUtilities {
     }
     /* eslint-enable @typescript-eslint/naming-convention */
 
-    public hasRole(msg: GuildMember | Message, roles: string | readonly string[], override = true): boolean {
-        let member: GuildMember;
-        if (msg instanceof GuildMember) {
-            member = msg;
-        } else {
-            if (msg.member === null)
-                return false;
-            member = msg.member;
-        }
-
-        if (override
-            && (this.isBotOwner(member.id)
-                || member.guild.ownerId === member.id
-                || member.permissions.has('ADMINISTRATOR')))
-            return true;
-
-        if (typeof roles === 'string')
-            roles = [roles];
-
-        return roles.some(r => member.roles.cache.has(r));
-    }
-
     public isBotHigher(member: GuildMember): boolean {
         const bot = member.guild.me;
         if (bot === null)
             return false;
-        const botPos = this.getPosition(bot);
-        const memPos = this.getPosition(member);
-        return botPos > memPos;
-    }
-
-    public getPosition(member: GuildMember): number {
-        if (member.guild.ownerId === member.id)
-            return Infinity;
-
-        return member.roles.highest.position;
+        return bot.roles.highest.position > member.roles.highest.position;
     }
 
     public async isUserStaff(member: GuildMember): Promise<boolean>;
@@ -673,34 +642,11 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public hasPerms(member: GuildMember, allow: bigint): boolean {
+        if (allow === 0n)
+            return true;
+
         const newPerm = new Permissions(allow);
-        return member.permissions.any(newPerm);
-    }
-
-    public async hasRoles(member: GuildMember, roles: readonly string[], channel?: TextBasedChannels, override = true): Promise<boolean> {
-        if (override
-            && (this.isBotOwner(member.id)
-                || member.guild.ownerId === member.id
-                || member.permissions.has('ADMINISTRATOR'))
-        ) {
-            return true;
-        }
-
-        roles = roles.map(p => p.toLowerCase());
-        const guildRoles = member.guild.roles.cache.filter(m =>
-            roles.includes(m.name.toLowerCase())
-            || roles.some(p => parse.entityId(p, '@&', true) === m.id));
-
-        if (guildRoles.some(r => member.roles.cache.has(r.id)))
-            return true;
-
-        if (channel !== undefined) {
-            if (await this.database.guilds.getSetting(member.guild.id, 'disablenoperms') !== true) {
-                const permString = roles.map(m => '`' + m + '`').join(', or ');
-                void this.send(channel, `You need the role ${permString} in order to use this command!`);
-            }
-        }
-        return false;
+        return member.permissions.any(newPerm, true);
     }
 
     public isBotStaff(id: string): boolean {

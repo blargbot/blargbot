@@ -6,3 +6,4 @@ export * from './smartJoin';
 export * from './smartSplit';
 export * from './truncate';
 export * from './ram';
+export * from './permissions';

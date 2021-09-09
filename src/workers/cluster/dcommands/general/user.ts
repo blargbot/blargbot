@@ -25,14 +25,14 @@ export class UserCommand extends BaseGlobalCommand {
             thumbnail: {
                 url: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
             },
-            description: `**User Id** ${user.id}\n**Created** ${timestamp(user.createdAt)}`
+            description: `**User Id**: ${user.id}\n**Created**: ${timestamp(user.createdAt)}`
         };
 
         if (guard.isGuildCommandContext(context)) {
             const member = await context.util.getMember(context.channel.guild, user.id);
             if (member !== undefined) {
-                result.description += `\n**Joined** ${timestamp(member.joinedAt)}
-**Permissions** ${member.permissions.bitfield} [(Permission calculator)](https://discordapi.com/permissions.html#${member.permissions.bitfield})`;
+                result.description += `\n**Joined**: ${timestamp(member.joinedAt)}
+**Permissions**: [${member.permissions.bitfield}](https://discordapi.com/permissions.html#${member.permissions.bitfield})`;
                 result.fields = [
                     {
                         name: 'Roles',

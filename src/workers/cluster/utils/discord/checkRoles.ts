@@ -44,7 +44,7 @@ export async function checkRoles(
 
     result.hasRole = result.roles.map(role => {
         if (result.member !== undefined)
-            return context.util.hasRole(result.member, role.id, false);
+            return result.member.roles.cache.has(role.id);
         return false;
     });
     return result;

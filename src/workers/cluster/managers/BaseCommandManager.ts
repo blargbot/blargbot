@@ -4,8 +4,8 @@ import { CommandGetCoreResult, CommandGetResult, CommandResult, ICommand, IComma
 import { defaultStaff, guard, humanize } from '@cluster/utils';
 import { MessageIdQueue } from '@core/MessageIdQueue';
 import { CommandPermissions, IMiddleware } from '@core/types';
-import { parse, runMiddleware } from '@core/utils';
-import { Guild, Message, PartialMessage, Permissions, TextBasedChannels, User } from 'discord.js';
+import { parse, pluralise as p, runMiddleware } from '@core/utils';
+import { Guild, Message, PartialMessage, TextBasedChannels, User } from 'discord.js';
 
 export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -63,8 +63,8 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
                 await this.cluster.util.send(message, `❌ You need the role ${humanize.smartJoin(result.detail.map(r => `<@&${r}>`), ', ', ' or ')} in order to use this command!`);
                 return true;
             case 'MISSING_PERMISSIONS': {
-                const permissions = new Permissions(result.detail);
-                await this.cluster.util.send(message, `❌ You need permission to ${permissions.bitfield} in order to use this command!`);
+                const permissions = humanize.permissions(result.detail, true).map(m => `- \`${m}\``);
+                await this.cluster.util.send(message, `❌ You need ${p(permissions.length, 'the following permission', 'any of the following permissions')} to use this command:\n${permissions.join('\n')}`);
                 return true;
             }
         }
@@ -131,9 +131,9 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
             // Command is disabled
             return { state: 'DISABLED' };
 
-        const [guild, channel] = location instanceof Guild ? [location, undefined]
-            : guard.isGuildChannel(location) ? [location.guild, location]
-                : [undefined, location];
+        const guild = location instanceof Guild ? location
+            : guard.isGuildChannel(location) ? location.guild
+                : undefined;
 
         if (guild === undefined)
             // Dms have no command restrictions
@@ -144,8 +144,8 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
             // User isnt in the guild and so cannot use commands
             return { state: 'NOT_IN_GUILD' };
 
-        if (guild.ownerId === user.id)
-            // Guild owners can use all commands
+        if (guild.ownerId === user.id || member.permissions.has('ADMINISTRATOR'))
+            // Guild owners/admins can use all commands
             return { state: 'ALLOWED' };
 
         const permOverride = await this.cluster.util.database.guilds.getSetting(guild.id, 'permoverride');
@@ -163,18 +163,29 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
             if (perm !== undefined) {
                 if (this.cluster.util.hasPerms(member, perm))
                     return { state: 'ALLOWED' };
-                if (perm !== 0n)
-                    result = { state: 'MISSING_PERMISSIONS', detail: perm };
+                result = { state: 'MISSING_PERMISSIONS', detail: perm };
             }
         }
 
         const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, 'adminrole');
-        const roles = [adminrole, ...permissions.roles ?? []].filter(guard.hasValue);
-        if (roles.length > 0) {
+        const roleIds = [adminrole, ...permissions.roles ?? []]
+            .map(r => {
+                if (r === undefined)
+                    return undefined;
+
+                const id = parse.entityId(r, '@&', true);
+                if (id !== undefined)
+                    return member.guild.roles.cache.get(id)?.id;
+
+                const norm = r.toLowerCase();
+                return member.guild.roles.cache.find(r => r.name.toLowerCase() === norm)?.id;
+            }).filter(guard.hasValue);
+
+        if (roleIds.length > 0) {
             // User has one of the roles this command is linked to or the admin role?
-            if (await this.cluster.util.hasRoles(member, roles, channel))
+            if (member.roles.cache.hasAny(...roleIds))
                 return { state: 'ALLOWED' };
-            result = { state: 'MISSING_ROLE', detail: roles };
+            result = { state: 'MISSING_ROLE', detail: roleIds };
         }
 
         return result;
