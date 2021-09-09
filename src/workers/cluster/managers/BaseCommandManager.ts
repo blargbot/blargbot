@@ -118,7 +118,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     protected async checkPermissions(
         user: User,
         location: Guild | TextBasedChannels,
-        permissions?: CommandPermissions
+        permissions: CommandPermissions
     ): Promise<PermissionCheckResult> {
         if (this.cluster.util.isBotOwner(user.id))
             return { state: 'ALLOWED' };
@@ -127,7 +127,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
         if (blacklistReason !== undefined)
             return { state: 'BLACKLISTED', detail: blacklistReason };
 
-        if (permissions?.disabled === true)
+        if (permissions.disabled === true)
             // Command is disabled
             return { state: 'DISABLED' };
 
@@ -157,18 +157,19 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
         }
 
         let result: PermissionCheckResult = { state: 'ALLOWED' };
-        if (permissions?.permission !== undefined) {
+        if (permissions.permission !== undefined) {
             // User has any of the permissions for this command
             const perm = parse.bigint(permissions.permission);
             if (perm !== undefined) {
                 if (this.cluster.util.hasPerms(member, perm))
                     return { state: 'ALLOWED' };
-                result = { state: 'MISSING_PERMISSIONS', detail: perm };
+                if (perm !== 0n)
+                    result = { state: 'MISSING_PERMISSIONS', detail: perm };
             }
         }
 
         const adminrole = await this.cluster.util.database.guilds.getSetting(member.guild.id, 'adminrole');
-        const roles = [adminrole, ...permissions?.roles ?? []].filter(guard.hasValue);
+        const roles = [adminrole, ...permissions.roles ?? []].filter(guard.hasValue);
         if (roles.length > 0) {
             // User has one of the roles this command is linked to or the admin role?
             if (await this.cluster.util.hasRoles(member, roles, channel))
