@@ -50,7 +50,7 @@ jobs:
       run: echo ${{ steps.test.outcome }} ${{ hashFiles('coverage/index.html') }}
 
     - name: Upload coverage
-      if: always() && steps.test.outcome != 'skipped' && 
+      if: always() && steps.test.outcome != 'skipped'
       uses: actions/upload-artifact@v2
       with:
         name: coverage
