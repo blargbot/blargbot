@@ -51,12 +51,6 @@ export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix' 
         desc: 'Whether or not to dm help messages or output them in channels',
         type: 'bool'
     },
-    permoverride: {
-        key: 'permoverride',
-        name: 'Permission override',
-        desc: 'Whether or not specific permissions override role requirement',
-        type: 'bool'
-    },
     staffperms: {
         key: 'staffperms',
         name: 'Staff permissions',

@@ -618,11 +618,9 @@ export class ClusterUtilities extends BaseUtilities {
         } else {
             const guildId = typeof args[0] === 'string' ? args[0] : args[0].id;
 
-            if (await this.database.guilds.getSetting(guildId, 'permoverride') === true) {
-                const allow = parse.bigint(await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff);
-                if (allow !== undefined)
-                    return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
-            }
+            const allow = parse.bigint(await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff);
+            if (allow !== undefined)
+                return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
 
             return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
         }
@@ -632,13 +630,8 @@ export class ClusterUtilities extends BaseUtilities {
         if (member.guild.ownerId === member.id) return true;
         if (member.permissions.has('ADMINISTRATOR')) return true;
 
-        if (await this.database.guilds.getSetting(member.guild.id, 'permoverride') === true) {
-            const allow = parse.bigint(await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff);
-            if (allow !== undefined && this.hasPerms(member, allow)) {
-                return true;
-            }
-        }
-        return false;
+        const allow = parse.bigint(await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff);
+        return allow !== undefined && this.hasPerms(member, allow);
     }
 
     public hasPerms(member: GuildMember, allow: bigint): boolean {

@@ -1,7 +1,7 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
-import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
+import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
 import { Snowflake } from 'catflake';
 import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
@@ -56,10 +56,6 @@ export interface ICommand<T = unknown> extends ICommandDetails {
     execute(context: CommandContext): Promise<void>;
 }
 
-export interface ICommandPermissionEvaluator {
-    checkPermissions(user: User, location: Guild | TextBasedChannels, permissions?: CommandPermissions): Promise<PermissionCheckResult>;
-}
-
 export type Result<State, Detail = undefined, Optional extends boolean = Detail extends undefined ? true : false> = Optional extends false
     ? { readonly state: State; readonly detail: Detail; }
     : { readonly state: State; readonly detail?: Detail; };
@@ -87,7 +83,6 @@ export type CommandManagerTypeMap = {
 };
 
 export type CommandManagers = { [P in keyof CommandManagerTypeMap]: ICommandManager<CommandManagerTypeMap[P]> }
-export type CommandManagerTypes = CommandManagerTypeMap[keyof CommandManagerTypeMap];
 
 export type Statement = ReadonlyArray<string | SubtagCall>;
 
@@ -618,22 +613,6 @@ export interface ClusterPoolOptions {
 export interface FindEntityOptions {
     noLookup?: boolean;
     noErrors?: boolean;
-}
-
-export interface CanExecuteDefaultCommandOptions {
-    readonly quiet?: boolean;
-    readonly storedGuild?: StoredGuild;
-    readonly permOverride?: StoredGuildSettings['permoverride'];
-    readonly staffPerms?: StoredGuildSettings['staffperms'];
-}
-
-export interface CanExecuteCustomCommandOptions {
-    readonly quiet?: boolean;
-}
-
-export interface LookupMatch<T> {
-    content: string;
-    value: T;
 }
 
 export interface BanDetails {

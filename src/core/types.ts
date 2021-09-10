@@ -655,7 +655,6 @@ export interface StoredGuildSettings {
     readonly modlog?: string; // channelid or channel tag
     readonly mutedrole?: string; // roleid or role tag
     readonly nocleverbot?: boolean;
-    readonly permoverride?: boolean;
     readonly prefix?: readonly string[];
     readonly social?: boolean;
     readonly staffperms?: string;

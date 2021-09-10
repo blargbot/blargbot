@@ -69,7 +69,6 @@ export class SettingsCommand extends BaseGuildCommand {
                         {
                             name: 'Permissions',
                             value: settingGroup([
-                                ['permoverride', parse.boolean(settings.permoverride, false, true)],
                                 ['staffperms', settings.staffperms ?? new Permissions(defaultStaff).bitfield.toString()],
                                 ['kickoverride', settings.kickoverride],
                                 ['banoverride', settings.banoverride]
