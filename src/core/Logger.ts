@@ -1,5 +1,5 @@
 import { guard } from '@cluster/utils';
-import Sentry from '@sentry/node';
+import * as Sentry from '@sentry/node';
 import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts';
 import { black, blue, cyan, green, magenta, red, yellow } from 'chalk';
 import { ValidationError } from 'sequelize';

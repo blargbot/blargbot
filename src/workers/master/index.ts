@@ -1,6 +1,5 @@
 import 'module-alias/register';
 
-import config from '@config';
 import { createLogger } from '@core/Logger';
 import { MasterWorker } from '@master';
 import avatars from '@res/avatars.json';
@@ -10,6 +9,7 @@ export * from './Master';
 export * from './MasterWorker';
 
 export default async function start(): Promise<void> {
+    const config = await import('@config');
     const logger = createLogger(config, 'MS');
     logger.setGlobal();
 
