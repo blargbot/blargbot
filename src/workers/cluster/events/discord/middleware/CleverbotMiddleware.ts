@@ -10,7 +10,7 @@ export class CleverbotMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly util: ClusterUtilities) {
     }
 
-    public async execute(context: Message, next: () => Promise<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
         if (await next())
             return true;
 

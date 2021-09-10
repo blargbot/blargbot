@@ -11,7 +11,7 @@ export class CommandMiddleware implements IMiddleware<Message, boolean> {
     ) {
     }
 
-    public async execute(context: Message, next: () => Promise<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
         const prefix = await this.cluster.prefixes.findPrefix(context);
         if (prefix === undefined)
             return await next();

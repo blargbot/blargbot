@@ -2,6 +2,7 @@ import { BaseGuildCommand, SingleThreadMiddleware } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
 import { createSafeRegExp, guard, pluralise as p } from '@core/utils';
+import { Snowflake } from 'catflake';
 import { Collection, Constants, DiscordAPIError, Message, TextBasedChannels, User } from 'discord.js';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';

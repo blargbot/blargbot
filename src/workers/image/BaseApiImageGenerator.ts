@@ -14,10 +14,10 @@ export abstract class BaseApiImageGenerator<T extends keyof CommandMap> extends 
 
     public async execute(message: CommandMap[T]): Promise<ImageResult | undefined> {
         try {
-            const response = await fetch(this.worker.config.blargbot_api.base + this.key, {
+            const response = await fetch(this.worker.config.blargbotApi.base + this.key, {
                 method: 'POST',
                 headers: {
-                    ['Authorization']: this.worker.config.blargbot_api.token,
+                    ['Authorization']: this.worker.config.blargbotApi.token,
                     ['Content-Type']: 'application/json'
                 },
                 body: JSON.stringify(message)

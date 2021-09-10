@@ -25,9 +25,8 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
     }
 
     protected tryActivate(rawModule: unknown): ModuleResult<TModule> | undefined {
-        if (rawModule instanceof this.type) {
+        if (rawModule instanceof this.type)
             return { module: <TModule>rawModule, names: this.#getNames(<TModule>rawModule) };
-        }
 
         if (guard.isClass(rawModule, this.type)) {
             const instance = new rawModule(...this.constructorArguments);

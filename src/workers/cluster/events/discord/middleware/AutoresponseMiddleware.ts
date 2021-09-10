@@ -6,13 +6,13 @@ export class AutoresponseMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly manager: AutoresponseManager) {
     }
 
-    public async execute(context: Message, next: () => Promise<boolean>): Promise<boolean> {
-        const promises = [this.manager.execute(context, true)];
+    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
+        const process = this.manager.execute(context, true);
         const handled = await next();
         if (!handled)
-            promises.push(this.manager.execute(context, false));
+            await this.manager.execute(context, false);
 
-        await Promise.all(promises);
+        await process;
         return handled;
     }
 

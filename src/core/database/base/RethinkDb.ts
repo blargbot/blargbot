@@ -1,4 +1,4 @@
-import { RethinkDbOptions } from '@core/types';
+import { RethinkConfiguration } from '@core/Configuration';
 import * as r from 'rethinkdb';
 import { Connection, Cursor, Expression, Query, Time } from 'rethinkdb';
 
@@ -8,9 +8,9 @@ export class RethinkDb {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #connection?: r.Connection
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #options: RethinkDbOptions;
+    readonly #options: RethinkConfiguration;
 
-    public constructor(options: RethinkDbOptions) {
+    public constructor(options: RethinkConfiguration) {
         this.#options = options;
     }
 
@@ -46,12 +46,8 @@ export class RethinkDb {
     public async connect(): Promise<Connection> {
         if (this.#connectionPromise === undefined) {
             this.#connectionPromise = r.connect({
-                host: this.#options.host,
-                db: this.#options.database,
-                password: this.#options.password,
-                user: this.#options.user,
-                port: this.#options.port,
-                timeout: 10000
+                timeout: 10000,
+                ...this.#options
             }).then(conn => this.#connection = conn);
         }
 

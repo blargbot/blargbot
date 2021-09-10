@@ -26,11 +26,7 @@ void (async function () {
 
     const [rethink] = await Promise.all([
         r.connect({
-            host: config.rethink.host,
-            db: config.rethink.database,
-            password: config.rethink.password,
-            user: config.rethink.user,
-            port: config.rethink.port,
+            ...config.rethink,
             timeout: 10000
         }),
         discord.login(config.discord.token)

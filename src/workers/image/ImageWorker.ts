@@ -1,3 +1,4 @@
+import { Configuration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseWorker } from '@core/worker';

@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@core/types';
 import { snowflake } from '@core/utils';
+import { Snowflake } from 'catflake';
 import { ChildProcess } from 'child_process';
 import EventEmitter from 'eventemitter3';
 

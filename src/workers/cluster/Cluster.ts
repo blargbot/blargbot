@@ -2,6 +2,7 @@ import { BaseSubtag, BBTagEngine } from '@cluster/bbtag';
 import { ClusterOptions } from '@cluster/types';
 import { getRange } from '@cluster/utils';
 import { BaseClient } from '@core/BaseClient';
+import { Configuration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
@@ -12,7 +13,7 @@ import moment, { duration, Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, PrefixManager, ReactionAwaitManager, RolemeManager, TimeoutManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, HelpManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, PrefixManager, ReactionAwaitManager, RolemeManager, TimeoutManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -36,6 +37,7 @@ export class Cluster extends BaseClient {
     public readonly polls: PollManager;
     public readonly intervals: IntervalManager;
     public readonly rolemes: RolemeManager;
+    public readonly help: HelpManager;
     public readonly await: { reactions: ReactionAwaitManager; messages: MessageAwaitManager; };
 
     public constructor(
@@ -101,6 +103,7 @@ export class Cluster extends BaseClient {
         this.bbtag = new BBTagEngine(this);
         this.intervals = new IntervalManager(this, duration(10, 's'));
         this.rolemes = new RolemeManager(this);
+        this.help = new HelpManager(this.commands, this.util);
         this.await = {
             reactions: new ReactionAwaitManager(this),
             messages: new MessageAwaitManager(this)

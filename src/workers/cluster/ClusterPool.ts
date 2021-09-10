@@ -1,3 +1,4 @@
+import { ClusterWorkerConfiguration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
 import { ProcessMessageHandler } from '@core/types';
 import { WorkerPool } from '@core/worker';
@@ -6,7 +7,7 @@ import { ClusterConnection } from './ClusterConnection';
 
 export class ClusterPool extends WorkerPool<ClusterConnection> {
     public constructor(
-        public readonly config: Configuration['discord']['shards'],
+        public readonly config: ClusterWorkerConfiguration,
         logger: Logger
     ) {
         super('Cluster',

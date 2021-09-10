@@ -58,7 +58,7 @@ export const metrics = {
     }
 };
 
-function aggregate(regArray: Prometheus.metric[][]): Prometheus.Registry { // TODO Nested array?
+function aggregate(regArray: Prometheus.metric[][]): Prometheus.Registry {
     const aggregated = Prometheus.AggregatorRegistry.aggregate(regArray);
     return aggregated;
 }

@@ -1,8 +1,7 @@
 import { Cluster } from '@cluster';
 import { BaseCommand, CommandContext } from '@cluster/command';
-import { HelpCommand } from '@cluster/dcommands/general/help';
-import { AggregateCommandManager, DefaultCommandManager } from '@cluster/managers';
-import { CommandResult, ICommand } from '@cluster/types';
+import { HelpManager } from '@cluster/managers';
+import { CommandResult } from '@cluster/types';
 import { Channel } from 'diagnostics_channel';
 import { TextBasedChannels, User } from 'discord.js';
 import { it } from 'mocha';
@@ -26,22 +25,23 @@ export function testExecuteHelp(command: BaseCommand, pages?: number[]): void {
         const commandArgs = `help${page === undefined ? '' : ` ${page}`}`;
 
         testExecute(command, commandArgs, 'This is the help text!', ['GUILD_TEXT'], {
-            helpCommandMock: undefined as ICommand<BaseCommand> | undefined,
-            helpMock: HelpCommand,
+            helpMock: HelpManager,
             clusterMock: Cluster,
-            userMock: User,
-            commandsMock: AggregateCommandManager,
-            defaultCommandsMock: DefaultCommandManager
+            userMock: User
         }, {
             arrange(ctx) {
-                when(ctx.contextMock.author).thenReturn(instance(ctx.userMock));
-                when(ctx.contextMock.channel).thenReturn(instance(ctx.channelMock));
-                when(ctx.contextMock.cluster).thenReturn(instance(ctx.clusterMock));
-                when(ctx.clusterMock.commands).thenReturn(instance(ctx.commandsMock));
-                when(ctx.commandsMock.default).thenReturn(instance(ctx.defaultCommandsMock));
-                when(ctx.defaultCommandsMock.get('help', instance(ctx.channelMock), instance(ctx.userMock))).thenResolve({ state: 'ALLOWED', detail: instance(ctx.helpCommandMock) });
-                when(ctx.helpCommandMock.implementation).thenReturn(instance(ctx.helpMock));
-                when(ctx.helpMock.viewCommand(instance(ctx.contextMock), command.name, (page ?? 1) - 1)).thenResolve('This is the help text!');
+                when(ctx.contextMock.author)
+                    .thenReturn(instance(ctx.userMock));
+                when(ctx.contextMock.channel)
+                    .thenReturn(instance(ctx.channelMock));
+                when(ctx.contextMock.cluster)
+                    .thenReturn(instance(ctx.clusterMock));
+                when(ctx.contextMock.prefix)
+                    .thenReturn('PREFIXAAAAA');
+                when(ctx.clusterMock.help)
+                    .thenReturn(instance(ctx.helpMock));
+                when(ctx.helpMock.viewCommand(instance(ctx.channelMock), instance(ctx.userMock), 'PREFIXAAAAA', command.name, (page ?? 1) - 1))
+                    .thenResolve('This is the help text!');
             }
         });
     }

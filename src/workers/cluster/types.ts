@@ -1,8 +1,9 @@
 import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
-import { CommandType, ModerationType, SubtagType, SubtagVariableType } from '@cluster/utils';
+import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuild, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
+import { Snowflake } from 'catflake';
 import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
@@ -695,7 +696,6 @@ export interface SubtagProperties {
     desc: string;
 }
 
-export type SubtagVariablePropertiesSet = { [key in SubtagVariableType]: SubtagVariableProperties; }
 export interface SubtagVariableProperties {
     table: string;
 }

@@ -19,10 +19,7 @@ jobs:
       
     - name: Add configuration files
       run: | 
-        echo $CONFIG_JSON >> config.json
         echo '["abc"]' >> res/avatars.json
-      env:
-        CONFIG_JSON: ${{secrets.config_json}}
     
     - name: Install Node
       uses: actions/setup-node@v2

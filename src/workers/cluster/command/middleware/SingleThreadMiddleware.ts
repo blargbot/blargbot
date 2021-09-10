@@ -11,7 +11,7 @@ export class SingleThreadMiddleware<TContext extends CommandContext> implements 
         this.locks = {};
     }
 
-    public async execute(context: TContext, next: () => Promise<CommandResult>): Promise<CommandResult> {
+    public async execute(context: TContext, next: () => Awaitable<CommandResult>): Promise<CommandResult> {
         const key = this.keySelector(context);
         const lock = this.locks[key];
         if (lock !== undefined) {

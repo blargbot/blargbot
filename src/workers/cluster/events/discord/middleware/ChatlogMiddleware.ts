@@ -6,11 +6,10 @@ export class ChatlogMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly chatlog: ChatLogManager) {
     }
 
-    public async execute(context: Message, next: () => Promise<boolean>): Promise<boolean> {
-        const [, result] = await Promise.all([
-            this.chatlog.messageCreated(context),
-            next()
-        ]);
+    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
+        const process = this.chatlog.messageCreated(context);
+        const result = await next();
+        await process;
         return result;
     }
 }

@@ -2,12 +2,13 @@ import { Cluster } from '@cluster';
 import { AwaitReactionsResponse } from '@cluster/types';
 import { parse } from '@cluster/utils';
 import { guard, snowflake } from '@core/utils';
+import { Snowflake } from 'catflake';
 import { GuildMessage, Message, MessageReaction, PartialMessageReaction, User } from 'discord.js';
 import EventEmitter from 'eventemitter3';
 
 export class ReactionAwaitManager {
     private readonly messageMap: Map<string, Snowflake[]>;
-    private readonly reactionSnowflakeMap: Map<Snowflake, { users?: string[]; reactions?: string[]; messages: string[];}>;
+    private readonly reactionSnowflakeMap: Map<Snowflake, { users?: string[]; reactions?: string[]; messages: string[]; }>;
     private readonly emitter: EventEmitter;
     public constructor(
         private readonly cluster: Cluster
@@ -33,7 +34,7 @@ export class ReactionAwaitManager {
             reactions
         });
 
-        const check = checkFunction !== undefined ? checkFunction :  () => true;
+        const check = checkFunction !== undefined ? checkFunction : () => true;
 
         return new Promise((resolve) => {
             const waitTimeout = setTimeout(() => {
@@ -114,7 +115,7 @@ export class ReactionAwaitManager {
 
     private addSnowflake(
         snowflake: Snowflake,
-        snowflakeData: { users?: string[]; reactions?: string[]; messages: string[];}
+        snowflakeData: { users?: string[]; reactions?: string[]; messages: string[]; }
     ): void {
         this.reactionSnowflakeMap.set(snowflake, snowflakeData);
 

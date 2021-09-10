@@ -6,10 +6,9 @@ export class UpsertUserMiddleware implements IMiddleware<Message, boolean> {
     }
 
     public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
-        const [, result] = await Promise.all([
-            this.database.upsert(context.author),
-            next()
-        ]);
+        const process = this.database.upsert(context.author);
+        const result = await next();
+        await process;
         return result;
     }
 }

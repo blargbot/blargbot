@@ -1,6 +1,5 @@
-import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
-import { BBTagVariable } from '@core/types';
+import { BBTagVariable, SubtagVariableType } from '@core/types';
 import { ENUM, Model, ModelCtor, Sequelize, STRING, TEXT } from 'sequelize';
 
 export type BBTagVariableModel = ModelCtor<Model<BBTagVariable>>;

@@ -1,5 +1,5 @@
+import { PostgresConfiguration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
-import { PostgresDbOptions } from '@core/types';
 import { Sequelize, Transaction } from 'sequelize';
 
 import { BBTagVariableModel, createBBTagVariableModel } from './postgresModels';
@@ -10,17 +10,16 @@ export class PostgresDb {
 
     public constructor(
         public readonly logger: Logger,
-        options: PostgresDbOptions
+        options: PostgresConfiguration
     ) {
         this.sequelize = new Sequelize(
             options.database,
             options.user,
             options.pass,
             {
-                host: options.host,
+                ...options.sequelize,
                 dialect: 'postgres',
-                logging: this.logger.database,
-                ...options.sequelize
+                logging: this.logger.database
             }
         );
 

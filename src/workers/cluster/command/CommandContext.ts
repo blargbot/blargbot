@@ -1,6 +1,7 @@
 import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagEngine } from '@cluster/bbtag';
 import { CommandResult, GuildCommandContext, ICommand } from '@cluster/types';
+import { Configuration } from '@core/Configuration';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@core/types';

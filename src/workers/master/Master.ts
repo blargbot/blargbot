@@ -1,5 +1,6 @@
 import { ClusterPool } from '@cluster';
 import { BaseClient } from '@core/BaseClient';
+import { Configuration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';

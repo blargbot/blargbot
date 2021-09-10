@@ -7,10 +7,9 @@ export class RolemesMiddleware implements IMiddleware<Message, boolean> {
     }
 
     public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
-        const [, result] = await Promise.all([
-            this.rolemes.execute(context),
-            next()
-        ]);
+        const process = this.rolemes.execute(context);
+        const result = await next();
+        await process;
         return result;
     }
 }

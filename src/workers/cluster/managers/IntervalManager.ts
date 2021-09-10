@@ -12,7 +12,6 @@ export class IntervalManager {
         private readonly cluster: Cluster,
         public readonly timeLimit: Duration
     ) {
-
     }
 
     public async invokeAll(): Promise<void> {

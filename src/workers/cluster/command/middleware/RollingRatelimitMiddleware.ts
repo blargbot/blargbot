@@ -21,7 +21,7 @@ export class RollingRatelimitMiddleware implements IMiddleware<CommandContext, C
         this.timestamps = {};
     }
 
-    public async execute(context: CommandContext, next: () => Promise<CommandResult>): Promise<CommandResult> {
+    public async execute(context: CommandContext, next: () => Awaitable<CommandResult>): Promise<CommandResult> {
         const key = this.options.key(context);
 
         let timeout = this.timeouts[key];

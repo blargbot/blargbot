@@ -1,11 +1,11 @@
 import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
-import { SubtagVariableType } from '@cluster/utils/constants/subtagVariableType'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
+import { Snowflake } from 'catflake';
 import { ChannelInteraction, Client as Discord, EmbedField, FileOptions, Guild, GuildMember, InteractionButtonOptions, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
 import { Duration, Moment } from 'moment-timezone';
-import { Options as SequelizeOptions } from 'sequelize';
 
 import { Binder } from './Binder';
+import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from './Configuration';
 import { WorkerConnection } from './worker';
 
 export type MalformedEmbed = { fields: [EmbedField]; malformed: boolean; };
@@ -782,38 +782,10 @@ export interface BBTagVariable {
 export interface DatabaseOptions {
     readonly logger: Logger;
     readonly discord: Discord<true>;
-    readonly rethinkDb: RethinkDbOptions;
-    readonly cassandra: CassandraDbOptions;
-    readonly postgres: PostgresDbOptions;
-    readonly airtable: AirtableOptions;
-}
-
-export interface RethinkDbOptions {
-    readonly database: string;
-    readonly user: string;
-    readonly password: string;
-    readonly host: string;
-    readonly port: number;
-}
-
-export interface CassandraDbOptions {
-    readonly username: string;
-    readonly password: string;
-    readonly keyspace: string;
-    readonly contactPoints: readonly string[];
-}
-
-export interface PostgresDbOptions {
-    readonly database: string;
-    readonly user: string;
-    readonly pass: string;
-    readonly host: string;
-    readonly sequelize: SequelizeOptions;
-}
-
-export interface AirtableOptions {
-    readonly key: string;
-    readonly base: string;
+    readonly rethink: RethinkConfiguration;
+    readonly cassandra: CassandraConfiguration;
+    readonly postgres: PostgresConfiguration;
+    readonly airtable: AirtableConfiguration;
 }
 
 export interface StoredGuildEventLogConfig {
@@ -995,4 +967,13 @@ export interface TypeMappingOptions<T, R> {
 
 export interface IMiddleware<Context, Result = void> {
     execute(context: Context, next: (context?: Context) => Awaitable<Result>): Awaitable<Result>;
+}
+
+export enum SubtagVariableType {
+    LOCAL = 'LOCAL_TAG',
+    AUTHOR = 'AUTHOR',
+    GUILD = 'GUILD_CC',
+    GLOBAL = 'GLOBAL',
+    TAGGUILD = 'GUILD_TAG',
+    GUILDLOCAL = 'LOCAL_CC'
 }

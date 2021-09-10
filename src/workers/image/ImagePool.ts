@@ -1,3 +1,4 @@
+import { ImageWorkerConfiguration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
 import { WorkerPool } from '@core/worker';
 import { ImageGeneratorMap, ImageResult } from '@image/types';
@@ -7,7 +8,7 @@ import { ImageConnection } from './ImageConnection';
 export class ImagePool extends WorkerPool<ImageConnection> {
     private nextWorker: number;
 
-    public constructor(private readonly clusterId: number, config: Configuration['discord']['images'], logger: Logger) {
+    public constructor(private readonly clusterId: number, config: ImageWorkerConfiguration, logger: Logger) {
         super('Image', config.perCluster, config.spawnTime, logger);
         this.nextWorker = 0;
     }

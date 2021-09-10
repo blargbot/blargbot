@@ -6,7 +6,7 @@ import { Constants, DiscordAPIError } from 'discord.js';
 import { CommandContext } from '../CommandContext';
 
 export class ErrorMiddleware<TContext extends CommandContext> implements IMiddleware<TContext, CommandResult> {
-    public async execute(context: TContext, next: () => Promise<CommandResult>): Promise<CommandResult> {
+    public async execute(context: TContext, next: () => Awaitable<CommandResult>): Promise<CommandResult> {
         try {
             return await next();
         } catch (err: unknown) {

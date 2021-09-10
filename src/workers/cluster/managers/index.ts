@@ -14,3 +14,4 @@ export * from './ReactionAwaitManager';
 export * from './MessageAwaitManager';
 export * from './RolemeManager';
 export * from './TimeoutManager';
+export * from './HelpManager';

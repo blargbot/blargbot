@@ -1,13 +1,14 @@
 import { Cluster } from '@cluster';
 import { snowflake } from '@cluster/utils';
 import { guard } from '@core/utils';
+import { Snowflake } from 'catflake';
 import { GuildMessage, Message } from 'discord.js';
 import EventEmitter from 'eventemitter3';
 
 export class MessageAwaitManager {
     private readonly emitter: EventEmitter;
     private readonly channelSnowflakeMap: Map<string, Snowflake[]>;
-    private readonly snowflakeMap: Map<Snowflake, { users?: string[]; channels: string[];}>;
+    private readonly snowflakeMap: Map<Snowflake, { users?: string[]; channels: string[]; }>;
 
     public constructor(
         private readonly cluster: Cluster
@@ -25,9 +26,9 @@ export class MessageAwaitManager {
     ): Promise<GuildMessage | string> {
         const awaitMessageSnowflake = snowflake.create();
         const snowflakeStr = awaitMessageSnowflake.toString();
-        this.addSnowflake(awaitMessageSnowflake, {channels, users});
+        this.addSnowflake(awaitMessageSnowflake, { channels, users });
 
-        const check = checkFunction !== undefined ? checkFunction :  () => true;
+        const check = checkFunction !== undefined ? checkFunction : () => true;
 
         return new Promise((resolve) => {
             const waitTimeout = setTimeout(() => {
@@ -92,7 +93,7 @@ export class MessageAwaitManager {
 
     private addSnowflake(
         snowflake: Snowflake,
-        data: {channels: string[]; users?: string[];}
+        data: { channels: string[]; users?: string[]; }
     ): void {
         this.snowflakeMap.set(snowflake, data);
         for (const channel of data.channels) {

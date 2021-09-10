@@ -57,7 +57,7 @@ export class Database {
         this.#airtable = new Airtable({
             apiKey: options.airtable.key
         }).base(options.airtable.base);
-        this.#rethinkDb = new RethinkDb(options.rethinkDb);
+        this.#rethinkDb = new RethinkDb(options.rethink);
         this.#postgres = new PostgresDb(options.logger, options.postgres);
         this.#cassandra = new Cassandra({
             localDataCenter: 'datacenter1',

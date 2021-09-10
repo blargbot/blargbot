@@ -1,141 +1,116 @@
-import '@sentry/tracing';
+import { guard } from '@cluster/utils';
+import Sentry from '@sentry/node';
+import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts';
+import { black, blue, cyan, green, magenta, red, yellow } from 'chalk';
+import { ValidationError } from 'sequelize';
 
-import * as Sentry from '@sentry/node';
-import CatLoggr, { LogLevel } from 'cat-loggr/ts';
-import Sequelize, { ValidationError } from 'sequelize';
+import { Configuration } from './Configuration';
 
-export type Logger = { [P in LogLevels]: (...args: unknown[]) => void }
-    & Pick<CatLoggr, 'addPreHook' | 'addPostHook' | 'addArgHook' | 'setDefaultMeta' | 'setLevel' | 'setGlobal' | 'meta'>;
-type GenericLogLevel<T extends string, R extends readonly string[]> = LogLevel & { name: T; aliases?: R; sentry?: Sentry.Severity; }
-type Color = typeof CatLoggr._chalk;
-type LogLevels =
-    | typeof logLevels[number]['name']
-    | typeof logLevels[number]['aliases'][number];
+export type LoggerMethods = { [P in LogTypes]: (...args: unknown[]) => void; }
+
+export interface Logger extends CatLoggr, LoggerMethods {
+}
+
+type LogLevels = typeof logLevels[number];
+type LogTypes =
+    | LogLevels['name']
+    | Extract<LogLevels, { aliases: unknown; }>['aliases'][number];
 
 export function createLogger(config: Configuration, workerId: string): Logger {
     const logger = new CatLoggr({
         shardId: workerId,
         level: config.general.loglevel,
         shardLength: 6,
-        levels: [...logLevels]
+        levels: logLevels.map(l => {
+            const level = new CatLogLevel(l.name, <Color><unknown>l.color);
+            if ('aliases' in l)
+                level.aliases = [...l.aliases];
+            if ('isError' in l)
+                level.err = l.isError;
+            if ('isTrace' in l)
+                level.trace = l.isTrace;
+            return level;
+        })
     });
 
-    logger.addArgHook(({ arg }) => {
-        if (isSequelizeValidationError(arg) && Array.isArray(arg.errors)) {
-            const text: string[] = [arg.stack ?? ''];
-            for (const err of arg.errors) {
-                text.push(`\n - ${err.message}\n   - ${err.path ?? 'UNKNOWN PATH'} ${err.value ?? 'UNKNOWN VALUE'}`);
-            }
-            return text.join('');
-        }
-        return null;
-    });
+    logger.addArgHook(sequelizeErrorArgHook);
+    if (config.sentry.base !== '')
+        logger.addPreHook(createSentryPreHook(config, workerId));
 
-    if (config.sentry.base !== '') {
-        const sentry = new Sentry.Hub(new Sentry.NodeClient({
-            dsn: config.sentry.base,
-            environment: config.general.isbeta ? 'development' : 'production',
-            integrations: [
-                new Sentry.Integrations.Http({ tracing: true })
-            ],
-            tracesSampleRate: config.sentry.sampleRate
-        }));
-
-        sentry.setTag('worker', workerId);
-        logger.addPreHook(logEntry => {
-            if (!logEntry.error)
-                return null;
-
-            const args: unknown[] = [...logEntry.args as unknown[]];
-            const error = logEntry.args.find((arg): arg is Error => arg instanceof Error) ?? args.splice(0, args.length).join(' ');
-            const level = logLevelMap[logEntry.level];
-            if (level === undefined)
-                return null;
-
-            // eslint-disable-next-line @typescript-eslint/ban-types
-            const context: object = {
-                ...logEntry.context,
-                shard: logEntry.shard,
-                args
-            };
-
-            sentry.withScope(scope => {
-                if (typeof error !== 'string') {
-                    scope.setLevel(level);
-                    sentry.captureException(error, context);
-                } else {
-                    sentry.captureMessage(error, level, context);
-                }
-            });
-            return null;
-        });
-    }
-
-    if (coerceCatLoggr(logger))
-        return logger;
-
-    throw new Error('The constructed logger doesnt match its definition!');
+    return <Logger>logger;
 }
-
-function logLevel<T extends string, R extends readonly string[]>(
-    name: T,
-    color: Color,
-    options?: Pick<Partial<LogLevel>, 'err' | 'trace'> & {
-        aliases?: R;
-        sentry?: Sentry.Severity;
-    }
-): GenericLogLevel<T, R> {
-    return {
-        name,
-        color: color as GenericLogLevel<T, R>['color'],
-        sentry: options?.sentry,
-        err: options?.err ?? false,
-        trace: options?.trace ?? false,
-        aliases: (options?.aliases ?? []) as unknown as string[] & R,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setAliases: undefined!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setColors: undefined!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setError: undefined!,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        setTrace: undefined!
-    };
-}
-
-const { red, black, yellow, blue, green, cyan, magenta } = CatLoggr._chalk;
 
 const logLevels = [
-    logLevel('fatal', red.bgBlack, { err: true, sentry: Sentry.Severity.Fatal }),
-    logLevel('error', black.bgRed, { err: true, sentry: Sentry.Severity.Error }),
-    logLevel('warn', black.bgYellow, { err: true, sentry: Sentry.Severity.Warning }),
-    logLevel('website', black.bgCyan),
-    logLevel('ws', yellow.bgBlack),
-    logLevel('cluster', black.bgMagenta),
-    logLevel('worker', black.bgMagenta),
-    logLevel('command', black.bgBlue),
-    logLevel('shardi', blue.bgYellow),
-    logLevel('init', black.bgBlue),
-    logLevel('info', black.bgGreen),
-    logLevel('trace', green.bgBlack, { trace: true }),
-    logLevel('output', black.bgMagenta),
-    logLevel('bbtag', black.bgGreen),
-    logLevel('verbose', black.bgCyan),
-    logLevel('adebug', cyan.bgBlack),
-    logLevel('debug', magenta.bgBlack, { aliases: ['log', 'dir'] as const }),
-    logLevel('database', black.bgBlue),
-    logLevel('module', black.bgBlue)
+    { name: 'fatal', color: red.bgBlack, isError: true },
+    { name: 'error', color: black.bgRed, isError: true },
+    { name: 'warn', color: black.bgYellow, isError: true },
+    { name: 'website', color: black.bgCyan },
+    { name: 'ws', color: yellow.bgBlack },
+    { name: 'cluster', color: black.bgMagenta },
+    { name: 'worker', color: black.bgMagenta },
+    { name: 'command', color: black.bgBlue },
+    { name: 'shardi', color: blue.bgYellow },
+    { name: 'init', color: black.bgBlue },
+    { name: 'info', color: black.bgGreen },
+    { name: 'trace', color: green.bgBlack, isTrace: true },
+    { name: 'output', color: black.bgMagenta },
+    { name: 'bbtag', color: black.bgGreen },
+    { name: 'verbose', color: black.bgCyan },
+    { name: 'adebug', color: cyan.bgBlack },
+    { name: 'debug', color: magenta.bgBlack, aliases: ['log', 'dir'] as const },
+    { name: 'database', color: black.bgBlue },
+    { name: 'module', color: black.bgBlue }
 ] as const;
 
-const logLevelMap = Object.fromEntries(logLevels.flatMap(l => [[l.name, l.sentry] as const, ...l.aliases.map(a => [a, l.sentry] as const)]));
+function sequelizeErrorArgHook(...[{ arg }]: Parameters<ArgHookCallback>): string | null {
+    if (!isSequelizeValidationError(arg) || !Array.isArray(arg.errors))
+        return null;
 
-function isSequelizeValidationError(error: unknown): error is ValidationError {
-    return typeof error === 'object' && error instanceof Sequelize.ValidationError;
+    const text = arg.errors.map(err => `\n - ${err.message}\n   - ${err.path ?? 'UNKNOWN PATH'} ${err.value ?? 'UNKNOWN VALUE'}`);
+    return `${arg.stack ?? ''}${text.join('')}`;
 }
 
-function coerceCatLoggr(logger: CatLoggr): logger is CatLoggr & Logger {
-    for (const { name } of logLevels)
-        if (!(name in logger) || typeof logger[name] !== 'function')
-            return false;
-    return true;
+function createSentryPreHook(config: Configuration, workerId: string): PreHookCallback {
+    const sentry = new Sentry.Hub(new Sentry.NodeClient({
+        dsn: config.sentry.base,
+        environment: config.general.isbeta ? 'development' : 'production',
+        integrations: [
+            new Sentry.Integrations.Http({ tracing: true })
+        ],
+        tracesSampleRate: config.sentry.sampleRate
+    }));
+
+    sentry.setTag('worker', workerId);
+    return (...args) => sentryPreHook(sentry, ...args);
+}
+
+function sentryPreHook(sentry: Sentry.Hub, ...[{ error: isError, args, level, context, shard }]: Parameters<PreHookCallback>): null {
+    if (!isError)
+        return null;
+
+    args = [...args as unknown[]];
+    const error = args.find(guard.instanceOf(Error))
+        ?? args.splice(0, args.length).join(' ');
+
+    sentry.withScope(scope => sendToSentry(sentry, scope, <Sentry.Severity>level, error, {
+        ...context,
+        shard: shard,
+        args
+    }));
+
+    return null;
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function sendToSentry(sentry: Sentry.Hub, scope: Sentry.Scope, level: Sentry.Severity, error: string | Error, context: object): void {
+    if (typeof error !== 'string') {
+        scope.setLevel(level);
+        sentry.captureException(error, context);
+    } else {
+        sentry.captureMessage(error, level, context);
+    }
+}
+
+function isSequelizeValidationError(error: unknown): error is ValidationError {
+    return typeof error === 'object' && error instanceof ValidationError;
 }

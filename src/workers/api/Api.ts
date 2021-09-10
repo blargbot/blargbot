@@ -1,4 +1,5 @@
 import { BaseClient } from '@core/BaseClient';
+import { Configuration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import express, { Express } from 'express';

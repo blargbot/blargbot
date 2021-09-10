@@ -3,6 +3,7 @@ import { CustomCommandLimit, getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand } from '@cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
+import { Configuration } from '@core/Configuration';
 import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
 import { FileOptions, MessageEmbedOptions, MessageOptions, Role } from 'discord.js';
@@ -743,7 +744,7 @@ function normalizeName(title: string): string {
 
 function signShrinkwrap(shrinkwrap: GuildShrinkwrap, config: Configuration): string {
     const content = JSON.stringify(shrinkwrap);
-    return createHmac('sha256', config.general.interface_key).update(content).digest('hex');
+    return createHmac('sha256', config.general.shrinkwrapKey).update(content).digest('hex');
 }
 
 async function requestSafe(url: string): Promise<unknown> {

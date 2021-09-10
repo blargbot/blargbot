@@ -3,6 +3,8 @@ import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { Client as Discord, ClientOptions as DiscordOptions } from 'discord.js';
 
+import { Configuration } from './Configuration';
+
 export class BaseClient {
     public readonly util: BaseUtilities;
     public readonly database: Database;
@@ -20,7 +22,7 @@ export class BaseClient {
         this.database = new Database({
             logger: this.logger,
             discord: this.discord,
-            rethinkDb: this.config.rethink,
+            rethink: this.config.rethink,
             cassandra: this.config.cassandra,
             postgres: this.config.postgres,
             airtable: this.config.airtable

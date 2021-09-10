@@ -1,4 +1,4 @@
-import { SubtagVariableType } from '@cluster/utils';
+import { SubtagVariableType } from '@core/types';
 import ReadWriteLock from 'rwlock';
 
 import { BBTagContext } from './BBTagContext';

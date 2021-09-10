@@ -20,6 +20,7 @@ export class AvatarInterval extends CronService {
         this.logger.info('!=! Performing the avatar interval !=!');
         if (this.master.config.general.isbeta)
             return;
+
         const time = moment();
         const h = parseInt(time.format('H'));
         // account for any number of possible avatars

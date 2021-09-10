@@ -8,7 +8,7 @@ export class IgnoreSelfMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly logger: Logger) {
     }
 
-    public async execute(context: Message, next: () => Promise<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
         if (context.author.id !== context.client.user?.id) {
             metrics.messageCounter.inc();
             return await next();

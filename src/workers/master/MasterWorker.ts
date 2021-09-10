@@ -1,3 +1,4 @@
+import { Configuration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
 import { BaseWorker } from '@core/worker';
 import { MasterIPCContract, MasterOptions } from '@master/types';

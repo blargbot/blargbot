@@ -9,9 +9,6 @@ import { CommandContext } from './CommandContext';
 import { compileSignatures } from './compilation';
 import { InvokeCommandHandlerMiddleware } from './middleware';
 
-// Circular reference means this needs to be resolved asyncronously;
-const helpCommandPromise = import('@cluster/dcommands/general/help');
-
 export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
     private readonly handler: InvokeCommandHandlerMiddleware<TContext>;
     protected readonly middleware: Array<IMiddleware<TContext, CommandResult>>;
@@ -23,7 +20,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
             {
                 parameters: 'help {page:integer=1}',
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-                execute: (context, [page]) => this.showHelp(context, this, page.asInteger - 1),
+                execute: (context, [page]) => context.cluster.help.viewCommand(context.channel, context.author, context.prefix, this.name, page.asInteger - 1),
                 description: 'Gets the help message for this command',
                 hidden: true
             },
@@ -55,14 +52,5 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
 
         const result = await runMiddleware([...this.middleware, this.handler], context, undefined);
         await context.reply(result);
-    }
-
-    protected async showHelp(context: CommandContext, command: BaseCommand, page: number): Promise<CommandResult> {
-        // TODO transition to using a worker
-        const { HelpCommand: helpCommandClass } = await helpCommandPromise;
-        const help = await context.cluster.commands.default.get('help', context.channel, context.author);
-        if (help.state === 'ALLOWED' && help.detail.implementation instanceof helpCommandClass)
-            return await help.detail.implementation.viewCommand(context, command.name, page);
-        return undefined;
     }
 }

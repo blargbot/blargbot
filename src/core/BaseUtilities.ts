@@ -1,8 +1,10 @@
 import { DMContext, SendContext, SendPayload, StoredUser } from '@core/types';
+import { Snowflake } from 'catflake';
 import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction, Webhook } from 'discord.js';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
+import { Configuration } from './Configuration';
 import { Database } from './database';
 import { Logger } from './Logger';
 import { metrics } from './Metrics';
