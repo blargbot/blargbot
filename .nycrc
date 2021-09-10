@@ -1,6 +1,6 @@
 {
   "cache": false,
-  "check-coverage": true,
+  "check-coverage": false,
   "extension": [
     ".ts"
   ],

@@ -96,10 +96,8 @@
         "ci": "yarn rebuild && yarn lint && yarn coverage",
         "coverage": "nyc yarn test",
         "build": "tsc",
-        "build:watch": "tsc -w",
         "rebuild": "yarn clean && yarn build",
         "lint": "eslint --ext .ts ./",
-        "lint-fix": "eslint --ext .ts ./ --fix",
         "prepare": "husky install",
         "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
     },

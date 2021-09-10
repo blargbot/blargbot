@@ -35,11 +35,22 @@ jobs:
     - name: Install packages
       run: yarn install
     
-    - name: Run checks
-      run: yarn run ci
+    - name: Build
+      run: yarn build
 
-    - name: Upload code coverage
-      if: hashFiles('coverage/index.html') != ''
+    - name: Lint
+      run: yarn lint
+
+    - name: Test
+      id: test
+      run: yarn coverage
+
+    - name: Test
+      if: always()
+      run: echo ${{ steps.test.outcome }} ${{ hashFiles('coverage/index.html') }}
+
+    - name: Upload coverage
+      if: always() && steps.test.outcome != 'skipped' && 
       uses: actions/upload-artifact@v2
       with:
         name: coverage
