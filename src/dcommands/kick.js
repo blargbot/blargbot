@@ -65,14 +65,14 @@ class KickCommand extends BaseCommand {
             return [`You don't have permission to kick users!`, '`User has no permissions`'];
         }
         
-        let member = msg.guild.members.get(user.id);
+        const member = msg.guild.members.get(user.id);
         
         if(!member) {
             return [`${user.username} isnt on this server!`, '`User not in guild`'];
         }
-        let botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-        let userPos = bu.getPosition(msg.member);
-        let targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
+        const botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+        const userPos = bu.getPosition(msg.member);
+        const targetPos = bu.getPosition(member);
         if (targetPos >= botPos) {
             return [`I don't have permission to kick ${user.username}!`, '`Bot has no permissions`'];
         }
