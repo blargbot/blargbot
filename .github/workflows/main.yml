@@ -19,6 +19,8 @@ jobs:
       
     - name: Add configuration files
       run: | 
+        echo "declare const config: import('@core/Configuration').Configuration;
+        export default config;" >> config.json.d.ts
         echo '["abc"]' >> res/avatars.json
     
     - name: Install Node
