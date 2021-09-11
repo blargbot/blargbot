@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
  * @Last Modified by: RagingLink
- * @Last Modified time: 2021-09-11 12:52:57
+ * @Last Modified time: 2021-09-11 12:58:55
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -49,8 +49,8 @@ whiteList.marquee = ['behavior', 'direction', 'hspace', 'loop', 'scrollamount', 
 whiteList.style = []; // Allow style without attributes
 whiteList.link = ['rel', 'href']; // Allow link tags for external CSS.
 
-const customWhitelistedAttribs = ['class','id', 'style', 'title', 'data-tooltip'];
-// add class and id attributes to all whitelisted elements
+const customWhitelistedAttribs = ['class', 'id', 'style', 'title', 'data-tooltip'];
+// add custom attributes to all elements
 for (const key in whiteList) {
     whiteList[key].push(...customWhitelistedAttribs);
 }
