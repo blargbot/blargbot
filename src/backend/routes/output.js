@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:19:10
- * @Last Modified by: stupid cat
- * @Last Modified time: 2019-01-02 14:18:24
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-09-11 12:52:57
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -49,9 +49,10 @@ whiteList.marquee = ['behavior', 'direction', 'hspace', 'loop', 'scrollamount', 
 whiteList.style = []; // Allow style without attributes
 whiteList.link = ['rel', 'href']; // Allow link tags for external CSS.
 
+const customWhitelistedAttribs = ['class','id', 'style', 'title', 'data-tooltip'];
 // add class and id attributes to all whitelisted elements
 for (const key in whiteList) {
-    whiteList[key].push('class', 'id');
+    whiteList[key].push(...customWhitelistedAttribs);
 }
 
 
@@ -102,7 +103,7 @@ router.get('/:id/perm', async function (req, res) {
 
     let output = await getOutput(id[0]);
 
-    let m = await bu.cclient.execute(`UPDATE message_outputs USING TTL 0 
+    let m = await bu.cclient.execute(`UPDATE message_outputs USING TTL 0
         SET content = :content, embeds = :embeds, channelid = :channelid
     WHERE id = :id`, {
             id: output.id, content: output.content, embeds: output.embeds, channelid: output.channelid
