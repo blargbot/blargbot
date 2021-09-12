@@ -41,7 +41,7 @@ const fullArgument: CommandArgument = {
     get asNumber() { return throwNotDeclared('number', () => this.asInteger); },
     get asRole() { return throwNotDeclared('role'); },
     get asSender() { return throwNotDeclared('sender', () => this.asUser); },
-    get asString() { return throwNotDeclared('string'); },
+    get asString() { return throwNotDeclared('string', () => this.asLiteral); },
     get asUser() { return throwNotDeclared('user', () => this.asMember.user); },
 
     get asBigints() { return [this.asBigint]; },
