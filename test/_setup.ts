@@ -4,6 +4,7 @@ import * as mockito from 'ts-mockito';
 import { Mocker } from 'ts-mockito/lib/Mock';
 import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub';
 import { MethodStub } from 'ts-mockito/lib/stub/MethodStub';
+import { ReturnValueMethodStub } from 'ts-mockito/lib/stub/ReturnValueMethodStub';
 import { isProxy } from 'util/types';
 
 (mockito as Mutable<typeof mockito>).mock = (obj?: unknown) => {
@@ -17,7 +18,13 @@ import { isProxy } from 'util/types';
         if (!(symbol in ctx))
             ctx[symbol] = undefined;
 
-    return new Mocker(obj, ctx).getMock() as unknown;
+    const mocker = new Mocker(obj, ctx);
+    mocker.isStrict = true;
+    return mocker.getMock() as unknown;
+};
+(mockito as Mutable<typeof mockito>).setStrict = (obj: unknown, strict) => {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
+    (<{ __tsmockitoMocker: Mocker; }>obj).__tsmockitoMocker.isStrict = strict;
 };
 
 class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
@@ -41,6 +48,8 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
 
 }
 
-Mocker.prototype['getEmptyMethodStub'] = key => {
-    return new MethodNotConfiguredStub(key);
+Mocker.prototype['getEmptyMethodStub'] = function (this: Mocker, key) {
+    if (this.isStrict)
+        return new MethodNotConfiguredStub(key);
+    return new ReturnValueMethodStub(-1, [], null);
 };

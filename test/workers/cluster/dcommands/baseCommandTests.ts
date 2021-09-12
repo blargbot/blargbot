@@ -3,11 +3,12 @@ import { BaseCommand, CommandContext } from '@cluster/command';
 import { HelpManager } from '@cluster/managers';
 import { CommandResult } from '@cluster/types';
 import { Logger } from '@core/Logger';
+import { expect } from 'chai';
 import { Channel } from 'diagnostics_channel';
 import { TextBasedChannels, User } from 'discord.js';
 import { it } from 'mocha';
 import moment from 'moment';
-import { instance, mock, verify, when } from 'ts-mockito';
+import { instance, mock, setStrict, when } from 'ts-mockito';
 
 interface HandleConfig<TChannel extends TextBasedChannels['type'], AutoMock extends Record<string, unknown>> {
     arrange?: (context: HandleContext<TChannel, AutoMock>) => Awaitable<void>;
@@ -70,15 +71,15 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
                     .map(e => [e[0], mock(e[1])] as const)
             ]);
 
+            setStrict(context.loggerMock, false);
             when(context.channelMock.type).thenReturn(channelType);
             when(context.contextMock.argsString).thenReturn(argumentString);
             when(context.contextMock.channel).thenReturn(instance(context.channelMock));
-            when(context.contextMock.reply(expected)).thenResolve(undefined);
 
             await options?.arrange?.(context);
 
             // act
-            await command.execute(
+            const result = await command.execute(
                 instance(context.contextMock),
                 () => { throw new Error('next shouldnt be called'); },
                 {
@@ -88,7 +89,7 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
                 });
 
             // assert
-            verify(context.contextMock.reply(expected)).once();
+            expect(result).to.deep.equal(expected);
             await options?.assert?.(context);
         });
     }

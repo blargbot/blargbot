@@ -12,7 +12,14 @@ declare module 'ts-mockito' {
     export function strictEqual<T>(expectedValue: T): T;
     export function match<T extends string>(expectedValue: RegExp | string): T;
     export function objectContaining<T>(expectedValue: T): { readonly [key: string]: T; };
+    export function setStrict<T>(mock: T, strict: boolean): void;
 
+}
+
+declare module 'ts-mockito/lib/Mock' {
+    export interface Mocker {
+        isStrict: boolean;
+    }
 }
 
 declare module 'ts-mockito/lib/MethodStubSetter' {

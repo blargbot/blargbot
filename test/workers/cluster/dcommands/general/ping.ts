@@ -1,10 +1,11 @@
 import { CommandContext } from '@cluster/command';
 import { PingCommand } from '@cluster/dcommands/general/ping';
 import { Logger } from '@core/Logger';
+import { expect } from 'chai';
 import { Channel, Message, TextBasedChannels } from 'discord.js';
 import { describe, it } from 'mocha';
 import moment from 'moment';
-import { anyString, instance, mock, verify, when } from 'ts-mockito';
+import { anyString, instance, mock, setStrict, verify, when } from 'ts-mockito';
 
 import { testExecute, testExecuteHelp } from '../baseCommandTests';
 
@@ -40,13 +41,13 @@ describe('PingCommand', () => {
             const channelMock = mock<TextBasedChannels>(Channel);
             const contextMock = mock<CommandContext>(CommandContext);
             const loggerMock = mock<Logger>();
+            setStrict(loggerMock, false);
             when(channelMock.type).thenReturn('GUILD_TEXT');
             when(contextMock.argsString).thenReturn('123');
             when(contextMock.channel).thenReturn(instance(channelMock));
-            when(contextMock.reply(expected)).thenResolve(undefined);
 
             // act
-            await command.execute(
+            const result = await command.execute(
                 instance(contextMock),
                 () => { throw new Error('next shouldnt be called'); },
                 {
@@ -56,7 +57,7 @@ describe('PingCommand', () => {
                 });
 
             // assert
-            verify(contextMock.reply(expected)).once();
+            expect(result).to.equal(expected);
         });
 
         it('Should edit the message if it is sent successfully', async () => {
@@ -70,11 +71,12 @@ describe('PingCommand', () => {
             when(replyMock.createdTimestamp).thenReturn(456);
 
             // act
-            await command.ping(instance(contextMock));
+            const result = await command.ping(instance(contextMock));
 
             // assert
             verify(contextMock.reply(anyString())).once();
             verify(replyMock.edit(expected)).once();
+            expect(result).to.be.undefined;
         });
 
         it('Should not error if the message doesnt get sent', async () => {
@@ -83,10 +85,11 @@ describe('PingCommand', () => {
             when(contextMock.reply(anyString())).thenResolve(undefined);
 
             // act
-            await command.ping(instance(contextMock));
+            const result = await command.ping(instance(contextMock));
 
             // assert
             verify(contextMock.reply(anyString())).once();
+            expect(result).to.be.undefined;
         });
     });
 });
