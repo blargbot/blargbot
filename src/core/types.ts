@@ -965,7 +965,14 @@ export interface TypeMappingOptions<T, R> {
 }
 
 export interface IMiddleware<Context, Result = void> {
-    execute(context: Context, next: (context?: Context) => Awaitable<Result>): Awaitable<Result>;
+    readonly name?: string;
+    execute(context: Context, next: () => Awaitable<Result>, options: MiddlewareRunOptions): Awaitable<Result>;
+}
+
+export interface MiddlewareRunOptions {
+    readonly id: Snowflake;
+    readonly logger: Logger;
+    readonly start: number;
 }
 
 export enum SubtagVariableType {

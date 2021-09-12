@@ -1,7 +1,7 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { CommandDefinition, CommandOptions, CommandResult } from '@cluster/types';
 import { commandTypeDetails, runMiddleware } from '@cluster/utils';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, MiddlewareRunOptions } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommand } from './BaseCommand';
@@ -42,15 +42,10 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
     protected abstract guardContext(context: CommandContext): context is TContext;
     protected abstract handleInvalidContext(context: CommandContext): Promise<CommandResult> | CommandResult;
 
-    public async execute(context: CommandContext): Promise<void> {
-        if (!this.guardContext(context)) {
-            const result = await this.handleInvalidContext(context);
-            if (result !== undefined)
-                await context.reply(result);
-            return;
-        }
+    public async execute(context: CommandContext, _: unknown, options: MiddlewareRunOptions): Promise<CommandResult> {
+        if (!this.guardContext(context))
+            return await this.handleInvalidContext(context);
 
-        const result = await runMiddleware([...this.middleware, this.handler], context, undefined);
-        await context.reply(result);
+        return await runMiddleware([...this.middleware, this.handler], context, undefined, options);
     }
 }

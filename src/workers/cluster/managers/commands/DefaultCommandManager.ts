@@ -1,11 +1,11 @@
 import { Cluster } from '@cluster';
-import { BaseCommand, CommandContext, ErrorMiddleware } from '@cluster/command';
-import { CommandGetCoreResult, CommandParameter, CommandSignature, FlagDefinition, ICommand } from '@cluster/types';
+import { BaseCommand, CommandContext } from '@cluster/command';
+import { CommandGetCoreResult, CommandParameter, CommandResult, CommandSignature, FlagDefinition, ICommand } from '@cluster/types';
 import { commandTypeDetails, guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { CommandPermissions } from '@core/types';
+import { CommandPermissions, MiddlewareRunOptions } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommandManager } from './BaseCommandManager';
@@ -16,9 +16,7 @@ export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
     public get size(): number { return this.modules.size; }
 
     public constructor(source: string, cluster: Cluster) {
-        super('Default', cluster, [
-            new ErrorMiddleware()
-        ]);
+        super(cluster);
         this.modules = new ModuleLoader(source, BaseCommand, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
     }
 
@@ -102,16 +100,17 @@ class NormalizedCommand implements ICommand<BaseCommand> {
         this.flags = implementation.flags;
     }
 
-    public async execute(context: CommandContext): Promise<void> {
+    public async execute(context: CommandContext, next: () => Awaitable<CommandResult>, options: MiddlewareRunOptions): Promise<CommandResult> {
+        const timer = new Timer().start();
         try {
-            const timer = new Timer().start();
-            await this.implementation.execute(context);
-            timer.end();
-            metrics.commandLatency.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).observe(timer.elapsed);
-            metrics.commandCounter.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).inc();
+            return await this.implementation.execute(context, next, options);
         } catch (err: unknown) {
             metrics.commandError.labels(this.name).inc();
             throw err;
+        } finally {
+            timer.end();
+            metrics.commandLatency.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).observe(timer.elapsed);
+            metrics.commandCounter.labels(this.name, commandTypeDetails[this.implementation.category].name.toLowerCase()).inc();
         }
     }
 }

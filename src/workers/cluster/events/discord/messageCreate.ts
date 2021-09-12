@@ -1,8 +1,8 @@
 import { Cluster } from '@cluster';
-import { RollingRatelimitMiddleware } from '@cluster/command';
+import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware, SendTypingMiddleware } from '@cluster/command';
 import { humanize, runMiddleware } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, MiddlewareRunOptions } from '@core/types';
 import { Message } from 'discord.js';
 import moment from 'moment';
 
@@ -27,21 +27,28 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             new TableflipMiddleware(cluster.util),
             new MessageAwaiterMiddleware(cluster.await.messages),
             new CommandMiddleware(cluster, [
+                new ErrorMiddleware(),
                 new RollingRatelimitMiddleware({
                     period: moment.duration(30, 's'),
                     maxCommands: 15,
                     cooldown: moment.duration(60, 's'),
                     penalty: moment.duration(5, 's'),
                     key: ctx => ctx.author.id
-                })
+                }),
+                new CommandLoggerMiddleware(),
+                new SendTypingMiddleware()
             ]),
             new CleverbotMiddleware(cluster.util)
         ];
     }
 
     public async execute(message: Message): Promise<void> {
-        const start = moment();
-        const handled = await runMiddleware(this.middleware, message, false);
-        this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', moment().diff(start), 'ms');
+        const options: MiddlewareRunOptions = {
+            id: message.id,
+            logger: this.logger,
+            start: moment().valueOf()
+        };
+        const handled = await runMiddleware(this.middleware, message, false, options);
+        this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', moment().diff(options.start), 'ms');
     }
 }

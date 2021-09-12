@@ -85,7 +85,7 @@ export class Cluster extends BaseClient {
         this.domains = new DomainManager(this.database.vars);
         this.images = new ImagePool(this.id, config.discord.images, this.logger);
         this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users);
-        this.commands = new AggregateCommandManager({
+        this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
         });

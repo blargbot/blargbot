@@ -1,16 +1,24 @@
-import { BaseCommand, CommandContext } from '@cluster/command';
-import { CommandGetResult, CommandManagers, CommandResult, ICommand, ICommandManager } from '@cluster/types';
-import { CommandPermissions, IMiddleware, NamedGuildCommandTag } from '@core/types';
+import { Cluster } from '@cluster';
+import { BaseCommand } from '@cluster/command';
+import { CommandGetResult, CommandManagers, ICommand, ICommandManager } from '@cluster/types';
+import { MessageIdQueue } from '@core/MessageIdQueue';
+import { CommandPermissions, NamedGuildCommandTag } from '@core/types';
+import { guard, humanize } from '@core/utils';
 import { Guild, Message, PartialMessage, TextBasedChannels, User } from 'discord.js';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
+    public readonly messages: MessageIdQueue;
     public readonly custom: ICommandManager<NamedGuildCommandTag>;
     public readonly default: ICommandManager<BaseCommand>;
     private readonly managersArr: Array<CommandManagers[keyof CommandManagers]>;
 
     public get size(): number { return this.managersArr.reduce((p, c) => p + c.size, 0); }
 
-    public constructor(managers: CommandManagers) {
+    public constructor(
+        private readonly cluster: Cluster,
+        managers: CommandManagers
+    ) {
+        this.messages = new MessageIdQueue(100);
         this.managersArr = [
             this.custom = managers.custom,
             this.default = managers.default
@@ -19,14 +27,6 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
 
     public async load(commands?: Iterable<string> | boolean): Promise<void> {
         await Promise.all(this.managersArr.map(m => m.load(commands)));
-    }
-
-    public async execute(message: Message, prefix: string, middleware?: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>): Promise<boolean> {
-        for (const manager of this.managersArr) {
-            if (await manager.execute(message, prefix, middleware))
-                return true;
-        }
-        return false;
     }
 
     public async get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult> {
@@ -65,6 +65,24 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
     }
 
     public async messageDeleted(message: Message | PartialMessage): Promise<void> {
-        await Promise.all(this.managersArr.map(manager => manager.messageDeleted(message)));
+        if (!guard.isGuildMessage(message))
+            return;
+        if (!this.messages.has(message.channel.guild.id, message.id)
+            || await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'deletenotif') !== true) {
+            return;
+        }
+
+        let author: string | undefined;
+        if (!message.partial)
+            author = humanize.fullName(message.author);
+        else {
+            const chatlog = await this.cluster.database.chatlogs.getByMessageId(message.id);
+            if (chatlog !== undefined) {
+                author = (await this.cluster.util.getUser(chatlog.userid))?.username;
+            }
+        }
+
+        if (author !== undefined)
+            await this.cluster.util.send(message.channel.id, `**${author}** deleted their command message.`);
     }
 }

@@ -1,7 +1,9 @@
 import { CommandContext } from '@cluster/command';
 import { PingCommand } from '@cluster/dcommands/general/ping';
+import { Logger } from '@core/Logger';
 import { Channel, Message, TextBasedChannels } from 'discord.js';
 import { describe, it } from 'mocha';
+import moment from 'moment';
 import { anyString, instance, mock, verify, when } from 'ts-mockito';
 
 import { testExecute, testExecuteHelp } from '../baseCommandTests';
@@ -37,13 +39,21 @@ describe('PingCommand', () => {
             const expected = '❌ Too many arguments! `ping` doesnt need any arguments';
             const channelMock = mock<TextBasedChannels>(Channel);
             const contextMock = mock<CommandContext>(CommandContext);
+            const loggerMock = mock<Logger>();
             when(channelMock.type).thenReturn('GUILD_TEXT');
             when(contextMock.argsString).thenReturn('123');
             when(contextMock.channel).thenReturn(instance(channelMock));
             when(contextMock.reply(expected)).thenResolve(undefined);
 
             // act
-            await command.execute(instance(contextMock));
+            await command.execute(
+                instance(contextMock),
+                () => { throw new Error('next shouldnt be called'); },
+                {
+                    id: '',
+                    logger: instance(loggerMock),
+                    start: moment().valueOf()
+                });
 
             // assert
             verify(contextMock.reply(expected)).once();

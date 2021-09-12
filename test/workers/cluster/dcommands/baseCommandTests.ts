@@ -2,9 +2,11 @@ import { Cluster } from '@cluster';
 import { BaseCommand, CommandContext } from '@cluster/command';
 import { HelpManager } from '@cluster/managers';
 import { CommandResult } from '@cluster/types';
+import { Logger } from '@core/Logger';
 import { Channel } from 'diagnostics_channel';
 import { TextBasedChannels, User } from 'discord.js';
 import { it } from 'mocha';
+import moment from 'moment';
 import { instance, mock, verify, when } from 'ts-mockito';
 
 interface HandleConfig<TChannel extends TextBasedChannels['type'], AutoMock extends Record<string, unknown>> {
@@ -16,6 +18,7 @@ type HandleContext<TChannel extends TextBasedChannels['type'], AutoMock extends 
     & {
         contextMock: CommandContext;
         channelMock: Extract<TextBasedChannels, { type: TChannel; }>;
+        loggerMock: Logger;
     } & {
         [P in keyof AutoMock]: AutoMock[P] extends abstract new (...args: infer _) => infer R ? R : Exclude<AutoMock[P], undefined>
     }
@@ -62,6 +65,7 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
             const context = <HandleContext<TChannel, AutoMock>>Object.fromEntries([
                 ['channelMock', mock(Channel)] as const,
                 ['contextMock', mock(CommandContext)] as const,
+                ['loggerMock', mock<Logger>()] as const,
                 ...Object.entries(automock ?? {})
                     .map(e => [e[0], mock(e[1])] as const)
             ]);
@@ -74,7 +78,14 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
             await options?.arrange?.(context);
 
             // act
-            await command.execute(instance(context.contextMock));
+            await command.execute(
+                instance(context.contextMock),
+                () => { throw new Error('next shouldnt be called'); },
+                {
+                    id: '',
+                    logger: instance(context.loggerMock),
+                    start: moment().valueOf()
+                });
 
             // assert
             verify(context.contextMock.reply(expected)).once();

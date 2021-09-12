@@ -1,11 +1,12 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
-import { CommandBaseOptions, CommandSignature, FlagDefinition } from '@cluster/types';
+import { CommandBaseOptions, CommandResult, CommandSignature, FlagDefinition } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
+import { IMiddleware, MiddlewareRunOptions } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { CommandContext } from './CommandContext';
 
-export abstract class BaseCommand implements CommandBaseOptions {
+export abstract class BaseCommand implements CommandBaseOptions, IMiddleware<CommandContext, CommandResult> {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: CommandType;
@@ -31,7 +32,7 @@ export abstract class BaseCommand implements CommandBaseOptions {
     }
 
     public abstract isVisible(util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User): Promise<boolean> | boolean;
-    public abstract execute(context: CommandContext): Promise<void>;
+    public abstract execute(context: CommandContext, next: () => Awaitable<CommandResult>, options: MiddlewareRunOptions): Awaitable<CommandResult>;
 
     public error<T extends string>(message: T): `❌ ${T}` {
         return `❌ ${message}`;

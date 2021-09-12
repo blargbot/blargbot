@@ -4,7 +4,7 @@ import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
 import { Snowflake } from 'catflake';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessage, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
@@ -34,11 +34,9 @@ export type ClusterIPCContract = {
 
 export interface ICommandManager<T = unknown> {
     readonly size: number;
-    execute(message: Message, prefix: string, middleware?: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>): Promise<boolean>;
     get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>>;
     list(location?: Guild | TextBasedChannels, user?: User): AsyncIterable<ICommand<T>>;
     configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
-    messageDeleted(message: Message | PartialMessage): Promise<void>;
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
 
@@ -51,9 +49,9 @@ export interface ICommandDetails extends Required<CommandPermissions> {
     readonly signatures: readonly CommandSignature[];
 }
 
-export interface ICommand<T = unknown> extends ICommandDetails {
+export interface ICommand<T = unknown> extends ICommandDetails, IMiddleware<CommandContext, CommandResult> {
+    readonly name: string;
     readonly implementation: T;
-    execute(context: CommandContext): Promise<void>;
 }
 
 export type Result<State, Detail = undefined, Optional extends boolean = Detail extends undefined ? true : false> = Optional extends false

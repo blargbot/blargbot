@@ -13,7 +13,7 @@ export class CustomCommandManager extends BaseCommandManager<NamedGuildCommandTa
     public readonly size: number = 0;
 
     public constructor(cluster: Cluster) {
-        super('Custom', cluster);
+        super(cluster);
     }
 
     protected async getCore(name: string, location?: Guild | TextBasedChannels): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
@@ -99,7 +99,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         this.hidden = this.implementation.hidden ?? false;
     }
 
-    public async execute(context: CommandContext): Promise<void> {
+    public async execute(context: CommandContext): Promise<undefined> {
         if (!guard.isGuildCommandContext(context))
             return;
 
@@ -120,6 +120,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             isCC: true,
             limit: new limits.customCommandLimit()
         });
+        return undefined;
     }
 
     private async getDetails(context: CommandContext): Promise<string | CustomCommandDetails> {
