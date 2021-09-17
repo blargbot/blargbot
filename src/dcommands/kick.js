@@ -19,7 +19,6 @@ class KickCommand extends BaseCommand {
             if (!user) {
                 return await bu.send(msg, `I couldn't find that user. Try again with their ID or a mention instead.`);
             }
-            if (!context.guild.members.get(user.id)) return this.userNotInGuild(subtag, context);   //checking if user is in guild; if not then returning user not in guild error
             
             let target = await bu.getUser(msg, words[1]);     //unused
             let reason = bu.parseInput(this.flags, words).r;
