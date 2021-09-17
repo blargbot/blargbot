@@ -25,7 +25,7 @@ class KickCommand extends BaseCommand {
 
             if (!target) return;
             
-            bu.send((await this.kick(msg, user, reason))[0]);
+            bu.send(msg, (await this.kick(msg, user, reason))[0]);
             
         } else bu.send(msg, `You didn't tell me who to kick!`);
     }
@@ -64,11 +64,13 @@ class KickCommand extends BaseCommand {
                 fullReason
             );
 
-            return [`:ok_hand: Kicked ${user.username}. Reason: ${reason}`];
+            if (reason)
+                return [`:ok_hand: Kicked ${user.username}. Reason: ${reason}`, 'Success'];
+            return [`:ok_hand: Kicked ${user.username}.`, 'Success'];
         } catch (err) {
             console.error(err);
             //return err;
-            return [`Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, false];
+            return [`Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${err.message}\n${err.response}\`\`\``, err];
         }
     }
 }
