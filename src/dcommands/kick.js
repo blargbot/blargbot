@@ -24,31 +24,6 @@ class KickCommand extends BaseCommand {
             let reason = bu.parseInput(this.flags, words).r;
 
             if (!target) return;
-
-            /*let state = await this.kick(msg, target, reason, false, false);
-            let response;
-            switch (state) {
-                case 0: //Successful
-                    response = `Kicked ${target.username}. Reason: ${reason}`;
-                    break;
-                case 1: //Bot doesnt have perms
-                    response = `I don't have permission to kick users!`;
-                    break;
-                case 2: //Bot cannot kick target
-                    response = `I don't have permission to kick ${target.username}!`;
-                break;
-                case 3: //User doesnt have perms
-                    response = `You don't have permission to kick users!`;
-                    break;
-                case 4: //User cannot kick target
-                    response = `You don't have permission to kick ${target.username}!`;
-                    break;
-                default: //Error occurred
-                    response = `Failed to kick the user! Please check your permission settings and command and retry. \nIf you still can't get it to work, please report it to me by doing \`b!report <your issue>\` with the following:\`\`\`\n${state.message}\n${state.response}\`\`\``;
-                    break;
-            }
-
-            bu.send(msg, response);*/
             
             bu.send((await this.kick(msg, user, reason))[0]);
             
@@ -85,7 +60,7 @@ class KickCommand extends BaseCommand {
 
             await bot.kickGuildMember(
                 msg.channel.guild.id,
-                target.id,
+                member.id,
                 fullReason
             );
 
