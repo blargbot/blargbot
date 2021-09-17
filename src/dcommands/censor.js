@@ -353,6 +353,7 @@ class CensorCommand extends BaseCommand {
                     let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
                     if (censorList.length + phrase.length + suffix.length > 1500) {
                         censorList += `...and ${storedGuild.censor.list.length - i} more.\n`;
+                        break;
                     } else {
                         censorList += phrase;
                     }
