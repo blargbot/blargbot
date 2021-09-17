@@ -21,7 +21,7 @@ class BanCommand extends BaseCommand {
         if (words[1]) {
             let input = bu.parseInput(this.flags, words);
 
-            var user = await bu.getUser(msg, input.undefined[0]);
+            const user = await bu.getUser(msg, input.undefined[0]);
             if (!user) {
                 return await bu.send(msg, `I couldn't find that user. Try again with their ID or a mention instead.`);
                 // bu.send(msg, `I couldn't find that user. Try using \`hackban\` with their ID or a mention instead.`);
@@ -52,9 +52,9 @@ class BanCommand extends BaseCommand {
         let member = msg.guild.members.get(user.id);
 
         if (member) {
-            var botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
-            var userPos = bu.getPosition(msg.member);
-            var targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
+            const botPos = bu.getPosition(msg.channel.guild.members.get(bot.user.id));
+            const userPos = bu.getPosition(msg.member);
+            const targetPos = bu.getPosition(msg.channel.guild.members.get(user.id));
             if (targetPos >= botPos) {
                 return [`I don't have permission to ban ${user.username}!`, '`Bot has no permissions`'];
             }
@@ -89,7 +89,10 @@ class BanCommand extends BaseCommand {
 
                     starttime: r.epochTime(moment().unix())
                 });
-                return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>)`, duration.asMilliseconds()];
+              if(reason)
+                  return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>). Ban reason: ${reason}`, duration.asMilliseconds()];
+              return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>).`, duration.asMiliseconds()]
+
             } else {
                 return [`:ok_hand:`, true];
             }
