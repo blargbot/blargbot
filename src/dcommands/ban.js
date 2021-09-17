@@ -75,6 +75,8 @@ class BanCommand extends BaseCommand {
             const fullReason = (tag ? '' : `[ ${bu.getFullName(msg.author)} ]`) + (reason ? ' ' + reason : '');
             await bot.banGuildMember(msg.channel.guild.id, user.id, deleteDays, encodeURIComponent(fullReason));
             let suffix = '';
+            let unban_at = moment().add(duration).unix();
+
             if (duration) {
                 await bu.events.insert({
                     type: 'unban',
@@ -83,10 +85,14 @@ class BanCommand extends BaseCommand {
                     content: `${user.username}#${user.discriminator}`,
                     guild: msg.guild.id,
                     duration: duration.toJSON(),
-                    endtime: r.epochTime(moment().add(duration).unix()),
+                    endtime: r.epochTime(unban_at),
+
                     starttime: r.epochTime(moment().unix())
                 });
-                return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>). Ban reason: ${reason}`, duration.asMilliseconds()];
+              if(reason)
+                  return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>). Ban reason: ${reason}`, duration.asMilliseconds()];
+              return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>).`, duration.asMiliseconds()]
+
             } else {
                 return [`:ok_hand:`, true];
             }
