@@ -12,7 +12,7 @@ const moment = require('moment-timezone');
 const snekfetch = require('snekfetch');
 const unorm = require('unorm');
 const limax = require('limax');
-const { User, Channel, Member, Message, Permission } = require('eris');
+const { User, Channel, Member, Message, Permission, Role } = require('eris');
 const twemoji = require('twemoji');
 const request = require('request');
 const isSafeRegex = require('safe-regex');
@@ -540,49 +540,63 @@ bu.getUserById = async function (userId) {
 };
 
 /**
- * Gets a channel from a name (smartly)
- * @param msg - the message (Message)
- * @param name - the name of the channel (String)
- * @param args - additional arguments, if a bool is provided defaults to quiet (Boolean|Object)
- * @param args.quiet - if true, won't respond with multiple channels found (Boolean)
- * @param args.suppress - if true, won't output 'no channels found' or 'query cancelled' messages (Boolean)
- * @returns {User|null}
+ * @template T
+ * @param {Iterable<T>} entities
+ * @param {(entity: T) => number | boolean[]} scoreFunc
+ * @returns {T[]}
  */
-bu.getChannel = async function (msg, name, args = {}) {
-    if (typeof args !== 'object')
-        args = { quiet: args };
-    let channel = msg.channel.guild.channels.get(name);
+function findBestEntity(entities, scoreFunc) {
+    /** @type {T[]} */
+    const exactMatches = [];
+    /** @type {{ value: T, score: number }[]}     */
+    const scores = [];
+
+    for (const entity of entities) {
+        let score = scoreFunc(entity);
+        if (Array.isArray(score))
+            score = score.reduce((total, match, i, { length }) => total + (+match << (length - i)), 0);
+
+        if (score === Infinity)
+            exactMatches.push(entity);
+        if (score > 0)
+            scores.push({ value: entity, score });
+    }
+
+    if (exactMatches.length === 1)
+        return exactMatches;
+
+    return scores.sort((a, b) => b.score - a.score).map(x => x.value);
+}
+
+/**
+ * Gets a channel from a name (smartly)
+ * @param {Message<import('eris').AnyGuildChannel>} msg - the message
+ * @param {string} query - the name of the channel
+ * @param {LookupArgs|boolean} options - additional arguments, if a bool is provided defaults to quiet
+ * @returns {import('eris').AnyGuildChannel|null}
+ */
+bu.getChannel = async function (msg, query, options = {}) {
+    if (!query) return null;
+    /** @type {LookupArgs} */
+    const args = typeof options !== 'object' ? { quiet: options } : options;
+    let channel = msg.channel.guild.channels.get(query);
     if (channel) {
         return channel;
     }
 
-    let channelList = name ? msg.channel.guild.channels.filter(m => (m.name && m.name.toLowerCase().indexOf(name.toLowerCase()) > -1)) : [];
-
-    channelList.sort(function (a, b) {
-        let thingy = 0;
-        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.name.startsWith(name)) {
-            thingy += 100;
-        }
-        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.name.startsWith(name)) {
-            thingy -= 100;
-        }
-        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            a.name.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy += 10;
-        }
-        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            b.name.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy -= 10;
-        }
-        if (a.name.indexOf(name) > -1) {
-            thingy++;
-        }
-        if (b.name.indexOf(name) > -1) {
-            thingy--;
-        }
-        return -thingy;
+    const normQuery = query.toLowerCase();
+    let channelList = findBestEntity(msg.channel.guild.channels.values(), channel => {
+        if (channel.name === query) return Infinity;
+        const name = channel.name;
+        const normName = name.toLowerCase();
+        return [
+            normName === normQuery,
+            name.startsWith(query),
+            normName.startsWith(normQuery),
+            name.includes(query),
+            normName.includes(normQuery)
+        ];
     });
-    //  console.debug(channelList.map(m => m.name));
 
     if (channelList.length == 1) {
         return channelList[0];
@@ -592,136 +606,66 @@ bu.getChannel = async function (msg, name, args = {}) {
             bu.send(msg, `No channels found${args.label ? ' in ' + args.label : ''}.`);
         }
         return null;
+    } else if (!args.quiet) {
+        let matches = channelList.map(c => { return { content: `${c.name} - ${c.id}`, value: c }; });
+        let lookupResponse = await bu.createLookup(msg, 'channel', matches, args);
+        return lookupResponse;
     } else {
-        if (!args.quiet) {
-            var channelListString = '';
-            let newChannelList = [];
-            for (let i = 0; i < channelList.length && i < 20; i++) {
-              newChannelList.push(channelList[i]);
-            }
-            for (let i = 0; i < newChannelList.length; i++) {
-                channelListString += `${i + 1 < 10 ? ' ' + (i + 1) : i + 1}. ${newChannelList[i].name} - ${newChannelList[i].id}\n`;
-            }
-            let moreChannelString = newChannelList.length < channelList.length ? `...and ${channelList.length - newChannelList.length} more.\n` : '';
-
-            let query = await bu.createQuery(msg, `Multiple channels found! Please select one from the list.\`\`\`prolog
-${channelListString}${moreChannelString}--------------------
-C. cancel query
-\`\`\`
-**${bu.getFullName(msg.author)}**, please type the number of the channel you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`, (msg2) => {
-                if (msg2.content.toLowerCase() == 'c' || (parseInt(msg2.content) < newChannelList.length + 1 && parseInt(msg2.content) >= 1)) {
-                    return true;
-                } else return false;
-            }, undefined, args.label, args.suppress);
-            let response = await query.response;
-            if (response.content.toLowerCase() == 'c') {
-                if (!args.suppress)
-                    bu.send(msg, 'Query canceled.');
-                return null;
-            } else {
-                await bot.deleteMessage(query.prompt.channel.id, query.prompt.id);
-                return newChannelList[parseInt(response.content) - 1];
-            }
-        } else {
-            return null;
-        }
+        return null;
     }
 };
 
 /**
  * Gets a user from a name (smartly)
- * @param msg - the message (Message)
- * @param name - the name of the user (String)
- * @param args - additional arguments, if a bool is provided defaults to quiet (Boolean|Object)
- * @param args.quiet - if true, won't respond with multiple users found (Boolean)
- * @param args.suppress - if true, won't output 'no users found' or 'query cancelled' messages (Boolean)
+ * @param {Message<import('eris').AnyGuildChannel>} msg - the message
+ * @param {string} query - the name of the channel
+ * @param {LookupArgs|boolean} options - additional arguments, if a bool is provided defaults to quiet
  * @returns {User|null}
  */
-bu.getUser = async function (msg, name, args = {}) {
-    if (!name) return null;
-    if (typeof args !== 'object')
-        args = { quiet: args };
-    var userList;
-    var userId;
-    var discrim;
+bu.getUser = async function (msg, query, options = {}) {
+    if (!query) return null;
+    /** @type {LookupArgs} */
+    const args = typeof options !== 'object' ? { quiet: options } : options;
 
-    let user = await bu.getUserById(name);
+    let user = await bu.getUserById(query);
     if (user)
         return user;
 
-    if (/^.*#\d{4}$/.test(name)) {
-        discrim = name.match(/^.*#(\d{4}$)/)[1];
-        name = name.substring(0, name.length - 5);
+    let discrim;
+    if (/^.*#\d{4}$/.test(query)) {
+        discrim = query.match(/^.*#(\d{4}$)/)[1];
+        query = query.substring(0, query.length - 5);
     }
 
-    userList = msg.channel.guild.members.filter(m => (m.user.username &&
-        m.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-        (discrim != undefined ? m.user.discriminator == discrim : true)) ||
-        ((m.nick) &&
-            m.nick.toLowerCase().indexOf(name) > -1 &&
-            (discrim != undefined ? m.user.discriminator == discrim : true)));
-    userList.sort(function (a, b) {
-        let thingy = 0;
-        if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.user.username.startsWith(name)) {
-            thingy += 100;
-        }
-        if (a.nick && a.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.nick.startsWith(name)) {
-            thingy += 100;
-        }
-        if (b.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.user.username.startsWith(name)) {
-            thingy -= 100;
-        }
-        if (b.nick && b.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.nick.startsWith(name)) {
-            thingy -= 100;
-        }
-        if (a.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            a.user.username.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy += 10;
-        }
-        if (a.nick && a.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            a.nick.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy += 10;
-        }
-        if (b.user.username.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            b.user.username.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy -= 10;
-        }
-        if (b.nick && b.nick.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            b.nick.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy -= 10;
-        }
-        if (a.user.username.indexOf(name) > -1) {
-            thingy++;
-        }
-        if (a.nick && a.nick.indexOf(name)) {
-            thingy++;
-        }
-        if (b.user.username.indexOf(name) > -1) {
-            thingy--;
-        }
-        if (b.nick && b.nick.indexOf(name)) {
-            thingy--;
-        }
-        return -thingy;
+    const normQuery = query.toLowerCase();
+    const memberList = findBestEntity(msg.channel.guild.members.values(), member => {
+        if (query === member.username && discrim === member.discriminator) return Infinity;
+        const names = [member.username, member.nick || member.username];
+        const normNames = names.map(n => n.toLowerCase());
+        return [
+            names.includes(query),
+            normNames.includes(normQuery),
+            names.some(n => n.startsWith(query)),
+            normNames.some(n => n.startsWith(normQuery)),
+            names.some(n => n.includes(query)),
+            normNames.some(n => n.includes(normQuery))
+        ];
     });
-    //  console.debug(userList.map(m => m.user.username));
 
-    if (userList.length == 1) {
-        return userList[0].user;
-    } else if (userList.length == 0) {
+    if (memberList.length == 1) {
+        return memberList[0].user;
+    } else if (memberList.length == 0) {
         if (!args.quiet && !args.suppress) {
             if (args.onSendCallback) args.onSendCallback();
             await bu.send(msg, `No users found${args.label ? ' in ' + args.label : ''}.`);
         }
         return null;
+    } else if (!args.quiet) {
+        let matches = memberList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user }; });
+        let lookupResponse = await bu.createLookup(msg, 'user', matches, args);
+        return lookupResponse;
     } else {
-        if (!args.quiet) {
-            let matches = userList.map(m => { return { content: `${m.user.username}#${m.user.discriminator} - ${m.user.id}`, value: m.user }; });
-            let lookupResponse = await bu.createLookup(msg, 'user', matches, args);
-            return lookupResponse;
-        } else {
-            return null;
-        }
+        return null;
     }
 };
 
@@ -737,42 +681,37 @@ bu.getMessage = async function (channelId, messageId) {
     return null;
 };
 
-bu.getRole = async function (msg, name, args = {}) {
-    if (typeof args !== 'object')
-        args = { quiet: args };
-    if (/\d{17,23}/.test(name))
-        name = name.match(/\d{17,23}/)[0];
-    if (msg.channel.guild.roles.get(name)) {
-        return msg.channel.guild.roles.get(name);
+/**
+ * Gets a user from a name (smartly)
+ * @param {Message<import('eris').AnyGuildChannel>} msg - the message
+ * @param {string} query - the name of the channel
+ * @param {LookupArgs|boolean} options - additional arguments, if a bool is provided defaults to quiet
+ * @returns {Role|null}
+ */
+bu.getRole = async function (msg, query, options = {}) {
+    if (!query) return null;
+    /** @type {LookupArgs} */
+    const args = typeof options !== 'object' ? { quiet: options } : options;
+    if (/\d{17,23}/.test(query))
+        query = query.match(/\d{17,23}/)[0];
+    if (msg.channel.guild.roles.get(query)) {
+        return msg.channel.guild.roles.get(query);
     }
 
-    let roleList = msg.channel.guild.roles.filter(m => (m.name &&
-        m.name.toLowerCase().indexOf(name.toLowerCase()) > -1));
-    roleList.sort(function (a, b) {
-        let thingy = 0;
-        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && a.name.startsWith(name)) {
-            thingy += 100;
-        }
-        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 && b.name.startsWith(name)) {
-            thingy -= 100;
-        }
-        if (a.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            a.name.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy += 10;
-        }
-        if (b.name.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-            b.name.toLowerCase().startsWith(name.toLowerCase())) {
-            thingy -= 10;
-        }
-        if (a.name.indexOf(name) > -1) {
-            thingy++;
-        }
-        if (b.name.indexOf(name) > -1) {
-            thingy--;
-        }
-        return -thingy;
+    const normQuery = query.toLowerCase();
+    const roleList = findBestEntity(msg.channel.guild.roles.values(), role => {
+        if (role.name === query) return Infinity;
+        const name = role.name;
+        const normName = name.toLowerCase();
+        return [
+            name === query,
+            normName === normQuery,
+            name.startsWith(query),
+            normName.startsWith(normQuery),
+            name.includes(query),
+            normName.includes(normQuery)
+        ];
     });
-    //  console.debug(roleList.map(m => m.name));
 
     if (roleList.length == 1) {
         return roleList[0];
@@ -1955,11 +1894,12 @@ bu.formatAuditReason = function (user, reason, ban = false) {
 
 /**
  * Sends lookup message to msg.channel and returns the selected item
+ * @template T
  * @param {Message} msg - Message of author
  * @param {String} type - Type of lookup in the lookup message
- * @param {Object[]} matches - An array of Objects with properties `content` and `value`
- * @param {Object} args -
- * @returns {*} The value of the matched item, returns {null} if cancelled
+ * @param {{content: string, value: T}[]} matches - An array of Objects with properties `content` and `value`
+ * @param {LookupArgs} args -
+ * @returns {Promise<T|null>} The value of the matched item, returns {null} if cancelled
  */
 bu.createLookup = async function (msg, type, matches, args = {}) {
     var outputString = '';
@@ -1977,7 +1917,7 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
             `\n${outputString}${moreLookup}--------------------` +
             `\nC.cancel query\`\`\`` +
             `\n**${bu.getFullName(msg.author)}**, please type the number of the ${type} you wish to select below, or type \`c\` to cancel. This query will expire in 5 minutes.`
-            ,(msg2) => {
+            , (msg2) => {
                 return msg2.content.toLowerCase() === 'c' || (parseInt(msg2.content) < lookupList.length + 1 && parseInt(msg2.content) >= 1);
             }, undefined, args.label, args.suppress);
         let response = await query.response;
@@ -1996,3 +1936,11 @@ bu.createLookup = async function (msg, type, matches, args = {}) {
         return null;
     }
 };
+
+/**
+ * @typedef {Object} LookupArgs
+ * @property {boolean} [quiet] - if true, won't respond with the entity picker
+ * @property {boolean} [suppress] - if true, won't output 'no x found' or 'query cancelled' messages
+ * @property {string} [label] - Where this query is taking place
+ * @property {() => void} [onSendCallback] - Called if a message is sent by the lookup
+ */
