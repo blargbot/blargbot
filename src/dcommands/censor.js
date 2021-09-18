@@ -351,8 +351,9 @@ class CensorCommand extends BaseCommand {
                 suffix = "```\nPlease type the number of the censor you wish to view, or type 'c' to cancel. This prompt will expire in 5 minutes.";
                 for (let i = 0; i < storedGuild.censor.list.length; i++) {
                     let phrase = `${i + 1}. ${storedGuild.censor.list[i].term}${storedGuild.censor.list[i].regex ? ' (regex)' : ''}\n`;
-                    if (censorList.length + phrase.length + suffix.length > 1500) {
+                    if (censorList.length + phrase.length + suffix.length > 3500) {
                         censorList += `...and ${storedGuild.censor.list.length - i} more.\n`;
+                        break;
                     } else {
                         censorList += phrase;
                     }
