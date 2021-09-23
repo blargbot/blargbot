@@ -25,7 +25,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             new AutoresponseMiddleware(cluster.autoresponses),
             new IgnoreBotsMiddleware(),
             new TableflipMiddleware(cluster.util),
-            new MessageAwaiterMiddleware(cluster.await.messages),
+            new MessageAwaiterMiddleware(cluster.awaiter.messages),
             new CommandMiddleware(cluster, [
                 new ErrorMiddleware(),
                 new RollingRatelimitMiddleware({

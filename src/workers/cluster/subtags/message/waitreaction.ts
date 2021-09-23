@@ -1,7 +1,8 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { Statement, SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
-import { GuildMessage, MessageReaction, User } from 'discord.js';
+import { guard } from '@core/utils';
+import { User } from 'discord.js';
 
 export class WaitReactionSubtag extends BaseSubtag {
     public constructor() {
@@ -111,7 +112,7 @@ export class WaitReactionSubtag extends BaseSubtag {
         }
 
         //* Not sure what this empty override is for
-        const reactionSubtag = context.override('reaction', { execute: () => ''});
+        const reactionSubtag = context.override('reaction', { execute: () => '' });
         const subtagOverrides = [];
         for (const name of overrides.waitreaction) {
             subtagOverrides.push(context.override(name, {
@@ -121,24 +122,28 @@ export class WaitReactionSubtag extends BaseSubtag {
             }));
         }
 
-        const checkFunc = async (message: GuildMessage, user: User, reaction: MessageReaction): Promise<boolean> => {
-            const childContext = context.makeChild({message});
-            childContext.override('reaction', {execute: () => reaction.emoji.toString()});
-            childContext.override('reactuser', {execute: () => user.id});
+        const userSet = new Set(users);
+        const reactionSet = new Set(parsedReactions);
+        const checkReaction = reactionSet.size === 0 ? () => true : (emoji: string) => reactionSet.has(emoji);
+        const reaction = await context.util.cluster.awaiter.reactions.wait(messages, async ({ user, reaction, message }) => {
+            if (!userSet.has(user.id) || !checkReaction(reaction.emoji.toString()) || !guard.isGuildMessage(message))
+                return false;
+
+            const childContext = context.makeChild({ message });
+            childContext.override('reaction', { execute: () => reaction.emoji.toString() });
+            childContext.override('reactuser', { execute: () => user.id });
 
             const result = parse.boolean(await childContext.eval(condition));
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
-        };
+        }, timeout * 1000);
 
-        const awaitReactionResponse = await context.util.cluster.await.reactions.awaitTagReactions(messages, users, parsedReactions, checkFunc, timeout * 1000);
         reactionSubtag.revert();
         for (const override of subtagOverrides)
             override.revert();
-        if (typeof awaitReactionResponse === 'string')
-            return this.customError(awaitReactionResponse, context, subtag);
-        awaitReactionResponse;
-        return JSON.stringify([awaitReactionResponse.message.id, awaitReactionResponse.message.id, awaitReactionResponse.user.id, awaitReactionResponse.reaction.emoji.toString()]);
-
+        if (reaction === undefined)
+            return this.customError(`Wait timed out after ${timeout * 1000}`, context, subtag);
+        reaction;
+        return JSON.stringify([reaction.message.channel.id, reaction.message.id, reaction.user.id, reaction.reaction.emoji.toString()]);
     }
 }
 

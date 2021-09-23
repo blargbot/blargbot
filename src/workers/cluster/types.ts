@@ -4,7 +4,7 @@ import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
 import { Snowflake } from 'catflake';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildMessage, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
+import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessageReaction, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
@@ -771,7 +771,7 @@ export interface CommandBinderStateFailureReason {
 }
 
 export interface AwaitReactionsResponse {
-    message: GuildMessage;
-    reaction: MessageReaction;
+    message: Message;
+    reaction: MessageReaction | PartialMessageReaction;
     user: User;
 }

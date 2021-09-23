@@ -6,6 +6,7 @@ import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-t
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster';
+import { Awaiter } from './managers';
 
 export class ClusterUtilities extends BaseUtilities {
     public constructor(
@@ -67,8 +68,7 @@ export class ClusterUtilities extends BaseUtilities {
             selectId: snowflake.create().toString()
         };
 
-        const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const awaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, {
             [component.cancelId]: () => true,
             [component.selectId]: () => true,
             [component.prevId]: async i => {
@@ -90,7 +90,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             prompt,
             async getResult() {
-                const interaction = await awaiter.result;
+                const interaction = await awaiter;
                 await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
@@ -157,8 +157,7 @@ export class ClusterUtilities extends BaseUtilities {
             minCount: options.minCount
         };
 
-        const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const awaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, {
             [component.cancelId]: () => true,
             [component.selectId]: () => true
         });
@@ -170,7 +169,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             prompt,
             async getResult() {
-                const interaction = await awaiter.result;
+                const interaction = await awaiter;
                 await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
@@ -215,8 +214,7 @@ export class ClusterUtilities extends BaseUtilities {
             confirmButton: options.confirm
         };
 
-        const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const awaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, {
+        const awaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, {
             [component.confirmId]: () => true,
             [component.cancelId]: () => true
         });
@@ -230,7 +228,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             prompt,
             async getResult() {
-                const interaction = await awaiter.result;
+                const interaction = await awaiter;
                 await cleanupQuery(prompt, interaction);
                 switch (interaction?.customId) {
                     case component.confirmId: return true;
@@ -267,7 +265,7 @@ export class ClusterUtilities extends BaseUtilities {
         const messages: Message[] = [];
         const parse = options.parse ?? (m => ({ success: true, value: m.content }));
         const channel = options.context instanceof Message ? options.context.channel : options.context;
-        const componentAwaiter = this.createComponentAwaiter(channel, options.actors, '❌ This isnt for you to use!', options.timeout, { [component.cancelId]: () => true });
+        const componentAwaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, { [component.cancelId]: () => true });
         const messageAwaiter = this.createMessageAwaiter(channel, options.actors, options.timeout, async message => {
             const parseResult = await parse(message);
             if (!parseResult.success && parseResult.error !== undefined) {
@@ -297,7 +295,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             messages: messages,
             async getResult() {
-                const result = await Promise.race([componentAwaiter.result, messageAwaiter.result]);
+                const result = await Promise.race([componentAwaiter, messageAwaiter]);
                 componentAwaiter.cancel();
                 messageAwaiter.cancel();
                 await cleanupQuery(prompt, result);
@@ -321,39 +319,21 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public createComponentAwaiter(
-        channel: TextBasedChannels,
         actors: Iterable<string | User> | string | User,
         rejectMessage: string,
         timeout: number | undefined,
         options: Record<string, (interaction: MessageComponentInteraction) => boolean | Promise<boolean>>
-    ): {
-        readonly result: Promise<MessageComponentInteraction | undefined>;
-        cancel(): void;
-    } {
+    ): Awaiter<MessageComponentInteraction> {
         const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
-        const collector = channel.createMessageComponentCollector({
-            time: timeout ?? 60000,
-            max: 1,
-            filter: async (interaction) => {
-                if (!validIds.has(interaction.customId))
-                    return false;
-
-                if (!actorFilter(interaction.user)) {
-                    await interaction.reply({ content: rejectMessage, ephemeral: true });
-                    return false;
-                }
-
-                return await options[interaction.customId](interaction);
+        return this.cluster.awaiter.components.wait(validIds, async (interaction) => {
+            if (!actorFilter(interaction.user)) {
+                await interaction.reply({ content: rejectMessage, ephemeral: true });
+                return false;
             }
-        });
 
-        return {
-            result: new Promise(resolve => collector.once('end', c => resolve(c.first()))),
-            cancel() {
-                collector.stop();
-            }
-        };
+            return await options[interaction.customId](interaction);
+        }, timeout ?? 60000);
     }
 
     public createMessageAwaiter(
@@ -361,28 +341,11 @@ export class ClusterUtilities extends BaseUtilities {
         actors: Iterable<string | User> | string | User,
         timeout: number | undefined,
         filter: (message: Message) => Promise<boolean> | boolean
-    ): {
-        readonly result: Promise<Message | undefined>;
-        cancel(): void;
-    } {
+    ): Awaiter<Message> {
         const actorFilter = createActorFilter(actors);
-        const collector = channel.createMessageCollector({
-            time: timeout ?? 60000,
-            max: 1,
-            filter: async (message) => {
-                if (!actorFilter(message.author))
-                    return false;
-
-                return await filter(message);
-            }
-        });
-
-        return {
-            result: new Promise(resolve => collector.once('end', c => resolve(c.first()))),
-            cancel() {
-                collector.stop();
-            }
-        };
+        return this.cluster.awaiter.messages.wait([channel.id], async message => {
+            return actorFilter(message.author) && await filter(message);
+        }, timeout ?? 60000);
     }
 
     public async queryUser(options: EntityPickQueryOptions<User>): Promise<ChoiceResult<User>> {

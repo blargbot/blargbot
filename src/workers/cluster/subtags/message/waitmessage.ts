@@ -1,7 +1,8 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
-import { GuildChannels, GuildMessage, User } from 'discord.js';
+import { guard } from '@core/utils';
+import { GuildChannels, User } from 'discord.js';
 
 import { Statement } from '../../types';
 
@@ -113,17 +114,20 @@ export class WaitMessageSubtags extends BaseSubtag {
             }));
         }
 
-        const checkFunc = async (message: GuildMessage): Promise<boolean> => {
+        const userSet = new Set(users);
+        const result = await context.util.cluster.awaiter.messages.wait(channels, async message => {
+            if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
+                return false;
+
             const childContext = context.makeChild({ message });
             const result = parse.boolean(await childContext.eval(condition));
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
-        };
+        }, timeout * 1000);
 
-        const result = await context.util.cluster.await.messages.awaitTagMessage(channels, users, checkFunc, timeout * 1000);
         for (const override of subtagOverrides)
             override.revert();
-        if (typeof result === 'string')
-            return this.customError(result, context, subtag);
+        if (result === undefined)
+            return this.customError(`Wait timed out after ${timeout * 1000}`, context, subtag);
         return JSON.stringify([result.channel.id, result.id]);
 
     }

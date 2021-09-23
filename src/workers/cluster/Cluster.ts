@@ -13,7 +13,7 @@ import moment, { duration, Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, HelpManager, IntervalManager, MessageAwaitManager, ModerationManager, PollManager, PrefixManager, ReactionAwaitManager, RolemeManager, TimeoutManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -38,7 +38,7 @@ export class Cluster extends BaseClient {
     public readonly intervals: IntervalManager;
     public readonly rolemes: RolemeManager;
     public readonly help: HelpManager;
-    public readonly await: { reactions: ReactionAwaitManager; messages: MessageAwaitManager; };
+    public readonly awaiter: AwaiterManager;
 
     public constructor(
         logger: Logger,
@@ -104,10 +104,7 @@ export class Cluster extends BaseClient {
         this.intervals = new IntervalManager(this, duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new HelpManager(this.commands, this.util);
-        this.await = {
-            reactions: new ReactionAwaitManager(this),
-            messages: new MessageAwaitManager(this)
-        };
+        this.awaiter = new AwaiterManager(this.logger);
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());
