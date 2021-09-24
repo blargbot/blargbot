@@ -13,7 +13,7 @@ declare module 'ts-mockito' {
     export function match<T extends string>(expectedValue: RegExp | string): T;
     export function objectContaining<T>(expectedValue: T): { readonly [key: string]: T; };
     export function setStrict<T>(mock: T, strict: boolean): void;
-
+    export function satisfies<T>(test: (value: T) => boolean): T;
 }
 
 declare module 'ts-mockito/lib/Mock' {

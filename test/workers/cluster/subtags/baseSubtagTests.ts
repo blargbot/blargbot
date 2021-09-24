@@ -13,7 +13,7 @@ interface ArgRef {
 
 interface HandleConfig<AutoMock extends Record<string, unknown>, Details> {
     arrange?: (context: HandleContext<AutoMock>, args: readonly ArgRef[], subtag: SubtagCall, details: Details) => Awaitable<void>;
-    assert?: (context: HandleContext<AutoMock>, args: readonly ArgRef[], subtag: SubtagCall, details: Details) => Awaitable<void>;
+    assert?: (context: HandleContext<AutoMock>, args: readonly ArgRef[], subtag: SubtagCall, details: Details, result: SubtagResult) => Awaitable<void>;
 }
 
 type TestCases<Details, T extends Record<string, unknown>> = ReadonlyArray<TestCase<Details, T>>;
@@ -97,7 +97,7 @@ export function testExecuteFail<Details = undefined, AutoMock extends Record<str
 
 export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
     subtag: BaseSubtag,
-    cases: TestCases<Details, { expected: SubtagResult; title?: string; }>,
+    cases: TestCases<Details, { expected?: SubtagResult; title?: string; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details>
 ): void {
@@ -112,9 +112,8 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
     subtag: BaseSubtag,
     automock: AutoMock | undefined,
     options: HandleConfig<AutoMock, Details>,
-    testCase: TestCase<Details, { expected: SubtagResult; }>
+    testCase: TestCase<Details, { expected?: SubtagResult; }>
 ): () => Promise<void> {
-    const { args, expected, details } = testCase;
     return async () => {
         // arrange
         const context = <HandleContext<AutoMock>>Object.fromEntries([
@@ -124,7 +123,7 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
                 .map(e => [e[0], mock(e[1])] as const)
         ]);
 
-        const argRefs = args.map<ArgRef>((arg, i) => ({
+        const argRefs = testCase.args.map<ArgRef>((arg, i) => ({
             code: [`ARG${i}`],
             get resolveOrder() {
                 switch (typeof arg) {
@@ -169,14 +168,15 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
         }
 
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        options.arrange?.(context, argRefs, call, details!);
+        options.arrange?.(context, argRefs, call, testCase.details!);
 
         // act
         const result = await subtag.execute(instance(context.contextMock), subtag.name, call);
 
         // asssert
-        expect(result).to.equal(expected);
+        if ('expected' in testCase)
+            expect(result).to.equal(testCase.expected);
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        options.assert?.(context, argRefs, call, details!);
+        options.assert?.(context, argRefs, call, testCase.details!, result);
     };
 }

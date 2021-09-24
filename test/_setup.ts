@@ -1,31 +1,37 @@
 import 'module-alias/register';
 
 import * as mockito from 'ts-mockito';
+import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
 import { Mocker } from 'ts-mockito/lib/Mock';
 import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub';
 import { MethodStub } from 'ts-mockito/lib/stub/MethodStub';
 import { ReturnValueMethodStub } from 'ts-mockito/lib/stub/ReturnValueMethodStub';
 import { isProxy } from 'util/types';
 
-(mockito as Mutable<typeof mockito>).mock = (obj?: unknown) => {
-    const ctx: Record<PropertyKey, unknown> = {};
+Object.assign(mockito, <Partial<typeof mockito>>{
+    mock(obj?: unknown) {
+        const ctx: Record<PropertyKey, unknown> = {};
 
-    if (typeof obj === 'function')
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        Object.setPrototypeOf(ctx, <object | null>obj.prototype);
+        if (typeof obj === 'function')
+            // eslint-disable-next-line @typescript-eslint/ban-types
+            Object.setPrototypeOf(ctx, <object | null>obj.prototype);
 
-    for (const symbol of ['Symbol(Symbol.toPrimitive)', 'then', 'catch'])
-        if (!(symbol in ctx))
-            ctx[symbol] = undefined;
+        for (const symbol of ['Symbol(Symbol.toPrimitive)', 'then', 'catch'])
+            if (!(symbol in ctx))
+                ctx[symbol] = undefined;
 
-    const mocker = new Mocker(obj, ctx);
-    mocker.isStrict = true;
-    return mocker.getMock() as unknown;
-};
-(mockito as Mutable<typeof mockito>).setStrict = (obj: unknown, strict) => {
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    (<{ __tsmockitoMocker: Mocker; }>obj).__tsmockitoMocker.isStrict = strict;
-};
+        const mocker = new Mocker(obj, ctx);
+        mocker.isStrict = true;
+        return mocker.getMock() as unknown;
+    },
+    setStrict(obj: unknown, strict) {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        (<{ __tsmockitoMocker: Mocker; }>obj).__tsmockitoMocker.isStrict = strict;
+    },
+    satisfies<T>(test: (value: T) => boolean) {
+        return new SatisfiesMatcher<T>(test);
+    }
+});
 
 class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
     public constructor(protected readonly name: string) {
@@ -45,7 +51,20 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
     public getValue(): never {
         throw new Error(`The '${this.name}' property hasnt been mocked`);
     }
+}
 
+class SatisfiesMatcher<T> extends Matcher {
+    public constructor(private readonly test: (value: T) => boolean) {
+        super();
+    }
+
+    public match(value: unknown): boolean {
+        return this.test(value as T);
+    }
+
+    public toString(): string {
+        return `satisfies(${this.test.name})`;
+    }
 }
 
 Mocker.prototype['getEmptyMethodStub'] = function (this: Mocker, key) {

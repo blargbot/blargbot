@@ -18,11 +18,10 @@ export class ShuffleSubtag extends BaseSubtag {
                 {
                     parameters: ['array'],
                     description: 'Shuffles the `{args}` the user provided, or the elements of `array`. If used with a variable this will modify the original array',
-                    exampleCode: '{shuffle} {args;0} {args;1} {args;2}',
-                    exampleIn: 'one two three',
-                    exampleOut: 'three one two',
+                    exampleCode: '{shuffle;[1,2,3,4,5,6]}',
+                    exampleOut: '[5,3,2,6,1,4]',
                     execute: async (context, args, subtag): Promise<string | void> => {
-                        const arr = await bbtagUtil.tagArray.getArray(context, args[0].value);
+                        const arr = bbtagUtil.tagArray.deserialize(args[0].value);
                         if (arr === undefined || !Array.isArray(arr.v))
                             return this.notAnArray(context, subtag);
 
