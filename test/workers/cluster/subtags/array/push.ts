@@ -110,7 +110,7 @@ describe('{pop}', () => {
         ], {
             dbMock: VariableCache
         }, {
-            arrange(ctx, _, __, details) {
+            arrange(ctx, details) {
                 if (details.dbName !== undefined) {
                     when(ctx.contextMock.variables)
                         .thenReturn(instance(ctx.dbMock));
@@ -124,7 +124,7 @@ describe('{pop}', () => {
 
                 }
             },
-            assert(ctx, _, __, details) {
+            assert(ctx, details) {
                 if (details.dbName === undefined) {
                     verify(ctx.dbMock.get(anyString()))
                         .never();

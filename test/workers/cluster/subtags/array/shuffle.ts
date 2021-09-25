@@ -25,10 +25,10 @@ describe('{shuffle}', () => {
             get title(): string { return `${this.details.input.length} tag args`; }
         })), {
         }, {
-            arrange(ctx, _, __, details) {
+            arrange(ctx, details) {
                 when(ctx.contextMock.input).thenReturn([...details.input]);
             },
-            assert(ctx, _, __, details) {
+            assert(ctx, details) {
                 const input = instance(ctx.contextMock).input;
                 if (details.input.length > 0)
                     expect(input).to.not.have.ordered.members(details.input);
@@ -50,7 +50,7 @@ describe('{shuffle}', () => {
                 details: { args: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] }
             }
         ], {}, {
-            assert(...[, , , details, result]) {
+            assert(_, details, result) {
                 const val = JSON.parse(result ?? '[]');
                 if (details.args.length > 0)
                     expect(val).to.not.have.ordered.members(details.args);
@@ -71,11 +71,11 @@ describe('{shuffle}', () => {
         ], {
             variablesMock: VariableCache
         }, {
-            arrange(ctx, _, __, details) {
+            arrange(ctx, details) {
                 when(ctx.contextMock.variables).thenReturn(instance(ctx.variablesMock));
                 when(ctx.variablesMock.set(details.var, satisfies(isPermutationOf(details.val)))).thenResolve();
             },
-            assert(ctx, _, __, details) {
+            assert(ctx, details) {
                 verify(ctx.variablesMock.set(details.var, satisfies(isPermutationOf(details.val)))).once();
             }
         });

@@ -65,7 +65,7 @@ describe('{map}', () => {
             limitMock: undefined as RuntimeLimit | undefined,
             dbMock: VariableCache
         }, {
-            arrange(ctx, args, call, details) {
+            arrange(ctx, details, args, call) {
                 const checkResults: Array<undefined | string> = [undefined];
                 checkResults[details.maxLoops] = '`Nope`';
 
@@ -84,7 +84,7 @@ describe('{map}', () => {
                     when(ctx.dbMock.set(args[0].value, value))
                         .thenResolve();
             },
-            assert(ctx, args, call, details) {
+            assert(ctx, details, _, args, call) {
                 verify(ctx.limitMock.check(instance(ctx.contextMock), call, 'map:loops'))
                     .times(details.loopChecks);
                 verify(ctx.contextMock.eval(args[2].code))
