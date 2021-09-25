@@ -2,7 +2,7 @@
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
  * @Last Modified by: RagingLink
- * @Last Modified time: 2021-08-03 12:08:32
+ * @Last Modified time: 2021-09-25 22:51:31
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -517,6 +517,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                 limits: new bbtag.limits.autoresponse_everything(),
                 tagContent: tag.content,
                 author: tag.author,
+                authorizer: tag.authorizer,
                 input: m.content,
                 isCC: true,
                 tagName: ars.everything.executes,
@@ -552,6 +553,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                         limits: new bbtag.limits.autoresponse_general(),
                         tagContent: tag.content,
                         author: tag.author,
+                        authorizer: tag.authorizer,
                         input: matches || m.content,
                         isCC: true,
                         tagName: ar.executes
