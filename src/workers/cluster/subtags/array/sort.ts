@@ -18,17 +18,9 @@ export class SortSubtag extends BaseSubtag {
                         const arr = await bbtagUtil.tagArray.getArray(context, args[0].value);
                         if (arr === undefined || !Array.isArray(arr.v))
                             return this.notAnArray(context, subtag);
-                        let descending = parse.boolean(args[1].value);
 
-                        if (typeof descending !== 'boolean')
-                            descending = args[1].value !== '';
-
-                        arr.v = arr.v.sort((a, b) => {
-                            return compare(parse.string(a), parse.string(b));
-                        });
-
-                        if (descending)
-                            arr.v.reverse();
+                        const direction = parse.boolean(args[1].value) ?? args[1].value !== '' ? -1 : 1;
+                        arr.v = arr.v.sort((a, b) => direction * compare(parse.string(a), parse.string(b)));
 
                         if (arr.n === undefined)
                             return bbtagUtil.tagArray.serialize(arr.v);

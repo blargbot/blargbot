@@ -69,14 +69,14 @@ describe('{shuffle}', () => {
                 details: { var: '~arr', val: [1, 2, 3, 4, 5, 6] }
             }
         ], {
-            variablesMock: VariableCache
+            dbMock: VariableCache
         }, {
             arrange(ctx, details) {
-                when(ctx.contextMock.variables).thenReturn(instance(ctx.variablesMock));
-                when(ctx.variablesMock.set(details.var, satisfies(isPermutationOf(details.val)))).thenResolve();
+                when(ctx.contextMock.variables).thenReturn(instance(ctx.dbMock));
+                when(ctx.dbMock.set(details.var, satisfies(isPermutationOf(details.val)))).thenResolve();
             },
             assert(ctx, details) {
-                verify(ctx.variablesMock.set(details.var, satisfies(isPermutationOf(details.val)))).once();
+                verify(ctx.dbMock.set(details.var, satisfies(isPermutationOf(details.val)))).once();
             }
         });
         testExecuteTooManyArgs(subtag, [
