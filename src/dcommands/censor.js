@@ -6,16 +6,25 @@ class CensorCommand extends BaseCommand {
             name: 'censor',
             category: bu.CommandType.ADMIN,
             usage: 'censor help',
-            info: 'Creates message censorships.\nCommands:\n   ADD <text> [flags] - Adds a censor with for the provided text.\n   EDIT [text] [flags] - Brings up a menu to edit a censor where `text` can be the new trigger phrase\n   REMOVE - Brings up a menu to remove a censor\n   EXCEPTION <add | remove> [flags] - Adds or removes an exception.\n   RULE [flags] - Sets the censorship rules.\n   INFO - Displays information about censors.',
+            info: `Creates message censorships.
+Commands:
+   ADD <text> [flags] - Adds a censor with for the provided text.
+   EDIT [text] [flags] - Brings up a menu to edit a censor where \`text\` can be the new trigger phrase
+   REMOVE - Brings up a menu to remove a censor
+   EXCEPTION <add | remove> [flags] - Adds or removes an exception.
+   RULE [flags] - Sets the censorship rules.
+   INFO - Displays information about censors.
+   
+Note: Unsafe and very long (more than 2000 characters) regexes will be rejected when using the -R/--regex flag`,
             flags: [{
                 flag: 'R',
                 word: 'regex',
-                desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
+                desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext.'
             },
             {
                 flag: 'D',
                 word: 'decancer',
-                desc: 'Add/Edit: If specified, messages will be run through decancer before being checked. Can help to eliminate the use of non-ascii characters to bypass censors'
+                desc: 'Add/Edit: If specified, messages will be run through decancer before being checked.'
             },
             {
                 flag: 'w',
