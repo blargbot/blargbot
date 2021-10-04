@@ -384,6 +384,7 @@ Note: Unsafe and very long (more than 2000 characters) regexes will be rejected 
                     bu.send(msg, 'Query canceled.');
                     return;
                 }
+                /** @type {Censor | undefined} */
                 let censor = storedGuild.censor.list[parseInt(response.content) - 1];
                 let triggeredMessages = [];
                 if (censor.deleteMessage) triggeredMessages.push('**Delete Message**: ' + censor.deleteMessage);
@@ -391,7 +392,8 @@ Note: Unsafe and very long (more than 2000 characters) regexes will be rejected 
                 if (censor.banMessage) triggeredMessages.push('**Ban Message**: ' + censor.banMessage);
                 bu.send(msg, `Censor Details:
 **Trigger**: ${censor.term}
-**Regex**: ${censor.regex}${triggeredMessages.length > 0 ? '\n' + triggeredMessages.join('\n') : ''}
+**Regex**: ${censor.regex}
+**Decancered**: ${censor.decancer || false}${triggeredMessages.length > 0 ? '\n' + triggeredMessages.join('\n') : ''}
 **Weight**: ${censor.weight}
 **Reason**: ${censor.reason || 'Default'}`);
                 break;
