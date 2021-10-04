@@ -92,51 +92,51 @@ class CensorCommand extends BaseCommand {
             case 'add': {
                 if (!storedGuild.censor.list) storedGuild.censor.list = [];
                 /** @type {Censor} */
-                const censor = {
+                const addCensor = {
                     weight: 1,
                     term: input.undefined.slice(1).join(' ')
                 };
-                if (censor.term == '') {
+                if (addCensor.term == '') {
                     bu.send(msg, `You can't censor nothing!`);
                     return;
                 }
                 if (input.R) {
                     try {
-                        bu.createRegExp(censor.term);
-                        censor.regex = true;
+                        bu.createRegExp(addCensor.term);
+                        addCensor.regex = true;
                     } catch (err) {
                         bu.send(msg, 'Unsafe or invalid regex! Terminating.');
                         return;
                     }
-                } else censor.regex = false;
-                censor.decancer = input.D != null;
+                } else addCensor.regex = false;
+                addCensor.decancer = input.D != null;
                 messages = [];
                 if (input.d && input.d.length > 0) {
-                    censor.deleteMessage = input.d.join(' ');
+                    addCensor.deleteMessage = input.d.join(' ');
                     messages.push('delete');
                 }
                 if (input.k && input.k.length > 0) {
-                    censor.kickMessage = input.k.join(' ');
+                    addCensor.kickMessage = input.k.join(' ');
                     messages.push('kick');
                 }
                 if (input.b && input.b.length > 0) {
-                    censor.banMessage = input.b.join(' ');
+                    addCensor.banMessage = input.b.join(' ');
                     messages.push('ban');
                 }
                 if (input.w && input.w.length > 0 && !isNaN(parseInt(input.w[0]))) {
-                    censor.weight = parseInt(input.w[0]);
+                    addCensor.weight = parseInt(input.w[0]);
                 }
                 if (input.r && input.r.length > 0) {
-                    censor.reason = input.r.join(' ');
+                    addCensor.reason = input.r.join(' ');
                 }
-                storedGuild.censor.list.push(censor);
+                storedGuild.censor.list.push(addCensor);
                 await saveGuild();
                 bu.send(msg, `Censor created!
-**Trigger**: ${censor.term}
-**Regex**: ${censor.regex}
+**Trigger**: ${addCensor.term}
+**Regex**: ${addCensor.regex}
 **Messages**: ${messages.join(', ')}
-**Weight**: ${censor.weight}
-**Reason**: ${censor.reason || 'Default'}`);
+**Weight**: ${addCensor.weight}
+**Reason**: ${addCensor.reason || 'Default'}`);
                 break;
             }
             case 'edit': {
@@ -166,45 +166,45 @@ class CensorCommand extends BaseCommand {
                 }
                 let index = parseInt(response.content) - 1;
                 /** @type {Censor} */
-                const censor = storedGuild.censor.list[index];
-                censor.term = input.undefined.slice(1).join(' ') || censor.term;
+                const addCensor = storedGuild.censor.list[index];
+                addCensor.term = input.undefined.slice(1).join(' ') || addCensor.term;
                 if (input.R) {
                     try {
-                        bu.createRegExp(censor.term);
-                        censor.regex = true;
+                        bu.createRegExp(addCensor.term);
+                        addCensor.regex = true;
                     } catch (err) {
                         bu.send(msg, 'Unsafe or invalid regex! Terminating.');
                         return;
                     }
-                } else censor.regex = false;
-                censor.decancer = input.D != null;
+                } else addCensor.regex = false;
+                addCensor.decancer = input.D != null;
                 messages = [];
                 if (input.d && input.d.length > 0) {
-                    censor.deleteMessage = input.d.join(' ');
+                    addCensor.deleteMessage = input.d.join(' ');
                     messages.push('delete');
                 }
                 if (input.k && input.k.length > 0) {
-                    censor.kickMessage = input.k.join(' ');
+                    addCensor.kickMessage = input.k.join(' ');
                     messages.push('kick');
                 }
                 if (input.b && input.b.length > 0) {
-                    censor.banMessage = input.b.join(' ');
+                    addCensor.banMessage = input.b.join(' ');
                     messages.push('ban');
                 }
                 if (input.w && input.w.length > 0 && !isNaN(parseInt(input.w[0]))) {
-                    censor.weight = parseInt(input.w[0]);
+                    addCensor.weight = parseInt(input.w[0]);
                 }
                 if (input.r && input.r.length > 0) {
-                    censor.reason = input.r.join(' ');
+                    addCensor.reason = input.r.join(' ');
                 }
-                storedGuild.censor.list[index] = censor;
+                storedGuild.censor.list[index] = addCensor;
                 await saveGuild();
                 bu.send(msg, `Censor edited!
-**Trigger**: ${censor.term}
-**Regex**: ${censor.regex}
+**Trigger**: ${addCensor.term}
+**Regex**: ${addCensor.regex}
 **Messages**: ${messages.join(', ')}
-**Weight**: ${censor.weight}
-**Reason**: ${censor.reason || 'Default'}`);
+**Weight**: ${addCensor.weight}
+**Reason**: ${addCensor.reason || 'Default'}`);
                 break;
             }
             case 'delete':
