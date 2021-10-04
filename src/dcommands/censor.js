@@ -7,51 +7,58 @@ class CensorCommand extends BaseCommand {
             category: bu.CommandType.ADMIN,
             usage: 'censor help',
             info: 'Creates message censorships.\nCommands:\n   ADD <text> [flags] - Adds a censor with for the provided text.\n   EDIT [text] [flags] - Brings up a menu to edit a censor where `text` can be the new trigger phrase\n   REMOVE - Brings up a menu to remove a censor\n   EXCEPTION <add | remove> [flags] - Adds or removes an exception.\n   RULE [flags] - Sets the censorship rules.\n   INFO - Displays information about censors.',
-            flags: [{
-                flag: 'R',
-                word: 'regex',
-                desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
-            },
-            {
-                flag: 'w',
-                word: 'weight',
-                desc: 'Add/Edit: How many incidents the censor is worth.'
-            },
-            {
-                flag: 'r',
-                word: 'reason',
-                desc: 'Add/Edit: A custom modlog reason. NOT BBTag compatible.'
-            },
-            {
-                flag: 'd',
-                word: 'deletemessage',
-                desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
-            },
-            {
-                flag: 'k',
-                word: 'kickmessage',
-                desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is kicked. Adds override rules.'
-            },
-            {
-                flag: 'b',
-                word: 'banmessage',
-                desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is banned. Adds override rules.'
-            },
-            {
-                flag: 'u',
-                word: 'users',
-                desc: 'Exception: A list of users that are exempt from censorship.'
-            },
-            {
-                flag: 'r',
-                word: 'roles',
-                desc: 'Exception: A list of roles that are exempt from censorship.'
-            },
-            {
-                flag: 'c',
-                word: 'channels',
-                desc: 'Exception: A list of channels that are exempt from censorship.'
-            }]
+            flags: [
+                {
+                    flag: 'R',
+                    word: 'regex',
+                    desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
+                },
+                {
+                    flag: 'D',
+                    word: 'decancer',
+                    desc: 'Add/Edit: If specified, messages will be run through decancer before being checked. Can help to eliminate the use of non-ascii characters to bypass censors'
+                },
+                {
+                    flag: 'w',
+                    word: 'weight',
+                    desc: 'Add/Edit: How many incidents the censor is worth.'
+                },
+                {
+                    flag: 'r',
+                    word: 'reason',
+                    desc: 'Add/Edit: A custom modlog reason. NOT BBTag compatible.'
+                },
+                {
+                    flag: 'd',
+                    word: 'deletemessage',
+                    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
+                },
+                {
+                    flag: 'k',
+                    word: 'kickmessage',
+                    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is kicked. Adds override rules.'
+                },
+                {
+                    flag: 'b',
+                    word: 'banmessage',
+                    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is banned. Adds override rules.'
+                },
+                {
+                    flag: 'u',
+                    word: 'users',
+                    desc: 'Exception: A list of users that are exempt from censorship.'
+                },
+                {
+                    flag: 'r',
+                    word: 'roles',
+                    desc: 'Exception: A list of roles that are exempt from censorship.'
+                },
+                {
+                    flag: 'c',
+                    word: 'channels',
+                    desc: 'Exception: A list of channels that are exempt from censorship.'
+                }
+            ]
         });
     }
 
@@ -79,58 +86,60 @@ class CensorCommand extends BaseCommand {
             cases: {}
         };
         let changes = 0;
-        let censorList, suffix, response, addCensor, term, messages;
+        let censorList, suffix, response, messages;
         switch (input.undefined[0].toLowerCase()) {
             case 'create':
-            case 'add':
+            case 'add': {
                 if (!storedGuild.censor.list) storedGuild.censor.list = [];
-                addCensor = {
-                    weight: 1
+                /** @type {Censor} */
+                const censor = {
+                    weight: 1,
+                    term: input.undefined.slice(1).join(' ')
                 };
-                term = input.undefined.slice(1).join(' ');
-                if (term == '') {
+                if (censor.term == '') {
                     bu.send(msg, `You can't censor nothing!`);
                     return;
                 }
                 if (input.R) {
                     try {
-                        bu.createRegExp(term);
-                        addCensor.regex = true;
+                        bu.createRegExp(censor.term);
+                        censor.regex = true;
                     } catch (err) {
                         bu.send(msg, 'Unsafe or invalid regex! Terminating.');
                         return;
                     }
-                } else addCensor.regex = false;
-                addCensor.term = term;
+                } else censor.regex = false;
+                censor.decancer = input.D != null;
                 messages = [];
                 if (input.d && input.d.length > 0) {
-                    addCensor.deleteMessage = input.d.join(' ');
+                    censor.deleteMessage = input.d.join(' ');
                     messages.push('delete');
                 }
                 if (input.k && input.k.length > 0) {
-                    addCensor.kickMessage = input.k.join(' ');
+                    censor.kickMessage = input.k.join(' ');
                     messages.push('kick');
                 }
                 if (input.b && input.b.length > 0) {
-                    addCensor.banMessage = input.b.join(' ');
+                    censor.banMessage = input.b.join(' ');
                     messages.push('ban');
                 }
                 if (input.w && input.w.length > 0 && !isNaN(parseInt(input.w[0]))) {
-                    addCensor.weight = parseInt(input.w[0]);
+                    censor.weight = parseInt(input.w[0]);
                 }
                 if (input.r && input.r.length > 0) {
-                    addCensor.reason = input.r.join(' ');
+                    censor.reason = input.r.join(' ');
                 }
-                storedGuild.censor.list.push(addCensor);
+                storedGuild.censor.list.push(censor);
                 await saveGuild();
                 bu.send(msg, `Censor created!
-**Trigger**: ${addCensor.term}
-**Regex**: ${addCensor.regex}
+**Trigger**: ${censor.term}
+**Regex**: ${censor.regex}
 **Messages**: ${messages.join(', ')}
-**Weight**: ${addCensor.weight}
-**Reason**: ${addCensor.reason || 'Default'}`);
+**Weight**: ${censor.weight}
+**Reason**: ${censor.reason || 'Default'}`);
                 break;
-            case 'edit':
+            }
+            case 'edit': {
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
                     bu.send(msg, `There are no censors on this guild!`);
                     return;
@@ -156,48 +165,48 @@ class CensorCommand extends BaseCommand {
                     return;
                 }
                 let index = parseInt(response.content) - 1;
-                addCensor = storedGuild.censor.list[index];
-                term = input.undefined.slice(1).join(' ') || addCensor.term;
-
+                /** @type {Censor} */
+                const censor = storedGuild.censor.list[index];
+                censor.term = input.undefined.slice(1).join(' ') || censor.term;
                 if (input.R) {
                     try {
-                        bu.createRegExp(term);
-                        addCensor.regex = true;
+                        bu.createRegExp(censor.term);
+                        censor.regex = true;
                     } catch (err) {
                         bu.send(msg, 'Unsafe or invalid regex! Terminating.');
                         return;
                     }
-                } else addCensor.regex = false;
-                if (term != '')
-                    addCensor.term = term;
+                } else censor.regex = false;
+                censor.decancer = input.D != null;
                 messages = [];
                 if (input.d && input.d.length > 0) {
-                    addCensor.deleteMessage = input.d.join(' ');
+                    censor.deleteMessage = input.d.join(' ');
                     messages.push('delete');
                 }
                 if (input.k && input.k.length > 0) {
-                    addCensor.kickMessage = input.k.join(' ');
+                    censor.kickMessage = input.k.join(' ');
                     messages.push('kick');
                 }
                 if (input.b && input.b.length > 0) {
-                    addCensor.banMessage = input.b.join(' ');
+                    censor.banMessage = input.b.join(' ');
                     messages.push('ban');
                 }
                 if (input.w && input.w.length > 0 && !isNaN(parseInt(input.w[0]))) {
-                    addCensor.weight = parseInt(input.w[0]);
+                    censor.weight = parseInt(input.w[0]);
                 }
                 if (input.r && input.r.length > 0) {
-                    addCensor.reason = input.r.join(' ');
+                    censor.reason = input.r.join(' ');
                 }
-                storedGuild.censor.list[index] = addCensor;
+                storedGuild.censor.list[index] = censor;
                 await saveGuild();
                 bu.send(msg, `Censor edited!
-**Trigger**: ${addCensor.term}
-**Regex**: ${addCensor.regex}
+**Trigger**: ${censor.term}
+**Regex**: ${censor.regex}
 **Messages**: ${messages.join(', ')}
-**Weight**: ${addCensor.weight}
-**Reason**: ${addCensor.reason || 'Default'}`);
+**Weight**: ${censor.weight}
+**Reason**: ${censor.reason || 'Default'}`);
                 break;
+            }
             case 'delete':
             case 'remove':
                 if (!storedGuild.censor.list || storedGuild.censor.list.length == 0) {
@@ -383,15 +392,15 @@ class CensorCommand extends BaseCommand {
                 let output = `There are currently ${storedGuild.censor.list.length} censors active.
 **__Exceptions__**
 User Exceptions: ${storedGuild.censor.exception.user.map(u => {
-                        let user = bot.users.get(u);
-                        if (user) return bu.getFullName(user);
-                        else return u;
-                    }).join(', ')}
+                    let user = bot.users.get(u);
+                    if (user) return bu.getFullName(user);
+                    else return u;
+                }).join(', ')}
 Role Exceptions: ${storedGuild.censor.exception.role.map(r => {
-                        let role = msg.guild.roles.get(r);
-                        if (role) return role.name;
-                        else return r;
-                    }).join(', ')}
+                    let role = msg.guild.roles.get(r);
+                    if (role) return role.name;
+                    else return r;
+                }).join(', ')}
 Channel Exceptions: ${storedGuild.censor.exception.channel.map(c => `<#${c}>`).join(', ')}
 
 **__Settings__**
@@ -408,3 +417,15 @@ Ban Message: ${storedGuild.censor.rule.banMessage || 'Default'}
 }
 
 module.exports = CensorCommand;
+
+/**
+ * @typedef Censor
+ * @property {number} weight
+ * @property {boolean} [regex]
+ * @property {boolean} [decancer]
+ * @property {string} term
+ * @property {string} [deleteMessage]
+ * @property {string} [kickMessage]
+ * @property {string} [banMessage]
+ * @property {string} [reason]
+ */

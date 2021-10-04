@@ -1284,6 +1284,12 @@ bu.parseDuration = function (text) {
     return duration;
 };
 
+/**
+ * @param {Array<{ flag: string, word: string }>} map
+ * @param {string} text
+ * @param {boolean} noTrim
+ * @returns {{ readonly undefined: string[] } & { readonly [key: string]: string[] | undefined }}
+ */
 bu.parseInput = function (map, text, noTrim) {
     let words;
     if (Array.isArray(text)) words = bu.splitInput(text.slice(1).join(' '), noTrim);
@@ -1854,15 +1860,16 @@ bu.blargbotApi = async function (endpoint, args = {}) {
 };
 
 bu.decancer = function (text) {
+    const token = bu.makeSnowflake().toString();
     text = unorm.nfkd(text);
     text = limax(text, {
-        replacement: ' ',
+        replacement: token,
         tone: false,
         separateNumbers: false,
         maintainCase: true,
         custom: ['.', ',', ' ', '!', '\'', '"', '?']
     });
-    return text;
+    return text.replaceAll(token, '');
 };
 
 bu.findMessages = async function (channelId, count, filter, before, after) {
