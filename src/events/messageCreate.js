@@ -380,12 +380,15 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
             for (const cens of censor.list) {
                 let violation = false;
                 let term = cens.term;
+                let content = msg.content;
+                if (cens.decancer)
+                    content = bu.decancer(content);
                 if (cens.regex) {
                     try {
                         let regex = bu.createRegExp(term);
-                        if (regex.test(msg.content)) violation = true;
+                        if (regex.test(content)) violation = true;
                     } catch (err) { }
-                } else if (msg.content.toLowerCase().indexOf(term.toLowerCase()) > -1) violation = true;
+                } else if (content.toLowerCase().includes(term.toLowerCase())) violation = true;
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
                     if (cens.weight > 0) {
