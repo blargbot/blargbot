@@ -1867,7 +1867,7 @@ bu.decancer = function (text) {
         separateNumbers: false,
         maintainCase: true,
         custom: [...'., !\'"?0123456789']
-    })).join(' ').replace(new Regexp(token, 'g'), '');
+    })).join(' ').replace(new RegExp(token, 'g'), '');
 };
 
 bu.findMessages = async function (channelId, count, filter, before, after) {
