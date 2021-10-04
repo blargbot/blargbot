@@ -1861,15 +1861,14 @@ bu.blargbotApi = async function (endpoint, args = {}) {
 
 bu.decancer = function (text) {
     const token = bu.makeSnowflake().toString();
-    text = unorm.nfkd(text);
-    text = limax(text, {
+    return unorm.nfkd(text).split(' ').map(t => limax(t, {
         replacement: token,
+        separator: ' ',
         tone: false,
         separateNumbers: false,
         maintainCase: true,
-        custom: ['.', ',', ' ', '!', '\'', '"', '?']
-    });
-    return text.replaceAll(token, '');
+        custom: [...'., !\'"?0123456789']
+    })).join(' ').replaceAll(token, '');
 };
 
 bu.findMessages = async function (channelId, count, filter, before, after) {
