@@ -122,6 +122,7 @@ class Context {
         if (options.isCC === undefined) options.isCC = this.isCC;
         if (options.tagName === undefined) options.tagName = this.tagName;
         if (options.author === undefined) options.author = this.author;
+        if (options.authorizer === undefined) options.authorizer = this.authorizer;
         if (options.locks === undefined) options.locks = this.locks;
         if (options.outputModify === undefined) options.outputModify = this.outputModify;
 
