@@ -1863,7 +1863,6 @@ bu.decancer = function (text) {
     const token = bu.makeSnowflake().toString();
     return unorm.nfkd(text).split(' ').map(t => limax(t, {
         replacement: token,
-        separator: ' ',
         tone: false,
         separateNumbers: false,
         maintainCase: true,
