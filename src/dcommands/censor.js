@@ -7,58 +7,56 @@ class CensorCommand extends BaseCommand {
             category: bu.CommandType.ADMIN,
             usage: 'censor help',
             info: 'Creates message censorships.\nCommands:\n   ADD <text> [flags] - Adds a censor with for the provided text.\n   EDIT [text] [flags] - Brings up a menu to edit a censor where `text` can be the new trigger phrase\n   REMOVE - Brings up a menu to remove a censor\n   EXCEPTION <add | remove> [flags] - Adds or removes an exception.\n   RULE [flags] - Sets the censorship rules.\n   INFO - Displays information about censors.',
-            flags: [
-                {
-                    flag: 'R',
-                    word: 'regex',
-                    desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
-                },
-                {
-                    flag: 'D',
-                    word: 'decancer',
-                    desc: 'Add/Edit: If specified, messages will be run through decancer before being checked. Can help to eliminate the use of non-ascii characters to bypass censors'
-                },
-                {
-                    flag: 'w',
-                    word: 'weight',
-                    desc: 'Add/Edit: How many incidents the censor is worth.'
-                },
-                {
-                    flag: 'r',
-                    word: 'reason',
-                    desc: 'Add/Edit: A custom modlog reason. NOT BBTag compatible.'
-                },
-                {
-                    flag: 'd',
-                    word: 'deletemessage',
-                    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
-                },
-                {
-                    flag: 'k',
-                    word: 'kickmessage',
-                    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is kicked. Adds override rules.'
-                },
-                {
-                    flag: 'b',
-                    word: 'banmessage',
-                    desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is banned. Adds override rules.'
-                },
-                {
-                    flag: 'u',
-                    word: 'users',
-                    desc: 'Exception: A list of users that are exempt from censorship.'
-                },
-                {
-                    flag: 'r',
-                    word: 'roles',
-                    desc: 'Exception: A list of roles that are exempt from censorship.'
-                },
-                {
-                    flag: 'c',
-                    word: 'channels',
-                    desc: 'Exception: A list of channels that are exempt from censorship.'
-                }
-            ]
+            flags: [{
+                flag: 'R',
+                word: 'regex',
+                desc: 'Add/Edit: If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.'
+            },
+            {
+                flag: 'D',
+                word: 'decancer',
+                desc: 'Add/Edit: If specified, messages will be run through decancer before being checked. Can help to eliminate the use of non-ascii characters to bypass censors'
+            },
+            {
+                flag: 'w',
+                word: 'weight',
+                desc: 'Add/Edit: How many incidents the censor is worth.'
+            },
+            {
+                flag: 'r',
+                word: 'reason',
+                desc: 'Add/Edit: A custom modlog reason. NOT BBTag compatible.'
+            },
+            {
+                flag: 'd',
+                word: 'deletemessage',
+                desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a message is deleted. Adds override rules.'
+            },
+            {
+                flag: 'k',
+                word: 'kickmessage',
+                desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is kicked. Adds override rules.'
+            },
+            {
+                flag: 'b',
+                word: 'banmessage',
+                desc: 'Add/Rule/Edit: The BBTag-compatible message to send after a user is banned. Adds override rules.'
+            },
+            {
+                flag: 'u',
+                word: 'users',
+                desc: 'Exception: A list of users that are exempt from censorship.'
+            },
+            {
+                flag: 'r',
+                word: 'roles',
+                desc: 'Exception: A list of roles that are exempt from censorship.'
+            },
+            {
+                flag: 'c',
+                word: 'channels',
+                desc: 'Exception: A list of channels that are exempt from censorship.'
+            }]
         });
     }
 
