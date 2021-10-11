@@ -104,7 +104,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             ownedMsgs: [],
             return: RuntimeReturnState.NONE,
             stackSize: 0,
-            embed: undefined,
+            embeds: undefined,
             file: undefined,
             reactions: [],
             nsfw: undefined,
@@ -260,7 +260,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 {
                     content: text,
                     replyToExecuting: true,
-                    embeds: this.state.embed !== undefined ? [this.state.embed] : undefined,
+                    embeds: this.state.embeds !== undefined ? this.state.embeds : undefined,
                     nsfw: this.state.nsfw,
                     allowedMentions: {
                         parse: disableEveryone ? [] : ['everyone'],

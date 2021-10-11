@@ -1,7 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagCall } from '@cluster/types';
 import { guard, parse, SubtagType } from '@cluster/utils';
-import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
+import { EmbedFieldData, MessageEmbed, MessageEmbedOptions } from 'discord.js';
 
 export class EditSubtag extends BaseSubtag {
     public constructor() {
@@ -46,16 +46,16 @@ export class EditSubtag extends BaseSubtag {
         if (channel === undefined)
             return this.channelNotFound(context, subtag);
         let content: string | undefined;
-        let embed: MessageEmbedOptions | undefined;
+        let embeds: MessageEmbed[] | MessageEmbedOptions[] | undefined;
         if (embedStr !== undefined) {
-            embed = parse.embed(embedStr);
+            embeds = parse.embed(embedStr);
             content = contentStr;
         }else {
             const parsedEmbed = parse.embed(contentStr);
             if (parsedEmbed === undefined || guard.hasProperty(parsedEmbed, 'malformed')) {
                 content = contentStr;
             } else {
-                embed = parsedEmbed;
+                embeds = parsedEmbed;
             }
         }
 
@@ -67,7 +67,7 @@ export class EditSubtag extends BaseSubtag {
             if (message.author.id !== context.discord.user.id)
                 return this.customError('I must be the message author', context, subtag);
             content = content ?? message.content;
-            let embeds = embed !== undefined ? [embed] : message.embeds;
+            embeds = embeds ?? message.embeds;
 
             if (contentStr === '_delete') content = '';
             if (embedStr === '_delete') embeds = [];

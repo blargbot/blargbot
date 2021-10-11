@@ -183,7 +183,7 @@ export interface BBTagContextState {
     ownedMsgs: string[];
     return: RuntimeReturnState;
     stackSize: number;
-    embed: undefined | MessageEmbedOptions;
+    embeds: undefined | MessageEmbedOptions[];
     file: undefined | FileOptions;
     reactions: string[];
     nsfw: undefined | string;
