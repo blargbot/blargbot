@@ -9,6 +9,7 @@ export class SendSubtag extends BaseSubtag {
         super({
             name: 'send',
             category: SubtagType.MESSAGE,
+            desc: 'If `embed` is an array, multiple embeds will be added to the message payload.',
             definition: [
                 {
                     parameters: ['channel', 'message', 'embed', 'fileContent', 'fileName?:file.txt'],
