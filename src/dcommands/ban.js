@@ -7,7 +7,7 @@ class BanCommand extends BaseCommand {
             name: 'ban',
             category: bu.CommandType.ADMIN,
             usage: 'ban <user> [days] [flags]',
-            info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1).\nIf mod-logging is enabled, the ban will be logged.',
+            info: 'Bans a user, where `days` is the number of days to delete messages for (defaults to 1, with a maximum of 7).\nIf mod-logging is enabled, the ban will be logged.',
             flags: [{ flag: 'r', word: 'reason', desc: 'The reason for the ban.' },
             {
                 flag: 't',
@@ -36,7 +36,7 @@ class BanCommand extends BaseCommand {
             if (input.t && input.t.length > 0) {
                 duration = bu.parseDuration(input.t.join(' '));
             }
-            bu.send(msg, (await this.ban(msg, user, parseInt(input.undefined.length > 1 ? input.undefined[input.undefined.length - 1] : 0), input.r, duration))[0]);
+            bu.send(msg, (await this.ban(msg, user, parseInt(input.undefined.length > 1 ? input.undefined[input.undefined.length - 1] : 1), input.r, duration))[0]);
         } else bu.send(msg, 'You have to tell me who to ban!');
     }
 
