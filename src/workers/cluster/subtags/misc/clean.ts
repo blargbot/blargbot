@@ -5,7 +5,7 @@ export class CleanSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'clean',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],

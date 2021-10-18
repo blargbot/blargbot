@@ -5,7 +5,7 @@ export class ReplaceSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'replace',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['phrase', 'replaceWith'],

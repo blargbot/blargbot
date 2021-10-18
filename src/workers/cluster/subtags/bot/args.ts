@@ -6,7 +6,7 @@ export class ArgsSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'args',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             definition: [
                 {
                     parameters: [],

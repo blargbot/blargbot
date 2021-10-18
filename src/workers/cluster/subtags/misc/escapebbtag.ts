@@ -5,7 +5,7 @@ export class EscapeBbtagSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'escapebbtag',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['~input*'],

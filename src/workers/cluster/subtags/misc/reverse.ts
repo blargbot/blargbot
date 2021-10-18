@@ -5,7 +5,7 @@ export class ReverseSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'reverse',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],

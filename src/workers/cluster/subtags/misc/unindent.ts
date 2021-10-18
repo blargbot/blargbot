@@ -5,7 +5,7 @@ export class UnindentSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'unindent',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             aliases: ['ui'],
             definition: [
                 {

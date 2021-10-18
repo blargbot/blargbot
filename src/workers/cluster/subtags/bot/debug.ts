@@ -5,7 +5,7 @@ export class DebugSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'debug',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['text?'],

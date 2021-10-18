@@ -5,7 +5,7 @@ export class ReturnSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'return',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['force?:true'],

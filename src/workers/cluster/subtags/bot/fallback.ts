@@ -5,7 +5,7 @@ export class FallBackSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'fallback',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['message?'],

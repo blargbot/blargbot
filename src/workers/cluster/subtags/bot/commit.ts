@@ -5,7 +5,7 @@ export class CommitSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'commit',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             desc:
                 'For optimization reasons, variables are not stored in the database immediately when you use `{set}`. ' +
                 'Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that ' +

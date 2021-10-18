@@ -6,7 +6,7 @@ export class GetSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'get',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['name'],

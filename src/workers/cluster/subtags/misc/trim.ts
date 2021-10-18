@@ -5,7 +5,7 @@ export class TrimSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'trim',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],

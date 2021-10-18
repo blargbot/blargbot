@@ -5,7 +5,7 @@ export class ThrowSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'throw',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['error?:A custom error occurred'],

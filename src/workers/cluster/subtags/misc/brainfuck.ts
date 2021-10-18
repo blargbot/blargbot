@@ -8,7 +8,7 @@ export class BrainFuckSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'brainfuck',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['code', 'input?'],

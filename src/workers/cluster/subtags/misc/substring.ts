@@ -5,7 +5,7 @@ export class SubstringSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'substring',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text', 'start', 'end?'],

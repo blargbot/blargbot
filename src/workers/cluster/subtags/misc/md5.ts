@@ -7,7 +7,7 @@ export class Md5Subtag extends BaseSubtag {
         super({
             name: 'md5',
             aliases: ['md5encode'],
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],
