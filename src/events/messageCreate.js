@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:22:24
- * @Last Modified by: stupid cat
- * @Last Modified time: 2019-07-29 17:55:23
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-09-25 22:51:31
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -171,7 +171,7 @@ async function exceededRatelimit(msg) {
     }
     if (timedOut[msg.author.id]) {
         if (Date.now() < timedOut[msg.author.id]) {
-            timedOut[msg.author.id] += 5000;
+            timedOut[msg.author.id] += 5000; //TODO Use configured penalty value
             return true;
         } else {
             delete timedOut[msg.author.id];
@@ -186,7 +186,7 @@ async function exceededRatelimit(msg) {
 
     if (commandUsage[msg.author.id].length >= maxExecutions) {
         timedOut[msg.author.id] = Date.now() + timeoutDuration;
-        await bu.send(msg, 'Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out.\n\nContinuing to spam commands will lengthen your timeout!');
+        await bu.send(msg, 'Sorry, you\'ve been running too many commands. To prevent abuse, I\'m going to have to time you out for `' + timeoutDuration / 1000 + 's`.\n\nContinuing to spam commands will lengthen your timeout by `5s`!');
         return true;
     }
 
@@ -380,12 +380,15 @@ bu.handleCensor = async function handleCensor(msg, storedGuild) {
             for (const cens of censor.list) {
                 let violation = false;
                 let term = cens.term;
+                let content = msg.content;
+                if (cens.decancer)
+                    content = bu.decancer(content);
                 if (cens.regex) {
                     try {
                         let regex = bu.createRegExp(term);
-                        if (regex.test(msg.content)) violation = true;
+                        if (regex.test(content)) violation = true;
                     } catch (err) { }
-                } else if (msg.content.toLowerCase().indexOf(term.toLowerCase()) > -1) violation = true;
+                } else if (content.toLowerCase().includes(term.toLowerCase())) violation = true;
                 if (violation == true) { // Uh oh, they did a bad!
                     let res = await bu.issueWarning(msg.author, msg.guild, cens.weight);
                     if (cens.weight > 0) {
@@ -517,6 +520,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                 limits: new bbtag.limits.autoresponse_everything(),
                 tagContent: tag.content,
                 author: tag.author,
+                authorizer: tag.authorizer,
                 input: m.content,
                 isCC: true,
                 tagName: ars.everything.executes,
@@ -552,6 +556,7 @@ async function handleAutoresponse(msg, storedGuild, everything = false) {
                         limits: new bbtag.limits.autoresponse_general(),
                         tagContent: tag.content,
                         author: tag.author,
+                        authorizer: tag.authorizer,
                         input: matches || m.content,
                         isCC: true,
                         tagName: ar.executes

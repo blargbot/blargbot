@@ -60,16 +60,17 @@ const tagType = {
 };
 
 function mdToHtml(text) {
-    // text = text.replace(/([,;/])(?=\S)/g, '$1\u200b');
-    let result = converter.makeHtml(text).replace(/\n/g, '<br>');
+    if (text == undefined)
+        return undefined;
 
-    // if (result.startsWith('<p>'))
-    //     result = result.substr(3, result.length - 7);
-
-    return result;
+    const html = converter.makeHtml(text) || text;
+    return html.replace(/\n/g, '<br>');
 }
 
 function addSubtagReferences(text) {
+    if (text == undefined)
+        return undefined;
+
     return text.replace(/\{([a-z]+)\}/ig, function (match, subtag) {
         return `<a href='#${subtag}'>${match}</a>`;
     });
@@ -223,7 +224,7 @@ e.init = () => {
                 toReturn += `<div class="tagargs">${mdToHtml('`' + argumentFactory.toString(subtag.args) + '`')}</div>`;
             }
             if (subtag.array) toReturn += `<div class="tagarray"><p>Array compatible</p></div>`;
-            toReturn += `<div class="tagdescription">${addSubtagReferences(mdToHtml(subtag.desc))}</div><div class="taglimits">`;
+            toReturn += `<div class="tagdescription">${addSubtagReferences(mdToHtml(subtag.desc)) || 'MISSING DESCRIPTION'}</div><div class="taglimits">`;
 
             for (const key of Object.keys(bbtag.limits)) {
                 let text = bbtag.limitToSring(key, subtag.name);

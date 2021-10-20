@@ -48,7 +48,7 @@ class ReasonCommand extends BaseCommand {
                         };
                         msg2.edit({
                             content: ' ',
-                            embed: embed
+                            embeds: [embed]
                         });
                     } else {
                         msg2.edit(content);

@@ -103,7 +103,7 @@ module.exports =
                 if (message.edit)
                     message.edit({
                         content: text,
-                        embed: embed
+                        embeds: embed ? [embed] : []
                     });
             } catch (err) { }
         })

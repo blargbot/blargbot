@@ -41,6 +41,7 @@ Example: ${example}`);
         }
 
         let channel;
+        let endUnix = moment().add(duration).unix();
         if (input.c) channel = msg.channel.id;
         await bu.events.insert({
             type: 'remind',
@@ -49,24 +50,23 @@ Example: ${example}`);
             content: input.undefined.join(' '),
             channel: channel,
             starttime: r.epochTime(moment().unix()),
-            endtime: r.epochTime(moment().add(duration).unix())
+            endtime: r.epochTime(endUnix)
         });
-        await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} ${duration.humanize(true)}! :alarm_clock: `);
+        await bu.send(msg, `:alarm_clock: Ok! I'll remind you ${channel ? 'here' : 'in a DM'} <t:${endUnix}:R>! :alarm_clock: `);
     }
 
     async event(args) {
-        let duration = moment.duration(moment() - moment(args.starttime));
-        duration.subtract(duration * 2);
+        let endUnix = moment(args.starttime).unix();
         if (args.channel) {
             bu.send(args.channel, {
-                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this ${duration.humanize(true)}:
+                content: `:alarm_clock: Hi, <@${args.user}>! You asked me to remind you about this <t:${endUnix}:R> :
 ${args.content}`,
                 allowedMentions: {
                     users: [args.user]
                 }
             });
         } else {
-            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this ${duration.humanize(true)}:
+            bu.sendDM(args.user, `:alarm_clock: Hi! You asked me to remind you about this <t:${endUnix}:R> :
     ${args.content}`);
         }
     };
