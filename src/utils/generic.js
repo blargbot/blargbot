@@ -579,7 +579,7 @@ bu.getChannel = async function (msg, query, options = {}) {
     if (!query) return null;
     /** @type {LookupArgs} */
     const args = typeof options !== 'object' ? { quiet: options } : options;
-    let channel = msg.channel.guild.channels.get(query);
+    let channel = msg.channel.guild.channels.get(query) || msg.channel.guild.threads.get(query);
     if (channel) {
         return channel;
     }
