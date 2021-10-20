@@ -551,7 +551,7 @@ bu.getUserById = async function (userId) {
 bu.getChannel = async function (msg, name, args = {}) {
     if (typeof args !== 'object')
         args = { quiet: args };
-    let channel = msg.channel.guild.channels.get(name);
+    let channel = msg.channel.guild.channels.get(name) || msg.channel.guild.threads.get(name);
     if (channel) {
         return channel;
     }
