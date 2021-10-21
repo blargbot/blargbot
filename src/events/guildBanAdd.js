@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:21:12
- * @Last Modified by: stupid cat
- * @Last Modified time: 2017-05-07 18:21:12
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-10-21 15:22:47
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -41,6 +41,15 @@ bot.on('guildBanAdd', async function (guild, user) {
         type = bu.bans[guild.id][user.id].type;
         reason = bu.bans[guild.id][user.id].reason;
         delete bu.bans[guild.id][user.id];
+    }
+    if (reason === undefined) {
+        try {
+            const banObject = await guild.getBan(user.id);
+            if (banObject !== undefined)
+                reason = banObject.reason;
+        } catch (e) {
+            //no-op
+        }
     }
     bu.logAction(guild, user, mod, type, reason, bu.ModLogColour.BAN);
     bu.logEvent(guild.id, user.id, 'memberban', [{
