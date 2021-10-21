@@ -29,6 +29,14 @@ export class ModLogManager {
     }
 
     public async logBan(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
+        if (moderator === undefined && reason === undefined) {
+            try {
+                const banObject = await guild.bans.fetch(user.id);
+                reason = banObject.reason ?? undefined;
+            } catch (e: unknown) {
+                //no-op
+            }
+        }
         await this.logAction({
             type: 'Ban',
             guildId: guild.id,
