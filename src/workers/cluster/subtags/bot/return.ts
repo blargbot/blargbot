@@ -13,7 +13,7 @@ export class ReturnSubtag extends BaseSubtag {
                         'If `force` is `true` then it will also return from any tags calling this tag.',
                     exampleCode: 'This will display. {return} This will not.',
                     exampleOut: 'This will display.',
-                    execute: (context, [{value: forcedStr}]) => {
+                    execute: (context, [{ value: forcedStr }]) => {
                         const forced = parse.boolean(forcedStr, true);
                         context.state.return = forced ? -1 : 1;
                     }

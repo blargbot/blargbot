@@ -83,30 +83,30 @@ export class ChannelEditSubtag extends BaseSubtag {
     }
 }
 
-const mapChannelOptions = mapping.mapJson(
-    mapping.mapObject<ChannelData>({
-        bitrate: mapping.mapOptionalNumber,
-        name: mapping.mapOptionalString,
-        nsfw: mapping.mapOptionalBoolean,
-        parent: ['parentID', mapping.mapOptionalString],
-        rateLimitPerUser: mapping.mapOptionalNumber,
-        topic: mapping.mapOptionalString,
-        userLimit: mapping.mapOptionalNumber,
-        defaultAutoArchiveDuration: mapping.mapIn(60, 1440, 4320, 10080, undefined),
-        lockPermissions: mapping.mapOptionalBoolean,
+const mapChannelOptions = mapping.json(
+    mapping.object<ChannelData>({
+        bitrate: mapping.number.optional,
+        name: mapping.string.optional,
+        nsfw: mapping.boolean.optional,
+        parent: ['parentID', mapping.string.optional],
+        rateLimitPerUser: mapping.number.optional,
+        topic: mapping.string.optional,
+        userLimit: mapping.number.optional,
+        defaultAutoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
+        lockPermissions: mapping.boolean.optional,
         permissionOverwrites: [undefined],
-        position: mapping.mapOptionalNumber,
+        position: mapping.number.optional,
         rtcRegion: [undefined],
         type: [undefined]
     })
 );
 
-const mapThreadOptions = mapping.mapJson(
-    mapping.mapObject<ThreadEditData>({
-        archived: mapping.mapOptionalBoolean,
-        autoArchiveDuration: mapping.mapIn(60, 1440, 4320, 10080, undefined),
-        locked: mapping.mapOptionalBoolean,
-        name: mapping.mapOptionalString,
-        rateLimitPerUser: mapping.mapOptionalNumber
+const mapThreadOptions = mapping.json(
+    mapping.object<ThreadEditData>({
+        archived: mapping.boolean.optional,
+        autoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
+        locked: mapping.boolean.optional,
+        name: mapping.string.optional,
+        rateLimitPerUser: mapping.number
     })
 );

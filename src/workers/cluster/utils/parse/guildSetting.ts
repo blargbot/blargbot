@@ -38,7 +38,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             };
         }
         case 'permission': {
-            const val = parse.bigint(raw);
+            const val = parse.bigInt(raw);
             return {
                 success: val !== undefined,
                 value: <StoredGuildSettings[T]>val?.toString(),

@@ -106,12 +106,12 @@ export class TagsRoute extends BaseRoute {
     }
 }
 
-const mapCreateTag = mapping.mapObject({
-    content: mapping.mapString,
-    name: mapping.mapString
-}, { strict: true });
+const mapCreateTag = mapping.object({
+    content: mapping.string,
+    name: mapping.string
+});
 
-const mapUpdateTag = mapping.mapObject({
-    content: mapping.mapOptionalString,
-    name: mapping.mapOptionalString
+const mapUpdateTag = mapping.object({
+    content: mapping.string.optional,
+    name: mapping.string.optional
 });

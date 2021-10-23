@@ -1,6 +1,6 @@
-export function boolean(value: string | boolean | number | undefined, defValue: boolean, includeNumbers?: boolean): boolean
-export function boolean(value: string | boolean | number | undefined, defValue?: undefined, includeNumbers?: boolean): boolean | undefined
-export function boolean(value: string | boolean | number | undefined, defValue?: boolean, includeNumbers = true): boolean | undefined {
+export function parseBoolean(value: string | boolean | number | undefined, defValue: boolean, includeNumbers?: boolean): boolean
+export function parseBoolean(value: string | boolean | number | undefined, defValue?: undefined, includeNumbers?: boolean): boolean | undefined
+export function parseBoolean(value: string | boolean | number | undefined, defValue?: boolean, includeNumbers = true): boolean | undefined {
     if (typeof value === 'boolean')
         return value;
 

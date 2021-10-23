@@ -13,15 +13,15 @@ export class JsonSortSubtag extends BaseSubtag {
                 {
                     parameters: ['array', 'path', 'descending?'],
                     description: 'Sorts an array of objects based on the provided `path`.\n' +
-                    '`path` is a dot-noted series of properties.\n' +
-                    'If `descending` is provided, sorts in descending order.\n' +
-                    'If provided a variable, will modify the original `array`.',
+                        '`path` is a dot-noted series of properties.\n' +
+                        'If `descending` is provided, sorts in descending order.\n' +
+                        'If provided a variable, will modify the original `array`.',
                     exampleCode: '{set;~array;{json;[\n  {"points" : 10, "name" : "Blargbot"},\n  {"points" : 3, "name" : "UNO"},\n' +
                         '  {"points" : 6, "name" : "Stupid cat"},\n  {"points" : 12, "name" : "Winner"}\n]}}\n' +
                         '{jsonstringify;{jsonsort;{slice;{get;~array};0};points};2}',
                     exampleOut: '[\n  "{\\"points\\":3,\\"name\\":\\"UNO\\"}",\n  "{\\"points\\":6,\\"name\\":\\"Stupid cat\\"}",' +
                         '\n  "{\\"points\\":10,\\"name\\":\\"Blargbot\\"}",\n  "{\\"points\\":12,\\"name\\":\\"Winner\\"}"\n]',
-                    execute: async (context, [{value: arrStr}, {value: pathStr}, {value: descStr}], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: arrStr }, { value: pathStr }, { value: descStr }], subtag): Promise<string | void> => {
                         let descending = parse.boolean(descStr);
                         if (descending === undefined)
                             descending = descStr !== '';
@@ -45,7 +45,7 @@ export class JsonSortSubtag extends BaseSubtag {
 
                                 const valueAtPath = json.get(baseObj, path);
                                 return valueAtPath;
-                            } catch(e: unknown) {
+                            } catch (e: unknown) {
                                 return undefined;
                             }
                         });

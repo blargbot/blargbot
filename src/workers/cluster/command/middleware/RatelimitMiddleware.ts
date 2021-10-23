@@ -1,5 +1,5 @@
 import { CommandResult } from '@cluster/types';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import moment, { Duration, Moment } from 'moment-timezone';
 
 import { CommandContext } from '../CommandContext';
@@ -13,7 +13,7 @@ export class RatelimitMiddleware<TContext extends CommandContext> implements IMi
         this.cooldowns = {};
     }
 
-    public async execute(context: TContext, next: () => Awaitable<CommandResult>): Promise<CommandResult> {
+    public async execute(context: TContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {
         const key = this.keySelector(context);
         const lastUsage = this.cooldowns[key] ??= { timestamp: moment(), warned: false };
         if (moment().isAfter(lastUsage.timestamp)) {

@@ -5,7 +5,7 @@ import { commandTypeDetails, guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { CommandPermissions, MiddlewareRunOptions } from '@core/types';
+import { CommandPermissions, NextMiddleware } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { BaseCommandManager } from './BaseCommandManager';
@@ -100,10 +100,10 @@ class NormalizedCommand implements ICommand<BaseCommand> {
         this.flags = implementation.flags;
     }
 
-    public async execute(context: CommandContext, next: () => Awaitable<CommandResult>, options: MiddlewareRunOptions): Promise<CommandResult> {
+    public async execute(context: CommandContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {
         const timer = new Timer().start();
         try {
-            return await this.implementation.execute(context, next, options);
+            return await this.implementation.execute(context, next);
         } catch (err: unknown) {
             metrics.commandError.labels(this.name).inc();
             throw err;

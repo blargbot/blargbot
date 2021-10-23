@@ -67,13 +67,13 @@ async function fetchSafe(url: string, init?: RequestInit): Promise<unknown> {
     }
 }
 
-const wordApiMapping = mapping.mapObject({
-    word: mapping.mapString,
-    results: mapping.mapArray(mapping.mapObject({
-        definition: mapping.mapString,
-        partOfSpeech: mapping.mapString,
-        synonyms: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined })
+const wordApiMapping = mapping.object({
+    word: mapping.string,
+    results: mapping.array(mapping.object({
+        definition: mapping.string,
+        partOfSpeech: mapping.string,
+        synonyms: mapping.array(mapping.string).optional
     })),
-    frequency: mapping.mapNumber,
-    pronunciation: mapping.mapRecord(mapping.mapChoice(mapping.mapIn(undefined), mapping.mapString))
+    frequency: mapping.number,
+    pronunciation: mapping.record(mapping.choice(mapping.in(undefined), mapping.string))
 });

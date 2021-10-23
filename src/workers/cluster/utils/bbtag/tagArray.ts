@@ -34,12 +34,12 @@ export function deserialize(value: string): BBTagArray | undefined {
     return result.value;
 }
 
-const mapBBArray = mapping.mapJson(
-    mapping.mapChoice(
-        mapping.mapArray(mapping.mapJToken),
-        mapping.mapObject<BBTagArray>({
-            n: mapping.mapOptionalString,
-            v: mapping.mapArray(mapping.mapJToken)
+const mapBBArray = mapping.json(
+    mapping.choice(
+        mapping.array(mapping.jToken),
+        mapping.object<BBTagArray>({
+            n: mapping.string.optional,
+            v: mapping.array(mapping.jToken)
         })
     )
 );

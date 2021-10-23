@@ -244,6 +244,7 @@ export interface Suggestion {
 export interface MessageFilter {
     readonly term: string;
     readonly regex: boolean;
+    readonly decancer?: boolean;
 }
 
 export interface StoredVar<T extends string> {
@@ -954,27 +955,37 @@ export interface SuggestionsTable {
     update(id: number, suggestion: Partial<Suggestion>): Promise<boolean>;
 }
 
-export type TypeMappingResult<T> = { valid: false; } | { valid: true; value: T; };
-export type TypeMapping<T, TArgs extends unknown[] = []> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
-export type TypeMappings<T> = { readonly [P in keyof T]-?: TypeMapping<T[P]> | [string, TypeMapping<T[P]>] | [T[P]] };
-export interface TypeMappingOptions<T, R> {
-    initial?: () => T;
-    ifNull?: TypeMappingResult<T | R>;
-    ifUndefined?: TypeMappingResult<T | R>;
-    strict?: boolean;
+export type TypeMappingResult<T> = { readonly valid: false; } | { readonly valid: true; readonly value: T; };
+export type NormalizedTypeMapping<T, TUnion, TArgs extends unknown[] = []> = TypeMapping<Exclude<T, undefined | null> | TUnion, TArgs>;
+export interface TypeMapping<T, TArgs extends unknown[] = []> {
+    (value: unknown, ...args: TArgs): TypeMappingResult<T>;
+    readonly required: NormalizedTypeMapping<T, never, TArgs>;
+    readonly optional: NormalizedTypeMapping<T, undefined, TArgs>;
+    readonly nullable: NormalizedTypeMapping<T, null, TArgs>;
+    readonly nullish: NormalizedTypeMapping<T, null | undefined, TArgs>;
 }
+
+export type TypeMappings<T, TArgs extends unknown[] = []> = {
+    readonly [P in keyof T]-?:
+    | TypeMapping<T[P], TArgs>
+    | [PropertyKey, TypeMapping<T[P], TArgs>]
+    | [T[P]]
+};
 
 export interface IMiddleware<Context, Result = void> {
     readonly name?: string;
-    execute(context: Context, next: () => Awaitable<Result>, options: MiddlewareRunOptions): Awaitable<Result>;
+    readonly execute: (context: Context, next: NextMiddleware<Result>) => Awaitable<Result>;
 }
 
-export interface MiddlewareRunOptions {
+export interface NextMiddleware<Result> extends MiddlewareOptions {
+    (): Awaitable<Result>;
+}
+
+export interface MiddlewareOptions {
     readonly id: Snowflake;
     readonly logger: Logger;
     readonly start: number;
 }
-
 export enum SubtagVariableType {
     LOCAL = 'LOCAL_TAG',
     AUTHOR = 'AUTHOR',

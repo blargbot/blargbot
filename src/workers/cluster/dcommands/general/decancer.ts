@@ -1,8 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, discordUtil, guard } from '@cluster/utils';
+import { CommandType, discordUtil, guard, humanize } from '@cluster/utils';
 import { User } from 'discord.js';
-import limax from 'limax';
-import { nfkd } from 'unorm';
 
 export class DecancerCommand extends BaseGlobalCommand {
     public constructor() {
@@ -35,7 +33,7 @@ export class DecancerCommand extends BaseGlobalCommand {
         if (!await context.util.isUserStaff(context.message.member))
             return this.decancerText(member.displayName);
 
-        const decancered = this.decancerTextCore(member.displayName);
+        const decancered = humanize.decancer(member.displayName);
         try {
             await member.edit({ nick: decancered }, discordUtil.formatAuditReason(context.author, 'Decancered nickname/username'));
             return this.success(`Successfully decancered **${member.toString()}**'s name to: \`${decancered}\``);
@@ -45,17 +43,8 @@ export class DecancerCommand extends BaseGlobalCommand {
     }
 
     public decancerText(text: string, decancered?: string): string {
-        decancered ??= this.decancerTextCore(text);
+        decancered ??= humanize.decancer(text);
         return this.success(`The decancered version of **${text}** is: \`${decancered}\``);
     }
 
-    private decancerTextCore(text: string): string {
-        return limax(nfkd(text), {
-            replacement: ' ',
-            tone: false,
-            separateNumbers: false,
-            maintainCase: true,
-            custom: ['.', ',', ' ', '!', '\'', '"', '?']
-        });
-    }
 }

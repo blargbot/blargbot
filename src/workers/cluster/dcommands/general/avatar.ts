@@ -54,11 +54,11 @@ export class AvatarCommand extends BaseGlobalCommand {
     }
 }
 
-const allowedFormats = Object.keys<{ [P in AllowedImageFormat]: true }>({
-    jpeg: true,
-    jpg: true,
-    png: true,
-    webp: true
+const allowedFormats = Object.keys<AllowedImageFormat>({
+    jpeg: 0,
+    jpg: 0,
+    png: 0,
+    webp: 0
 });
 
 const allowedImageSizes = Object.values<{ [P in AllowedImageSize]: P }>({

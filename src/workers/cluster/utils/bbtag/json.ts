@@ -180,8 +180,8 @@ export function clean(input: JToken): JToken {
             return clean(input.v);
         }
 
-        for (const key of Object.keys(input)) {
-            input[key] = clean(input[key]);
+        for (const [key, value] of Object.entries(input)) {
+            input[key] = clean(value);
         }
     }
     return input;

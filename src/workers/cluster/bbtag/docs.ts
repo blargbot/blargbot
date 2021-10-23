@@ -216,8 +216,8 @@ function subtagDocs(context: CommandContext, subtag: BaseSubtag): MessageEmbedOp
     const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
     const limitField: EmbedFieldData = { name: '__Usage limits__', value: '' };
 
-    for (const key of Object.keys(limits)) {
-        const limit = new limits[key]();
+    for (const limitClass of Object.values(limits)) {
+        const limit = new limitClass();
         const text = limit.rulesFor(subtag.name).join('\n');
         if (text.length > 0) {
             limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}\n\n`;

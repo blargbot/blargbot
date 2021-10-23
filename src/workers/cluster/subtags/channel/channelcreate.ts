@@ -81,25 +81,24 @@ const channelTypes = {
     store: 'GUILD_STORE'
 } as const;
 
-const mapOptions = mapping.mapJson(
-    mapping.mapObject<GuildChannelCreateOptions>({
-        bitrate: mapping.mapOptionalNumber,
-        nsfw: mapping.mapOptionalBoolean,
-        parent: ['parentID', mapping.mapOptionalString],
-        rateLimitPerUser: mapping.mapOptionalNumber,
-        topic: mapping.mapOptionalString,
-        userLimit: mapping.mapOptionalNumber,
-        permissionOverwrites: mapping.mapArray<OverwriteData, undefined>(
-            mapping.mapObject<OverwriteData>({
-                allow: mapping.mapOptionalBigInt,
-                deny: mapping.mapOptionalBigInt,
-                id: mapping.mapString,
-                type: mapping.mapIn('role', 'member')
-            }),
-            { ifUndefined: mapping.result.undefined }
-        ),
-        reason: mapping.mapOptionalString,
-        position: mapping.mapOptionalNumber,
+const mapOptions = mapping.json(
+    mapping.object<GuildChannelCreateOptions>({
+        bitrate: mapping.number.optional,
+        nsfw: mapping.boolean.optional,
+        parent: ['parentID', mapping.string.optional],
+        rateLimitPerUser: mapping.number.optional,
+        topic: mapping.string.optional,
+        userLimit: mapping.number.optional,
+        permissionOverwrites: mapping.array<OverwriteData>(
+            mapping.object<OverwriteData>({
+                allow: mapping.bigInt.optional,
+                deny: mapping.bigInt.optional,
+                id: mapping.string,
+                type: mapping.in('role', 'member')
+            })
+        ).optional,
+        reason: mapping.string.optional,
+        position: mapping.number.optional,
         type: [undefined]
     })
 );

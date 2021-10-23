@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware, SendTypingMiddleware } from '@cluster/command';
 import { humanize, runMiddleware } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
-import { IMiddleware, MiddlewareRunOptions } from '@core/types';
+import { IMiddleware } from '@core/types';
 import { Message } from 'discord.js';
 import moment from 'moment';
 
@@ -43,12 +43,12 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
     }
 
     public async execute(message: Message): Promise<void> {
-        const options: MiddlewareRunOptions = {
+        const options = Object.seal({
             id: message.id,
             logger: this.logger,
             start: moment().valueOf()
-        };
-        const handled = await runMiddleware(this.middleware, message, false, options);
+        });
+        const handled = await runMiddleware(this.middleware, message, options, () => false);
         this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', moment().diff(options.start), 'ms');
     }
 }

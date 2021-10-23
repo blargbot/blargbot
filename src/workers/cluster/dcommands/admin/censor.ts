@@ -16,6 +16,7 @@ export class CensorCommand extends BaseGuildCommand {
                     description: 'Creates a censor using the given phrase',
                     execute: (ctx, [phrase], flags) => this.createCensor(ctx, phrase.asString, {
                         isRegex: flags.R !== undefined,
+                        decancer: flags.D !== undefined,
                         weight: flags.w?.merge().value,
                         reason: flags.r?.merge().value
                     })
@@ -25,6 +26,7 @@ export class CensorCommand extends BaseGuildCommand {
                     description: 'Updates a censor',
                     execute: (ctx, [id, phrase], flags) => this.updateCensor(ctx, id.asInteger, phrase.asOptionalString, {
                         isRegex: flags.R !== undefined,
+                        decancer: flags.D !== undefined,
                         weight: flags.w?.merge().value,
                         reason: flags.r?.merge().value
                     })
@@ -88,6 +90,7 @@ export class CensorCommand extends BaseGuildCommand {
             ],
             flags: [
                 { flag: 'R', word: 'regex', description: 'If specified, parse as /regex/ rather than plaintext. Unsafe and very long (more than 2000 characters) regexes will not parse successfully.' },
+                { flag: 'D', word: 'decancer', description: 'If specified, perform the censor check against the decancered version of the message.' },
                 { flag: 'w', word: 'weight', description: 'How many incidents the censor is worth.' },
                 { flag: 'r', word: 'reason', description: 'A custom modlog reason. NOT BBTag compatible.' }
             ]
@@ -115,7 +118,8 @@ export class CensorCommand extends BaseGuildCommand {
 
         const id = Math.max(...Object.keys(censors?.list ?? {}).map(parseInt), 0) + 1;
         await context.database.guilds.setCensor(context.channel.guild.id, id, {
-            regex: options.isRegex ?? false,
+            regex: options.isRegex,
+            decancer: options.decancer,
             term: phrase,
             weight: weight,
             reason: options.reason
@@ -148,7 +152,8 @@ export class CensorCommand extends BaseGuildCommand {
             ...censor,
             weight: weight,
             reason: options.reason ?? censor.reason,
-            regex: phrase !== undefined ? options.isRegex ?? false : censor.regex,
+            regex: phrase !== undefined ? options.isRegex : censor.regex,
+            decancer: phrase !== undefined ? options.decancer : censor.decancer,
             term: phrase ?? censor.term
         });
         return this.success(`Censor \`${id}\` has been updated`);
@@ -326,7 +331,8 @@ export class CensorCommand extends BaseGuildCommand {
 }
 
 interface CensorOptions {
-    isRegex?: boolean;
+    isRegex: boolean;
+    decancer: boolean;
     weight?: string | number;
     reason?: string;
 }

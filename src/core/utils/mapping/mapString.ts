@@ -1,15 +1,16 @@
-import { TypeMappingResult } from '@core/types';
+import { TypeMapping } from '@core/types';
 import Long from 'long';
 
+import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapString(value: unknown): TypeMappingResult<string> {
+export const mapString: TypeMapping<string> = createMapping(value => {
     switch (typeof value) {
-        case 'string': return { valid: true, value };
+        case 'string': return result.success(value);
         case 'object': if (!(value instanceof Long)) break;
         // fallthrough
         case 'number':
-        case 'bigint': return { valid: true, value: value.toString() };
+        case 'bigint': return result.success(value.toString());
     }
-    return result.never;
-}
+    return result.failed;
+});

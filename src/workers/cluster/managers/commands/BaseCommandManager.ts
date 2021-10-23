@@ -75,7 +75,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
             // Guild owners/admins can use all commands
             return { state: 'ALLOWED' };
 
-        const staffPerms = parse.bigint(await this.cluster.util.database.guilds.getSetting(guild.id, 'staffperms') ?? defaultStaff);
+        const staffPerms = parse.bigInt(await this.cluster.util.database.guilds.getSetting(guild.id, 'staffperms') ?? defaultStaff);
         if (staffPerms !== undefined && this.cluster.util.hasPerms(member, staffPerms))
             // User has any of the permissions that identify them as a staff member
             return { state: 'ALLOWED' };
@@ -83,7 +83,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
         let result: PermissionCheckResult = { state: 'ALLOWED' };
         if (permissions.permission !== undefined) {
             // User has any of the permissions for this command
-            const perm = parse.bigint(permissions.permission);
+            const perm = parse.bigInt(permissions.permission);
             if (perm !== undefined) {
                 if (this.cluster.util.hasPerms(member, perm))
                     return { state: 'ALLOWED' };

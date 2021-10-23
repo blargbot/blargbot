@@ -1,5 +1,7 @@
 import { TypeMappingResult } from '@core/types';
 
+import { result } from './result';
+
 export function mapFake<T>(value: unknown): TypeMappingResult<T> {
-    return { valid: true, value: <T>value };
+    return result.success(<T>value);
 }

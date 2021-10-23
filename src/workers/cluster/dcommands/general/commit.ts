@@ -88,21 +88,21 @@ interface CommitData {
     };
 }
 
-const commitMapping = mapping.mapArray(
-    mapping.mapObject<CommitData>({
-        author: mapping.mapObject<CommitData['author']>({
-            avatar_url: mapping.mapString,
-            html_url: mapping.mapString,
-            login: mapping.mapString
-        }, { ifUndefined: mapping.result.undefined }),
-        commit: mapping.mapObject({
-            author: mapping.mapObject({
-                name: mapping.mapString
+const commitMapping = mapping.array(
+    mapping.object<CommitData>({
+        author: mapping.object<CommitData['author']>({
+            avatar_url: mapping.string,
+            html_url: mapping.string,
+            login: mapping.string
+        }).optional,
+        commit: mapping.object({
+            author: mapping.object({
+                name: mapping.string
             }),
-            message: mapping.mapString
+            message: mapping.string
         }),
-        html_url: mapping.mapString,
-        sha: mapping.mapString
+        html_url: mapping.string,
+        sha: mapping.string
     })
 );
 /* eslint-enable @typescript-eslint/naming-convention */

@@ -1,24 +1,22 @@
-import { TypeMappingResult } from '@core/types';
+import { TypeMapping } from '@core/types';
 import { Duration, duration } from 'moment-timezone';
 
-import { result as _result } from './result';
+import { createMapping } from './createMapping';
+import { result } from './result';
 
-export function mapDuration(value: unknown): TypeMappingResult<Duration> {
-    const result = lazyReadDuration(value);
-    if (result?.isValid() === true)
-        return { valid: true, value: result };
-    return _result.never;
-}
-
-function lazyReadDuration(value: unknown): Duration | undefined {
+export const mapDuration: TypeMapping<Duration> = createMapping(value => {
     try {
         switch (typeof value) {
-            case 'string': return duration(value);
-            case 'object': return duration(value);
-            case 'number': return duration(value);
-            default: return undefined;
+            case 'string':
+            case 'object':
+            case 'number': {
+                const mapped = duration(value);
+                if (mapped.isValid())
+                    return result.success(mapped);
+            }
         }
     } catch {
-        return undefined;
+        // NOOP
     }
-}
+    return result.failed;
+});

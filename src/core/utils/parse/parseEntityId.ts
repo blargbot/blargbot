@@ -1,4 +1,4 @@
-export function entityId(text: string, identifier = '', allowJustId = identifier.length === 0): string | undefined {
+export function parseEntityId(text: string, identifier = '', allowJustId = identifier.length === 0): string | undefined {
     if (typeof text !== 'string')
         return undefined;
 

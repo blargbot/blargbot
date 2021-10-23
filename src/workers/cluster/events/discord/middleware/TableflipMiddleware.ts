@@ -1,13 +1,13 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { guard, randInt } from '@cluster/utils';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import { Message } from 'discord.js';
 
 export class TableflipMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly util: ClusterUtilities) {
     }
 
-    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
         const result = next();
         const flipDir = context.content.includes('(╯°□°）╯︵ ┻━┻') ? 'unflip'
             : context.content.includes('┬─┬﻿ ノ( ゜-゜ノ)') ? 'flip'

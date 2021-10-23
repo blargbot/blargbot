@@ -1,10 +1,8 @@
+import { guard } from '@cluster/utils';
 import { MalformedEmbed } from '@core/types';
 import { MessageEmbedOptions } from 'discord.js';
 
-import { guard } from '..';
-
-export function embed(embedText: string): MessageEmbedOptions[] | MalformedEmbed[] | undefined {
-
+export function parseEmbed(embedText: string): MessageEmbedOptions[] | MalformedEmbed[] | undefined {
     if (embedText.trim().length === 0)
         return undefined;
 
@@ -48,7 +46,7 @@ export function embed(embedText: string): MessageEmbedOptions[] | MalformedEmbed
     }
 }
 
-function singleEmbed(embedText: string): (MessageEmbedOptions & {malformed?: false;}) | MalformedEmbed | undefined {
+function singleEmbed(embedText: string): (MessageEmbedOptions & { malformed?: false; }) | MalformedEmbed | undefined {
     if (embedText.trim().length === 0)
         return undefined;
     try {

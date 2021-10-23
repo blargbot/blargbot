@@ -1,4 +1,5 @@
 import { Timer } from '@core/Timer';
+import { guard } from '@core/utils';
 
 import { BBTagContext } from './BBTagContext';
 import { tagVariableScopes } from './tagVariables';
@@ -32,7 +33,7 @@ export class VariableCache {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cache: Record<string, CacheEntry | undefined>;
 
-    public get list(): CacheEntry[] { return Object.keys(this.#cache).map(k => this.#cache[k]).filter((e): e is CacheEntry => e !== undefined); }
+    public get list(): CacheEntry[] { return Object.values(this.#cache).filter(guard.hasValue); }
 
     public constructor(
         public readonly context: BBTagContext
@@ -88,9 +89,9 @@ export class VariableCache {
         if (execRunning)
             this.context.execTimer.end();
         this.context.dbTimer.resume();
-        const vars = (variables ?? Object.keys(this.#cache))
-            .map(key => this.#cache[key])
-            .filter((c): c is CacheEntry => c !== undefined);
+        const vars = (variables?.map(key => this.#cache[key]) ?? Object.values(this.#cache))
+            .filter(guard.hasValue);
+
         const pools: Record<string, Record<string, JToken>> = {};
         for (const v of vars) {
             if (v.changed) {

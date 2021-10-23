@@ -20,9 +20,8 @@ export class GreedyBinding<TContext extends CommandContext, Name extends Command
 
     public * debugView(): Generator<string> {
         yield `Greedy ${this.parameter.raw ? 'raw ' : ''}values into array variable '${this.name}'`;
-        for (const key of Object.keys(this.next) as number[]) {
-            yield `    When ${key} or more values:`;
-            const next = this.next[key];
+        for (const [key, next] of Object.entries(this.next)) {
+            yield `    When ${<string>key} or more values:`;
             if (next !== undefined) {
                 for (const binding of next) {
                     for (const line of binding.debugView()) {

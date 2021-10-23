@@ -1,16 +1,17 @@
-import { TypeMappingResult } from '@core/types';
+import { TypeMapping } from '@core/types';
 
+import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapJToken(value: unknown): TypeMappingResult<JToken> {
+export const mapJToken: TypeMapping<JToken> = createMapping(value => {
     switch (typeof value) {
         case 'bigint':
         case 'symbol':
-        case 'function': return result.never;
+        case 'function': return result.failed;
         case 'boolean':
         case 'number':
         case 'object':
         case 'string':
-        case 'undefined': return { valid: true, value: value as JToken };
+        case 'undefined': return result.success(value);
     }
-}
+});

@@ -286,13 +286,12 @@ function createGreedyVarBindingBuilder<TContext extends CommandContext>(depth: n
     };
 }
 
-function mapKeys<TKey extends string | number, TValue, TResult>(
+function mapKeys<TKey extends string, TValue, TResult>(
     source: { [P in TKey]?: TValue },
     map: (value: TValue, key: TKey) => TResult
 ): { [P in TKey]?: TResult } {
-    return Object.keys(source)
-        .reduce<{ [P in TKey]?: TResult }>((r, key) => {
-            const value = source[key] as TValue | undefined;
+    return Object.entries(source)
+        .reduce<{ [P in TKey]?: TResult }>((r, [key, value]) => {
             if (value !== undefined)
                 r[key] = map(value, key);
             return r;

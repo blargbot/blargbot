@@ -1,5 +1,5 @@
 import { CommandResult } from '@cluster/types';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 
 import { CommandContext } from '../CommandContext';
 
@@ -11,7 +11,7 @@ export class SingleThreadMiddleware<TContext extends CommandContext> implements 
         this.locks = {};
     }
 
-    public async execute(context: TContext, next: () => Awaitable<CommandResult>): Promise<CommandResult> {
+    public async execute(context: TContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {
         const key = this.keySelector(context);
         const lock = this.locks[key];
         if (lock !== undefined) {

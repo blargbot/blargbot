@@ -73,14 +73,14 @@ async function requestXmlSafe(url: string): Promise<unknown> {
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
-const r34Mapping = mapping.mapObject({
-    posts: mapping.mapObject({
-        tag: mapping.mapArray(mapping.mapObject({
-            '$': mapping.mapObject({
-                author: mapping.mapOptionalString,
-                file_url: mapping.mapOptionalString,
-                date: mapping.mapOptionalDate,
-                source: mapping.mapOptionalString
+const r34Mapping = mapping.object({
+    posts: mapping.object({
+        tag: mapping.array(mapping.object({
+            '$': mapping.object({
+                author: mapping.string.optional,
+                file_url: mapping.string.optional,
+                date: mapping.date.optional,
+                source: mapping.string.optional
             })
         }))
     })

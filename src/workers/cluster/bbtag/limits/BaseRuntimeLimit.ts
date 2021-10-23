@@ -54,20 +54,18 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         const set = this.#rules[rootKey] ?? {};
         const rules = subKey !== undefined
             ? set[subKey] ?? []
-            : Object.keys(set).flatMap(k => set[k] ?? []);
+            : Object.values(set).flatMap(v => v ?? []);
         return rules.map(r => r.displayText(rootKey, this.scopeName));
     }
 
     public serialize(): SerializedRuntimeLimit {
         const result: SerializedRuntimeLimit = { rules: {}, type: this.#name };
 
-        for (const rootKey of Object.keys(this.#rules)) {
-            const ruleSet = this.#rules[rootKey];
+        for (const [rootKey, ruleSet] of Object.entries(this.#rules)) {
             if (ruleSet === undefined)
                 continue;
 
-            for (const subKey of Object.keys(ruleSet)) {
-                const subRules = ruleSet[subKey];
+            for (const [subKey, subRules] of Object.entries(ruleSet)) {
                 if (subRules !== undefined) {
                     result.rules[`${rootKey}:${subKey}`] = subRules.map(r => r.state());
                 }
@@ -78,10 +76,8 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
     }
 
     public load(state: SerializedRuntimeLimit): void {
-        for (const ruleKey of Object.keys(state.rules)) {
+        for (const [ruleKey, states] of Object.entries(state.rules)) {
             const [rootKey, subKey] = this.getKeys(ruleKey);
-            const states = state.rules[ruleKey];
-
             const set = this.#rules[rootKey];
             if (set === undefined)
                 continue;

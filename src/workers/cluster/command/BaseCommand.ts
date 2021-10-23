@@ -1,7 +1,7 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { CommandBaseOptions, CommandResult, CommandSignature, FlagDefinition } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { IMiddleware, MiddlewareRunOptions } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import { Guild, TextBasedChannels, User } from 'discord.js';
 
 import { CommandContext } from './CommandContext';
@@ -32,7 +32,7 @@ export abstract class BaseCommand implements CommandBaseOptions, IMiddleware<Com
     }
 
     public abstract isVisible(util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User): Promise<boolean> | boolean;
-    public abstract execute(context: CommandContext, next: () => Awaitable<CommandResult>, options: MiddlewareRunOptions): Awaitable<CommandResult>;
+    public abstract execute(context: CommandContext, next: NextMiddleware<CommandResult>): Awaitable<CommandResult>;
 
     public error<T extends string>(message: T): `❌ ${T}` {
         return `❌ ${message}`;

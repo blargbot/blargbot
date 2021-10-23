@@ -1,12 +1,13 @@
-import { TypeMappingResult } from '@core/types';
+import { TypeMapping } from '@core/types';
 
+import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapJObject(value: unknown): TypeMappingResult<JObject> {
+export const mapJObject: TypeMapping<JObject> = createMapping(value => {
     switch (typeof value) {
         case 'object':
             if (!Array.isArray(value) && value !== null)
-                return { valid: true, value: value as JObject };
+                return result.success(value as JObject);
         // fallthrough
         case 'bigint':
         case 'boolean':
@@ -14,6 +15,6 @@ export function mapJObject(value: unknown): TypeMappingResult<JObject> {
         case 'number':
         case 'string':
         case 'symbol':
-        case 'undefined': return result.never;
+        case 'undefined': return result.failed;
     }
-}
+});

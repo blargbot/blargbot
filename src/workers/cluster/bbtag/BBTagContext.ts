@@ -354,8 +354,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         result.state.cache = {};
         result.state.overrides = {};
 
-        for (const key of Object.keys(obj.tempVars))
-            await result.variables.set(key, new CacheEntry(result, key, obj.tempVars[key]));
+        for (const [key, value] of Object.entries(obj.tempVars))
+            await result.variables.set(key, new CacheEntry(result, key, value));
         return result;
     }
 

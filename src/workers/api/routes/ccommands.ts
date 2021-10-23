@@ -138,12 +138,12 @@ export class CCommandsRoute extends BaseRoute {
     }
 }
 
-const mapCreateCommand = mapping.mapObject({
-    content: mapping.mapString,
-    name: mapping.mapString
+const mapCreateCommand = mapping.object({
+    content: mapping.string,
+    name: mapping.string
 });
 
-const mapUpdateCommand = mapping.mapObject({
-    content: mapping.mapOptionalString,
-    name: mapping.mapOptionalString
+const mapUpdateCommand = mapping.object({
+    content: mapping.string.optional,
+    name: mapping.string.optional
 });

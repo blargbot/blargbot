@@ -535,8 +535,7 @@ export class TagCommand extends BaseGuildCommand {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...addFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []];
-        for (const flag of Object.keys(addFlags)) {
-            const args = addFlags[flag];
+        for (const [flag, args] of Object.entries(addFlags)) {
             if (args === undefined || args.length === 0)
                 return this.error(`No word was specified for the \`${flag}\` flag`);
 
@@ -745,10 +744,10 @@ export class TagCommand extends BaseGuildCommand {
         if ('tag' in details && 'content' in details)
             files.push({ name: details.tag + '.bbtag', attachment: details.content });
 
-        for (const key of Object.keys(details)) {
+        for (const [key, detail] of Object.entries(details)) {
             fields.push({
                 name: key,
-                value: humanize.truncate(details[key], 1000, '(too long)'),
+                value: humanize.truncate(detail, 1000, '(too long)'),
                 inline: true
             });
         }

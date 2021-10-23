@@ -202,4 +202,4 @@ async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, ty
     }
 }
 
-const mapDuration = mapping.mapJson(mapping.mapDuration);
+const mapDuration = mapping.json(mapping.duration);

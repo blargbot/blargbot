@@ -96,7 +96,7 @@ const parameterTypes: ParameterTypeFactories = {
     },
     string: buildParameter('string', value => ({ success: true, value: createCommandArgument('string', value) })),
     bigint: buildParameter('bigint', (value) => {
-        const result = parse.bigint(value);
+        const result = parse.bigInt(value);
         if (result === undefined)
             return { success: false, error: { parseFailed: { attemptedValue: value, types: ['an integer'] } } };
         return { success: true, value: createCommandArgument('bigint', result) };

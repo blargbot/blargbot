@@ -1,13 +1,14 @@
 import { TypeMapping } from '@core/types';
 
+import { createMapping } from './createMapping';
 import { result } from './result';
 
 export function mapIn<T>(...values: readonly T[]): TypeMapping<T> {
     const valueSet = new Set<unknown>(values);
 
-    return (value: unknown) => {
+    return createMapping(value => {
         if (valueSet.has(value))
-            return { valid: true, value: <T>value };
-        return result.never;
-    };
+            return result.success(<T>value);
+        return result.failed;
+    });
 }

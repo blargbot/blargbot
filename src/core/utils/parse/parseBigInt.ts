@@ -1,4 +1,4 @@
-export function bigint(s: string | number | bigint): bigint | undefined {
+export function parseBigInt(s: string | number | bigint): bigint | undefined {
     if (typeof s === 'bigint')
         return s;
     try {

@@ -1,26 +1,20 @@
-import { TypeMapping, TypeMappingOptions } from '@core/types';
+import { TypeMapping } from '@core/types';
 
-import { result as _result } from './result';
+import { createMapping } from './createMapping';
+import { result } from './result';
 
-export function mapRecord<T>(mapping: TypeMapping<T, [key: string]>): TypeMapping<Record<string, T>>;
-export function mapRecord<T>(mapping: TypeMapping<T, [key: string]>, options: TypeMappingOptions<Record<string, T>, T>): TypeMapping<Record<string, T>>;
-export function mapRecord<T, R>(mapping: TypeMapping<T, [key: string]>, options: TypeMappingOptions<Record<string, T>, R>): TypeMapping<Record<string, T> | R>;
-export function mapRecord<T, R>(mapping: TypeMapping<T, [key: string]>, options: TypeMappingOptions<Record<string, T>, R> = {}): TypeMapping<Record<string, T> | R> {
-    return value => {
-        if (value === undefined)
-            return options.ifUndefined ?? _result.never;
-        if (typeof value !== 'object')
-            return _result.never;
-        if (value === null)
-            return options.ifNull ?? _result.never;
+export function mapRecord<T>(mapping: TypeMapping<T, [key: string]>, initial?: () => Record<string, T>): TypeMapping<Record<string, T>> {
+    return createMapping(value => {
+        if (value === undefined || typeof value !== 'object' || value === null)
+            return result.failed;
 
-        const result: Record<string, T> = options.initial?.() ?? {} as Record<string, T>;
-        for (const key of Object.keys(value)) {
-            const mapped = mapping(value[key], key);
-            if (!mapped.valid)
-                return _result.never;
-            result[key] = mapped.value;
+        const mapped: Record<string, T> = initial?.() ?? {};
+        for (const [key, prop] of Object.entries(value)) {
+            const mappedProp = mapping(prop, key);
+            if (!mappedProp.valid)
+                return result.failed;
+            mapped[key] = mappedProp.value;
         }
-        return { valid: true, value: result };
-    };
+        return result.success(mapped);
+    });
 }

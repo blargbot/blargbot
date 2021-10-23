@@ -49,12 +49,11 @@ describe('PingCommand', () => {
             // act
             const result = await command.execute(
                 instance(contextMock),
-                () => { throw new Error('next shouldnt be called'); },
-                {
+                Object.assign(() => { throw new Error('next shouldnt be called'); }, {
                     id: '',
                     logger: instance(loggerMock),
                     start: moment().valueOf()
-                });
+                }));
 
             // assert
             expect(result).to.equal(expected);

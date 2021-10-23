@@ -1,9 +1,8 @@
-import { TypeMappingResult } from '@core/types';
-
+import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapBoolean(value: unknown): TypeMappingResult<boolean> {
+export const mapBoolean = createMapping<boolean>(value => {
     return typeof value === 'boolean'
-        ? { valid: true, value }
-        : result.never;
-}
+        ? result.success(value)
+        : result.failed;
+});

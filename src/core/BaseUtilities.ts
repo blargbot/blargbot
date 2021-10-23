@@ -752,18 +752,18 @@ function isEmbed(payload: SendPayload): payload is MessageEmbedOptions {
     return typeof payload !== 'string' && embedKeys.some(k => k in payload);
 }
 
-const embedKeys = Object.keys<{ [P in keyof MessageEmbedOptions]-?: true }>({
-    author: true,
-    color: true,
-    description: true,
-    fields: true,
-    footer: true,
-    image: true,
-    thumbnail: true,
-    timestamp: true,
-    title: true,
-    url: true,
-    video: true
+const embedKeys = Object.keys<keyof MessageEmbedOptions>({
+    author: 0,
+    color: 0,
+    description: 0,
+    fields: 0,
+    footer: 0,
+    image: 0,
+    thumbnail: 0,
+    timestamp: 0,
+    title: 0,
+    url: 0,
+    video: 0
 });
 
 function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[] {

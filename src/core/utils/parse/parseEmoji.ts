@@ -1,6 +1,6 @@
 import * as twemoji from 'twemoji';
 
-export function emoji(text: string, distinct = false): string[] {
+export function parseEmoji(text: string, distinct = false): string[] {
     let result: string[] = [];
 
     text = text.replace(/\ufe0f/g, '');

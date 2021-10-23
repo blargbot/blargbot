@@ -166,7 +166,7 @@ interface ArData {
     channel: string;
 }
 
-const mapArData = mapping.mapBase64(mapping.mapJson(mapping.mapObject<ArData>({
-    channel: mapping.mapString,
-    guild: mapping.mapString
+const mapArData = mapping.base64(mapping.json(mapping.object<ArData>({
+    channel: mapping.string,
+    guild: mapping.string
 })));

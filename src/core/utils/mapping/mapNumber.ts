@@ -1,9 +1,10 @@
-import { TypeMappingResult } from '@core/types';
+import { TypeMapping } from '@core/types';
 
+import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapNumber(value: unknown): TypeMappingResult<number> {
+export const mapNumber: TypeMapping<number> = createMapping(value => {
     return typeof value === 'number'
-        ? { valid: true, value }
-        : result.never;
-}
+        ? result.success(value)
+        : result.failed;
+});

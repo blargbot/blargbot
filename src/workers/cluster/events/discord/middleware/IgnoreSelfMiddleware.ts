@@ -1,14 +1,14 @@
 import { guard } from '@cluster/utils';
 import { Logger } from '@core/Logger';
 import { metrics } from '@core/Metrics';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import { Message } from 'discord.js';
 
 export class IgnoreSelfMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly logger: Logger) {
     }
 
-    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
         if (context.author.id !== context.client.user?.id) {
             metrics.messageCounter.inc();
             return await next();

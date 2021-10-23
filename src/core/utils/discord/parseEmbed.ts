@@ -1,6 +1,6 @@
 import { MessageEmbedOptions } from 'discord.js';
 
-import * as mapping from '../mapping';
+import { mapping } from '../mapping';
 
 export function parseEmbed(embedText?: string): (MessageEmbedOptions & { malformed?: true; }) | undefined {
     if (embedText === undefined || embedText.length === 0)
@@ -12,50 +12,49 @@ export function parseEmbed(embedText?: string): (MessageEmbedOptions & { malform
         : { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
 }
 
-const mapEmbed = mapping.mapJson(
-    mapping.mapObject<MessageEmbedOptions>({
-        author: mapping.mapObject<MessageEmbedOptions['author'] | undefined>({
-            icon_url: mapping.mapOptionalString,
-            name: mapping.mapString,
-            url: mapping.mapOptionalString,
+const mapEmbed = mapping.json(
+    mapping.object<MessageEmbedOptions>({
+        author: mapping.object<MessageEmbedOptions['author'] | undefined>({
+            icon_url: mapping.string.optional,
+            name: mapping.string,
+            url: mapping.string.optional,
             iconURL: [undefined],
             proxyIconURL: [undefined],
             proxy_icon_url: [undefined]
-        }, { ifUndefined: mapping.result.undefined }),
-        color: mapping.mapOptionalNumber,
-        description: mapping.mapOptionalString,
-        fields: mapping.mapArray(
-            mapping.mapObject<Exclude<MessageEmbedOptions['fields'], undefined>[number]>({
-                inline: mapping.mapOptionalBoolean,
-                name: mapping.mapString,
-                value: mapping.mapString
-            }),
-            { ifUndefined: mapping.result.undefined }
-        ),
-        footer: mapping.mapObject<MessageEmbedOptions['footer'] | undefined>({
-            icon_url: mapping.mapOptionalString,
-            text: mapping.mapString,
+        }).optional,
+        color: mapping.number.optional,
+        description: mapping.string.optional,
+        fields: mapping.array(
+            mapping.object<Exclude<MessageEmbedOptions['fields'], undefined>[number]>({
+                inline: mapping.boolean.optional,
+                name: mapping.string,
+                value: mapping.string
+            })
+        ).optional,
+        footer: mapping.object<MessageEmbedOptions['footer'] | undefined>({
+            icon_url: mapping.string.optional,
+            text: mapping.string,
             iconURL: [undefined],
             proxyIconURL: [undefined],
             proxy_icon_url: [undefined]
-        }, { ifUndefined: mapping.result.undefined }),
-        image: mapping.mapObject<MessageEmbedOptions['image'] | undefined>({
-            url: mapping.mapOptionalString,
+        }).optional,
+        image: mapping.object<MessageEmbedOptions['image'] | undefined>({
+            url: mapping.string.optional,
             height: [undefined],
             proxyURL: [undefined],
             proxy_url: [undefined],
             width: [undefined]
-        }, { ifUndefined: mapping.result.undefined }),
-        thumbnail: mapping.mapObject<MessageEmbedOptions['thumbnail'] | undefined>({
-            url: mapping.mapOptionalString,
+        }).optional,
+        thumbnail: mapping.object<MessageEmbedOptions['thumbnail'] | undefined>({
+            url: mapping.string.optional,
             height: [undefined],
             proxyURL: [undefined],
             proxy_url: [undefined],
             width: [undefined]
-        }, { ifUndefined: mapping.result.undefined }),
-        timestamp: mapping.mapOptionalDate,
-        title: mapping.mapOptionalString,
-        url: mapping.mapOptionalString,
+        }).optional,
+        timestamp: mapping.date.optional,
+        title: mapping.string.optional,
+        url: mapping.string.optional,
         video: [undefined]
     })
 );

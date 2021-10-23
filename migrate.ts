@@ -360,7 +360,7 @@ function migrateCommandPerms(guildId: string, guild: any, logger: Logger, contex
 
     let changed = false;
 
-    for (const [commandName, perms] of Object.entries(commandPerms)) {
+    for (const [commandName, perms] of Object.entries<PropertyKey, any>(commandPerms)) {
         const newPerm: r.UpdateData<MutableCommandPermissions> = {};
         switch (typeof perms.permission) {
             case 'object': // null
@@ -426,25 +426,25 @@ function migrateSettings(guildId: string, guild: any, logger: Logger, context: G
     return changed;
 }
 
-const mapGuildTriggerTag = mapping.mapObject<GuildTriggerTag>({
-    author: mapping.mapString,
-    authorizer: mapping.mapOptionalString,
-    content: mapping.mapString
+const mapGuildTriggerTag = mapping.object<GuildTriggerTag>({
+    author: mapping.string,
+    authorizer: mapping.string.optional,
+    content: mapping.string
 });
 
-const mapStringOrGuildTriggerTag = mapping.mapChoice(
-    mapping.mapString,
-    mapping.mapObject<GuildTriggerTag>({
-        author: mapping.mapString,
-        authorizer: mapping.mapOptionalString,
-        content: mapping.mapString
+const mapStringOrGuildTriggerTag = mapping.choice(
+    mapping.string,
+    mapping.object<GuildTriggerTag>({
+        author: mapping.string,
+        authorizer: mapping.string.optional,
+        content: mapping.string
     })
 );
 
-const mapOldFilteredAr = mapping.mapObject({
-    executes: mapping.mapString,
-    term: mapping.mapString,
-    regex: mapping.mapBoolean
+const mapOldFilteredAr = mapping.object({
+    executes: mapping.string,
+    term: mapping.string,
+    regex: mapping.boolean
 });
 
 function nukedCC(newLocation: string): r.UpdateData<GuildCommandTag> {

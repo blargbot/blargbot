@@ -1,11 +1,12 @@
 import { TypeMapping } from '@core/types';
 
+import { createMapping } from './createMapping';
 import { result } from './result';
 
 export function mapRegex<T extends string>(regex: RegExp): TypeMapping<T> {
-    return (value: unknown) => {
+    return createMapping(value => {
         if (typeof value === 'string' && regex.test(value))
-            return { valid: true, value: <T>value };
-        return result.never;
-    };
+            return result.success(<T>value);
+        return result.failed;
+    });
 }

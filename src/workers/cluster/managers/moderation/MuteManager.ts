@@ -135,4 +135,4 @@ export class MuteManager extends ModerationManagerBase {
     }
 }
 
-const mapDuration = mapping.mapJson(mapping.mapDuration);
+const mapDuration = mapping.json(mapping.duration);

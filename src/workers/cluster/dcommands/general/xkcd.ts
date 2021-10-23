@@ -58,10 +58,10 @@ interface ComicInfo {
     img: string;
 }
 
-const comicInfoMapping = mapping.mapObject<ComicInfo>({
-    num: mapping.mapNumber,
-    title: mapping.mapString,
-    year: mapping.mapString,
-    alt: mapping.mapString,
-    img: mapping.mapString
+const comicInfoMapping = mapping.object<ComicInfo>({
+    num: mapping.number,
+    title: mapping.string,
+    year: mapping.string,
+    alt: mapping.string,
+    img: mapping.string
 });

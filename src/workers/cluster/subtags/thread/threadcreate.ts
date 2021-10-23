@@ -1,16 +1,18 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { bbtagUtil, discordUtil, guard, mapping, parse, SubtagType  } from '@cluster/utils';
+import { bbtagUtil, discordUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
 import { AllowedThreadTypeForTextChannel, GuildMessage, ThreadAutoArchiveDuration, ThreadCreateOptions } from 'discord.js';
 
-const threadOptions = mapping.mapObject({
-    name: mapping.mapString,
-    autoArchiveDuration: mapping.mapOptionalChoice<string | number | undefined>(
-        mapping.mapOptionalString,
-        mapping.mapOptionalNumber
+const threadOptions = mapping.object({
+    name: mapping.string,
+    autoArchiveDuration: mapping.choice(
+        mapping.in(undefined),
+        mapping.string,
+        mapping.number
     ),
-    private: mapping.mapOptionalChoice<string | boolean | undefined>(
-        mapping.mapOptionalString,
-        mapping.mapOptionalBoolean
+    private: mapping.choice(
+        mapping.in(undefined),
+        mapping.string,
+        mapping.boolean
     )
 });
 

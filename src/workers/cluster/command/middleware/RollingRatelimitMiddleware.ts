@@ -1,5 +1,5 @@
 import { CommandResult } from '@cluster/types';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import moment, { Duration, Moment } from 'moment-timezone';
 
 import { CommandContext } from '../CommandContext';
@@ -21,7 +21,7 @@ export class RollingRatelimitMiddleware implements IMiddleware<CommandContext, C
         this.timestamps = {};
     }
 
-    public async execute(context: CommandContext, next: () => Awaitable<CommandResult>): Promise<CommandResult> {
+    public async execute(context: CommandContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {
         const key = this.options.key(context);
 
         let timeout = this.timeouts[key];

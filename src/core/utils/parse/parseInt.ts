@@ -1,7 +1,9 @@
-export function int(s: string | number, radix?: number): number;
-export function int(s: string | number, allowNaN: false, radix?: number): number | undefined;
-export function int(s: string | number, allowNaN: true, radix?: number): number;
-export function int(s: string | number, ...args: [boolean, number?] | [number?]): number | undefined {
+const parseIntOld = parseInt;
+
+export function parseInt(s: string | number, radix?: number): number;
+export function parseInt(s: string | number, allowNaN: false, radix?: number): number | undefined;
+export function parseInt(s: string | number, allowNaN: true, radix?: number): number;
+export function parseInt(s: string | number, ...args: [boolean, number?] | [number?]): number | undefined {
     const result = intCore(s, args);
     if (!isNaN(result))
         return result;
@@ -26,7 +28,7 @@ function intCore(s: string | number, args: [boolean, number?] | [number?]): numb
         }
     }
 
-    const result = parseInt(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
+    const result = parseIntOld(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
     if (Math.abs(result) > Number.MAX_SAFE_INTEGER)
         return NaN;
     return result;

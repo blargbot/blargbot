@@ -81,12 +81,11 @@ export function testExecute<TChannel extends TextBasedChannels['type'], AutoMock
             // act
             const result = await command.execute(
                 instance(context.contextMock),
-                () => { throw new Error('next shouldnt be called'); },
-                {
+                Object.assign(() => { throw new Error('next shouldnt be called'); }, {
                     id: '',
                     logger: instance(context.loggerMock),
                     start: moment().valueOf()
-                });
+                }));
 
             // assert
             expect(result).to.deep.equal(expected);

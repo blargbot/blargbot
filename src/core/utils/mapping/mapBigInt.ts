@@ -1,18 +1,17 @@
-import { TypeMappingResult } from '@core/types';
-
+import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapBigInt(value: unknown): TypeMappingResult<bigint> {
+export const mapBigInt = createMapping<bigint>(value => {
     try {
         switch (typeof value) {
-            case 'bigint': return { valid: true, value };
+            case 'bigint': return result.success(value);
             case 'string':
-            case 'number': return { valid: true, value: BigInt(value) };
-            default: return result.never;
+            case 'number': return result.success(BigInt(value));
+            default: return result.failed;
         }
     } catch (e: unknown) {
         if (e instanceof RangeError)
-            return result.never;
+            return result.failed;
         throw e;
     }
-}
+});

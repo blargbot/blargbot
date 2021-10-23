@@ -1,13 +1,13 @@
 import { CensorManager } from '@cluster/managers/moderation';
 import { guard } from '@cluster/utils';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import { Message } from 'discord.js';
 
 export class CensorMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly censors: CensorManager) {
     }
 
-    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
         if (!guard.isGuildMessage(context))
             return await next();
 

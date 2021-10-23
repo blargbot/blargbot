@@ -5,7 +5,7 @@ declare global {
     type Primitive = string | number | bigint | boolean | object | Function | symbol | undefined;
     type JToken = JObject | JArray | JValue | null | undefined;
     type JValue = string | number | boolean;
-    type JObject = { [key: string]: JToken; };
+    type JObject = { [P in string]?: JToken; };
     type JArray = JToken[];
     type JTokenType = keyof JTokenTypeMap;
     type JTokenTypeMap = {
@@ -36,14 +36,38 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/ban-types
     type DeepMutable<T> = T extends Exclude<Primitive, object> ? T : { -readonly [P in keyof T]: DeepMutable<T[P]>; };
     type FilteredKeys<T, U> = { [P in keyof T]: T[P] extends U ? P : never }[keyof T];
+    type SplitString<T extends string> = T extends '' ? []
+        : T extends `${infer _1}${infer _2}${infer _3}${infer _4}${infer _5}${infer _6}${infer _rest}` ? [_1, _2, _3, _4, _5, _6, ...SplitString<_rest>]
+        : T extends `${infer _1}${infer _2}${infer _3}${infer _4}${infer _5}${infer _rest}` ? [_1, _2, _3, _4, _5, ...SplitString<_rest>]
+        : T extends `${infer _1}${infer _2}${infer _3}${infer _4}${infer _rest}` ? [_1, _2, _3, _4, ...SplitString<_rest>]
+        : T extends `${infer _1}${infer _2}${infer _3}${infer _rest}` ? [_1, _2, _3, ...SplitString<_rest>]
+        : T extends `${infer _1}${infer _2}${infer _rest}` ? [_1, _2, ...SplitString<_rest>]
+        : T extends `${infer _1}${infer _rest}` ? [_1, ...SplitString<_rest>]
+        : string[];
 
     interface ObjectConstructor {
-        keys<T>(value: Exclude<T, undefined | null>): Array<string & keyof T>;
-        values<T>(value: Exclude<T, undefined | null>): Array<T[keyof T]>;
-        entries<T>(value: Exclude<T, undefined | null>): Array<[string & keyof T, T[string & keyof T]]>;
+        keys<TKey extends string>(value: { [P in TKey]?: unknown }): TKey[];
+        keys<TString extends string>(value: TString): Array<`${number}`>;
+        keys<TArray extends unknown[]>(value: TArray): Array<`${number}`>;
+        keys(value: number | boolean | bigint): [];
+        values<T>(value: Exclude<T, undefined | null>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T> : Array<T[keyof T]>;
+        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[TKey & string, TValue]>;
+        entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]?: TValue; }): Array<[TKey & string, TValue | undefined]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
         create<T extends object>(value: T): T;
         fromEntries<TKey extends PropertyKey, TValue>(entries: Iterable<readonly [TKey, TValue]>): Record<TKey, TValue>;
+
+        defineProperties<T, U>(o: T, properties: { [P in keyof U]: StrongPropertyDescriptor<U[P]> }): T & U;
+        defineProperty<T, Key extends PropertyKey, U>(o: T, key: Key, attributes: StrongPropertyDescriptor<U>): T & { [P in Key]: U; };
+    }
+
+    interface StrongPropertyDescriptor<T> {
+        configurable?: boolean;
+        enumerable?: boolean;
+        value?: T;
+        writable?: boolean;
+        get?(): T;
+        set?(v: T): void;
     }
 
     interface Boolean {
@@ -65,6 +89,9 @@ declare global {
     interface Set<T> {
         has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
     }
+    interface ReadonlySet<T> {
+        has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
+    }
 
     type Awaitable<T> = T | PromiseLike<T>;
     type Awaited<T> = T extends PromiseLike<infer R> ? Awaited<R> : T;
@@ -81,6 +108,7 @@ declare global {
     interface String {
         toLowerCase<T extends string>(this: T): Lowercase<T>;
         toUpperCase<T extends string>(this: T): Uppercase<T>;
+        split<T extends string>(this: T, splitter: ''): SplitString<T>;
     }
 
     function setTimeout<TArgs extends unknown[]>(callback: (...args: TArgs) => void, ms: number, ...args: TArgs): NodeJS.Timeout;

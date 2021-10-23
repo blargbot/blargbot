@@ -1,7 +1,7 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
-import { IMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import { Message } from 'discord.js';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
@@ -10,7 +10,7 @@ export class CleverbotMiddleware implements IMiddleware<Message, boolean> {
     public constructor(private readonly util: ClusterUtilities) {
     }
 
-    public async execute(context: Message, next: () => Awaitable<boolean>): Promise<boolean> {
+    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
         if (await next())
             return true;
 

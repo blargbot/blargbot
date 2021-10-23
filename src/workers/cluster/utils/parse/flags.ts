@@ -48,8 +48,8 @@ export function flags(definitions: Iterable<FlagDefinition>, text: string, stric
     pushFlagGroup(resultGroups, currentFlag, currentGroup);
 
     const result: Mutable<FlagResult> = { _: toFlagResultSet(text, resultGroups._) };
-    for (const key of Object.keys(resultGroups))
-        result[key] = toFlagResultSet(text, resultGroups[key] ?? []);
+    for (const [key, group] of Object.entries(resultGroups))
+        result[key] = toFlagResultSet(text, group ?? []);
 
     return result;
 }

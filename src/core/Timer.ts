@@ -15,7 +15,7 @@ export class Timer {
     public get elapsed(): number {
         if (this.#start === undefined)
             return this.#elapsed;
-        return this.#elapsed + (Date.now() - this.#start);
+        return this.#elapsed + (performance.now() - this.#start);
     }
 
     public get duration(): Duration {
@@ -32,7 +32,7 @@ export class Timer {
             throw new Error('Cannot start an already started timer');
         if (reset)
             this.#elapsed = 0;
-        this.#start = Date.now();
+        this.#start = performance.now();
         return this;
     }
 
@@ -51,7 +51,7 @@ export class Timer {
 
     public end(): this {
         if (this.#start !== undefined) {
-            this.#elapsed += Date.now() - this.#start;
+            this.#elapsed += performance.now() - this.#start;
             this.#start = undefined;
         }
         return this;

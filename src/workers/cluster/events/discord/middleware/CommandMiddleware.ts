@@ -1,7 +1,7 @@
 import { Cluster } from '@cluster';
 import { CommandContext } from '@cluster/command';
 import { CommandResult } from '@cluster/types';
-import { IMiddleware, MiddlewareRunOptions } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@core/types';
 import { humanize, pluralise as p, runMiddleware } from '@core/utils';
 import { Message } from 'discord.js';
 
@@ -12,7 +12,7 @@ export class CommandMiddleware implements IMiddleware<Message, boolean> {
     ) {
     }
 
-    public async execute(message: Message, next: () => Awaitable<boolean>, options: MiddlewareRunOptions): Promise<boolean> {
+    public async execute(message: Message, next: NextMiddleware<boolean>): Promise<boolean> {
         const prefix = await this.cluster.prefixes.findPrefix(message);
         if (prefix === undefined)
             return await next();
@@ -26,7 +26,7 @@ export class CommandMiddleware implements IMiddleware<Message, boolean> {
         switch (command.state) {
             case 'ALLOWED': {
                 const context = new CommandContext(this.cluster, message, commandText, prefix, commandName, argsString, command.detail);
-                const output = await runMiddleware([...this.middleware, command.detail], context, undefined, options);
+                const output = await runMiddleware([...this.middleware, command.detail], context, next, () => undefined);
                 if (output !== undefined)
                     await context.reply(output);
 

@@ -1,11 +1,11 @@
 import colors from '@res/colors.json';
 
 import { randInt } from '../random';
-import { hex } from './hex';
+import { parseHex } from './parseHex';
 
 const colorKeys = Object.keys(colors);
 
-export function color(text: number | 'random' | string): number | undefined {
+export function parseColor(text: number | 'random' | string): number | undefined {
     if (typeof text === 'number')
         return text;
 
@@ -27,7 +27,7 @@ export function color(text: number | 'random' | string): number | undefined {
         const b = parseInt(match[3]);
         if (isNaN(r + g + b) || !isByte(r) || !isByte(g) || !isByte(b))
             return undefined;
-        return parseInt(hex(r) + hex(g) + hex(b), 16);
+        return parseInt(parseHex(r) + parseHex(g) + parseHex(b), 16);
     }
 
     //Hex code with 6 digits

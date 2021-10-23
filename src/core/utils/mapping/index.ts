@@ -1,26 +1,45 @@
-export * from './mapArray';
-export * from './mapBase64';
-export * from './mapBoolean';
-export * from './mapChoice';
-export * from './mapDuration';
-export * from './mapIn';
-export * from './mapInstanceof';
-export * from './mapJObject';
-export * from './mapJson';
-export * from './mapJToken';
-export * from './mapNumber';
-export * from './mapObject';
-export * from './mapOptionalBoolean';
-export * from './mapOptionalNumber';
-export * from './mapOptionalString';
-export * from './mapRecord';
-export * from './mapString';
-export * from './mapUnknown';
-export * from './result';
-export * from './mapOptionalDate';
-export * from './mapBigInt';
-export * from './mapOptionalBigInt';
-export * from './mapOptionalChoice';
-export * from './mapGuard';
-export * from './mapRegex';
-export * from './mapCast';
+import { mapArray } from './mapArray';
+import { mapBase64 } from './mapBase64';
+import { mapBigInt } from './mapBigInt';
+import { mapBoolean } from './mapBoolean';
+import { mapChoice } from './mapChoice';
+import { mapDate } from './mapDate';
+import { mapDuration } from './mapDuration';
+import { mapFake } from './mapFake';
+import { mapGuard } from './mapGuard';
+import { mapIn } from './mapIn';
+import { mapInstanceof } from './mapInstanceof';
+import { mapJObject } from './mapJObject';
+import { mapJson } from './mapJson';
+import { mapJToken } from './mapJToken';
+import { mapNumber } from './mapNumber';
+import { mapObject } from './mapObject';
+import { mapRecord } from './mapRecord';
+import { mapRegex } from './mapRegex';
+import { mapString } from './mapString';
+import { mapUnknown } from './mapUnknown';
+import { result } from './result';
+
+export const mapping = Object.seal({
+    array: mapArray,
+    base64: mapBase64,
+    bigInt: mapBigInt,
+    boolean: mapBoolean,
+    choice: mapChoice,
+    date: mapDate,
+    duration: mapDuration,
+    fake: mapFake,
+    guard: mapGuard,
+    in: mapIn,
+    instanceof: mapInstanceof,
+    jObject: mapJObject,
+    json: mapJson,
+    jToken: mapJToken,
+    number: mapNumber,
+    object: mapObject,
+    record: mapRecord,
+    regex: mapRegex,
+    string: mapString,
+    unknown: mapUnknown,
+    ...result
+});

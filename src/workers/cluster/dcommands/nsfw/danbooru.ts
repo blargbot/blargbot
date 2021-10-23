@@ -69,11 +69,11 @@ async function requestSafe(url: string): Promise<unknown> {
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */
-const danbooruMapping = mapping.mapArray(mapping.mapObject({
-    has_children: mapping.mapOptionalBoolean,
-    file_url: mapping.mapOptionalString,
-    tag_string_artist: mapping.mapOptionalString,
-    source: mapping.mapOptionalString,
-    created_at: mapping.mapOptionalDate
+const danbooruMapping = mapping.array(mapping.object({
+    has_children: mapping.boolean.optional,
+    file_url: mapping.string.optional,
+    tag_string_artist: mapping.string.optional,
+    source: mapping.string.optional,
+    created_at: mapping.date.optional
 }));
 /* eslint-enable @typescript-eslint/naming-convention */

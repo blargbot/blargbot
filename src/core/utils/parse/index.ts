@@ -1,11 +1,25 @@
-export * from './boolean';
-export * from './color';
-export * from './duration';
-export * from './embed';
-export * from './emoji';
-export * from './entityId';
-export * from './float';
-export * from './int';
-export * from './time';
-export * from './string';
-export * from './bigint';
+import { parseBigInt } from './parseBigInt';
+import { parseBoolean } from './parseBoolean';
+import { parseColor } from './parseColor';
+import { parseDuration } from './parseDuration';
+import { parseEmbed } from './parseEmbed';
+import { parseEmoji } from './parseEmoji';
+import { parseEntityId } from './parseEntityId';
+import { parseFloat } from './parseFloat';
+import { parseInt } from './parseInt';
+import { parseString } from './parseString';
+import { parseTime } from './parseTime';
+
+export const parse = {
+    color: parseColor,
+    duration: parseDuration,
+    embed: parseEmbed,
+    emoji: parseEmoji,
+    entityId: parseEntityId,
+    float: parseFloat,
+    int: parseInt,
+    bigInt: parseBigInt,
+    boolean: parseBoolean,
+    string: parseString,
+    time: parseTime
+};

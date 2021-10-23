@@ -2,7 +2,7 @@ import moment, { Moment } from 'moment-timezone';
 
 import * as guard from '../guard';
 
-export function time(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC', toTimezone = 'Etc/UTC'): Moment {
+export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC', toTimezone = 'Etc/UTC'): Moment {
     const now = moment.tz(timezone).tz(toTimezone);
     if (text === '')
         return now;

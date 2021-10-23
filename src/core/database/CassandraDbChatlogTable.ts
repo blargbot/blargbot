@@ -128,17 +128,17 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
     }
 }
 
-const mapChatlog = mapping.mapObject<Chatlog>({
-    attachment: mapping.mapOptionalString,
-    channelid: mapping.mapString,
-    content: mapping.mapString,
-    embeds: mapping.mapJson(mapping.mapArray(mapping.mapUnknown)),
-    guildid: mapping.mapString,
-    id: mapping.mapString,
-    msgid: mapping.mapString,
-    msgtime: mapping.mapInstanceof(Date),
-    type: mapping.mapIn(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
-    userid: mapping.mapString
+const mapChatlog = mapping.object<Chatlog>({
+    attachment: mapping.string.optional,
+    channelid: mapping.string,
+    content: mapping.string,
+    embeds: mapping.json(mapping.array(mapping.unknown)),
+    guildid: mapping.string,
+    id: mapping.string,
+    msgid: mapping.string,
+    msgtime: mapping.instanceof(Date),
+    type: mapping.in(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
+    userid: mapping.string
 });
 
 function stringifyType(type: ChatlogType): string {

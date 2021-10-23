@@ -7,8 +7,7 @@ import { stringify } from './stringify';
 
 export function createDebugOutput(result: ExecutionResult): MessageOptions {
     const performance: Record<string, unknown> = {};
-    for (const key of Object.keys(result.duration.subtag)) {
-        const times = result.duration.subtag[key];
+    for (const [key, times] of Object.entries(result.duration.subtag)) {
         if (times !== undefined && times.length > 0) {
             const totalTime = times.reduce((l, r) => l + r);
             performance[key] = {

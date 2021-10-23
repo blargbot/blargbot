@@ -7,3 +7,4 @@ export * from './smartSplit';
 export * from './truncate';
 export * from './ram';
 export * from './permissions';
+export * from './decancer';

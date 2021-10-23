@@ -1,8 +1,8 @@
 import moment, { Duration, DurationInputArg2 } from 'moment-timezone';
 
-export function duration(text: string, fallback: Duration): Duration;
-export function duration(text: string, fallback?: Duration): Duration | undefined;
-export function duration(text: string, fallback?: Duration): Duration | undefined {
+export function parseDuration(text: string, fallback: Duration): Duration;
+export function parseDuration(text: string, fallback?: Duration): Duration | undefined;
+export function parseDuration(text: string, fallback?: Duration): Duration | undefined {
     const ctx = { text };
     const durations = [
         find(ctx, /([0-9]+) ?(years?|y)\b/i, 'years'),

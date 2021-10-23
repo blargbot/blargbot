@@ -1,5 +1,6 @@
-import { TypeMappingResult } from '@core/types';
+import { TypeMapping } from '@core/types';
 
-export function mapUnknown(value: unknown): TypeMappingResult<unknown> {
-    return { valid: true, value };
-}
+import { createMapping } from './createMapping';
+import { result } from './result';
+
+export const mapUnknown: TypeMapping<unknown> = createMapping(value => result.success(value));
