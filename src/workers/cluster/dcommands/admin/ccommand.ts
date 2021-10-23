@@ -380,8 +380,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...addFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []];
-        for (const flag of Object.keys(addFlags)) {
-            const args = addFlags[flag];
+        for (const [flag, args] of Object.entries(addFlags)) {
             if (args === undefined || args.length === 0)
                 return this.error(`No word was specified for the \`${flag}\` flag`);
 
@@ -544,15 +543,14 @@ export class CustomCommandCommand extends BaseGuildCommand {
         const guildId = context.channel.guild.id;
         const commandNames = new Set((await context.database.guilds.getCustomCommands(guildId)).map(c => c.name));
         const shrinkwrap = signedShrinkwrap.value.payload;
-        for (const commandName of Object.keys(shrinkwrap.cc)) {
+        for (const [commandName, command] of Object.entries(shrinkwrap.cc)) {
+            if (command === undefined)
+                continue;
+
             if (commandNames.has(commandName.toLowerCase())) {
                 confirm.push(this.error(`Ignore the command \`${commandName}\` as a command with that name already exists`));
                 continue;
             }
-
-            const command = shrinkwrap.cc[commandName];
-            if (command === undefined)
-                continue;
 
             confirm.push(this.success(`Import the command \`${commandName}\``));
             importSteps.push(async () => {
@@ -756,36 +754,28 @@ async function requestSafe(url: string): Promise<unknown> {
     }
 }
 
-/* eslint-disable @typescript-eslint/naming-convention */
-const flagKeys = Object.keys<{ [P in Letter]: 0 }>({
-    'a': 0, 'b': 0, 'c': 0, 'd': 0, 'e': 0, 'f': 0, 'g': 0, 'h': 0, 'i': 0, 'j': 0, 'k': 0, 'l': 0, 'm': 0, 'n': 0, 'o': 0, 'p': 0, 'q': 0, 'r': 0, 's': 0, 't': 0, 'u': 0, 'v': 0, 'w': 0, 'x': 0, 'y': 0, 'z': 0,
-    'A': 0, 'B': 0, 'C': 0, 'D': 0, 'E': 0, 'F': 0, 'G': 0, 'H': 0, 'I': 0, 'J': 0, 'K': 0, 'L': 0, 'M': 0, 'N': 0, 'O': 0, 'P': 0, 'Q': 0, 'R': 0, 'S': 0, 'T': 0, 'U': 0, 'V': 0, 'W': 0, 'X': 0, 'Y': 0, 'Z': 0
-});
-/* eslint-enable @typescript-eslint/naming-convention */
-
-const mapCustomCommandShrinkwrap = mapping.mapObject<CustomCommandShrinkwrap>({
-    content: mapping.mapString,
-    cooldown: mapping.mapOptionalNumber,
-    flags: mapping.mapArray(
-        mapping.mapObject<FlagDefinition>({
-            description: mapping.mapString,
-            word: mapping.mapString,
-            flag: mapping.mapIn(...flagKeys)
-        }),
-        { ifUndefined: mapping.result.undefined }
-    ),
-    help: mapping.mapOptionalString,
-    hidden: mapping.mapOptionalBoolean,
-    roles: mapping.mapArray(mapping.mapString, { ifUndefined: mapping.result.undefined }),
-    disabled: mapping.mapOptionalBoolean,
-    permission: mapping.mapOptionalString
+const mapCustomCommandShrinkwrap = mapping.object<CustomCommandShrinkwrap>({
+    content: mapping.string,
+    cooldown: mapping.number.optional,
+    flags: mapping.array(
+        mapping.object<FlagDefinition>({
+            description: mapping.string,
+            word: mapping.string,
+            flag: mapping.in(...guard.isLetter.letters)
+        })
+    ).optional,
+    help: mapping.string.optional,
+    hidden: mapping.boolean.optional,
+    roles: mapping.array(mapping.string).optional,
+    disabled: mapping.boolean.optional,
+    permission: mapping.string.optional
 });
 
-const mapGuildShrinkwrap = mapping.mapObject<GuildShrinkwrap>({
-    cc: mapping.mapRecord(mapCustomCommandShrinkwrap)
+const mapGuildShrinkwrap = mapping.object<GuildShrinkwrap>({
+    cc: mapping.record(mapCustomCommandShrinkwrap)
 });
 
-const mapSignedGuildShrinkwrap = mapping.mapObject<SignedGuildShrinkwrap>({
-    signature: mapping.mapOptionalString,
-    payload: mapping.mapChoice(mapping.mapJson(mapGuildShrinkwrap), mapGuildShrinkwrap)
+const mapSignedGuildShrinkwrap = mapping.object<SignedGuildShrinkwrap>({
+    signature: mapping.string.optional,
+    payload: mapping.choice(mapping.json(mapGuildShrinkwrap), mapGuildShrinkwrap)
 });
