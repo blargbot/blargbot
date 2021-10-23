@@ -1,9 +1,9 @@
-import { TypeMapping } from '@core/types';
+import { TypeMapping, TypeMappingImpl } from '@core/types';
 
 import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapBase64<T>(mapping: TypeMapping<T>): TypeMapping<T> {
+export function mapBase64<T>(mapping: TypeMappingImpl<T>): TypeMapping<T> {
     return createMapping(value => {
         if (typeof value !== 'string')
             return result.failed;

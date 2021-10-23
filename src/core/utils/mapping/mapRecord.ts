@@ -1,9 +1,9 @@
-import { TypeMapping } from '@core/types';
+import { TypeMapping, TypeMappingImpl } from '@core/types';
 
 import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapRecord<T>(mapping: TypeMapping<T, [key: string]>, initial?: () => Record<string, T>): TypeMapping<Record<string, T>> {
+export function mapRecord<T>(mapping: TypeMappingImpl<T, [key: string]>, initial?: () => Record<string, T>): TypeMapping<Record<string, T>> {
     return createMapping(value => {
         if (value === undefined || typeof value !== 'object' || value === null)
             return result.failed;

@@ -1,4 +1,4 @@
-import { TypeMapping, TypeMappings } from '@core/types';
+import { TypeMapping, TypeMappingImpl, TypeMappings } from '@core/types';
 
 import * as guard from '../guard';
 import { createMapping } from './createMapping';
@@ -13,7 +13,7 @@ export function mapObject<T>(mappings: TypeMappings<T>, initial?: () => Partial<
         const mapped: Partial<T> = initial?.() ?? {};
         const remainingKeys = new Set<PropertyKey>(Object.keys(objValue));
 
-        function checkKey<K extends keyof T>(resultKey: K, sourceKey: PropertyKey | undefined, mapping: TypeMapping<T[K]>): boolean {
+        function checkKey<K extends keyof T>(resultKey: K, sourceKey: PropertyKey | undefined, mapping: TypeMappingImpl<T[K]>): boolean {
             if (sourceKey !== undefined) {
                 if (!guard.hasProperty(objValue, sourceKey))
                     return mapping(undefined).valid;
@@ -40,12 +40,12 @@ export function mapObject<T>(mappings: TypeMappings<T>, initial?: () => Partial<
     });
 }
 
-function splitMapping<T, K extends keyof T>(key: K, mapping: TypeMappings<T>[K]): [PropertyKey | undefined, TypeMapping<T[K]>] {
+function splitMapping<T, K extends keyof T>(key: K, mapping: TypeMappings<T>[K]): [PropertyKey | undefined, TypeMappingImpl<T[K]>] {
     if (typeof mapping !== 'object')
         return [key, mapping];
 
     if (mapping.length === 1)
-        return [undefined, createMapping(() => result.success(mapping[0]))];
+        return [undefined, () => result.success(mapping[0])];
 
     return mapping;
 }

@@ -1,8 +1,6 @@
-import { NormalizedTypeMapping, TypeMapping, TypeMappingResult } from '@core/types';
+import { NormalizedTypeMapping, TypeMapping, TypeMappingImpl, TypeMappingResult } from '@core/types';
 
 import { result } from './result';
-
-type TypeMappingImpl<T, TArgs extends unknown[]> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
 
 export function createMapping<T, TArgs extends unknown[] = []>(impl: TypeMappingImpl<T, TArgs>): TypeMapping<T, TArgs> {
     return createMappingCore<T, never, TArgs>(impl, props);
@@ -48,7 +46,7 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor & { get<T, 
             return Object.defineProperty(this, 'nullable', {
                 configurable: false,
                 writable: false,
-                value: createNormalizedMapping(this, result.failed, result.success(null))
+                value: createNormalizedMapping(this, result.failed, result.null)
             }).nullable;
         }
     },
@@ -58,7 +56,7 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor & { get<T, 
             return Object.defineProperty(this, 'nullish', {
                 configurable: false,
                 writable: false,
-                value: createNormalizedMapping(this, result.success(undefined), result.success(null))
+                value: createNormalizedMapping(this, result.undefined, result.null)
             }).nullish;
         }
     },
@@ -68,7 +66,7 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor & { get<T, 
             return Object.defineProperty(this, 'optional', {
                 configurable: false,
                 writable: false,
-                value: createNormalizedMapping(this, result.success(undefined), result.failed)
+                value: createNormalizedMapping(this, result.undefined, result.failed)
             }).optional;
         }
     },

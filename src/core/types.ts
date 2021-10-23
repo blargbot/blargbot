@@ -957,8 +957,8 @@ export interface SuggestionsTable {
 
 export type TypeMappingResult<T> = { readonly valid: false; } | { readonly valid: true; readonly value: T; };
 export type NormalizedTypeMapping<T, TUnion, TArgs extends unknown[] = []> = TypeMapping<Exclude<T, undefined | null> | TUnion, TArgs>;
-export interface TypeMapping<T, TArgs extends unknown[] = []> {
-    (value: unknown, ...args: TArgs): TypeMappingResult<T>;
+export type TypeMappingImpl<T, TArgs extends unknown[] = []> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
+export interface TypeMapping<T, TArgs extends unknown[] = []> extends TypeMappingImpl<T, TArgs> {
     readonly required: NormalizedTypeMapping<T, never, TArgs>;
     readonly optional: NormalizedTypeMapping<T, undefined, TArgs>;
     readonly nullable: NormalizedTypeMapping<T, null, TArgs>;
@@ -967,8 +967,8 @@ export interface TypeMapping<T, TArgs extends unknown[] = []> {
 
 export type TypeMappings<T, TArgs extends unknown[] = []> = {
     readonly [P in keyof T]-?:
-    | TypeMapping<T[P], TArgs>
-    | [PropertyKey, TypeMapping<T[P], TArgs>]
+    | TypeMappingImpl<T[P], TArgs>
+    | [PropertyKey, TypeMappingImpl<T[P], TArgs>]
     | [T[P]]
 };
 
