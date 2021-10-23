@@ -6,7 +6,7 @@ export class Base64decodeSubtag extends BaseSubtag {
         super({
             name: 'base64decode',
             aliases: ['atob'],
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text+'],

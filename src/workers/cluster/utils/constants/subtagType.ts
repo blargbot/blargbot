@@ -2,7 +2,7 @@ import { SubtagPropertiesSet } from '@cluster/types';
 
 export enum SubtagType {
     SIMPLE = 1,
-    COMPLEX,
+    MISC,
     ARRAY,
     JSON,
     MATH,
@@ -10,6 +10,7 @@ export enum SubtagType {
     LOOPS,
     BOT,
     //API,
+    WEBHOOK,
     MESSAGE,
     CHANNEL,
     THREAD,
@@ -23,9 +24,9 @@ export const tagTypeDetails: SubtagPropertiesSet = {
         name: 'Simple',
         desc: 'Subtags that require no arguments.'
     },
-    [SubtagType.COMPLEX]: {
-        name: 'General',
-        desc: 'General purpose subtags.'
+    [SubtagType.MISC]: {
+        name: 'Miscellaneous',
+        desc: 'Miscellaneous subtags for general things.'
     },
     [SubtagType.ARRAY]: {
         name: 'Array',
@@ -55,6 +56,10 @@ export const tagTypeDetails: SubtagPropertiesSet = {
     //     name: 'API',
     //     desc: 'Subtags that access the discord API to perform operations.'
     // },
+    [SubtagType.WEBHOOK]: {
+        name: 'Webhook',
+        desc: 'Subtags that interact with webhooks.'
+    },
     [SubtagType.MESSAGE]: {
         name: 'Message',
         desc: 'Subtags that interact with messages.'

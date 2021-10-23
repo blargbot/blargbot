@@ -8,7 +8,7 @@ export class IfSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'if',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             desc:
                 'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
                 'If they are not provided, `value1` is read as `true` or `false`. ' +

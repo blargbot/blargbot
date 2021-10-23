@@ -26,9 +26,13 @@ export class ApplySubtag extends BaseSubtag {
         args: string[],
         subtag: SubtagCall
     ): Promise<string> {
-        const subtagClass = context.subtags.get(args[0].toLowerCase());
-        if (subtagClass === undefined)
-            return this.customError('No subtag found', context, subtag);
+        const name = args[0].toLowerCase();
+
+        if (context.state.overrides[name] === undefined) {
+            const nativeSubtag = context.subtags.get(name);
+            if (nativeSubtag === undefined)
+                return this.customError('No subtag found', context, subtag);
+        }
 
         const subtagArgs = args.slice(1);
         const flattenedArgs: string[][] = [];
@@ -46,7 +50,7 @@ export class ApplySubtag extends BaseSubtag {
             else flattenedArgs.push([arg]);
         }
         const subtagCall = {
-            name: [subtagClass.name],
+            name: [name],
             args: flattenedArgs,
             start: subtag.start,
             end: subtag.end,

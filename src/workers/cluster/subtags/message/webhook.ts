@@ -8,7 +8,7 @@ export class WebhookSubtag extends BaseSubtag {
         super({
             name: 'webhook',
             category: SubtagType.MESSAGE,
-            desc: 'Please assign your webhook credentials to private variables! Do not leave them in your code.',
+            desc: 'Please assign your webhook credentials to private variables! Do not leave them in your code.\n`embed` can be an array of embed objects.',
             definition: [
                 {
                     parameters: ['id', 'token'], //! Idk why allowing users to use 2 args is even a thing, it will just error because the message is empty
@@ -57,7 +57,6 @@ export class WebhookSubtag extends BaseSubtag {
         subtag: SubtagCall,
         webhookID: string,
         webhookToken: string,
-
         content?: string,
         embedStr?: string,
         username?: string,
@@ -65,13 +64,11 @@ export class WebhookSubtag extends BaseSubtag {
         fileStr?: string,
         fileName?: string
     ): Promise<string | void> {
-        let embed: MessageEmbedOptions | undefined;
+        let embeds: MessageEmbedOptions[] | undefined;
         let file: FileOptions | undefined;
 
         if (embedStr !== undefined) {
-            embed = parse.embed(embedStr);
-        } else {
-            embed = undefined;
+            embeds = parse.embed(embedStr);
         }
         if (fileStr !== undefined) {
             if (fileName === undefined) fileName = 'file.txt';
@@ -90,7 +87,7 @@ export class WebhookSubtag extends BaseSubtag {
                 username: username,
                 avatarURL: avatar,
                 content: content,
-                embeds: embed !== undefined ? [embed] : undefined,
+                embeds,
                 files: file !== undefined ? [file] : undefined
             });
         } catch (err: unknown) {

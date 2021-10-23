@@ -5,7 +5,7 @@ export class TimeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'time',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             desc: 'If you provide `time`, you should also provide `parseFormat` to ensure it is being interpreted correctly.\n' +
                 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more format information.\n' +
                 'See [here](http://momentjs.com/docs/#/parsing/) for parsing documentation. ' +

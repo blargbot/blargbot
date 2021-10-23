@@ -8,7 +8,7 @@ export class BoolSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'bool',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['arg1', 'evaluator', 'arg2'],

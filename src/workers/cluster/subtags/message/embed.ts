@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 
 export class EmbedSubtag extends BaseSubtag {
     public constructor() {
@@ -8,8 +8,8 @@ export class EmbedSubtag extends BaseSubtag {
             category: SubtagType.MESSAGE,
             definition: [
                 {
-                    parameters: ['embed'],
-                    description: 'Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a valid json embed object.\n' +
+                    parameters: ['embed+'],
+                    description: 'Takes whatever input you pass to `embed` and attempts to form an embed from it. `embed` must be a valid json embed object. Multiple embeds can be provided.\n' +
                         'This subtag works well with `{embedbuild}`. If attempting to use inside of a `{send}`, `{edit}` or `{dm}`, you should not include `{embed}`, ' +
                         'and instead just pass the content direct to `{send}`/`{edit}`/`{dm}`\n' +
                         'You can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) ' +
@@ -18,7 +18,7 @@ export class EmbedSubtag extends BaseSubtag {
                     exampleCode: '{embed;{lb}"title":"Hello!"{rb}}',
                     exampleOut: '(an embed with "Hello!" as the title)',
                     execute: (ctx, args) => {
-                        ctx.state.embed = discordUtil.parseEmbed(args[0].value);
+                        ctx.state.embeds = parse.embed(JSON.stringify(args.map(arg => arg.value)));
                     }
                 }
             ]

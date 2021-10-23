@@ -5,7 +5,7 @@ export class UriEncodeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'uriencode',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],

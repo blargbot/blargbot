@@ -10,7 +10,7 @@ export class OperatorSubtag extends BaseSubtag {
         super({
             name: 'operator',
             aliases: Object.keys(allOperators),
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [//! overwritten
                 {
                     parameters: ['values+'],

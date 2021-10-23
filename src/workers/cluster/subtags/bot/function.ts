@@ -31,7 +31,7 @@ export class FunctionSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'function',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             aliases: ['func'],
             definition: [
                 {

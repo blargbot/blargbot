@@ -6,7 +6,7 @@ export class ChooseSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'choose',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['choice', '~options+'],

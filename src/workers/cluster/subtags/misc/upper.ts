@@ -5,7 +5,7 @@ export class UpperSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'upper',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],

@@ -7,7 +7,7 @@ export class LockSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'lock',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             desc: 'Provides read/write locking functionality for bbtag. This is a very advanced feature, ' +
                 'so it is reccomended that you first [read about the concept of locks](https://en.wikipedia.org/wiki/Lock_\\(computer_science\\)).' +
                 '\n\nIn simple terms, a lock allows commands running at the same time to cooperate and wait for eachother to finish ' +

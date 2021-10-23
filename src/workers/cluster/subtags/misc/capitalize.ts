@@ -5,7 +5,7 @@ export class CapitalizeSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'capitalize',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],

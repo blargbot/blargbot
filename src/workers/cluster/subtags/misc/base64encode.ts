@@ -6,7 +6,7 @@ export class Base64encodeSubtag extends BaseSubtag {
         super({
             name: 'base64encode',
             aliases: ['btoa'],
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text+'],

@@ -5,7 +5,7 @@ export class RegexSplitSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'regexsplit',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text', '~regex'],

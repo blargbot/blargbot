@@ -5,7 +5,7 @@ export class IndexOfSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'indexof',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text|array', 'searchfor', 'start?:0'],

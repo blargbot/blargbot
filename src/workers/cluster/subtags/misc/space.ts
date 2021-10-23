@@ -5,7 +5,7 @@ export class SpaceSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'space',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             aliases: ['s'],
             definition: [
                 {

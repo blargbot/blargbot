@@ -5,7 +5,7 @@ export class IsArraySubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'isarray',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.ARRAY,
             definition: [
                 {
                     parameters: ['text'],

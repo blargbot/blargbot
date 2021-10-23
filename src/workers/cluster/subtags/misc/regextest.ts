@@ -5,7 +5,7 @@ export class RegexTestSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'regextest',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text', '~regex'],

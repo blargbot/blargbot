@@ -6,7 +6,7 @@ export class PadSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'pad',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             deprecated: 'realpad',
             definition: [
                 {

@@ -9,7 +9,7 @@ export class SleepTag extends BaseSubtag {
     public constructor() {
         super({
             name: 'sleep',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.BOT,
             definition: [
                 {
                     parameters: ['duration'],

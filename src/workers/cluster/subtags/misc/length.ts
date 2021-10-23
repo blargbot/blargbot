@@ -5,7 +5,7 @@ export class LengthSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'length',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['value'],

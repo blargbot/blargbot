@@ -9,6 +9,7 @@ export class SendSubtag extends BaseSubtag {
         super({
             name: 'send',
             category: SubtagType.MESSAGE,
+            desc: 'If `embed` is an array, multiple embeds will be added to the message payload.',
             definition: [
                 {
                     parameters: ['channel', 'message', 'embed', 'fileContent', 'fileName?:file.txt'],
@@ -33,7 +34,7 @@ export class SendSubtag extends BaseSubtag {
         });
     }
 
-    public async send(context: BBTagContext, subtag: SubtagCall, channelId: string, message?: string, embed?: MessageEmbedOptions | MalformedEmbed, file?: FileOptions): Promise<string> {
+    public async send(context: BBTagContext, subtag: SubtagCall, channelId: string, message?: string, embed?: MessageEmbedOptions[] | MalformedEmbed[], file?: FileOptions): Promise<string> {
         const channel = await context.queryChannel(channelId, { noLookup: true });
         if (channel === undefined || !guard.isTextableChannel(channel))
             return this.channelNotFound(context, subtag, `Unable to read ${channelId} as a valid channel`);
@@ -48,7 +49,7 @@ export class SendSubtag extends BaseSubtag {
         try {
             const sent = await context.util.send(channel, {
                 content: message,
-                embeds: embed !== undefined ? [embed] : undefined,
+                embeds: embed !== undefined ? embed : undefined,
                 nsfw: context.state.nsfw,
                 allowedMentions: {
                     parse: disableEveryone ? [] : ['everyone'],
@@ -73,9 +74,9 @@ export class SendSubtag extends BaseSubtag {
     }
 }
 
-function resolveContent(content: string): [string | undefined, MessageEmbedOptions | undefined] {
-    const embed = parse.embed(content);
-    if (embed === undefined || 'malformed' in embed && embed.malformed)
+function resolveContent(content: string): [string | undefined, MessageEmbedOptions[] | undefined] {
+    const embeds = parse.embed(content);
+    if (embeds === undefined || 'malformed' in embeds[0])
         return [content, undefined];
-    return [undefined, embed];
+    return [undefined, embeds];
 }

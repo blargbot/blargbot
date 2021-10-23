@@ -6,7 +6,7 @@ export class RandStrSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'randstr',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['chars', 'length'],

@@ -8,7 +8,7 @@ export class LogicSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'logic',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['operator', 'values+'],

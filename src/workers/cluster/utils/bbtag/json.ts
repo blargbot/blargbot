@@ -91,7 +91,7 @@ export function get(input: JObject | JArray, path: string | string[]): JToken {
     return obj;
 }
 
-export function set(input: JObject | JArray, path: string | string[], value: string, forceCreate = false): JToken {
+export function set(input: JObject | JArray, path: string | string[], value: JToken, forceCreate = false): JToken {
     if (typeof path === 'string')
         path = path.split('.');
     const comps = path;

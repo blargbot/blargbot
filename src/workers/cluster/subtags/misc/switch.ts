@@ -6,7 +6,7 @@ export class SwitchSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'switch',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [//! Docs overidden
                 {
                     parameters: ['value', 'default'],

@@ -5,7 +5,7 @@ export class HashSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'hash',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['text'],

@@ -5,7 +5,7 @@ export class VoidSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'void',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             aliases: ['null'],
             definition: [
                 {

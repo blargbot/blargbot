@@ -5,7 +5,7 @@ export class RandChooseSubtag extends BaseSubtag {
     public constructor() {
         super({
             name: 'randchoose',
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             definition: [
                 {
                     parameters: ['choiceArray'],

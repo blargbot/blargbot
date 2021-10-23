@@ -6,7 +6,7 @@ export class CommentSubtag extends BaseSubtag {
         super({
             name: 'comment',
             aliases: ['//'],
-            category: SubtagType.COMPLEX,
+            category: SubtagType.MISC,
             desc: 'A subtag that just gets removed. Useful for documenting your code.',
             definition: [
                 {
