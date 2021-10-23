@@ -1,5 +1,3 @@
-const parseFloatOld = parseFloat;
-
 export function parseFloat(s: string | number, allowNaN?: true): number;
 export function parseFloat(s: string | number, allowNaN: false): number | undefined
 export function parseFloat(s: string | number, allowNaN?: boolean): number | undefined {
@@ -15,5 +13,5 @@ export function parseFloat(s: string | number, allowNaN?: boolean): number | und
 function floatCore(s: string | number): number {
     if (typeof s === 'number')
         return s;
-    return parseFloatOld(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'));
+    return global.parseFloat(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'));
 }

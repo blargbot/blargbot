@@ -1,5 +1,3 @@
-const parseIntOld = parseInt;
-
 export function parseInt(s: string | number, radix?: number): number;
 export function parseInt(s: string | number, allowNaN: false, radix?: number): number | undefined;
 export function parseInt(s: string | number, allowNaN: true, radix?: number): number;
@@ -28,7 +26,7 @@ function intCore(s: string | number, args: [boolean, number?] | [number?]): numb
         }
     }
 
-    const result = parseIntOld(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
+    const result = global.parseInt(s.replace(/[,.](?=.*[,.])/g, '').replace(',', '.'), radix);
     if (Math.abs(result) > Number.MAX_SAFE_INTEGER)
         return NaN;
     return result;

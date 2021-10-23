@@ -1,4 +1,4 @@
-import { hasProperty } from '@cluster/utils/guard';
+import { guard } from '@core/utils';
 
 import { toBlocks } from './toBlocks';
 
@@ -13,7 +13,7 @@ export function compare(a: string, b: string): number {
 
     for (const [a, b] of pairs) {
         const key = `${typeof a}|${typeof b}`;
-        if (!hasProperty(sorter, key))
+        if (!guard.hasProperty(sorter, key))
             continue;
 
         const value = sorter[key](a, b);

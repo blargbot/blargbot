@@ -1,3 +1,4 @@
+import { createMapping } from './createMapping';
 import { mapArray } from './mapArray';
 import { mapBase64 } from './mapBase64';
 import { mapBigInt } from './mapBigInt';
@@ -21,6 +22,7 @@ import { mapUnknown } from './mapUnknown';
 import { result } from './result';
 
 export const mapping = Object.seal({
+    create: createMapping,
     array: mapArray,
     base64: mapBase64,
     bigInt: mapBigInt,

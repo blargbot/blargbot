@@ -1,5 +1,5 @@
-import { guard } from '@cluster/utils';
 import { MalformedEmbed } from '@core/types';
+import { guard } from '@core/utils';
 import { MessageEmbedOptions } from 'discord.js';
 
 export function parseEmbed(embedText: string): MessageEmbedOptions[] | MalformedEmbed[] | undefined {
