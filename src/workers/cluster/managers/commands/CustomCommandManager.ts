@@ -1,5 +1,4 @@
 import { Cluster } from '@cluster';
-import { limits } from '@cluster/bbtag';
 import { CommandContext } from '@cluster/command';
 import { CommandGetCoreResult, CommandSignature, FlagDefinition, ICommand } from '@cluster/types';
 import { guard, humanize } from '@cluster/utils';
@@ -118,7 +117,7 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
             message: context.message,
             inputRaw: context.commandText,
             isCC: true,
-            limit: new limits.customCommandLimit()
+            limit: 'customCommandLimit'
         });
         return undefined;
     }

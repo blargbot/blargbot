@@ -1,5 +1,5 @@
 import { Cluster, ClusterUtilities } from '@cluster';
-import { getDocsEmbed, TagLimit } from '@cluster/bbtag';
+import { getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand, CommandContext } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@cluster/utils';
@@ -184,7 +184,7 @@ export class TagCommand extends BaseGuildCommand {
             message: context.message,
             inputRaw: input ?? '',
             isCC: false,
-            limit: new TagLimit(),
+            limit: 'tagLimit',
             rootTagName: match.name,
             author: match.author,
             authorizer: match.authorizer,
@@ -205,7 +205,7 @@ export class TagCommand extends BaseGuildCommand {
             message: context.message,
             inputRaw: input,
             isCC: false,
-            limit: new TagLimit(),
+            limit: 'tagLimit',
             rootTagName: 'test',
             author: context.author.id
         });

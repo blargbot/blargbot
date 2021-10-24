@@ -1,4 +1,3 @@
-import { CustomCommandLimit } from '@cluster/bbtag';
 import { bbtagUtil, guard, ModerationType } from '@cluster/utils';
 import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@core/types';
 import { GuildMessage } from 'discord.js';
@@ -58,7 +57,7 @@ export class CensorManager extends ModerationManagerBase {
             const result = await this.cluster.bbtag.execute(tag.content, {
                 message: message,
                 rootTagName: 'censor',
-                limit: new CustomCommandLimit(),
+                limit: 'customCommandLimit',
                 inputRaw: message.content,
                 isCC: true,
                 author: tag.author,

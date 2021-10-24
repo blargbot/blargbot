@@ -241,7 +241,7 @@ export interface BBTagContextOptions {
     readonly cooldown?: number;
     readonly cooldowns?: TagCooldownManager;
     readonly locks?: Record<string, ReadWriteLock | undefined>;
-    readonly limit: RuntimeLimit;
+    readonly limit: RuntimeLimit | keyof typeof import('./bbtag/limits')['limits'];
     readonly silent?: boolean;
     readonly state?: Partial<BBTagContextState>;
     readonly scopes?: ScopeCollection;

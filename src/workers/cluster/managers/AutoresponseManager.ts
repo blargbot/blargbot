@@ -1,5 +1,4 @@
 import { Cluster } from '@cluster';
-import { EverythingAutoResponseLimit, GeneralAutoResponseLimit } from '@cluster/bbtag';
 import { WhitelistResponse } from '@cluster/types';
 import { bbtagUtil, codeBlock, guard, humanize, mapping } from '@cluster/utils';
 import { GuildTriggerTag } from '@core/types';
@@ -87,7 +86,7 @@ ${codeBlock(code, 'js')}`
     private async executeCore(msg: GuildMessage, id: `${number}` | 'everything', tag: GuildTriggerTag): Promise<void> {
         const result = await this.cluster.bbtag.execute(tag.content, {
             message: msg,
-            limit: id === 'everything' ? new EverythingAutoResponseLimit() : new GeneralAutoResponseLimit(),
+            limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
             author: tag.author,
             authorizer: tag.authorizer,
             inputRaw: msg.content,

@@ -1,5 +1,4 @@
 import { Cluster } from '@cluster';
-import { CustomCommandLimit } from '@cluster/bbtag';
 import { ExecutionResult } from '@cluster/types';
 import { guard, sleep, snowflake } from '@cluster/utils';
 import { GuildTriggerTag } from '@core/types';
@@ -83,7 +82,7 @@ export class IntervalManager {
                     content: '',
                     id: snowflake.create().toString()
                 },
-                limit: new CustomCommandLimit(),
+                limit: 'customCommandLimit',
                 inputRaw: '',
                 isCC: true,
                 rootTagName: '_interval',

@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { CustomCommandLimit, getDocsEmbed } from '@cluster/bbtag';
+import { getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand } from '@cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
@@ -163,7 +163,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
             message: context.message,
             inputRaw: input,
             isCC: true,
-            limit: new CustomCommandLimit(),
+            limit: 'customCommandLimit',
             rootTagName: 'test',
             author: context.author.id
         });
@@ -200,7 +200,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
             message: context.message,
             inputRaw: input ?? '',
             isCC: true,
-            limit: new CustomCommandLimit(),
+            limit: 'customCommandLimit',
             rootTagName: match.name,
             author: match.author,
             authorizer: match.authorizer,

@@ -1,5 +1,4 @@
 import { Cluster } from '@cluster';
-import { CustomCommandLimit } from '@cluster/bbtag';
 import { ExecutionResult } from '@cluster/types';
 import { GuildRolemeEntry } from '@core/types';
 import { guard } from '@core/utils';
@@ -48,7 +47,7 @@ export class RolemeManager {
         return await this.cluster.bbtag.execute(tag.content, {
             message: trigger,
             rootTagName: 'roleme',
-            limit: new CustomCommandLimit(),
+            limit: 'customCommandLimit',
             inputRaw: '',
             isCC: true,
             author: tag.author,

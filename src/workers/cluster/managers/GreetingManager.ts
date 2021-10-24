@@ -1,5 +1,4 @@
 import { Cluster } from '@cluster';
-import { limits } from '@cluster/bbtag';
 import { ExecutionResult } from '@cluster/types';
 import { snowflake } from '@cluster/utils';
 import { GuildTriggerTag } from '@core/types';
@@ -42,7 +41,7 @@ export class GreetingManager {
             author: command.author,
             inputRaw: '',
             isCC: true,
-            limit: new limits.customCommandLimit(),
+            limit: 'customCommandLimit',
             message: {
                 attachments: new Collection(),
                 author: member.user,
