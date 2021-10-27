@@ -130,6 +130,7 @@ class Context {
         context.state = this.state;
         context.scopes = this.scopes;
         context.variables = this.variables;
+        context.subtagCount = this.subtagCount;
 
         return context;
     }
