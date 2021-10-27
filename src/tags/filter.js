@@ -1,8 +1,8 @@
 /*
  * @Author: stupid cat
  * @Date: 2017-05-07 18:54:06
- * @Last Modified by: stupid cat
- * @Last Modified time: 2018-10-23 20:37:44
+ * @Last Modified by: RagingLink
+ * @Last Modified time: 2021-10-27 11:39:37
  *
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
@@ -55,8 +55,6 @@ module.exports =
                         //If item 'e' is an object, it stringifies it for comparison. Otherwise it will always return false
                         result.push(...array.filter(e => typeof e === 'object' ? JSON.stringify(e) === stringifiedItem : e === item));
                     }
-                    if (i++ % 1000 === 0)
-                        await this.sleep();
                 } catch (err) {
                     if (typeof err == "function") {
                         return err(subtag, context);
@@ -67,9 +65,4 @@ module.exports =
             context.variables.reset(varName);
             return JSON.stringify(result);
         }).whenDefault(Builder.errors.tooManyArguments)
-        .withProp('sleep', function (time = 100) {
-            return new Promise(res => {
-                setTimeout(res, time);
-            });
-        })
         .build();

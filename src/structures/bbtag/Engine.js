@@ -186,10 +186,6 @@ function sleep(time = 100) {
 async function safeLoopIteration(context) {
     if (context.state.safeLoops === undefined) context.state.safeLoops = 0;
     context.state.safeLoops++;
-
-    if (context.state.safeLoops % 1000 === 0) {
-        await sleep(100);
-    }
     // is 100,000 loops enough? :3
     if (context.state.safeLoops >= 100000) {
         return true;
