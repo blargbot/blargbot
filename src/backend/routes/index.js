@@ -44,4 +44,11 @@ router.get('/update', (req, res) => {
     res.render('update');
 });
 
+router.get('/privacy', (req, res) => {
+    res.locals.user = req.user;
+    req.session.returnTo = req.path;
+
+    res.render('privacy');
+});
+
 module.exports = router;
