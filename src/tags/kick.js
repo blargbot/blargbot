@@ -35,28 +35,20 @@ module.exports =
 
             if (!user) return Builder.errors.noUserFound(subtag, context);
 
-            let state = await CommandManager.built['kick'].kick(
+            let response = await CommandManager.built['kick'].kick(
                 context.msg,
                 user,
                 args[1] || context.scope.reason || undefined,
                 true,
                 noPerms
             );
-            console.debug(state);
-            switch (state) {
-                case 0: //Successful
-                    return 'Success';
-                case 1: //Bot doesnt have perms
-                    return error(`I don't have permission to kick users!`);
-                case 2: //Bot cannot kick target
-                    return error(`I don't have permission to kick ${user.username}!`);
-                case 3: //User doesnt have perms
-                    return error(`You don't have permission to kick users!`);
-                case 4: //User cannot kick target
-                    return error(`You don't have permission to kick ${user.username}!`);
-                default: //Error occurred
-                    throw state;
-            }
+    
+            if (typeof response[1] != 'string')
+                throw response[1];
+            if (response[1].startsWith('`'))
+                return Builder.util.error(subtag, context, response[1].slice(1, -1));
+    
+            return response[1];
         })
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
