@@ -112,6 +112,24 @@ export class ModLogManager {
         });
     }
 
+    public async logTempMute(guild: Guild, user: User, duration: Duration, moderator?: User, reason?: string): Promise<void> {
+        await this.logAction({
+            type: 'Temporary Mute',
+            guildId: guild.id,
+            user,
+            moderator,
+            reason,
+            color: ModlogColour.MUTE,
+            fields: [
+                {
+                    name: 'Duration',
+                    value: humanize.duration(duration),
+                    inline: true
+                }
+            ]
+        });
+    }
+
     public async logWarn(guild: Guild, user: User, count: number, newTotal: number, moderator?: User, reason?: string): Promise<void> {
         await this.logAction({
             type: 'Warning',

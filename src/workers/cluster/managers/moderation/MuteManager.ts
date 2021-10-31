@@ -28,8 +28,8 @@ export class MuteManager extends ModerationManagerBase {
             return 'roleTooHigh';
 
         await member.roles.add(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
-        await this.modLog.logMute(member.guild, member.user, moderator, reason);
-        if (duration !== undefined && duration.asMilliseconds() > 0)
+        if (duration !== undefined && duration.asMilliseconds() > 0) {
+            await this.modLog.logTempMute(member.guild, member.user, duration, moderator, reason);
             await this.cluster.timeouts.insert('unmute', {
                 source: member.guild.id,
                 guild: member.guild.id,
@@ -37,6 +37,9 @@ export class MuteManager extends ModerationManagerBase {
                 duration: JSON.stringify(duration),
                 endtime: moment().add(duration).valueOf()
             });
+        } else {
+            await this.modLog.logMute(member.guild, member.user, moderator, reason);
+        }
         return 'success';
     }
 
