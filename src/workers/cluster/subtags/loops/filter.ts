@@ -23,7 +23,6 @@ export class FilterSubtag extends BaseSubtag {
                         const array = Array.from(arr.v);
 
                         const processed: Record<string, boolean> = {};
-                        let i = 0;
                         const subtagOverrides = [];
                         const childContext = context.makeChild();
                         for (const name of overrides.filter) {
@@ -53,10 +52,6 @@ export class FilterSubtag extends BaseSubtag {
                                     //If item 'e' is an object, it stringifies it for comparison. Otherwise it will always return false
                                     result.push(...array.filter(e => stringifiedItem === parse.string(e)));
                                 }
-                                if (i++ % 1000 === 0)
-                                    await new Promise(res => {
-                                        setTimeout(res, 100);
-                                    });
                             } catch (err: unknown) {//? What is this?
                                 // if (typeof err === 'function') {
                                 //     return err(subtag, context);
