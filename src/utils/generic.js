@@ -902,36 +902,49 @@ bu.issueWarning = async function (user, guild, count, params) {
     if (!storedGuild.warnings.users[user.id]) storedGuild.warnings.users[user.id] = 0;
     let type = 0;
     let error = undefined;
+    const oldCount = storedGuild.warnings.users[user.id];
     storedGuild.warnings.users[user.id] += count;
     if (storedGuild.warnings.users[user.id] < 0) storedGuild.warnings.users[user.id] = 0;
     let warningCount = storedGuild.warnings.users[user.id];
     const member = guild.members.get(user.id);
     if (member && bu.isBotHigher(member)) {
-        if (storedGuild.settings.banat && storedGuild.settings.banat > 0 && warningCount >= storedGuild.settings.banat) {
-            if (!bu.bans[guild.id]) bu.bans[guild.id] = {};
-            bu.bans[guild.id][user.id] = {
-                mod: bot.user,
-                type: 'Auto-Ban',
-                reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`
-            };
-            try {
-                await guild.banMember(user.id, 0, `[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`);
-            } catch (e) { error = e; }
-            storedGuild.warnings.users[user.id] = undefined;
-            type = 1;
-        } else if (storedGuild.settings.kickat && storedGuild.settings.kickat > 0) {
-            if (!storedGuild.settings.actonlimitsonly && warningCount >= storedGuild.settings.kickat) {
-                try {
-                    await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
-                } catch (e) { error = e; }
-                type = 2;
-            } else if (storedGuild.settings.actonlimitsonly && warningCount == storedGuild.settings.kickat) {
-                try {
-                    await guild.kickMember(user.id, `[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`);
-                } catch (e) { error = e; }
-                type = 2;
-            }
-        }
+        if (
+			storedGuild.settings.banat &&
+			storedGuild.settings.banat > 0 &&
+			warningCount >= storedGuild.settings.banat
+		) {
+			if (!bu.bans[guild.id]) bu.bans[guild.id] = {};
+			bu.bans[guild.id][user.id] = {
+				mod: bot.user,
+				type: 'Auto-Ban',
+				reason: `Exceeded Warning Limit (${warningCount}/${storedGuild.settings.banat})`,
+			};
+			try {
+				await guild.banMember(
+					user.id,
+					0,
+					`[ Auto-Ban ] Exceeded warning limit (${warningCount}/${storedGuild.settings.banat})`
+				);
+			} catch (e) {
+				error = e;
+			}
+			storedGuild.warnings.users[user.id] = undefined;
+			type = 1;
+		} else if (
+			storedGuild.settings.kickat && storedGuild.settings.kickat > 0 &&
+			(!storedGuild.settings.actonlimitsonly || oldCount < storedGuild.settings.kickat) &&
+			warningCount >= storedGuild.settings.kickat
+		) {
+			try {
+				await guild.kickMember(
+					user.id,
+					`[ Auto-Kick ] Exceeded warning limit (${warningCount}/${storedGuild.settings.kickat})`
+				);
+			} catch (e) {
+				error = e;
+			}
+			type = 2;
+		}
     }
     await r.table('guild').get(guild.id).update({
         warnings: r.literal(storedGuild.warnings)
