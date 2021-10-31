@@ -54,15 +54,17 @@ export class RoleRemoveSubtag extends BaseSubtag {
         if (result.roles.find(role => role.position >= topRole) !== undefined)
             return this.customError('Role above author', context, subtag);
 
-        const roles = result.roles.filter((_, i) => result.hasRole[i]);
+        const roles = result.roles.filter((_, i) => result.hasRole[i]).map(role => role.id);
 
         if (roles.length === 0)
             return 'false';
 
         try {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
-            for (const role of roles)
-                await result.member.roles.remove(role, fullReason);
+            const existingRoles = [...result.member.roles.cache.keys()];
+            await result.member.edit({
+                roles: existingRoles.filter(roleID => !roles.includes(roleID))
+            }, fullReason);
             return 'true';
         } catch (err: unknown) {
             context.logger.error(err);
