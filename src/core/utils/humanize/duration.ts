@@ -16,15 +16,19 @@ export function duration(...args: [Duration, number?] | [Moment, Moment, number?
     }
 
     const parts = [];
-    if (diff.days() > 0) parts.push(`${diff.days()} days`);
-    if (diff.hours() > 0) parts.push(`${diff.hours()} hours`);
-    if (diff.minutes() > 0) parts.push(`${diff.minutes()} minutes`);
-    if (diff.seconds() > 0) parts.push(`${diff.seconds()} seconds`);
-    if (diff.milliseconds() > 0) parts.push(`${diff.milliseconds()} milliseconds`);
+    if (diff.days() > 0) parts.push(pluralDuration('day', diff.days()));
+    if (diff.hours() > 0) parts.push(pluralDuration('hour', diff.hours()));
+    if (diff.minutes() > 0) parts.push(pluralDuration('minute', diff.minutes()));
+    if (diff.seconds() > 0) parts.push(pluralDuration('second', diff.seconds()));
+    if (diff.milliseconds() > 0) parts.push(pluralDuration('millisecond', diff.milliseconds()));
 
     if (parts.length === 0)
         return '0 seconds';
     if (partsLimit !== undefined)
         return smartJoin(parts.slice(0, partsLimit), ', ', ' and ');
     return smartJoin(parts, ', ', ' and ');
+}
+
+function pluralDuration(text: string, amount: number): string {
+    return `${amount} ${text}` + (amount > 1 ? 's' : '');
 }
