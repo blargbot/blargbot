@@ -81,6 +81,12 @@ export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix' 
         desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
         type: 'int'
     },
+    actonlimitsonly: {
+        key: 'actonlimitsonly',
+        name: 'Act on Limits Only',
+        desc: 'Whether to kick/ban on a warning count that is in between the kickat and banat values.',
+        type: 'bool'
+    },
     adminrole: {
         key: 'adminrole',
         name: 'Admin role',
