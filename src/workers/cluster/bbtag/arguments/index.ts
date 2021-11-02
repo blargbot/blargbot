@@ -1,2 +1,2 @@
 export * from './ExecutingSubtagArgumentValue';
-export * from './LiteralSubtagArgumentValue';
+export * from './DefaultSubtagArgumentValue';

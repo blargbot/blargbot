@@ -279,14 +279,33 @@ export interface SubtagHandler {
     readonly execute: (this: unknown, context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
 }
 
-export interface SubtagHandlerParameter {
-    readonly name: string | undefined;
-    readonly required: boolean;
-    readonly greedy: number | false;
+export type SubtagHandlerValueParameter =
+    | OptionalSubtagHandlerParameter
+    | RequiredSubtagHandlerParameter
+
+export type SubtagHandlerParameter =
+    | SubtagHandlerValueParameter
+    | SubtagHandlerParameterGroup
+
+export interface OptionalSubtagHandlerParameter {
+    readonly name: string;
+    readonly required: false;
     readonly autoResolve: boolean;
     readonly defaultValue: string;
-    readonly nested: readonly SubtagHandlerParameter[];
     readonly maxLength: number;
+}
+
+export interface RequiredSubtagHandlerParameter {
+    readonly name: string;
+    readonly required: true;
+    readonly autoResolve: boolean;
+    readonly defaultValue: string;
+    readonly maxLength: number;
+}
+
+export interface SubtagHandlerParameterGroup {
+    readonly minRepeats: number;
+    readonly nested: readonly RequiredSubtagHandlerParameter[];
 }
 
 export interface SubtagSignatureDetails<TArgs = SubtagHandlerParameter> {
@@ -302,9 +321,8 @@ export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string |
 }
 
 export interface SubtagHandlerDefinitionParameterGroup {
-    readonly name?: string;
-    readonly type?: 'optional' | 'required' | `${number}OrMore`;
-    readonly parameters: ReadonlyArray<string | SubtagHandlerDefinitionParameterGroup>;
+    readonly minCount?: number;
+    readonly parameters: readonly string[];
 }
 
 export interface FlagDefinition {
@@ -536,6 +554,7 @@ export interface CommandListResult {
 }
 
 export interface SubtagArgumentValue {
+    readonly parameter: SubtagHandlerValueParameter;
     readonly isCached: boolean;
     readonly value: string;
     readonly code: Statement;
@@ -549,7 +568,9 @@ export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentVa
 }
 
 export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
-export type ArgumentResolver = (context: BBTagContext, subtagName: string, call: SubtagCall) => AsyncGenerator<SubtagArgumentValue>;
+export interface ArgumentResolver {
+    resolve(context: BBTagContext, subtagName: string, call: SubtagCall): Iterable<SubtagArgumentValue>;
+}
 
 export interface SubHandlerCollection {
     byNumber: { [argLength: number]: SubHandler | undefined; };
@@ -561,17 +582,16 @@ export interface SubHandlerCollection {
 
 export interface ArgumentResolvers {
     byNumber: { [argLength: number]: ArgumentResolver; };
-    byTest: Array<{
-        resolver: ArgumentResolver;
+    byTest: Array<ArgumentResolver & {
         test: (argCount: number) => boolean; minArgCount: number; maxArgCount: number;
     }>;
 }
 
 export interface ArgumentResolverPermutations {
-    greedy: SubtagHandlerParameter[];
+    greedy: number[];
     permutations: Array<{
-        beforeGreedy: SubtagHandlerParameter[];
-        afterGreedy: SubtagHandlerParameter[];
+        beforeGreedy: number[];
+        afterGreedy: number[];
     }>;
 }
 export interface ClusterStats {

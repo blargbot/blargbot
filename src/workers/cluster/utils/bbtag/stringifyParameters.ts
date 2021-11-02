@@ -5,14 +5,12 @@ export function stringifyParameters(subtagName: string, parameters: readonly Sub
 }
 
 function stringifyParameter(parameter: SubtagHandlerParameter): string {
-    const innerParams = parameter.nested.map(stringifyParameter).join(';');
-    let result = innerParams.length > 0 && parameter.name !== undefined ? `${parameter.name} ${innerParams}`
-        : parameter.name !== undefined ? parameter.name : innerParams;
-
-    if (parameter.greedy !== false)
-        result += '...';
-
+    if ('nested' in parameter) {
+        if (parameter.nested.length === 1)
+            return stringifyParameter(parameter.nested[0]) + '...';
+        return `(${parameter.nested.map(stringifyParameter).join(';')})...`;
+    }
     return parameter.required
-        ? `<${result}>`
-        : `[${result}]`;
+        ? `<${parameter.name}>`
+        : `[${parameter.name}]`;
 }

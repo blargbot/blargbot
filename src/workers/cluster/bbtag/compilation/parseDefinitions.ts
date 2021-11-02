@@ -1,6 +1,4 @@
-import { SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter } from '@cluster/types';
-
-const argumentRequired = [undefined, '!', '+'] as ReadonlyArray<string | undefined>;
+import { SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter } from '@cluster/types';
 
 export function parseDefinitions(definitions: readonly SubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
     return definitions.map(parseDefinition);
@@ -15,17 +13,8 @@ function parseDefinition(definition: SubtagHandlerDefinition): SubtagHandlerCall
 }
 
 function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup): SubtagHandlerParameter {
-    if (typeof parameter === 'object') {
-        return {
-            name: parameter.name ?? undefined,
-            autoResolve: false,
-            greedy: parameter.type?.endsWith('OrMore') === true ? parseInt(parameter.type) : false,
-            required: argumentRequired.includes(parameter.type),
-            nested: parameter.parameters.map(parseArgument),
-            defaultValue: '',
-            maxLength: 1000000
-        };
-    }
+    if (typeof parameter === 'object')
+        return createParameterGroup(parameter.parameters.map(parseArgument), parameter.minCount ?? 0);
 
     let autoResolve = true;
     if (parameter.startsWith('~')) {
@@ -33,17 +22,16 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         parameter = parameter.slice(1);
     }
 
-    const match: Record<string, string | undefined> = /^(?<parameter>.*?)(?::(?<defaultValue>.*?))?(?:#(?<maxLength>\d+))?$/.exec(parameter)?.groups ?? {};
-    const { defaultValue = '', maxLength = '1000000', parameter: param } = match;
-    parameter = param ?? parameter;
+    const match = /^(?<name>.*?)(?::(?<defaultValue>.*?))?(?:#(?<maxLength>\d+))?$/.exec(parameter)?.groups ?? {} as Record<string, string | undefined>;
+    const { defaultValue = '', maxLength = '1000000' } = match;
+    let name = match.name ?? parameter;
     let required = true;
     let greedy: number | false = false;
-    switch (parameter[parameter.length - 1]) {
+    switch (name[name.length - 1]) {
         case '?':
             required = false;
             break;
         case '*':
-            required = false;
             greedy = 0;
             break;
         case '+':
@@ -52,24 +40,33 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         case '!':
             break;
         default: {
-            const match = /^(.*?)\+(\d)$/.exec(parameter);
+            const match = /^(.*?)\+(\d)$/.exec(name);
             if (match !== null) {
                 greedy = parseInt(match[2]);
                 required = greedy > 0;
-                parameter = match[1];
+                name = match[1];
             }
-            parameter += '!';
+            name += '!';
         }
     }
-    parameter = parameter.slice(0, parameter.length - 1);
 
-    return {
-        name: parameter,
+    const result: SubtagHandlerValueParameter = {
+        name: name.slice(0, parameter.length - 1),
         autoResolve,
         required,
-        greedy: greedy,
         defaultValue,
-        nested: [],
         maxLength: parseInt(maxLength)
     };
+
+    return greedy === false ? result : createParameterGroup([result], greedy);
+}
+
+function createParameterGroup(parameters: SubtagHandlerParameter[], minCount: number): SubtagHandlerParameterGroup {
+    const nested = [];
+    for (const p of parameters) {
+        if ('nested' in p || !p.required)
+            throw new Error('All parameters inside a parameter group must be required');
+        nested.push(p);
+    }
+    return { nested, minRepeats: minCount };
 }

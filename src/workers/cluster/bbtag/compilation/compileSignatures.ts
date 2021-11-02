@@ -12,7 +12,7 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
         for (const entry of byTest) {
             minArgs = Math.min(minArgs, entry.minArgCount);
             maxArgs = Math.max(maxArgs, entry.maxArgCount);
-            binding.byTest.push({ test: entry.test, execute: createSubHandler(signature, entry.resolver) });
+            binding.byTest.push({ test: entry.test, execute: createSubHandler(signature, entry) });
         }
 
         for (const argLength of Object.keys(byNumber).map(i => parseInt(i))) {
@@ -45,9 +45,11 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
 function createSubHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): SubHandler {
     return async (context, subtagName, call) => {
         const args = [];
-        for await (const arg of resolver(context, subtagName, call))
+        for (const arg of resolver.resolve(context, subtagName, call)) {
             args.push(arg);
-
+            if (arg.parameter.autoResolve)
+                await arg.execute();
+        }
         return await signature.execute(context, Object.assign(args, { subtagName }), call);
     };
 }

@@ -1,5 +1,5 @@
 import { CommandContext } from '@cluster/command';
-import { SubtagHandlerCallSignature } from '@cluster/types';
+import { SubtagHandlerCallSignature, SubtagHandlerValueParameter } from '@cluster/types';
 import { bbtagUtil, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluster/utils';
 import { humanize } from '@core/utils';
 import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
@@ -184,8 +184,9 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
 function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, index: number): EmbedFieldData {
     let description = codeBlock(bbtagUtil.stringifyParameters(subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
+        .flatMap<SubtagHandlerValueParameter>(p => 'nested' in p ? p.nested : [p])
         .filter(param => param.defaultValue !== '')
-        .map(param => `\`${param.name ?? '\u200b'}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
+        .map(param => `\`${param.name}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
         .join('\n');
     if (defaultDesc.length > 0)
         description += defaultDesc + '\n\n';

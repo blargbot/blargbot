@@ -1,16 +1,18 @@
-import { ArgumentResolver, ArgumentResolverPermutations, ArgumentResolvers, Statement, SubtagHandlerCallSignature, SubtagHandlerParameter } from '@cluster/types';
+import { ArgumentResolver, ArgumentResolverPermutations, ArgumentResolvers, Statement, SubtagArgumentValue, SubtagHandlerCallSignature, SubtagHandlerParameter, SubtagHandlerValueParameter } from '@cluster/types';
 
-import { ExecutingSubtagArgumentValue, LiteralSubtagArgumentValue } from '../arguments';
+import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue } from '../arguments';
 
 export function createArgumentResolvers(signature: SubtagHandlerCallSignature): ArgumentResolvers {
-    const bindingOrder = createResolverOrder(signature.parameters);
+    const flatParams = [...flatParameters(signature.parameters)];
+    const defaultArgs = flatParams.map(p => new DefaultSubtagArgumentValue(p));
+    const bindingOrder = createResolverOrder(signature.parameters, flatParams);
     const result: ArgumentResolvers = { byTest: [], byNumber: {} };
 
     for (const { beforeGreedy, afterGreedy } of bindingOrder.permutations) {
         const parameterCount = beforeGreedy.length + afterGreedy.length;
         if (parameterCount in result.byNumber)
             throw new Error(`Multiple parameter patterns accept ${parameterCount} values`);
-        result.byNumber[parameterCount] = createResolver(signature.parameters, beforeGreedy, [], afterGreedy);
+        result.byNumber[parameterCount] = createResolver(parameterCount, defaultArgs, beforeGreedy, [], afterGreedy);
     }
 
     if (bindingOrder.greedy.length > 0) {
@@ -19,56 +21,62 @@ export function createArgumentResolvers(signature: SubtagHandlerCallSignature): 
             throw new Error('There must be fewer optional parameters than the number of repeated parameters!');
 
         for (const { beforeGreedy, afterGreedy } of bindingOrder.permutations) {
-            result.byTest.push(createGreedyResolver(signature.parameters, beforeGreedy, bindingOrder.greedy, afterGreedy));
+            result.byTest.push(createVariableResolver(defaultArgs, beforeGreedy, bindingOrder.greedy, afterGreedy));
         }
     }
 
     return result;
 }
 
-function createResolverOrder(parameters: readonly SubtagHandlerParameter[]): ArgumentResolverPermutations {
+function* flatParameters(parameters: Iterable<SubtagHandlerParameter>): Generator<SubtagHandlerValueParameter> {
+    for (const parameter of parameters) {
+        if ('nested' in parameter)
+            yield* flatParameters(parameter.nested);
+        else
+            yield parameter;
+    }
+}
+
+function createResolverOrder(parameters: readonly SubtagHandlerParameter[], flatParameters: readonly SubtagHandlerValueParameter[]): ArgumentResolverPermutations {
     const result: ArgumentResolverPermutations = {
         greedy: [],
         permutations: [{ beforeGreedy: [], afterGreedy: [] }]
     };
 
     for (const parameter of parameters) {
-        addParameter(result, parameter);
+        addParameter(result, parameter, flatParameters);
     }
 
     return result;
 }
 
-function addParameter(result: ArgumentResolverPermutations, parameter: SubtagHandlerParameter): void {
-    if (parameter.greedy !== false) {
+function addParameter(result: ArgumentResolverPermutations, parameter: SubtagHandlerParameter, flatParameters: readonly SubtagHandlerValueParameter[]): void {
+    if ('nested' in parameter) {
         if (result.greedy.length > 0) {
             throw new Error('Cannot have multiple greedy parameters!');
         }
-        const nestedParameters = parameter.nested.length === 0 ? [parameter] : [...flattenGreedyArgs(parameter.nested)];
-        result.greedy.push(...nestedParameters);
-        for (let i = 0; i < parameter.greedy; i++) {
+        const nestedIndexes = parameter.nested.map(p => flatParameters.indexOf(p));
+        result.greedy.push(...nestedIndexes);
+        for (let i = 0; i < parameter.minRepeats; i++) {
             for (const signature of result.permutations) {
-                signature.beforeGreedy.push(...nestedParameters);
+                signature.beforeGreedy.push(...nestedIndexes);
             }
         }
         return;
     }
-    const preserve = parameter.required ? [] : <ArgumentResolverPermutations['permutations']>result.permutations.map(x => ({
+
+    const preserve = parameter.required ? [] : result.permutations.map(x => ({
         beforeGreedy: [...x.beforeGreedy],
         afterGreedy: [...x.afterGreedy]
     }));
 
-    if (parameter.nested.length > 0) {
-        for (const nestedArg of parameter.nested) {
-            addParameter(result, nestedArg);
-        }
-    } else if (result.greedy.length > 0) {
+    if (result.greedy.length > 0) {
         for (const { afterGreedy: afterParams } of result.permutations) {
-            afterParams.push(parameter);
+            afterParams.push(flatParameters.indexOf(parameter));
         }
     } else {
         for (const { beforeGreedy: beforeParams } of result.permutations) {
-            beforeParams.push(parameter);
+            beforeParams.push(flatParameters.indexOf(parameter));
         }
     }
 
@@ -76,73 +84,78 @@ function addParameter(result: ArgumentResolverPermutations, parameter: SubtagHan
 }
 
 function createResolver(
-    parameters: readonly SubtagHandlerParameter[],
-    beforeGreedy: readonly SubtagHandlerParameter[],
-    greedy: readonly SubtagHandlerParameter[],
-    afterGreedy: readonly SubtagHandlerParameter[])
+    argCount: number,
+    defaultArgs: readonly SubtagArgumentValue[],
+    beforeGreedy: readonly number[],
+    greedy: readonly number[],
+    afterGreedy: readonly number[])
     : ArgumentResolver {
-    const defaultArgs = parameters.map(param => new LiteralSubtagArgumentValue(param.defaultValue));
-    return async function* resolve(context, subtagName, call) {
-        let i = 0;
-        for (const { arg, param } of matchArgs(call.args, beforeGreedy, greedy, afterGreedy)) {
-            const paramIndex = parameters.indexOf(param);
-            for (; i < paramIndex; i++)
-                yield defaultArgs[i];
-            i = paramIndex + 1;
+    const indexes = [...getParameterIndexes(argCount, defaultArgs.length, beforeGreedy, greedy, afterGreedy)]
+        .map(({ argIndex, paramIndex }) => ({ argIndex, defaultArg: defaultArgs[paramIndex] }));
 
-            const argValue = new ExecutingSubtagArgumentValue(context, subtagName, call, arg, param.defaultValue, param.maxLength);
-            if (param.autoResolve)
-                await argValue.wait();
-            yield argValue;
+    return {
+        * resolve(context, subtagName, call) {
+            for (const { argIndex, defaultArg } of indexes) {
+                const arg = call.args[argIndex] as Statement | undefined;
+                if (arg === undefined)
+                    yield defaultArg;
+                else
+                    yield new ExecutingSubtagArgumentValue(defaultArg.parameter, context, subtagName, call, arg);
+            }
         }
-
-        for (; i < defaultArgs.length; i++)
-            yield defaultArgs[i];
     };
 }
 
-function createGreedyResolver(
-    parameters: readonly SubtagHandlerParameter[],
-    beforeGreedy: readonly SubtagHandlerParameter[],
-    greedy: readonly SubtagHandlerParameter[],
-    afterGreedy: readonly SubtagHandlerParameter[])
+function createVariableResolver(
+    parameters: readonly SubtagArgumentValue[],
+    beforeGreedy: readonly number[],
+    greedy: readonly number[],
+    afterGreedy: readonly number[])
     : ArgumentResolvers['byTest'][number] {
     const minCount = beforeGreedy.length + afterGreedy.length;
+    const resolverCache = {} as Record<number, ArgumentResolver | undefined>;
+
     return {
         minArgCount: minCount,
         maxArgCount: Number.MAX_SAFE_INTEGER,
-        test: argCount => argCount >= minCount && (argCount - minCount) % greedy.length === 0,
-        resolver: createResolver(parameters, beforeGreedy, greedy, afterGreedy)
+        test(argCount) {
+            return argCount >= minCount && (argCount - minCount) % greedy.length === 0;
+        },
+        resolve(context, subtagName, call) {
+            const resolver = resolverCache[call.args.length] ??= createResolver(call.args.length, parameters, beforeGreedy, greedy, afterGreedy);
+            return resolver.resolve(context, subtagName, call);
+        }
     };
 }
 
-function* matchArgs(
-    args: readonly Statement[],
-    beforeGreedy: readonly SubtagHandlerParameter[],
-    greedy: readonly SubtagHandlerParameter[],
-    afterGreedy: readonly SubtagHandlerParameter[])
-    : Generator<{ arg: Statement; param: SubtagHandlerParameter; }> {
-    let i;
-    let j;
-    for (i = 0; i < beforeGreedy.length; i++)
-        yield { arg: args[i], param: beforeGreedy[i] };
-    for (j = 0; i < args.length - afterGreedy.length; i++, j++)
-        yield { arg: args[i], param: greedy[j % greedy.length] };
-    for (j = 0; i < args.length; i++, j++)
-        yield { arg: args[i], param: afterGreedy[j] };
+function* getParameterIndexes(
+    argCount: number,
+    parameterCount: number,
+    beforeGreedy: readonly number[],
+    greedy: readonly number[],
+    afterGreedy: readonly number[]
+): Generator<{ argIndex: number; paramIndex: number; }> {
+    let lastParamIndex = 0;
+    let argIndex = 0;
+    for (const paramIndex of getParameterIndexOrder(argCount, beforeGreedy, greedy, afterGreedy)) {
+        for (; lastParamIndex < paramIndex; lastParamIndex++)
+            yield { argIndex: -1, paramIndex: lastParamIndex };
+        lastParamIndex = paramIndex;
+        yield { argIndex: argIndex++, paramIndex };
+    }
+
+    for (; lastParamIndex < parameterCount; lastParamIndex++)
+        yield { argIndex: -1, paramIndex: lastParamIndex };
 }
 
-function* flattenGreedyArgs(parameters: readonly SubtagHandlerParameter[]): Generator<SubtagHandlerParameter> {
-    for (const parameter of parameters) {
-        if (!parameter.required)
-            throw new Error('Cannot have optional parameters inside a greedy parameter');
-
-        if (parameter.greedy !== false)
-            throw new Error('Cannot have greedy parameters inside a greedy parameter');
-
-        if (parameter.nested.length > 0)
-            yield* flattenGreedyArgs(parameter.nested);
-        else
-            yield parameter;
-    }
+function* getParameterIndexOrder(
+    argCount: number,
+    beforeGreedy: readonly number[],
+    greedy: readonly number[],
+    afterGreedy: readonly number[]
+): Generator<number, void, undefined> {
+    yield* beforeGreedy;
+    for (let i = 0; i < argCount - afterGreedy.length; i++)
+        yield greedy[i % greedy.length];
+    yield* afterGreedy;
 }

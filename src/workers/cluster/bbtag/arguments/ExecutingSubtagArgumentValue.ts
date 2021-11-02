@@ -1,4 +1,4 @@
-import { RuntimeReturnState, Statement, SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { RuntimeReturnState, Statement, SubtagArgumentValue, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
 import { MessageEmbedOptions } from 'discord.js';
 
 import { BBTagContext } from '../BBTagContext';
@@ -9,17 +9,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
     #promise?: Promise<string>;
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #value?: string;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #defaultValue: string;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #context: BBTagContext;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #maxLength: number;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #subtagName: string;
 
-    public readonly code: Statement;
-    public readonly call: SubtagCall;
     public get isCached(): boolean { return this.#value !== undefined; }
     public get raw(): string { return this.code.map(c => typeof c === 'string' ? c : c.source).join(''); }
     public get value(): string {
@@ -29,19 +19,12 @@ export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
     }
 
     public constructor(
-        context: BBTagContext,
-        subtagName: string,
-        call: SubtagCall,
-        code: Statement,
-        defaultValue: string,
-        maxLength: number
+        public readonly parameter: SubtagHandlerValueParameter,
+        private readonly context: BBTagContext,
+        private readonly subtagName: string,
+        public readonly call: SubtagCall,
+        public readonly code: Statement
     ) {
-        this.call = call;
-        this.code = code;
-        this.#context = context;
-        this.#defaultValue = defaultValue;
-        this.#maxLength = maxLength;
-        this.#subtagName = subtagName;
     }
 
     public execute(): Promise<string> {
@@ -53,37 +36,37 @@ export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
     }
 
     private async executeInner(): Promise<string> {
-        const result = await this.#context.eval(this.code);
-        if (result.length > this.#maxLength) {
-            await this.#context.util.send(this.#context.engine.cluster.config.discord.channels.errorlog, {
+        const result = await this.context.eval(this.code);
+        if (result.length > this.parameter.maxLength) {
+            await this.context.util.send(this.context.engine.cluster.config.discord.channels.errorlog, {
                 embeds: [
                     {
-                        title: `ERROR: SubTag arg > ${this.#maxLength}`,
+                        title: `ERROR: SubTag arg > ${this.parameter.maxLength}`,
                         color: 0xff0000,
-                        ...buildLengthEmbed(this.#context, this.call, this.#subtagName)
+                        ...buildLengthEmbed(this.context, this.call, this.subtagName)
                     }
                 ]
             });
-            this.#context.state.return = RuntimeReturnState.ALL;
-            throw new BBTagError(this.call.start, this.#context.addError(
+            this.context.state.return = RuntimeReturnState.ALL;
+            throw new BBTagError(this.call.start, this.context.addError(
                 'Argument length exceeded limit',
                 this.call,
-                `Argument ${this.call.args.indexOf(this.code)} is limited to ${this.#maxLength} but got a value of length ${result.length}`
+                `Argument ${this.call.args.indexOf(this.code)} is limited to ${this.parameter.maxLength} but got a value of length ${result.length}`
             ));
         }
 
-        if (result.length > this.#maxLength / 2) {
-            await this.#context.util.send(this.#context.engine.cluster.config.discord.channels.errorlog, {
+        if (result.length > this.parameter.maxLength / 2) {
+            await this.context.util.send(this.context.engine.cluster.config.discord.channels.errorlog, {
                 embeds: [
                     {
-                        title: `WARN: SubTag arg length > ${this.#maxLength}`,
+                        title: `WARN: SubTag arg length > ${this.parameter.maxLength}`,
                         color: 0xffff00,
-                        ...buildLengthEmbed(this.#context, this.call, this.#subtagName)
+                        ...buildLengthEmbed(this.context, this.call, this.subtagName)
                     }
                 ]
             });
         }
-        return this.#value = result.length === 0 ? this.#defaultValue : result;
+        return this.#value = result.length === 0 ? this.parameter.defaultValue : result;
     }
 }
 

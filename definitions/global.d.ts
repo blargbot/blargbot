@@ -109,6 +109,11 @@ declare global {
         toLowerCase<T extends string>(this: T): Lowercase<T>;
         toUpperCase<T extends string>(this: T): Uppercase<T>;
         split<T extends string>(this: T, splitter: ''): SplitString<T>;
+        toString<T extends string>(this: T): T;
+    }
+
+    interface Number {
+        toString<T extends number>(this: T): `${T}`;
     }
 
     function setTimeout<TArgs extends unknown[]>(callback: (...args: TArgs) => void, ms: number, ...args: TArgs): NodeJS.Timeout;
