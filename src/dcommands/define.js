@@ -41,9 +41,10 @@ class DefineCommand extends BaseCommand {
         vars.uses++;
         await r.table('vars').get('wordapis').update(vars);
         request({
-            url: `https://wordsapiv1.p.mashape.com/words/${args}`,
+            url: `https://wordsapiv1.p.rapidapi.com/words/${args}`,
             headers: {
-                'X-Mashape-Key': config.general.mashape,
+                'x-rapidapi-host': 'wordsapiv1.p.rapidapi.com',
+                'x-rapidapi-key': config.general.mashape,
                 'Accept': 'application/json'
             }
         }, function (error, response, body) {
