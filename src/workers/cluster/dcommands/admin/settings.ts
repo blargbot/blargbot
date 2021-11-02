@@ -78,7 +78,8 @@ export class SettingsCommand extends BaseGuildCommand {
                             name: 'Warnings',
                             value: settingGroup([
                                 ['kickat', settings.kickat],
-                                ['banat', settings.banat]
+                                ['banat', settings.banat],
+                                ['actonlimitsonly', settings.actonlimitsonly]
                             ])
                         },
                         {

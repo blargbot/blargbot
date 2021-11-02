@@ -639,6 +639,7 @@ export interface StoredTag {
 }
 
 export interface StoredGuildSettings {
+    readonly actonlimitsonly?: boolean;
     readonly adminrole?: string; // role tag or role name
     readonly antimention?: number;
     readonly banat?: number;

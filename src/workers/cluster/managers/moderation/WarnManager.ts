@@ -18,10 +18,11 @@ export class WarnManager extends ModerationManagerBase {
         if (isNaN(count))
             return { type: ModerationType.WARN, count: 0, state: 'countNaN' };
 
-        const warnings = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
+        const oldCount = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat') ?? Infinity;
         const kickAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'kickat') ?? Infinity;
-        let newCount = Math.max(0, warnings + Math.max(count, 0));
+        const actOnLimitsOnly = await this.cluster.database.guilds.getSetting(member.guild.id, 'actonlimitsonly') ?? false;
+        let newCount = Math.max(0, oldCount + Math.max(count, 0));
         let result: WarnResult = {
             type: ModerationType.WARN,
             count: newCount,
@@ -38,7 +39,7 @@ export class WarnManager extends ModerationManagerBase {
             };
             if (result.state === 'success')
                 newCount = 0;
-        } else if (kickAt > 0 && newCount >= kickAt) {
+        } else if (kickAt > 0 && (!actOnLimitsOnly || oldCount < kickAt) && newCount >= kickAt) {
             result = {
                 type: ModerationType.KICK,
                 state: await this.manager.bans.kick(member, moderator, true, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
