@@ -51,7 +51,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
     }
 
     const result: SubtagHandlerValueParameter = {
-        name: name.slice(0, parameter.length - 1),
+        name: name.slice(0, name.length - 1),
         autoResolve,
         required,
         defaultValue,

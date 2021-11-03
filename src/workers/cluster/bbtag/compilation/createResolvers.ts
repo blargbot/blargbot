@@ -90,17 +90,16 @@ function createResolver(
     greedy: readonly number[],
     afterGreedy: readonly number[])
     : ArgumentResolver {
-    const indexes = [...getParameterIndexes(argCount, defaultArgs.length, beforeGreedy, greedy, afterGreedy)]
-        .map(({ argIndex, paramIndex }) => ({ argIndex, defaultArg: defaultArgs[paramIndex] }));
+    const parameterMap = [...getParameterMap(argCount, defaultArgs, beforeGreedy, greedy, afterGreedy)];
 
     return {
         * resolve(context, subtagName, call) {
-            for (const { argIndex, defaultArg } of indexes) {
-                const arg = call.args[argIndex] as Statement | undefined;
+            for (const item of parameterMap) {
+                const arg = call.args[item.argIndex] as Statement | undefined;
                 if (arg === undefined)
-                    yield defaultArg;
+                    yield item.default;
                 else
-                    yield new ExecutingSubtagArgumentValue(defaultArg.parameter, context, subtagName, call, arg);
+                    yield new ExecutingSubtagArgumentValue(item.default.parameter, context, subtagName, call, arg);
             }
         }
     };
@@ -128,34 +127,33 @@ function createVariableResolver(
     };
 }
 
-function* getParameterIndexes(
+function* getParameterMap(
     argCount: number,
-    parameterCount: number,
+    defaultArgs: readonly SubtagArgumentValue[],
     beforeGreedy: readonly number[],
     greedy: readonly number[],
     afterGreedy: readonly number[]
-): Generator<{ argIndex: number; paramIndex: number; }> {
-    let lastParamIndex = 0;
-    let argIndex = 0;
-    for (const paramIndex of getParameterIndexOrder(argCount, beforeGreedy, greedy, afterGreedy)) {
-        for (; lastParamIndex < paramIndex; lastParamIndex++)
-            yield { argIndex: -1, paramIndex: lastParamIndex };
-        lastParamIndex = paramIndex;
-        yield { argIndex: argIndex++, paramIndex };
+): Generator<{ readonly argIndex: number; readonly default: SubtagArgumentValue; }> {
+    let param = 0;
+    let arg = 0;
+    for (const next of getParameterOrder(argCount, beforeGreedy, greedy, afterGreedy)) {
+        for (; param < next - 1; param++)
+            yield { argIndex: -1, default: defaultArgs[param] };
+        yield { argIndex: arg++, default: defaultArgs[param = next] };
     }
 
-    for (; lastParamIndex < parameterCount; lastParamIndex++)
-        yield { argIndex: -1, paramIndex: lastParamIndex };
+    for (param++; param < defaultArgs.length; param++)
+        yield { argIndex: -1, default: defaultArgs[param] };
 }
 
-function* getParameterIndexOrder(
+function* getParameterOrder(
     argCount: number,
     beforeGreedy: readonly number[],
     greedy: readonly number[],
     afterGreedy: readonly number[]
 ): Generator<number, void, undefined> {
     yield* beforeGreedy;
-    for (let i = 0; i < argCount - afterGreedy.length; i++)
+    for (let i = beforeGreedy.length; i < argCount - afterGreedy.length; i++)
         yield greedy[i % greedy.length];
     yield* afterGreedy;
 }
