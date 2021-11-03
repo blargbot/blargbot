@@ -152,8 +152,18 @@ function* getParameterOrder(
     greedy: readonly number[],
     afterGreedy: readonly number[]
 ): Generator<number, void, undefined> {
-    yield* beforeGreedy;
-    for (let i = 0; i + beforeGreedy.length < argCount - afterGreedy.length; i++)
-        yield greedy[i % greedy.length];
-    yield* afterGreedy;
+    if (greedy.length === 0) {
+        if (argCount !== beforeGreedy.length + afterGreedy.length)
+            throw new Error('Invalid argument count');
+        yield* beforeGreedy;
+        yield* afterGreedy;
+    } else {
+        const greedyRepeats = (argCount - beforeGreedy.length - afterGreedy.length) / greedy.length;
+        if (greedyRepeats % 1 !== 0)
+            throw new Error('Invalid argument count');
+        yield* beforeGreedy;
+        for (let i = 0; i < greedyRepeats; i++)
+            yield* greedy;
+        yield* afterGreedy;
+    }
 }
