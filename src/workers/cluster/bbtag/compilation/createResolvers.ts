@@ -153,7 +153,7 @@ function* getParameterOrder(
     afterGreedy: readonly number[]
 ): Generator<number, void, undefined> {
     yield* beforeGreedy;
-    for (let i = beforeGreedy.length; i < argCount - afterGreedy.length; i++)
+    for (let i = 0; i + beforeGreedy.length < argCount - afterGreedy.length; i++)
         yield greedy[i % greedy.length];
     yield* afterGreedy;
 }

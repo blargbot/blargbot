@@ -14,7 +14,7 @@ function parseDefinition(definition: SubtagHandlerDefinition): SubtagHandlerCall
 
 function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup): SubtagHandlerParameter {
     if (typeof parameter === 'object')
-        return createParameterGroup(parameter.parameters.map(parseArgument), parameter.minCount ?? 0);
+        return createParameterGroup(parameter.repeat.map(parseArgument), parameter.minCount ?? 0);
 
     let autoResolve = true;
     if (parameter.startsWith('~')) {

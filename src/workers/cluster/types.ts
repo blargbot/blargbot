@@ -322,7 +322,7 @@ export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string |
 
 export interface SubtagHandlerDefinitionParameterGroup {
     readonly minCount?: number;
-    readonly parameters: readonly string[];
+    readonly repeat: readonly string[];
 }
 
 export interface FlagDefinition {

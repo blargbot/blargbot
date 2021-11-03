@@ -7,14 +7,10 @@ export class SwitchSubtag extends BaseSubtag {
         super({
             name: 'switch',
             category: SubtagType.MISC,
-            definition: [//! Docs overidden
+            definition: [
                 {
-                    parameters: ['value', 'default'],
-                    execute: (_, [, {value}]) => value
-                },
-                {
-                    parameters: ['value', 'case', 'then+'],
-                    execute: (ctx, [{value}, ...args], subtag) => this.switch(ctx, subtag, value, ...args)
+                    parameters: ['value', { repeat: ['case', '~then'], minCount: 1 }, '~default?'],
+                    execute: (ctx, [value, ...cases], subtag) => this.switch(ctx, subtag, value.value, ...splitArgs(cases))
                 }
             ]
         });
@@ -24,20 +20,26 @@ export class SwitchSubtag extends BaseSubtag {
         _context: BBTagContext,
         _subtag: SubtagCall,
         value: string,
-        ...args: SubtagArgumentValue[]
+        cases: ReadonlyArray<readonly [string, SubtagArgumentValue]>,
+        defaultCase?: SubtagArgumentValue
     ): Promise<string> {
-        let elseDo: SubtagArgumentValue | undefined;
-
-        if (args.length % 2 === 1) elseDo = <SubtagArgumentValue>args.pop();
-
-        for (let i = 0; i < args.length; i += 2) {
-            const caseValue = await args[i].execute();
-            const caseArray = bbtagUtil.tagArray.deserialize(caseValue) ?? {v: undefined};
-            const cases = Array.isArray(caseArray.v) ? caseArray.v : [caseValue];
-            for (const key of cases)
-                if (parse.string(key) === value)
-                    return args[i + 1].execute();
+        for (const [caseValue, then] of cases) {
+            const { v: options = [caseValue] } = bbtagUtil.tagArray.deserialize(caseValue) ?? { v: undefined };
+            for (const option of options)
+                if (parse.string(option) === value)
+                    return await then.execute();
         }
-        return elseDo !== undefined ? await elseDo.execute() : '';
+        return await defaultCase?.execute() ?? '';
     }
+}
+
+function splitArgs(args: SubtagArgumentValue[]): [cases: ReadonlyArray<readonly [string, SubtagArgumentValue]>, defaultCase?: SubtagArgumentValue] {
+    let defaultCase = undefined;
+    if (args.length % 2 === 1)
+        defaultCase = args.pop();
+
+    const cases = [];
+    for (let i = 0; i < args.length; i += 2)
+        cases.push([args[i].value, args[i + 1]] as const);
+    return [cases, defaultCase];
 }
