@@ -38,7 +38,7 @@ export class RoleSetNameSubtag extends BaseSubtag {
         if (topRole === 0)
             return this.customError('Author cannot edit roles', context, subtag);
 
-        quiet ||= context.scope.quiet ?? false;
+        quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleStr, { noLookup: quiet });
 
         if (role !== undefined) {
@@ -46,7 +46,7 @@ export class RoleSetNameSubtag extends BaseSubtag {
                 return this.customError('Role above author', context, subtag);
 
             try {
-                const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+                const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
                 await role.edit({ name }, fullReason);
                 return ''; //TODO meaningful output
             } catch (err: unknown) {

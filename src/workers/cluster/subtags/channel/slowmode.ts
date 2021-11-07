@@ -17,7 +17,7 @@ export class SlowmodeSubtag extends BaseSubtag {
                         try {
                             void context.channel.edit({
                                 rateLimitPerUser: 0
-                            }, context.scope.reason ?? 'Initiated from BBTag by ' + humanize.fullName(context.user));
+                            }, context.scopes.local.reason ?? 'Initiated from BBTag by ' + humanize.fullName(context.user));
                         } catch (err: unknown) {
                             return this.customError('Missing required permissions', context, subtag);
                         }
@@ -64,7 +64,7 @@ export class SlowmodeSubtag extends BaseSubtag {
         try {
             await channel.edit({
                 rateLimitPerUser: time
-            }, context.scope.reason ?? 'Initiated from BBTag by ' + humanize.fullName(context.user));
+            }, context.scopes.local.reason ?? 'Initiated from BBTag by ' + humanize.fullName(context.user));
         } catch (err: unknown) {
             return this.customError('Missing required permissions', context, subtag);
         }

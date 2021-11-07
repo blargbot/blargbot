@@ -39,7 +39,7 @@ export class SpliceSubtag extends BaseSubtag {
         const arr = await bbtagUtil.tagArray.getArray(context, arrStr);
         let start = parse.int(startStr);
         let delCount = parse.int(countStr);
-        const fallback = parse.int(context.scope.fallback !== undefined ? context.scope.fallback : '');
+        const fallback = parse.int(context.scopes.local.fallback !== undefined ? context.scopes.local.fallback : '');
         const insert = bbtagUtil.tagArray.flattenArray(replaceItems);
 
         if (arr === undefined || !Array.isArray(arr.v))

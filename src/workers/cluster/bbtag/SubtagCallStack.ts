@@ -22,4 +22,8 @@ export class SubtagCallStack {
     public contains(subtagName: string): boolean {
         return (this.callCounts[subtagName] ?? 0) > 0;
     }
+
+    public lastIndexOf(subtagName: string): number {
+        return this.stack.lastIndexOf(subtagName);
+    }
 }

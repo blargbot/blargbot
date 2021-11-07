@@ -35,7 +35,7 @@ export class UnbanSubtag extends BaseSubtag {
         nopermsStr: string,
         subtag: SubtagCall
     ): Promise<string> {
-        const user = await context.queryUser(userStr, { noErrors: context.scope.noLookupErrors });
+        const user = await context.queryUser(userStr, { noErrors: context.scopes.local.noLookupErrors });
         const noPerms = nopermsStr !== '';
 
         if (user === undefined)

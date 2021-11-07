@@ -16,7 +16,7 @@ export class SliceSubtag extends BaseSubtag {
                     exampleOut: '["is","an","array"]',
                     execute: async (context, args, subtag) => {
                         const arr = await bbtagUtil.tagArray.getArray(context, args[0].value);
-                        const fallback = new Lazy<number>(() => parse.int(context.scope.fallback ?? ''));
+                        const fallback = new Lazy<number>(() => parse.int(context.scopes.local.fallback ?? ''));
 
                         if (arr === undefined || !Array.isArray(arr.v))
                             return this.notAnArray(context, subtag);

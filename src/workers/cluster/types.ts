@@ -1,4 +1,4 @@
-import { BBTagContext, limits, ScopeManager, TagCooldownManager, VariableCache } from '@cluster/bbtag';
+import { BBTagContext, limits, ScopeManager, SubtagCallStack, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
@@ -9,7 +9,6 @@ import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
 
-import { SubtagCallStack } from './bbtag/SubtagCallStack';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 
@@ -670,7 +669,7 @@ export interface SubtagOptions {
 
 export interface RuntimeLimitRule {
     check(context: BBTagContext, subtag: SubtagCall): Promise<boolean> | boolean;
-    errorText(subtagName: string, scopeName: string): string;
+    errorText(subtagName: string, context: BBTagContext): string;
     displayText(subtagName: string, scopeName: string): string;
     state(): JToken;
     load(state: JToken): void;
@@ -702,8 +701,9 @@ export type GuildSettingDescriptor<T extends keyof StoredGuildSettings = keyof S
 
 export type SubtagPropertiesSet = { [key in SubtagType]: SubtagProperties; }
 export interface SubtagProperties {
-    name: string;
-    desc: string;
+    readonly name: string;
+    readonly desc: string;
+    readonly hidden?: boolean;
 }
 
 export interface SubtagVariableProperties {

@@ -57,7 +57,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get member(): GuildMember { return this.message.member; }
     public get guild(): Guild { return this.message.channel.guild; }
     public get user(): User { return this.message.author; }
-    public get scope(): BBTagRuntimeScope { return this.scopes.local; }
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
     public get database(): Database { return this.engine.database; }
     public get logger(): Logger { return this.engine.logger; }
@@ -154,7 +153,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}`,
             debugMessage: debugMessage
         });
-        return this.scope.fallback ?? `\`${error}\``;
+        return this.scopes.local.fallback ?? `\`${error}\``;
     }
 
     public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {
@@ -201,13 +200,13 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         if (cached !== undefined)
             return await fetch(cached) ?? undefined;
 
-        const noLookup = this.scope.quiet ?? options.noLookup ?? false;
+        const noLookup = this.scopes.local.quiet ?? options.noLookup ?? false;
         const entities = await find(queryString);
         if (this.state.query.count >= 5 || noLookup) {
             return entities.length === 1 ? entities[0] : undefined;
         }
 
-        const noErrors = this.scope.noLookupErrors ?? options.noErrors ?? false;
+        const noErrors = this.scopes.local.noLookupErrors ?? options.noErrors ?? false;
         const result = await query({ context: this.channel, actors: this.author, choices: entities, filter: queryString });
         switch (result.state) {
             case 'FAILED':
@@ -348,7 +347,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public serialize(): SerializedBBTagContext {
         const newState = { ...this.state, cache: undefined, overrides: undefined };
-        const newScope = { ...this.scope };
+        const newScope = { ...this.scopes.local };
         return {
             msg: {
                 id: this.message.id,

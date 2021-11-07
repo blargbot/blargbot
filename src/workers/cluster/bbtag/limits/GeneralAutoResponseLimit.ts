@@ -1,5 +1,5 @@
 import { GlobalLimit } from './GlobalLimit';
-import { DisabledRule, StaffOnlyRule, UseCountRule } from './rules';
+import { disabledRule, StaffOnlyRule, UseCountRule } from './rules';
 
 export class GeneralAutoResponseLimit extends GlobalLimit {
     public readonly scopeName = 'general autoresponses';
@@ -40,10 +40,10 @@ export class GeneralAutoResponseLimit extends GlobalLimit {
             .addRules('delete', StaffOnlyRule.instance, new UseCountRule(2))
             .addRules('reactremove', new UseCountRule(1))
             .addRules('reactremove:requests', new UseCountRule(20, ['Request', 'requests']))
-            .addRules('timer', DisabledRule.instance)
+            .addRules('timer', disabledRule)
             .addRules('usersetnick', StaffOnlyRule.instance)
-            .addRules('waitmessage', DisabledRule.instance)
-            .addRules('waitreaction', DisabledRule.instance)
+            .addRules('waitmessage', disabledRule)
+            .addRules('waitreaction', disabledRule)
             .addRules([
                 'for:loops',
                 'repeat:loops',

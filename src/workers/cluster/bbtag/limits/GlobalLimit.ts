@@ -35,9 +35,7 @@ export abstract class GlobalLimit extends BaseRuntimeLimit {
                 'waitreact',
                 'sleep'
             ],
-            new DisabledInRule('filter'),
-            new DisabledInRule('waitmessage'),
-            new DisabledInRule('waitreaction')
+            new DisabledInRule('filter', 'waitmessage', 'waitreaction')
         );
     }
 }

@@ -34,14 +34,14 @@ export class ParamsSubtag extends BaseSubtag {
     }
 
     public getAllParams(context: BBTagContext, subtag: SubtagCall): string {
-        const params = context.scope.paramsarray;
+        const params = context.scopes.local.paramsarray;
         if (params === undefined)
             return context.addError('{params} can only be used inside {function}', subtag);
         return params.join(' ');
     }
 
     public getParam(context: BBTagContext, index: string, subtag: SubtagCall): string {
-        const params = context.scope.paramsarray;
+        const params = context.scopes.local.paramsarray;
         if (params === undefined)
             return context.addError('{params} can only be used inside {function}', subtag);
 
@@ -58,7 +58,7 @@ export class ParamsSubtag extends BaseSubtag {
         end: string,
         subtag: SubtagCall
     ): string {
-        const params = context.scope.paramsarray;
+        const params = context.scopes.local.paramsarray;
         if (params === undefined)
             return context.addError('{params} can only be used inside {function}', subtag);
 

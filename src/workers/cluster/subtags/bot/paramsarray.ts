@@ -20,7 +20,7 @@ export class ParamsArraySubtag extends BaseSubtag {
     }
 
     public getParamsArray(context: BBTagContext, subtag: SubtagCall): string {
-        const params = context.scope.paramsarray;
+        const params = context.scopes.local.paramsarray;
         if (params === undefined)
             return context.addError('{paramsarray} can only be used inside {function}', subtag);
         return JSON.stringify(params);

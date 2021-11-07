@@ -22,12 +22,12 @@ export class IsUserBoostingSubtag extends BaseSubtag {
                     exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}',
                     exampleOut: 'stupid cat is boosting!',
                     execute: async (context, [{ value: userStr }, { value: quietStr }], subtag): Promise<string | void> => {
-                        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
+                        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
                         let user: User | undefined = context.user;
 
                         if (userStr !== '')
                             user = await context.queryUser(userStr, {
-                                noErrors: context.scope.noLookupErrors,
+                                noErrors: context.scopes.local.noLookupErrors,
                                 noLookup: quiet
                             });
 

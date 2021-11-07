@@ -13,7 +13,7 @@ export class QuietSubtag extends BaseSubtag {
                     exampleCode: '{quiet} {usermention;cat}',
                     exampleOut: 'cat',
                     execute: (ctx, [quiet]) => {
-                        ctx.scope.quiet = parse.boolean(quiet.value);
+                        ctx.scopes.local.quiet = parse.boolean(quiet.value);
                     }
                 }
             ]

@@ -24,7 +24,7 @@ export class RolePosSubtag extends BaseSubtag {
         roleId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scope.quiet ?? false;
+        quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role !== undefined) {

@@ -44,11 +44,11 @@ export class UserSetRolesSubtag extends BaseSubtag {
          * Quiet suppresses all errors here instead of just the user errors
          * I feel like that is how it *should* work
         */
-        quiet ||= context.scope.quiet ?? false;
+        quiet ||= context.scopes.local.quiet ?? false;
         context.logger.log(quiet);
         const user = await context.queryUser(userStr, {
             noLookup: quiet,
-            noErrors: context.scope.noLookupErrors
+            noErrors: context.scopes.local.noLookupErrors
         });
         if (user === undefined)
             return quiet ? 'false' : this.noUserFound(context, subtag);
@@ -66,7 +66,7 @@ export class UserSetRolesSubtag extends BaseSubtag {
         for (const roleElement of roleArr.v) {
             const role = await context.queryRole(parse.string(roleElement), {
                 noLookup: quiet,
-                noErrors: context.scope.noLookupErrors
+                noErrors: context.scopes.local.noLookupErrors
             });
             if (role === undefined)
                 return quiet ? 'false' : this.noRoleFound(context, subtag, parse.string(roleElement) + ' is not a role');
@@ -74,7 +74,7 @@ export class UserSetRolesSubtag extends BaseSubtag {
         }
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             await member.edit({
                 roles: parsedRoles
             }, fullReason);

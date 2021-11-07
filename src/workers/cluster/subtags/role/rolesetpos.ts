@@ -18,7 +18,7 @@ export class RoleSetPosSubtag extends BaseSubtag {
                         if (topRole === 0)
                             return this.customError('Author cannot edit roles', context, subtag);
 
-                        const quiet = quietStr !== '' || (context.scope.quiet ?? false);
+                        const quiet = quietStr !== '' || (context.scopes.local.quiet ?? false);
                         const role = await context.queryRole(roleStr, { noLookup: quiet });
                         const pos = parse.int(posStr);
 

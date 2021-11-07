@@ -30,7 +30,7 @@ export class UserNickSubtag extends BaseSubtag {
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scope.quiet ?? false;
+        quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined) {

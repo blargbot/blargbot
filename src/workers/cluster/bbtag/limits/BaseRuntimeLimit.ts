@@ -2,6 +2,7 @@ import { RuntimeLimit, RuntimeLimitRule, SerializedRuntimeLimit, SubtagCall } fr
 
 import { BBTagContext } from '../BBTagContext';
 import { limits } from './index';
+import { disabledRule } from './rules';
 
 export abstract class BaseRuntimeLimit implements RuntimeLimit {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -42,9 +43,8 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
             return undefined;
 
         for (const rule of collection) {
-            if (!await rule.check(context, subtag)) {
-                return context.addError(rule.errorText(rulekey, this.scopeName), subtag);
-            }
+            if (!await rule.check(context, subtag))
+                return context.addError(rule.errorText(rulekey, context), subtag);
         }
         return undefined;
     }
@@ -55,6 +55,9 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         const rules = subKey !== undefined
             ? set[subKey] ?? []
             : Object.values(set).flatMap(v => v ?? []);
+
+        if (rules.includes(disabledRule))
+            return [disabledRule.displayText(rootKey, this.scopeName)];
         return rules.map(r => r.displayText(rootKey, this.scopeName));
     }
 

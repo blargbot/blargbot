@@ -11,7 +11,7 @@ export class ClusterGetSubtagListHandler extends ClusterEventService<'getSubtagL
 
     public getSubtagList(): SubtagListResult {
         const tags: SubtagListResult = {};
-        for (const t of this.cluster.subtags.list()) {
+        for (const t of this.cluster.subtags.list(s => !s.hidden)) {
             tags[t.name] = {
                 category: t.category,
                 name: t.name,

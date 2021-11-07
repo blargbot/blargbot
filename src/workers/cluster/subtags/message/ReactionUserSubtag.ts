@@ -20,6 +20,6 @@ export class ReactionUserSubtag extends BaseSubtag {
     }
 
     public getReaction(context: BBTagContext, subtag: SubtagCall): string {
-        return context.scope.reaction ?? context.addError('{reactuser} can only be used inside {waitreaction}', subtag);
+        return context.scopes.local.reaction ?? context.addError('{reactuser} can only be used inside {waitreaction}', subtag);
     }
 }

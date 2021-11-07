@@ -52,7 +52,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
             return this.customError('Author must be staff to modify unrelated messages', context, subtag);
 
         // Loop through the "emotes" and check if each is a user. If it is not, then break
-        let user = await context.queryUser(args[0], { noErrors: context.scope.noLookupErrors, noLookup: true });
+        let user = await context.queryUser(args[0], { noErrors: context.scopes.local.noLookupErrors, noLookup: true });
         if (user === undefined)
             user = context.user;
         else

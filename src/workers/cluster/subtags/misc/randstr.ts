@@ -26,7 +26,7 @@ export class RandStrSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): string {
         const chars = charsStr.split('');
-        const fallback = parse.int(context.scope.fallback ?? '');
+        const fallback = parse.int(context.scopes.local.fallback ?? '');
         let count = parse.int(countStr);
 
         if (isNaN(count)) count = fallback;

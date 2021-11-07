@@ -53,7 +53,7 @@ export class LockSubtag extends BaseSubtag {
         code: SubtagArgumentValue,
         subtag: SubtagCall
     ): Promise<string> {
-        if (context.scope.inLock)
+        if (context.scopes.local.inLock)
             return this.customError('Lock cannot be nested', context, subtag);
 
         mode = mode.toLowerCase();
@@ -80,10 +80,10 @@ export class LockSubtag extends BaseSubtag {
 
         const release = await lockAsync(lock, `${mode}Lock`);
         try {
-            context.scope.inLock = true;
+            context.scopes.local.inLock = true;
             return await code.wait();
         } finally {
-            context.scope.inLock = false;
+            context.scopes.local.inLock = false;
             release();
         }
     }

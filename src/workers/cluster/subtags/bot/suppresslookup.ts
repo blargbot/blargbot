@@ -31,6 +31,6 @@ export class SuppressLookupSubtag extends BaseSubtag {
                 return this.notABoolean(context, subtag);
         }
 
-        context.scope.noLookupErrors = suppress;
+        context.scopes.local.noLookupErrors = suppress;
     }
 }

@@ -37,7 +37,7 @@ export class KickSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): Promise<string> {
         const user = await context.queryUser(userStr, {
-            noErrors: context.scope.noLookupErrors, noLookup: true //TODO why?
+            noErrors: context.scopes.local.noLookupErrors, noLookup: true //TODO why?
         });
 
         const noPerms = nopermsStr !== '' ? true : false;

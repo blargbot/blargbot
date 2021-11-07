@@ -41,8 +41,8 @@ export class RoleSetPermsSubtag extends BaseSubtag {
         if (topRole === 0)
             return this.customError('Author cannot edit roles', context, subtag);
 
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
-        const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scope.noLookupErrors });
+        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
+        const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scopes.local.noLookupErrors });
         const perms = parse.int(permsStr);
 
         const allowedPerms = context.permissions.valueOf();
@@ -53,7 +53,7 @@ export class RoleSetPermsSubtag extends BaseSubtag {
                 return this.customError('Role above author', context, subtag);
 
             try {
-                const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+                const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
                 await role.edit({ permissions: mappedPerms }, fullReason);
                 return;
             } catch (err: unknown) {

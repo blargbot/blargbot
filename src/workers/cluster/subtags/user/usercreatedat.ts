@@ -24,7 +24,7 @@ export class UserCreateDatSubtag extends BaseSubtag {
                     exampleCode: 'Stupid cat\'s account was created on {usercreatedat;;Stupid cat}',
                     exampleOut: 'Stupid cat\'s account was created on 2015-10-13T04:27:26Z',
                     execute: async (context, [{ value: format }, { value: userStr }, { value: quietStr }]): Promise<string | void> => {
-                        const quiet = quietStr !== '' || (context.scope.quiet ?? false);
+                        const quiet = quietStr !== '' || (context.scopes.local.quiet ?? false);
                         const user = await context.queryUser(userStr, { noLookup: quiet });
 
                         if (user !== undefined)

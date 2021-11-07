@@ -28,8 +28,8 @@ export class BaseNumberSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): string {
         let fallback;
-        if (context.scope.fallback !== undefined) {
-            fallback = parse.int(context.scope.fallback);
+        if (context.scopes.local.fallback !== undefined) {
+            fallback = parse.int(context.scopes.local.fallback);
             if (isNaN(fallback) || !between(fallback, 2, 36, true))
                 fallback = undefined;
         }

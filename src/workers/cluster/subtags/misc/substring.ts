@@ -14,7 +14,7 @@ export class SubstringSubtag extends BaseSubtag {
                     exampleCode: 'Hello {substring;world;2;3}!',
                     exampleOut: 'Hello r!',
                     execute: (context, args, subtag) => {
-                        const fallback = context.scope.fallback !== undefined ? parse.int(context.scope.fallback) : context.scope.fallback;
+                        const fallback = context.scopes.local.fallback !== undefined ? parse.int(context.scopes.local.fallback) : context.scopes.local.fallback;
                         const text = args[0].value;
                         let start: number = parse.int(args[1].value);
                         let end: number = parse.int(args[2].value !== '' ? args[2].value : text.length);

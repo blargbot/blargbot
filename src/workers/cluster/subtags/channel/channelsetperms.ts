@@ -93,7 +93,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         try {
             const fullReason = discordUtil.formatAuditReason(
                 context.user,
-                context.scope.reason ?? ''
+                context.scopes.local.reason ?? ''
             );
             const overwrite = channel.permissionOverwrites.cache.get(entityId);
             if (overwrite !== undefined && overwrite.type === type) {

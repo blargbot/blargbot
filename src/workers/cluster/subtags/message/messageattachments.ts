@@ -46,7 +46,7 @@ export class MessageAttachmentsSubtag extends BaseSubtag {
         quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        quiet ||= context.scope.quiet ?? false;
+        quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined)
             return quiet ? '[]' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);

@@ -77,7 +77,7 @@ export class EmojiCreateSubtag extends BaseSubtag {
         }
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason !== undefined ? context.scope.reason : '');
+            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason !== undefined ? context.scopes.local.reason : '');
             const emoji = await context.guild.emojis.create(options.image, options.name, { reason: fullReason, roles: options.roles });
             return emoji.id;
         } catch (err: unknown) {

@@ -35,7 +35,7 @@ export class UserJoinedAtSubtag extends BaseSubtag {
         quiet: boolean,
         subtag: SubtagCall
     ): Promise<string> {
-        quiet ||= context.scope.quiet ?? false;
+        quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user !== undefined) {

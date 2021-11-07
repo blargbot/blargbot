@@ -29,7 +29,7 @@ export class UserSetNickSubtag extends BaseSubtag {
                             if (user.id === context.discord.user.id)
                                 await member?.setNickname(nick);
                             else {
-                                const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+                                const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
                                 await member?.setNickname(nick, fullReason);
                             }
                         } catch (err: unknown) {

@@ -14,13 +14,13 @@ export class RepeatSubtag extends BaseSubtag {
                     exampleCode: '{repeat;e;10}',
                     exampleOut: 'eeeeeeeeee',
                     execute: async (context, args, subtag) => {
-                        const fallback = parse.int(context.scope.fallback !== undefined ? context.scope.fallback : '');
+                        const fallback = parse.int(context.scopes.local.fallback !== undefined ? context.scopes.local.fallback : '');
                         let amount = parse.int(args[1].value);
                         let result = '';
 
                         if (isNaN(amount)) {
                             if (isNaN(fallback))
-                                return this.notANumber(context, subtag, context.scope.fallback === undefined ? 'amount is not a number' : 'amount and fallback are not numbers');
+                                return this.notANumber(context, subtag, context.scopes.local.fallback === undefined ? 'amount is not a number' : 'amount and fallback are not numbers');
                             amount = fallback;
                         }
 

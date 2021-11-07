@@ -39,7 +39,7 @@ export class RoleAddSubtag extends BaseSubtag {
         if (topRole === 0)
             return this.customError('Author cannot add roles', context, subtag);
 
-        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
+        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
         const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
 
         if (result.member === undefined) {
@@ -60,7 +60,7 @@ export class RoleAddSubtag extends BaseSubtag {
             return 'false';
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             const existingRoles = [...result.member.roles.cache.keys()];
             await result.member.edit({
                 roles: existingRoles.concat(...roles.map(r => r.id))

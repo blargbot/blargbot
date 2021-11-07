@@ -17,7 +17,7 @@ export class RoleDeleteSubtag extends BaseSubtag {
                         if (topRole === 0)
                             return this.customError('Author cannot delete roles', context, subtag);
 
-                        const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
+                        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
                         const role = await context.queryRole(roleStr, {
                             noErrors: quiet,
                             noLookup: quiet
@@ -28,7 +28,7 @@ export class RoleDeleteSubtag extends BaseSubtag {
                                 return this.customError('Role above author', context, subtag);
 
                             try {
-                                const reason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+                                const reason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
                                 await role.delete(reason);
                                 //TODO meaningful output
                             } catch (err: unknown) {

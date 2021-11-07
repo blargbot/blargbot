@@ -49,7 +49,7 @@ export class RoleCreateSubtag extends BaseSubtag {
         const rolePerms = new Permissions().add(BigInt(parse.int(permStr))).valueOf();
         const options: CreateRoleOptions = {
             name,
-            reason: discordUtil.formatAuditReason(context.user, context.scope.reason),
+            reason: discordUtil.formatAuditReason(context.user, context.scopes.local.reason),
             color: parse.color(colorStr),
             permissions: rolePerms,
             mentionable: parse.boolean(mentionableStr, false),

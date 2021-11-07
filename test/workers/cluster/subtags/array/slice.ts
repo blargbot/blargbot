@@ -215,7 +215,7 @@ describe('{slice}', () => {
                         .thenResolve([...details.get]);
                 }
                 if ('fallback' in details) {
-                    when(ctx.contextMock.scope)
+                    when(ctx.contextMock.scopes.local)
                         .thenReturn(instance(ctx.scopeMock));
                     when(ctx.scopeMock.fallback)
                         .thenReturn(details.fallback);
@@ -266,7 +266,7 @@ describe('{slice}', () => {
             scopeMock: undefined as unknown as BBTagRuntimeScope
         }, {
             arrange(ctx, details) {
-                when(ctx.contextMock.scope)
+                when(ctx.contextMock.scopes.local)
                     .thenReturn(instance(ctx.scopeMock));
                 when(ctx.scopeMock.fallback)
                     .thenReturn(details.fallback);

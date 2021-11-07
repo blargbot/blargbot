@@ -20,7 +20,7 @@ export class EmojiDeleteSubtag extends BaseSubtag {
                         }
 
                         try {
-                            const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+                            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
                             await context.guild.emojis.cache.get(id)?.delete(fullReason);
                         } catch (err: unknown) {
                             context.logger.error(err);

@@ -30,7 +30,7 @@ export class GuildSetIconSubtag extends BaseSubtag {
                         }
 
                         try {
-                            const fullReason = discordUtil.formatAuditReason(context.user, context.scope.reason);
+                            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
                             await context.guild.edit({
                                 icon: image
                             }, fullReason);

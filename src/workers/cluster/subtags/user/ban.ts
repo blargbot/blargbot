@@ -58,7 +58,7 @@ export class BanSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): Promise<string> {
         const user = await context.queryUser(userStr, {
-            noLookup: true, noErrors: context.scope.noLookupErrors ?? false
+            noLookup: true, noErrors: context.scopes.local.noLookupErrors ?? false
         });
 
         if (user === undefined)

@@ -15,7 +15,7 @@ export class SpaceSubtag extends BaseSubtag {
                     exampleOut: 'Hello,    world!',
                     execute: (ctx, [countStr], subtag) => {
                         let count = parse.int(countStr.value);
-                        const fallback = parse.int(ctx.scope.fallback ?? '');
+                        const fallback = parse.int(ctx.scopes.local.fallback ?? '');
                         if (isNaN(count)) {
                             if (isNaN(fallback))
                                 return this.notANumber(ctx, subtag, 'Count and fallback are not numbers');

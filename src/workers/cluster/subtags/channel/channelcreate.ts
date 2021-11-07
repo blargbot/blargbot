@@ -61,8 +61,8 @@ export class ChannelCreateSubtag extends BaseSubtag {
         options.type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : undefined;
 
         try {
-            options.reason = context.scope.reason !== undefined
-                ? discordUtil.formatAuditReason(context.user, context.scope.reason)
+            options.reason = context.scopes.local.reason !== undefined
+                ? discordUtil.formatAuditReason(context.user, context.scopes.local.reason)
                 : options.reason;
             const channel = await context.guild.channels.create(name, options);
             return channel.id;

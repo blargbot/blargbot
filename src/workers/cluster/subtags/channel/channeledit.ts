@@ -72,7 +72,7 @@ export class ChannelEditSubtag extends BaseSubtag {
         try {
             const fullReason = discordUtil.formatAuditReason(
                 context.user,
-                context.scope.reason ?? ''
+                context.scopes.local.reason ?? ''
             );
             await channel.edit(options, fullReason);
             return channel.id;

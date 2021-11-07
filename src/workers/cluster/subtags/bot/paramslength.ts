@@ -20,7 +20,7 @@ export class ParamsLengthSubtag extends BaseSubtag {
     }
 
     public getParamsLength(context: BBTagContext, subtag: SubtagCall): string {
-        const params = context.scope.paramsarray;
+        const params = context.scopes.local.paramsarray;
         if (params === undefined)
             return context.addError('{paramslength} can only be used inside {function}', subtag);
         return params.length.toString();

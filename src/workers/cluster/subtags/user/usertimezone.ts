@@ -34,7 +34,7 @@ export class UserTimezoneSubtag extends BaseSubtag {
         userId: string,
         quiet: boolean
     ): Promise<string> {
-        quiet ||= context.scope.quiet ?? false;
+        quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
         if (user === undefined)
             return quiet ? '' : ''; //TODO add behavior for this??? Old code did nothing if user didnt exist

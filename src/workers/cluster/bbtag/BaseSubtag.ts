@@ -17,6 +17,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public readonly staff: boolean;
     public readonly signatures: readonly SubtagHandlerCallSignature[];
     public readonly handler: SubtagHandler;
+    public readonly hidden: boolean;
 
     protected constructor(options: SubtagOptions & { definition: readonly SubtagHandlerDefinition[]; }) {
         this.name = options.name;
@@ -26,6 +27,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         this.desc = options.desc;
         this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
+        this.hidden = options.hidden ?? false;
         this.signatures = parseDefinitions(options.definition);
         this.handler = compileSignatures(this.signatures);
     }

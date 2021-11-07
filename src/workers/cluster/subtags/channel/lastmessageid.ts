@@ -34,8 +34,8 @@ export class LastMessageIdSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr, {
-            noLookup: context.scope.quiet,
-            noErrors: context.scope.noLookupErrors
+            noLookup: context.scopes.local.quiet,
+            noErrors: context.scopes.local.noLookupErrors
         });
 
         if (channel === undefined)

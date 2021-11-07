@@ -18,7 +18,7 @@ export class FunctionInvokeSubtag extends BaseSubtag {
     }
 
     public async invokeFunction(context: BBTagContext, functionName: string, args: string[], subtag: SubtagCall): Promise<string> {
-        const func = context.scope.functions[functionName.toLowerCase()];
+        const func = context.scopes.local.functions[functionName.toLowerCase()];
         if (func === undefined)
             return context.addError(`Unknown subtag func.${functionName}`, subtag);
 

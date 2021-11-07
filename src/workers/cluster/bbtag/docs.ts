@@ -219,7 +219,7 @@ function subtagDocs(context: CommandContext, subtag: BaseSubtag): MessageEmbedOp
         const limit = new limitClass();
         const text = limit.rulesFor(subtag.name).join('\n');
         if (text.length > 0) {
-            limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}\n\n`;
+            limitField.value += `**Limits for ${limit.scopeName}:**\n${codeBlock(text)}`;
         }
     }
 
@@ -239,20 +239,21 @@ function subtagDocs(context: CommandContext, subtag: BaseSubtag): MessageEmbedOp
 }
 async function lookupSubtag(context: CommandContext, input: string): Promise<BaseSubtag | string | undefined> {
     input = input.replace(/[{}]/, '').toLowerCase();
-    const matchedSubtags = [...context.cluster.subtags.list()].filter(subtag => {
-        return subtag.name.includes(input) ? true : subtag.aliases.reduce<boolean>((acc, alias) => alias.includes(input) || acc, false);
-    });
-    if (matchedSubtags.find(s => s.name === input) !== undefined)
-        return matchedSubtags.find(s => s.name === input);
+    const matchedSubtags = [...context.cluster.subtags.list(subtag => !subtag.hidden && (subtag.name.includes(input) || subtag.aliases.some(a => a.includes(input))))];
+
     if (matchedSubtags.length === 1)
         return matchedSubtags[0];
+
+    const exact = matchedSubtags.find(s => s.name === input);
+    if (exact !== undefined)
+        return exact;
 
     const result = await context.util.queryChoice({
         context: context.message,
         actors: context.author,
         prompt: 'ℹ️ Multiple subtags found, please select one from the drop down.',
         placeholder: 'Select a subtag',
-        choices: matchedSubtags.map(subtag => {
+        choices: matchedSubtags.filter(s => s.deprecated === false).map(subtag => {
             return {
                 label: '{' + subtag.name + '}',
                 value: subtag.name
@@ -276,7 +277,8 @@ async function lookupSubtag(context: CommandContext, input: string): Promise<Bas
 
 async function subtagsEmbed(context: CommandContext, input?: string): Promise<MessageEmbedOptions | string> {
     const categories = Object.values(SubtagType)
-        .filter((p): p is SubtagType => typeof p !== 'string');
+        .filter((p): p is SubtagType => typeof p !== 'string')
+        .filter(p => tagTypeDetails[p].hidden !== true);
     if (input === undefined) {
         return categoriesEmbed(context, categories);
     }
@@ -288,7 +290,7 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Me
     if (matchedCategories.length === 1) {
         const category = matchedCategories[0];
         const props = tagTypeDetails[category];
-        const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
+        const subtags = [...context.cluster.subtags.list(s => s.category === category && !s.hidden && s.deprecated === false)].map(t => t.name);
         return {
             description: `**${props.name} Subtags** - ${props.desc}\n` +
                 codeBlock(subtags.join(', '))
@@ -321,7 +323,7 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Me
         case 'SUCCESS': {
             const category = queryResponse.value;
             const props = tagTypeDetails[category];
-            const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
+            const subtags = [...context.cluster.subtags.list(s => s.category === category && !s.hidden && s.deprecated === false)].map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
                     codeBlock(subtags.join(', '))
@@ -365,7 +367,7 @@ async function categoriesEmbed(context: CommandContext, categories: SubtagType[]
         case 'SUCCESS': {
             const category = queryResponse.value;
             if (category === 'all') {
-                const subtags = [...context.cluster.subtags.list()];
+                const subtags = [...context.cluster.subtags.list(s => !s.hidden && s.deprecated === false)];
                 return {
                     title: 'BBTag documentation - All subtags',
                     fields: categories.map(c => {
@@ -377,7 +379,7 @@ async function categoriesEmbed(context: CommandContext, categories: SubtagType[]
                 };
             }
             const props = tagTypeDetails[category];
-            const subtags = [...context.cluster.subtags.list(s => s.category === category)].map(t => t.name);
+            const subtags = [...context.cluster.subtags.list(s => s.category === category && !s.hidden && s.deprecated === false)].map(t => t.name);
             return {
                 description: `**${props.name} Subtags** - ${props.desc}\n` +
                     codeBlock(subtags.join(', '))

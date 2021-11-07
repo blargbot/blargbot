@@ -29,7 +29,7 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                         try {
                             const fullReason = discordUtil.formatAuditReason(
                                 context.user,
-                                context.scope.reason ?? ''
+                                context.scopes.local.reason ?? ''
                             );
                             await channel.delete(fullReason);
                             return;//TODO return something on success
