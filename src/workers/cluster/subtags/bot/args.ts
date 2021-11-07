@@ -66,7 +66,7 @@ export class ArgsSubtag extends BaseSubtag {
         if (from > to)
             from = [to, to = from][0];
 
-        if (context.input.length >= from || from < 0)
+        if (context.input.length <= from || from < 0)
             return this.notEnoughArguments(context, subtag);
 
         return context.input.slice(from, to).join(' ');
