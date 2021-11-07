@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, compare, parse, SubtagType } from '@cluster/utils';
 
 const json = bbtagUtil.json;
@@ -28,7 +29,7 @@ export class JsonSortSubtag extends BaseSubtag {
 
                         const arr = await bbtagUtil.tagArray.getArray(context, arrStr);
                         if (arr === undefined || !Array.isArray(arr.v))
-                            return this.notAnArray(context, subtag);
+                            throw new NotAnArrayError(arrStr);
 
                         if (pathStr === '')
                             return this.customError('No path provided', context, subtag);

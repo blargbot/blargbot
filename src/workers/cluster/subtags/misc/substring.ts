@@ -1,5 +1,7 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
+import { Lazy } from '@core/Lazy';
 
 export class SubstringSubtag extends BaseSubtag {
     public constructor() {
@@ -13,22 +15,17 @@ export class SubstringSubtag extends BaseSubtag {
                         '`end` defaults to the length of text.',
                     exampleCode: 'Hello {substring;world;2;3}!',
                     exampleOut: 'Hello r!',
-                    execute: (context, args, subtag) => {
-                        const fallback = context.scopes.local.fallback !== undefined ? parse.int(context.scopes.local.fallback) : context.scopes.local.fallback;
-                        const text = args[0].value;
-                        let start: number = parse.int(args[1].value);
-                        let end: number = parse.int(args[2].value !== '' ? args[2].value : text.length);
-                        if (fallback !== undefined) {
-                            if (isNaN(start)) start = fallback;
-                            if (isNaN(end)) end = fallback;
-                        }
+                    execute: (context, [text, startStr, endStr]) => {
+                        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
+                        const start = parse.int(startStr.value, false) ?? fallback.value;
+                        if (start === undefined)
+                            throw new NotANumberError(startStr.value);
 
-                        if (isNaN(start))
-                            return this.notANumber(context, subtag, 'start is not a number');
-                        if (isNaN(end))
-                            return this.notANumber(context, subtag, 'end is not a number');
+                        const end = parse.int(endStr.value !== '' ? endStr.value : text.value.length, false) ?? fallback.value;
+                        if (end === undefined)
+                            throw new NotANumberError(endStr.value);
 
-                        return text.substring(start, end);
+                        return text.value.substring(start, end);
                     }
                 }
             ]

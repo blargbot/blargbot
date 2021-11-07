@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class RoundDownSubtag extends BaseSubtag {
@@ -13,10 +14,10 @@ export class RoundDownSubtag extends BaseSubtag {
                     description: 'Rounds `number` down.',
                     exampleCode: '{rounddown;1.23}',
                     exampleOut: '1',
-                    execute: (context, [{value: numberStr}], subtag) => {
-                        const number = parse.float(numberStr);
-                        if (isNaN(number))
-                            return this.notANumber(context, subtag);
+                    execute: (_, [{ value: numberStr }]) => {
+                        const number = parse.float(numberStr, false);
+                        if (number === undefined)
+                            throw new NotANumberError(numberStr);
                         return Math.floor(number).toString();
                     }
                 }

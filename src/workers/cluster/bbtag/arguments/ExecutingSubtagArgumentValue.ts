@@ -2,7 +2,7 @@ import { RuntimeReturnState, Statement, SubtagArgumentValue, SubtagCall, SubtagH
 import { MessageEmbedOptions } from 'discord.js';
 
 import { BBTagContext } from '../BBTagContext';
-import { BBTagError } from '../BBTagError';
+import { ArgumentLengthError } from '../errors';
 
 export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
@@ -48,11 +48,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
                 ]
             });
             this.context.state.return = RuntimeReturnState.ALL;
-            throw new BBTagError(this.call.start, this.context.addError(
-                'Argument length exceeded limit',
-                this.call,
-                `Argument ${this.call.args.indexOf(this.code)} is limited to ${this.parameter.maxLength} but got a value of length ${result.length}`
-            ));
+            throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
 
         if (result.length > this.parameter.maxLength / 2) {

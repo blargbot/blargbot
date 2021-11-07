@@ -1,3 +1,4 @@
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { JoinSubtag } from '@cluster/subtags/array/join';
 import { describe } from 'mocha';
 
@@ -11,8 +12,8 @@ describe('{join}', () => {
             { args: ['a'], expectedCount: 2 }
         ]);
         testExecuteFail(subtag, [
-            { args: ['123', '456'], error: 'Not an array' },
-            { args: ['[123', '456'], error: 'Not an array' }
+            { args: ['123', ''], error: new NotAnArrayError('123') },
+            { args: ['[123', ''], error: new NotAnArrayError('[123') }
         ]);
         testExecute(subtag, [
             { args: ['[]', '|'], expected: '' },

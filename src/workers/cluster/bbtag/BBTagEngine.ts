@@ -11,7 +11,7 @@ import { inspect } from 'util';
 
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagContext } from './BBTagContext';
-import { BBTagError } from './BBTagError';
+import { BBTagRuntimeError } from './errors';
 import { TagCooldownManager } from './TagCooldownManager';
 
 export class BBTagEngine {
@@ -105,6 +105,8 @@ export class BBTagEngine {
                 await sleep(10);
             return await subtag.execute(context, name, bbtag) ?? '';
         } catch (err: unknown) {
+            if (err instanceof BBTagRuntimeError)
+                return context.addError(err.message, bbtag, err.detail);
             return this.logError(context, err, subtag, bbtag);
         } finally {
             context.callStack.pop();
@@ -137,9 +139,6 @@ export class BBTagEngine {
     }
 
     private async logError(context: BBTagContext, error: unknown, subtag: BaseSubtag, bbtag: SubtagCall): Promise<string> {
-        if (error instanceof BBTagError)
-            return error.message;
-
         this.logger.error(error);
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let description = `${error}`;
@@ -176,34 +175,25 @@ export class BBTagEngine {
     public check(source: string): AnalysisResults {
         const result: AnalysisResults = { errors: [], warnings: [] };
 
-        try {
-            const statement = bbtagUtil.parse(source);
+        const statement = bbtagUtil.parse(source);
 
-            for (const call of getSubtagCalls(statement)) {
-                if (call.name.length === 0)
-                    result.warnings.push({ location: call.start, message: 'Unnamed subtag' });
-                else if (call.name.some(p => typeof p !== 'string'))
-                    result.warnings.push({ location: call.start, message: 'Dynamic subtag' });
-                else {
-                    const subtag = this.subtags.get(call.name.join(''));
-                    // TODO Detect unknown subtags
-                    switch (typeof subtag?.deprecated) {
-                        case 'boolean':
-                            if (!subtag.deprecated)
-                                break;
-                        // fallthrough
-                        case 'string':
-                            result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
-
-                    }
+        for (const call of getSubtagCalls(statement)) {
+            if (call.name.length === 0)
+                result.warnings.push({ location: call.start, message: 'Unnamed subtag' });
+            else if (call.name.some(p => typeof p !== 'string'))
+                result.warnings.push({ location: call.start, message: 'Dynamic subtag' });
+            else {
+                const subtag = this.subtags.get(call.name.join(''));
+                // TODO Detect unknown subtags
+                switch (typeof subtag?.deprecated) {
+                    case 'boolean':
+                        if (!subtag.deprecated)
+                            break;
+                    // fallthrough
+                    case 'string':
+                        result.warnings.push({ location: call.start, message: `{${subtag.name}} is deprecated. ${subtag.deprecated}` });
                 }
             }
-
-        } catch (err: unknown) {
-            if (err instanceof BBTagError)
-                result.errors.push(err);
-            else
-                throw err;
         }
 
         return result;

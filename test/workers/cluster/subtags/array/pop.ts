@@ -1,4 +1,5 @@
 import { VariableCache } from '@cluster/bbtag';
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { PopSubtag } from '@cluster/subtags/array/pop';
 import { describe } from 'mocha';
 import { anyString, anything, deepEqual, instance, verify, when } from 'ts-mockito';
@@ -12,8 +13,8 @@ describe('{pop}', () => {
             { args: [], expectedCount: 1 }
         ]);
         testExecuteFail(subtag, [
-            { args: ['123'], error: 'Not an array' },
-            { args: ['[123'], error: 'Not an array' }
+            { args: ['123'], error: new NotAnArrayError('123') },
+            { args: ['[123'], error: new NotAnArrayError('[123') }
         ]);
         testExecute(subtag, [
             {

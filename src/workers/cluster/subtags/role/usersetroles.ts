@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, discordUtil, parse, SubtagType } from '@cluster/utils';
 import { Role } from 'discord.js';
@@ -58,8 +59,11 @@ export class UserSetRolesSubtag extends BaseSubtag {
             return quiet ? 'false' : this.noUserFound(context, subtag);
 
         const roleArr = await bbtagUtil.tagArray.getArray(context, rolesStr !== '' ? rolesStr : '[]');
-        if (roleArr === undefined)
-            return quiet ? 'false' : this.notAnArray(context, subtag);
+        if (roleArr === undefined) {
+            if (quiet)
+                return 'false';
+            throw new NotAnArrayError(rolesStr);
+        }
 
         const parsedRoles: Role[] = [];
 

@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { Cluster } from '@cluster/Cluster';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
@@ -51,7 +52,7 @@ export class PardonSubtag extends BaseSubtag {
         if (user === undefined || member === undefined)
             return this.noUserFound(context, subtag);
         if (isNaN(count))
-            return this.notANumber(context, subtag);
+            throw new NotANumberError(countStr);
 
         const result = await this.cluster.moderation.warns.pardon(member, this.cluster.discord.user, count, reason === '' ? 'Tag Pardon' : reason);
         return result.toString();

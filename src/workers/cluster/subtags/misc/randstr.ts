@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
@@ -26,13 +27,12 @@ export class RandStrSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): string {
         const chars = charsStr.split('');
-        const fallback = parse.int(context.scopes.local.fallback ?? '');
-        let count = parse.int(countStr);
+        const count = parse.int(countStr, false) ?? parse.int(context.scopes.local.fallback ?? '', false);
+        if (count === undefined)
+            throw new NotANumberError(countStr);
 
-        if (isNaN(count)) count = fallback;
-        if (isNaN(count)) return this.notANumber(context, subtag, 'Count and fallback are not numbers');
-
-        if (chars.length === 0) return this.customError('Not enough characters', context, subtag);
+        if (chars.length === 0)
+            return this.customError('Not enough characters', context, subtag);
 
         const numberArray = [...Array(count).keys()];
         return numberArray.map(() => chars[Math.floor(Math.random() * chars.length)]).join('');

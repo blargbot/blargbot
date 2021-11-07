@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, shuffle, SubtagType } from '@cluster/utils';
 
 export class ShuffleSubtag extends BaseSubtag {
@@ -20,10 +21,10 @@ export class ShuffleSubtag extends BaseSubtag {
                     description: 'Shuffles the `{args}` the user provided, or the elements of `array`. If used with a variable this will modify the original array',
                     exampleCode: '{shuffle;[1,2,3,4,5,6]}',
                     exampleOut: '[5,3,2,6,1,4]',
-                    execute: async (context, args, subtag): Promise<string | void> => {
-                        const arr = bbtagUtil.tagArray.deserialize(args[0].value);
+                    execute: async (context, [array]): Promise<string | void> => {
+                        const arr = bbtagUtil.tagArray.deserialize(array.value);
                         if (arr === undefined || !Array.isArray(arr.v))
-                            return this.notAnArray(context, subtag);
+                            throw new NotAnArrayError(array.value);
 
                         shuffle(arr.v);
                         if (arr.n === undefined)

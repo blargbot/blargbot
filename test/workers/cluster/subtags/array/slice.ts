@@ -1,4 +1,5 @@
 import { ScopeManager, VariableCache } from '@cluster/bbtag';
+import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
 import { SliceSubtag } from '@cluster/subtags/array/slice';
 import { BBTagRuntimeScope } from '@cluster/types';
 import { describe } from 'mocha';
@@ -14,8 +15,8 @@ describe('{slice}', () => {
             { args: ['[1,2,3]'], expectedCount: 2 }
         ]);
         testExecuteFail(subtag, [
-            { args: ['123', '0'], error: 'Not an array' },
-            { args: ['[123', '0'], error: 'Not an array' }
+            { args: ['123', '0'], error: new NotAnArrayError('123') },
+            { args: ['[123', '0'], error: new NotAnArrayError('[123') }
         ]);
         testExecute(subtag, [
             {
@@ -239,32 +240,27 @@ describe('{slice}', () => {
         testExecuteFail(subtag, [
             {
                 args: ['[1,2,3,4,5,6,7,8,9]', 'abc'],
-                error: 'Not a number',
-                debugMessage: 'abc is not a number',
+                error: new NotANumberError('abc'),
                 details: { fallback: undefined }
             },
             {
                 args: ['[1,2,3,4,5,6,7,8,9]', '5', 'xyz'],
-                error: 'Not a number',
-                debugMessage: 'xyz is not a number',
+                error: new NotANumberError('xyz'),
                 details: { fallback: undefined }
             },
             {
                 args: ['[1,2,3,4,5,6,7,8,9]', 'abc'],
-                error: 'Not a number',
-                debugMessage: 'abc is not a number',
+                error: new NotANumberError('abc'),
                 details: { fallback: 'nope' }
             },
             {
                 args: ['[1,2,3,4,5,6,7,8,9]', '5', 'xyz'],
-                error: 'Not a number',
-                debugMessage: 'xyz is not a number',
+                error: new NotANumberError('xyz'),
                 details: { fallback: 'qwerty' }
             },
             {
                 args: ['[1,2,3,4,5,6,7,8,9]', 'abc', 'def'],
-                error: 'Not a number',
-                debugMessage: 'abc is not a number',
+                error: new NotANumberError('abc'),
                 details: { fallback: undefined }
             }
         ], {

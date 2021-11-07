@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
@@ -65,7 +66,7 @@ export class GetSubtag extends BaseSubtag {
 
         index = parse.int(index);
         if (isNaN(index))
-            return this.notANumber(context, subtag);
+            throw new NotANumberError(index);
 
         if (result[index] === undefined)
             return this.customError('Index out of range', context, subtag);

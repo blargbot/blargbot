@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
@@ -32,17 +33,12 @@ export class MathSubtag extends BaseSubtag {
         if (!bbtagUtil.operators.isNumericOperator(operator))
             return this.customError('Invalid operator', context, subtag, operator + ' is not an operator');
 
-        const values = bbtagUtil.tagArray.flattenArray(args);
-        const parsedValues = values.map(value => {
-            switch (typeof value) {
-                case 'number': return value;
-                case 'string': return parse.float(value);
-                default: return NaN;
-            }
-        });
-
-        if (parsedValues.filter(isNaN).length > 0)
-            return this.notANumber(context, subtag, `At index ${parsedValues.findIndex(isNaN)}`);
-        return parsedValues.reduce(operators[operator]).toString();
+        return bbtagUtil.tagArray.flattenArray(args).map((arg) => {
+            if (typeof arg === 'string')
+                arg = parse.float(arg);
+            if (typeof arg !== 'number' || isNaN(arg))
+                throw new NotANumberError(arg);
+            return arg;
+        }).reduce(operators[operator]).toString();
     }
 }

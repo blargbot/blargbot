@@ -1,11 +1,12 @@
 import { VariableCache } from '@cluster/bbtag';
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { PushSubtag } from '@cluster/subtags/array/push';
 import { describe } from 'mocha';
 import { anyString, anything, deepEqual, instance, verify, when } from 'ts-mockito';
 
 import { testExecute, testExecuteFail, testExecuteNotEnoughArgs } from '../baseSubtagTests';
 
-describe('{pop}', () => {
+describe('{push}', () => {
     const subtag = new PushSubtag();
     describe('#execute', () => {
         testExecuteNotEnoughArgs(subtag, [
@@ -13,8 +14,8 @@ describe('{pop}', () => {
             { args: ['~arg'], expectedCount: 2 }
         ]);
         testExecuteFail(subtag, [
-            { args: ['123', 'a'], error: 'Not an array' },
-            { args: ['[123', 'a'], error: 'Not an array' }
+            { args: ['123', ''], error: new NotAnArrayError('123') },
+            { args: ['[123', ''], error: new NotAnArrayError('[123') }
         ]);
         testExecute(subtag, [
             {

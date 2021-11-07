@@ -1,4 +1,5 @@
 import { VariableCache } from '@cluster/bbtag';
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { ShuffleSubtag } from '@cluster/subtags/array/shuffle';
 import { expect } from 'chai';
 import { describe } from 'mocha';
@@ -36,8 +37,8 @@ describe('{shuffle}', () => {
             }
         });
         testExecuteFail(subtag, [
-            { args: ['123'], error: 'Not an array' },
-            { args: ['[123'], error: 'Not an array' }
+            { args: ['123'], error: new NotAnArrayError('123') },
+            { args: ['[123'], error: new NotAnArrayError('[123') }
         ]);
         testExecute(subtag, [
             {
@@ -51,7 +52,7 @@ describe('{shuffle}', () => {
             }
         ], {}, {
             assert(_, details, result) {
-                const val = JSON.parse(result ?? '[]');
+                const val = JSON.parse(result);
                 if (details.args.length > 0)
                     expect(val).to.not.have.ordered.members(details.args);
                 expect(val).to.have.members(details.args);

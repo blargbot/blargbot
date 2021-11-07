@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
@@ -34,13 +35,16 @@ export class RealPadSubtag extends BaseSubtag {
         directionStr: string,
         subtag: SubtagCall
     ): string {
-        const length = parse.int(lengthStr);
+        const length = parse.int(lengthStr, false);
         if (filler === '')
             filler = ' ';
         if (directionStr !== 'right' && directionStr !== 'left')
             return this.customError('Invalid direction', context, subtag, directionStr + 'is invalid');
         const direction: 'right' | 'left' = directionStr;
-        if (isNaN(length)) return this.notANumber(context, subtag);
+
+        if (length === undefined)
+            throw new NotANumberError(lengthStr);
+
         if (filler.length !== 1)
             return this.customError('Filler must be 1 character', context, subtag);
 

@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -94,9 +95,9 @@ export class WaitMessageSubtags extends BaseSubtag {
         // parse timeout
         let timeout;
         if (timeoutStr !== undefined) {
-            timeout = parse.float(timeoutStr);
-            if (isNaN(timeout))
-                return this.notANumber(context, subtag);
+            timeout = parse.float(timeoutStr, false);
+            if (timeout === undefined)
+                throw new NotANumberError(timeoutStr);
             if (timeout < 0)
                 timeout = 0;
             if (timeout > 300)

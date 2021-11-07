@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { CompareOperator } from '@cluster/utils/bbtag/operators';
 
@@ -11,8 +12,8 @@ export class ForSubtag extends BaseSubtag {
                 {
                     parameters: ['variable', 'initial', 'comparison', 'limit', 'increment?:1', '~code'],
                     description: 'To start, `variable` is set to `initial`. Then, the tag will loop, first checking `variable` against `limit` using `comparison`. ' +
-                    'If the check succeeds, `code` will be run before `variable` being incremented by `increment` and the cycle repeating.\n' +
-                    'This is very useful for repeating an action (or similar action) a set number of times. Edits to `variable` inside `code` will be ignored',
+                        'If the check succeeds, `code` will be run before `variable` being incremented by `increment` and the cycle repeating.\n' +
+                        'This is very useful for repeating an action (or similar action) a set number of times. Edits to `variable` inside `code` will be ignored',
                     exampleCode: '{for;~index;0;<;10;{get;~index},}',
                     exampleOut: '0,1,2,3,4,5,6,7,8,9,',
                     execute: async (context, args, subtag) => {
@@ -38,9 +39,11 @@ export class ForSubtag extends BaseSubtag {
                             }
                             await context.variables.set(varName, i);
                             result += await code.execute();
-                            i = parse.float(parse.string(await context.variables.get(varName)));
+                            const varValue = await context.variables.get(varName);
+                            i = parse.float(parse.string(varValue));
                             if (isNaN(i)) {
-                                result += this.notANumber(context, subtag);
+                                const error = new NotANumberError(varValue); // TODO change to be a AsyncIterable
+                                result += context.addError(error.message, subtag, error.detail);
                                 break;
                             }
 

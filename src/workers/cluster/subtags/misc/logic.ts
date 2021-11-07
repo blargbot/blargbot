@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotABooleanError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
@@ -44,20 +45,16 @@ export class LogicSubtag extends BaseSubtag {
         const values = args;
         if (operator === '!') {
             const value = parse.boolean(values[0]);
-            if (typeof value !== 'boolean')
-                return this.notABoolean(context, subtag, values[0] + ' is not a boolean');
+            if (value === undefined)
+                throw new NotABooleanError(values[0]);
             return operators[operator]([value]).toString();
         }
-        const parsedValues = values.map((value) => parse.boolean(value));
-        const parsedBools = parsedValues.filter((v): v is boolean => typeof v === 'boolean');
-        if (parsedBools.length !== parsedValues.length)
-            return this.notABoolean(
-                context,
-                subtag,
-                `At index ${parsedValues.findIndex(
-                    (v) => typeof v !== 'boolean'
-                )}`
-            );
-        return operators[operator](parsedBools).toString();
+        const parsed = values.map((value) => {
+            const parsed = parse.boolean(value);
+            if (parsed === undefined)
+                throw new NotABooleanError(value);
+            return parsed;
+        });
+        return operators[operator](parsed).toString();
     }
 }

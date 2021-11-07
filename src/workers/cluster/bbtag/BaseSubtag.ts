@@ -48,22 +48,6 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         return docs;
     }
 
-    public notANumber(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('Not a number', subtag, debugMessage);
-    }
-
-    public notABoolean(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('Not a boolean', subtag, debugMessage);
-    }
-
-    public notAnArray(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('Not an array', subtag, debugMessage);
-    }
-
-    public notEnoughArguments(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('Not enough arguments', subtag, debugMessage);
-    }
-
     public channelNotFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('No channel found', subtag, debugMessage);
     }

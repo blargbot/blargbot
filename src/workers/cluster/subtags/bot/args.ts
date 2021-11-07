@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class ArgsSubtag extends BaseSubtag {
@@ -22,7 +22,7 @@ export class ArgsSubtag extends BaseSubtag {
                     exampleCode: '{args;1}',
                     exampleIn: 'Hello world! BBtag is so cool',
                     exampleOut: 'world!',
-                    execute: (ctx, [index], subtag) => this.getArg(ctx, index.value, subtag)
+                    execute: (ctx, [index]) => this.getArg(ctx, index.value)
                 },
                 {
                     parameters: ['start', 'end'],
@@ -30,7 +30,7 @@ export class ArgsSubtag extends BaseSubtag {
                     exampleCode: '{args;2;4}',
                     exampleIn: 'Hello world! BBtag is so cool',
                     exampleOut: 'BBtag is',
-                    execute: (ctx, [start, end], subtag) => this.getArgs(ctx, start.value, end.value, subtag)
+                    execute: (ctx, [start, end]) => this.getArgs(ctx, start.value, end.value)
                 }
             ]
         });
@@ -40,10 +40,10 @@ export class ArgsSubtag extends BaseSubtag {
         return context.input.join(' ');
     }
 
-    public getArg(context: BBTagContext, index: string, subtag: SubtagCall): string {
+    public getArg(context: BBTagContext, index: string): string {
         const i = parse.int(index);
         if (isNaN(i))
-            return this.notANumber(context, subtag);
+            throw new NotANumberError(index);
 
         return context.input[i];
     }
@@ -51,23 +51,25 @@ export class ArgsSubtag extends BaseSubtag {
     public getArgs(
         context: BBTagContext,
         start: string,
-        end: string,
-        subtag: SubtagCall
+        end: string
     ): string {
-        let from = parse.int(start);
+        let from = parse.int(start, false);
+        if (from === undefined)
+            throw new NotANumberError(start);
+
         let to = end.toLowerCase() === 'n'
             ? context.input.length
-            : parse.int(end);
+            : parse.int(end, false);
 
-        if (isNaN(from) || isNaN(to))
-            return this.notANumber(context, subtag);
+        if (to === undefined)
+            throw new NotANumberError(end);
 
         // TODO This behaviour should be documented
         if (from > to)
             from = [to, to = from][0];
 
         if (context.input.length <= from || from < 0)
-            return this.notEnoughArguments(context, subtag);
+            throw new NotEnoughArgumentsError(from, context.input.length);
 
         return context.input.slice(from, to).join(' ');
     }

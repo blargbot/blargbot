@@ -1,5 +1,7 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
+import { Lazy } from '@core/Lazy';
 
 export class RepeatSubtag extends BaseSubtag {
     public constructor() {
@@ -13,25 +15,22 @@ export class RepeatSubtag extends BaseSubtag {
                     description: 'Repeatedly executes `code` `amount` times.',
                     exampleCode: '{repeat;e;10}',
                     exampleOut: 'eeeeeeeeee',
-                    execute: async (context, args, subtag) => {
-                        const fallback = parse.int(context.scopes.local.fallback !== undefined ? context.scopes.local.fallback : '');
-                        let amount = parse.int(args[1].value);
+                    execute: async (context, [code, amountStr], subtag) => {
+                        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
+                        const amount = parse.int(amountStr.value, false) ?? fallback.value;
+                        if (amount === undefined)
+                            throw new NotANumberError(amountStr.value);
+                        if (amount < 0)
+                            return this.customError('Can\'t be negative', context, subtag);
+
                         let result = '';
-
-                        if (isNaN(amount)) {
-                            if (isNaN(fallback))
-                                return this.notANumber(context, subtag, context.scopes.local.fallback === undefined ? 'amount is not a number' : 'amount and fallback are not numbers');
-                            amount = fallback;
-                        }
-
-                        if (amount < 0) return this.customError('Can\'t be negative', context, subtag);
 
                         for (let i = 0; i < amount; i++) {
                             if (await context.limit.check(context, subtag, 'repeat:loops') !== undefined) {
                                 result += this.tooManyLoops(context, subtag);
                                 break;
                             }
-                            result += await args[0].execute();
+                            result += await code.execute();
                             if (context.state.return !== 0)
                                 break;
                         }

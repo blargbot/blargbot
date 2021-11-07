@@ -1,6 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { Lazy } from '@core/Lazy';
 
 export class SpliceSubtag extends BaseSubtag {
     public constructor() {
@@ -14,7 +15,7 @@ export class SpliceSubtag extends BaseSubtag {
                     description: 'Removes `deleteCount` elements from `array` starting at `start`.',
                     exampleCode: '{splice;["this", "is", "an", "array"];1;1}',
                     exampleOut: '["is"]',
-                    execute: (ctx, args, subtag) => this.spliceArray(ctx, args[0].value, args[1].value, args[2].value, [], subtag)
+                    execute: (ctx, args) => this.spliceArray(ctx, args[0].value, args[1].value, args[2].value, [])
                 },
                 {
                     parameters: ['array', 'start', 'deleteCount:0', 'items+'],
@@ -22,7 +23,7 @@ export class SpliceSubtag extends BaseSubtag {
                         'Then, adds each `item` at that position in `array`. Returns the removed items.',
                     exampleCode: '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
                     exampleOut: '["is"] {"v":["this","was","an","array"],"n":"~array"}',
-                    execute: (ctx, args, subtag) => this.spliceArray(ctx, args[0].value, args[1].value, args[2].value, args.slice(3).map(arg => arg.value), subtag)
+                    execute: (ctx, args) => this.spliceArray(ctx, args[0].value, args[1].value, args[2].value, args.slice(3).map(arg => arg.value))
                 }
             ]
         });
@@ -33,24 +34,22 @@ export class SpliceSubtag extends BaseSubtag {
         arrStr: string,
         startStr: string,
         countStr: string,
-        replaceItems: string[],
-        subtag: SubtagCall
+        replaceItems: string[]
     ): Promise<string> {
         const arr = await bbtagUtil.tagArray.getArray(context, arrStr);
-        let start = parse.int(startStr);
-        let delCount = parse.int(countStr);
-        const fallback = parse.int(context.scopes.local.fallback !== undefined ? context.scopes.local.fallback : '');
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
+
         const insert = bbtagUtil.tagArray.flattenArray(replaceItems);
-
         if (arr === undefined || !Array.isArray(arr.v))
-            return this.notAnArray(context, subtag);
+            throw new NotAnArrayError(replaceItems);
 
-        if (isNaN(start)) start = fallback;
-        if (isNaN(delCount)) delCount = fallback;
-        if (isNaN(start))
-            return this.notANumber(context, subtag, `${startStr} is not a number`);
-        if (isNaN(delCount))
-            return this.notANumber(context, subtag, `${countStr} is not a number`);
+        const start = parse.int(startStr, false) ?? fallback.value;
+        if (start === undefined)
+            throw new NotANumberError(startStr);
+
+        const delCount = parse.int(countStr, false) ?? fallback.value;
+        if (delCount === undefined)
+            throw new NotANumberError(countStr);
 
         const result = arr.v.splice(start, delCount, ...insert);
         if (arr.n !== undefined)

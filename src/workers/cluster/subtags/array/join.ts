@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
 export class JoinSubtag extends BaseSubtag {
@@ -13,17 +13,17 @@ export class JoinSubtag extends BaseSubtag {
                     description: 'Joins the elements of `array` together with `text` as the separator.',
                     exampleCode: '{join;["this", "is", "an", "array"];!}',
                     exampleOut: 'this!is!an!array',
-                    execute: (context, [array, join], subtag) => this.join(context, array.value, join.value, subtag)
+                    execute: (context, [array, join]) => this.join(context, array.value, join.value)
                 }
             ]
         });
     }
 
-    public async join(context: BBTagContext, arrayStr: string, separator: string, subtag: SubtagCall): Promise<string> {
+    public async join(context: BBTagContext, arrayStr: string, separator: string): Promise<string> {
         const { v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
 
         if (array === undefined)
-            return this.notAnArray(context, subtag);
+            throw new NotAnArrayError(arrayStr);
 
         return array.join(separator);
     }

@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgumentValueArray, SubtagCall } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
@@ -38,9 +39,9 @@ export class OperatorSubtag extends BaseSubtag {
             /**
              * * It's important that numeric comes before logic, as they both have ^ as an operator
              */
-            return this.applyNumericOperation(context, operator, values, subtag);
+            return this.applyNumericOperation(operator, values);
         } else if (bbtagUtil.operators.isLogicOperator(operator)) {
-            return this.applyLogicOperation(context, operator, values, subtag);
+            return this.applyLogicOperation(operator, values);
         }
         //! This should never happen
         return this.customError('Invalid operator \'' + operator + '\'', context, subtag);
@@ -91,55 +92,36 @@ export class OperatorSubtag extends BaseSubtag {
         return pairedArrays;
     }
     public applyNumericOperation(
-        context: BBTagContext,
         operator: keyof typeof numeric,
-        values: string[],
-        subtag: SubtagCall
+        values: string[]
     ): string {
-        const flattenedValues = bbtagUtil.tagArray.flattenArray(values).map((arg) => {
-            switch (typeof arg) {
-                case 'number': return arg;
-                case 'string': return parse.float(arg);
-                default: return NaN;
-            }
-        });
-
-        if (flattenedValues.filter(isNaN).length !== 0) {
-            const atIndex = flattenedValues.findIndex(isNaN);
-            return this.notANumber(
-                context,
-                subtag,
-                `${flattenedValues[atIndex]} at index ${atIndex}`
-            );
-        }
-
-        return flattenedValues.reduce(numeric[operator]).toString();
+        return bbtagUtil.tagArray.flattenArray(values).map((arg) => {
+            if (typeof arg === 'string')
+                arg = parse.float(arg);
+            if (typeof arg !== 'number' || isNaN(arg))
+                throw new NotANumberError(arg);
+            return arg;
+        }).reduce(numeric[operator]).toString();
     }
 
     public applyLogicOperation(
-        context: BBTagContext,
         operator: keyof typeof logic,
-        values: string[],
-        subtag: SubtagCall
+        values: string[]
     ): string {
         if (operator === '!') {
             const value = parse.boolean(values[0]);
-            if (typeof value !== 'boolean')
-                return this.notABoolean(context, subtag, values[0] + ' is not a boolean');
+            if (value === undefined)
+                throw new NotABooleanError(values[0]);
             return logic[operator]([value]).toString();
         }
 
-        const parsedValues = values.map((value) => parse.boolean(value));
-        const parsedBools = parsedValues.filter((v): v is boolean => typeof v === 'boolean');
-        if (parsedBools.length !== parsedValues.length)
-            return this.notABoolean(
-                context,
-                subtag,
-                `At index ${parsedValues.findIndex(
-                    (v) => typeof v !== 'boolean'
-                )}`
-            );
-        return logic[operator](parsedBools).toString();
+        const parsed = values.map((value) => {
+            const bool = parse.boolean(value);
+            if (bool === undefined)
+                throw new NotABooleanError(value);
+            return bool;
+        });
+        return logic[operator](parsed).toString();
     }
 
     public enrichDocs(

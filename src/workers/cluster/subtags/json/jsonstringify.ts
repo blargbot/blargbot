@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const json = bbtagUtil.json;
@@ -15,10 +16,10 @@ export class JsonStringifySubtag extends BaseSubtag {
                     description: 'Pretty-prints the provided JSON `input` with the provided `indent`.',
                     exampleCode: '{jsonstringify;["one","two","three"]}',
                     exampleOut: '[\n    "one",\n    "two",\n    "three"\n]',
-                    execute: async (context, [{value: input}, {value: indentStr}], subtag) => {
-                        const indent = parse.int(indentStr);
-                        if (isNaN(indent))
-                            return this.notANumber(context, subtag);
+                    execute: async (context, [{ value: input }, { value: indentStr }]) => {
+                        const indent = parse.int(indentStr, false);
+                        if (indent === undefined)
+                            throw new NotANumberError(indentStr);
 
                         let obj: JObject | JArray;
                         const arr = await bbtagUtil.tagArray.getArray(context, input);

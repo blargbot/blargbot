@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class SpaceSubtag extends BaseSubtag {
@@ -13,17 +14,12 @@ export class SpaceSubtag extends BaseSubtag {
                     description: 'Will be replaced by `count` spaces. If `count` is less than `0`, no spaces will be returned.',
                     exampleCode: 'Hello,{space;4}world!',
                     exampleOut: 'Hello,    world!',
-                    execute: (ctx, [countStr], subtag) => {
-                        let count = parse.int(countStr.value);
-                        const fallback = parse.int(ctx.scopes.local.fallback ?? '');
-                        if (isNaN(count)) {
-                            if (isNaN(fallback))
-                                return this.notANumber(ctx, subtag, 'Count and fallback are not numbers');
-                            count = fallback;
-                        }
-                        if (count < 0) count = 0;
+                    execute: (ctx, [countStr]) => {
+                        const count = parse.int(countStr.value, false) ?? parse.int(ctx.scopes.local.fallback ?? '', false);
+                        if (count === undefined)
+                            throw new NotANumberError(countStr.value);
 
-                        return ''.padStart(count, ' ');
+                        return ''.padStart(count < 0 ? 0 : count, ' ');
                     }
                 }
             ]

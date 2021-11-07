@@ -1,5 +1,6 @@
 import { ArgumentResolver, SubHandler, SubHandlerCollection, SubtagHandler, SubtagHandlerCallSignature } from '@cluster/types';
 
+import { NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';
 import { createArgumentResolvers } from './createResolvers';
 
 export function compileSignatures(signatures: readonly SubtagHandlerCallSignature[]): SubtagHandler {
@@ -33,9 +34,9 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
                 return await execute(context, subtagName, call);
 
             if (call.args.length < minArgs)
-                return context.addError('Not enough arguments', call, `Expected at least ${minArgs} arguments but got ${call.args.length}`);
+                throw new NotEnoughArgumentsError(minArgs, call.args.length);
             else if (call.args.length > maxArgs)
-                return context.addError('Too many arguments', call, `Expected ${maxArgs} arguments or fewer but got ${call.args.length}`);
+                throw new TooManyArgumentsError(maxArgs, call.args.length);
 
             throw new Error(`Missing handler for ${call.args.length} arguments!`);
         }

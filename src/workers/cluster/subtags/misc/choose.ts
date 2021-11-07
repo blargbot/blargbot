@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
@@ -24,10 +25,10 @@ export class ChooseSubtag extends BaseSubtag {
         options: SubtagArgumentValue[],
         subtag: SubtagCall
     ): Promise<string> | string {
-        const index = parse.int(choice);
+        const index = parse.int(choice, false);
 
-        if (isNaN(index))
-            return this.notANumber(context, subtag);
+        if (index === undefined)
+            throw new NotANumberError(choice);
 
         if (index < 0)
             return this.customError('Choice cannot be negative', context, subtag);

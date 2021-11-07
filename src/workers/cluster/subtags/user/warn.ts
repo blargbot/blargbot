@@ -1,5 +1,6 @@
 import { Cluster } from '@cluster';
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { User } from 'discord.js';
@@ -52,7 +53,7 @@ export class WarnSubtag extends BaseSubtag {
         if (member === undefined)
             return this.noUserFound(context, subtag);
         if (isNaN(count))
-            return this.notANumber(context, subtag);
+            throw new NotANumberError(countStr);
 
         const result = await this.cluster.moderation.warns.warn(member, this.cluster.discord.user, count, reason !== '' ? reason : 'Tag Warning');
         return result.count.toString();

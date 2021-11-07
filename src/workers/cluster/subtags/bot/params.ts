@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
@@ -47,7 +48,7 @@ export class ParamsSubtag extends BaseSubtag {
 
         const i = parse.int(index);
         if (isNaN(i))
-            return this.notANumber(context, subtag);
+            throw new NotANumberError(index);
 
         return params[i];
     }
@@ -62,20 +63,23 @@ export class ParamsSubtag extends BaseSubtag {
         if (params === undefined)
             return context.addError('{params} can only be used inside {function}', subtag);
 
-        let from = parse.int(start);
+        let from = parse.int(start, false);
+        if (from === undefined)
+            throw new NotANumberError(start);
+
         let to = end.toLowerCase() === 'n'
             ? params.length
-            : parse.int(end);
+            : parse.int(end, false);
 
-        if (isNaN(from) || isNaN(to))
-            return this.notANumber(context, subtag);
+        if (to === undefined)
+            throw new NotANumberError(end);
 
         // TODO This behaviour should be documented
         if (from > to)
             from = [to, to = from][0];
 
         if (params.length <= from || from < 0)
-            return this.notEnoughArguments(context, subtag);
+            throw new NotEnoughArgumentsError(from, params.length);
 
         return params.slice(from, to).join(' ');
     }
