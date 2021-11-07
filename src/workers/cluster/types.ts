@@ -572,16 +572,6 @@ export interface SubtagArgumentValue {
     readonly raw: string;
     wait(): Promise<string>;
     execute(): Promise<string>;
-
-    // asNumber(): number;
-    // asArray(): BBTagArray;
-    // asBoolean(): boolean;
-    // asVariable(): {
-    //     get(): Promise<JToken>;
-    //     asNumber(): Promise<number>;
-    //     asBoolean(): Promise<boolean>;
-    //     asArray(): Promise<BBTagArray>;
-    // };
 }
 
 export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentValue> {
