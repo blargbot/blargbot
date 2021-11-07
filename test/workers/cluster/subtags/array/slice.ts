@@ -1,4 +1,4 @@
-import { VariableCache } from '@cluster/bbtag';
+import { ScopeManager, VariableCache } from '@cluster/bbtag';
 import { SliceSubtag } from '@cluster/subtags/array/slice';
 import { BBTagRuntimeScope } from '@cluster/types';
 import { describe } from 'mocha';
@@ -205,7 +205,8 @@ describe('{slice}', () => {
             }
         ], {
             dbMock: VariableCache,
-            scopeMock: undefined as unknown as BBTagRuntimeScope
+            scopeMock: ScopeManager,
+            localMock: undefined as BBTagRuntimeScope | undefined
         }, {
             arrange(ctx, details) {
                 if (details.dbName !== undefined) {
@@ -215,9 +216,11 @@ describe('{slice}', () => {
                         .thenResolve([...details.get]);
                 }
                 if ('fallback' in details) {
-                    when(ctx.contextMock.scopes.local)
+                    when(ctx.contextMock.scopes)
                         .thenReturn(instance(ctx.scopeMock));
-                    when(ctx.scopeMock.fallback)
+                    when(ctx.scopeMock.local)
+                        .thenReturn(instance(ctx.localMock));
+                    when(ctx.localMock.fallback)
                         .thenReturn(details.fallback);
                 }
             },
@@ -227,8 +230,10 @@ describe('{slice}', () => {
                 else
                     verify(ctx.dbMock.get(details.dbName)).once();
 
-                if ('fallback' in details)
-                    verify(ctx.scopeMock.fallback).once();
+                if ('fallback' in details) {
+                    verify(ctx.scopeMock.local).once();
+                    verify(ctx.localMock.fallback).once();
+                }
             }
         });
         testExecuteFail(subtag, [
@@ -263,12 +268,15 @@ describe('{slice}', () => {
                 details: { fallback: undefined }
             }
         ], {
-            scopeMock: undefined as unknown as BBTagRuntimeScope
+            scopeMock: ScopeManager,
+            localMock: undefined as BBTagRuntimeScope | undefined
         }, {
             arrange(ctx, details) {
-                when(ctx.contextMock.scopes.local)
+                when(ctx.contextMock.scopes)
                     .thenReturn(instance(ctx.scopeMock));
-                when(ctx.scopeMock.fallback)
+                when(ctx.scopeMock.local)
+                    .thenReturn(instance(ctx.localMock));
+                when(ctx.localMock.fallback)
                     .thenReturn(details.fallback);
             }
         });

@@ -5,7 +5,10 @@ import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
 import { Mocker } from 'ts-mockito/lib/Mock';
 import { AbstractMethodStub } from 'ts-mockito/lib/stub/AbstractMethodStub';
 import { MethodStub } from 'ts-mockito/lib/stub/MethodStub';
+import { RejectPromiseMethodStub } from 'ts-mockito/lib/stub/RejectPromiseMethodStub';
+import { ResolvePromiseMethodStub } from 'ts-mockito/lib/stub/ResolvePromiseMethodStub';
 import { ReturnValueMethodStub } from 'ts-mockito/lib/stub/ReturnValueMethodStub';
+import { ThrowErrorMethodStub } from 'ts-mockito/lib/stub/ThrowErrorMethodStub';
 import { isProxy } from 'util/types';
 
 Object.assign(mockito, <Partial<typeof mockito>>{
@@ -72,3 +75,21 @@ Mocker.prototype['getEmptyMethodStub'] = function (this: Mocker, key) {
         return new MethodNotConfiguredStub(key);
     return new ReturnValueMethodStub(-1, [], null);
 };
+
+function setPropertyDisallowMock<T>(object: T, name: string): void {
+    Object.defineProperty(object, name, {
+        set: function (this: Record<string, unknown>, value: unknown) {
+            if (typeof value === 'object' && value !== null && '__tsmockitoMocker' in value)
+                throw new Error('Cannot directly use a mocked object. Pass it to `instance(mock)` first.');
+            this[`_${name}`] = value;
+        },
+        get: function (this: Record<string, unknown>): unknown {
+            return this[`_${name}`];
+        }
+    });
+}
+
+setPropertyDisallowMock(ReturnValueMethodStub.prototype, 'returns');
+setPropertyDisallowMock(ThrowErrorMethodStub.prototype, 'error');
+setPropertyDisallowMock(ResolvePromiseMethodStub.prototype, 'value');
+setPropertyDisallowMock(RejectPromiseMethodStub.prototype, 'value');

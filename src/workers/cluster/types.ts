@@ -254,7 +254,7 @@ export interface BBTagContextOptions {
     readonly limit: RuntimeLimit | keyof typeof import('./bbtag/limits')['limits'];
     readonly silent?: boolean;
     readonly state?: Partial<BBTagContextState>;
-    readonly scopes?: ScopeManager<BBTagRuntimeScope>;
+    readonly scopes?: ScopeManager;
     readonly variables?: VariableCache;
     readonly callStack?: SubtagCallStack;
 }

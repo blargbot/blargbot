@@ -1,5 +1,5 @@
 import { ClusterUtilities } from '@cluster';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
 import { bbtagUtil, guard, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
@@ -46,7 +46,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public readonly flaggedInput: FlagResult;
     public readonly errors: RuntimeError[];
     public readonly debug: RuntimeDebugEntry[];
-    public readonly scopes: ScopeManager<BBTagRuntimeScope>;
+    public readonly scopes: ScopeManager;
     public readonly variables: VariableCache;
     public dbObjectsCommitted: number;
     public readonly state: BBTagContextState;
@@ -83,16 +83,11 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
         this.locks = options.locks ?? {};
         this.limit = typeof options.limit === 'string' ? new limits[options.limit]() : options.limit;
-        // this.outputModify = options.outputModify ?? ((_, r) => r);
         this.silent = options.silent ?? false;
         this.flaggedInput = parse.flags(this.flags, this.inputRaw);
         this.errors = [];
         this.debug = [];
-        this.scopes = options.scopes ?? new ScopeManager<BBTagRuntimeScope>(parent => {
-            if (parent === undefined)
-                return { inLock: false, functions: {} };
-            return Object.create(parent);
-        });
+        this.scopes = options.scopes ?? new ScopeManager();
         this.callStack = options.callStack ?? new SubtagCallStack();
         this.variables = options.variables ?? new VariableCache(this);
         this.execTimer = new Timer();
