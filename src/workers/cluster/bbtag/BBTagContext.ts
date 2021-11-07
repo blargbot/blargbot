@@ -1,5 +1,5 @@
 import { ClusterUtilities } from '@cluster';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
 import { bbtagUtil, guard, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
@@ -10,11 +10,12 @@ import { Base, Client as Discord, Collection, Guild, GuildChannels, GuildMember,
 import { Duration } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
+import { ScopeManager } from '.';
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagEngine } from './BBTagEngine';
 import { CacheEntry, VariableCache } from './Caching';
 import { limits } from './limits';
-import { ScopeCollection } from './ScopeCollection';
+import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
@@ -39,17 +40,17 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public readonly cooldowns: TagCooldownManager;
     public readonly locks: Record<string, ReadWriteLock | undefined>;
     public readonly limit: RuntimeLimit;
-    // public readonly outputModify: (context: BBTagContext, output: string) => string;
     public readonly silent: boolean;
     public readonly execTimer: Timer;
     public readonly dbTimer: Timer;
     public readonly flaggedInput: FlagResult;
     public readonly errors: RuntimeError[];
     public readonly debug: RuntimeDebugEntry[];
-    public readonly scopes: ScopeCollection;
+    public readonly scopes: ScopeManager<BBTagRuntimeScope>;
     public readonly variables: VariableCache;
     public dbObjectsCommitted: number;
     public readonly state: BBTagContextState;
+    public readonly callStack: SubtagCallStack;
 
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
     public get channel(): GuildTextBasedChannels { return this.message.channel; }
@@ -88,7 +89,12 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.flaggedInput = parse.flags(this.flags, this.inputRaw);
         this.errors = [];
         this.debug = [];
-        this.scopes = options.scopes ?? new ScopeCollection();
+        this.scopes = options.scopes ?? new ScopeManager<BBTagRuntimeScope>(parent => {
+            if (parent === undefined)
+                return { inLock: false, functions: {} };
+            return Object.create(parent);
+        });
+        this.callStack = options.callStack ?? new SubtagCallStack();
         this.variables = options.variables ?? new VariableCache(this);
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
@@ -112,7 +118,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             break: 0,
             continue: 0,
             subtags: {},
-            overrides: {},
             cache: {},
             subtagCount: 0,
             allowedMentions: {
@@ -124,15 +129,19 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         };
     }
 
-    public async eval(bbtag: Statement): Promise<string> {
-        return await this.engine.eval(bbtag, this);
+    public eval(bbtag: SubtagCall | Statement): Awaitable<string> {
+        return this.engine.eval(bbtag, this);
     }
 
     public ownsMessage(messageId: string): boolean {
         return messageId === this.message.id || this.state.ownedMsgs.includes(messageId);
     }
 
-    public makeChild(options: Partial<BBTagContextOptions> = {}): BBTagContext {
+    public getSubtag(name: string): BaseSubtag | undefined {
+        return this.subtags.get(name) ?? this.subtags.get(`${name.split('.', 1)[0]}.`);
+    }
+
+    public makeChild(options: Partial<BBTagContextOptions>): BBTagContext {
         return new BBTagContext(this.engine, {
             ...this,
             ...options
@@ -220,27 +229,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             default:
                 return result;
         }
-    }
-
-    public override(subtag: string, handler: SubtagHandler): { previous?: SubtagHandler; revert: () => void; } {
-        const overrides = this.state.overrides;
-        if (!guard.hasProperty(overrides, subtag)) {
-            overrides[subtag] = handler;
-            return {
-                revert() {
-                    delete overrides[subtag];
-                }
-            };
-        }
-
-        const previous = overrides[subtag];
-        overrides[subtag] = handler;
-        return {
-            previous,
-            revert() {
-                overrides[subtag] = previous;
-            }
-        };
     }
 
     public getLock(key: string): ReadWriteLock {
@@ -352,7 +340,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         Object.assign(result.scopes.local, obj.scope);
 
         result.state.cache = {};
-        result.state.overrides = {};
 
         for (const [key, value] of Object.entries(obj.tempVars))
             await result.variables.set(key, new CacheEntry(result, key, value));

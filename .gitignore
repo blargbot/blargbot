@@ -49,3 +49,4 @@ jsondiff.js
 *.cpuprofile
 !.vscode/**/*.json
 /coverage/**/*
+test.ts

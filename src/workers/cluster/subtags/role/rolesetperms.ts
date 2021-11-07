@@ -42,7 +42,7 @@ export class RoleSetPermsSubtag extends BaseSubtag {
             return this.customError('Author cannot edit roles', context, subtag);
 
         const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
-        const role = await context.queryRole(roleStr, {noLookup: quiet, noErrors: context.scope.noLookupErrors });
+        const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scope.noLookupErrors });
         const perms = parse.int(permsStr);
 
         const allowedPerms = context.permissions.valueOf();

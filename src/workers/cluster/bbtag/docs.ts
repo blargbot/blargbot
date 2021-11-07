@@ -70,9 +70,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
             ]
         };
         case 'argtypes':
-        case 'arguments':
-        case 'parameters':
-        case 'params': return {
+        case 'arguments': return {
             title: ' - Arguments',
             description: 'As you may have noticed, the various help documentation for subtags will have a usage that often look like this: ' +
                 '```\n{subtag;<arg1>;[arg2];<arg3...>}```' +

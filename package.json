@@ -96,6 +96,7 @@
         "ci": "yarn rebuild && yarn lint && yarn coverage",
         "coverage": "nyc yarn test",
         "build": "tsc",
+        "build:watch": "tsc -w",
         "rebuild": "yarn clean && yarn build",
         "lint": "eslint --ext .ts ./",
         "prepare": "husky install",

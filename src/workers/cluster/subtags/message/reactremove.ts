@@ -30,7 +30,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
         let channel;
         let message;
         // Check if the first "emote" is actually a valid channel
-        channel = await context.queryChannel(args[0], {noLookup: true});
+        channel = await context.queryChannel(args[0], { noLookup: true });
         if (channel === undefined)
             channel = context.channel;
         else
@@ -52,7 +52,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
             return this.customError('Author must be staff to modify unrelated messages', context, subtag);
 
         // Loop through the "emotes" and check if each is a user. If it is not, then break
-        let user = await context.queryUser(args[0], {noErrors: context.scope.noLookupErrors, noLookup: true});
+        let user = await context.queryUser(args[0], { noErrors: context.scope.noLookupErrors, noLookup: true });
         if (user === undefined)
             user = context.user;
         else

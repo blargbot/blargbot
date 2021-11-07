@@ -1,7 +1,7 @@
-import { BaseRuntimeLimit } from './BaseRuntimeLimit';
+import { GlobalLimit } from './GlobalLimit';
 import { DisabledRule, UseCountRule } from './rules';
 
-export class TagLimit extends BaseRuntimeLimit {
+export class TagLimit extends GlobalLimit {
     public readonly scopeName = 'tags';
 
     public constructor() {

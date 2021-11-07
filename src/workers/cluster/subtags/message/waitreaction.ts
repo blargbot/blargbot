@@ -111,17 +111,6 @@ export class WaitReactionSubtag extends BaseSubtag {
             timeout = 60;
         }
 
-        //* Not sure what this empty override is for
-        const reactionSubtag = context.override('reaction', { execute: () => '' });
-        const subtagOverrides = [];
-        for (const name of overrides.waitreaction) {
-            subtagOverrides.push(context.override(name, {
-                execute: (_context: BBTagContext, subtagName: string, _subtag: SubtagCall) => {
-                    return this.customError(`Subtag {${subtagName}} is disabled inside {waitreaction}`, _context, _subtag);
-                }
-            }));
-        }
-
         const userSet = new Set(users);
         const reactionSet = new Set(parsedReactions);
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: string) => reactionSet.has(emoji);
@@ -129,127 +118,16 @@ export class WaitReactionSubtag extends BaseSubtag {
             if (!userSet.has(user.id) || !checkReaction(reaction.emoji.toString()) || !guard.isGuildMessage(message))
                 return false;
 
+            context.scopes.pushScope();
+            context.scopes.local.reaction = reaction.emoji.toString();
+            context.scopes.local.reactUser = user.id;
             const childContext = context.makeChild({ message });
-            childContext.override('reaction', { execute: () => reaction.emoji.toString() });
-            childContext.override('reactuser', { execute: () => user.id });
-
             const result = parse.boolean(await childContext.eval(condition));
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
         }, timeout * 1000);
 
-        reactionSubtag.revert();
-        for (const override of subtagOverrides)
-            override.revert();
         if (reaction === undefined)
             return this.customError(`Wait timed out after ${timeout * 1000}`, context, subtag);
-        reaction;
         return JSON.stringify([reaction.message.channel.id, reaction.message.id, reaction.user.id, reaction.reaction.emoji.toString()]);
     }
 }
-
-// const Builder = require('../structures/TagBuilder');
-// const bbengine = require('../structures/bbtag/Engine');
-// const waitMessage = require('./waitmessage');
-
-// module.exports =
-//     Builder.BotTag('waitreaction')
-//         .withAlias('waitreact')
-//         .withArgs(a => [
-//             a.required('messages'),
-//             a.optional('users'),
-//             a.optional('reactions'),
-//             a.optional('condition'),
-//             a.optional('timeout')])
-//         .withDesc('Pauses the command until one of the given users adds any given reaction on any of the given messages. ' +
-//             'When a reaction is added, `condition` will be run to determine if the reaction can be accepted. ' +
-//             'If no reaction has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +
-//             'the channel Id, the message Id, the user id and the reaction, in that order. ' +
-//             '\n\n`users` defaults to the current user.' +
-//             '\n`reactions` defaults to any reaction.' +
-//             '\n`condition` must return `true` or `false` and defaults to `true`' +
-//             '\n`timeout` is a number of seconds. This defaults to 60 and is limited to 300' +
-//             '\n\n While inside the `condition` parameter, none of the following subtags may be used: `' + waitMessage.overrideSubtags.join(', ') + '`' +
-//             '\nAlso, the current message becomes the message the reaction was added to, and the user becomes the person who sent the message. ' +
-//             'This means that `{channelid}`, `{messageid}`, `{userid}` and all related subtags will change their values.' +
-//             '\nFinally, while inside the `condition` parameter, you can use the temporary subtag `{reaction}` to get the current reaction ' +
-//             'and the `{reactuser}` temporary subtag to get the user who reacted.')
-//         .withExample(
-//             '{waitreaction;{messageid};{userid};;{if;{reaction};startswith;<;false;true};300}',
-//             '(Reaction is added)',
-//             '["111111111111111","2222222222222","3333333333333","🤔"]'
-//         )
-//         .resolveArgs(0, 1, 2, 4)
-//         .whenArgs('0', Builder.errors.notEnoughArguments)
-//         .whenArgs('1-5', async function (subtag, context, args) {
-//             // get messages
-//             const messages = Builder.util.flattenArgArrays([args[0]]);
-
-//             // parse users
-//             let users;
-//             if (args[1]) {
-//                 users = Builder.util.flattenArgArrays([args[1]]);
-//                 users = await Promise.all(users.map(async input => await context.getUser(input, { quiet: true, suppress: true })));
-//                 if (users.find(user => user == null))
-//                     return Builder.errors.noUserFound(subtag, context);
-//                 users = users.map(user => user.id);
-//             } else {
-//                 users = [context.user.id];
-//             }
-
-//             // parse reactions
-//             let reactions;
-//             if (args[2]) {
-//                 reactions = Builder.util.flattenArgArrays([args[2]]);
-//                 reactions = [...new Set(reactions.flatMap(bu.findEmoji))];
-//                 if (reactions.length == 0)
-//                     return Builder.util.error(subtag, context, 'Invalid Emojis');
-//             } else {
-//                 reactions = undefined;
-//             }
-
-//             // parse check code
-//             let checkBBTag;
-//             if (args[3]) {
-//                 checkBBTag = args[3];
-//             } else {
-//                 checkBBTag = bbengine.parse('true').bbtag;
-//             }
-
-//             // parse timeout
-//             let timeout;
-//             if (args[4]) {
-//                 timeout = bu.parseFloat(args[4]);
-//                 if (isNaN(timeout))
-//                     return Builder.errors.notANumber(subtag, context);
-//                 if (timeout < 0)
-//                     timeout = 0;
-//                 if (timeout > 300)
-//                     timeout = 300;
-//             } else {
-//                 timeout = 60;
-//             }
-
-//             const reactionSubtag = context.override('reaction', undefined);
-//             const checkFunc = waitMessage.createCheck(subtag, context, checkBBTag, (msg, user, emoji) => {
-//                 context.override('reaction', () => padEmoji(emoji));
-//                 context.override('reactuser', () => user.id);
-//                 return context.makeChild({ msg });
-//             });
-
-//             try {
-//                 const result = await bu.awaitReact(messages, users, reactions, checkFunc, timeout * 1000);
-//                 return JSON.stringify([result.channel.id, result.message.id, result.user.id, padEmoji(result.emoji)]);
-//             } catch (err) {
-//                 if (typeof err === 'function') {
-//                     return err(subtag, context);
-//                 }
-//                 if (err instanceof bu.TimeoutError) {
-//                     return Builder.util.error(subtag, context, `Wait timed out after ${err.timeout}`);
-//                 }
-//                 throw err;
-//             } finally {
-//                 reactionSubtag.revert();
-//             }
-//         })
-//         .whenDefault(Builder.errors.tooManyArguments)
-//         .build();

@@ -105,15 +105,6 @@ export class WaitMessageSubtags extends BaseSubtag {
             timeout = 60;
         }
 
-        const subtagOverrides = [];
-        for (const name of overrides.waitmessage) {
-            subtagOverrides.push(context.override(name, {
-                execute: (_context: BBTagContext, subtagName: string, _subtag: SubtagCall) => {
-                    return this.customError(`Subtag {${subtagName}} is disabled inside {waitmessage}`, _context, _subtag);
-                }
-            }));
-        }
-
         const userSet = new Set(users);
         const result = await context.util.cluster.awaiter.messages.wait(channels, async message => {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
@@ -124,8 +115,6 @@ export class WaitMessageSubtags extends BaseSubtag {
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
         }, timeout * 1000);
 
-        for (const override of subtagOverrides)
-            override.revert();
         if (result === undefined)
             return this.customError(`Wait timed out after ${timeout * 1000}`, context, subtag);
         return JSON.stringify([result.channel.id, result.id]);

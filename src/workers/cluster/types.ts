@@ -1,4 +1,4 @@
-import { BBTagContext, limits, ScopeCollection, TagCooldownManager, VariableCache } from '@cluster/bbtag';
+import { BBTagContext, limits, ScopeManager, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
@@ -9,6 +9,7 @@ import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
 
+import { SubtagCallStack } from './bbtag/SubtagCallStack';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 
@@ -122,11 +123,22 @@ export interface SourceToken {
     start: SourceMarker;
     end: SourceMarker;
 }
+
 export interface BBTagRuntimeScope {
+    // Everything here should be immutable types.
+    // Mutable types will modify globally when editing a local scope if not careful
+
     quiet?: boolean;
     fallback?: string;
     noLookupErrors?: boolean;
     reason?: string;
+    inLock: boolean;
+    paramsarray?: readonly string[];
+    reaction?: string;
+    reactUser?: string;
+
+    // Functions are intended to be stored globally so a mutable type is fine
+    readonly functions: Record<string, Statement | undefined>;
 }
 export interface SerializedRuntimeLimit {
     type: keyof typeof limits;
@@ -191,7 +203,6 @@ export interface BBTagContextState {
     break: number;
     continue: number;
     subtags: Record<string, number[] | undefined>;
-    overrides: Record<string, SubtagHandler | undefined>;
     cache: Record<string, NamedGuildCommandTag | StoredTag | null>;
     subtagCount: number;
     allowedMentions: {
@@ -244,8 +255,9 @@ export interface BBTagContextOptions {
     readonly limit: RuntimeLimit | keyof typeof import('./bbtag/limits')['limits'];
     readonly silent?: boolean;
     readonly state?: Partial<BBTagContextState>;
-    readonly scopes?: ScopeCollection;
+    readonly scopes?: ScopeManager<BBTagRuntimeScope>;
     readonly variables?: VariableCache;
+    readonly callStack?: SubtagCallStack;
 }
 
 export interface ExecutionResult {
@@ -272,11 +284,11 @@ export type SubtagResult =
     | void;
 
 export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
-    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Awaitable<SubtagResult>;
 }
 
 export interface SubtagHandler {
-    readonly execute: (this: unknown, context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult> | SubtagResult;
+    readonly execute: (this: unknown, context: BBTagContext, subtagName: string, call: SubtagCall) => Awaitable<SubtagResult>;
 }
 
 export type SubtagHandlerValueParameter =
@@ -653,6 +665,7 @@ export interface SubtagOptions {
     desc?: string;
     deprecated?: string | boolean;
     staff?: boolean;
+    hidden?: boolean;
 }
 
 export interface RuntimeLimitRule {

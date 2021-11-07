@@ -1,7 +1,7 @@
-import { BaseRuntimeLimit } from './BaseRuntimeLimit';
+import { GlobalLimit } from './GlobalLimit';
 import { DisabledRule, StaffOnlyRule, UseCountRule } from './rules';
 
-export class GeneralAutoResponseLimit extends BaseRuntimeLimit {
+export class GeneralAutoResponseLimit extends GlobalLimit {
     public readonly scopeName = 'general autoresponses';
 
     public constructor() {

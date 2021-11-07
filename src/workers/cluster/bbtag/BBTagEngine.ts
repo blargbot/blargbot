@@ -1,5 +1,5 @@
 import { Cluster, ClusterUtilities } from '@cluster';
-import { AnalysisResults, BBTagContextOptions, ExecutionResult, RuntimeReturnState, Statement, SubtagCall, SubtagHandler } from '@cluster/types';
+import { AnalysisResults, BBTagContextOptions, ExecutionResult, RuntimeReturnState, Statement, SubtagCall } from '@cluster/types';
 import { bbtagUtil, discordUtil, parse, sleep } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
@@ -51,7 +51,7 @@ export class BBTagEngine {
             context.cooldowns.set(context);
             context.execTimer.start();
             context.state.stackSize++;
-            content = await this.eval(bbtag, context);
+            content = await this.evalStatement(bbtag, context);
             if (context.state.replace !== undefined)
                 content = content.replace(context.state.replace.regex, context.state.replace.with);
             context.state.stackSize--;
@@ -88,83 +88,89 @@ export class BBTagEngine {
         };
     }
 
-    public async eval(bbtag: SubtagCall | Statement | string, context: BBTagContext): Promise<string> {
+    private async evalSubtag(bbtag: SubtagCall, context: BBTagContext): Promise<string> {
+        const name = (await this.evalStatement(bbtag.name, context)).toLowerCase();
+        const subtag = context.getSubtag(name);
+        if (subtag === undefined)
+            return context.addError(`Unknown subtag ${name}`, bbtag);
+
+        const result = await context.limit.check(context, bbtag, subtag.name);
+        if (result !== undefined)
+            return result;
+
+        context.callStack.push(subtag.name);
+        try {
+            // sleep for 100ms every 1000 subtag calls
+            if (++context.state.subtagCount % 1000 === 0)
+                await sleep(10);
+            return await subtag.execute(context, name, bbtag) ?? '';
+        } catch (err: unknown) {
+            return this.logError(context, err, subtag, bbtag);
+        } finally {
+            context.callStack.pop();
+        }
+    }
+
+    private async evalStatement(bbtag: Statement, context: BBTagContext): Promise<string> {
+        const results = [];
+        context.scopes.pushScope();
+        for (const elem of bbtag) {
+            if (typeof elem === 'string')
+                results.push(elem);
+            else
+                results.push(await this.evalSubtag(elem, context));
+        }
+        context.scopes.popScope();
+        return results.join('');
+    }
+
+    public eval(bbtag: SubtagCall | Statement, context: BBTagContext): Awaitable<string> {
         if (context.engine !== this)
             throw new Error('Cannot execute a context from another engine!');
 
         if (context.state.return !== RuntimeReturnState.NONE)
             return '';
 
-        if (typeof bbtag === 'string')
-            return bbtag;
+        return Array.isArray(bbtag)
+            ? this.evalStatement(bbtag, context)
+            : this.evalSubtag(bbtag, context);
+    }
 
-        if (!('name' in bbtag)) {
-            const results = [];
-            context.scopes.beginScope();
-            for (const elem of bbtag)
-                results.push(await this.eval(elem, context));
-            context.scopes.finishScope();
-            return results.join('');
-        }
+    private async logError(context: BBTagContext, error: unknown, subtag: BaseSubtag, bbtag: SubtagCall): Promise<string> {
+        if (error instanceof BBTagError)
+            return error.message;
 
-        const name = (await this.eval(bbtag.name, context)).toLowerCase();
-        const override = context.state.overrides[name];
-        const native = this.cluster.subtags.get(name);
-        const [handler, definition]: [SubtagHandler?, BaseSubtag?] =
-            override !== undefined ? [override, undefined]
-                : native !== undefined ? [native, native]
-                    : [undefined, undefined];
+        this.logger.error(error);
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        let description = `${error}`;
+        const descLimit = discordUtil.getLimit('embed.description');
+        if (description.length > descLimit)
+            description = `${description.substring(0, descLimit - 15)}... (truncated)`;
 
-        if (handler === undefined)
-            return context.addError(`Unknown subtag ${name}`, bbtag);
-
-        if (definition !== undefined) {
-            const result = await context.limit.check(context, bbtag, definition.name);
-            if (result !== undefined)
-                return result;
-        }
-
-        try {
-            // sleep for 100ms every 1000 subtag calls
-            if (++context.state.subtagCount % 1000 === 0)
-                await sleep(10);
-            const result = await handler.execute(context, name, bbtag);
-            return typeof result === 'string' ? result : '';
-        } catch (err: unknown) {
-            if (err instanceof BBTagError)
-                return err.message;
-
-            this.logger.error(err);
-            // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-            let description = `${err}`;
-            if (description.length > discordUtil.getLimit('embed.description'))
-                description = description.substring(0, discordUtil.getLimit('embed.description') - 15) + '... (truncated)';
-
-            await this.util.send(this.cluster.config.discord.channels.errorlog, {
-                embeds: [
-                    {
-                        title: 'A tag error occurred',
-                        description: description,
-                        color: parse.color('red'),
-                        fields: [
-                            { name: 'SubTag', value: definition?.name ?? name, inline: true },
-                            { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
-                            { name: 'Tag Name', value: context.rootTagName, inline: true },
-                            { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
-                            { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
-                            { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
-                        ]
-                    }
-                ],
-                files: [
-                    {
-                        attachment: inspect(err),
-                        name: 'error.txt'
-                    }
-                ]
-            });
-            return context.addError('An internal server error has occurred', bbtag, err instanceof Error ? err.message : undefined);
-        }
+        await this.util.send(this.cluster.config.discord.channels.errorlog, {
+            embeds: [
+                {
+                    title: 'A tag error occurred',
+                    description: description,
+                    color: parse.color('red'),
+                    fields: [
+                        { name: 'SubTag', value: subtag.name, inline: true },
+                        { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
+                        { name: 'Tag Name', value: context.rootTagName, inline: true },
+                        { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
+                        { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
+                        { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
+                    ]
+                }
+            ],
+            files: [
+                {
+                    attachment: inspect(error),
+                    name: 'error.txt'
+                }
+            ]
+        });
+        return context.addError('An internal server error has occurred', bbtag, error instanceof Error ? error.message : undefined);
     }
 
     public check(source: string): AnalysisResults {

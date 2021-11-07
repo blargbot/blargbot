@@ -12,7 +12,7 @@ export class RoleDeleteSubtag extends BaseSubtag {
                     description: 'Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing.\nWarning: this subtag is able to delete roles managed by integrations.',
                     exampleCode: '{roledelete;Super Cool Role!}',
                     exampleOut: '(rip no more super cool roles for anyone)',
-                    execute: async (context, [{value: roleStr}, {value: quietStr}], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: roleStr }, { value: quietStr }], subtag): Promise<string | void> => {
                         const topRole = discordUtil.getRoleEditPosition(context);
                         if (topRole === 0)
                             return this.customError('Author cannot delete roles', context, subtag);

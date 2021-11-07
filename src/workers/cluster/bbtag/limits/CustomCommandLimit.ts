@@ -1,7 +1,7 @@
-import { BaseRuntimeLimit } from './BaseRuntimeLimit';
+import { GlobalLimit } from './GlobalLimit';
 import { StaffOnlyRule, UseCountRule } from './rules';
 
-export class CustomCommandLimit extends BaseRuntimeLimit {
+export class CustomCommandLimit extends GlobalLimit {
     public readonly scopeName = 'custom commands';
 
     public constructor() {
@@ -34,14 +34,15 @@ export class CustomCommandLimit extends BaseRuntimeLimit {
             .addRules('channelsetpos', StaffOnlyRule.instance)
             .addRules('threadcreate', StaffOnlyRule.instance)
             .addRules('deletethread', StaffOnlyRule.instance)
+            .addRules('usersetnick', StaffOnlyRule.instance)
+            .addRules('timer', StaffOnlyRule.instance)
             .addRules('dm', StaffOnlyRule.instance, new UseCountRule(1))
             .addRules('send', StaffOnlyRule.instance, new UseCountRule(10))
             .addRules('edit', new UseCountRule(10))
             .addRules('delete', new UseCountRule(11))
             .addRules('reactremove', new UseCountRule(10))
             .addRules('reactremove:requests', new UseCountRule(40, ['Request', 'requests']))
-            .addRules('timer', StaffOnlyRule.instance, new UseCountRule(3))
-            .addRules('usersetnick', StaffOnlyRule.instance)
+            .addRules('timer', new UseCountRule(3))
             .addRules('waitmessage', new UseCountRule(10))
             .addRules('waitreaction', new UseCountRule(20))
             .addRules([

@@ -53,6 +53,9 @@ export class LockSubtag extends BaseSubtag {
         code: SubtagArgumentValue,
         subtag: SubtagCall
     ): Promise<string> {
+        if (context.scope.inLock)
+            return this.customError('Lock cannot be nested', context, subtag);
+
         mode = mode.toLowerCase();
 
         if (!isValidLockMode(mode)) {
@@ -66,24 +69,21 @@ export class LockSubtag extends BaseSubtag {
         if (key.length === 0)
             return this.customError('Key cannot be empty', context, subtag);
 
-        const scope = tagVariableScopes.find((s) => key.startsWith(s.prefix));
-        if (scope === undefined) throw new Error('Missing default variable scope!');
+        const lockScope = tagVariableScopes.find((s) => key.startsWith(s.prefix));
+        if (lockScope === undefined)
+            throw new Error('Missing default variable scope!');
 
-        const lock = scope.getLock(
+        const lock = lockScope.getLock(
             context,
-            key.substring(scope.prefix.length)
+            key.substring(lockScope.prefix.length)
         );
 
-        const lockOverride = context.override('lock', {
-            execute: (context, _, subtag) =>
-                this.customError('Lock cannot be nested', context, subtag)
-        });
-
-        const release = await lockAsync(lock, mode === 'read' ? 'readLock' : 'writeLock');
+        const release = await lockAsync(lock, `${mode}Lock`);
         try {
+            context.scope.inLock = true;
             return await code.wait();
         } finally {
-            lockOverride.revert();
+            context.scope.inLock = false;
             release();
         }
     }

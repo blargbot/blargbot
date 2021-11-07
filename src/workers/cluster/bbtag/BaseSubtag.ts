@@ -45,6 +45,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public enrichDocs(docs: MessageEmbedOptions): MessageEmbedOptions {
         return docs;
     }
+
     public notANumber(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Not a number', subtag, debugMessage);
     }
@@ -72,9 +73,11 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public noUserFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('No user found', subtag, debugMessage);
     }
+
     public noRoleFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('No role found', subtag, debugMessage);
     }
+
     public userNotInGuild(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('User not in guild', subtag, debugMessage);
     }
@@ -86,6 +89,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public tooManyLoops(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Too many loops', subtag, debugMessage);
     }
+
     public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError(errorText, subtag, debugMessage);
     }

@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { SubtagType  } from '@cluster/utils';
+import { SubtagType } from '@cluster/utils';
 
 export class ExecSubtag extends BaseSubtag {
     public constructor() {
@@ -35,11 +35,15 @@ export class ExecSubtag extends BaseSubtag {
                             cooldown: tag.cooldown ?? 0,
                             inputRaw: input
                         });
-                        const result = await context.engine.execute(tag.content, childContext);
 
-                        context.errors.push(...childContext.errors);
-
-                        return result.content;
+                        context.scopes.pushScope(true);
+                        try {
+                            const result = await context.engine.execute(tag.content, childContext);
+                            return result.content;
+                        } finally {
+                            context.errors.push(...childContext.errors);
+                            context.scopes.popScope();
+                        }
                     }
                 }
             ]

@@ -17,11 +17,11 @@ export class IsUserBoostingSubtag extends BaseSubtag {
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns `true` if the `user` is boosting the guild and `false` if not. '+
+                    description: 'Returns `true` if the `user` is boosting the guild and `false` if not. ' +
                         'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}',
                     exampleOut: 'stupid cat is boosting!',
-                    execute: async (context, [{value: userStr}, {value: quietStr}], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: userStr }, { value: quietStr }], subtag): Promise<string | void> => {
                         const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : quietStr !== '';
                         let user: User | undefined = context.user;
 

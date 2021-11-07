@@ -1,5 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 
 export class FilterSubtag extends BaseSubtag {
@@ -23,24 +22,11 @@ export class FilterSubtag extends BaseSubtag {
                         const array = Array.from(arr.v);
 
                         const processed: Record<string, boolean> = {};
-                        const subtagOverrides = [];
-                        const childContext = context.makeChild();
-                        for (const name of overrides.filter) {
-                            subtagOverrides.push(childContext.override(name, {
-                                execute: (_context: BBTagContext, subtagName: string, _subtag: SubtagCall) => {
-                                    return this.customError(`Subtag {${subtagName}} is disabled inside {filter}`, _context, _subtag);
-                                }
-                            }));
-                        }
                         for (const item of array) {
                             const stringifiedItem = parse.string(item);
                             if (processed[stringifiedItem]) continue;
-                            if (await context.limit.check(context, subtag, 'filter:loops') !== undefined) {
-                                for (const override of subtagOverrides) {
-                                    override.revert();
-                                }
+                            if (await context.limit.check(context, subtag, 'filter:loops') !== undefined)
                                 return this.customError('Max safeloops reached', context, subtag);
-                            }
 
                             await context.variables.set(varName, item);
                             try {
@@ -58,9 +44,6 @@ export class FilterSubtag extends BaseSubtag {
                                 // }
                                 // throw err;
                             }
-                        }
-                        for (const override of subtagOverrides) {
-                            override.revert();
                         }
                         await context.variables.reset(varName);
                         return JSON.stringify(result);

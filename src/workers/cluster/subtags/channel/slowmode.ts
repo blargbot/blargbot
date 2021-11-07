@@ -49,7 +49,7 @@ export class SlowmodeSubtag extends BaseSubtag {
     ): Promise<string | void> {
         let time = parse.int(timeStr);
         let channel;
-        const lookupChannel = await context.queryChannel(channelStr, { noLookup: true});//TODO yikes
+        const lookupChannel = await context.queryChannel(channelStr, { noLookup: true });//TODO yikes
         if (lookupChannel !== undefined)
             channel = lookupChannel;
         else {
