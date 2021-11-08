@@ -52,8 +52,8 @@ class TagBuilder {
                     let execArgs = resolveArgs != null
                         ? resolveArgs
                         : [...new Array(subtagArgs.length).keys()];
-
-                    for (const index of new Set(execArgs))
+                    
+                        for (const index of new Set(execArgs))
                         if (subtagArgs[index] !== undefined)
                             subtagArgs[index] = await definition.executeArg(subtag, subtagArgs[index], context);
 
@@ -78,6 +78,8 @@ class TagBuilder {
                     timer.end();
                     bu.Metrics.subtagLatency
                         .labels(subtag.name).observe(timer.elapsed);
+                    bu.Metrics.subtagCounter
+                        .labels(subtag.name).inc();
                     if (!context.state.subtags)
                         context.state.subtags = {};
                     if (!context.state.subtags[subtag.name] || !Array.isArray(context.state.subtags[subtag.name]))
