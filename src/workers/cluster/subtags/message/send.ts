@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { MalformedEmbed } from '@core/types';
@@ -37,7 +38,7 @@ export class SendSubtag extends BaseSubtag {
     public async send(context: BBTagContext, subtag: SubtagCall, channelId: string, message?: string, embed?: MessageEmbedOptions[] | MalformedEmbed[], file?: FileOptions): Promise<string> {
         const channel = await context.queryChannel(channelId, { noLookup: true });
         if (channel === undefined || !guard.isTextableChannel(channel))
-            return this.channelNotFound(context, subtag, `Unable to read ${channelId} as a valid channel`);
+            throw new ChannelNotFoundError(channelId);
 
         if (typeof file?.attachment === 'string' && file.attachment.startsWith('buffer:'))
             file.attachment = Buffer.from(file.attachment.slice(7), 'base64');

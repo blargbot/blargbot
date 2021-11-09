@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { AnyChannel } from 'discord.js';
 
@@ -22,7 +22,7 @@ export class ChannelTypeSubtag extends BaseSubtag {
                     description: 'Returns the type the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: '{channeltype;cool channel}\n{channeltype;some channel that doesn\'t exist;true}',
                     exampleOut: 'voice\n(nothing is returned here)',
-                    execute: (ctx, [channel, quiet], subtag) => this.getChannelId(ctx, channel.value, quiet.value !== '', subtag)
+                    execute: (ctx, [channel, quiet]) => this.getChannelId(ctx, channel.value, quiet.value !== '')
 
                 }
             ]
@@ -32,13 +32,15 @@ export class ChannelTypeSubtag extends BaseSubtag {
     public async getChannelId(
         context: BBTagContext,
         channelStr: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined)
-            return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
+        if (channel === undefined) {
+            if (quiet)
+                return '';
+            throw new ChannelNotFoundError(channelStr);
+        }
         return channelTypes[channel.type];
     }
 }

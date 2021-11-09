@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { Message, MessageEmbedOptions } from 'discord.js';
@@ -36,13 +37,13 @@ export class ReactAddSubtag extends BaseSubtag {
         let message: Message | undefined;
 
         // Check if the first "emote" is actually a valid channel
-        let channel = await context.queryChannel(args[0], {noErrors: true, noLookup: true});
+        let channel = await context.queryChannel(args[0], { noErrors: true, noLookup: true });
         if (channel === undefined)
             channel = context.channel;
         else
             args.shift();
         if (channel === undefined)
-            return this.channelNotFound(context, subtag);
+            throw new ChannelNotFoundError(args[0]);
         // Check that the current first "emote" is a message id
         if (/^\d{17,23}$/.test(args[0])) {
             try {

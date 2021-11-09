@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
@@ -65,7 +66,7 @@ export class MessageEditTimeSubtag extends BaseSubtag {
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr, { noLookup: true }); //TODO lookup
         if (channel === undefined)
-            return this.channelNotFound(context, subtag);
+            throw new ChannelNotFoundError(channelStr);
 
         try {
             const message = await context.util.getMessage(channel.id, messageStr);

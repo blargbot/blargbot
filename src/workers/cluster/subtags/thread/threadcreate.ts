@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
 import { AllowedThreadTypeForTextChannel, GuildMessage, ThreadAutoArchiveDuration, ThreadCreateOptions } from 'discord.js';
 
@@ -28,22 +29,22 @@ export class ThreadCreateSubtag extends BaseSubtag {
                     description: '`channel` defaults to the current channel\n\nCreates a new thread in `channel`. If `message` is provided, thread will start from `message`.\n`options` must be a JSON object containing `name`, other properties are:\n- `autoArchiveDuration` (one of `60, 1440, 4320, 10080`)\n- `private` (boolean)\nThe guild must have the required boosts for durations `4320` and `10080`. If `private` is true thread will be private (unless in a news channel).\nReturns the ID of the new thread channel',
                     exampleCode: '{threadcreate;;123456789123456;{json;{"name" : "Hello world!"}}}',
                     exampleOut: '98765432198765',
-                    execute: async (context, args, subtag): Promise<string | void> => {
+                    execute: async (context, [channelStr, messageStr, optionsStr], subtag): Promise<string | void> => {
                         let channel;
-                        if (args[0].value === '')
+                        if (channelStr.value === '')
                             channel = context.channel;
                         else {
-                            channel = await context.queryChannel(args[0].value);
+                            channel = await context.queryChannel(channelStr.value);
                             if (channel === undefined)
-                                return this.channelNotFound(context, subtag);
+                                throw new ChannelNotFoundError(channelStr.value);
                         }
                         if (!guard.isThreadableChannel(channel))
                             return this.customError(discordUtil.notThreadable(channel), context, subtag);
 
                         let message: GuildMessage | undefined;
-                        if (args[1].value !== '') {
+                        if (messageStr.value !== '') {
                             try {
-                                const maybeMessage = await context.util.getMessage(channel, args[1].value);
+                                const maybeMessage = await context.util.getMessage(channel, messageStr.value);
                                 if (maybeMessage === undefined)
                                     return this.noMessageFound(context, subtag);
                                 if (!guard.isGuildMessage(maybeMessage))
@@ -54,7 +55,7 @@ export class ThreadCreateSubtag extends BaseSubtag {
                             }
                         }
 
-                        const mappingOptions = threadOptions((await bbtagUtil.json.parse(context, args[2].value)).object);
+                        const mappingOptions = threadOptions((await bbtagUtil.json.parse(context, optionsStr.value)).object);
 
                         if (!mappingOptions.valid)
                             return this.customError('Invalid options object', context, subtag);

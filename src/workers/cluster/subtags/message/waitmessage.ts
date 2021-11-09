@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
+import { ChannelNotFoundError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -65,7 +65,7 @@ export class WaitMessageSubtags extends BaseSubtag {
             flattenedChannels = await Promise.all(flattenedChannels.map(async input => await context.queryChannel(input, { noLookup: true })));
             channels = flattenedChannels.filter((channel): channel is GuildChannels => channel !== undefined);
             if (flattenedChannels.length !== channels.length)
-                return this.channelNotFound(context, subtag);
+                throw new ChannelNotFoundError(channelStr);
             channels = channels.map(channel => channel.id);
         } else {
             channels = [context.channel.id];

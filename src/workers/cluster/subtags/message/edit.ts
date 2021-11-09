@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedFieldData, MessageEmbed, MessageEmbedOptions } from 'discord.js';
@@ -18,7 +19,7 @@ export class EditSubtag extends BaseSubtag {
                 {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
                     execute: async (ctx, args, subtag) => {
-                        const channel = await ctx.queryChannel(args[0].value, {noLookup: true});
+                        const channel = await ctx.queryChannel(args[0].value, { noLookup: true });
                         if (channel === undefined) {//{edit;msg;text;embed}
                             await this.edit(ctx, subtag, ctx.channel.id, args[0].value, args[1].value, args[2].value);
                         } else {//{edit;channel;msg;text|embed}
@@ -42,15 +43,16 @@ export class EditSubtag extends BaseSubtag {
         contentStr: string,
         embedStr?: string
     ): Promise<string | void> {
-        const channel = await context.queryChannel(channelStr, {noLookup: true});
+        const channel = await context.queryChannel(channelStr, { noLookup: true });
         if (channel === undefined)
-            return this.channelNotFound(context, subtag);
+            throw new ChannelNotFoundError(channelStr);
+
         let content: string | undefined;
         let embeds: MessageEmbed[] | MessageEmbedOptions[] | undefined;
         if (embedStr !== undefined) {
             embeds = parse.embed(embedStr);
             content = contentStr;
-        }else {
+        } else {
             const parsedEmbed = parse.embed(contentStr);
             if (parsedEmbed === undefined || guard.hasProperty(parsedEmbed, 'malformed')) {
                 content = contentStr;

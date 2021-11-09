@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { Constants } from 'discord.js';
@@ -46,7 +47,7 @@ export class MessageTypeSubtag extends BaseSubtag {
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr);
         if (channel === undefined)
-            return this.channelNotFound(context, subtag);
+            throw new ChannelNotFoundError(channelStr);
         let message;
         try {
             message = await context.util.getMessage(channel, messageID);

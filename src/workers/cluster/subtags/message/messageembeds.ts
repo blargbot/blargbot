@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
@@ -43,8 +44,12 @@ export class MessageEmbedsSubtag extends BaseSubtag {
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined)
-            return quiet ? '[]' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
+        if (channel === undefined) {
+            if (quiet)
+                return '[]';
+            throw new ChannelNotFoundError(channelStr);
+        }
+
         let message: Message | undefined;
         try {
             message = await context.util.getMessage(channel, messageStr);

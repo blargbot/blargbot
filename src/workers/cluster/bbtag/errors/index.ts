@@ -1,6 +1,7 @@
 export * from './ArgumentLengthError';
 export * from './BBTagRuntimeError';
 export * from './BBTagTypeError';
+export * from './ChannelNotFoundError';
 export * from './NotABooleanError';
 export * from './NotANumberError';
 export * from './NotAnArrayError';

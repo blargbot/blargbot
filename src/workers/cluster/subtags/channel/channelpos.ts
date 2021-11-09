@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -38,8 +39,12 @@ export class ChannelPosSubtag extends BaseSubtag {
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined)
-            return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
+        if (channel === undefined) {
+            if (quiet)
+                return '';
+            throw new ChannelNotFoundError(channelStr);
+        }
+
         return this.getChanelPositionCore(context, channel, subtag);
     }
 

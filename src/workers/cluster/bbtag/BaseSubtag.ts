@@ -39,7 +39,6 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         } finally {
             timer.end();
             metrics.subtagLatency.labels(this.name).observe(timer.elapsed);
-            metrics.subtagCounter.labels(this.name).inc();
             const debugPerf = context.state.subtags[this.name] ??= [];
             debugPerf.push(timer.elapsed);
         }
@@ -47,10 +46,6 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
 
     public enrichDocs(docs: MessageEmbedOptions): MessageEmbedOptions {
         return docs;
-    }
-
-    public channelNotFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('No channel found', subtag, debugMessage);
     }
 
     public noMessageFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {

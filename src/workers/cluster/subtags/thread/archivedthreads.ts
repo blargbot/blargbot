@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, SubtagType } from '@cluster/utils';
 
 export class ArchivedThreadsSubtag extends BaseSubtag {
@@ -12,10 +13,10 @@ export class ArchivedThreadsSubtag extends BaseSubtag {
                     description: '`channel` defaults to the current channel\n\nLists all archived threads in `channel`.\nReturns an array of thread channel IDs.',
                     exampleCode: '{archivedthreads;123456789123456}',
                     exampleOut: '["123456789012345", "98765432198765"]',
-                    execute: async (context, args, subtag) => {
-                        const channel = await context.queryChannel(args[0].value);
+                    execute: async (context, [channelStr], subtag) => {
+                        const channel = await context.queryChannel(channelStr.value);
                         if (channel === undefined)
-                            return this.channelNotFound(context, subtag);
+                            throw new ChannelNotFoundError(channelStr.value);
                         if (guard.isThreadableChannel(channel))
                             return JSON.stringify((await channel.threads.fetchArchived()).threads.map(t => t.id));
                         return this.customError(discordUtil.notThreadable(channel), context, subtag);

@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
@@ -22,7 +22,7 @@ export class ChannelIsVoice extends BaseSubtag {
                     description: 'Checks if `channel` is a voice channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{isvoice;blarg podcats}',
                     exampleOut: 'true',
-                    execute: (ctx, [channel, quiet], subtag) => this.isVoiceChannel(ctx, channel.value, quiet.value !== '', subtag)
+                    execute: (ctx, [channel, quiet]) => this.isVoiceChannel(ctx, channel.value, quiet.value !== '')
                 }
             ]
         });
@@ -31,13 +31,15 @@ export class ChannelIsVoice extends BaseSubtag {
     public async isVoiceChannel(
         context: BBTagContext,
         channelStr: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
-        if (channel === undefined)
-            return quiet ? '' : this.channelNotFound(context, subtag, `${channelStr} could not be found`);
+        if (channel === undefined) {
+            if (quiet)
+                return '';
+            throw new ChannelNotFoundError(channelStr);
+        }
         return guard.isVoiceChannel(channel).toString();
     }
 }

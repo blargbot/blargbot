@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -39,10 +40,10 @@ export class LastMessageIdSubtag extends BaseSubtag {
         });
 
         if (channel === undefined)
-            return this.channelNotFound(context, subtag);
-        if (guard.isTextableChannel(channel)) {
+            throw new ChannelNotFoundError(channelStr);
+        if (guard.isTextableChannel(channel))
             return channel.lastMessageId ?? '';
-        }
+
         return this.customError('Channel must be a textable channel', context, subtag);
     }
 }
