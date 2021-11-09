@@ -1,6 +1,6 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
-import { parse, SubtagType } from '@cluster/utils';
+import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { discordUtil, guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 
 const fields = [
@@ -79,17 +79,13 @@ export class EmbedBuildSubag extends BaseSubtag {
                     exampleOut: '{"title":"hello!","description":"I am an example embed","fields":[' +
                         '{"name":"Field 1","value":"This is the first field!"},' +
                         '{"name":"Field 2","value":"This is the next field and is inline!","inline":true}]}',
-                    execute: (ctx, args, subtag) => this.buildEmbed(ctx, args.map(arg => arg.value), subtag)
+                    execute: (_, args) => this.buildEmbed(args.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public buildEmbed(
-        context: BBTagContext,
-        args: string[],
-        subtag: SubtagCall
-    ): string {
+    public buildEmbed(args: string[]): string {
         const embed: EmbedBuildOptions = {};
 
         for (const entry of args) {
@@ -97,117 +93,103 @@ export class EmbedBuildSubag extends BaseSubtag {
                 continue;
             const splitAt = entry.indexOf(':');
             if (splitAt === -1)
-                return this.invalidEmbed('Missing \':\'', context, subtag);
+                throw new BBTagRuntimeError('Missing \':\'', entry);
 
             const key = entry.substring(0, splitAt);
             const value = entry.substring(splitAt + 1);
 
-            const embedError = this.setField(embed, key, value);
-
-            if (typeof embedError === 'string')
-                return this.invalidEmbed(embedError, context, subtag);
+            this.setField(embed, key, value);
         }
 
         if (embed.fields !== undefined) {
-            if (embed.fields.filter(f => typeof f.value !== 'string' || f.value.trim() === '').length > 0)
-                return this.invalidEmbed('Fields missing value', context, subtag);
-            if (embed.fields.filter(f => typeof f.name !== 'string' || f.name.trim() === '').length > 0)
-                return this.invalidEmbed('Field missing name', context, subtag);
+            for (let i = 0; i < embed.fields.length; i++) {
+                const field = embed.fields[i];
+                if ((field.value?.trim() ?? '') === '')
+                    throw new BBTagRuntimeError('Fields missing value', `Field at index ${i}`);
+                if ((field.name?.trim() ?? '') === '')
+                    throw new BBTagRuntimeError('Field missing name', `Field at index ${i}`);
+            }
         }
-        const embedText = JSON.stringify(embed);
-        if (embedText.length > 6000) //? Is this even how discord counts this?
-            return this.invalidEmbed('Embed too long', context, subtag);
-        return embedText;
+        if (!guard.checkEmbedSize([<MessageEmbedOptions>embed])) //? Is this even how discord counts this?
+            throw new BBTagRuntimeError('Embed too long', JSON.stringify(embed));
+        return JSON.stringify(embed);
     }
 
     private setField(
         embed: EmbedBuildOptions,
         key: string,
         value: string
-    ): string | void {
+    ): void {
         switch (key.toLowerCase()) {
             case 'title':
-                if (value.length > 256)
-                    return 'Title too long';
+                if (value.length > discordUtil.getLimit('embed.title'))
+                    throw new BBTagRuntimeError('Title too long', value);
                 embed.title = value;
                 break;
             case 'description':
-                if (value.length > 2048)
-                    return 'Description too long';
+                if (value.length > discordUtil.getLimit('embed.description'))
+                    throw new BBTagRuntimeError('Description too long', value);
                 embed.description = value;
                 break;
             case 'url':
-                try {
-                    const parsedValue = new URL(value);
-                    embed.url = parsedValue.host;
-                    break;
-                } catch (e: unknown) {
-                    return 'Invalid url';
-                }
+                if (!guard.isUrl(value))
+                    throw new BBTagRuntimeError('Invalid url', value);
+                embed.url = value;
+                break;
             case 'color': {
                 const colour = parse.color(value);
                 if (colour === undefined)
-                    return 'Invalid color';
+                    throw new BBTagRuntimeError('Invalid color', value);
                 embed.color = colour;
                 break;
             }
             case 'timestamp': {
                 const time = parse.time(value);
                 if (!time.isValid())
-                    return 'Invalid timestamp';
+                    throw new BBTagRuntimeError('Invalid timestamp', value);
                 embed.timestamp = time.toDate();
                 break;
             }
             case 'footer.icon_url':
-                try {
-                    embed.footer = { ...embed.footer, icon_url: new URL(value).href };
-                    break;
-                } catch (e: unknown) {
-                    return 'Invalid footer.icon_url';
-                }
+                if (!guard.isUrl(value))
+                    throw new BBTagRuntimeError('Invalid footer.icon_url', value);
+                embed.footer = { ...embed.footer, icon_url: value };
+                break;
             case 'footer.text':
-                if (value.length > 2048)
-                    return 'Footer text too long';
+                if (value.length > discordUtil.getLimit('embed.footer.text'))
+                    throw new BBTagRuntimeError('Footer text too long', value);
                 embed.footer = { ...embed.footer, text: value };
                 break;
             case 'thumbnail.url':
-                try {
-                    embed.thumbnail = { ...embed.thumbnail, url: new URL(value).href };
-                    break;
-                } catch (e: unknown) {
-                    return 'Invalid thumbnail.url';
-                }
+                if (!guard.isUrl(value))
+                    throw new BBTagRuntimeError('Invalid thumbnail.url', value);
+                embed.thumbnail = { ...embed.thumbnail, url: value };
+                break;
             case 'image.url':
-                try {
-                    embed.image = { ...embed.image, url: new URL(value).href };
-                    break;
-                } catch (e: unknown) {
-                    return 'Invalid image.url';
-                }
+                if (!guard.isUrl(value))
+                    throw new BBTagRuntimeError('Invalid image.url', value);
+                embed.image = { ...embed.image, url: value };
+                break;
             case 'author.name':
-                if (value.length > 256)
-                    return 'Author name too long';
+                if (value.length > discordUtil.getLimit('embed.author.name'))
+                    throw new BBTagRuntimeError('Author name too long', value);
                 embed.author = { ...embed.author, name: value };
                 break;
             case 'author.url':
-                try {
-                    embed.author = { ...embed.author, url: new URL(value).href };
-                    break;
-                } catch (e: unknown) {
-                    return 'Invalid author.url';
-                }
+                if (!guard.isUrl(value))
+                    throw new BBTagRuntimeError('Invalid author.url', value);
+                embed.author = { ...embed.author, url: value };
+                break;
             case 'author.icon_url':
-                try {
-                    embed.author = { ...embed.author, icon_url: new URL(value).href };
-                    break;
-                } catch (e: unknown) {
-                    return 'Invalid author.icon_url';
-                }
+                if (!guard.isUrl(value))
+                    throw new BBTagRuntimeError('Invalid author.icon_url', value);
+                embed.author = { ...embed.author, icon_url: value };
+                break;
             case 'fields.name':
-                if (embed.fields !== undefined && embed.fields.length >= 25)
-                    return 'Too many fields';
-                if (value.length > 256)
-                    return 'Field name too long';
+                if (embed.fields !== undefined && embed.fields.length >= discordUtil.getLimit('embed.fields'))
+                    throw new BBTagRuntimeError('Too many fields', value);
+                if (value.length > discordUtil.getLimit('embed.field.name'))
+                    throw new BBTagRuntimeError('Field name too long', value);
                 if (embed.fields === undefined)
                     embed.fields = [];
                 embed.fields.push({
@@ -216,22 +198,22 @@ export class EmbedBuildSubag extends BaseSubtag {
                 break;
             case 'fields.value':
                 if (embed.fields === undefined || embed.fields.length === 0)
-                    return 'Field name not specified';
-                if (value.length > 1024)
-                    return 'Field value too long';
+                    throw new BBTagRuntimeError('Field name not specified');
+                if (value.length > discordUtil.getLimit('embed.field.value'))
+                    throw new BBTagRuntimeError('Field value too long', value);
                 embed.fields[embed.fields.length - 1].value = value;
                 break;
             case 'fields.inline': {
                 if (embed.fields === undefined || embed.fields.length === 0)
-                    return 'Field name not specified';
+                    throw new BBTagRuntimeError('Field name not specified');
                 const parsedValue = parse.boolean(value);
                 if (typeof parsedValue !== 'boolean')
-                    return 'Inline must be a boolean';
+                    throw new BBTagRuntimeError('Inline must be a boolean', value);
                 embed.fields[embed.fields.length - 1].inline = parsedValue;
                 break;
             }
             default:
-                return 'Unknown key \'' + value + '\'';
+                throw new BBTagRuntimeError('Unknown key \'' + value + '\'');
         }
 
     }
