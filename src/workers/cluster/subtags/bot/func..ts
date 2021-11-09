@@ -1,6 +1,6 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RuntimeReturnState, SubtagCall } from '@cluster/types';
+import { SubtagStackOverflowError, UnknownSubtagError } from '@cluster/bbtag/errors';
+import { RuntimeReturnState } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
 export class FunctionInvokeSubtag extends BaseSubtag {
@@ -12,20 +12,20 @@ export class FunctionInvokeSubtag extends BaseSubtag {
             definition: [
                 {
                     parameters: ['args*'],
-                    execute: (ctx, args, subtag) => this.invokeFunction(ctx, args.subtagName.slice(5), args.map(arg => arg.value), subtag)
+                    execute: (ctx, args) => this.invokeFunction(ctx, args.subtagName.slice(5), args.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public async invokeFunction(context: BBTagContext, functionName: string, args: string[], subtag: SubtagCall): Promise<string> {
+    public async invokeFunction(context: BBTagContext, functionName: string, args: string[]): Promise<string> {
         const func = context.scopes.local.functions[functionName.toLowerCase()];
         if (func === undefined)
-            return context.addError(`Unknown subtag func.${functionName}`, subtag);
+            throw new UnknownSubtagError(`func.${functionName}`);
 
         if (context.state.stackSize > 200) {
             context.state.return = RuntimeReturnState.ALL;
-            throw new BBTagRuntimeError(`Terminated recursive tag after ${context.state.stackSize} execs.`);
+            throw new SubtagStackOverflowError(context.state.stackSize);
         }
 
         const scope = context.scopes.pushScope();

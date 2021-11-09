@@ -35,18 +35,15 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         return this;
     }
 
-    public async check(context: BBTagContext, subtag: SubtagCall, rulekey: string): Promise<string | undefined> {
+    public async check(context: BBTagContext, subtag: SubtagCall, rulekey: string): Promise<void> {
         const [rootKey, subKey] = this.getKeys(rulekey);
         const set = this.#rules[rootKey] ?? {};
         const collection = set[subKey];
         if (collection === undefined)
             return undefined;
 
-        for (const rule of collection) {
-            if (!await rule.check(context, subtag))
-                return context.addError(rule.errorText(rulekey, context), subtag);
-        }
-        return undefined;
+        for (const rule of collection)
+            await rule.check(context, rootKey, subtag);
     }
 
     public rulesFor(rulekey: string): string[] {

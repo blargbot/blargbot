@@ -1,4 +1,4 @@
-import { ExecutionResult } from '@cluster/types';
+import { ExecutionResult, SubtagCall } from '@cluster/types';
 import { codeBlock, humanize } from '@core/utils';
 import { MessageOptions } from 'discord.js';
 import moment from 'moment';
@@ -32,21 +32,34 @@ export function createDebugOutput(result: ExecutionResult): MessageOptions {
                     tagName: result.tagName,
                     userInput: result.input,
                     code: result.source,
-                    debug: result.debug,
+                    debug: result.debug.map(e => ({
+                        details: e.text,
+                        subtag: subtagLocation(e.subtag)
+                    })),
                     errors: result.errors.map(e => ({
-                        error: e.error,
-                        details: e.debugMessage,
-                        subtag: e.subtag === undefined ? undefined : {
-                            name: stringify(e.subtag.name),
-                            arguments: e.subtag.args.map(stringify),
-                            start: `Index ${e.subtag.start.index}: Line ${e.subtag.start.line}, column ${e.subtag.start.column}`,
-                            end: `Index ${e.subtag.end.index}: Line ${e.subtag.end.line}, column ${e.subtag.end.column}`
-                        }
+                        error: e.error.message,
+                        details: e.error.detail,
+                        subtag: readableSubtag(e.subtag)
                     })),
                     variables: result.database.values,
                     performance: performance
                 }, undefined, 2)
             }
         ]
+    };
+}
+
+function readableSubtag(subtag: SubtagCall | undefined): JObject | undefined {
+    return subtag === undefined ? undefined : {
+        name: stringify(subtag.name),
+        arguments: subtag.args.map(stringify),
+        ...subtagLocation(subtag)
+    };
+}
+
+function subtagLocation(subtag: SubtagCall): JObject {
+    return {
+        start: `Index ${subtag.start.index}: Line ${subtag.start.line}, column ${subtag.start.column}`,
+        end: `Index ${subtag.end.index}: Line ${subtag.end.line}, column ${subtag.end.column}`
     };
 }

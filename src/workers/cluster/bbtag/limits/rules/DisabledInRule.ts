@@ -1,5 +1,6 @@
 import { BBTagContext } from '@cluster/bbtag';
-import { RuntimeLimitRule } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { RuntimeLimitRule, SubtagCall } from '@cluster/types';
 import { humanize } from '@cluster/utils';
 
 export class DisabledInRule implements RuntimeLimitRule {
@@ -8,13 +9,15 @@ export class DisabledInRule implements RuntimeLimitRule {
         this.subtags = subtagNames;
     }
 
-    public check(context: BBTagContext): boolean {
-        return !this.subtags.some(s => context.callStack.contains(s));
-    }
-
-    public errorText(subtagName: string, context: BBTagContext): string {
-        const problem = this.subtags.map(s => ({ s, i: context.callStack.lastIndexOf(s) })).reduce((p, c) => p.i < c.i ? c : p);
-        return `{${subtagName}} is disabled inside {${problem.s}}`;
+    public check(context: BBTagContext, subtagName: string): void {
+        const problem = this.subtags.map(s => ({ s, i: context.callStack.lastIndexOf(s) }))
+            .reduce((p, c) => p.i < c.i ? c : p, { s: '', i: -1 });
+        if (problem.s.length > 0) {
+            const { subtag } = context.callStack.get(problem.i) ?? { subtag: unknownSubtag };
+            throw new BBTagRuntimeError(`{${subtagName}} is disabled inside {${problem.s}}`, `${problem.s} located at:\n` +
+                `Index ${subtag.start.index}: Line ${subtag.start.line}, column ${subtag.start.column}\n` +
+                `Index ${subtag.end.index}: Line ${subtag.end.line}, column ${subtag.end.column}`);
+        }
     }
 
     public displayText(): string {
@@ -29,3 +32,12 @@ export class DisabledInRule implements RuntimeLimitRule {
         // NOOP
     }
 }
+
+const unknownSubtag: Pick<SubtagCall, 'start' | 'end'> = {
+    start: {
+        column: -1,
+        index: -1,
+        line: -1
+    },
+    get end() { return this.start; }
+};

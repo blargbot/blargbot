@@ -26,11 +26,17 @@ export class RepeatSubtag extends BaseSubtag {
                         let result = '';
 
                         for (let i = 0; i < amount; i++) {
-                            if (await context.limit.check(context, subtag, 'repeat:loops') !== undefined) {
-                                const error = new TooManyLoopsError(-1);
-                                result += context.addError(error.message, subtag, error.detail);
+                            try {
+                                await context.limit.check(context, subtag, 'repeat:loops');
+                            } catch (error: unknown) {
+                                if (!(error instanceof TooManyLoopsError))
+                                    throw error;
+
+                                // TODO change to be a AsyncIterable
+                                result += context.addError(error, subtag);
                                 break;
                             }
+
                             result += await code.execute();
                             if (context.state.return !== 0)
                                 break;

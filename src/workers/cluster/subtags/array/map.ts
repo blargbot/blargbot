@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
@@ -29,11 +30,15 @@ export class MapSubtag extends BaseSubtag {
 
         const result = [];
         for (const item of array) {
-            const checked = await context.limit.check(context, subtag, 'map:loops');
-            if (checked !== undefined) {
-                result.push(checked);
+            try {
+                await context.limit.check(context, subtag, 'map:loops');
+            } catch (error: unknown) {
+                if (!(error instanceof BBTagRuntimeError))
+                    throw error;
+                result.push(context.addError(error, subtag));
                 break;
             }
+
             await context.variables.set(varName, item);
             result.push(await code.execute());
 

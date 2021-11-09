@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class ParamsArraySubtag extends BaseSubtag {
@@ -13,16 +13,16 @@ export class ParamsArraySubtag extends BaseSubtag {
                     description: 'Gets the parameters passed to the current function as an array',
                     exampleCode: '{func.test;{paramsarray}}\n{func.test;a;b;c;d}',
                     exampleOut: '["a","b","c","d"]',
-                    execute: (ctx, _, subtag) => this.getParamsArray(ctx, subtag)
+                    execute: (ctx) => this.getParamsArray(ctx)
                 }
             ]
         });
     }
 
-    public getParamsArray(context: BBTagContext, subtag: SubtagCall): string {
+    public getParamsArray(context: BBTagContext): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            return context.addError('{paramsarray} can only be used inside {function}', subtag);
+            throw new BBTagRuntimeError('{paramsarray} can only be used inside {function}');
         return JSON.stringify(params);
     }
 }

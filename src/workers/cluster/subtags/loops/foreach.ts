@@ -20,11 +20,17 @@ export class ForeachSubtag extends BaseSubtag {
                         const array = Array.from(arr.v);
 
                         for (const item of array) {
-                            if (await context.limit.check(context, subtag, 'foreach:loops') !== undefined) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN
-                                const error = new TooManyLoopsError(-1);
-                                result += context.addError(error.message, subtag, error.detail);
+                            try {
+                                await context.limit.check(context, subtag, 'foreach:loops');
+                            } catch (error: unknown) {
+                                if (!(error instanceof TooManyLoopsError))
+                                    throw error;
+
+                                // TODO change to be a AsyncIterable
+                                result += context.addError(error, subtag);
                                 break;
                             }
+
                             await context.variables.set(varName, item);
                             result += await code.execute();
                             if (context.state.return !== 0)

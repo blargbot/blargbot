@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class ParamsSubtag extends BaseSubtag {
@@ -14,37 +13,37 @@ export class ParamsSubtag extends BaseSubtag {
                     description: 'Gets the whole input given to the current function call',
                     exampleCode: '{func;test;You gave the parameters `{params}`}\n{func.test;Hello world!;BBtag is so cool}',
                     exampleOut: 'You gave the parameters `Hello world! BBtag is so cool`',
-                    execute: (ctx, _, subtag) => this.getAllParams(ctx, subtag)
+                    execute: (ctx) => this.getAllParams(ctx)
                 },
                 {
                     parameters: ['index'],
                     description: 'Gets a parameter passed to the current function call',
                     exampleCode: '{func;test;The first parameter is `{params;0}`}\n{func.test;Hello world!;BBtag is so cool}',
                     exampleOut: 'The first parameter is `Hello world!`',
-                    execute: (ctx, [index], subtag) => this.getParam(ctx, index.value, subtag)
+                    execute: (ctx, [index]) => this.getParam(ctx, index.value)
                 },
                 {
                     parameters: ['start', 'end'],
                     description: 'Gets all the parameters given from `start` up to `end`. If `end` is `n` then all parameters after `start` will be returned',
                     exampleCode: '{func;test;The first parameter is `{params;2;4}`}\n{func.test;A;B;C;D;E;F}',
                     exampleOut: 'C D',
-                    execute: (ctx, [start, end], subtag) => this.getParams(ctx, start.value, end.value, subtag)
+                    execute: (ctx, [start, end]) => this.getParams(ctx, start.value, end.value)
                 }
             ]
         });
     }
 
-    public getAllParams(context: BBTagContext, subtag: SubtagCall): string {
+    public getAllParams(context: BBTagContext): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            return context.addError('{params} can only be used inside {function}', subtag);
+            throw new BBTagRuntimeError('{params} can only be used inside {function}');
         return params.join(' ');
     }
 
-    public getParam(context: BBTagContext, index: string, subtag: SubtagCall): string {
+    public getParam(context: BBTagContext, index: string): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            return context.addError('{params} can only be used inside {function}', subtag);
+            throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
         const i = parse.int(index);
         if (isNaN(i))
@@ -56,12 +55,11 @@ export class ParamsSubtag extends BaseSubtag {
     public getParams(
         context: BBTagContext,
         start: string,
-        end: string,
-        subtag: SubtagCall
+        end: string
     ): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            return context.addError('{params} can only be used inside {function}', subtag);
+            throw new BBTagRuntimeError('{params} can only be used inside {function}');
 
         let from = parse.int(start, false);
         if (from === undefined)

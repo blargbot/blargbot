@@ -38,38 +38,41 @@ export class WhileSubtag extends BaseSubtag {
         subtag: SubtagCall
     ): Promise<string> {
         let result = '';
-        let reachedLimit = false;
+        try {
+            while (result.length < 1000000) {
+                await context.limit.check(context, subtag, 'while:loops');
+                let right = await val1Raw.execute();
+                let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
+                let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
 
-        while (!(reachedLimit = await context.limit.check(context, subtag, 'while:loops') !== undefined)) {
-            let right = await val1Raw.execute();
-            let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
-            let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
-
-            if (bbtagUtil.operators.isCompareOperator(operator)) {
-                //operator = operator;
-            } else if (bbtagUtil.operators.isCompareOperator(left)) {
-                //operator = left;
-                [left, operator] = [operator, left];
-            } else if (bbtagUtil.operators.isCompareOperator(right)) {
-                //operator = right;
-                [operator, right] = [right, operator];
-            }
-
-            if (bbtagUtil.operators.isCompareOperator(operator)) {
-                if (bbtagUtil.operators.compare[operator](right, left))
-                    result += await codeRaw.execute();
-                else {
-                    break;
+                if (bbtagUtil.operators.isCompareOperator(operator)) {
+                    //operator = operator;
+                } else if (bbtagUtil.operators.isCompareOperator(left)) {
+                    //operator = left;
+                    [left, operator] = [operator, left];
+                } else if (bbtagUtil.operators.isCompareOperator(right)) {
+                    //operator = right;
+                    [operator, right] = [right, operator];
                 }
-            } else {
-                //TODO invalid operator stuff here
-                result += await codeRaw.execute();
-            }
-        }
 
-        if (reachedLimit) {
-            const error = new TooManyLoopsError(-1); //* Not sure how I feel about subtags appending this error to the result. imo this should be the error should be returned
-            result += context.addError(error.message, subtag, error.detail);
+                if (bbtagUtil.operators.isCompareOperator(operator)) {
+                    if (bbtagUtil.operators.compare[operator](right, left))
+                        result += await codeRaw.execute();
+                    else {
+                        break;
+                    }
+                } else {
+                    //TODO invalid operator stuff here
+                    result += await codeRaw.execute();
+                }
+            }
+        } catch (error: unknown) {
+            if (!(error instanceof TooManyLoopsError))
+                throw error;
+
+            //* Not sure how I feel about subtags appending this error to the result. imo this should be the error should be returned
+            // TODO change to be a AsyncIterable
+            result += context.addError(error, subtag);
         }
         return result;
     }

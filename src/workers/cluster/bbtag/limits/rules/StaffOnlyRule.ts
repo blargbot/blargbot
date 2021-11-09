@@ -1,3 +1,4 @@
+import { StaffOnlyError } from '@cluster/bbtag/errors';
 import { RuntimeLimitRule } from '@cluster/types';
 
 import { BBTagContext } from '../../BBTagContext';
@@ -5,11 +6,9 @@ import { BBTagContext } from '../../BBTagContext';
 export class StaffOnlyRule implements RuntimeLimitRule {
     public static readonly instance: StaffOnlyRule = new StaffOnlyRule();
 
-    public async check(context: BBTagContext): Promise<boolean> {
-        return await context.isStaff;
-    }
-    public errorText(): string {
-        return 'Authorizer must be staff';
+    public async check(context: BBTagContext): Promise<void> {
+        if (!await context.isStaff)
+            throw new StaffOnlyError(context.authorizer);
     }
     public displayText(): string {
         return 'Authorizer must be staff';

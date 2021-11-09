@@ -11,7 +11,7 @@ import { inspect } from 'util';
 
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagContext } from './BBTagContext';
-import { BBTagRuntimeError } from './errors';
+import { BBTagRuntimeError, SubtagStackOverflowError, TagCooldownError } from './errors';
 import { TagCooldownManager } from './TagCooldownManager';
 
 export class BBTagEngine {
@@ -38,15 +38,15 @@ export class BBTagEngine {
         const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.cooldowns, ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
         let content;
-        if (context.cooldowns.get(context).isAfter(moment())) {
-            const remaining = moment.duration(context.cooldowns.get(context).diff(moment()));
+        if (context.cooldownEnd.isAfter(moment())) {
+            const remaining = moment.duration(context.cooldownEnd.diff(moment()));
             if (context.state.stackSize === 0)
                 await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
             context.state.return = RuntimeReturnState.ALL;
-            content = context.addError(`Cooldown: ${remaining.asMilliseconds()}`, caller);
+            content = context.addError(new TagCooldownError(context.tagName, context.isCC, remaining), caller);
         } else if (context.state.stackSize > 200) {
             context.state.return = RuntimeReturnState.ALL;
-            content = context.addError(`Terminated recursive tag after ${context.state.stackSize} execs.`, caller);
+            content = context.addError(new SubtagStackOverflowError(context.state.stackSize), caller);
         } else {
             context.cooldowns.set(context);
             context.execTimer.start();
@@ -90,26 +90,30 @@ export class BBTagEngine {
 
     private async evalSubtag(bbtag: SubtagCall, context: BBTagContext): Promise<string> {
         const name = (await this.evalStatement(bbtag.name, context)).toLowerCase();
-        const subtag = context.getSubtag(name);
-        if (subtag === undefined)
-            return context.addError(`Unknown subtag ${name}`, bbtag);
 
-        const result = await context.limit.check(context, bbtag, subtag.name);
-        if (result !== undefined)
-            return result;
-
-        context.callStack.push(subtag.name);
         try {
-            // sleep for 100ms every 1000 subtag calls
-            if (++context.state.subtagCount % 1000 === 0)
-                await sleep(10);
-            return await subtag.execute(context, name, bbtag) ?? '';
+            const subtag = context.getSubtag(name);
+            await context.limit.check(context, bbtag, subtag.name);
+            context.callStack.push(subtag.name, bbtag);
+
+            try {
+
+                // sleep for 100ms every 1000 subtag calls
+                if (++context.state.subtagCount % 1000 === 0)
+                    await sleep(10);
+                return await subtag.execute(context, name, bbtag) ?? '';
+            } catch (err: unknown) {
+                if (!(err instanceof BBTagRuntimeError))
+                    return this.logError(context, err, subtag.name, bbtag);
+                throw err;
+            } finally {
+                context.callStack.pop();
+            }
+
         } catch (err: unknown) {
             if (err instanceof BBTagRuntimeError)
-                return context.addError(err.message, bbtag, err.detail);
-            return this.logError(context, err, subtag, bbtag);
-        } finally {
-            context.callStack.pop();
+                return context.addError(err, bbtag);
+            throw err;
         }
     }
 
@@ -138,7 +142,7 @@ export class BBTagEngine {
             : this.evalSubtag(bbtag, context);
     }
 
-    private async logError(context: BBTagContext, error: unknown, subtag: BaseSubtag, bbtag: SubtagCall): Promise<string> {
+    private async logError(context: BBTagContext, error: unknown, subtagName: string, bbtag: SubtagCall): Promise<string> {
         this.logger.error(error);
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let description = `${error}`;
@@ -153,7 +157,7 @@ export class BBTagEngine {
                     description: description,
                     color: parse.color('red'),
                     fields: [
-                        { name: 'SubTag', value: subtag.name, inline: true },
+                        { name: 'SubTag', value: subtagName, inline: true },
                         { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
                         { name: 'Tag Name', value: context.rootTagName, inline: true },
                         { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
@@ -169,7 +173,8 @@ export class BBTagEngine {
                 }
             ]
         });
-        return context.addError('An internal server error has occurred', bbtag, error instanceof Error ? error.message : undefined);
+        const bbError = new BBTagRuntimeError('An internal server error has occurred', error instanceof Error ? error.message : undefined);
+        return context.addError(bbError, bbtag);
     }
 
     public check(source: string): AnalysisResults {

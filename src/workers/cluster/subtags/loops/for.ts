@@ -33,18 +33,22 @@ export class ForSubtag extends BaseSubtag {
                         if (errors.length > 0) throw new BBTagRuntimeError(errors.join(', '));
 
                         for (let i = initial; bbtagUtil.operators.compare[operator as CompareOperator](i.toString(), limit.toString()); i += increment) {
-                            if (await context.limit.check(context, subtag, 'for:loops') !== undefined) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN
-                                const error = new TooManyLoopsError(-1);
-                                result += context.addError(error.message, subtag, error.detail);
+                            try {
+                                await context.limit.check(context, subtag, 'for:loops');
+                            } catch (error: unknown) {
+                                if (!(error instanceof TooManyLoopsError))
+                                    throw error;
+                                result += context.addError(error);
                                 break;
                             }
+
                             await context.variables.set(varName, i);
                             result += await code.execute();
                             const varValue = await context.variables.get(varName);
                             i = parse.float(parse.string(varValue));
                             if (isNaN(i)) {
-                                const error = new NotANumberError(varValue); // TODO change to be a AsyncIterable
-                                result += context.addError(error.message, subtag, error.detail);
+                                // TODO change to be a AsyncIterable
+                                result += context.addError(new NotANumberError(varValue), subtag);
                                 break;
                             }
 

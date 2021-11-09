@@ -1,3 +1,4 @@
+import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
 import { GlobalLimit } from './GlobalLimit';
 import { disabledRule, StaffOnlyRule, UseCountRule } from './rules';
 
@@ -39,7 +40,7 @@ export class GeneralAutoResponseLimit extends GlobalLimit {
             .addRules('edit', StaffOnlyRule.instance, new UseCountRule(1))
             .addRules('delete', StaffOnlyRule.instance, new UseCountRule(2))
             .addRules('reactremove', new UseCountRule(1))
-            .addRules('reactremove:requests', new UseCountRule(20, ['Request', 'requests']))
+            .addRules('reactremove:requests', new UseCountRule(20, 'requests', 'Request'))
             .addRules('timer', disabledRule)
             .addRules('usersetnick', StaffOnlyRule.instance)
             .addRules('waitmessage', disabledRule)
@@ -48,10 +49,10 @@ export class GeneralAutoResponseLimit extends GlobalLimit {
                 'for:loops',
                 'repeat:loops',
                 'while:loops'
-            ], new UseCountRule(5000, ['Loop', 'loops']))
-            .addRules('foreach:loops', new UseCountRule(50000, ['Loop', 'loops']))
-            .addRules('map:loops', new UseCountRule(50000, ['Loop', 'loops']))
-            .addRules('filter:loops', new UseCountRule(50000, ['Loop', 'loops']))
+            ], new UseCountRule(5000, 'loops', () => new TooManyLoopsError(5000)))
+            .addRules('foreach:loops', new UseCountRule(50000, 'loops', 'Loop'))
+            .addRules('map:loops', new UseCountRule(50000, 'loops', 'Loop'))
+            .addRules('filter:loops', new UseCountRule(50000, 'loops', () => new BBTagRuntimeError('Max safeloops reached')))
             .addRules('dump', new UseCountRule(5));
     }
 }

@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class ReactionUserSubtag extends BaseSubtag {
@@ -13,13 +13,16 @@ export class ReactionUserSubtag extends BaseSubtag {
                     description: 'Gets the user whos reaction that triggered {waitreact}',
                     exampleCode: '{waitreact;11111111111111111;{bool;{reactuser};==;3333333333333}}',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","✅"]',
-                    execute: (ctx, _, subtag) => this.getReaction(ctx, subtag)
+                    execute: (ctx) => this.getReaction(ctx)
                 }
             ]
         });
     }
 
-    public getReaction(context: BBTagContext, subtag: SubtagCall): string {
-        return context.scopes.local.reaction ?? context.addError('{reactuser} can only be used inside {waitreaction}', subtag);
+    public getReaction(context: BBTagContext): string {
+        const val = context.scopes.local.reactUser;
+        if (val === undefined)
+            throw new BBTagRuntimeError('{reactuser} can only be used inside {waitreaction}');
+        return val;
     }
 }

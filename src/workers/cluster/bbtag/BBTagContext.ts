@@ -1,19 +1,20 @@
 import { ClusterUtilities } from '@cluster';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, FindEntityOptions, FlagDefinition, FlagResult, RuntimeDebugEntry, RuntimeError, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
-import { bbtagUtil, guard, humanize, parse } from '@cluster/utils';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, FindEntityOptions, FlagDefinition, FlagResult, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
+import { guard, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { ChoiceQueryResult, EntityPickQueryOptions, NamedGuildCommandTag, StoredTag } from '@core/types';
 import { Base, Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
-import { Duration } from 'moment-timezone';
+import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import { ScopeManager } from '.';
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagEngine } from './BBTagEngine';
 import { CacheEntry, VariableCache } from './Caching';
+import { BBTagRuntimeError, UnknownSubtagError } from './errors';
 import { limits } from './limits';
 import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
@@ -44,7 +45,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public readonly execTimer: Timer;
     public readonly dbTimer: Timer;
     public readonly flaggedInput: FlagResult;
-    public readonly errors: RuntimeError[];
+    public readonly errors: LocatedRuntimeError[];
     public readonly debug: RuntimeDebugEntry[];
     public readonly scopes: ScopeManager;
     public readonly variables: VariableCache;
@@ -64,6 +65,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get util(): ClusterUtilities { return this.engine.util; }
     public get discord(): Discord<true> { return this.engine.discord; }
     public get subtags(): ModuleLoader<BaseSubtag> { return this.engine.subtags; }
+    public get cooldownEnd(): Moment { return this.cooldowns.get(this); }
 
     public constructor(
         public readonly engine: BBTagEngine,
@@ -131,8 +133,16 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return messageId === this.message.id || this.state.ownedMsgs.includes(messageId);
     }
 
-    public getSubtag(name: string): BaseSubtag | undefined {
-        return this.subtags.get(name) ?? this.subtags.get(`${name.split('.', 1)[0]}.`);
+    public getSubtag(name: string): BaseSubtag {
+        let result = this.subtags.get(name);
+        if (result !== undefined)
+            return result;
+
+        result = this.subtags.get(`${name.split('.', 1)[0]}.`);
+        if (result !== undefined)
+            return result;
+
+        throw new UnknownSubtagError(name);
     }
 
     public makeChild(options: Partial<BBTagContextOptions>): BBTagContext {
@@ -142,13 +152,9 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         });
     }
 
-    public addError(error: string, subtag?: SubtagCall, debugMessage?: string): string {
-        this.errors.push({
-            subtag: subtag,
-            error: `${bbtagUtil.stringify(subtag?.name ?? ['UNKNOWN SUBTAG'])}: ${error}`,
-            debugMessage: debugMessage
-        });
-        return this.scopes.local.fallback ?? `\`${error}\``;
+    public addError(error: BBTagRuntimeError, subtag?: SubtagCall): string {
+        this.errors.push({ subtag: subtag, error });
+        return this.scopes.local.fallback ?? `\`${error.message}\``;
     }
 
     public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {

@@ -1,5 +1,4 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 
 export class FilterSubtag extends BaseSubtag {
@@ -26,9 +25,7 @@ export class FilterSubtag extends BaseSubtag {
                         for (const item of array) {
                             const stringifiedItem = parse.string(item);
                             if (processed[stringifiedItem]) continue;
-                            if (await context.limit.check(context, subtag, 'filter:loops') !== undefined)
-                                throw new BBTagRuntimeError('Max safeloops reached');
-
+                            await context.limit.check(context, subtag, 'filter:loops');
                             await context.variables.set(varName, item);
                             try {
                                 const res = await args[2].execute();

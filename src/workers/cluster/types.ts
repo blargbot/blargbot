@@ -9,6 +9,7 @@ import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
 
+import { BBTagRuntimeError } from './bbtag/errors';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 
@@ -212,10 +213,9 @@ export interface BBTagContextState {
 
 }
 
-export interface RuntimeError {
+export interface LocatedRuntimeError {
     readonly subtag: SubtagCall | undefined;
-    readonly error: string | readonly RuntimeError[];
-    readonly debugMessage: string | undefined;
+    readonly error: BBTagRuntimeError;
 }
 
 export interface RuntimeDebugEntry {
@@ -226,7 +226,7 @@ export interface RuntimeDebugEntry {
 export interface RuntimeLimit {
     addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this;
     readonly scopeName: string;
-    check(context: BBTagContext, subtag: SubtagCall, subtagName: string): Promise<string | undefined> | string | undefined;
+    check(context: BBTagContext, subtag: SubtagCall, subtagName: string): Awaitable<void>;
     rulesFor(subtagName: string): string[];
     serialize(): SerializedRuntimeLimit;
     load(state: SerializedRuntimeLimit): void;
@@ -264,7 +264,7 @@ export interface ExecutionResult {
     tagName: string;
     input: string;
     content: string;
-    errors: RuntimeError[];
+    errors: LocatedRuntimeError[];
     debug: RuntimeDebugEntry[];
     duration: {
         total: number;
@@ -668,8 +668,7 @@ export interface SubtagOptions {
 }
 
 export interface RuntimeLimitRule {
-    check(context: BBTagContext, subtag: SubtagCall): Promise<boolean> | boolean;
-    errorText(subtagName: string, context: BBTagContext): string;
+    check(context: BBTagContext, subtagName: string, subtag: SubtagCall): Awaitable<void>;
     displayText(subtagName: string, scopeName: string): string;
     state(): JToken;
     load(state: JToken): void;

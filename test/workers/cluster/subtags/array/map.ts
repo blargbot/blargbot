@@ -1,4 +1,5 @@
 import { VariableCache } from '@cluster/bbtag';
+import { TooManyLoopsError } from '@cluster/bbtag/errors';
 import { MapSubtag } from '@cluster/subtags/array/map';
 import { RuntimeLimit } from '@cluster/types';
 import { describe } from 'mocha';
@@ -74,7 +75,11 @@ describe('{map}', () => {
                 when(ctx.contextMock.limit)
                     .thenReturn(instance(ctx.limitMock));
                 when(ctx.limitMock.check(instance(ctx.contextMock), call, 'map:loops'))
-                    .thenReturn(...checkResults);
+                    .thenReturn(...checkResults.map(r => {
+                        if (r === undefined)
+                            return undefined;
+                        throw new TooManyLoopsError(-1);
+                    }));
                 when(ctx.contextMock.variables)
                     .thenReturn(instance(ctx.dbMock));
                 when(ctx.dbMock.reset(args[0].value))

@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class ParamsLengthSubtag extends BaseSubtag {
@@ -13,16 +13,16 @@ export class ParamsLengthSubtag extends BaseSubtag {
                     description: 'Gets the number of parameters passed to the current function',
                     exampleCode: '{func.test;{paramslength}}\n{func.test;a;b;c;d}',
                     exampleOut: '["a","b","c","d"]',
-                    execute: (ctx, _, subtag) => this.getParamsLength(ctx, subtag)
+                    execute: (ctx) => this.getParamsLength(ctx)
                 }
             ]
         });
     }
 
-    public getParamsLength(context: BBTagContext, subtag: SubtagCall): string {
+    public getParamsLength(context: BBTagContext): string {
         const params = context.scopes.local.paramsarray;
         if (params === undefined)
-            return context.addError('{paramslength} can only be used inside {function}', subtag);
+            throw new BBTagRuntimeError('{paramslength} can only be used inside {function}');
         return params.length.toString();
     }
 }

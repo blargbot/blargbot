@@ -74,9 +74,8 @@ export class ReactRemoveSubtag extends BaseSubtag {
                 continue;
 
             try {
-                if (await context.limit.check(context, subtag, 'reactremove:requests') === undefined) {
-                    await message.reactions.cache.get(reaction)?.users.remove(user);
-                }
+                await context.limit.check(context, subtag, 'reactremove:requests');
+                await message.reactions.cache.get(reaction)?.users.remove(user);
             } catch (err: unknown) {
                 if (err instanceof DiscordAPIError) {
                     switch (err.code) {
