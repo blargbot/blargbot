@@ -9,3 +9,4 @@ export * from './NotAnArrayError';
 export * from './NotEnoughArgumentsError';
 export * from './TooManyArgumentsError';
 export * from './UserNotFoundError';
+export * from './RoleNotFoundError';

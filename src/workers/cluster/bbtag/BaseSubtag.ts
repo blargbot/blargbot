@@ -48,10 +48,6 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         return docs;
     }
 
-    public noRoleFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('No role found', subtag, debugMessage);
-    }
-
     public userNotInGuild(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('User not in guild', subtag, debugMessage);
     }

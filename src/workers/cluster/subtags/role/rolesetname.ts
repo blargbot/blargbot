@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { RoleNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
@@ -41,19 +42,20 @@ export class RoleSetNameSubtag extends BaseSubtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleStr, { noLookup: quiet });
 
-        if (role !== undefined) {
-            if (role.position >= topRole)
-                return this.customError('Role above author', context, subtag);
+        if (role === undefined)
+            throw new RoleNotFoundError(roleStr);
 
-            try {
-                const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-                await role.edit({ name }, fullReason);
-                return ''; //TODO meaningful output
-            } catch (err: unknown) {
-                if (!quiet)
-                    return this.customError('Failed to edit role: no perms', context, subtag);
-            }
+        if (role.position >= topRole)
+            return this.customError('Role above author', context, subtag);
+
+        try {
+            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
+            await role.edit({ name }, fullReason);
+            return ''; //TODO meaningful output
+        } catch (err: unknown) {
+            if (!quiet)
+                return this.customError('Failed to edit role: no perms', context, subtag);
+            throw new RoleNotFoundError(roleStr);
         }
-        return this.noRoleFound(context, subtag);
     }
 }

@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { UserNotFoundError } from '@cluster/bbtag/errors';
+import { RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
@@ -50,7 +50,7 @@ export class RoleAddSubtag extends BaseSubtag {
         }
 
         if (result.roles.length === 0)
-            return this.noRoleFound(context, subtag);
+            throw new RoleNotFoundError(roleStr);
 
         if (result.roles.find(role => role.position >= topRole) !== undefined)
             return this.customError('Role above author', context, subtag);

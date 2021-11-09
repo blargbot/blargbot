@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { RoleNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 
 export class RoleSetPosSubtag extends BaseSubtag {
@@ -22,22 +23,22 @@ export class RoleSetPosSubtag extends BaseSubtag {
                         const role = await context.queryRole(roleStr, { noLookup: quiet });
                         const pos = parse.int(posStr);
 
-                        if (role !== undefined) {
-                            if (role.position >= topRole)
-                                return this.customError('Role above author', context, subtag);
-                            if (pos >= topRole) {
-                                return this.customError('Desired position above author', context, subtag);
-                            }
+                        if (role === undefined)
+                            throw new RoleNotFoundError(roleStr);
 
-                            try {
-                                await role.edit({ position: pos });
-                                return '`Role not found`'; //TODO meaningful output, this is purely for backwards compatibility :/
-                            } catch (err: unknown) {
-                                if (!quiet)
-                                    return this.customError('Failed to edit role: no perms', context, subtag);
-                            }
+                        if (role.position >= topRole)
+                            return this.customError('Role above author', context, subtag);
+                        if (pos >= topRole)
+                            return this.customError('Desired position above author', context, subtag);
+
+                        try {
+                            await role.edit({ position: pos });
+                            return '`Role not found`'; //TODO meaningful output, this is purely for backwards compatibility :/
+                        } catch (err: unknown) {
+                            if (!quiet)
+                                return this.customError('Failed to edit role: no perms', context, subtag);
+                            throw new RoleNotFoundError(roleStr);
                         }
-                        return this.noRoleFound(context, subtag);
                     }
                 }
             ]

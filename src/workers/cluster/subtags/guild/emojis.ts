@@ -37,7 +37,7 @@ export class EmojisSubtag extends BaseSubtag {
                         // });
 
                         // if (role === undefined) {
-                        //     return this.noRoleFound(context, subtag) //TODO add this to other role subtags too, but when versioning is a thing to avoid incompatibilities
+                        //     throw new RoleNotFoundError(roleStr) //TODO add this to other role subtags too, but when versioning is a thing to avoid incompatibilities
                         // }
                         // const emojis = context.guild.emojis.filter(e => e.roles.cache.has(role.id))
                         //     .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);

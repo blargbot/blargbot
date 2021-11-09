@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotAnArrayError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, discordUtil, parse, SubtagType } from '@cluster/utils';
 import { Role } from 'discord.js';
@@ -71,8 +71,11 @@ export class UserSetRolesSubtag extends BaseSubtag {
                 noLookup: quiet,
                 noErrors: context.scopes.local.noLookupErrors
             });
-            if (role === undefined)
-                return quiet ? 'false' : this.noRoleFound(context, subtag, parse.string(roleElement) + ' is not a role');
+            if (role === undefined) {
+                if (quiet)
+                    return 'false';
+                throw new RoleNotFoundError(userStr);
+            }
             parsedRoles.push(role);
         }
 
