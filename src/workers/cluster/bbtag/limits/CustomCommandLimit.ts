@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, TooManyLoopsError } from '../errors';
 import { GlobalLimit } from './GlobalLimit';
-import { StaffOnlyRule, UseCountRule } from './rules';
+import { staffOnlyRule, UseCountRule } from './rules';
 
 export class CustomCommandLimit extends GlobalLimit {
     public readonly scopeName = 'custom commands';
@@ -8,37 +8,37 @@ export class CustomCommandLimit extends GlobalLimit {
     public constructor() {
         super('customCommandLimit');
 
-        this.addRules('ban', StaffOnlyRule.instance)
-            .addRules('unban', StaffOnlyRule.instance)
-            .addRules('guildbans', StaffOnlyRule.instance)
-            .addRules('kick', StaffOnlyRule.instance)
-            .addRules('modlog', StaffOnlyRule.instance)
-            .addRules('pardon', StaffOnlyRule.instance)
-            .addRules('warn', StaffOnlyRule.instance)
-            .addRules('reason', StaffOnlyRule.instance)
-            .addRules('slowmode', StaffOnlyRule.instance)
-            .addRules('roleadd', StaffOnlyRule.instance)
-            .addRules('rolecreate', StaffOnlyRule.instance)
-            .addRules('roledelete', StaffOnlyRule.instance)
-            .addRules('rolemention', StaffOnlyRule.instance)
-            .addRules('roleremove', StaffOnlyRule.instance)
-            .addRules('rolesetmentionable', StaffOnlyRule.instance)
-            .addRules('rolesetperms', StaffOnlyRule.instance)
-            .addRules('rolesetposition', StaffOnlyRule.instance)
-            .addRules('guildseticon', StaffOnlyRule.instance)
-            .addRules('emojicreate', StaffOnlyRule.instance)
-            .addRules('emojidelete', StaffOnlyRule.instance)
-            .addRules('channelcreate', StaffOnlyRule.instance)
-            .addRules('channeldelete', StaffOnlyRule.instance)
-            .addRules('channeledit', StaffOnlyRule.instance)
-            .addRules('channelsetperms', StaffOnlyRule.instance)
-            .addRules('channelsetpos', StaffOnlyRule.instance)
-            .addRules('threadcreate', StaffOnlyRule.instance)
-            .addRules('deletethread', StaffOnlyRule.instance)
-            .addRules('usersetnick', StaffOnlyRule.instance)
-            .addRules('timer', StaffOnlyRule.instance)
-            .addRules('dm', StaffOnlyRule.instance, new UseCountRule(1))
-            .addRules('send', StaffOnlyRule.instance, new UseCountRule(10))
+        this.addRules('ban', staffOnlyRule)
+            .addRules('unban', staffOnlyRule)
+            .addRules('guildbans', staffOnlyRule)
+            .addRules('kick', staffOnlyRule)
+            .addRules('modlog', staffOnlyRule)
+            .addRules('pardon', staffOnlyRule)
+            .addRules('warn', staffOnlyRule)
+            .addRules('reason', staffOnlyRule)
+            .addRules('slowmode', staffOnlyRule)
+            .addRules('roleadd', staffOnlyRule)
+            .addRules('rolecreate', staffOnlyRule)
+            .addRules('roledelete', staffOnlyRule)
+            .addRules('rolemention', staffOnlyRule)
+            .addRules('roleremove', staffOnlyRule)
+            .addRules('rolesetmentionable', staffOnlyRule)
+            .addRules('rolesetperms', staffOnlyRule)
+            .addRules('rolesetposition', staffOnlyRule)
+            .addRules('guildseticon', staffOnlyRule)
+            .addRules('emojicreate', staffOnlyRule)
+            .addRules('emojidelete', staffOnlyRule)
+            .addRules('channelcreate', staffOnlyRule)
+            .addRules('channeldelete', staffOnlyRule)
+            .addRules('channeledit', staffOnlyRule)
+            .addRules('channelsetperms', staffOnlyRule)
+            .addRules('channelsetpos', staffOnlyRule)
+            .addRules('threadcreate', staffOnlyRule)
+            .addRules('deletethread', staffOnlyRule)
+            .addRules('usersetnick', staffOnlyRule)
+            .addRules('timer', staffOnlyRule)
+            .addRules('dm', staffOnlyRule, new UseCountRule(1))
+            .addRules('send', staffOnlyRule, new UseCountRule(10))
             .addRules('edit', new UseCountRule(10))
             .addRules('delete', new UseCountRule(11))
             .addRules('reactremove', new UseCountRule(10))
@@ -51,8 +51,8 @@ export class CustomCommandLimit extends GlobalLimit {
                 'repeat:loops',
                 'while:loops'
             ], new UseCountRule(10000, 'loops', () => new TooManyLoopsError(10000)))
-            .addRules('foreach:loops', new UseCountRule(100000, 'loops', 'Loop'))
-            .addRules('map:loops', new UseCountRule(100000, 'loops', 'Loop'))
+            .addRules('foreach:loops', new UseCountRule(100000, 'loops', () => new TooManyLoopsError(100000)))
+            .addRules('map:loops', new UseCountRule(100000, 'loops', () => new TooManyLoopsError(100000)))
             .addRules('filter:loops', new UseCountRule(100000, 'loops', () => new BBTagRuntimeError('Max safeloops reached')))
             .addRules('dump', new UseCountRule(5));
     }

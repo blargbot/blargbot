@@ -3,20 +3,18 @@ import { RuntimeLimitRule } from '@cluster/types';
 
 import { BBTagContext } from '../../BBTagContext';
 
-export class StaffOnlyRule implements RuntimeLimitRule {
-    public static readonly instance: StaffOnlyRule = new StaffOnlyRule();
-
-    public async check(context: BBTagContext): Promise<void> {
+export const staffOnlyRule: RuntimeLimitRule = Object.seal({
+    async check(context: BBTagContext) {
         if (!await context.isStaff)
             throw new StaffOnlyError(context.authorizer);
-    }
-    public displayText(): string {
+    },
+    displayText() {
         return 'Authorizer must be staff';
-    }
-    public state(): JToken {
+    },
+    state() {
         return null;
-    }
-    public load(): void {
+    },
+    load() {
         // NOOP
     }
-}
+});

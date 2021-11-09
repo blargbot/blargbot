@@ -49,8 +49,8 @@ export class TagLimit extends GlobalLimit {
                 'repeat:loops',
                 'while:loops'
             ], new UseCountRule(10000, 'loops', () => new TooManyLoopsError(10000)))
-            .addRules('foreach:loops', new UseCountRule(100000, 'loops', 'Loop'))
-            .addRules('map:loops', new UseCountRule(100000, 'loops', 'Loop'))
+            .addRules('foreach:loops', new UseCountRule(100000, 'loops', () => new TooManyLoopsError(100000)))
+            .addRules('map:loops', new UseCountRule(100000, 'loops', () => new TooManyLoopsError(100000)))
             .addRules('filter:loops', new UseCountRule(100000, 'loops', () => new BBTagRuntimeError('Max safeloops reached')))
             .addRules('dump', new UseCountRule(5));
     }
