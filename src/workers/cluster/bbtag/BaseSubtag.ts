@@ -48,10 +48,6 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         return docs;
     }
 
-    public userNotInGuild(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('User not in guild', subtag, debugMessage);
-    }
-
     public invalidEmbed(issue: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Invalid embed: ' + issue, subtag, debugMessage);//TODO move issue to debug perhaps?
     }

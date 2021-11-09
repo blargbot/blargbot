@@ -1,6 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
-import { User } from 'discord.js';
 import moment from 'moment-timezone';
 
 export class UserBoostDataSubtag extends BaseSubtag {
@@ -29,31 +28,23 @@ export class UserBoostDataSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}',
                     exampleOut: 'stupid cat is boosting!',
-                    execute: async (context, [{ value: format }, { value: userStr }, { value: quietStr }], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: format }, { value: userStr }, { value: quietStr }], subtag): Promise<string> => {
                         const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
-                        let user: User | undefined = context.user;
-
-                        if (userStr !== '')
-                            user = await context.queryUser(userStr, {
-                                noErrors: context.scopes.local.noLookupErrors,
-                                noLookup: quiet
-                            });
-
-                        if (user !== undefined) {
-                            const member = await context.util.getMember(context.guild, user.id);
-                            if (member !== undefined) {
-                                const boostDate = member.premiumSinceTimestamp;
-                                if (boostDate === null)
-                                    return this.customError('User not boosting', context, subtag);
-                                return moment(boostDate).format(format);
-                            }
-                            return this.userNotInGuild(context, subtag);
+                        const member = userStr === '' ? context.member : await context.queryMember(userStr, {
+                            noErrors: context.scopes.local.noLookupErrors,
+                            noLookup: quiet
+                        });
+                        if (member === undefined) {
+                            // TODO
+                            // if (quiet)
+                            return '';
+                            // throw new UserNotFoundError(userStr);
                         }
 
-                        if (quiet)
-                            return '';
-                        //TODO
-                        //throw new UserNotFoundError(userStr);
+                        const boostDate = member.premiumSinceTimestamp;
+                        if (boostDate === null)
+                            return this.customError('User not boosting', context, subtag);
+                        return moment(boostDate).format(format);
                     }
                 }
             ]

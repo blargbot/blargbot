@@ -31,14 +31,12 @@ export class DMSubtag extends BaseSubtag {
         messageStr: string,
         embedStr?: string
     ): Promise<string | void> {
-        const user = await context.queryUser(userStr);
+        const member = await context.queryMember(userStr);
         let content: string | undefined = messageStr;
         let embed = discordUtil.parseEmbed(messageStr);
 
-        if (user === undefined)
+        if (member === undefined)
             throw new UserNotFoundError(userStr);
-        if (await context.util.getMember(context.guild, user.id) === undefined)
-            return this.userNotInGuild(context, subtag);
 
         if (embed !== undefined && embed.malformed !== true)
             content = undefined;
@@ -46,8 +44,8 @@ export class DMSubtag extends BaseSubtag {
             embed = discordUtil.parseEmbed(embedStr);
 
         try {
-            const dmChannel = user.dmChannel ?? await user.createDM();
-            let cache = dmCache[user.id];
+            const dmChannel = member.user.dmChannel ?? await member.createDM();
+            let cache = dmCache[member.id];
             if (cache === undefined ||
                 cache.count > 5 ||
                 cache.user !== context.user.id ||
@@ -58,7 +56,7 @@ export class DMSubtag extends BaseSubtag {
                     'and was sent by ' +
                     `**__${context.user.username}#${context.user.discriminator}}__** (${context.user.id}):`
                 );
-                cache = dmCache[user.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
+                cache = dmCache[member.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
             }
             await context.util.send(dmChannel.id, {
                 content,
