@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { MessageNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Message, MessageEmbedOptions } from 'discord.js';
 
@@ -29,12 +28,12 @@ export class ReactListSubtag extends BaseSubtag {
                 {
                     parameters: ['channelid|messageid', 'messageid|reactions'],
                     description: 'Either returns an array of users who reacted with `reactions` on `messageid`, or returns an array of reactions on `messageid` in `channelid`',
-                    execute: (ctx, args, subtag) => this.getReactions(ctx, subtag, args.map(arg => arg.value))
+                    execute: (ctx, args) => this.getReactions(ctx, args.map(arg => arg.value))
                 },
                 {
                     parameters: ['channelid|message', 'messageid|reactions', 'reactions+'],
                     description: 'Either returns an array of users who reacted with `reactions` on `messageid` in `channelid`, or returns an array of users who reacted `reactions` on `messageid`.',
-                    execute: (ctx, args, subtag) => this.getReactions(ctx, subtag, args.map(arg => arg.value))
+                    execute: (ctx, args) => this.getReactions(ctx, args.map(arg => arg.value))
                 }
             ]
         });
@@ -42,7 +41,6 @@ export class ReactListSubtag extends BaseSubtag {
 
     public async getReactions(
         context: BBTagContext,
-        subtag: SubtagCall,
         args: string[]
     ): Promise<string> {
         let channel;
@@ -69,7 +67,7 @@ export class ReactListSubtag extends BaseSubtag {
         const parsedEmojis = parse.emoji(args.join('|'), true);
 
         if (parsedEmojis.length === 0 && args.length > 0)
-            return this.customError('Invalid Emojis', context, subtag);
+            throw new BBTagRuntimeError('Invalid Emojis');
 
         // Default to listing what emotes there are
         if (parsedEmojis.length === 0)
@@ -97,7 +95,7 @@ export class ReactListSubtag extends BaseSubtag {
         }
 
         if (errors.length > 0)
-            return this.customError('Unknown Emoji: ' + errors.join(', '), context, subtag);
+            throw new BBTagRuntimeError('Unknown Emoji: ' + errors.join(', '));
         return JSON.stringify([...new Set(users)]);
     }
 

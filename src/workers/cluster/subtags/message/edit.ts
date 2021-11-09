@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedFieldData, MessageEmbed, MessageEmbedOptions } from 'discord.js';
 
@@ -14,22 +13,22 @@ export class EditSubtag extends BaseSubtag {
             definition: [//! Overwritten
                 {
                     parameters: ['messageId', 'text|embed'],
-                    execute: (ctx, args, subtag) => this.edit(ctx, subtag, ctx.channel.id, args[0].value, args[1].value)
+                    execute: (ctx, args) => this.edit(ctx, ctx.channel.id, args[0].value, args[1].value)
                 },
                 {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
-                    execute: async (ctx, args, subtag) => {
+                    execute: async (ctx, args) => {
                         const channel = await ctx.queryChannel(args[0].value, { noLookup: true });
                         if (channel === undefined) {//{edit;msg;text;embed}
-                            await this.edit(ctx, subtag, ctx.channel.id, args[0].value, args[1].value, args[2].value);
+                            await this.edit(ctx, ctx.channel.id, args[0].value, args[1].value, args[2].value);
                         } else {//{edit;channel;msg;text|embed}
-                            await this.edit(ctx, subtag, channel.id, args[1].value, args[2].value);
+                            await this.edit(ctx, channel.id, args[1].value, args[2].value);
                         }
                     }
                 },
                 {
                     parameters: ['channelId', 'messageID', 'text', 'embed'],
-                    execute: (ctx, args, subtag) => this.edit(ctx, subtag, args[0].value, args[1].value, args[2].value, args[3].value)
+                    execute: (ctx, args) => this.edit(ctx, args[0].value, args[1].value, args[2].value, args[3].value)
                 }
             ]
         });
@@ -37,7 +36,6 @@ export class EditSubtag extends BaseSubtag {
 
     public async edit(
         context: BBTagContext,
-        subtag: SubtagCall,
         channelStr: string,
         messageStr: string,
         contentStr: string,
@@ -67,7 +65,7 @@ export class EditSubtag extends BaseSubtag {
             if (message === undefined)
                 throw new MessageNotFoundError(channel, messageStr);
             if (message.author.id !== context.discord.user.id)
-                return this.customError('I must be the message author', context, subtag);
+                throw new BBTagRuntimeError('I must be the message author');
             content = content ?? message.content;
             embeds = embeds ?? message.embeds;
 
@@ -75,7 +73,7 @@ export class EditSubtag extends BaseSubtag {
             if (embedStr === '_delete') embeds = [];
 
             if (content.trim() === '' && embeds.length === 0)
-                return this.customError('Message cannot be empty', context, subtag);
+                throw new BBTagRuntimeError('Message cannot be empty');
             try {
                 await message.edit({
                     content,
@@ -85,7 +83,7 @@ export class EditSubtag extends BaseSubtag {
                 // NOOP
             }
         } catch (err: unknown) {
-            return this.customError('Unable to get message', context, subtag);
+            throw new BBTagRuntimeError('Unable to get message');
         }
     }
 

@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
@@ -21,7 +21,7 @@ export class RepeatSubtag extends BaseSubtag {
                         if (amount === undefined)
                             throw new NotANumberError(amountStr.value);
                         if (amount < 0)
-                            return this.customError('Can\'t be negative', context, subtag);
+                            throw new BBTagRuntimeError('Can\'t be negative');
 
                         let result = '';
 

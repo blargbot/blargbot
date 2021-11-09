@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 
 export class RoleSetColorSubtag extends BaseSubtag {
@@ -13,7 +13,7 @@ export class RoleSetColorSubtag extends BaseSubtag {
                     description: 'Sets the color of `role` to \'#000000\'. This is transparent.',
                     exampleCode: 'The admin role is now colourless. {rolesetcolor;admin}',
                     exampleOut: 'The admin role is now colourless.',
-                    execute: (ctx, args, subtag) => this.setRolecolor(ctx, args[0].value, '', false, subtag)
+                    execute: (ctx, args) => this.setRolecolor(ctx, args[0].value, '', false)
                 },
                 {
                     parameters: ['role', 'color', 'quiet?'],
@@ -21,7 +21,7 @@ export class RoleSetColorSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
                     exampleCode: 'The admin role is now white. {rolesetcolor;admin;white}',
                     exampleOut: 'The admin role is now white.',
-                    execute: (ctx, args, subtag) => this.setRolecolor(ctx, args[0].value, args[1].value, args[2].value !== '', subtag)
+                    execute: (ctx, args) => this.setRolecolor(ctx, args[0].value, args[1].value, args[2].value !== '')
                 }
             ]
         });
@@ -31,12 +31,11 @@ export class RoleSetColorSubtag extends BaseSubtag {
         context: BBTagContext,
         roleStr: string,
         colorStr: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         const topRole = discordUtil.getRoleEditPosition(context);
         if (topRole === 0)
-            return this.customError('Author cannot edit roles', context, subtag);
+            throw new BBTagRuntimeError('Author cannot edit roles');
 
         quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleStr, { noLookup: quiet });
@@ -44,7 +43,7 @@ export class RoleSetColorSubtag extends BaseSubtag {
 
         if (role !== undefined) {
             if (role.position >= topRole)
-                return this.customError('Role above author', context, subtag);
+                throw new BBTagRuntimeError('Role above author');
 
             try {
                 const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
@@ -52,9 +51,9 @@ export class RoleSetColorSubtag extends BaseSubtag {
                 return ''; //TODO meaningful output
             } catch (err: unknown) {
                 if (!quiet)
-                    return this.customError('Failed to edit role: no perms', context, subtag);
+                    throw new BBTagRuntimeError('Failed to edit role: no perms');
             }
         }
-        return this.customError('Role not found', context, subtag); //TODO this.noRoleFound instead
+        throw new BBTagRuntimeError('Role not found'); //TODO this.noRoleFound instead
     }
 }

@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class TimeSubtag extends BaseSubtag {
@@ -16,7 +17,7 @@ export class TimeSubtag extends BaseSubtag {
                     description: 'Returns `time` formatted using `format`.',
                     exampleIn: 'The current date is {time}',
                     exampleOut: 'The current date is {time}',
-                    execute: (_, [{value: format}]) => {
+                    execute: (_, [{ value: format }]) => {
                         return parse.time('now').format(format);
                     }
                 },
@@ -25,11 +26,11 @@ export class TimeSubtag extends BaseSubtag {
                     description: 'Returns `time` formatted using `format`.',
                     exampleIn: '{time;YYYY/MM/DD HH:mm:ss;{time;X};X}',
                     exampleOut: '2021-08-12T11:55:42Z',
-                    execute: (context, [{value: format}, {value: time}, {value: parseFormat}], subtag) => {
+                    execute: (_context, [{ value: format }, { value: time }, { value: parseFormat }]) => {
                         const date = parse.time(time, parseFormat);
 
                         if (!date.isValid())
-                            return this.customError('Invalid date', context, subtag);
+                            throw new BBTagRuntimeError('Invalid date');
                         return date.format(format);
                     }
                 },
@@ -39,7 +40,7 @@ export class TimeSubtag extends BaseSubtag {
                         'If `time` is empty, the current time in `fromTimezone` will be returned.',
                     exampleCode: 'Time Berlin (as fromTimezone): {time;HH:mm;;;Europe/Berlin}',
                     exampleOut: 'Time Berlin (as fromTimezone): 23:33',
-                    execute: (context, [{value: format}, {value: time}, {value: parseFormat}, {value: fromTimezone}], subtag) => {
+                    execute: (_context, [{ value: format }, { value: time }, { value: parseFormat }, { value: fromTimezone }]) => {
                         let date;
                         if (time === '') {
                             date = parse.time('now', undefined, 'Etc/UTC', fromTimezone);
@@ -48,7 +49,7 @@ export class TimeSubtag extends BaseSubtag {
                         }
 
                         if (!date.isValid())
-                            return this.customError('Invalid date', context, subtag);
+                            throw new BBTagRuntimeError('Invalid date');
                         return date.format(format);
                     }
                 },
@@ -56,19 +57,19 @@ export class TimeSubtag extends BaseSubtag {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'time', 'parseFormat', 'fromTimezone', 'toTimezone:Etc/UTC'],
                     description: '`time` is in `fromTimezone` and converted to `toTimezone` using `format`.',
                     exampleCode: 'Time Berlin (as toTimezone): {time;HH:mm;;;;Europe/Berlin}\n' +
-                    'Time Berlin from UTC 12:00: {time;HH:mm;12:00;HH:mm;;Europe/Berlin}\n' +
-                    'Time Berlin (as fromTimezone): {time;HH:mm;;;Europe/Berlin}\n' +
-                    'Time Berlin (as fromTimezone and empty toTimezone): {time;HH:mm;;;Europe/Berlin;}\n' +
-                    'Time New York from Berlin (12:00 in Berlin): {time;HH:mm;12:00;HH:mm;Europe/Berlin;America/New_York}',
+                        'Time Berlin from UTC 12:00: {time;HH:mm;12:00;HH:mm;;Europe/Berlin}\n' +
+                        'Time Berlin (as fromTimezone): {time;HH:mm;;;Europe/Berlin}\n' +
+                        'Time Berlin (as fromTimezone and empty toTimezone): {time;HH:mm;;;Europe/Berlin;}\n' +
+                        'Time New York from Berlin (12:00 in Berlin): {time;HH:mm;12:00;HH:mm;Europe/Berlin;America/New_York}',
                     exampleOut: 'Time Berlin (as toTimezone): 23:33\n' +
-                    'Time Berlin from UTC 12:00: 14:00\n' +
-                    'Time Berlin (as fromTimezone): 23:33\n' +
-                    'Time Berlin (as fromTimezone and empty toTimezone): 21:33\n' +
-                    'Time New York from Berlin (12:00 in Berlin): 06:00',
-                    execute: (context, [{value: format}, {value: time}, {value: parseFormat}, {value: fromTimezone}, {value: toTimezone}], subtag) => {
+                        'Time Berlin from UTC 12:00: 14:00\n' +
+                        'Time Berlin (as fromTimezone): 23:33\n' +
+                        'Time Berlin (as fromTimezone and empty toTimezone): 21:33\n' +
+                        'Time New York from Berlin (12:00 in Berlin): 06:00',
+                    execute: (_context, [{ value: format }, { value: time }, { value: parseFormat }, { value: fromTimezone }, { value: toTimezone }]) => {
                         const date = parse.time(time, parseFormat, fromTimezone, toTimezone);
                         if (!date.isValid())
-                            return this.customError('Invalid date', context, subtag);
+                            throw new BBTagRuntimeError('Invalid date');
                         return date.format(format);
                     }
                 }

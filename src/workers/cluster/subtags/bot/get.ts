@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class GetSubtag extends BaseSubtag {
@@ -23,7 +22,7 @@ export class GetSubtag extends BaseSubtag {
                     parameters: ['name', 'index'],
                     description: 'When variable `name` is an array this will return the element at index `index`.' +
                         ' If `index` is empty the entire array will be returned. If variable is not an array it will return the whole variable.',
-                    execute: async (ctx, [{ value: variableName }, { value: index }], subtag) => await this.getArray(ctx, variableName, index, subtag)
+                    execute: async (ctx, [{ value: variableName }, { value: index }]) => await this.getArray(ctx, variableName, index)
                 }
             ]
         });
@@ -46,7 +45,7 @@ export class GetSubtag extends BaseSubtag {
         }
     }
 
-    public async getArray(context: BBTagContext, variableName: string, index: string | number, subtag: SubtagCall): Promise<string> {
+    public async getArray(context: BBTagContext, variableName: string, index: string | number): Promise<string> {
         const result = await context.variables.get(variableName);
         if (!Array.isArray(result)) {
             switch (typeof result) {
@@ -69,7 +68,7 @@ export class GetSubtag extends BaseSubtag {
             throw new NotANumberError(index);
 
         if (result[index] === undefined)
-            return this.customError('Index out of range', context, subtag);
+            throw new BBTagRuntimeError('Index out of range');
 
         const itemAtIndex = result[index];
         switch (typeof itemAtIndex) {

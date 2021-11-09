@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
 export class RoleDeleteSubtag extends BaseSubtag {
@@ -12,10 +13,10 @@ export class RoleDeleteSubtag extends BaseSubtag {
                     description: 'Deletes `role`. If `quiet` is specified, if `role` can\'t be found it will return nothing.\nWarning: this subtag is able to delete roles managed by integrations.',
                     exampleCode: '{roledelete;Super Cool Role!}',
                     exampleOut: '(rip no more super cool roles for anyone)',
-                    execute: async (context, [{ value: roleStr }, { value: quietStr }], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: roleStr }, { value: quietStr }]): Promise<string | void> => {
                         const topRole = discordUtil.getRoleEditPosition(context);
                         if (topRole === 0)
-                            return this.customError('Author cannot delete roles', context, subtag);
+                            throw new BBTagRuntimeError('Author cannot delete roles');
 
                         const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
                         const role = await context.queryRole(roleStr, {
@@ -25,7 +26,7 @@ export class RoleDeleteSubtag extends BaseSubtag {
 
                         if (role !== undefined) {
                             if (role.position >= topRole)
-                                return this.customError('Role above author', context, subtag);
+                                throw new BBTagRuntimeError('Role above author');
 
                             try {
                                 const reason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
@@ -33,7 +34,7 @@ export class RoleDeleteSubtag extends BaseSubtag {
                                 //TODO meaningful output
                             } catch (err: unknown) {
                                 context.logger.error(err);
-                                return this.customError('Failed to delete role: no perms', context, subtag);
+                                throw new BBTagRuntimeError('Failed to delete role: no perms');
                             }
                         }
                     }

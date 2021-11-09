@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { default as Brainfuck } from 'brainfuck-node';
 
@@ -15,13 +16,13 @@ export class BrainFuckSubtag extends BaseSubtag {
                     description: 'Interprets `code` as brainfuck, using `input` as the text for `,`.',
                     exampleCode: '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
                     exampleOut: 'Hello World!',
-                    execute: (ctx, [code, input], subtag) => {
+                    execute: (_, [code, input]) => {
                         try {
                             return bfClient.execute(code.value, input.value).output;
                         } catch (e: unknown) {
                             if (e instanceof Error)
-                                return this.customError(e.message, ctx, subtag);
-                            return this.customError('Unexpected error from brainfuck', ctx, subtag);
+                                throw new BBTagRuntimeError(e.message);
+                            throw new BBTagRuntimeError('Unexpected error from brainfuck');
                         }
                     }
                 }

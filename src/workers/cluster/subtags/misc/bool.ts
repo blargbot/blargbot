@@ -1,5 +1,5 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.compare;
@@ -18,15 +18,13 @@ export class BoolSubtag extends BaseSubtag {
                         'The positions of `evaluator` and `arg1` can be swapped.',
                     exampleCode: '{bool;5;<=;10}',
                     exampleOut: 'true',
-                    execute: (ctx, args, subtag) => this.runCondition(ctx, subtag, args[0].value, args[1].value, args[2].value)
+                    execute: (_, args) => this.runCondition(args[0].value, args[1].value, args[2].value)
                 }
             ]
         });
     }
 
     public runCondition(
-        context: BBTagContext,
-        subtag: SubtagCall,
         left: string,
         evaluator: string,
         right: string
@@ -41,7 +39,7 @@ export class BoolSubtag extends BaseSubtag {
             operator = right;
             [operator, right] = [right, operator];
         } else {
-            return this.customError('Invalid operator', context, subtag);
+            throw new BBTagRuntimeError('Invalid operator');
         }
 
         const leftBool = parse.boolean(left, undefined, false);

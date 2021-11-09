@@ -1,5 +1,6 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { SubtagArgumentValue } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.compare;
@@ -19,39 +20,37 @@ export class IfSubtag extends BaseSubtag {
                     parameters: ['boolean', '~then'],
                     description:
                         'If `boolean` is `true`, return `then`, else do nothing.',
-                    execute: (ctx, [{ value: bool }, thenCode], subtag) => this.simpleBooleanCheck(ctx, subtag, bool, thenCode)
+                    execute: (_, [{ value: bool }, thenCode]) => this.simpleBooleanCheck(bool, thenCode)
                 },
                 {
                     parameters: ['boolean', '~then', '~else'],
                     description:
                         'If `boolean` is `true`, return `then`, else execute `else`',
-                    execute: (ctx, [{ value: bool }, thenCode, elseCode], subtag) => this.simpleBooleanCheck(ctx, subtag, bool, thenCode, elseCode)
+                    execute: (_, [{ value: bool }, thenCode, elseCode]) => this.simpleBooleanCheck(bool, thenCode, elseCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then'],
                     description:
                         '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`.',
-                    execute: (ctx, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode)
+                    execute: (_, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode]) => this.evaluatorCheck(value1, evaluator, value2, thenCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then', '~else'],
                     description:
                         '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
-                    execute: (ctx, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode, elseCode], subtag) => this.evaluatorCheck(ctx, subtag, value1, evaluator, value2, thenCode, elseCode)
+                    execute: (_, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode, elseCode]) => this.evaluatorCheck(value1, evaluator, value2, thenCode, elseCode)
                 }
             ]
         });
     }
     public async simpleBooleanCheck(
-        context: BBTagContext,
-        subtag: SubtagCall,
         bool: string,
         thenCode: SubtagArgumentValue,
         elseCode?: SubtagArgumentValue
     ): Promise<string> {
         const actualBoolean = parse.boolean(bool);
         if (typeof actualBoolean !== 'boolean')
-            return this.customError('Not a boolean', context, subtag);
+            throw new BBTagRuntimeError('Not a boolean');
 
         if (actualBoolean) {
             return thenCode.wait();
@@ -64,8 +63,6 @@ export class IfSubtag extends BaseSubtag {
     }
 
     public async evaluatorCheck(
-        context: BBTagContext,
-        subtag: SubtagCall,
         value1: string,
         evaluator: string,
         value2: string,
@@ -82,7 +79,7 @@ export class IfSubtag extends BaseSubtag {
             operator = value2;
             [evaluator, value2] = [value2, evaluator];
         } else {
-            return this.customError('Invalid operator', context, subtag);
+            throw new BBTagRuntimeError('Invalid operator');
         }
         const leftBool = parse.boolean(value1, undefined, false);
         if (leftBool !== undefined) value1 = leftBool.toString();

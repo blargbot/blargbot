@@ -1,6 +1,6 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValueArray, SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError, NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
+import { SubtagArgumentValueArray } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
 
@@ -16,20 +16,15 @@ export class OperatorSubtag extends BaseSubtag {
                 {
                     parameters: ['values+'],
                     description: '',
-                    execute: (ctx, args, subtag) =>
-                        this.applyOperation(ctx, args, subtag)
+                    execute: (_, args) => this.applyOperation(args)
                 }
             ]
         });
     }
 
-    public applyOperation(
-        context: BBTagContext,
-        args: SubtagArgumentValueArray,
-        subtag: SubtagCall
-    ): string {
+    public applyOperation(args: SubtagArgumentValueArray): string {
         if (args.subtagName.toLowerCase() === 'operator')
-            return this.customError('Invalid operator \'operator\'', context, subtag);
+            throw new BBTagRuntimeError('Invalid operator \'operator\'');
 
         const operator = args.subtagName;
         const values = args.map((arg) => arg.value);
@@ -44,7 +39,7 @@ export class OperatorSubtag extends BaseSubtag {
             return this.applyLogicOperation(operator, values);
         }
         //! This should never happen
-        return this.customError('Invalid operator \'' + operator + '\'', context, subtag);
+        throw new BBTagRuntimeError('Invalid operator \'' + operator + '\'');
 
     }
 

@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
 import { GuildChannelCreateOptions, OverwriteData } from 'discord.js';
 
@@ -15,7 +15,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
                     description: 'Creates a channel of type `type`',
                     exampleCode: '{channelcreate;super-voice-channel;voice}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, [name, type], subtag) => this.channelCreate(ctx, name.value, type.value, '{}', subtag)
+                    execute: (ctx, [name, type]) => this.channelCreate(ctx, name.value, type.value, '{}')
                 },
                 {
                     parameters: ['name', 'type:text', 'options:{}'],
@@ -31,7 +31,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
                         'Returns the new channel\'s ID.',
                     exampleCode: '{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}',
                     exampleOut: '22222222222222222',
-                    execute: (ctx, [name, type, options], subtag) => this.channelCreate(ctx, name.value, type.value, options.value, subtag)
+                    execute: (ctx, [name, type, options]) => this.channelCreate(ctx, name.value, type.value, options.value)
                 }
             ]
         });
@@ -41,21 +41,20 @@ export class ChannelCreateSubtag extends BaseSubtag {
         context: BBTagContext,
         name: string,
         typeKey: string,
-        optionsJson: string,
-        subtag: SubtagCall
+        optionsJson: string
     ): Promise<string> {
         const permissions = context.permissions;
         if (permissions.has('MANAGE_CHANNELS') !== true)
-            return this.customError('Author cannot create channels', context, subtag);
+            throw new BBTagRuntimeError('Author cannot create channels');
 
         let options: GuildChannelCreateOptions;
         try {
             const mapped = mapOptions(optionsJson);
             if (!mapped.valid)
-                return this.customError('Invalid JSON', context, subtag);
+                throw new BBTagRuntimeError('Invalid JSON');
             options = mapped.value;
         } catch (e: unknown) {
-            return this.customError('Invalid JSON', context, subtag);
+            throw new BBTagRuntimeError('Invalid JSON');
         }
 
         options.type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : undefined;
@@ -68,7 +67,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
             return channel.id;
         } catch (err: unknown) {
             context.logger.error(err);
-            return this.customError('Failed to create channel: no perms', context, subtag);
+            throw new BBTagRuntimeError('Failed to create channel: no perms');
         }
     }
 }

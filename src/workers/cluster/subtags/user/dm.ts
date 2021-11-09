@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
 const dmCache: DMCache = {};
@@ -18,7 +17,7 @@ export class DMSubtag extends BaseSubtag {
                         'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.',
                     exampleCode: '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}',
                     exampleOut: 'DM: Hello\nEmbed: You\'re cool',
-                    execute: (ctx, [user, content, embed], subtag) => this.sendDm(ctx, subtag, user.value, content.value, embed.value)
+                    execute: (ctx, [user, content, embed]) => this.sendDm(ctx, user.value, content.value, embed.value)
                 }
             ]
         });
@@ -26,7 +25,6 @@ export class DMSubtag extends BaseSubtag {
 
     public async sendDm(
         context: BBTagContext,
-        subtag: SubtagCall,
         userStr: string,
         messageStr: string,
         embedStr?: string
@@ -65,7 +63,7 @@ export class DMSubtag extends BaseSubtag {
             });
             cache.count++;
         } catch (e: unknown) {
-            return this.customError('Could not send DM', context, subtag);
+            throw new BBTagRuntimeError('Could not send DM');
         }
     }
 }

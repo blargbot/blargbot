@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class ExecccSubtag extends BaseSubtag {
@@ -13,14 +14,14 @@ export class ExecccSubtag extends BaseSubtag {
                         '\n`{exec}` executes `ccommand` as if `ccommand`\'s code was in the root ccommand.',
                     exampleCode: 'Let me do a ccommand for you. {execcc;f}',
                     exampleOut: 'Let me do a ccommand for you. User#1111 has paid their respects. Total respects given: 5',
-                    execute: async (context, args, subtag) => {
+                    execute: async (context, args) => {
                         const tagName = args[0].value.toLowerCase();
                         const ccommand = await context.getCached('cc_' + tagName as `cc_${string}`, async (key) => context.database.guilds.getCommand(context.guild.id, key));
 
                         if (ccommand === null)
-                            return this.customError('CCommand not found: ' + tagName, context, subtag);
+                            throw new BBTagRuntimeError('CCommand not found: ' + tagName);
                         if ('alias' in ccommand)
-                            return this.customError('Cannot execcc imported tag: ' + tagName, context, subtag);
+                            throw new BBTagRuntimeError('Cannot execcc imported tag: ' + tagName);
 
                         let input: string;
                         switch (args.length) {

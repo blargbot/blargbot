@@ -1,5 +1,6 @@
 import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
-import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { SubtagArgumentValue } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import ReadWriteLock from 'rwlock';
 
@@ -40,7 +41,7 @@ export class LockSubtag extends BaseSubtag {
                         '\nMiddle' +
                         '\nEnd' +
                         '\nThis order is guaranteed always. Without a lock it isnt',
-                    execute: async (ctx, [{ value: mode }, { value: key }, code], subtag) => await this.lock(ctx, mode, key, code, subtag)
+                    execute: async (ctx, [{ value: mode }, { value: key }, code]) => await this.lock(ctx, mode, key, code)
                 }
             ]
         });
@@ -50,24 +51,19 @@ export class LockSubtag extends BaseSubtag {
         context: BBTagContext,
         mode: string,
         key: string,
-        code: SubtagArgumentValue,
-        subtag: SubtagCall
+        code: SubtagArgumentValue
     ): Promise<string> {
         if (context.scopes.local.inLock)
-            return this.customError('Lock cannot be nested', context, subtag);
+            throw new BBTagRuntimeError('Lock cannot be nested');
 
         mode = mode.toLowerCase();
 
         if (!isValidLockMode(mode)) {
-            return this.customError(
-                'Mode must be \'read\' or \'write\'',
-                context,
-                subtag
-            );
+            throw new BBTagRuntimeError('Mode must be \'read\' or \'write\'', mode);
         }
 
         if (key.length === 0)
-            return this.customError('Key cannot be empty', context, subtag);
+            throw new BBTagRuntimeError('Key cannot be empty');
 
         const lockScope = tagVariableScopes.find((s) => key.startsWith(s.prefix));
         if (lockScope === undefined)

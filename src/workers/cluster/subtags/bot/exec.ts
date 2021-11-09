@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class ExecSubtag extends BaseSubtag {
@@ -13,12 +14,12 @@ export class ExecSubtag extends BaseSubtag {
                         '\n`{exec}` executes `tag` as if `tag`\'s code was in the root tag/ccommand.',
                     exampleCode: 'Let me do a tag for you. {exec;f}',
                     exampleOut: 'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5',
-                    execute: async (context, args, subtag) => {
+                    execute: async (context, args) => {
                         const tagName = args[0].value.toLowerCase();
                         const tag = await context.getCached('tag_' + tagName as `tag_${string}`, (key) => context.database.tags.get(key));
 
                         if (tag === null)
-                            return this.customError('Tag not found: ' + tagName, context, subtag);
+                            throw new BBTagRuntimeError('Tag not found: ' + tagName);
                         let input: string;
                         switch (args.length) {
                             case 1:

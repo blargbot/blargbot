@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UnbanSubtag extends BaseSubtag {
@@ -14,7 +13,7 @@ export class UnbanSubtag extends BaseSubtag {
                     description: 'Unbans `user`.',
                     exampleCode: '{unban;@user} @user was unbanned!',
                     exampleOut: '@user was unbanned!',
-                    execute: (ctx, args, subtag) => this.unbanUser(ctx, args[0].value, '', '', subtag)
+                    execute: (ctx, args) => this.unbanUser(ctx, args[0].value, '', '')
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
@@ -23,7 +22,7 @@ export class UnbanSubtag extends BaseSubtag {
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{unban;@stupid cat;I made a mistake} @stupid cat has been unbanned',
                     exampleOut: 'true @stupid cat has been unbanned',
-                    execute: (ctx, args, subtag) => this.unbanUser(ctx, args[0].value, args[1].value, args[2].value, subtag)
+                    execute: (ctx, args) => this.unbanUser(ctx, args[0].value, args[1].value, args[2].value)
                 }
             ]
         });
@@ -33,8 +32,7 @@ export class UnbanSubtag extends BaseSubtag {
         context: BBTagContext,
         userStr: string,
         reason: string,
-        nopermsStr: string,
-        subtag: SubtagCall
+        nopermsStr: string
     ): Promise<string> {
         const user = await context.queryUser(userStr, { noErrors: context.scopes.local.noLookupErrors });
         const noPerms = nopermsStr !== '';
@@ -44,15 +42,13 @@ export class UnbanSubtag extends BaseSubtag {
 
         const result = await context.util.cluster.moderation.bans.unban(context.guild, user, context.user, noPerms, reason);
 
-        const error = (message: string): string => this.customError(message, context, subtag);
-
         switch (result) {
             case 'success':
                 return 'true';
             case 'moderatorNoPerms':
-                return error('User has no permissions');
+                throw new BBTagRuntimeError('User has no permissions');
             case 'noPerms':
-                return error('Bot has no permissions');
+                throw new BBTagRuntimeError('Bot has no permissions');
             case 'notBanned':
                 return 'false';
         }

@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
@@ -16,14 +15,14 @@ export class LastMessageIdSubtag extends BaseSubtag {
                     description: 'Returns the messageID of the last message in the current channel.',
                     exampleCode: '{lastmessageid}',
                     exampleOut: '1111111111111111',
-                    execute: (ctx, _, subtag) => this.getLastMessageID(ctx, ctx.channel.id, subtag)
+                    execute: (ctx) => this.getLastMessageID(ctx, ctx.channel.id)
                 },
                 {
                     parameters: ['channel'],
                     description: 'Returns the messageID of the last message in `channel`.',
                     exampleCode: '{lastmessageid;1111111111111111}',
                     exampleOut: '2222222222222222',
-                    execute: (ctx, args, subtag) => this.getLastMessageID(ctx, args[0].value, subtag)
+                    execute: (ctx, args) => this.getLastMessageID(ctx, args[0].value)
                 }
             ]
         });
@@ -31,8 +30,7 @@ export class LastMessageIdSubtag extends BaseSubtag {
 
     public async getLastMessageID(
         context: BBTagContext,
-        channelStr: string,
-        subtag: SubtagCall
+        channelStr: string
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr, {
             noLookup: context.scopes.local.quiet,
@@ -44,6 +42,6 @@ export class LastMessageIdSubtag extends BaseSubtag {
         if (guard.isTextableChannel(channel))
             return channel.lastMessageId ?? '';
 
-        return this.customError('Channel must be a textable channel', context, subtag);
+        throw new BBTagRuntimeError('Channel must be a textable channel');
     }
 }

@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 import { Permissions } from 'discord.js';
@@ -16,7 +16,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, [{ value: channel }, { value: type }, { value: item }], subtag) => this.channelDeleteOverwrite(ctx, channel, type.toLowerCase(), item, subtag)
+                    execute: (ctx, [{ value: channel }, { value: type }, { value: item }]) => this.channelDeleteOverwrite(ctx, channel, type.toLowerCase(), item)
                 },
                 {
                     parameters: ['channel', 'type', 'memberid|roleid', 'allow', 'deny?'],
@@ -26,7 +26,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222;1024;2048}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, [channel, type, entityId, allow, deny], subtag) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.int(allow.value), parse.int(deny.value), subtag)
+                    execute: (ctx, [channel, type, entityId, allow, deny]) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.int(allow.value), parse.int(deny.value))
                 }
             ]
         });
@@ -36,23 +36,22 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         context: BBTagContext,
         channelStr: string,
         type: string,
-        item: string,
-        subtag: SubtagCall
+        item: string
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
-            return this.customError('Channel does not exist', context, subtag); //TODO No channel found error
+            throw new BBTagRuntimeError('Channel does not exist'); //TODO No channel found error
 
         if (guard.isThreadChannel(channel))
-            return this.customError('Cannot set permissions for a thread channel', context, subtag);
+            throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
         const permission = channel.permissionsFor(context.authorizer);
         if (permission?.has('MANAGE_CHANNELS') !== true)
-            return this.customError('Author cannot edit this channel', context, subtag);
+            throw new BBTagRuntimeError('Author cannot edit this channel');
 
         if (!['member', 'role'].includes(type))
-            return this.customError('Type must be member or role', context, subtag);
+            throw new BBTagRuntimeError('Type must be member or role');
 
         //TODO lookup for items, argumentsshould be allowed to be usernames / channelnames
         try {
@@ -61,7 +60,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
                 await override.delete();
             return channel.id;
         } catch (e: unknown) {
-            return this.customError('Failed to edit channel: no perms', context, subtag);
+            throw new BBTagRuntimeError('Failed to edit channel: no perms');
         }
     }
 
@@ -71,23 +70,22 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
         typeStr: string,
         entityId: string,
         allow: number,
-        deny: number,
-        subtag: SubtagCall
+        deny: number
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
-            return this.customError('Channel does not exist', context, subtag); //TODO No channel found error
+            throw new BBTagRuntimeError('Channel does not exist'); //TODO No channel found error
 
         if (guard.isThreadChannel(channel))
-            return this.customError('Cannot set permissions for a thread channel', context, subtag);
+            throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
         const permission = channel.permissionsFor(context.authorizer);
         if (permission?.has('MANAGE_CHANNELS') !== true)
-            return this.customError('Author cannot edit this channel', context, subtag);
+            throw new BBTagRuntimeError('Author cannot edit this channel');
 
         if (!['member', 'role'].includes(typeStr))
-            return this.customError('Type must be member or role', context, subtag);
+            throw new BBTagRuntimeError('Type must be member or role');
         const type: 'member' | 'role' = typeStr as 'member' | 'role';
 
         try {
@@ -115,7 +113,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
             return channel.id;
         } catch (err: unknown) {
             context.logger.error(err);
-            return this.customError('Failed to edit channel: no perms', context, subtag);
+            throw new BBTagRuntimeError('Failed to edit channel: no perms');
         }
     }
 }

@@ -1,6 +1,5 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.numeric;
@@ -18,20 +17,18 @@ export class MathSubtag extends BaseSubtag {
                         'See `{operators}` for a shorter way of performing numeric operations.',
                     exampleCode: '2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}',
                     exampleOut: '2 + 3 + 6 - 2 = 9',
-                    execute: (ctx, args, subtag) => this.doMath(ctx, args[0].value, args.slice(1).map(arg => arg.value), subtag)
+                    execute: (_, args) => this.doMath(args[0].value, args.slice(1).map(arg => arg.value))
                 }
             ]
         });
     }
 
     public doMath(
-        context: BBTagContext,
         operator: string,
-        args: string[],
-        subtag: SubtagCall
+        args: string[]
     ): string {
         if (!bbtagUtil.operators.isNumericOperator(operator))
-            return this.customError('Invalid operator', context, subtag, operator + ' is not an operator');
+            throw new BBTagRuntimeError('Invalid operator', operator + ' is not an operator');
 
         return bbtagUtil.tagArray.flattenArray(args).map((arg) => {
             if (typeof arg === 'string')

@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
 export class ChannelDeleteSubtag extends BaseSubtag {
@@ -12,7 +13,7 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                     description: 'Deletes the provided `channel`.',
                     exampleCode: '{channeldelete;11111111111111111}',
                     exampleOut: '',
-                    execute: async (context, [{ value: channelStr }], subtag) => {
+                    execute: async (context, [{ value: channelStr }]) => {
                         const channel = await context.queryChannel(channelStr);
 
                         /**
@@ -20,11 +21,11 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                          * * when versioning is out and about
                          */
                         if (channel === undefined)
-                            return this.customError('Channel does not exist', context, subtag);
+                            throw new BBTagRuntimeError('Channel does not exist');
                         const permission = channel.permissionsFor(context.authorizer);
 
                         if (permission?.has('MANAGE_CHANNELS') !== true)
-                            return this.customError('Author cannot edit this channel', context, subtag);
+                            throw new BBTagRuntimeError('Author cannot edit this channel');
 
                         try {
                             const fullReason = discordUtil.formatAuditReason(
@@ -35,7 +36,7 @@ export class ChannelDeleteSubtag extends BaseSubtag {
                             return;//TODO return something on success
                         } catch (err: unknown) {
                             context.logger.error(err);
-                            return this.customError('Failed to edit channel: no perms', context, subtag);
+                            throw new BBTagRuntimeError('Failed to edit channel: no perms');
                         }
                     }
                 }

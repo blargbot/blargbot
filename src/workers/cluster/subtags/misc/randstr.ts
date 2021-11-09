@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class RandStrSubtag extends BaseSubtag {
@@ -14,7 +13,7 @@ export class RandStrSubtag extends BaseSubtag {
                     description: 'Creates a random string with characters from `chars` that is `length` characters long.',
                     exampleCode: '{randstr;abcdefghijklmnopqrstuvwxyz;9}',
                     exampleOut: 'kgzyqcvda',
-                    execute: (ctx, [{ value: charsStr }, { value: countStr }], subtag) => this.randStr(ctx, charsStr, countStr, subtag)
+                    execute: (ctx, [{ value: charsStr }, { value: countStr }]) => this.randStr(ctx, charsStr, countStr)
                 }
             ]
         });
@@ -23,8 +22,7 @@ export class RandStrSubtag extends BaseSubtag {
     public randStr(
         context: BBTagContext,
         charsStr: string,
-        countStr: string,
-        subtag: SubtagCall
+        countStr: string
     ): string {
         const chars = charsStr.split('');
         const count = parse.int(countStr, false) ?? parse.int(context.scopes.local.fallback ?? '', false);
@@ -32,7 +30,7 @@ export class RandStrSubtag extends BaseSubtag {
             throw new NotANumberError(countStr);
 
         if (chars.length === 0)
-            return this.customError('Not enough characters', context, subtag);
+            throw new BBTagRuntimeError('Not enough characters');
 
         const numberArray = [...Array(count).keys()];
         return numberArray.map(() => chars[Math.floor(Math.random() * chars.length)]).join('');

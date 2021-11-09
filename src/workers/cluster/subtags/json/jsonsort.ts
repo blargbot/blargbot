@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { NotAnArrayError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, compare, parse, SubtagType } from '@cluster/utils';
 
 const json = bbtagUtil.json;
@@ -22,7 +22,7 @@ export class JsonSortSubtag extends BaseSubtag {
                         '{jsonstringify;{jsonsort;{slice;{get;~array};0};points};2}',
                     exampleOut: '[\n  "{\\"points\\":3,\\"name\\":\\"UNO\\"}",\n  "{\\"points\\":6,\\"name\\":\\"Stupid cat\\"}",' +
                         '\n  "{\\"points\\":10,\\"name\\":\\"Blargbot\\"}",\n  "{\\"points\\":12,\\"name\\":\\"Winner\\"}"\n]',
-                    execute: async (context, [{ value: arrStr }, { value: pathStr }, { value: descStr }], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: arrStr }, { value: pathStr }, { value: descStr }]): Promise<string | void> => {
                         let descending = parse.boolean(descStr);
                         if (descending === undefined)
                             descending = descStr !== '';
@@ -32,7 +32,7 @@ export class JsonSortSubtag extends BaseSubtag {
                             throw new NotAnArrayError(arrStr);
 
                         if (pathStr === '')
-                            return this.customError('No path provided', context, subtag);
+                            throw new BBTagRuntimeError('No path provided');
                         const path = pathStr.split('.');
                         const mappedArray = arr.v.map(item => {
                             try {
@@ -53,7 +53,7 @@ export class JsonSortSubtag extends BaseSubtag {
 
                         const undefinedItems = mappedArray.filter(v => v === undefined);
                         if (undefinedItems.length !== 0) {
-                            return this.customError('Cannot read property ' + path.join('.') + ' at index ' + mappedArray.indexOf(undefined).toString() + ', ' + undefinedItems.length.toString() + ' total failures', context, subtag);
+                            throw new BBTagRuntimeError('Cannot read property ' + path.join('.') + ' at index ' + mappedArray.indexOf(undefined).toString() + ', ' + undefinedItems.length.toString() + ' total failures');
                         }
 
                         arr.v = arr.v.sort((a, b) => {

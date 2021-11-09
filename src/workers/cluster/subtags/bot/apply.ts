@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
 
@@ -29,7 +30,7 @@ export class ApplySubtag extends BaseSubtag {
         const name = args[0].toLowerCase();
 
         if (context.getSubtag(name) === undefined)
-            return this.customError('No subtag found', context, subtag);
+            throw new BBTagRuntimeError('No subtag found');
 
         const subtagArgs = args.slice(1);
         const flattenedArgs: string[][] = [];

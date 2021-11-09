@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { CompareOperator } from '@cluster/utils/bbtag/operators';
 
@@ -30,7 +30,7 @@ export class ForSubtag extends BaseSubtag {
                         if (!bbtagUtil.operators.isCompareOperator(operator)) errors.push('Invalid operator');
                         if (isNaN(limit)) errors.push('Limit must be a number');
                         if (isNaN(increment)) errors.push('Increment must be a number');
-                        if (errors.length > 0) return this.customError(errors.join(', '), context, subtag);
+                        if (errors.length > 0) throw new BBTagRuntimeError(errors.join(', '));
 
                         for (let i = initial; bbtagUtil.operators.compare[operator as CompareOperator](i.toString(), limit.toString()); i += increment) {
                             if (await context.limit.check(context, subtag, 'for:loops') !== undefined) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN

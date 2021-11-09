@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, parse, SubtagType } from '@cluster/utils';
 import { Role } from 'discord.js';
 
@@ -17,14 +16,14 @@ export class UserSetRolesSubtag extends BaseSubtag {
                     description: 'Sets the roles of the current user to `roleArray`.',
                     exampleCode: '{usersetroles;["1111111111111"]}',
                     exampleOut: 'true',
-                    execute: (ctx, args, subtag) => this.userSetRole(ctx, args[0].value, ctx.user.id, false, subtag)
+                    execute: (ctx, args) => this.userSetRole(ctx, args[0].value, ctx.user.id, false)
                 },
                 {
                     parameters: ['roleArray', 'user', 'quiet?'],
                     description: 'Sets the roles of `user` to `roleArray`. If quiet is provided, all errors will return `false`.',
                     exampleCode: '{usersetroles;["1111111111111"];stupid cat}',
                     exampleOut: 'true',
-                    execute: (ctx, args, subtag) => this.userSetRole(ctx, args[0].value, args[1].value, args[2].value !== '', subtag)
+                    execute: (ctx, args) => this.userSetRole(ctx, args[0].value, args[1].value, args[2].value !== '')
                 }
             ]
         });
@@ -34,12 +33,11 @@ export class UserSetRolesSubtag extends BaseSubtag {
         context: BBTagContext,
         rolesStr: string,
         userStr: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         const topRole = discordUtil.getRoleEditPosition(context);
         if (topRole === 0)
-            return this.customError('Author cannot remove roles', context, subtag);
+            throw new BBTagRuntimeError('Author cannot remove roles');
 
         /*
          * Quiet suppresses all errors here instead of just the user errors

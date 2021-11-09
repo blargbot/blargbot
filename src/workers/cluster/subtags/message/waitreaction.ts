@@ -1,6 +1,6 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { Statement, SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { Statement, SubtagArgumentValue } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
@@ -31,7 +31,7 @@ export class WaitReactionSubtag extends BaseSubtag {
                     exampleCode: '{waitreaction;12345678912345;stupid cat}',
                     exampleIn: '(reaction is added)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","🤔"]',
-                    execute: (ctx, args, subtag) => this.awaitReaction(ctx, subtag, args[0].value, args[1].value, '', 'true', '60')
+                    execute: (ctx, args) => this.awaitReaction(ctx, args[0].value, args[1].value, '', 'true', '60')
                 },
                 {
                     parameters: ['messages', 'userIDs', 'reactions', '~condition?:true'],
@@ -39,7 +39,7 @@ export class WaitReactionSubtag extends BaseSubtag {
                     exampleCode: '{waitreaction;12345678912345;{userid;stupid cat};["🤔", "👀"];{bool;{reaction};==;👀}}',
                     exampleIn: '(🤔 was reacted)\n(👀 was reacted)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","👀"]',
-                    execute: (ctx, args, subtag) => this.awaitReaction(ctx, subtag, args[0].value, args[1].value, args[2].value, args[3], '60')
+                    execute: (ctx, args) => this.awaitReaction(ctx, args[0].value, args[1].value, args[2].value, args[3], '60')
                 },
                 {
                     parameters: ['messages', 'userIDs', 'reactions', '~condition:true', 'timeout:60'],
@@ -47,7 +47,7 @@ export class WaitReactionSubtag extends BaseSubtag {
                     exampleCode: '{waitreaction;12345678912345;["{userid;stupid cat}","{userid;titansmasher}"];["🤔", "👀"];;120}',
                     exampleIn: '(some random user reacted with 🤔)\n(titansmasher reacted with 🤔)',
                     exampleOut: '["111111111111111","12345678912345","135556895086870528","🤔"]',
-                    execute: (ctx, args, subtag) => this.awaitReaction(ctx, subtag, args[0].value, args[1].value, args[2].value, args[3], args[4].value)
+                    execute: (ctx, args) => this.awaitReaction(ctx, args[0].value, args[1].value, args[2].value, args[3], args[4].value)
                 }
             ]
         });
@@ -55,7 +55,6 @@ export class WaitReactionSubtag extends BaseSubtag {
 
     public async awaitReaction(
         context: BBTagContext,
-        subtag: SubtagCall,
         messageStr: string,
         userIDStr: string,
         reactions: string,
@@ -85,7 +84,7 @@ export class WaitReactionSubtag extends BaseSubtag {
             parsedReactions = bbtagUtil.tagArray.flattenArray([reactions]).map(i => parse.string(i));
             parsedReactions = [...new Set(parsedReactions.flatMap(i => parse.emoji(i)))];
             if (parsedReactions.length === 0)
-                return this.customError('Invalid Emojis', context, subtag);
+                throw new BBTagRuntimeError('Invalid Emojis');
         } else {
             parsedReactions = undefined;
         }
@@ -128,7 +127,7 @@ export class WaitReactionSubtag extends BaseSubtag {
         }, timeout * 1000);
 
         if (reaction === undefined)
-            return this.customError(`Wait timed out after ${timeout * 1000}`, context, subtag);
+            throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
         return JSON.stringify([reaction.message.channel.id, reaction.message.id, reaction.user.id, reaction.reaction.emoji.toString()]);
     }
 }

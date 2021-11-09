@@ -1,6 +1,5 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotABooleanError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError, NotABooleanError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.logic;
@@ -18,17 +17,13 @@ export class LogicSubtag extends BaseSubtag {
                         'See `{operators}` for a shorter way of performing logic operations.',
                     exampleCode: '{logic;&&;true;false}',
                     exampleOut: 'false',
-                    execute: (ctx, args, subtag) => this.applyLogicOperation(ctx, args.map(arg => arg.value), subtag)
+                    execute: (_, args) => this.applyLogicOperation(args.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public applyLogicOperation(
-        context: BBTagContext,
-        args: string[],
-        subtag: SubtagCall
-    ): string {
+    public applyLogicOperation(args: string[]): string {
         let operator;
 
         for (let i = 0; i < args.length; i++) {
@@ -40,7 +35,7 @@ export class LogicSubtag extends BaseSubtag {
         }
 
         if (operator === undefined)
-            return this.customError('Invalid operator', context, subtag);
+            throw new BBTagRuntimeError('Invalid operator');
 
         const values = args;
         if (operator === '!') {

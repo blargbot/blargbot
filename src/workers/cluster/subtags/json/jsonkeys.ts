@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
 const json = bbtagUtil.json;
@@ -18,7 +19,7 @@ export class JsonKeysSubtag extends BaseSubtag {
                     exampleCode: '{set;~json;{json;{"key": "value", "key2" : "value2"}}\n' +
                         '{jsonkeys;~json}',
                     exampleOut: '["key","key2"]',
-                    execute: async (context, [{ value: input }, { value: path }], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: input }, { value: path }]): Promise<string | void> => {
                         try {
                             let obj: JObject | JArray;
                             const arr = await bbtagUtil.tagArray.getArray(context, input);
@@ -34,7 +35,7 @@ export class JsonKeysSubtag extends BaseSubtag {
 
                         } catch (e: unknown) {
                             if (e instanceof Error)
-                                return this.customError(e.message, context, subtag);
+                                throw new BBTagRuntimeError(e.message);
                         }
                     }
                 }

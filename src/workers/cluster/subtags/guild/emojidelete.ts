@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
 export class EmojiDeleteSubtag extends BaseSubtag {
@@ -12,11 +13,11 @@ export class EmojiDeleteSubtag extends BaseSubtag {
                     description: 'Deletes an emoji with the provided `id`',
                     exampleCode: '{emojidelete;11111111111111111}',
                     exampleOut: '', //TODO meaningful output like `true`/`false`,
-                    execute: async (context, [{ value: id }], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: id }]): Promise<string | void> => {
                         const permission = context.permissions;
 
                         if (!permission.has('MANAGE_EMOJIS_AND_STICKERS')) {
-                            return this.customError('Author cannot delete emojis', context, subtag);
+                            throw new BBTagRuntimeError('Author cannot delete emojis');
                         }
 
                         try {
@@ -26,7 +27,7 @@ export class EmojiDeleteSubtag extends BaseSubtag {
                             context.logger.error(err);
                             if (err instanceof Error) {
                                 const parts = err.message.split('\n').map(m => m.trim());
-                                return this.customError('Failed to delete emoji: ' + (parts.length > 1 ? parts[1] : parts[0]), context, subtag);
+                                throw new BBTagRuntimeError('Failed to delete emoji: ' + (parts.length > 1 ? parts[1] : parts[0]));
                             }
                         }
                     }

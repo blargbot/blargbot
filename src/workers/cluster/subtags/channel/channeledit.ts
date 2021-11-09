@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, mapping, SubtagType } from '@cluster/utils';
 import { TypeMapping } from '@core/types';
 import { guard } from '@core/utils';
@@ -26,7 +26,7 @@ export class ChannelEditSubtag extends BaseSubtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, args, subtag) => this.channelEdit(ctx, [...args.map(arg => arg.value), '{}'], subtag)
+                    execute: (ctx, args) => this.channelEdit(ctx, [...args.map(arg => arg.value), '{}'])
                 }
             ]
         });
@@ -34,39 +34,37 @@ export class ChannelEditSubtag extends BaseSubtag {
 
     public async channelEdit(
         context: BBTagContext,
-        args: string[],
-        subtag: SubtagCall
+        args: string[]
     ): Promise<string> {
         const channel = await context.queryChannel(args[0]);
 
         if (channel === undefined)
-            return this.customError('Channel does not exist', context, subtag);//TODO no channel found error
+            throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
 
         const permission = channel.permissionsFor(context.authorizer);
 
         if (permission?.has('MANAGE_CHANNELS') !== true)
-            return this.customError('Author cannot edit this channel', context, subtag);
+            throw new BBTagRuntimeError('Author cannot edit this channel');
 
         return guard.isThreadChannel(channel)
-            ? await this.channelEditCore(context, channel, args[1], mapThreadOptions, subtag)
-            : await this.channelEditCore(context, channel, args[1], mapChannelOptions, subtag);
+            ? await this.channelEditCore(context, channel, args[1], mapThreadOptions)
+            : await this.channelEditCore(context, channel, args[1], mapChannelOptions);
     }
 
     private async channelEditCore<T>(
         context: BBTagContext,
         channel: Extract<GuildChannels, { edit(data: T, fullReason?: string): Promise<unknown>; }>,
         editJson: string,
-        mapping: TypeMapping<T>,
-        subtag: SubtagCall
+        mapping: TypeMapping<T>
     ): Promise<string> {
         let options: T;
         try {
             const mapped = mapping(editJson);
             if (!mapped.valid)
-                return this.customError('Invalid JSON', context, subtag);
+                throw new BBTagRuntimeError('Invalid JSON');
             options = mapped.value;
         } catch (e: unknown) {
-            return this.customError('Invalid JSON', context, subtag);
+            throw new BBTagRuntimeError('Invalid JSON');
         }
 
         try {
@@ -78,7 +76,7 @@ export class ChannelEditSubtag extends BaseSubtag {
             return channel.id;
         } catch (err: unknown) {
             context.logger.error(err);
-            return this.customError('Failed to edit channel: no perms', context, subtag);
+            throw new BBTagRuntimeError('Failed to edit channel: no perms');
         }
     }
 }

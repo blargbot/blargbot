@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class KickSubtag extends BaseSubtag {
@@ -15,7 +14,7 @@ export class KickSubtag extends BaseSubtag {
                     description: 'Kicks `user`.',
                     exampleCode: '{kick;stupid cat} @stupid cat was kicked!',
                     exampleOut: 'Succes @stupid cat was kicked',
-                    execute: (ctx, args, subtag) => this.kickMember(ctx, args[0].value, '', '', subtag)
+                    execute: (ctx, args) => this.kickMember(ctx, args[0].value, '', '')
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
@@ -24,7 +23,7 @@ export class KickSubtag extends BaseSubtag {
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{kick;stupid cat;because I can} @stupid cat was kicked!',
                     exampleOut: 'Success @stupid cat was kicked, because I can!',
-                    execute: (ctx, args, subtag) => this.kickMember(ctx, args[0].value, args[1].value, args[2].value, subtag)
+                    execute: (ctx, args) => this.kickMember(ctx, args[0].value, args[1].value, args[2].value)
                 }
             ]
         });
@@ -34,8 +33,7 @@ export class KickSubtag extends BaseSubtag {
         context: BBTagContext,
         userStr: string,
         reason: string,
-        nopermsStr: string,
-        subtag: SubtagCall
+        nopermsStr: string
     ): Promise<string> {
         const user = await context.queryUser(userStr, {
             noErrors: context.scopes.local.noLookupErrors, noLookup: true //TODO why?
@@ -50,18 +48,17 @@ export class KickSubtag extends BaseSubtag {
 
         const response = await context.util.cluster.moderation.bans.kick(member, context.user, noPerms, reason);
 
-        const error = (message: string): string => this.customError(message, context, subtag);
         switch (response) {
             case 'success': //Successful
                 return 'Success'; //TODO true/false response
             case 'noPerms': //Bot doesnt have perms
-                return error('I don\'t have permission to kick users!');
+                throw new BBTagRuntimeError('I don\'t have permission to kick users!');
             case 'memberTooHigh': //Bot cannot kick target
-                return error(`I don't have permission to kick ${user.username}!`);
+                throw new BBTagRuntimeError(`I don't have permission to kick ${user.username}!`);
             case 'moderatorNoPerms': //User doesnt have perms
-                return error('You don\'t have permission to kick users!');
+                throw new BBTagRuntimeError('You don\'t have permission to kick users!');
             case 'moderatorTooLow': //User cannot kick target
-                return error(`You don't have permission to kick ${user.username}!`);
+                throw new BBTagRuntimeError(`You don't have permission to kick ${user.username}!`);
         }
     }
 }

@@ -1,7 +1,6 @@
 import { Cluster } from '@cluster';
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Duration } from 'moment';
 
@@ -28,14 +27,14 @@ export class BanSubtag extends BaseSubtag {
                     description: 'Bans `user`. If the ban is succesful `true` will be returned, else it will return an error.',
                     exampleCode: '{ban;Stupid cat;4}',
                     exampleOut: 'true',
-                    execute: (ctx, args, subtag) => this.banMember(ctx, args[0].value, args[1].value, 'Tag Ban', '', '', subtag)
+                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, 'Tag Ban', '', '')
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban?'],
                     description: 'Bans `user` for duration `timeToUnban` with `reason`.',
                     exampleCode: '{ban;Stupid cat;;Not clicking enough kittens;30d}',
                     exampleOut: 'true (stupid cat will be unbanned after 30d)',
-                    execute: (ctx, args, subtag) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, '', subtag)
+                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, '')
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban', 'noPerms'],
@@ -43,7 +42,7 @@ export class BanSubtag extends BaseSubtag {
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{ban;Stupid cat;;For being stupid;;anythingcangohere}',
                     exampleOut: 'true (anyone can use this cc regardless of perms)',
-                    execute: (ctx, args, subtag) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value, subtag)
+                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value)
                 }
             ]
         });
@@ -55,8 +54,7 @@ export class BanSubtag extends BaseSubtag {
         daysToDeleteStr: string,
         reason: string,
         timeToUnbanStr: string,
-        nopermsStr: string,
-        subtag: SubtagCall
+        nopermsStr: string
     ): Promise<string> {
         const user = await context.queryUser(userStr, {
             noLookup: true, noErrors: context.scopes.local.noLookupErrors ?? false
@@ -77,6 +75,6 @@ export class BanSubtag extends BaseSubtag {
 
         if (response === 'success' || response === 'alreadyBanned')
             return duration !== undefined ? duration.asMilliseconds().toString() : 'true';
-        return this.customError(errorMap[response], context, subtag);
+        throw new BBTagRuntimeError(errorMap[response]);
     }
 }

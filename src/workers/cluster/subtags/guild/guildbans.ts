@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class GuildBansSubtag extends BaseSubtag {
@@ -13,20 +13,19 @@ export class GuildBansSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'This guild has {length;{guildbans}} banned users.',
                     exampleOut: 'This guild has 123 banned users.',
-                    execute: (ctx, _, subtag) => this.getGuildBans(ctx, subtag)
+                    execute: (ctx) => this.getGuildBans(ctx)
                 }
             ]
         });
     }
 
     public async getGuildBans(
-        context: BBTagContext,
-        subtag: SubtagCall
+        context: BBTagContext
     ): Promise<string> {
         try {
             return JSON.stringify((await context.guild.bans.fetch()).map(u => u.user.id));
         } catch (err: unknown) {
-            return this.customError('Missing required permissions', context, subtag);
+            throw new BBTagRuntimeError('Missing required permissions');
         }
     }
 }

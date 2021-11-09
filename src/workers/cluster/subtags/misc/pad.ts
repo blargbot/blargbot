@@ -1,5 +1,5 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class PadSubtag extends BaseSubtag {
@@ -14,25 +14,17 @@ export class PadSubtag extends BaseSubtag {
                     description: 'Places `text` ontop of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap',
                     exampleCode: '{pad;left;000000;ABC}',
                     exampleOut: '000ABC',
-                    execute: (ctx, args, subtag) => this.pad(ctx, args.map(arg => arg.value), subtag)
+                    execute: (_, [direction, back, text]) => this.pad(direction.value, back.value, text.value)
                 }
             ]
         });
     }
 
-    public pad(
-        context: BBTagContext,
-        args: string[],
-        subtag: SubtagCall
-    ): string {
-        const direction = args[0];
-        const backing = args[1];
-        const overlay = args[2];
-
+    public pad(direction: string, backing: string, overlay: string): string {
         if (direction.toLowerCase() === 'left')
             return backing.substr(0, backing.length - overlay.length) + overlay;
         if (direction.toLowerCase() === 'right')
             return overlay + backing.substr(overlay.length);
-        return this.customError('Invalid direction', context, subtag);
+        throw new BBTagRuntimeError('Invalid direction');
     }
 }

@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { RuntimeReturnState, SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
@@ -24,7 +25,7 @@ export class FunctionInvokeSubtag extends BaseSubtag {
 
         if (context.state.stackSize > 200) {
             context.state.return = RuntimeReturnState.ALL;
-            return this.customError(`Terminated recursive tag after ${context.state.stackSize} execs.`, context, subtag);
+            throw new BBTagRuntimeError(`Terminated recursive tag after ${context.state.stackSize} execs.`);
         }
 
         const scope = context.scopes.pushScope();

@@ -51,8 +51,4 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public tooManyLoops(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('Too many loops', subtag, debugMessage);
     }
-
-    public customError(errorText: string, context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError(errorText, subtag, debugMessage);
-    }
 }

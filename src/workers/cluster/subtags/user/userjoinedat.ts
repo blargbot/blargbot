@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment';
 
@@ -15,14 +15,14 @@ export class UserJoinedAtSubtag extends BaseSubtag {
                     description: 'Returns the date that the executing user joined the guild, using `format` for the output, in UTC+0.\n',
                     exampleCode: 'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'Your account joined this guild on 2016/01/01 01:00:00.',
-                    execute: (ctx, [format], subtag) => this.getUserJoinDate(ctx, format.value, ctx.user.id, false, subtag)
+                    execute: (ctx, [format]) => this.getUserJoinDate(ctx, format.value, ctx.user.id, false)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
                     description: 'Returns the date that `user` joined the current guild using `format` for the output, in UTC+0. if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat joined this guild on {userjoinedat;YYYY/MM/DD HH:mm:ss;Stupid cat}',
                     exampleOut: 'Stupid cat joined this guild on 2016/06/19 23:30:30',
-                    execute: (ctx, [format, userId, quiet], subtag) => this.getUserJoinDate(ctx, format.value, userId.value, quiet.value !== '', subtag)
+                    execute: (ctx, [format, userId, quiet]) => this.getUserJoinDate(ctx, format.value, userId.value, quiet.value !== '')
                 }
             ]
         });
@@ -32,8 +32,7 @@ export class UserJoinedAtSubtag extends BaseSubtag {
         context: BBTagContext,
         format: string,
         userId: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
@@ -42,7 +41,7 @@ export class UserJoinedAtSubtag extends BaseSubtag {
             const member = await context.util.getMember(context.guild, user.id);
             if (member !== undefined)
                 return moment(member.joinedAt).utcOffset(0).format(format);
-            return this.customError('User not in guild', context, subtag);
+            throw new BBTagRuntimeError('User not in guild');
         }
 
         return quiet ? '' : ''; //TODO add behaviour for this????

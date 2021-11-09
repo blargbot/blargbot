@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Message, MessageEmbedOptions } from 'discord.js';
 
@@ -15,15 +14,15 @@ export class ReactAddSubtag extends BaseSubtag {
             definition: [//! Overwritten
                 {
                     parameters: ['reaction'],
-                    execute: (ctx, args, subtag) => this.addReactions(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
                 },
                 {
                     parameters: ['messageid', 'reaction'],
-                    execute: (ctx, args, subtag) => this.addReactions(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
                 },
                 {
                     parameters: ['channel', 'messageid', 'reactions+'],
-                    execute: (ctx, args, subtag) => this.addReactions(ctx, args.map(arg => arg.value), subtag)
+                    execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
                 }
             ]
         });
@@ -31,8 +30,7 @@ export class ReactAddSubtag extends BaseSubtag {
 
     public async addReactions(
         context: BBTagContext,
-        args: string[],
-        subtag: SubtagCall
+        args: string[]
     ): Promise<string | void> {
         let message: Message | undefined;
 
@@ -57,12 +55,12 @@ export class ReactAddSubtag extends BaseSubtag {
         }
         const permissions = channel.permissionsFor(context.discord.user);
         if (permissions === null || !permissions.has('ADD_REACTIONS'))
-            return this.customError('I dont have permission to Add Reactions', context, subtag);
+            throw new BBTagRuntimeError('I dont have permission to Add Reactions');
         // Find all actual emotes in remaining emotes
         const parsed = parse.emoji(args.join('|'), true);
 
         if (parsed.length === 0 && args.length > 0)
-            return this.customError('Invalid Emojis', context, subtag);
+            throw new BBTagRuntimeError('Invalid Emojis');
         const outputMessage = await context.state.outputMessage;
         const reactToMessage = message !== undefined ? message :
             outputMessage !== undefined ? await context.util.getMessage(context.channel, outputMessage) : undefined;
@@ -71,7 +69,7 @@ export class ReactAddSubtag extends BaseSubtag {
             // Perform add of each reaction
             const errors = await context.util.addReactions(reactToMessage, parsed);
             if (errors.failed.length > 0)
-                return this.customError(`I cannot add '${errors.failed.toString()}' as reactions`, context, subtag);
+                throw new BBTagRuntimeError(`I cannot add '${errors.failed.toString()}' as reactions`);
         } else {
             // Defer reactions to output message
             context.state.reactions.push(...parsed);

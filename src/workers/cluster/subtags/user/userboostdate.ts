@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment-timezone';
 
@@ -15,10 +16,10 @@ export class UserBoostDataSubtag extends BaseSubtag {
                     description: 'Returns the date that the executing user started boosting the guild using `format` for the output, in UTC+0.',
                     exampleCode: 'Your account started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'Your account started boosting this guild on 2020/02/27 00:00:00',
-                    execute: (ctx, [{ value: format }], subtag) => {
+                    execute: (ctx, [{ value: format }]) => {
                         const boostDate = ctx.member.premiumSinceTimestamp;
                         if (boostDate === null)
-                            return this.customError('User not boosting', ctx, subtag);
+                            throw new BBTagRuntimeError('User not boosting');
                         return moment(boostDate).format(format);
                     }
                 },
@@ -28,7 +29,7 @@ export class UserBoostDataSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}',
                     exampleOut: 'stupid cat is boosting!',
-                    execute: async (context, [{ value: format }, { value: userStr }, { value: quietStr }], subtag): Promise<string> => {
+                    execute: async (context, [{ value: format }, { value: userStr }, { value: quietStr }]): Promise<string> => {
                         const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
                         const member = userStr === '' ? context.member : await context.queryMember(userStr, {
                             noErrors: context.scopes.local.noLookupErrors,
@@ -43,7 +44,7 @@ export class UserBoostDataSubtag extends BaseSubtag {
 
                         const boostDate = member.premiumSinceTimestamp;
                         if (boostDate === null)
-                            return this.customError('User not boosting', context, subtag);
+                            throw new BBTagRuntimeError('User not boosting');
                         return moment(boostDate).format(format);
                     }
                 }

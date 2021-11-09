@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class ThrowSubtag extends BaseSubtag {
@@ -12,7 +13,9 @@ export class ThrowSubtag extends BaseSubtag {
                     description: 'Throws `error`.',
                     exampleCode: '{throw;Custom Error}',
                     exampleOut: '\u200B`Custom Error`\u200B',
-                    execute: (ctx, [error], subtag) => this.customError(error.value, ctx, subtag)
+                    execute: (_, [error]) => {
+                        throw new BBTagRuntimeError(error.value, 'A user defined error');
+                    }
                 }
             ]
         });

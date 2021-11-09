@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 import { GuildChannels } from 'discord.js';
@@ -18,14 +17,14 @@ export class ChannelPosSubtag extends BaseSubtag {
                     description: 'Returns the position of the current channel.',
                     exampleCode: 'This channel is in position {channelpos}',
                     exampleOut: 'This channel is in position 1',
-                    execute: (ctx, _, subtag) => this.getChanelPositionCore(ctx, ctx.channel, subtag)
+                    execute: (ctx) => this.getChanelPositionCore(ctx.channel)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
                     description: 'Returns the position of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: 'The position of test-channel is {channelpos;test-channel}',
                     exampleOut: 'The position of test-channel is 0',
-                    execute: (ctx, [channel, quiet], subtag) => this.getChannelPosition(ctx, channel.value, quiet.value !== '', subtag)
+                    execute: (ctx, [channel, quiet]) => this.getChannelPosition(ctx, channel.value, quiet.value !== '')
                 }
             ]
         });
@@ -34,8 +33,7 @@ export class ChannelPosSubtag extends BaseSubtag {
     public async getChannelPosition(
         context: BBTagContext,
         channelStr: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
@@ -45,12 +43,12 @@ export class ChannelPosSubtag extends BaseSubtag {
             throw new ChannelNotFoundError(channelStr);
         }
 
-        return this.getChanelPositionCore(context, channel, subtag);
+        return this.getChanelPositionCore(channel);
     }
 
-    private getChanelPositionCore(context: BBTagContext, channel: GuildChannels, subtag: SubtagCall): string {
+    private getChanelPositionCore(channel: GuildChannels): string {
         if (guard.isThreadChannel(channel))
-            return this.customError('Threads dont have a position', context, subtag, `${channel.toString()} is a thread and doesnt have a position`);
+            throw new BBTagRuntimeError('Threads dont have a position', `${channel.toString()} is a thread and doesnt have a position`);
 
         return channel.position.toString();
     }

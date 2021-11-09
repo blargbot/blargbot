@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
 import { AllowedThreadTypeForTextChannel, GuildMessage, ThreadAutoArchiveDuration, ThreadCreateOptions } from 'discord.js';
 
@@ -29,7 +29,7 @@ export class ThreadCreateSubtag extends BaseSubtag {
                     description: '`channel` defaults to the current channel\n\nCreates a new thread in `channel`. If `message` is provided, thread will start from `message`.\n`options` must be a JSON object containing `name`, other properties are:\n- `autoArchiveDuration` (one of `60, 1440, 4320, 10080`)\n- `private` (boolean)\nThe guild must have the required boosts for durations `4320` and `10080`. If `private` is true thread will be private (unless in a news channel).\nReturns the ID of the new thread channel',
                     exampleCode: '{threadcreate;;123456789123456;{json;{"name" : "Hello world!"}}}',
                     exampleOut: '98765432198765',
-                    execute: async (context, [channelStr, messageStr, optionsStr], subtag): Promise<string | void> => {
+                    execute: async (context, [channelStr, messageStr, optionsStr]): Promise<string | void> => {
                         let channel;
                         if (channelStr.value === '')
                             channel = context.channel;
@@ -39,7 +39,7 @@ export class ThreadCreateSubtag extends BaseSubtag {
                                 throw new ChannelNotFoundError(channelStr.value);
                         }
                         if (!guard.isThreadableChannel(channel))
-                            return this.customError(discordUtil.notThreadable(channel), context, subtag);
+                            throw new BBTagRuntimeError(discordUtil.notThreadable(channel));
 
                         let message: GuildMessage | undefined;
                         if (messageStr.value !== '') {
@@ -48,7 +48,7 @@ export class ThreadCreateSubtag extends BaseSubtag {
                                 if (maybeMessage === undefined)
                                     throw new MessageNotFoundError(channel, messageStr.value);
                                 if (!guard.isGuildMessage(maybeMessage))
-                                    return this.customError('Message not in guild', context, subtag);
+                                    throw new BBTagRuntimeError('Message not in guild');
                                 message = maybeMessage;
                             } catch (e: unknown) {
                                 throw new MessageNotFoundError(channel, messageStr.value);
@@ -58,7 +58,7 @@ export class ThreadCreateSubtag extends BaseSubtag {
                         const mappingOptions = threadOptions((await bbtagUtil.json.parse(context, optionsStr.value)).object);
 
                         if (!mappingOptions.valid)
-                            return this.customError('Invalid options object', context, subtag);
+                            throw new BBTagRuntimeError('Invalid options object');
                         const guildFeatures = context.guild.features;
 
                         const input = mappingOptions.value;
@@ -69,11 +69,11 @@ export class ThreadCreateSubtag extends BaseSubtag {
 
                         if (![60, 1440].includes(input.autoArchiveDuration)) {
                             if (input.autoArchiveDuration === 10080 && !guildFeatures.includes('SEVEN_DAY_THREAD_ARCHIVE')) {
-                                return this.customError('Guild does not have 7 day threads', context, subtag, 'Missing boosts');
+                                throw new BBTagRuntimeError('Guild does not have 7 day threads', 'Missing boosts');
                             } else if (input.autoArchiveDuration === 4320 && !guildFeatures.includes('THREE_DAY_THREAD_ARCHIVE')) {
-                                return this.customError('Guild does not have 3 day threads', context, subtag, 'Missing boosts');
+                                throw new BBTagRuntimeError('Guild does not have 3 day threads', 'Missing boosts');
                             }
-                            return this.customError('Invalid autoArchiveDuration', context, subtag);
+                            throw new BBTagRuntimeError('Invalid autoArchiveDuration');
                         }
 
                         const options: ThreadCreateOptions<AllowedThreadTypeForTextChannel> = {
@@ -83,7 +83,7 @@ export class ThreadCreateSubtag extends BaseSubtag {
 
                         if (parse.boolean(input.private) === true) {
                             if (!guildFeatures.includes('PRIVATE_THREADS'))
-                                return this.customError('Guild cannot have private threads', context, subtag);
+                                throw new BBTagRuntimeError('Guild cannot have private threads');
                             options.type = 'GUILD_PRIVATE_THREAD';
                         } else {
                             options.type = 'GUILD_PUBLIC_THREAD';
@@ -98,7 +98,7 @@ export class ThreadCreateSubtag extends BaseSubtag {
                         } catch (e: unknown) {
                             if (e instanceof Error) {
                                 context.logger.error(e);
-                                return this.customError(e.message, context, subtag);
+                                throw new BBTagRuntimeError(e.message);
                             }
                         }
                     }

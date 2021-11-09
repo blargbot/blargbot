@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { createSafeRegExp, SubtagType } from '@cluster/utils';
 
 export class RegexTestSubtag extends BaseSubtag {
@@ -14,12 +15,12 @@ export class RegexTestSubtag extends BaseSubtag {
                         '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',
                     exampleCode: '{regextest;apple;/p+/i} {regextest;banana;/p+/i}',
                     exampleOut: 'true false',
-                    execute: (context, [{value: text}, {raw: regexStr}], subtag): string | void => {
+                    execute: (_context, [{ value: text }, { raw: regexStr }]): string | void => {
                         try {
                             const regexResult = createSafeRegExp(regexStr);
                             if (!regexResult.success) {
                                 let reason: string;
-                                switch(regexResult.reason) {
+                                switch (regexResult.reason) {
                                     case 'invalid':
                                         reason = 'Invalid Regex';
                                         break;
@@ -29,12 +30,12 @@ export class RegexTestSubtag extends BaseSubtag {
                                     case 'unsafe':
                                         reason = 'Unsafe Regex';
                                 }
-                                return this.customError(reason, context, subtag);
+                                throw new BBTagRuntimeError(reason);
                             }
                             return regexResult.regex.test(text).toString();
                         } catch (e: unknown) {
                             if (e instanceof Error)
-                                return this.customError(e.message, context, subtag);
+                                throw new BBTagRuntimeError(e.message);
                         }
                     }
                 }

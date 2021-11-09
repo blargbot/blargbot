@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { MessageNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { DiscordAPIError, EmbedFieldData, MessageEmbedOptions } from 'discord.js';
@@ -38,7 +38,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
             args.shift();
         const permissions = channel.permissionsFor(context.discord.user);
         if (permissions === null || !permissions.has('MANAGE_MESSAGES'))
-            return this.customError('I need to be able to Manage Messages to remove reactions', context, subtag);
+            throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
         // Check that the current first "emote" is a message id
         try {
             message = await context.util.getMessage(channel, args[0]);
@@ -50,7 +50,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
             throw new MessageNotFoundError(channel, args[0]);
 
         if (!(await context.isStaff || context.ownsMessage(message.id)))
-            return this.customError('Author must be staff to modify unrelated messages', context, subtag);
+            throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
         // Loop through the "emotes" and check if each is a user. If it is not, then break
         let user = await context.queryUser(args[0], { noErrors: context.scopes.local.noLookupErrors, noLookup: true });
@@ -62,7 +62,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
         let parsedEmojis = parse.emoji(args.join('|'), true);
 
         if (parsedEmojis.length === 0 && args.length !== 0)
-            return this.customError('Invalid Emojis', context, subtag);
+            throw new BBTagRuntimeError('Invalid Emojis');
 
         // Default to all emotes
         if (parsedEmojis.length === 0)
@@ -84,7 +84,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
                             errored.push(reaction);
                             break;
                         case 50013:
-                            return this.customError('I need to be able to Manage Messages to remove reactions', context, subtag);
+                            throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
                         default:
                             throw err;
                     }
@@ -94,7 +94,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
         }
 
         if (errored.length > 0)
-            return this.customError('Unknown Emoji: ' + errored.join(', '), context, subtag);
+            throw new BBTagRuntimeError('Unknown Emoji: ' + errored.join(', '));
     }
 
     public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {

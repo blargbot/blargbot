@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 import { ReturnObject } from '@cluster/utils/bbtag/json';
 
@@ -17,7 +17,7 @@ export class JsonSetSubtag extends BaseSubtag {
                     description: 'Deletes the value at `path`. `input` can be a JSON object or array',
                     exampleCode: '{set;~json;{json;{"key" : "value"}}}\n{jset;~json;key}\n{get;~json}',
                     exampleOut: '{}',
-                    execute: async (ctx, args, subtag) => this.deleteValue(ctx, args[0].value, args[1].value, subtag)
+                    execute: async (ctx, args) => this.deleteValue(ctx, args[0].value, args[1].value)
                 },
                 {
                     parameters: ['input:{}', 'path', 'value', 'create?'],
@@ -26,7 +26,7 @@ export class JsonSetSubtag extends BaseSubtag {
                         'If `create` is not empty, will create/convert any missing keys.',
                     exampleCode: '{jsonset;;path.to.key;value;create}',
                     exampleOut: '{"path":{"to":{"key":"value"}}}',
-                    execute: async (ctx, args, subtag) => this.setValue(ctx, args[0].value, args[1].value, args[2].value, args[3].value, subtag)
+                    execute: async (ctx, args) => this.setValue(ctx, args[0].value, args[1].value, args[2].value, args[3].value)
                 }
             ]
         });
@@ -35,8 +35,7 @@ export class JsonSetSubtag extends BaseSubtag {
     public async deleteValue(
         context: BBTagContext,
         input: string,
-        path: string,
-        subtag: SubtagCall
+        path: string
     ): Promise<string | void> {
         let obj: JArray | JObject | ReturnObject;
         try {
@@ -59,7 +58,7 @@ export class JsonSetSubtag extends BaseSubtag {
         } catch (e: unknown) {
             context.logger.error(e);
             if (e instanceof Error)
-                return this.customError(e.message, context, subtag);
+                throw new BBTagRuntimeError(e.message);
         }
     }
 
@@ -68,8 +67,7 @@ export class JsonSetSubtag extends BaseSubtag {
         input: string,
         path: string,
         value: string,
-        createStr: string,
-        subtag: SubtagCall
+        createStr: string
     ): Promise<string | void> {
         const create = createStr !== '' ? true : false;
         let obj: JArray | JObject | ReturnObject;
@@ -92,7 +90,7 @@ export class JsonSetSubtag extends BaseSubtag {
             } else return JSON.stringify(modifiedObj);
         } catch (e: unknown) {
             if (e instanceof Error)
-                return this.customError(e.message, context, subtag);
+                throw new BBTagRuntimeError(e.message);
         }
     }
 }
