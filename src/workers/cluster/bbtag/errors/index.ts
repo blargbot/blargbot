@@ -8,5 +8,6 @@ export * from './NotANumberError';
 export * from './NotAnArrayError';
 export * from './NotEnoughArgumentsError';
 export * from './TooManyArgumentsError';
+export * from './TooManyLoopsError';
 export * from './UserNotFoundError';
 export * from './RoleNotFoundError';

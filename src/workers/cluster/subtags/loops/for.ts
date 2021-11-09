@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotANumberError, TooManyLoopsError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { CompareOperator } from '@cluster/utils/bbtag/operators';
 
@@ -34,7 +34,8 @@ export class ForSubtag extends BaseSubtag {
 
                         for (let i = initial; bbtagUtil.operators.compare[operator as CompareOperator](i.toString(), limit.toString()); i += increment) {
                             if (await context.limit.check(context, subtag, 'for:loops') !== undefined) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN
-                                result += this.tooManyLoops(context, subtag);
+                                const error = new TooManyLoopsError(-1);
+                                result += context.addError(error.message, subtag, error.detail);
                                 break;
                             }
                             await context.variables.set(varName, i);

@@ -47,8 +47,4 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public enrichDocs(docs: MessageEmbedOptions): MessageEmbedOptions {
         return docs;
     }
-
-    public tooManyLoops(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('Too many loops', subtag, debugMessage);
-    }
 }

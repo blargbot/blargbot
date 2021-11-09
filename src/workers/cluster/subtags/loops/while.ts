@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { TooManyLoopsError } from '@cluster/bbtag/errors';
 import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
@@ -66,8 +67,10 @@ export class WhileSubtag extends BaseSubtag {
             }
         }
 
-        if (reachedLimit)
-            result += this.tooManyLoops(context, subtag); //* Not sure how I feel about subtags appending this error to the result. imo this should be the error should be returned
+        if (reachedLimit) {
+            const error = new TooManyLoopsError(-1); //* Not sure how I feel about subtags appending this error to the result. imo this should be the error should be returned
+            result += context.addError(error.message, subtag, error.detail);
+        }
         return result;
     }
 }

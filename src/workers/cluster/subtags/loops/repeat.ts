@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotANumberError, TooManyLoopsError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
@@ -27,7 +27,8 @@ export class RepeatSubtag extends BaseSubtag {
 
                         for (let i = 0; i < amount; i++) {
                             if (await context.limit.check(context, subtag, 'repeat:loops') !== undefined) {
-                                result += this.tooManyLoops(context, subtag);
+                                const error = new TooManyLoopsError(-1);
+                                result += context.addError(error.message, subtag, error.detail);
                                 break;
                             }
                             result += await code.execute();
