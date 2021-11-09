@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
+import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { Message, MessageEmbedOptions } from 'discord.js';
@@ -52,7 +52,7 @@ export class ReactAddSubtag extends BaseSubtag {
                 // NOOP
             }
             if (message === undefined)
-                return this.noMessageFound(context, subtag);
+                throw new MessageNotFoundError(channel, args[0]);
             args.shift();
         }
         const permissions = channel.permissionsFor(context.discord.user);

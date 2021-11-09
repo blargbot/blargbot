@@ -48,10 +48,6 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         return docs;
     }
 
-    public noMessageFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('No message found', subtag, debugMessage);
-    }
-
     public noUserFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('No user found', subtag, debugMessage);
     }

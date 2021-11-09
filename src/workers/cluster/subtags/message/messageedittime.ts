@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
@@ -17,14 +16,14 @@ export class MessageEditTimeSubtag extends BaseSubtag {
                     description: 'Returns the edit time of the executing message in unix milliseconds.',
                     exampleCode: 'The edit timestamp of your message is "{messageedittime}"',
                     exampleOut: 'The edit timestamp of your message is "1628782144703"',
-                    execute: async (context, _, subtag) => {
+                    execute: async (context) => {
                         try {
-                            const message = await context.util.getMessage(context.channel.id, context.message.id);
+                            const message = await context.util.getMessage(context.channel, context.message.id);
                             if (message === undefined)
-                                return this.noMessageFound(context, subtag);
+                                throw new MessageNotFoundError(context.channel, context.message.id);
                             return message.editedTimestamp !== null ? moment(message.editedTimestamp).format('x') : moment().format('x');
                         } catch (e: unknown) {
-                            return this.noMessageFound(context, subtag);
+                            throw new MessageNotFoundError(context.channel, context.message.id);
                         }
                     }
                 },
@@ -32,26 +31,26 @@ export class MessageEditTimeSubtag extends BaseSubtag {
                     parameters: ['format|messageid'],
                     description: 'If the first argument is a messageid, this will return the edit time of `messageid` in unix. ' +
                         'Else this will return the edit time of the executing message in `format`.',
-                    execute: (context, args, subtag) => {
+                    execute: (context, args) => {
                         if (/^\d{17,23}/.test(args[0].value))
-                            return this.getMessageEditTime(context, context.channel.id, args[0].value, 'x', subtag);
-                        return this.getMessageEditTime(context, context.channel.id, context.message.id, args[0].value, subtag);
+                            return this.getMessageEditTime(context, context.channel.id, args[0].value, 'x');
+                        return this.getMessageEditTime(context, context.channel.id, context.message.id, args[0].value);
                     }
                 },
                 {
                     parameters: ['channel|messageid', 'messageid|format'],
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
-                    execute: async (context, args, subtag) => {
+                    execute: async (context, args) => {
                         const channel = await context.queryChannel(args[0].value, { noErrors: true });
                         if (channel === undefined)
-                            return this.getMessageEditTime(context, context.channel.id, args[0].value, args[1].value, subtag);
-                        return this.getMessageEditTime(context, args[0].value, args[1].value, 'x', subtag);
+                            return this.getMessageEditTime(context, context.channel.id, args[0].value, args[1].value);
+                        return this.getMessageEditTime(context, args[0].value, args[1].value, 'x');
                     }
                 },
                 {
                     parameters: ['channel', 'messageid', 'format'],
                     description: '{messagetime;<channel>;<messageid>;<format>}',
-                    execute: (context, args, subtag) => this.getMessageEditTime(context, args[0].value, args[1].value, args[2].value, subtag)
+                    execute: (context, args) => this.getMessageEditTime(context, args[0].value, args[1].value, args[2].value)
                 }
             ]
         });
@@ -61,8 +60,7 @@ export class MessageEditTimeSubtag extends BaseSubtag {
         context: BBTagContext,
         channelStr: string,
         messageStr: string,
-        format: string,
-        subtag: SubtagCall
+        format: string
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr, { noLookup: true }); //TODO lookup
         if (channel === undefined)
@@ -71,11 +69,11 @@ export class MessageEditTimeSubtag extends BaseSubtag {
         try {
             const message = await context.util.getMessage(channel.id, messageStr);
             if (message === undefined)
-                return this.noMessageFound(context, subtag);
+                throw new MessageNotFoundError(channel, messageStr);
 
             return message.editedTimestamp === null ? moment().format('x') : moment(message.editedTimestamp).format(format);
         } catch (e: unknown) {
-            return this.noMessageFound(context, subtag);
+            throw new MessageNotFoundError(channel, messageStr);
         }
     }
 

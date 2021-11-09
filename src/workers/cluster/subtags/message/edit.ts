@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
+import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedFieldData, MessageEmbed, MessageEmbedOptions } from 'discord.js';
@@ -65,7 +65,7 @@ export class EditSubtag extends BaseSubtag {
             const message = await context.util.getMessage(channel.id, messageStr);
 
             if (message === undefined)
-                return this.noMessageFound(context, subtag);
+                throw new MessageNotFoundError(channel, messageStr);
             if (message.author.id !== context.discord.user.id)
                 return this.customError('I must be the message author', context, subtag);
             content = content ?? message.content;

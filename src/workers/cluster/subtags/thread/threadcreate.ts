@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
+import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
 import { AllowedThreadTypeForTextChannel, GuildMessage, ThreadAutoArchiveDuration, ThreadCreateOptions } from 'discord.js';
 
@@ -46,12 +46,12 @@ export class ThreadCreateSubtag extends BaseSubtag {
                             try {
                                 const maybeMessage = await context.util.getMessage(channel, messageStr.value);
                                 if (maybeMessage === undefined)
-                                    return this.noMessageFound(context, subtag);
+                                    throw new MessageNotFoundError(channel, messageStr.value);
                                 if (!guard.isGuildMessage(maybeMessage))
                                     return this.customError('Message not in guild', context, subtag);
                                 message = maybeMessage;
                             } catch (e: unknown) {
-                                return this.noMessageFound(context, subtag);
+                                throw new MessageNotFoundError(channel, messageStr.value);
                             }
                         }
 

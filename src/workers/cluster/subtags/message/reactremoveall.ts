@@ -1,4 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
+import { MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class ReactRemoveAllSubtag extends BaseSubtag {
@@ -15,11 +16,11 @@ export class ReactRemoveAllSubtag extends BaseSubtag {
                     description: 'Removes all reactions from `messageId`.\n`channelId` defaults to the current channel.',
                     exampleCode: '{reactremoveall;12345678901234;:thinking:}',
                     exampleOut: '(removed all the reactions)',
-                    execute: async (context, [{value: channelStr}, {value: messageID}], subtag): Promise<string | void> => {
+                    execute: async (context, [{ value: channelStr }, { value: messageID }], subtag): Promise<string | void> => {
                         let message;
                         let channel;
 
-                        channel = await context.queryChannel(channelStr, {noLookup:true});
+                        channel = await context.queryChannel(channelStr, { noLookup: true });
                         if (channel === undefined)
                             channel = context.channel;
 
@@ -30,7 +31,7 @@ export class ReactRemoveAllSubtag extends BaseSubtag {
                         }
 
                         if (message === undefined)
-                            return this.noMessageFound(context, subtag);
+                            throw new MessageNotFoundError(channel, messageID);
 
                         if (!(await context.isStaff || context.ownsMessage(message.id)))
                             return this.customError('Author must be staff to modify unrelated messages', context, subtag);

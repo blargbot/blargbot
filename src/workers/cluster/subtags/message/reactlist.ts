@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { Message, MessageEmbedOptions } from 'discord.js';
@@ -13,15 +14,15 @@ export class ReactListSubtag extends BaseSubtag {
                 {
                     parameters: [],
                     description: 'This just returns `No message found` ***always*** for the sake of backwards compatibility.',
-                    execute: (ctx, _, subtag) => this.noMessageFound(ctx, subtag, 'this is expected')
+                    execute: (ctx) => { throw new MessageNotFoundError(ctx.channel, ''); }
                 },
                 {
                     parameters: ['messageid'],
                     description: 'Returns an array of reactions on `messageid`.',
-                    execute: async (context, [{value: msgStr}], subtag) => {
-                        const msg = await context.util.getMessage(context.channel.id, msgStr, true);
+                    execute: async (context, [messageStr]) => {
+                        const msg = await context.util.getMessage(context.channel, messageStr.value, true);
                         if (msg === undefined)
-                            return this.noMessageFound(context, subtag);
+                            throw new MessageNotFoundError(context.channel, messageStr.value);
                         return JSON.stringify(msg.reactions.cache.map(r => r.emoji.toString()));
                     }
                 },
@@ -48,7 +49,7 @@ export class ReactListSubtag extends BaseSubtag {
         let message: Message | undefined;
 
         // Check if the first "emote" is actually a valid channel
-        channel = await context.queryChannel(args[0], {noLookup: true});
+        channel = await context.queryChannel(args[0], { noLookup: true });
         if (channel === undefined)
             channel = context.channel;
         else
@@ -61,7 +62,7 @@ export class ReactListSubtag extends BaseSubtag {
             // NOOP
         }
         if (message === undefined)
-            return this.noMessageFound(context, subtag);
+            throw new MessageNotFoundError(channel, args[0]);
         args.shift();
 
         // Find all actual emotes in remaining emotes
@@ -105,7 +106,7 @@ export class ReactListSubtag extends BaseSubtag {
             {
                 name: 'Usage',
                 value: '```\n{reactlist}```This just returns `No message found` ***always*** for the sake of backwards compatibility.\n\n' +
-                '**Example code:**\n> {reactlist}\n**Example out:**\n> `No message found`'
+                    '**Example code:**\n> {reactlist}\n**Example out:**\n> `No message found`'
             },
             {
                 name: '\u200b',

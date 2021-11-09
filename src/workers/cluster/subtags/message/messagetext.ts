@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
 
@@ -16,21 +15,21 @@ export class MessageTextSubtag extends BaseSubtag {
                     description: 'Returns the text of the executing message.',
                     exampleCode: 'You sent "text"',
                     exampleOut: 'You sent "b!t test You sent "{text}""`',
-                    execute: (ctx, _, subtag) => this.getMessageText(ctx, ctx.channel.id, ctx.message.id, false, subtag)
+                    execute: (ctx) => this.getMessageText(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
                     description: 'Returns the text of `messageid` in the current channel.',
                     exampleCode: 'Message 1111111111111 contained: "{text;1111111111111}"',
                     exampleOut: 'Message 1111111111111 contained: "Hello world!"',
-                    execute: (ctx, args, subtag) => this.getMessageText(ctx, ctx.channel.id, args[0].value, false, subtag)
+                    execute: (ctx, args) => this.getMessageText(ctx, ctx.channel.id, args[0].value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
                     description: 'Returns the text of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
                     exampleCode: 'Message 1111111111111 in #support contained: "{text;support;1111111111111}"',
                     exampleOut: 'Message 1111111111111 in #support contained: "Spooky Stuff"',
-                    execute: (ctx, args, subtag) => this.getMessageText(ctx, args[0].value, args[1].value, args[2].value !== '', subtag)
+                    execute: (ctx, args) => this.getMessageText(ctx, args[0].value, args[1].value, args[2].value !== '')
                 }
             ]
         });
@@ -40,8 +39,7 @@ export class MessageTextSubtag extends BaseSubtag {
         context: BBTagContext,
         channelStr: string,
         messageStr: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
@@ -55,10 +53,10 @@ export class MessageTextSubtag extends BaseSubtag {
         try {
             message = await context.util.getMessage(channel, messageStr);
             if (message === undefined)
-                return this.noMessageFound(context, subtag, `${messageStr} could not be found`);
+                throw new MessageNotFoundError(channel, messageStr);
             return message.content;
         } catch (e: unknown) {
-            return this.noMessageFound(context, subtag, `${messageStr} could not be found`);
+            throw new MessageNotFoundError(channel, messageStr);
         }
 
     }

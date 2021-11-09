@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { DiscordAPIError, EmbedFieldData, MessageEmbedOptions } from 'discord.js';
@@ -46,7 +47,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
         }
         args.shift();
         if (message === undefined)
-            return this.noMessageFound(context, subtag);
+            throw new MessageNotFoundError(channel, args[0]);
 
         if (!(await context.isStaff || context.ownsMessage(message.id)))
             return this.customError('Author must be staff to modify unrelated messages', context, subtag);

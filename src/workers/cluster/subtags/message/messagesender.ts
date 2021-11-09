@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
+import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
 
@@ -16,21 +15,21 @@ export class MessageSenderSubtag extends BaseSubtag {
                     description: 'Returns the id of the author of the executing message.',
                     exampleCode: 'That was sent by "{sender}"',
                     exampleOut: 'That was sent by "1111111111111"',
-                    execute: (ctx, _, subtag) => this.getMessageSender(ctx, ctx.channel.id, ctx.message.id, false, subtag)
+                    execute: (ctx) => this.getMessageSender(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
                     parameters: ['messageid'],
                     description: 'Returns the id of the author of `messageid` in the current channel.',
                     exampleCode: 'Message 1111111111111 was sent by {sender;1111111111111}',
                     exampleOut: 'Message 1111111111111 was sent by 2222222222222',
-                    execute: (ctx, args, subtag) => this.getMessageSender(ctx, ctx.channel.id, args[0].value, false, subtag)
+                    execute: (ctx, args) => this.getMessageSender(ctx, ctx.channel.id, args[0].value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
                     description: 'Returns the id of the author of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
                     exampleCode: 'Message 1111111111111 in #support was sent by {sender;support;1111111111111}',
                     exampleOut: 'Message 1111111111111 in #support was sent by 2222222222222',
-                    execute: (ctx, args, subtag) => this.getMessageSender(ctx, args[0].value, args[1].value, args[2].value !== '', subtag)
+                    execute: (ctx, args) => this.getMessageSender(ctx, args[0].value, args[1].value, args[2].value !== '')
                 }
             ]
         });
@@ -40,8 +39,7 @@ export class MessageSenderSubtag extends BaseSubtag {
         context: BBTagContext,
         channelStr: string,
         messageStr: string,
-        quiet: boolean,
-        subtag: SubtagCall
+        quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
@@ -55,10 +53,10 @@ export class MessageSenderSubtag extends BaseSubtag {
         try {
             message = await context.util.getMessage(channel, messageStr);
             if (message === undefined)
-                return this.noMessageFound(context, subtag, `${messageStr} could not be found`);
+                throw new MessageNotFoundError(channel, messageStr);
             return message.author.id;
         } catch (e: unknown) {
-            return this.noMessageFound(context, subtag, `${messageStr} could not be found`);
+            throw new MessageNotFoundError(channel, messageStr);
         }
 
     }

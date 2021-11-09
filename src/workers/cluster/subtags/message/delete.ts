@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
+import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { guard, SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
@@ -53,9 +53,9 @@ export class DeleteSubtag extends BaseSubtag {
         if (messageId.length > 0 && guard.isTextableChannel(channel)) {
             msg = await context.util.getMessage(channel.id, messageId);
             if (msg === undefined)
-                return this.noMessageFound(context, subtag);
+                throw new MessageNotFoundError(channel, messageId);
         } else {
-            return this.noMessageFound(context, subtag, 'messageId is empty');
+            throw new MessageNotFoundError(channel, messageId);
         }
 
         /**
