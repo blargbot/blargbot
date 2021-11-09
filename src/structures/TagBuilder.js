@@ -52,8 +52,8 @@ class TagBuilder {
                     let execArgs = resolveArgs != null
                         ? resolveArgs
                         : [...new Array(subtagArgs.length).keys()];
-                    
-                        for (const index of new Set(execArgs))
+
+                    for (const index of new Set(execArgs))
                         if (subtagArgs[index] !== undefined)
                             subtagArgs[index] = await definition.executeArg(subtag, subtagArgs[index], context);
 
