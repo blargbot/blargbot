@@ -1,5 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { ChannelNotFoundError, NotANumberError } from '@cluster/bbtag/errors';
+import { ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -78,7 +78,7 @@ export class WaitMessageSubtags extends BaseSubtag {
             flattenedUsers = await Promise.all(flattenedUsers.map(async input => await context.queryUser(input, { noLookup: true })));
             users = flattenedUsers.filter((user): user is User => user !== undefined);
             if (users.length !== flattenedUsers.length)
-                return this.noUserFound(context, subtag);
+                throw new UserNotFoundError(userStr);
             users = users.map(user => user.id);
         } else {
             users = [context.user.id];

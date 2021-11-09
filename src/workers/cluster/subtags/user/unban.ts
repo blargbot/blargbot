@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
@@ -39,7 +40,7 @@ export class UnbanSubtag extends BaseSubtag {
         const noPerms = nopermsStr !== '';
 
         if (user === undefined)
-            return this.noUserFound(context, subtag);
+            throw new UserNotFoundError(userStr);
 
         const result = await context.util.cluster.moderation.bans.unban(context.guild, user, context.user, noPerms, reason);
 

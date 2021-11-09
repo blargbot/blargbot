@@ -1,9 +1,8 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
+import { NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Statement, SubtagArgumentValue, SubtagCall } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { User } from 'discord.js';
 
 export class WaitReactionSubtag extends BaseSubtag {
     public constructor() {
@@ -69,12 +68,13 @@ export class WaitReactionSubtag extends BaseSubtag {
         // parse users
         let users;
         if (userIDStr !== '') {
-            let flattenedUsers: string[] | Array<User | undefined> = bbtagUtil.tagArray.flattenArray([userIDStr]).map(i => parse.string(i));
-            flattenedUsers = await Promise.all(flattenedUsers.map(async input => await context.queryUser(input, { noErrors: true, noLookup: true })));
-            users = flattenedUsers.filter((user): user is User => user !== undefined);
-            if (users.length !== flattenedUsers.length)
-                return this.noUserFound(context, subtag);
-            users = users.map(user => user.id);
+            const flattenedUsers = bbtagUtil.tagArray.flattenArray([userIDStr]).map(i => parse.string(i));
+            users = await Promise.all(flattenedUsers.map(async input => {
+                const user = await context.queryUser(input, { noErrors: true, noLookup: true });
+                if (user === undefined)
+                    throw new UserNotFoundError(input);
+                return user.id;
+            }));
         } else {
             users = [context.user.id];
         }

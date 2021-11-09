@@ -1,5 +1,6 @@
 import { Cluster } from '@cluster';
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { Duration } from 'moment';
@@ -62,7 +63,7 @@ export class BanSubtag extends BaseSubtag {
         });
 
         if (user === undefined)
-            return this.noUserFound(context, subtag);
+            throw new UserNotFoundError(userStr);
         const daysToDelete = parse.int(daysToDeleteStr);
         if (isNaN(daysToDelete))
             return 'false'; //TODO this.notANumber(context, subtag)

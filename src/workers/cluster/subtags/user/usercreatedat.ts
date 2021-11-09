@@ -33,7 +33,7 @@ export class UserCreateDatSubtag extends BaseSubtag {
                         if (quiet)
                             return '';
                         //TODO return no user found if quiet is not true
-                        //return this.noUserFound(context, subtag);
+                        //throw new UserNotFoundError(userStr);
                     }
                 }
             ]

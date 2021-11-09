@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
@@ -42,10 +43,10 @@ export class KickSubtag extends BaseSubtag {
 
         const noPerms = nopermsStr !== '' ? true : false;
         if (user === undefined)
-            return this.noUserFound(context, subtag);
+            throw new UserNotFoundError(userStr);
         const member = await context.util.getMember(context.guild.id, user.id);
         if (member === undefined)
-            return this.noUserFound(context, subtag);
+            throw new UserNotFoundError(userStr);
 
         const response = await context.util.cluster.moderation.bans.kick(member, context.user, noPerms, reason);
 

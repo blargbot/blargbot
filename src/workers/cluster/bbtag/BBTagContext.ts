@@ -152,14 +152,18 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     }
 
     public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {
-        const member = await this.queryEntity(
+        const member = await this.queryMember(query, options);
+        return member?.user;
+    }
+
+    public async queryMember(query: string, options: FindEntityOptions = {}): Promise<GuildMember | undefined> {
+        return await this.queryEntity(
             query, 'user', 'User',
             async id => await this.util.getMember(this.guild, id),
             async query => await this.util.findMembers(this.guild, query),
             async options => await this.util.queryMember(options),
             options
         );
-        return member?.user;
     }
 
     public async queryRole(query: string, options: FindEntityOptions = {}): Promise<Role | undefined> {

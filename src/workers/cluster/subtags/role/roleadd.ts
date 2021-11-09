@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
@@ -45,7 +46,7 @@ export class RoleAddSubtag extends BaseSubtag {
         if (result.member === undefined) {
             if (quiet)
                 return 'false';
-            return this.noUserFound(context, subtag);
+            throw new UserNotFoundError(userStr);
         }
 
         if (result.roles.length === 0)

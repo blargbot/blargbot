@@ -48,10 +48,6 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         return docs;
     }
 
-    public noUserFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
-        return context.addError('No user found', subtag, debugMessage);
-    }
-
     public noRoleFound(context: BBTagContext, subtag?: SubtagCall, debugMessage?: string): string {
         return context.addError('No role found', subtag, debugMessage);
     }

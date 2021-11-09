@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
@@ -35,7 +36,7 @@ export class DMSubtag extends BaseSubtag {
         let embed = discordUtil.parseEmbed(messageStr);
 
         if (user === undefined)
-            return this.noUserFound(context, subtag);
+            throw new UserNotFoundError(userStr);
         if (await context.util.getMember(context.guild, user.id) === undefined)
             return this.userNotInGuild(context, subtag);
 

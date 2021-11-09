@@ -53,7 +53,7 @@ export class UserBoostDataSubtag extends BaseSubtag {
                         if (quiet)
                             return '';
                         //TODO
-                        //return this.noUserFound(context, subtag);
+                        //throw new UserNotFoundError(userStr);
                     }
                 }
             ]
