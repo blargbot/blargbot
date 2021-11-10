@@ -1,7 +1,8 @@
 import 'ts-mockito';
 
 declare module 'ts-mockito' {
-    export function anyOfClass<T>(expectedClass: abstract new (...args: unknown[]) => T): T;
+    export function anyOfClass<T>(expectedClass: new (...args: never) => T): T;
+    export function anyOfClass<T>(expectedClass: abstract new (...args: never) => T): T;
     export function anyFunction<Args extends never, Result>(): (...args: Args) => Result;
     export function anyNumber<T extends number>(): T;
     export function anyString<T extends string>(): T;

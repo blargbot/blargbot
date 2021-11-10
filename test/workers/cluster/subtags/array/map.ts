@@ -3,7 +3,7 @@ import { TooManyLoopsError } from '@cluster/bbtag/errors';
 import { MapSubtag } from '@cluster/subtags/array/map';
 import { RuntimeLimit } from '@cluster/types';
 import { describe } from 'mocha';
-import { instance, verify, when } from 'ts-mockito';
+import { anyOfClass, instance, verify, when } from 'ts-mockito';
 
 import { testExecute, testExecuteNotEnoughArgs, testExecuteTooManyArgs } from '../baseSubtagTests';
 
@@ -77,13 +77,17 @@ describe('{map}', () => {
                 when(ctx.limitMock.check(instance(ctx.contextMock), call, 'map:loops'))
                     .thenReturn(...checkResults.map(r => {
                         if (r === undefined)
-                            return undefined;
-                        throw new TooManyLoopsError(-1);
+                            return Promise.resolve(undefined);
+                        return Promise.reject(new TooManyLoopsError(-1));
                     }));
                 when(ctx.contextMock.variables)
                     .thenReturn(instance(ctx.dbMock));
                 when(ctx.dbMock.reset(args[0].value))
                     .thenResolve();
+
+                if (details.maxLoops < details.loopChecks)
+                    when(ctx.contextMock.addError(anyOfClass(TooManyLoopsError), call))
+                        .thenReturn('`Nope`');
 
                 for (const value of details.varSets)
                     when(ctx.dbMock.set(args[0].value, value))
@@ -98,6 +102,9 @@ describe('{map}', () => {
                     .times(details.varSets.length);
                 verify(ctx.dbMock.reset(args[0].value))
                     .times(details.varSets.length === 0 ? 0 : 1);
+                if (details.maxLoops < details.loopChecks)
+                    verify(ctx.contextMock.addError(anyOfClass(TooManyLoopsError), call))
+                        .once();
 
                 for (const value of details.varSets)
                     verify(ctx.dbMock.set(args[0].value, value))
