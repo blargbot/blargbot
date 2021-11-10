@@ -11,7 +11,7 @@ export class RepeatSubtag extends BaseSubtag {
             aliases: ['loop'],
             definition: [
                 {
-                    parameters: ['code', 'amount'],
+                    parameters: ['~code', 'amount'],
                     description: 'Repeatedly executes `code` `amount` times.',
                     exampleCode: '{repeat;e;10}',
                     exampleOut: 'eeeeeeeeee',

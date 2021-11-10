@@ -143,6 +143,9 @@ export class BBTagEngine {
     }
 
     private async logError(context: BBTagContext, error: unknown, subtagName: string, bbtag: SubtagCall): Promise<string> {
+        if (error instanceof RangeError)
+            throw error;
+
         this.logger.error(error);
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let description = `${error}`;

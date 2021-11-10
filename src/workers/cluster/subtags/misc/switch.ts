@@ -1,5 +1,5 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { BaseSubtag } from '@cluster/bbtag';
+import { SubtagArgumentValue } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class SwitchSubtag extends BaseSubtag {
@@ -10,15 +10,13 @@ export class SwitchSubtag extends BaseSubtag {
             definition: [
                 {
                     parameters: ['value', { repeat: ['case', '~then'], minCount: 1 }, '~default?'],
-                    execute: (ctx, [value, ...cases], subtag) => this.switch(ctx, subtag, value.value, ...splitArgs(cases))
+                    execute: (_, [value, ...cases]) => this.switch(value.value, ...splitArgs(cases))
                 }
             ]
         });
     }
 
     public async switch(
-        _context: BBTagContext,
-        _subtag: SubtagCall,
         value: string,
         cases: ReadonlyArray<readonly [string, SubtagArgumentValue]>,
         defaultCase?: SubtagArgumentValue
