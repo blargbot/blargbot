@@ -13,7 +13,7 @@ import ReadWriteLock from 'rwlock';
 import { ScopeManager } from '.';
 import { BaseSubtag } from './BaseSubtag';
 import { BBTagEngine } from './BBTagEngine';
-import { CacheEntry, VariableCache } from './Caching';
+import { VariableCache } from './Caching';
 import { BBTagRuntimeError, UnknownSubtagError } from './errors';
 import { limits } from './limits';
 import { SubtagCallStack } from './SubtagCallStack';
@@ -346,7 +346,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         result.state.cache = {};
 
         for (const [key, value] of Object.entries(obj.tempVars))
-            await result.variables.set(key, new CacheEntry(result, key, value));
+            await result.variables.set(key, value);
+
         return result;
     }
 

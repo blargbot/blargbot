@@ -54,7 +54,7 @@ export const tagVariableScopes: readonly TagVariableScope[] = [
     }
 ];
 
-interface TagVariableScope {
+export interface TagVariableScope {
     readonly name: string;
     readonly prefix: string;
     readonly description: string;
