@@ -7,12 +7,11 @@ import { ChildProcess } from 'child_process';
 import EventEmitter from 'eventemitter3';
 
 export class IPCMessageEmitter {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #events: EventEmitter;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #process?: NodeJS.Process | ChildProcess;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #sender?: (message: ProcessMessage) => boolean;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get process(): NodeJS.Process | ChildProcess | undefined { return this.#process; }
     public set process(value: NodeJS.Process | ChildProcess | undefined) {

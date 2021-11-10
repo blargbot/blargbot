@@ -5,12 +5,12 @@ import { limits } from './index';
 import { disabledRule } from './rules';
 
 export abstract class BaseRuntimeLimit implements RuntimeLimit {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #rules: Record<string, RuntimeLimitRuleCollection | undefined>;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #name: keyof typeof limits;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
-    abstract get scopeName(): string;
+    public abstract get scopeName(): string;
 
     protected constructor(name: keyof typeof limits) {
         this.#rules = {};

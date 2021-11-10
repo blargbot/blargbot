@@ -24,7 +24,7 @@ describe('PingCommand', () => {
                     when(ctx.contextMock.timestamp).thenReturn(333);
                     when(ctx.replyMock.createdTimestamp).thenReturn(456);
                     when(ctx.contextMock.reply(anyString())).thenResolve(instance(ctx.replyMock));
-                    when(ctx.replyMock.edit('✅ Pong! (123ms)')).thenResolve(instance(ctx.replyMock));
+                    when(ctx.replyMock.edit('✅ Pong! (123ms)')).thenResolve();
                 },
                 assert(ctx) {
                     verify(ctx.contextMock.reply(anyString())).once();
@@ -66,7 +66,7 @@ describe('PingCommand', () => {
             const replyMock = mock(Message);
             when(contextMock.reply(anyString())).thenResolve(instance(replyMock));
             when(contextMock.timestamp).thenReturn(333);
-            when(replyMock.edit(expected)).thenResolve(instance(replyMock));
+            when(replyMock.edit(expected)).thenResolve();
             when(replyMock.createdTimestamp).thenReturn(456);
 
             // act

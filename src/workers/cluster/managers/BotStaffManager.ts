@@ -2,10 +2,10 @@ import { Cluster } from '@cluster';
 import { Guild } from 'discord.js';
 
 export class BotStaffManager {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #staff: Set<string>;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #support: Set<string>;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get staff(): ReadonlySet<string> { return this.#staff; }
     public get support(): ReadonlySet<string> { return this.#support; }

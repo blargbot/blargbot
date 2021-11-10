@@ -98,6 +98,7 @@ const mapOptions = mapping.json(
         ).optional,
         reason: mapping.string.optional,
         position: mapping.number.optional,
-        type: [undefined]
+        type: [undefined],
+        rtcRegion: [undefined]
     })
 );

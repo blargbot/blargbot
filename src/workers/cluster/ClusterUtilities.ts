@@ -1,7 +1,7 @@
 import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
-import { Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageButtonOptions, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectMenuOptions, MessageSelectOptionData, Permissions, Role, TextBasedChannels, User, Webhook } from 'discord.js';
+import { BaseMessageComponentOptions, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectOptionData, Permissions, Role, TextBasedChannels, User, Webhook } from 'discord.js';
 import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-types';
 import fetch from 'node-fetch';
 
@@ -670,19 +670,19 @@ function createActorFilter(actors: Iterable<string | User | GuildMember> | strin
 }
 
 function createConfirmBody(options: ConfirmComponentOptions): Pick<MessageOptions, 'components'> {
-
-    const confirm: MessageButtonOptions = {
+    const confirm = {
         style: 'SUCCESS',
         ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
         type: 'BUTTON',
         customId: options.confirmId
-    };
-    const cancel: MessageButtonOptions = {
+    } as const;
+
+    const cancel = {
         style: 'DANGER',
         ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
         type: 'BUTTON',
         customId: options.cancelId
-    };
+    } as const;
 
     return {
         components: [
@@ -695,20 +695,20 @@ function createConfirmBody(options: ConfirmComponentOptions): Pick<MessageOption
 }
 
 function createMultipleBody(options: MultipleComponentOptions): Pick<MessageOptions, 'components'> {
-    const select: MessageSelectMenuOptions = {
+    const select = {
         type: 'SELECT_MENU',
         customId: options.selectId,
         options: options.select,
         placeholder: options.placeholder,
         maxValues: options.maxCount ?? options.select.length,
         minValues: options.minCount ?? 0
-    };
-    const cancel: MessageButtonOptions = {
+    } as const;
+    const cancel = {
         type: 'BUTTON',
         customId: options.cancelId,
         emoji: '✖️',
         style: 'DANGER'
-    };
+    } as const;
 
     return {
         components: [
@@ -719,18 +719,18 @@ function createMultipleBody(options: MultipleComponentOptions): Pick<MessageOpti
 }
 
 function createChoiceBody(options: ChoiceComponentOptions): Pick<MessageOptions, 'components' | 'content'> {
-    const select: MessageSelectMenuOptions = {
+    const select = {
         type: 'SELECT_MENU',
         customId: options.selectId,
         options: options.select,
         placeholder: options.placeholder
-    };
-    const cancel: MessageButtonOptions = {
+    } as const;
+    const cancel = {
         type: 'BUTTON',
         customId: options.cancelId,
         emoji: '✖️',
         style: 'DANGER'
-    };
+    } as const;
 
     if (options.lastPage === 0) {
         return {
@@ -742,22 +742,22 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<MessageOptions,
         };
     }
 
-    const prev: MessageButtonOptions = {
+    const prev = {
         type: 'BUTTON',
         customId: options.prevId,
         emoji: ':bigarrowleft:876227640976097351', // TODO config
         style: 'PRIMARY',
         disabled: options.page === 0
-    };
+    } as const;
 
-    const next: MessageButtonOptions = {
+    const next = {
 
         type: 'BUTTON',
         customId: options.nextId,
         emoji: ':bigarrowright:876227816998461511', // TODO config
         style: 'PRIMARY',
         disabled: options.page === options.lastPage
-    };
+    } as const;
 
     return {
         content: `${options.content}\nPage ${options.page + 1}/${options.lastPage + 1}`.trim(),
@@ -769,19 +769,18 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<MessageOptions,
 }
 
 function createTextBody(options: TextComponentOptions, disabled = false): Pick<MessageOptions, 'components'> {
-    const cancel: MessageButtonOptions = {
-        style: 'SECONDARY',
-        ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
-        type: 'BUTTON',
-        customId: options.cancelId,
-        disabled: disabled
-    };
 
     return {
         components: [
             {
                 type: 'ACTION_ROW',
-                components: [cancel]
+                components: [{
+                    style: 'SECONDARY',
+                    ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
+                    type: 'BUTTON',
+                    customId: options.cancelId,
+                    disabled: disabled
+                }]
             }
         ]
     };
@@ -820,11 +819,11 @@ async function cleanupQuery(...items: Array<Message | MessageComponentInteractio
     await Promise.allSettled(promises);
 }
 
-function disableComponents(components: Iterable<MessageActionRow | APIActionRowComponent>): MessageActionRowOptions[] {
+function disableComponents(components: Iterable<MessageActionRow | APIActionRowComponent>): Array<Required<BaseMessageComponentOptions> & MessageActionRowOptions> {
     return [...disableComponentsCore(components)];
 }
 
-function* disableComponentsCore(components: Iterable<MessageActionRow | APIActionRowComponent>): Generator<MessageActionRowOptions> {
+function* disableComponentsCore(components: Iterable<MessageActionRow | APIActionRowComponent>): Generator<Required<BaseMessageComponentOptions> & MessageActionRowOptions> {
     for (const component of components) {
         switch (component.type) {
             case 'ACTION_ROW':
@@ -842,7 +841,7 @@ function* disableComponentsCore(components: Iterable<MessageActionRow | APIActio
                                 minValues: c.min_values,
                                 placeholder: c.placeholder,
                                 type: 'SELECT_MENU',
-                                options: c.options.map<MessageSelectOptionData>(op => ({
+                                options: c.options?.map<MessageSelectOptionData>(op => ({
                                     label: op.label,
                                     value: op.value,
                                     default: op.default,

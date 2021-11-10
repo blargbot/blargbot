@@ -21,7 +21,10 @@ type HandleContext<TChannel extends TextBasedChannels['type'], AutoMock extends 
         channelMock: Extract<TextBasedChannels, { type: TChannel; }>;
         loggerMock: Logger;
     } & {
-        [P in keyof AutoMock]: AutoMock[P] extends abstract new (...args: infer _) => infer R ? R : Exclude<AutoMock[P], undefined>
+        [P in keyof AutoMock]: AutoMock[P] extends abstract new (...args: infer _) => infer R ? R
+        // eslint-disable-next-line @typescript-eslint/ban-types
+        : AutoMock[P] extends (Function & { prototype: infer R; }) ? R
+        : Exclude<AutoMock[P], undefined>
     }
 
 export function testExecuteHelp(command: BaseCommand, pages?: number[]): void {

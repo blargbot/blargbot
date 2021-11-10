@@ -16,7 +16,6 @@ export class VariableCache {
         this.#cache = {};
     }
 
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     async #get(variable: string): Promise<CacheEntry> {
         const forced = variable.startsWith('!');
         if (forced)

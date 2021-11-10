@@ -5,16 +5,13 @@ import Jimp from 'jimp';
 import { JimpGifEncoderOptions } from './types';
 
 export class JimpGifEncoder {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #canvas: Canvas;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #canvasContext: NodeCanvasRenderingContext2D;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #encoder: GIFEncoder;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #buffers: Uint8Array[];
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #promise: Promise<Buffer>;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public constructor({ width, height, repeat = 0, quality = 10, delay = 0 }: JimpGifEncoderOptions) {
         this.#canvas = createCanvas(width, height);

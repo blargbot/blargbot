@@ -176,16 +176,9 @@ export class EventLogManager {
     }
 
     public async userAvatarUpdated(user: User, oldUser: PartialUser | User): Promise<void> {
-        const oldUserInstance = new User(this.cluster.discord, {
-            id: user.id,
-            avatar: oldUser.avatar,
-            discriminator: oldUser.discriminator ?? user.discriminator,
-            username: oldUser.username ?? user.username
-        });
-
         const embed = this.eventLogEmbed('Avatar Updated', user, 0xd8af1a, {
             image: { url: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }) },
-            thumbnail: { url: oldUserInstance.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }) },
+            thumbnail: { url: oldUser.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }) },
             description: '➡️ Old avatar\n⬇️ New avatar'
         });
 

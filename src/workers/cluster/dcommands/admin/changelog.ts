@@ -33,7 +33,7 @@ export class ChangelogCommand extends BaseGuildCommand {
         if (changelogChannel === undefined || !guard.isGuildChannel(changelogChannel) || changelogChannel.type !== 'GUILD_NEWS')
             return this.error('It looks like I cant find the where to get changelog messages from! Please try again later.');
 
-        await changelogChannel.addFollower(context.channel, `${humanize.fullName(context.author)} subscribed channel to changelog updates`);
+        await changelogChannel.addFollower(context.channel.id, `${humanize.fullName(context.author)} subscribed channel to changelog updates`);
         return this.success('This channel will now get my changelog updates!');
     }
 

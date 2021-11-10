@@ -5,10 +5,10 @@ import { GuildTriggerTag } from '@core/types';
 import { GuildEmoji, GuildMessage, Message, ReactionEmoji, User } from 'discord.js';
 
 export class AutoresponseManager {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #guilds: Set<string>;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get guilds(): ReadonlySet<string> { return this.#guilds; }
 

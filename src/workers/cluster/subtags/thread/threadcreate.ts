@@ -1,7 +1,7 @@
 import { BaseSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
-import { AllowedThreadTypeForTextChannel, GuildMessage, ThreadAutoArchiveDuration, ThreadCreateOptions } from 'discord.js';
+import { GuildMessage } from 'discord.js';
 
 const threadOptions = mapping.object({
     name: mapping.string,
@@ -67,33 +67,30 @@ export class ThreadCreateSubtag extends BaseSubtag {
                         else
                             input.autoArchiveDuration = 1440;
 
-                        if (![60, 1440].includes(input.autoArchiveDuration)) {
-                            if (input.autoArchiveDuration === 10080 && !guildFeatures.includes('SEVEN_DAY_THREAD_ARCHIVE')) {
-                                throw new BBTagRuntimeError('Guild does not have 7 day threads', 'Missing boosts');
-                            } else if (input.autoArchiveDuration === 4320 && !guildFeatures.includes('THREE_DAY_THREAD_ARCHIVE')) {
-                                throw new BBTagRuntimeError('Guild does not have 3 day threads', 'Missing boosts');
-                            }
-                            throw new BBTagRuntimeError('Invalid autoArchiveDuration');
+                        switch (input.autoArchiveDuration) {
+                            case 60: break;
+                            case 1440: break;
+                            case 4320:
+                                if (!guildFeatures.includes('THREE_DAY_THREAD_ARCHIVE'))
+                                    throw new BBTagRuntimeError('Guild does not have 3 day threads', 'Missing boosts');
+                                break;
+                            case 10080:
+                                if (!guildFeatures.includes('SEVEN_DAY_THREAD_ARCHIVE'))
+                                    throw new BBTagRuntimeError('Guild does not have 7 day threads', 'Missing boosts');
+                                break;
+                            default:
+                                throw new BBTagRuntimeError('Invalid autoArchiveDuration');
                         }
 
-                        const options: ThreadCreateOptions<AllowedThreadTypeForTextChannel> = {
-                            name: input.name,
-                            autoArchiveDuration: <ThreadAutoArchiveDuration>input.autoArchiveDuration
-                        };
-
-                        if (parse.boolean(input.private) === true) {
-                            if (!guildFeatures.includes('PRIVATE_THREADS'))
-                                throw new BBTagRuntimeError('Guild cannot have private threads');
-                            options.type = 'GUILD_PRIVATE_THREAD';
-                        } else {
-                            options.type = 'GUILD_PUBLIC_THREAD';
-                        }
-
-                        if (message !== undefined)
-                            options.startMessage = message.id;
+                        if (parse.boolean(input.private) === true && !guildFeatures.includes('PRIVATE_THREADS'))
+                            throw new BBTagRuntimeError('Guild cannot have private threads');
 
                         try {
-                            const threadChannel = await channel.threads.create(options);
+                            const threadChannel = await channel.threads.create({
+                                name: input.name,
+                                autoArchiveDuration: input.autoArchiveDuration,
+                                startMessage: message?.id
+                            });
                             return threadChannel.id;
                         } catch (e: unknown) {
                             if (e instanceof Error) {

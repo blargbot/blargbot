@@ -81,7 +81,7 @@ export class BaseUtilities {
         } else if ('userid' in target) {
             return {
                 iconURL: target.avatarURL,
-                name: target.username,
+                name: target.username ?? 'UNKNOWN',
                 url: this.websiteLink(`user/${target.userid}`)
             };
         }

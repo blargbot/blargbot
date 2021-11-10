@@ -5,12 +5,11 @@ import { BaseService } from './BaseService';
 
 export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<string, IPCContracts>, Contract extends WorkerIPCContractNames<TWorker>> extends BaseService {
     public readonly type: string;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #attach: (worker: TWorker) => void;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #detach: (worker: TWorker) => void;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #handlers: WeakMap<TWorker, ProcessMessageHandler>;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public constructor(
         public readonly workers: WorkerPool<TWorker>,

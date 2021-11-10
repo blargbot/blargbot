@@ -5,10 +5,10 @@ import { BBTagContext } from '../BBTagContext';
 import { ArgumentLengthError } from '../errors';
 
 export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #promise?: Promise<string>;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #value?: string;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get isCached(): boolean { return this.#value !== undefined; }
     public get raw(): string { return this.code.map(c => typeof c === 'string' ? c : c.source).join(''); }

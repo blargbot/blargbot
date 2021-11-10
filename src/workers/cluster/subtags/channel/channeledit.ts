@@ -105,6 +105,7 @@ const mapThreadOptions = mapping.json(
         autoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
         locked: mapping.boolean.optional,
         name: mapping.string.optional,
-        rateLimitPerUser: mapping.number
+        rateLimitPerUser: mapping.number,
+        invitable: mapping.boolean.optional
     })
 );

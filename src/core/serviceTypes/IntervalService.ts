@@ -5,10 +5,11 @@ import { inspect } from 'util';
 import { BaseService } from './BaseService';
 
 export abstract class IntervalService extends BaseService {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #interval?: NodeJS.Timeout;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #execute: () => void;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
+
     public readonly period: Duration;
     public readonly logger: Logger;
     private readonly immediate: boolean;

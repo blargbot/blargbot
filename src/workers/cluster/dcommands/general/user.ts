@@ -54,7 +54,7 @@ export class UserCommand extends BaseGlobalCommand {
         }
 
         if (user.bot)
-            result.author.name = `🤖 ${result.author.name ?? ''}`;
+            result.author.name = `🤖 ${result.author.name}`;
 
         return result;
     }

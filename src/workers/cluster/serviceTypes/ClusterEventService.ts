@@ -5,7 +5,7 @@ import { GetWorkerProcessMessageHandler, IPCContractNames } from '@core/types';
 
 export abstract class ClusterEventService<Contract extends IPCContractNames<ClusterIPCContract>> extends BaseService {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    readonly #execute: GetWorkerProcessMessageHandler<ClusterIPCContract, Contract>
+    readonly #execute: GetWorkerProcessMessageHandler<ClusterIPCContract, Contract>;
     public readonly type: string;
 
     protected constructor(

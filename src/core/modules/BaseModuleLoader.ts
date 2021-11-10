@@ -7,7 +7,6 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import reloadFactory from 'require-reload';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const reload = reloadFactory(require);
 
 interface ModuleLoaderEvents<TModule> {
@@ -18,10 +17,10 @@ interface ModuleLoaderEvents<TModule> {
 }
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoaderEvents<TModule>> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #root: string;
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #modules: MultiKeyMap<string, { module: TModule; location: string; }>;
+    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get size(): number { return this.#modules.size; }
 

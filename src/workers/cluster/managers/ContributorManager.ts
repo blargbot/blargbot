@@ -8,7 +8,7 @@ const reload = reloadFactory(require);
 export class ContributorManager {
     public patrons: Array<User | string>;
     public donators: Array<User | string>;
-    public others: Array<{ user: User | string; reason: string; decorator: string; }>
+    public others: Array<{ user: User | string; reason: string; decorator: string; }>;
 
     public constructor(
         private readonly cluster: Cluster
