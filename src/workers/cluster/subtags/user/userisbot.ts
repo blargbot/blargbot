@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UserIsBotSubtag extends BaseSubtag {
@@ -13,13 +14,15 @@ export class UserIsBotSubtag extends BaseSubtag {
                     description: 'Returns whether the executing user is a bot.',
                     exampleCode: 'Are you a bot? {userisbot}',
                     exampleOut: 'Are you a bot? false',
-                    execute: (ctx) => ctx.user.bot.toString()
+                    returns: 'boolean',
+                    execute: (ctx) => ctx.user.bot
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns whether a `user` is a bot. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Is Stupid cat a bot? {userisbot;Stupid cat}',
                     exampleOut: 'Stupid cat\'s username is Stupid cat!',
+                    returns: 'boolean',
                     execute: (ctx, [userId, quiet]) => this.getUserIsBot(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -30,14 +33,16 @@ export class UserIsBotSubtag extends BaseSubtag {
         context: BBTagContext,
         userId: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            return user.bot.toString();
+        if (user === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userId);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return user.bot;
     }
 }

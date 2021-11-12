@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UserGameSubtag extends BaseSubtag {
@@ -13,6 +14,7 @@ export class UserGameSubtag extends BaseSubtag {
                     description: 'Returns the game the executing user is playing. ',
                     exampleCode: 'You are playing {usergame}',
                     exampleOut: 'You are playing with bbtag',
+                    returns: 'string',
                     execute: (ctx) => ctx.member.presence?.activities[0]?.name ?? 'nothing'
                 },
                 {
@@ -20,6 +22,7 @@ export class UserGameSubtag extends BaseSubtag {
                     description: 'Returns the game `user` is playing. If `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat is playing {usergame;Stupid cat}',
                     exampleOut: 'Stupid cat is playing nothing',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserGame(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -32,14 +35,14 @@ export class UserGameSubtag extends BaseSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const member = await context.queryMember(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            const member = await context.util.getMember(context.guild, user.id);
-            if (member !== undefined)
-                return member.presence?.activities[0]?.name ?? 'nothing';
+        if (member === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userId);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return member.presence?.activities[0]?.name ?? 'nothing';
     }
 }

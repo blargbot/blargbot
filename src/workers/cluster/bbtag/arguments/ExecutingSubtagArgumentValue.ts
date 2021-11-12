@@ -1,10 +1,10 @@
-import { RuntimeReturnState, Statement, SubtagArgumentValue, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
+import { RuntimeReturnState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
 import { MessageEmbedOptions } from 'discord.js';
 
 import { BBTagContext } from '../BBTagContext';
 import { ArgumentLengthError } from '../errors';
 
-export class ExecutingSubtagArgumentValue implements SubtagArgumentValue {
+export class ExecutingSubtagArgumentValue implements SubtagArgument {
     /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #promise?: Promise<string>;
     #value?: string;

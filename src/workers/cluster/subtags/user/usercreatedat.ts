@@ -1,4 +1,5 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment-timezone';
 
@@ -13,9 +14,8 @@ export class UserCreateDatSubtag extends BaseSubtag {
                     description: 'Returns the account creation date of the executing user in `format`.',
                     exampleCode: 'Your account was created on {usercreatedat}',
                     exampleOut: 'Your account was created on 2017-02-06T18:58:10+00:00',
-                    execute: (ctx, [{ value: format }]) => {
-                        return moment(ctx.user.createdAt).utcOffset(0).format(format);
-                    }
+                    returns: 'string',
+                    execute: (ctx, [format]) => moment(ctx.user.createdAt).utcOffset(0).format(format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
@@ -23,20 +23,23 @@ export class UserCreateDatSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s account was created on {usercreatedat;;Stupid cat}',
                     exampleOut: 'Stupid cat\'s account was created on 2015-10-13T04:27:26Z',
-                    execute: async (context, [{ value: format }, { value: userStr }, { value: quietStr }]): Promise<string | void> => {
-                        const quiet = quietStr !== '' || (context.scopes.local.quiet ?? false);
-                        const user = await context.queryUser(userStr, { noLookup: quiet });
-
-                        if (user !== undefined)
-                            return moment(user.createdAt).utcOffset(0).format(format);
-
-                        if (quiet)
-                            return '';
-                        //TODO return no user found if quiet is not true
-                        //throw new UserNotFoundError(userStr);
-                    }
+                    returns: 'string',
+                    execute: (ctx, [format, user, quiet]) => this.getUserCreatedAt(ctx, format.value, user.value, quiet.value !== '')
                 }
             ]
         });
+    }
+
+    public async getUserCreatedAt(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
+        quiet ||= context.scopes.local.quiet ?? false;
+        const user = await context.queryUser(userStr, { noLookup: quiet });
+
+        if (user === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userStr);
+        }
+
+        return moment(user.createdAt).utcOffset(0).format(format);
     }
 }

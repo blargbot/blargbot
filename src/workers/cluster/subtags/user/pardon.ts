@@ -18,6 +18,7 @@ export class PardonSubtag extends BaseSubtag {
                     description: 'Gives `user` one pardon.',
                     exampleCode: 'Be pardoned! {pardon}',
                     exampleOut: 'Be pardoned! 0',
+                    returns: 'number',
                     execute: (ctx, args) => this.pardon(ctx, args[0].value, '1', '')
                 },
                 {
@@ -25,6 +26,7 @@ export class PardonSubtag extends BaseSubtag {
                     description: 'Gives `user` `count` pardons with `reason`.',
                     exampleCode: 'Be pardoned 9001 times, Stupid cat! {pardon;Stupid cat;9001}',
                     exampleOut: 'Be pardoned 9001 times, Stupid cat! 0',
+                    returns: 'number',
                     execute: (ctx, args) => this.pardon(ctx, args[0].value, args[1].value, args[2].value)
                 }
             ]
@@ -36,7 +38,7 @@ export class PardonSubtag extends BaseSubtag {
         userStr: string,
         countStr: string,
         reason: string
-    ): Promise<string> {
+    ): Promise<number> {
         let user: User | undefined = context.user;
         const count = parse.int(countStr);
         let member: GuildMember | undefined;
@@ -53,6 +55,6 @@ export class PardonSubtag extends BaseSubtag {
             throw new NotANumberError(countStr);
 
         const result = await this.cluster.moderation.warns.pardon(member, this.cluster.discord.user, count, reason === '' ? 'Tag Pardon' : reason);
-        return result.toString();
+        return result.warnings;
     }
 }

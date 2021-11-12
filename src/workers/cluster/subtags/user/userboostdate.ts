@@ -1,6 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
+import { GuildMember } from 'discord.js';
 import moment from 'moment-timezone';
 
 export class UserBoostDataSubtag extends BaseSubtag {
@@ -16,12 +17,8 @@ export class UserBoostDataSubtag extends BaseSubtag {
                     description: 'Returns the date that the executing user started boosting the guild using `format` for the output, in UTC+0.',
                     exampleCode: 'Your account started boosting this guild on {userboostdate;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'Your account started boosting this guild on 2020/02/27 00:00:00',
-                    execute: (ctx, [{ value: format }]) => {
-                        const boostDate = ctx.member.premiumSinceTimestamp;
-                        if (boostDate === null)
-                            throw new BBTagRuntimeError('User not boosting');
-                        return moment(boostDate).format(format);
-                    }
+                    returns: 'string',
+                    execute: (ctx, [format]) => this.getUserBoostDate(ctx.member, format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],
@@ -29,26 +26,30 @@ export class UserBoostDataSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: '{if;{isuserboosting;stupid cat};stupid cat is boosting!; no boosting here :(}',
                     exampleOut: 'stupid cat is boosting!',
-                    execute: async (context, [{ value: format }, { value: userStr }, { value: quietStr }]): Promise<string> => {
-                        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
-                        const member = userStr === '' ? context.member : await context.queryMember(userStr, {
-                            noErrors: context.scopes.local.noLookupErrors,
-                            noLookup: quiet
-                        });
-                        if (member === undefined) {
-                            // TODO
-                            // if (quiet)
-                            return '';
-                            // throw new UserNotFoundError(userStr);
-                        }
-
-                        const boostDate = member.premiumSinceTimestamp;
-                        if (boostDate === null)
-                            throw new BBTagRuntimeError('User not boosting');
-                        return moment(boostDate).format(format);
-                    }
+                    returns: 'string',
+                    execute: (context, [format, user, quiet]) => this.findUserBoostDate(context, format.value, user.value, quiet.value !== '')
                 }
             ]
         });
+    }
+
+    public async findUserBoostDate(context: BBTagContext, format: string, userStr: string, quiet: boolean): Promise<string> {
+        quiet ||= context.scopes.local.quiet ?? false;
+        const member = await context.queryMember(userStr, { noLookup: quiet });
+
+        if (member === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userStr);
+        }
+
+        return this.getUserBoostDate(member, format);
+    }
+
+    public getUserBoostDate(user: GuildMember, format: string): string {
+        if (user.premiumSinceTimestamp === null)
+            throw new BBTagRuntimeError('User not boosting');
+
+        return moment(user.premiumSinceTimestamp).format(format);
     }
 }

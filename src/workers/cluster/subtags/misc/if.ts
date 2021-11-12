@@ -1,6 +1,6 @@
 import { BaseSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValue } from '@cluster/types';
+import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.compare;
@@ -45,8 +45,8 @@ export class IfSubtag extends BaseSubtag {
     }
     public async simpleBooleanCheck(
         bool: string,
-        thenCode: SubtagArgumentValue,
-        elseCode?: SubtagArgumentValue
+        thenCode: SubtagArgument,
+        elseCode?: SubtagArgument
     ): Promise<string> {
         const actualBoolean = parse.boolean(bool);
         if (typeof actualBoolean !== 'boolean')
@@ -66,8 +66,8 @@ export class IfSubtag extends BaseSubtag {
         value1: string,
         evaluator: string,
         value2: string,
-        thenCode: SubtagArgumentValue,
-        elseCode?: SubtagArgumentValue
+        thenCode: SubtagArgument,
+        elseCode?: SubtagArgument
     ): Promise<string> {
         let operator;
         if (bbtagUtil.operators.isCompareOperator(evaluator)) {

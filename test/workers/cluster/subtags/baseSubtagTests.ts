@@ -1,6 +1,7 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
-import { BBTagContextState, Statement, SubtagCall, SubtagResult } from '@cluster/types';
+import { SubtagResult } from '@cluster/bbtag/results';
+import { BBTagContextState, Statement, SubtagCall } from '@cluster/types';
 import { expect } from 'chai';
 import { it } from 'mocha';
 import { instance, mock, when } from 'ts-mockito';
@@ -155,13 +156,13 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
         let result;
         if (testCase.expected instanceof Error) {
             try {
-                await subtag.execute(instance(context.contextMock), subtag.name, call);
+                await joinResults(subtag.execute(instance(context.contextMock), subtag.name, call));
                 throw new Error(`Expected ${testCase.expected.constructor.name} to be thrown, but no error was thrown.`);
             } catch (err: unknown) {
                 result = err;
             }
         } else {
-            result = await subtag.execute(instance(context.contextMock), subtag.name, call);
+            result = await joinResults(subtag.execute(instance(context.contextMock), subtag.name, call));
         }
 
         // asssert
@@ -176,4 +177,12 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         options.assert?.(context, testCase.details!, <Result>result, argRefs, call);
     };
+}
+
+async function joinResults(values: AsyncIterable<string | undefined>): Promise<string> {
+    const results = [];
+    for await (const value of values)
+        if (value !== undefined)
+            results.push(value);
+    return results.join('');
 }

@@ -74,7 +74,7 @@ describe('{map}', () => {
                     .thenReturn(0);
                 when(ctx.contextMock.limit)
                     .thenReturn(instance(ctx.limitMock));
-                when(ctx.limitMock.check(instance(ctx.contextMock), call, 'map:loops'))
+                when(ctx.limitMock.check(instance(ctx.contextMock), 'map:loops'))
                     .thenReturn(...checkResults.map(r => {
                         if (r === undefined)
                             return Promise.resolve(undefined);
@@ -94,7 +94,7 @@ describe('{map}', () => {
                         .thenResolve();
             },
             assert(ctx, details, _, args, call) {
-                verify(ctx.limitMock.check(instance(ctx.contextMock), call, 'map:loops'))
+                verify(ctx.limitMock.check(instance(ctx.contextMock), 'map:loops'))
                     .times(details.loopChecks);
                 verify(ctx.contextMock.eval(args[2].code))
                     .times(details.varSets.length);

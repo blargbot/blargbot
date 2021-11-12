@@ -1,6 +1,6 @@
-import { Statement, SubtagArgumentValue, SubtagHandlerValueParameter } from '@cluster/types';
+import { Statement, SubtagArgument, SubtagHandlerValueParameter } from '@cluster/types';
 
-export class DefaultSubtagArgumentValue implements SubtagArgumentValue {
+export class DefaultSubtagArgumentValue implements SubtagArgument {
     public readonly isCached = true;
     public get value(): string { return this.parameter.defaultValue; }
     public get code(): Statement { return [this.parameter.defaultValue]; }

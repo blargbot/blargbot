@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UserStatusSubtag extends BaseSubtag {
@@ -13,6 +14,7 @@ export class UserStatusSubtag extends BaseSubtag {
                     description: 'Returns the status of the user.',
                     exampleCode: 'You are currently {userstatus}',
                     exampleOut: 'You are currently online',
+                    returns: 'string',
                     execute: (ctx) => ctx.member.presence?.status ?? 'offline'
                 },
                 {
@@ -20,6 +22,7 @@ export class UserStatusSubtag extends BaseSubtag {
                     description: 'Returns the status of `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat is currently {userstatus;stupid cat}',
                     exampleOut: 'Stupid cat is currently online',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserStatus(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -32,14 +35,14 @@ export class UserStatusSubtag extends BaseSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const member = await context.queryMember(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            const member = await context.util.getMember(context.guild, user.id);
-            if (member !== undefined)
-                return member.presence?.status ?? 'offline';
+        if (member === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userId);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return member.presence?.status ?? 'offline';
     }
 }

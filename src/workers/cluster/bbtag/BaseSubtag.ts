@@ -1,4 +1,4 @@
-import { SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagOptions, SubtagResult } from '@cluster/types';
+import { AnySubtagHandlerDefinition, SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagOptions } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { Timer } from '@core/Timer';
@@ -7,7 +7,7 @@ import { MessageEmbedOptions } from 'discord.js';
 import { BBTagContext } from './BBTagContext';
 import { compileSignatures, parseDefinitions } from './compilation';
 
-export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
+export abstract class BaseSubtag implements SubtagOptions {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;
@@ -19,7 +19,7 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
     public readonly handler: SubtagHandler;
     public readonly hidden: boolean;
 
-    protected constructor(options: SubtagOptions & { definition: readonly SubtagHandlerDefinition[]; }) {
+    protected constructor(options: SubtagOptions & { definition: readonly AnySubtagHandlerDefinition[]; }) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
@@ -32,10 +32,11 @@ export abstract class BaseSubtag implements SubtagOptions, SubtagHandler {
         this.handler = compileSignatures(this.signatures);
     }
 
-    public async execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): Promise<SubtagResult> {
+    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
         const timer = new Timer().start();
         try {
-            return await this.handler.execute(context, subtagName, subtag);
+            const result = await this.handler.execute(context, subtagName, subtag);
+            yield* result.execute(context, subtag);
         } finally {
             timer.end();
             metrics.subtagLatency.labels(this.name).observe(timer.elapsed);

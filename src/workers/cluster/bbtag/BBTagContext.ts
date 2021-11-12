@@ -154,7 +154,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public addError(error: BBTagRuntimeError, subtag?: SubtagCall): string {
         this.errors.push({ subtag: subtag, error });
-        return this.scopes.local.fallback ?? `\`${error.message}\``;
+        return this.scopes.local.fallback ?? error.bberror;
     }
 
     public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {

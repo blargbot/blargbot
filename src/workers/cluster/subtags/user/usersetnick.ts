@@ -15,7 +15,8 @@ export class UserSetNickSubtag extends BaseSubtag {
                     description: 'Sets `user`\'s nickname to `nick`. Leave `nick` blank to reset their nickname.',
                     exampleCode: '{usersetnick;super cool nickname}\n{//;Reset the the nickname}\n{usersetnick;}',
                     exampleOut: '', //TODO meaningful output
-                    execute: async (context, [nick, userStr]): Promise<string | void> => {
+                    returns: 'nothing',
+                    execute: async (context, [nick, userStr]): Promise<void> => {
                         let user: User | undefined = context.user;
                         if (userStr.value !== '') {
                             user = await context.queryUser(userStr.value);

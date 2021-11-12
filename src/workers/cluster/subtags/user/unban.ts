@@ -13,7 +13,8 @@ export class UnbanSubtag extends BaseSubtag {
                     description: 'Unbans `user`.',
                     exampleCode: '{unban;@user} @user was unbanned!',
                     exampleOut: '@user was unbanned!',
-                    execute: (ctx, args) => this.unbanUser(ctx, args[0].value, '', '')
+                    returns: 'boolean',
+                    execute: (ctx, [user]) => this.unbanUser(ctx, user.value, '', '')
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
@@ -22,7 +23,8 @@ export class UnbanSubtag extends BaseSubtag {
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{unban;@stupid cat;I made a mistake} @stupid cat has been unbanned',
                     exampleOut: 'true @stupid cat has been unbanned',
-                    execute: (ctx, args) => this.unbanUser(ctx, args[0].value, args[1].value, args[2].value)
+                    returns: 'boolean',
+                    execute: (ctx, [user, reason, noPerms]) => this.unbanUser(ctx, user.value, reason.value, noPerms.value)
                 }
             ]
         });
@@ -33,7 +35,7 @@ export class UnbanSubtag extends BaseSubtag {
         userStr: string,
         reason: string,
         nopermsStr: string
-    ): Promise<string> {
+    ): Promise<boolean> {
         const user = await context.queryUser(userStr, { noErrors: context.scopes.local.noLookupErrors });
         const noPerms = nopermsStr !== '';
 
@@ -43,14 +45,10 @@ export class UnbanSubtag extends BaseSubtag {
         const result = await context.util.cluster.moderation.bans.unban(context.guild, user, context.user, noPerms, reason);
 
         switch (result) {
-            case 'success':
-                return 'true';
-            case 'moderatorNoPerms':
-                throw new BBTagRuntimeError('User has no permissions');
-            case 'noPerms':
-                throw new BBTagRuntimeError('Bot has no permissions');
-            case 'notBanned':
-                return 'false';
+            case 'success': return true;
+            case 'moderatorNoPerms': throw new BBTagRuntimeError('User has no permissions');
+            case 'noPerms': throw new BBTagRuntimeError('Bot has no permissions');
+            case 'notBanned': return false;
         }
     }
 }

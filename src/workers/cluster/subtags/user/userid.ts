@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UserIdSubtag extends BaseSubtag {
@@ -12,6 +13,7 @@ export class UserIdSubtag extends BaseSubtag {
                     description: 'Returns the user ID of the executing user.',
                     exampleCode: 'Your id is {userid}',
                     exampleOut: 'Your id is 123456789123456',
+                    returns: 'id',
                     execute: (ctx) => ctx.user.id
                 },
                 {
@@ -19,6 +21,7 @@ export class UserIdSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s ID. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'This is Stupid cat\'s user ID {userid;Stupid cat}',
                     exampleOut: 'This is Stupid cat\'s user ID 103347843934212096',
+                    returns: 'id',
                     execute: (ctx, [userId, quiet]) => this.getUserId(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -33,10 +36,12 @@ export class UserIdSubtag extends BaseSubtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            return user.id;
+        if (user === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userId);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return user.id;
     }
 }

@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UserDiscrimSubtag extends BaseSubtag {
@@ -13,6 +14,7 @@ export class UserDiscrimSubtag extends BaseSubtag {
                     description: 'Returns the discriminator of the executing user.',
                     exampleCode: 'Your discrim is {userdiscrim}',
                     exampleOut: 'Your discrim is 1234',
+                    returns: 'string',
                     execute: (ctx) => ctx.user.discriminator
                 },
                 {
@@ -20,6 +22,7 @@ export class UserDiscrimSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s discriminator. If `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s discriminator is {userdiscrim;Stupid cat}',
                     exampleOut: 'Stupid cat\'s discriminator is 8160',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserDiscrim(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -34,9 +37,12 @@ export class UserDiscrimSubtag extends BaseSubtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
-        if (user !== undefined)
-            return user.discriminator;
+        if (user === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userId);
+        }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return user.discriminator;
     }
 }

@@ -1,6 +1,6 @@
 import { BaseSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValueArray } from '@cluster/types';
+import { SubtagArgumentArray } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
 
@@ -22,7 +22,7 @@ export class OperatorSubtag extends BaseSubtag {
         });
     }
 
-    public applyOperation(args: SubtagArgumentValueArray): string {
+    public applyOperation(args: SubtagArgumentArray): string {
         if (args.subtagName.toLowerCase() === 'operator')
             throw new BBTagRuntimeError('Invalid operator \'operator\'');
 

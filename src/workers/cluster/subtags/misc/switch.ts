@@ -1,5 +1,5 @@
 import { BaseSubtag } from '@cluster/bbtag';
-import { SubtagArgumentValue } from '@cluster/types';
+import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class SwitchSubtag extends BaseSubtag {
@@ -18,8 +18,8 @@ export class SwitchSubtag extends BaseSubtag {
 
     public async switch(
         value: string,
-        cases: ReadonlyArray<readonly [string, SubtagArgumentValue]>,
-        defaultCase?: SubtagArgumentValue
+        cases: ReadonlyArray<readonly [string, SubtagArgument]>,
+        defaultCase?: SubtagArgument
     ): Promise<string> {
         for (const [caseValue, then] of cases) {
             const { v: options = [caseValue] } = bbtagUtil.tagArray.deserialize(caseValue) ?? { v: undefined };
@@ -31,7 +31,7 @@ export class SwitchSubtag extends BaseSubtag {
     }
 }
 
-function splitArgs(args: SubtagArgumentValue[]): [cases: ReadonlyArray<readonly [string, SubtagArgumentValue]>, defaultCase?: SubtagArgumentValue] {
+function splitArgs(args: SubtagArgument[]): [cases: ReadonlyArray<readonly [string, SubtagArgument]>, defaultCase?: SubtagArgument] {
     let defaultCase = undefined;
     if (args.length % 2 === 1)
         defaultCase = args.pop();

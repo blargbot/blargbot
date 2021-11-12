@@ -1,4 +1,4 @@
-import { ArgumentResolver, ArgumentResolverPermutations, ArgumentResolvers, Statement, SubtagArgumentValue, SubtagHandlerCallSignature, SubtagHandlerParameter, SubtagHandlerValueParameter } from '@cluster/types';
+import { ArgumentResolver, ArgumentResolverPermutations, ArgumentResolvers, Statement, SubtagArgument, SubtagHandlerCallSignature, SubtagHandlerParameter, SubtagHandlerValueParameter } from '@cluster/types';
 
 import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue } from '../arguments';
 
@@ -85,7 +85,7 @@ function addParameter(result: ArgumentResolverPermutations, parameter: SubtagHan
 
 function createResolver(
     argCount: number,
-    defaultArgs: readonly SubtagArgumentValue[],
+    defaultArgs: readonly SubtagArgument[],
     beforeGreedy: readonly number[],
     greedy: readonly number[],
     afterGreedy: readonly number[])
@@ -106,7 +106,7 @@ function createResolver(
 }
 
 function createVariableResolver(
-    parameters: readonly SubtagArgumentValue[],
+    parameters: readonly SubtagArgument[],
     beforeGreedy: readonly number[],
     greedy: readonly number[],
     afterGreedy: readonly number[])
@@ -129,11 +129,11 @@ function createVariableResolver(
 
 function* getParameterMap(
     argCount: number,
-    defaultArgs: readonly SubtagArgumentValue[],
+    defaultArgs: readonly SubtagArgument[],
     beforeGreedy: readonly number[],
     greedy: readonly number[],
     afterGreedy: readonly number[]
-): Generator<{ readonly argIndex: number; readonly default: SubtagArgumentValue; }> {
+): Generator<{ readonly argIndex: number; readonly default: SubtagArgument; }> {
     let param = 0;
     let arg = 0;
     for (const next of getParameterOrder(argCount, beforeGreedy, greedy, afterGreedy)) {

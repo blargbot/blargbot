@@ -1,4 +1,4 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class RandUserSubtag extends BaseSubtag {
@@ -12,12 +12,15 @@ export class RandUserSubtag extends BaseSubtag {
                     description: 'Returns the id of a random user on the current guild.',
                     exampleCode: '{username;{randuser}} is a lovely person! {username;{randuser}} isn\'t as good.',
                     exampleOut: 'abalabahaha is a lovely person! stupid cat isn\'t as good.',
-                    execute: (context) => {
-                        const members = context.guild.members.cache.map(m => m.id);
-                        return members[Math.floor(Math.random() * members.length)];
-                    }
+                    returns: 'id',
+                    execute: ctx => this.randomUser(ctx)
                 }
             ]
         });
+    }
+
+    public randomUser(context: BBTagContext): string {
+        const members = context.guild.members.cache.map(m => m.id);
+        return members[Math.floor(Math.random() * members.length)];
     }
 }

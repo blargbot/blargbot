@@ -1,6 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
 export class MapSubtag extends BaseSubtag {
@@ -17,36 +16,26 @@ export class MapSubtag extends BaseSubtag {
                         ' will be the new value of the element. This will return the new array, and will not modify the original.',
                     exampleCode: '{map;~item;["apples","oranges","pears"];{upper;{get;~item}}}',
                     exampleOut: '["APPLES","ORANGES","PEARS"]',
-                    execute: (context, [varName, array, code], subtag) => this.map(context, varName.value, array.value, code, subtag)
+                    returns: 'arrayWithErrors',
+                    execute: (context, [varName, array, code]) => this.map(context, varName.value, array.value, code)
                 }
             ]
         });
     }
 
-    public async map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgumentValue, subtag: SubtagCall): Promise<string> {
-        const { v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
-        if (array === undefined || array.length === 0)
-            return '[]';
+    public async * map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<string> {
+        const { v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? { v: [] };
+        try {
+            for (const item of array) {
+                await context.limit.check(context, 'map:loops');
+                await context.variables.set(varName, item);
+                yield await code.execute();
 
-        const result = [];
-        for (const item of array) {
-            try {
-                await context.limit.check(context, subtag, 'map:loops');
-            } catch (error: unknown) {
-                if (!(error instanceof BBTagRuntimeError))
-                    throw error;
-                result.push(context.addError(error, subtag));
-                break;
+                if (context.state.return !== 0)
+                    break;
             }
-
-            await context.variables.set(varName, item);
-            result.push(await code.execute());
-
-            if (context.state.return !== 0)
-                break;
+        } finally {
+            await context.variables.reset(varName);
         }
-
-        await context.variables.reset(varName);
-        return bbtagUtil.tagArray.serialize(result);
     }
 }

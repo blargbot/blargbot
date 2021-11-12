@@ -51,7 +51,7 @@ export class BBTagEngine {
             context.cooldowns.set(context);
             context.execTimer.start();
             context.state.stackSize++;
-            content = await this.evalStatement(bbtag, context);
+            content = await joinResults(this.evalStatement(bbtag, context));
             if (context.state.replace !== undefined)
                 content = content.replace(context.state.replace.regex, context.state.replace.with);
             context.state.stackSize--;
@@ -88,46 +88,50 @@ export class BBTagEngine {
         };
     }
 
-    private async evalSubtag(bbtag: SubtagCall, context: BBTagContext): Promise<string> {
-        const name = (await this.evalStatement(bbtag.name, context)).toLowerCase();
+    private async * evalSubtag(bbtag: SubtagCall, context: BBTagContext): AsyncIterable<string> {
+        const name = (await joinResults(this.evalStatement(bbtag.name, context))).toLowerCase();
 
         try {
             const subtag = context.getSubtag(name);
-            await context.limit.check(context, bbtag, subtag.name);
+            await context.limit.check(context, subtag.name);
+
             context.callStack.push(subtag.name, bbtag);
 
             try {
+                for await (const item of subtag.execute(context, name, bbtag)) {
+                    // allow the eventloop to process other stuff every 1000 subtag calls
+                    if (++context.state.subtagCount % 1000 === 0)
+                        await sleep(0);
 
-                // sleep for 100ms every 1000 subtag calls
-                if (++context.state.subtagCount % 1000 === 0)
-                    await sleep(10);
-                return await subtag.execute(context, name, bbtag) ?? '';
+                    if (item !== undefined)
+                        yield item;
+                }
             } catch (err: unknown) {
-                if (!(err instanceof BBTagRuntimeError))
-                    return this.logError(context, err, subtag.name, bbtag);
-                throw err;
+                yield err instanceof BBTagRuntimeError
+                    ? context.addError(err, bbtag)
+                    : this.logError(context, err, subtag.name, bbtag);
             } finally {
                 context.callStack.pop();
             }
 
         } catch (err: unknown) {
-            if (err instanceof BBTagRuntimeError)
-                return context.addError(err, bbtag);
-            throw err;
+            if (!(err instanceof BBTagRuntimeError))
+                throw err;
+            yield context.addError(err, bbtag);
         }
+
     }
 
-    private async evalStatement(bbtag: Statement, context: BBTagContext): Promise<string> {
-        const results = [];
+    // eslint-disable-next-line @typescript-eslint/require-await
+    private async * evalStatement(bbtag: Statement, context: BBTagContext): AsyncIterable<string> {
         context.scopes.pushScope();
         for (const elem of bbtag) {
             if (typeof elem === 'string')
-                results.push(elem);
+                yield elem;
             else
-                results.push(await this.evalSubtag(elem, context));
+                yield* this.evalSubtag(elem, context);
         }
         context.scopes.popScope();
-        return results.join('');
     }
 
     public eval(bbtag: SubtagCall | Statement, context: BBTagContext): Awaitable<string> {
@@ -137,9 +141,11 @@ export class BBTagEngine {
         if (context.state.return !== RuntimeReturnState.NONE)
             return '';
 
-        return Array.isArray(bbtag)
+        const results = Array.isArray(bbtag)
             ? this.evalStatement(bbtag, context)
             : this.evalSubtag(bbtag, context);
+
+        return joinResults(results);
     }
 
     private async logError(context: BBTagContext, error: unknown, subtagName: string, bbtag: SubtagCall): Promise<string> {
@@ -218,4 +224,11 @@ function* getSubtagCalls(statement: Statement): IterableIterator<SubtagCall> {
         for (const arg of part.args)
             yield* getSubtagCalls(arg);
     }
+}
+
+async function joinResults(values: AsyncIterable<string>): Promise<string> {
+    const results = [];
+    for await (const value of values)
+        results.push(value);
+    return results.join('');
 }

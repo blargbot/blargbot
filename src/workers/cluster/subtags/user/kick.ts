@@ -14,7 +14,8 @@ export class KickSubtag extends BaseSubtag {
                     description: 'Kicks `user`.',
                     exampleCode: '{kick;stupid cat} @stupid cat was kicked!',
                     exampleOut: 'Succes @stupid cat was kicked',
-                    execute: (ctx, args) => this.kickMember(ctx, args[0].value, '', '')
+                    returns: 'string',
+                    execute: (ctx, [user]) => this.kickMember(ctx, user.value, '', true)
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
@@ -23,7 +24,8 @@ export class KickSubtag extends BaseSubtag {
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{kick;stupid cat;because I can} @stupid cat was kicked!',
                     exampleOut: 'Success @stupid cat was kicked, because I can!',
-                    execute: (ctx, args) => this.kickMember(ctx, args[0].value, args[1].value, args[2].value)
+                    returns: 'string',
+                    execute: (ctx, [user, reason, noPerms]) => this.kickMember(ctx, user.value, reason.value, noPerms.value !== '')
                 }
             ]
         });
@@ -33,20 +35,17 @@ export class KickSubtag extends BaseSubtag {
         context: BBTagContext,
         userStr: string,
         reason: string,
-        nopermsStr: string
+        noperms: boolean
     ): Promise<string> {
-        const user = await context.queryUser(userStr, {
-            noErrors: context.scopes.local.noLookupErrors, noLookup: true //TODO why?
+        const member = await context.queryMember(userStr, {
+            noErrors: context.scopes.local.noLookupErrors,
+            noLookup: true //TODO why?
         });
 
-        const noPerms = nopermsStr !== '' ? true : false;
-        if (user === undefined)
-            throw new UserNotFoundError(userStr);
-        const member = await context.util.getMember(context.guild.id, user.id);
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
-        const response = await context.util.cluster.moderation.bans.kick(member, context.user, noPerms, reason);
+        const response = await context.util.cluster.moderation.bans.kick(member, context.user, noperms, reason);
 
         switch (response) {
             case 'success': //Successful
@@ -54,11 +53,11 @@ export class KickSubtag extends BaseSubtag {
             case 'noPerms': //Bot doesnt have perms
                 throw new BBTagRuntimeError('I don\'t have permission to kick users!');
             case 'memberTooHigh': //Bot cannot kick target
-                throw new BBTagRuntimeError(`I don't have permission to kick ${user.username}!`);
+                throw new BBTagRuntimeError(`I don't have permission to kick ${member.user.username}!`);
             case 'moderatorNoPerms': //User doesnt have perms
                 throw new BBTagRuntimeError('You don\'t have permission to kick users!');
             case 'moderatorTooLow': //User cannot kick target
-                throw new BBTagRuntimeError(`You don't have permission to kick ${user.username}!`);
+                throw new BBTagRuntimeError(`You don't have permission to kick ${member.user.username}!`);
         }
     }
 }

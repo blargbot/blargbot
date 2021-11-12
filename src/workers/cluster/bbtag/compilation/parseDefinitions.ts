@@ -1,14 +1,16 @@
-import { SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter } from '@cluster/types';
+import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagResultTypeMap } from '@cluster/types';
 
-export function parseDefinitions(definitions: readonly SubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
+import { ArraySubtagResult, ArrayWithErrorsSubtagResult, IgnoreSubtagResult, StringifySubtagResult, StringIterableSubtagResult, StringSubtagResult, SubtagResult } from '../results';
+
+export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
     return definitions.map(parseDefinition);
 }
 
-function parseDefinition(definition: SubtagHandlerDefinition): SubtagHandlerCallSignature {
+function parseDefinition(definition: AnySubtagHandlerDefinition): SubtagHandlerCallSignature {
     return {
         ...definition,
         parameters: definition.parameters.map(parseArgument),
-        execute: definition.execute
+        execute: getExecute(definition)
     };
 }
 
@@ -70,3 +72,26 @@ function createParameterGroup(parameters: SubtagHandlerParameter[], minCount: nu
     }
     return { nested, minRepeats: minCount };
 }
+
+function getExecute(definition: AnySubtagHandlerDefinition): SubtagHandlerCallSignature['execute'] {
+    if (definition.returns === 'unknown')
+        return (...args) => definition.execute(...args);
+
+    const subtagResult = subtagResultTypes[definition.returns] as new (value: unknown) => SubtagResult;
+    return (...args) => new subtagResult(definition.execute(...args));
+}
+
+const subtagResultTypes: { [P in Exclude<keyof SubtagResultTypeMap, 'unknown'>]: new (value: Awaitable<SubtagResultTypeMap[P]>) => SubtagResult } = {
+    number: StringifySubtagResult,
+    numbers: ArraySubtagResult,
+    boolean: StringifySubtagResult,
+    booleans: ArraySubtagResult,
+    string: StringSubtagResult,
+    strings: ArraySubtagResult,
+    array: ArraySubtagResult,
+    arrayWithErrors: ArrayWithErrorsSubtagResult,
+    nothing: IgnoreSubtagResult,
+    id: StringSubtagResult,
+    ids: ArraySubtagResult,
+    loop: StringIterableSubtagResult
+};

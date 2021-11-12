@@ -1,6 +1,6 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValue } from '@cluster/types';
+import { SubtagArgument } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
 export class FunctionSubtag extends BaseSubtag {
@@ -27,7 +27,7 @@ export class FunctionSubtag extends BaseSubtag {
     public createFunction(
         context: BBTagContext,
         funcName: string,
-        code: SubtagArgumentValue
+        code: SubtagArgument
     ): string | void {
         let name = funcName.toLowerCase();
         if (name.startsWith('func.'))

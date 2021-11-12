@@ -1,4 +1,5 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UserNameSubtag extends BaseSubtag {
@@ -12,6 +13,7 @@ export class UserNameSubtag extends BaseSubtag {
                     description: 'Returns the username of the executing user.',
                     exampleCode: 'Your username is {username}!',
                     exampleOut: 'Your username is Cool Dude 1337!',
+                    returns: 'string',
                     execute: (ctx) => ctx.user.username.replace(/@/g, '@\u200b')
                 },
                 {
@@ -19,6 +21,7 @@ export class UserNameSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s username. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s username is {username;Stupid cat}!',
                     exampleOut: 'Stupid cat\'s username is Stupid cat!',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserName(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -33,10 +36,12 @@ export class UserNameSubtag extends BaseSubtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const user = await context.queryUser(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            return user.username.replace(/@/g, '@\u200b');
+        if (user === undefined) {
+            // We dont want this error to appear in the output
+            context.scopes.local.fallback = '';
+            throw new UserNotFoundError(userId);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return user.username.replace(/@/g, '@\u200b');
     }
 }

@@ -13,7 +13,7 @@ export class CommentSubtag extends BaseSubtag {
                     parameters: ['~anything*'],
                     exampleCode: 'This is a sentence. {//;This is a comment.}',
                     exampleOut: 'This is a sentence.',
-                    execute: () => ''
+                    execute: () => { /*NOOP*/ }
                 }
             ]
         });
