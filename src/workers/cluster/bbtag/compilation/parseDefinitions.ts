@@ -1,6 +1,6 @@
-import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagResultTypeMap } from '@cluster/types';
+import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagLogic, SubtagResult, SubtagReturnTypeMap } from '@cluster/types';
 
-import { ArraySubtagResult, ArrayWithErrorsSubtagResult, IgnoreSubtagResult, StringifySubtagResult, StringIterableSubtagResult, StringSubtagResult, SubtagResult } from '../results';
+import { ArraySubtagLogic, ArrayWithErrorsSubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic';
 
 export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
     return definitions.map(parseDefinition);
@@ -10,7 +10,7 @@ function parseDefinition(definition: AnySubtagHandlerDefinition): SubtagHandlerC
     return {
         ...definition,
         parameters: definition.parameters.map(parseArgument),
-        execute: getExecute(definition)
+        implementation: getExecute(definition)
     };
 }
 
@@ -73,25 +73,25 @@ function createParameterGroup(parameters: SubtagHandlerParameter[], minCount: nu
     return { nested, minRepeats: minCount };
 }
 
-function getExecute(definition: AnySubtagHandlerDefinition): SubtagHandlerCallSignature['execute'] {
-    if (definition.returns === 'unknown')
-        return (...args) => definition.execute(...args);
-
-    const subtagResult = subtagResultTypes[definition.returns] as new (value: unknown) => SubtagResult;
-    return (...args) => new subtagResult(definition.execute(...args));
+function getExecute(definition: AnySubtagHandlerDefinition): SubtagLogic<SubtagResult> {
+    const wrapper = logicWrappers[definition.returns];
+    return new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>);
 }
 
-const subtagResultTypes: { [P in Exclude<keyof SubtagResultTypeMap, 'unknown'>]: new (value: Awaitable<SubtagResultTypeMap[P]>) => SubtagResult } = {
-    number: StringifySubtagResult,
-    numbers: ArraySubtagResult,
-    boolean: StringifySubtagResult,
-    booleans: ArraySubtagResult,
-    string: StringSubtagResult,
-    strings: ArraySubtagResult,
-    array: ArraySubtagResult,
-    arrayWithErrors: ArrayWithErrorsSubtagResult,
-    nothing: IgnoreSubtagResult,
-    id: StringSubtagResult,
-    ids: ArraySubtagResult,
-    loop: StringIterableSubtagResult
+const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<SubtagResult> } = {
+    ['unknown']: DeferredSubtagLogic,
+    ['number']: StringifySubtagLogic,
+    ['number[]']: ArraySubtagLogic,
+    ['boolean']: StringifySubtagLogic,
+    ['boolean|number']: StringifySubtagLogic,
+    ['boolean[]']: ArraySubtagLogic,
+    ['string']: StringSubtagLogic,
+    ['string[]']: ArraySubtagLogic,
+    ['json[]']: ArraySubtagLogic,
+    ['(json|error)[]']: ArrayWithErrorsSubtagLogic,
+    ['nothing']: IgnoreSubtagLogic,
+    ['id']: StringSubtagLogic,
+    ['id[]']: ArraySubtagLogic,
+    ['loop']: StringIterableSubtagLogic,
+    ['error']: IgnoreSubtagLogic
 };

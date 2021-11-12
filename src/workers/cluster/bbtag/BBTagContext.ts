@@ -205,14 +205,14 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         if (cached !== undefined)
             return await fetch(cached) ?? undefined;
 
-        const noLookup = this.scopes.local.quiet ?? options.noLookup ?? false;
+        const noLookup = options.noLookup === true || this.scopes.local.quiet === true;
         const entities = await find(queryString);
         if (this.state.query.count >= 5 || noLookup) {
             return entities.length === 1 ? entities[0] : undefined;
         }
 
-        const noErrors = this.scopes.local.noLookupErrors ?? options.noErrors ?? false;
         const result = await query({ context: this.channel, actors: this.author, choices: entities, filter: queryString });
+        const noErrors = options.noErrors === true || this.scopes.local.noLookupErrors === true;
         switch (result.state) {
             case 'FAILED':
             case 'NO_OPTIONS':

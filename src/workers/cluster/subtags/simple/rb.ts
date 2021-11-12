@@ -12,6 +12,7 @@ export class RbSubtag extends BaseSubtag {
                     description: 'Returns `}`',
                     exampleCode: 'This is a bracket! {rb}',
                     exampleOut: 'This is a bracket! }',
+                    returns: 'string',
                     execute: () => '}'
                 }
             ]

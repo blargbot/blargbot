@@ -14,7 +14,8 @@ export class RoleSetPermsSubtag extends BaseSubtag {
                     description: 'Removes all perms from `role`',
                     exampleCode: '{rolesetperms;Support}',
                     exampleOut: '(perms have been changed)', //TODO meaningful output
-                    execute: (ctx, args) => this.roleSetPerms(ctx, args[0].value, '0', '')
+                    returns: 'nothing',
+                    execute: (ctx, [role]) => this.roleSetPerms(ctx, role.value, '0', '')
                 },
                 {
                     parameters: ['role', 'permissions:0', 'quiet?'],
@@ -24,6 +25,7 @@ export class RoleSetPermsSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `role` can\'t be found it will simply return nothing',
                     exampleCode: 'The admin role now has the administrator permission. {rolesetperms;admin;8}',
                     exampleOut: 'The admin role now has the administrator permission.',
+                    returns: 'nothing',
                     execute: (ctx, args) => this.roleSetPerms(ctx, args[0].value, args[1].value, args[2].value)
                 }
             ]
@@ -35,7 +37,7 @@ export class RoleSetPermsSubtag extends BaseSubtag {
         roleStr: string,
         permsStr: string,
         quietStr: string
-    ): Promise<string | void> {
+    ): Promise<void> {
         const topRole = discordUtil.getRoleEditPosition(context);
         if (topRole === 0)
             throw new BBTagRuntimeError('Author cannot edit roles');

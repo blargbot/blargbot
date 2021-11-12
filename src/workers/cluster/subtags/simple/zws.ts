@@ -12,6 +12,7 @@ export class ZwsSubtag extends BaseSubtag {
                     description: 'Returns a single zero width space (unicode 200B)',
                     exampleCode: '{zws}',
                     exampleOut: '\u200B',
+                    returns: 'string',
                     execute: () => '\u200B'
                 }
             ]

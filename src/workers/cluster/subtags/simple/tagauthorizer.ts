@@ -13,6 +13,7 @@ export class TagAuthorizerSubtag extends BaseSubtag {
                     description: 'Returns the user ID of the tag/cc authorizer',
                     exampleCode: '{username;{tagauthorizer}} authorized this tag!',
                     exampleOut: 'stupid cat authorized this tag!',
+                    returns: 'id',
                     execute: (ctx) => ctx.authorizer
                 }
             ]

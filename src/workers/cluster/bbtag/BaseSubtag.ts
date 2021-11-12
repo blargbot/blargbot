@@ -1,4 +1,4 @@
-import { AnySubtagHandlerDefinition, SubtagCall, SubtagHandler, SubtagHandlerCallSignature, SubtagOptions } from '@cluster/types';
+import { AnySubtagHandlerDefinition, CompositeSubtagHandler, SubtagCall, SubtagHandlerCallSignature, SubtagOptions, SubtagResult } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { Timer } from '@core/Timer';
@@ -16,7 +16,7 @@ export abstract class BaseSubtag implements SubtagOptions {
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
     public readonly signatures: readonly SubtagHandlerCallSignature[];
-    public readonly handler: SubtagHandler;
+    public readonly handler: CompositeSubtagHandler;
     public readonly hidden: boolean;
 
     protected constructor(options: SubtagOptions & { definition: readonly AnySubtagHandlerDefinition[]; }) {
@@ -32,11 +32,11 @@ export abstract class BaseSubtag implements SubtagOptions {
         this.handler = compileSignatures(this.signatures);
     }
 
-    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
+    // eslint-disable-next-line @typescript-eslint/require-await
+    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
         const timer = new Timer().start();
         try {
-            const result = await this.handler.execute(context, subtagName, subtag);
-            yield* result.execute(context, subtag);
+            yield* this.handler.execute(context, subtagName, subtag);
         } finally {
             timer.end();
             metrics.subtagLatency.labels(this.name).observe(timer.elapsed);

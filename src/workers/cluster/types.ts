@@ -10,7 +10,6 @@ import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
 
 import { BBTagRuntimeError } from './bbtag/errors';
-import { SubtagResult } from './bbtag/results';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 
@@ -279,11 +278,25 @@ export interface ExecutionResult {
     };
 }
 export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
-    execute(context: BBTagContext, args: SubtagArgumentArray, subtagCall: SubtagCall): Awaitable<SubtagResult>;
+    readonly implementation: SubtagLogic<SubtagResult>;
+}
+
+export type SubtagResult = AsyncIterable<string | undefined>;
+
+export interface SubtagLogic<T> {
+    execute(context: BBTagContext, args: SubtagArgumentArray, call: SubtagCall): T;
+}
+
+export interface CompositeSubtagHandler extends SubtagHandler {
+    readonly handlers: readonly ConditionalSubtagHandler[];
+}
+
+export interface ConditionalSubtagHandler extends SubtagHandler {
+    canHandle(call: SubtagCall): boolean;
 }
 
 export interface SubtagHandler {
-    execute(context: BBTagContext, subtagName: string, call: SubtagCall): Awaitable<SubtagResult>;
+    execute(context: BBTagContext, subtagName: string, call: SubtagCall): SubtagResult;
 }
 
 export type SubtagHandlerValueParameter =
@@ -321,33 +334,36 @@ export interface SubtagSignatureDetails<TArgs = SubtagHandlerParameter> {
     readonly exampleCode?: string;
     readonly exampleIn?: string;
     readonly exampleOut?: string;
-    readonly returns: keyof SubtagResultTypeMap;
+    readonly returns: keyof SubtagReturnTypeMap;
 }
 
-interface SubtagHandlerDefinition<Type extends keyof SubtagResultTypeMap> extends SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup> {
+interface SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap>
+    extends SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup>,
+    SubtagLogic<Awaitable<SubtagReturnTypeMap[Type]>> {
     readonly returns: Type;
-    execute(context: BBTagContext, args: SubtagArgumentArray, subtagCall: SubtagCall): Awaitable<SubtagResultTypeMap[Type]>;
 }
 
 type Iterated<T> = (Iterable<T> | AsyncIterable<T>) & { charCodeAt?: undefined; }; // To exclude string
 
-export type SubtagResultTypeMap = {
+export type SubtagReturnTypeMap = {
     'unknown': SubtagResult;
     'number': number;
-    'numbers': Iterated<number>;
+    'number[]': Iterated<number>;
     'boolean': boolean;
-    'booleans': Iterated<boolean>;
+    'boolean|number': boolean | number;
+    'boolean[]': Iterated<boolean>;
     'string': string;
+    'string[]': Iterated<string>;
     'id': string;
-    'ids': Iterated<string>;
-    'strings': Iterated<string>;
-    'array': Iterated<JToken>;
-    'arrayWithErrors': Iterated<JToken>;
+    'id[]': Iterated<string>;
+    'json[]': Iterated<JToken>;
+    '(json|error)[]': Iterated<JToken>;
     'nothing': void;
+    'error': never;
     'loop': Iterated<string>;
 }
 
-export type AnySubtagHandlerDefinition = { [P in keyof SubtagResultTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagResultTypeMap];
+export type AnySubtagHandlerDefinition = { [P in keyof SubtagReturnTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagReturnTypeMap];
 
 export interface SubtagHandlerDefinitionParameterGroup {
     readonly minCount?: number;
@@ -596,33 +612,12 @@ export interface SubtagArgumentArray extends ReadonlyArray<SubtagArgument> {
     readonly subtagName: string;
 }
 
-export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
 export interface ArgumentResolver {
-    resolve(context: BBTagContext, subtagName: string, call: SubtagCall): Iterable<SubtagArgument>;
+    readonly argRange: readonly [min: number, max: number];
+    canResolve(subtag: SubtagCall): boolean;
+    resolve(context: BBTagContext, subtagName: string, subtag: SubtagCall): Iterable<SubtagArgument>;
 }
 
-export interface SubHandlerCollection {
-    byNumber: { [argLength: number]: SubHandler | undefined; };
-    byTest: Array<{
-        execute: SubHandler;
-        test: (argCount: number) => boolean;
-    }>;
-}
-
-export interface ArgumentResolvers {
-    byNumber: { [argLength: number]: ArgumentResolver; };
-    byTest: Array<ArgumentResolver & {
-        test: (argCount: number) => boolean; minArgCount: number; maxArgCount: number;
-    }>;
-}
-
-export interface ArgumentResolverPermutations {
-    greedy: number[];
-    permutations: Array<{
-        beforeGreedy: number[];
-        afterGreedy: number[];
-    }>;
-}
 export interface ClusterStats {
     readonly id: number;
     readonly time: number;

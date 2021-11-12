@@ -13,7 +13,8 @@ export class ArgsarraySubtag extends BaseSubtag {
                     exampleCode: 'Your input was {argsarray}',
                     exampleIn: 'Hello world!',
                     exampleOut: 'Your input was ["Hello","world!"]',
-                    execute: (ctx) => JSON.stringify(ctx.input)
+                    returns: 'string[]',
+                    execute: (ctx) => ctx.input
                 }
             ]
         });

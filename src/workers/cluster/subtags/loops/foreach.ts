@@ -29,7 +29,7 @@ export class ForeachSubtag extends BaseSubtag {
         const arr = await bbtagUtil.tagArray.getArray(context, array) ?? { v: array.split('') };
         try {
             for (const item of arr.v) {
-                await context.limit.check(context, 'filter:loops');
+                await context.limit.check(context, 'foreach:loops');
                 await context.variables.set(varName, item);
                 yield await code.execute();
 

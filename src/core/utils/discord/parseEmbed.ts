@@ -1,15 +1,20 @@
+import { MalformedEmbed } from '@core/types';
 import { MessageEmbedOptions } from 'discord.js';
 
 import { mapping } from '../mapping';
 
-export function parseEmbed(embedText?: string): (MessageEmbedOptions & { malformed?: true; }) | undefined {
+export function parseEmbed(embedText: string | undefined, allowMalformed: false): MessageEmbedOptions | undefined
+export function parseEmbed(embedText: string | undefined, allowMalformed?: true): MessageEmbedOptions | MalformedEmbed | undefined
+export function parseEmbed(embedText: string | undefined, allowMalformed = true): MessageEmbedOptions | MalformedEmbed | undefined {
     if (embedText === undefined || embedText.length === 0)
         return undefined;
 
     const mapped = mapEmbed(embedText);
     return mapped.valid
         ? mapped.value
-        : { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true };
+        : allowMalformed
+            ? { fields: [{ name: 'Malformed JSON', value: embedText + '' }], malformed: true }
+            : undefined;
 }
 
 const mapEmbed = mapping.json(

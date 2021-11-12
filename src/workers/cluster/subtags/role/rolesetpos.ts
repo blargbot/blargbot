@@ -1,5 +1,5 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, RoleNotFoundError } from '@cluster/bbtag/errors';
+import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 
 export class RoleSetPosSubtag extends BaseSubtag {
@@ -14,34 +14,38 @@ export class RoleSetPosSubtag extends BaseSubtag {
                         'If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role is now at position 3. {rolesetpos;admin;3}',
                     exampleOut: 'The admin role is now at position 3.',
-                    execute: async (context, [{ value: roleStr }, { value: posStr }, { value: quietStr }]) => {
-                        const topRole = discordUtil.getRoleEditPosition(context);
-                        if (topRole === 0)
-                            throw new BBTagRuntimeError('Author cannot edit roles');
-
-                        const quiet = quietStr !== '' || (context.scopes.local.quiet ?? false);
-                        const role = await context.queryRole(roleStr, { noLookup: quiet });
-                        const pos = parse.int(posStr);
-
-                        if (role === undefined)
-                            throw new RoleNotFoundError(roleStr);
-
-                        if (role.position >= topRole)
-                            throw new BBTagRuntimeError('Role above author');
-                        if (pos >= topRole)
-                            throw new BBTagRuntimeError('Desired position above author');
-
-                        try {
-                            await role.edit({ position: pos });
-                            return '`Role not found`'; //TODO meaningful output, this is purely for backwards compatibility :/
-                        } catch (err: unknown) {
-                            if (!quiet)
-                                throw new BBTagRuntimeError('Failed to edit role: no perms');
-                            throw new RoleNotFoundError(roleStr);
-                        }
-                    }
+                    returns: 'boolean',
+                    execute: (ctx, [role, position, quiet]) => this.setRolePosition(ctx, role.value, position.value, quiet.value !== '')
                 }
             ]
         });
+    }
+
+    public async setRolePosition(context: BBTagContext, roleStr: string, positionStr: string, quiet: boolean): Promise<boolean> {
+        const topRole = discordUtil.getRoleEditPosition(context);
+        if (topRole === 0)
+            throw new BBTagRuntimeError('Author cannot edit roles');
+
+        const role = await context.queryRole(roleStr, { noLookup: quiet });
+        const pos = parse.int(positionStr, false);
+        if (pos === undefined)
+            throw new NotANumberError(positionStr);
+
+        if (role === undefined)
+            throw new RoleNotFoundError(roleStr);
+
+        if (role.position >= topRole)
+            throw new BBTagRuntimeError('Role above author');
+        if (pos >= topRole)
+            throw new BBTagRuntimeError('Desired position above author');
+
+        try {
+            await role.edit({ position: pos });
+            return true;
+        } catch (err: unknown) {
+            if (!quiet)
+                throw new BBTagRuntimeError('Failed to edit role: no perms');
+            throw new RoleNotFoundError(roleStr);
+        }
     }
 }

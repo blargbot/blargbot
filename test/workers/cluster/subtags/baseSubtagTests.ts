@@ -1,7 +1,6 @@
 import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
-import { SubtagResult } from '@cluster/bbtag/results';
-import { BBTagContextState, Statement, SubtagCall } from '@cluster/types';
+import { BBTagContextState, Statement, SubtagCall, SubtagLogic, SubtagResult } from '@cluster/types';
 import { expect } from 'chai';
 import { it } from 'mocha';
 import { instance, mock, when } from 'ts-mockito';
@@ -77,7 +76,7 @@ export function testExecuteFail<Details = undefined, AutoMock extends Record<str
     }
 }
 
-export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagResult>(
+export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagLogic<SubtagResult>>(
     subtag: BaseSubtag,
     cases: TestCases<Details, { expected?: Result; title?: string; }>,
     automock?: AutoMock,
@@ -90,7 +89,7 @@ export function testExecute<Details = undefined, AutoMock extends Record<string,
     }
 }
 
-function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagResult>(
+function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagLogic<SubtagResult>>(
     subtag: BaseSubtag,
     automock: AutoMock | undefined,
     options: HandleConfig<AutoMock, Details, Result>,
@@ -179,7 +178,7 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
     };
 }
 
-async function joinResults(values: AsyncIterable<string | undefined>): Promise<string> {
+async function joinResults(values: SubtagResult): Promise<string> {
     const results = [];
     for await (const value of values)
         if (value !== undefined)

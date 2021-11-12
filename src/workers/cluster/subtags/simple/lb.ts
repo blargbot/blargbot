@@ -13,6 +13,7 @@ export class LbSubtag extends BaseSubtag {
                     description: 'Returns `{`',
                     exampleCode: 'This is a bracket! {lb}',
                     exampleOut: 'This is a bracket! {',
+                    returns: 'string',
                     execute: () => '{'
                 }
             ]

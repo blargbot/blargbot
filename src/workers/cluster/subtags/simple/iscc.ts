@@ -12,7 +12,8 @@ export class IsccSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}',
                     exampleOut: 'Boo, this only works in cc\'s',
-                    execute: (ctx) => (ctx.isCC === true).toString()
+                    returns: 'boolean',
+                    execute: (ctx) => ctx.isCC
                 }
             ]
         });

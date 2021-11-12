@@ -16,14 +16,16 @@ export class UserSetRolesSubtag extends BaseSubtag {
                     description: 'Sets the roles of the current user to `roleArray`.',
                     exampleCode: '{usersetroles;["1111111111111"]}',
                     exampleOut: 'true',
-                    execute: (ctx, args) => this.userSetRole(ctx, args[0].value, ctx.user.id, false)
+                    returns: 'boolean',
+                    execute: (ctx, [roles]) => this.userSetRole(ctx, roles.value, ctx.user.id, false)
                 },
                 {
                     parameters: ['roleArray', 'user', 'quiet?'],
                     description: 'Sets the roles of `user` to `roleArray`. If quiet is provided, all errors will return `false`.',
                     exampleCode: '{usersetroles;["1111111111111"];stupid cat}',
                     exampleOut: 'true',
-                    execute: (ctx, args) => this.userSetRole(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    returns: 'boolean',
+                    execute: (ctx, [roles, user, quiet]) => this.userSetRole(ctx, roles.value, user.value, quiet.value !== '')
                 }
             ]
         });
@@ -34,7 +36,7 @@ export class UserSetRolesSubtag extends BaseSubtag {
         rolesStr: string,
         userStr: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<boolean> {
         const topRole = discordUtil.getRoleEditPosition(context);
         if (topRole === 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
@@ -51,14 +53,14 @@ export class UserSetRolesSubtag extends BaseSubtag {
         });
         if (member === undefined) {
             if (quiet)
-                return 'false';
+                return false;
             throw new UserNotFoundError(userStr);
         }
 
         const roleArr = await bbtagUtil.tagArray.getArray(context, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
             if (quiet)
-                return 'false';
+                return false;
             throw new NotAnArrayError(rolesStr);
         }
 
@@ -71,7 +73,7 @@ export class UserSetRolesSubtag extends BaseSubtag {
             });
             if (role === undefined) {
                 if (quiet)
-                    return 'false';
+                    return false;
                 throw new RoleNotFoundError(userStr);
             }
             parsedRoles.push(role);
@@ -82,10 +84,10 @@ export class UserSetRolesSubtag extends BaseSubtag {
             await member.edit({
                 roles: parsedRoles
             }, fullReason);
-            return 'true';
+            return true;
         } catch (err: unknown) {
             context.logger.error(err);
-            return 'false';
+            return false;
         }
 
     }

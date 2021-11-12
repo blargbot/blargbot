@@ -8,7 +8,7 @@ import { Binder } from './Binder';
 import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from './Configuration';
 import { WorkerConnection } from './worker';
 
-export type MalformedEmbed = { fields: [EmbedFieldData]; malformed: boolean; };
+export type MalformedEmbed = { fields: [EmbedFieldData]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
 export type DMContext = string | Message | User | GuildMember;
 export type SendContext = UserChannelInteraction | ChannelInteraction | TextBasedChannels | string

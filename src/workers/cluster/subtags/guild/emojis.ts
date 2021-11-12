@@ -24,7 +24,7 @@ export class EmojisSubtag extends BaseSubtag {
                     description: 'Returns an array of emojis whitelisted for the provided `role`',
                     exampleCode: 'Cool gang has {length;{emojis;Cool gang}} emojis.',
                     exampleOut: 'Cool gang has 6 emojis.', //@ts-expect-error Subtag and roleStr are    d used in the new code
-                    execute: async (context, [{ value: roleStr }], subtag) => { //eslint-disable-line
+                    execute: async (context, [{ value: roleStr }]) => { //eslint-disable-line
                         //! Doesn't work, but compatibility™
                         const emojis = context.guild.emojis.cache.filter(e => e.roles.cache.size > 0)
                             .map(e => `<${e.animated ?? false ? 'a' : ''}:${e.name ?? ''}:${e.id}>`);

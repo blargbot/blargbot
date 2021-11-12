@@ -12,6 +12,7 @@ export class SemiSubtag extends BaseSubtag {
                     description: 'Returns `;`',
                     exampleCode: 'This is a semicolon! {semi}',
                     exampleOut: 'This is a semicolon! ;',
+                    returns: 'string',
                     execute: () => ';'
                 }
             ]
