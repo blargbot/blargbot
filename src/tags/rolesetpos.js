@@ -40,6 +40,7 @@ module.exports =
 
                 try {
                     await role.editPosition(pos);
+                    return 'true';
                 } catch (err) {
                     if (!quiet)
                         return Builder.util.error(subtag, context, 'Failed to edit role: no perms');
