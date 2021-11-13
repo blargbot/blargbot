@@ -1,4 +1,4 @@
-import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
+import type { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
 import { Snowflake } from 'catflake';
 import { ChannelInteraction, Client as Discord, EmbedFieldData, FileOptions, Guild, GuildMember, InteractionButtonOptions, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';

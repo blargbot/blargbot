@@ -1,5 +1,5 @@
-import { mapping } from '@cluster/utils';
 import { MalformedEmbed, TypeMappingImpl } from '@core/types';
+import { mapping } from '@core/utils';
 import { ColorResolvable, Constants, MessageEmbedOptions } from 'discord.js';
 
 export function parseEmbed(embedText: undefined, allowMalformed?: true): undefined;
