@@ -78,7 +78,7 @@ export class JsonSetSubtag extends Subtag {
         try {
             let varname: string | undefined;
             const arr = await bbtagUtil.tagArray.getArray(context, input);
-            if (arr !== undefined && Array.isArray(arr.v))
+            if (arr !== undefined)
                 obj = arr.v;
             else {
                 const parsedObject = await json.parse(context, input);

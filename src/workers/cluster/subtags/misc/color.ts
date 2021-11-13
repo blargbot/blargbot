@@ -57,28 +57,16 @@ export class ColorSubtag extends Subtag {
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
         const arr = await getArray(context, colorStr);
-        let input: string | string[];
-        if (arr === undefined || !Array.isArray(arr.v)) {
-            input = colorStr;
-        } else {
-            input = arr.v.map(elem => elem?.toString()).join(',');
-        }
-
+        const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
         let parsedInput;
-        if (typeof input === 'string') {
-            const match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(input);
-            if (match !== null) {
-                const r = parseInt(match[1]);
-                const g = parseInt(match[2]);
-                const b = parseInt(match[3]);
-                parsedInput = [r, g, b];
-            } else if (inputStr?.toLowerCase() === 'hsl') {
-                input = input.split(',');
-                parsedInput = [];
-                for (const i of input) {
-                    parsedInput.push(i);
-                }
-            } else parsedInput = input;
+        const match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(input);
+        if (match !== null) {
+            const r = parseInt(match[1]);
+            const g = parseInt(match[2]);
+            const b = parseInt(match[3]);
+            parsedInput = [r, g, b];
+        } else if (inputStr?.toLowerCase() === 'hsl') {
+            parsedInput = input.split(',');
         } else {
             parsedInput = input;
         }

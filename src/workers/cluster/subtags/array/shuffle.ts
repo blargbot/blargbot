@@ -31,7 +31,7 @@ export class ShuffleSubtag extends Subtag {
 
     public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {
         const arr = bbtagUtil.tagArray.deserialize(array);
-        if (arr === undefined || !Array.isArray(arr.v))
+        if (arr === undefined)
             throw new NotAnArrayError(array);
 
         shuffle(arr.v);

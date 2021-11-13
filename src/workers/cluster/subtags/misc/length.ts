@@ -22,7 +22,7 @@ export class LengthSubtag extends Subtag {
 
     public getLength(value: string): number {
         const deserializedArray = bbtagUtil.tagArray.deserialize(value);
-        if (deserializedArray !== undefined && Array.isArray(deserializedArray.v))
+        if (deserializedArray !== undefined)
             return deserializedArray.v.length;
         return value.length;
     }

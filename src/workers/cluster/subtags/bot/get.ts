@@ -32,7 +32,7 @@ export class GetSubtag extends Subtag {
 
     public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
         const arr = await bbtagUtil.tagArray.getArray(context, variableName);
-        if (arr !== undefined && Array.isArray(arr.v))
+        if (arr !== undefined)
             return JSON.stringify(arr);
         return await context.variables.get(variableName);
     }

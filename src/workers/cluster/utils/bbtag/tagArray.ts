@@ -47,10 +47,13 @@ const mapBBArray = mapping.json(
 export function flattenArray(array: JArray): JArray {
     const result = [];
     for (const arg of array) {
-        const arr = typeof arg === 'string' ? deserialize(arg) : { v: arg };
-        if (arr !== undefined && Array.isArray(arr.v))
+        const arr = typeof arg === 'string' ? deserialize(arg) : undefined;
+        if (arr !== undefined)
             result.push(...arr.v);
-        else result.push(arg);
+        else if (Array.isArray(arg))
+            result.push(...arg);
+        else
+            result.push(arg);
     }
     return result;
 }

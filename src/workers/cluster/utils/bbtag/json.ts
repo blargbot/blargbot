@@ -12,7 +12,7 @@ export async function parse(context: BBTagContext, input: string): Promise<Retur
     let obj: BBTagArray | JToken | undefined;
     let variable: string | undefined;
     const arr = await getArray(context, input);
-    if (arr !== undefined && Array.isArray(arr.v)) {
+    if (arr !== undefined) {
         obj = arr.v;
     } else {
         try {
@@ -180,7 +180,7 @@ export function clean(input: JToken): JToken {
             input[i] = clean(input[i]);
         }
     } else if (typeof input === 'object' && input !== null) {
-        if ('n' in input && 'v' in input && Array.isArray(input.v)) {
+        if ('n' in input && 'v' in input) {
             return clean(input.v);
         }
 

@@ -28,12 +28,9 @@ export class JsonKeysSubtag extends Subtag {
 
     public async getJsonKeys(context: BBTagContext, objStr: string, path: string): Promise<string[]> {
         try {
-            let obj: JObject | JArray;
             const arr = await bbtagUtil.tagArray.getArray(context, objStr);
-            if (arr !== undefined && Array.isArray(arr.v))
-                obj = arr.v;
-            else
-                obj = (await json.parse(context, objStr)).object;
+            const obj = arr?.v ?? (await json.parse(context, objStr)).object;
+
             if (path !== '') {
                 const objAtPath = json.get(obj, path);
                 return Object.keys(objAtPath ?? {});

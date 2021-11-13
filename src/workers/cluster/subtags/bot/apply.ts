@@ -41,7 +41,7 @@ export class ApplySubtag extends Subtag {
 
         for (const arg of args) {
             const arr = bbtagUtil.tagArray.deserialize(arg);
-            if (arr !== undefined && Array.isArray(arr.v)) {
+            if (arr !== undefined) {
                 flattenedArgs.push(
                     ...arr.v.map((i) =>
                         typeof i === 'object' || !guard.hasValue(i)

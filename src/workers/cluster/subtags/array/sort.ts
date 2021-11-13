@@ -24,7 +24,7 @@ export class SortSubtag extends Subtag {
 
     public async sort(context: BBTagContext, arrayStr: string, descendingStr: string): Promise<JArray | undefined> {
         const arr = await bbtagUtil.tagArray.getArray(context, arrayStr);
-        if (arr === undefined || !Array.isArray(arr.v))
+        if (arr === undefined)
             throw new NotAnArrayError(arrayStr);
 
         const direction = parse.boolean(descendingStr) ?? descendingStr !== '' ? -1 : 1;

@@ -21,7 +21,7 @@ export class ReverseSubtag extends Subtag {
 
     public async reverse(context: BBTagContext, input: string): Promise<string> {
         const arr = await bbtagUtil.tagArray.getArray(context, input);
-        if (arr === undefined || !Array.isArray(arr.v))
+        if (arr === undefined)
             return input.split('').reverse().join('');
 
         arr.v = arr.v.reverse();

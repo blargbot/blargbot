@@ -42,7 +42,7 @@ export class SpliceSubtag extends Subtag {
         const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
 
         const insert = bbtagUtil.tagArray.flattenArray(replaceItems);
-        if (arr === undefined || !Array.isArray(arr.v))
+        if (arr === undefined)
             throw new NotAnArrayError(replaceItems);
 
         const start = parse.int(startStr, false) ?? fallback.value;

@@ -31,7 +31,7 @@ export class JsonGetSubtag extends Subtag {
 
         let obj: JObject | JArray;
         const arr = await bbtagUtil.tagArray.getArray(context, input);
-        if (arr !== undefined && Array.isArray(arr.v)) {
+        if (arr !== undefined) {
             obj = arr.v;
         } else {
             obj = (await json.parse(context, input)).object;

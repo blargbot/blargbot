@@ -82,7 +82,7 @@ export const all: typeof compare & typeof numeric & typeof logic = Object.assign
 
 function getArray(text: string): JArray | false {
     const arr = deserialize(text);
-    if (arr !== undefined && Array.isArray(arr.v)) {
+    if (arr !== undefined) {
         return arr.v;
     }
     return false;

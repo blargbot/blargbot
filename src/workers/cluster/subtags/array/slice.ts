@@ -26,7 +26,7 @@ export class SliceSubtag extends Subtag {
         const arr = await bbtagUtil.tagArray.getArray(context, array);
         const fallback = new Lazy<number>(() => parse.int(context.scopes.local.fallback ?? ''));
 
-        if (arr === undefined || !Array.isArray(arr.v))
+        if (arr === undefined)
             throw new NotAnArrayError(array);
 
         const start = parse.int(startStr, false) ?? fallback.value;
