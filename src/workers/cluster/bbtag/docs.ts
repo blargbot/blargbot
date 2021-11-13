@@ -4,7 +4,7 @@ import { bbtagUtil, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluste
 import { humanize } from '@core/utils';
 import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 
-import { BaseSubtag } from './BaseSubtag';
+import { Subtag } from './Subtag';
 import { limits } from './limits';
 
 interface CategoryChoice {
@@ -179,7 +179,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
     }
 }
 
-function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, index: number): EmbedFieldData {
+function toField(subtag: Subtag, signature: SubtagHandlerCallSignature, index: number): EmbedFieldData {
     let description = codeBlock(bbtagUtil.stringifyParameters(subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .flatMap<SubtagHandlerValueParameter>(p => 'nested' in p ? p.nested : [p])
@@ -201,7 +201,7 @@ function toField(subtag: BaseSubtag, signature: SubtagHandlerCallSignature, inde
     return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
 }
 
-function subtagDocs(context: CommandContext, subtag: BaseSubtag): MessageEmbedOptions {
+function subtagDocs(context: CommandContext, subtag: Subtag): MessageEmbedOptions {
     const description = [];
     if (typeof subtag.deprecated === 'string')
         description.push(`**This subtag is deprecated and has been replaced by {${subtag.deprecated}}**`);
@@ -237,7 +237,7 @@ function subtagDocs(context: CommandContext, subtag: BaseSubtag): MessageEmbedOp
         }
     });
 }
-async function lookupSubtag(context: CommandContext, input: string): Promise<BaseSubtag | string | undefined> {
+async function lookupSubtag(context: CommandContext, input: string): Promise<Subtag | string | undefined> {
     input = input.replace(/[{}]/, '').toLowerCase();
     const matchedSubtags = [...context.cluster.subtags.list(subtag => !subtag.hidden && (subtag.name.includes(input) || subtag.aliases.some(a => a.includes(input))))];
 

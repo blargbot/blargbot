@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { guard, SubtagType } from '@cluster/utils';
 
-export class ChannelIsNsfw extends BaseSubtag {
+export class ChannelIsNsfw extends Subtag {
     public constructor() {
         super({
             name: 'channelisnsfw',

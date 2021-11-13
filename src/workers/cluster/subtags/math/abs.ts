@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class AbsSubtag extends BaseSubtag {
+export class AbsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'abs',

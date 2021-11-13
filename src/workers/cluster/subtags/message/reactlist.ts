@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Message, MessageEmbedOptions } from 'discord.js';
 
-export class ReactListSubtag extends BaseSubtag {
+export class ReactListSubtag extends Subtag {
     public constructor() {
         super({
             name: 'reactlist',
@@ -13,36 +13,35 @@ export class ReactListSubtag extends BaseSubtag {
                 {
                     parameters: [],
                     description: 'This just returns `No message found` ***always*** for the sake of backwards compatibility.',
+                    returns: 'error',
                     execute: (ctx) => { throw new MessageNotFoundError(ctx.channel, ''); }
                 },
                 {
                     parameters: ['messageid'],
                     description: 'Returns an array of reactions on `messageid`.',
-                    execute: async (context, [messageStr]) => {
-                        const msg = await context.util.getMessage(context.channel, messageStr.value, true);
-                        if (msg === undefined)
-                            throw new MessageNotFoundError(context.channel, messageStr.value);
-                        return JSON.stringify(msg.reactions.cache.map(r => r.emoji.toString()));
-                    }
+                    returns: 'string[]',
+                    execute: (ctx, [messageid]) => this.getReactions(ctx, messageid.value)
                 },
                 {
                     parameters: ['channelid|messageid', 'messageid|reactions'],
                     description: 'Either returns an array of users who reacted with `reactions` on `messageid`, or returns an array of reactions on `messageid` in `channelid`',
-                    execute: (ctx, args) => this.getReactions(ctx, args.map(arg => arg.value))
+                    returns: 'string[]',
+                    execute: (ctx, args) => this.getReactionsOrReactors(ctx, args.map(arg => arg.value))
                 },
                 {
                     parameters: ['channelid|message', 'messageid|reactions', 'reactions+'],
                     description: 'Either returns an array of users who reacted with `reactions` on `messageid` in `channelid`, or returns an array of users who reacted `reactions` on `messageid`.',
-                    execute: (ctx, args) => this.getReactions(ctx, args.map(arg => arg.value))
+                    returns: 'string[]',
+                    execute: (ctx, args) => this.getReactionsOrReactors(ctx, args.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public async getReactions(
+    public async getReactionsOrReactors(
         context: BBTagContext,
         args: string[]
-    ): Promise<string> {
+    ): Promise<Iterable<string>> {
         let channel;
         let message: Message | undefined;
 
@@ -57,7 +56,7 @@ export class ReactListSubtag extends BaseSubtag {
         try {
             message = await context.util.getMessage(channel.id, args[0]);
         } catch (e: unknown) {
-            // NOOP
+            // no-op
         }
         if (message === undefined)
             throw new MessageNotFoundError(channel, args[0]);
@@ -71,7 +70,7 @@ export class ReactListSubtag extends BaseSubtag {
 
         // Default to listing what emotes there are
         if (parsedEmojis.length === 0)
-            return JSON.stringify(message.reactions.cache.map(r => r.emoji.toString()));
+            return message.reactions.cache.map(r => r.emoji.toString());
 
         // List all users per reaction
         const users: string[] = [];
@@ -96,7 +95,14 @@ export class ReactListSubtag extends BaseSubtag {
 
         if (errors.length > 0)
             throw new BBTagRuntimeError('Unknown Emoji: ' + errors.join(', '));
-        return JSON.stringify([...new Set(users)]);
+        return [...new Set(users)];
+    }
+
+    public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
+        const msg = await context.util.getMessage(context.channel, messageId, true);
+        if (msg === undefined)
+            throw new MessageNotFoundError(context.channel, messageId);
+        return msg.reactions.cache.map(r => r.emoji.toString());
     }
 
     public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {

@@ -32,7 +32,7 @@ export class CensorManager extends ModerationManagerBase {
         try {
             await message.delete();
         } catch {
-            // NOOP
+            // no-op
         }
 
         const result = await this.manager.warns.warn(message.member, this.cluster.discord.user, censor.weight, censor.reason ?? 'Said a blacklisted phrase.');

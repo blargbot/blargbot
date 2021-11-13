@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class UriDecodeSubtag extends BaseSubtag {
+export class UriDecodeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'uridecode',
@@ -12,7 +12,8 @@ export class UriDecodeSubtag extends BaseSubtag {
                     description: 'Decodes `text` from URI format.',
                     exampleCode: '{uridecode;Hello%20world}',
                     exampleOut: 'Hello world!',
-                    execute: (_, [{ value: text }]) => decodeURIComponent(text)
+                    returns: 'string',
+                    execute: (_, [text]) => decodeURIComponent(text.value)
                 }
             ]
         });

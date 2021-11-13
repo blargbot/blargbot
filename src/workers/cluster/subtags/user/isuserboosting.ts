@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { GuildMember } from 'discord.js';
 
-export class IsUserBoostingSubtag extends BaseSubtag {
+export class IsUserBoostingSubtag extends Subtag {
     public constructor() {
         super({
             name: 'isuserboosting',

@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { MalformedEmbed } from '@core/types';
 import { FileOptions, MessageEmbedOptions } from 'discord.js';
 
-export class SendSubtag extends BaseSubtag {
+export class SendSubtag extends Subtag {
     public constructor() {
         super({
             name: 'send',
@@ -16,18 +16,21 @@ export class SendSubtag extends BaseSubtag {
                     description: 'Sends `message` and `embed` to `channel` with an attachment, and returns the message id. `channel` is either an id or channel mention. '
                         + 'If `fileContent` starts with `buffer:` then the following text will be parsed as base64 to a raw buffer.\n'
                         + '**Note:** `embed` is the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
+                    returns: 'id',
                     execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value), { attachment: fileContent.value, name: fileName.value })
                 },
                 {
                     parameters: ['channel', 'message', 'embed'],
                     description: 'Sends `message` and `embed` to `channel`, and returns the message id. `channel` is either an id or channel mention.\n'
                         + '**Note:** `embed` is the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
+                    returns: 'id',
                     execute: (ctx, [channel, message, embed]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value))
                 },
                 {
                     parameters: ['channel', 'content'],
                     description: 'Sends `content` to `channel`, and returns the message id. `channel` is either an id or channel mention.\n'
                         + '**Note:** `content` is the text to send or the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
+                    returns: 'id',
                     execute: (ctx, [channel, content]) => this.send(ctx, channel.value, ...resolveContent(content.value))
                 }
             ]

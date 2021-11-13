@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class LengthSubtag extends BaseSubtag {
+export class LengthSubtag extends Subtag {
     public constructor() {
         super({
             name: 'length',
@@ -13,14 +13,17 @@ export class LengthSubtag extends BaseSubtag {
                     exampleCode: 'What you said is {length;{args}} chars long.',
                     exampleIn: 'Hello',
                     exampleOut: 'What you said is 5 chars long.',
-                    execute: (_, [{ value }]) => {
-                        const deserializedArray = bbtagUtil.tagArray.deserialize(value);
-                        if (deserializedArray !== undefined && Array.isArray(deserializedArray.v))
-                            return deserializedArray.v.length.toString();
-                        return value.length.toString();
-                    }
+                    returns: 'number',
+                    execute: (_, [value]) => this.getLength(value.value)
                 }
             ]
         });
+    }
+
+    public getLength(value: string): number {
+        const deserializedArray = bbtagUtil.tagArray.deserialize(value);
+        if (deserializedArray !== undefined && Array.isArray(deserializedArray.v))
+            return deserializedArray.v.length;
+        return value.length;
     }
 }

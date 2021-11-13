@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-export class ChannelCategoriesSubtag extends BaseSubtag {
+export class ChannelCategoriesSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelcategories',

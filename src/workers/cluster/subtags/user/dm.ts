@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
 const dmCache: DMCache = {};
 
-export class DMSubtag extends BaseSubtag {
+export class DMSubtag extends Subtag {
     public constructor() {
         super({
             name: 'dm',

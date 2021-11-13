@@ -1,10 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.numeric;
 
-export class MathSubtag extends BaseSubtag {
+export class MathSubtag extends Subtag {
     public constructor() {
         super({
             name: 'math',

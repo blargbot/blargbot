@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
-import { CreateRoleOptions, Permissions } from 'discord.js';
+import { CreateRoleOptions } from 'discord.js';
 
-export class RoleCreateSubtag extends BaseSubtag {
+export class RoleCreateSubtag extends Subtag {
     public constructor() {
         super({
             name: 'rolecreate',
@@ -18,14 +18,17 @@ export class RoleCreateSubtag extends BaseSubtag {
                     description: 'Creates a role called `name`',
                     exampleCode: '{rolecreate;Super cool role!}',
                     exampleOut: '11111111111111111',
+                    returns: 'id',
                     execute: (ctx, args) => this.createRole(ctx, args[0].value, '#000000', '0', 'false', 'false')
                 },
                 {
                     parameters: ['name', 'color:000000', 'permissions?:0'],
+                    returns: 'id',
                     execute: (ctx, args) => this.createRole(ctx, args[0].value, args[1].value, args[2].value, 'false', 'false')
                 },
                 {
                     parameters: ['name', 'color:000000', 'permissions:0', 'mentionable:false', 'hoisted?:false'],
+                    returns: 'id',
                     execute: (ctx, args) => this.createRole(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value)
                 }
             ]
@@ -45,7 +48,11 @@ export class RoleCreateSubtag extends BaseSubtag {
 
         if (topRole === 0)
             throw new BBTagRuntimeError('Author cannot create roles');
-        const rolePerms = new Permissions().add(BigInt(parse.int(permStr))).valueOf();
+
+        const rolePerms = parse.bigInt(permStr);
+        if (rolePerms === undefined)
+            throw new BBTagRuntimeError('Permissions not a number');
+
         const options: CreateRoleOptions = {
             name,
             reason: discordUtil.formatAuditReason(context.user, context.scopes.local.reason),
@@ -55,10 +62,7 @@ export class RoleCreateSubtag extends BaseSubtag {
             hoist: parse.boolean(hoistedStr, false)
         };
 
-        if (isNaN(Number(rolePerms)))
-            throw new BBTagRuntimeError('Permissions not a number');
-
-        if ((rolePerms & BigInt(permission)) !== options.permissions)
+        if ((rolePerms & permission) !== rolePerms)
             throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {

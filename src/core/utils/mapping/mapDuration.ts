@@ -16,7 +16,7 @@ export const mapDuration: TypeMapping<Duration> = createMapping(value => {
             }
         }
     } catch {
-        // NOOP
+        // no-op
     }
     return result.failed;
 });

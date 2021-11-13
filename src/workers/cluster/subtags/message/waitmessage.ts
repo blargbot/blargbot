@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
@@ -7,7 +7,7 @@ import { GuildChannels } from 'discord.js';
 
 import { Statement } from '../../types';
 
-export class WaitMessageSubtags extends BaseSubtag {
+export class WaitMessageSubtags extends Subtag {
     public constructor() {
         super({
             name: 'waitmessage',
@@ -29,7 +29,7 @@ export class WaitMessageSubtags extends BaseSubtag {
                     description: 'Pauses the command until the executing user sends a message in the current channel.',
                     exampleCode: '{waitmessage}',
                     exampleOut: '["111111111111111","2222222222222"]',
-                    returns: 'array',
+                    returns: 'id[]',
                     execute: (ctx) => this.awaitMessage(ctx, ctx.channel.id, ctx.user.id)
                 },
                 {
@@ -37,16 +37,16 @@ export class WaitMessageSubtags extends BaseSubtag {
                     description: 'Pauses the command until one of `userIDs` sends a message in one of `channelIDs`',
                     exampleCode: '{waitmessage;111111111111111;{userid;stupid cat}}',
                     exampleOut: '["111111111111111", "103347843934212096"]',
-                    returns: 'array',
-                    execute: (ctx, args) => this.awaitMessage(ctx, args[0].value, args[1].value)
+                    returns: 'id[]',
+                    execute: (ctx, [channelIDs, userIDs]) => this.awaitMessage(ctx, channelIDs.value, userIDs.value)
                 },
                 {
                     parameters: ['channelIDs', 'userIDs', '~condition:true', 'timeout?:60'],
                     description: 'Pauses the command until `condition` returns true when one of `userIDs` sends a message in one of `channelIDs`.',
                     exampleCode: '{waitmessage;111111111111111;{userid;stupid cat};{bool;{username};startswith;stupid};50}',
                     exampleOut: '["111111111111111", "103347843934212096"]',
-                    returns: 'array',
-                    execute: (ctx, args) => this.awaitMessage(ctx, args[0].value, args[1].value, args[2], args[3].value)
+                    returns: 'id[]',
+                    execute: (ctx, [channelIDs, userIDs, condition, timeout]) => this.awaitMessage(ctx, channelIDs.value, userIDs.value, condition, timeout.value)
                 }
             ]
         });

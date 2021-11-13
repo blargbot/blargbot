@@ -1,11 +1,11 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 import { ReturnObject } from '@cluster/utils/bbtag/json';
 
 const json = bbtagUtil.json;
 
-export class JsonSetSubtag extends BaseSubtag {
+export class JsonSetSubtag extends Subtag {
     public constructor() {
         super({
             name: 'jsonset',

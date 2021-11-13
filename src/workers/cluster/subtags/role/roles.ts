@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class RolesSubtag extends BaseSubtag {
+export class RolesSubtag extends Subtag {
     public constructor() {
         super({
             name: 'roles',
@@ -13,7 +13,7 @@ export class RolesSubtag extends BaseSubtag {
                     description: 'Returns an array of roles on the current guild.',
                     exampleCode: 'The roles on this guild are: {roles}.',
                     exampleOut: 'The roles on this guild are: ["11111111111111111","22222222222222222"].',
-                    returns: 'array',
+                    returns: 'id[]',
                     execute: (ctx) => this.getGuildRoles(ctx)
                 },
                 {
@@ -21,7 +21,7 @@ export class RolesSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s roles in the current guild. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat has the roles: {roles;Stupid cat}',
                     exampleOut: 'Stupid cat has the roles: ["11111111111111111","22222222222222222"]',
-                    returns: 'array',
+                    returns: 'id[]',
                     execute: (ctx, [userId, quiet]) => this.getUserRoles(ctx, userId.value, quiet.value !== '')
                 }
             ]

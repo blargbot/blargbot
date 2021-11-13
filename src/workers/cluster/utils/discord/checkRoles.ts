@@ -22,12 +22,8 @@ export async function checkRoles(
         hasRole: []
     };
     let roles: string[];
-    if (userStr !== '') {
-        delete result.member;
-        const user = await context.queryUser(userStr, { noLookup: quiet });
-        if (user !== undefined)
-            result.member = await context.util.getMember(context.guild.id, user.id);
-    }
+    if (userStr !== '')
+        result.member = await context.queryMember(userStr, { noLookup: quiet });
 
     if (deserialized !== undefined && Array.isArray(deserialized.v))
         roles = deserialized.v as string[];

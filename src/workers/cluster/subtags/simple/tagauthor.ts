@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class TagAuthorSubtag extends BaseSubtag {
+export class TagAuthorSubtag extends Subtag {
     public constructor() {
         super({
             name: 'tagauthor',

@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class CommitSubtag extends BaseSubtag {
+export class CommitSubtag extends Subtag {
     public constructor() {
         super({
             name: 'commit',

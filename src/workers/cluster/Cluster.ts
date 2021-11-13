@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagEngine } from '@cluster/bbtag';
+import { BBTagEngine, Subtag } from '@cluster/bbtag';
 import { ClusterOptions } from '@cluster/types';
 import { getRange } from '@cluster/utils';
 import { BaseClient } from '@core/BaseClient';
@@ -19,7 +19,7 @@ export class Cluster extends BaseClient {
     public readonly id: number;
     public readonly createdAt: Moment;
     public readonly worker: ClusterWorker;
-    public readonly subtags: ModuleLoader<BaseSubtag>;
+    public readonly subtags: ModuleLoader<Subtag>;
     public readonly services: ModuleLoader<BaseService>;
     public readonly util: ClusterUtilities;
     public readonly timeouts: TimeoutManager;
@@ -89,7 +89,7 @@ export class Cluster extends BaseClient {
             custom: new CustomCommandManager(this),
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
         });
-        this.subtags = new ModuleLoader(`${__dirname}/subtags`, BaseSubtag, [this], this.logger, t => [t.name, ...t.aliases]);
+        this.subtags = new ModuleLoader(`${__dirname}/subtags`, Subtag, [this], this.logger, t => [t.name, ...t.aliases]);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);

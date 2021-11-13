@@ -1,10 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Cluster } from '@cluster/Cluster';
 import { parse, SubtagType } from '@cluster/utils';
-import { GuildMember, User } from 'discord.js';
 
-export class PardonSubtag extends BaseSubtag {
+export class PardonSubtag extends Subtag {
     public constructor(
         public readonly cluster: Cluster
     ) {
@@ -39,19 +38,14 @@ export class PardonSubtag extends BaseSubtag {
         countStr: string,
         reason: string
     ): Promise<number> {
-        let user: User | undefined = context.user;
-        const count = parse.int(countStr);
-        let member: GuildMember | undefined;
-        if (userStr !== '')
-            user = await context.queryUser(userStr);
-
-        if (user !== undefined) {
-            member = await context.util.getMember(context.guild.id, user.id);
-        }
-
-        if (user === undefined || member === undefined)
+        const member = userStr === ''
+            ? context.member
+            : await context.queryMember(userStr);
+        if (member === undefined)
             throw new UserNotFoundError(userStr);
-        if (isNaN(count))
+
+        const count = parse.int(countStr, false);
+        if (count === undefined)
             throw new NotANumberError(countStr);
 
         const result = await this.cluster.moderation.warns.pardon(member, this.cluster.discord.user, count, reason === '' ? 'Tag Pardon' : reason);

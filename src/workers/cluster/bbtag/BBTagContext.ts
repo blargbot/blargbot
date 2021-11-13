@@ -11,7 +11,7 @@ import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import { ScopeManager } from '.';
-import { BaseSubtag } from './BaseSubtag';
+import { Subtag } from './Subtag';
 import { BBTagEngine } from './BBTagEngine';
 import { VariableCache } from './Caching';
 import { BBTagRuntimeError, UnknownSubtagError } from './errors';
@@ -64,7 +64,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get permissions(): Permissions { return (this.guild.members.cache.get(this.authorizer) ?? { permissions: new Permissions(undefined) }).permissions; }
     public get util(): ClusterUtilities { return this.engine.util; }
     public get discord(): Discord<true> { return this.engine.discord; }
-    public get subtags(): ModuleLoader<BaseSubtag> { return this.engine.subtags; }
+    public get subtags(): ModuleLoader<Subtag> { return this.engine.subtags; }
     public get cooldownEnd(): Moment { return this.cooldowns.get(this); }
 
     public constructor(
@@ -133,7 +133,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return messageId === this.message.id || this.state.ownedMsgs.includes(messageId);
     }
 
-    public getSubtag(name: string): BaseSubtag {
+    public getSubtag(name: string): Subtag {
         let result = this.subtags.get(name);
         if (result !== undefined)
             return result;

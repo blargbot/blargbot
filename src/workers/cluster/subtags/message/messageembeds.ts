@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
 
-export class MessageEmbedsSubtag extends BaseSubtag {
+export class MessageEmbedsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'messageembeds',

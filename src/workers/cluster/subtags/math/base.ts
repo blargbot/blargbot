@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { between, parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
-export class BaseNumberSubtag extends BaseSubtag {
+export class BaseNumberSubtag extends Subtag {
     public constructor() {
         super({
             name: 'base',

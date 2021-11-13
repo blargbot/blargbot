@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
 import { GuildMessage } from 'discord.js';
@@ -17,7 +17,7 @@ const threadOptions = mapping.object({
     )
 });
 
-export class ThreadCreateSubtag extends BaseSubtag {
+export class ThreadCreateSubtag extends Subtag {
     public constructor() {
         super({
             name: 'threadcreate',

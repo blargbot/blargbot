@@ -1,10 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, compare, parse, SubtagType } from '@cluster/utils';
 
 const json = bbtagUtil.json;
 
-export class JsonSortSubtag extends BaseSubtag {
+export class JsonSortSubtag extends Subtag {
     public constructor() {
         super({
             name: 'jsonsort',

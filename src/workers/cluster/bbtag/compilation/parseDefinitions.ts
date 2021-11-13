@@ -1,4 +1,5 @@
 import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagLogic, SubtagResult, SubtagReturnTypeMap } from '@cluster/types';
+import { parse } from '@cluster/utils';
 
 import { ArraySubtagLogic, ArrayWithErrorsSubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic';
 
@@ -81,12 +82,14 @@ function getExecute(definition: AnySubtagHandlerDefinition): SubtagLogic<SubtagR
 const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<SubtagResult> } = {
     ['unknown']: DeferredSubtagLogic,
     ['number']: StringifySubtagLogic,
+    ['hex']: StringSubtagLogic.withConversion(val => val.toString(16).padStart(6, '0')),
     ['number[]']: ArraySubtagLogic,
     ['boolean']: StringifySubtagLogic,
     ['boolean|number']: StringifySubtagLogic,
     ['boolean[]']: ArraySubtagLogic,
     ['string']: StringSubtagLogic,
     ['string[]']: ArraySubtagLogic,
+    ['json']: StringSubtagLogic.withConversion(parse.string),
     ['json[]']: ArraySubtagLogic,
     ['(json|error)[]']: ArrayWithErrorsSubtagLogic,
     ['nothing']: IgnoreSubtagLogic,

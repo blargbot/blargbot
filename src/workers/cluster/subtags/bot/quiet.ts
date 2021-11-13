@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class QuietSubtag extends BaseSubtag {
+export class QuietSubtag extends Subtag {
     public constructor() {
         super({
             name: 'quiet',

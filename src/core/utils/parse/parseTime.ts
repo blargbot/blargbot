@@ -2,8 +2,8 @@ import moment, { Moment } from 'moment-timezone';
 
 import * as guard from '../guard';
 
-export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC', toTimezone = 'Etc/UTC'): Moment {
-    const now = moment.tz(timezone).tz(toTimezone);
+export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | string, format?: string, timezone = 'Etc/UTC'): Moment {
+    const now = moment.tz(timezone);
     if (text === '')
         return now;
 
@@ -29,10 +29,9 @@ export function parseTime(text: 'now' | 'today' | 'tomorrow' | 'yesterday' | str
         return now.add(magnitude, quantity);
     }
 
-    const tz = format === undefined
+    return format === undefined || format.length === 0
         ? moment.tz(text, timezone)
         : moment.tz(text, format, timezone);
-    return tz.tz(toTimezone);
 }
 
 /* eslint-disable @typescript-eslint/naming-convention */

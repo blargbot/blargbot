@@ -343,19 +343,21 @@ interface SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap>
     readonly returns: Type;
 }
 
-type Iterated<T> = (Iterable<T> | AsyncIterable<T>) & { charCodeAt?: undefined; }; // To exclude string
+type Iterated<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
 
 export type SubtagReturnTypeMap = {
     'unknown': SubtagResult;
-    'number': number;
+    'hex': number;
+    'number': number | bigint;
     'number[]': Iterated<number>;
     'boolean': boolean;
-    'boolean|number': boolean | number;
+    'boolean|number': boolean | number | bigint;
     'boolean[]': Iterated<boolean>;
     'string': string;
     'string[]': Iterated<string>;
     'id': string;
     'id[]': Iterated<string>;
+    'json': JToken;
     'json[]': Iterated<JToken>;
     '(json|error)[]': Iterated<JToken>;
     'nothing': void;

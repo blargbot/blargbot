@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
-export class SpliceSubtag extends BaseSubtag {
+export class SpliceSubtag extends Subtag {
     public constructor() {
         super({
             name: 'splice',

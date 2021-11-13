@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildFeaturesSubtag extends BaseSubtag {
+export class GuildFeaturesSubtag extends Subtag {
     public constructor() {
         super({
             name: 'guildfeatures',

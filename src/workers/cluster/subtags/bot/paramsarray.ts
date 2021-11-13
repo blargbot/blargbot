@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class ParamsArraySubtag extends BaseSubtag {
+export class ParamsArraySubtag extends Subtag {
     public constructor() {
         super({
             name: 'paramsarray',

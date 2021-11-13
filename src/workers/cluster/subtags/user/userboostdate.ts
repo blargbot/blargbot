@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { GuildMember } from 'discord.js';
 import moment from 'moment-timezone';
 
-export class UserBoostDataSubtag extends BaseSubtag {
+export class UserBoostDataSubtag extends Subtag {
     public constructor() {
         super({
             name: 'userboostdate',

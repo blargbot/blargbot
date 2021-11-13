@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class IsArraySubtag extends BaseSubtag {
+export class IsArraySubtag extends Subtag {
     public constructor() {
         super({
             name: 'isarray',

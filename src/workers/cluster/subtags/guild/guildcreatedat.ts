@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment';
 
-export class GuildCreateDat extends BaseSubtag {
+export class GuildCreateDat extends Subtag {
     public constructor() {
         super({
             name: 'guildcreatedat',

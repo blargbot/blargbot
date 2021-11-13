@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
+import { BBTagContext, Subtag, tagVariableScopes } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import ReadWriteLock from 'rwlock';
 
-export class LockSubtag extends BaseSubtag {
+export class LockSubtag extends Subtag {
     public constructor() {
         super({
             name: 'lock',

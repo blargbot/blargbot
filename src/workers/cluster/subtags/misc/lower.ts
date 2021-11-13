@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class LowerSubtag extends BaseSubtag {
+export class LowerSubtag extends Subtag {
     public constructor() {
         super({
             name: 'lower',
@@ -12,7 +12,8 @@ export class LowerSubtag extends BaseSubtag {
                     description: 'Returns `text` as lowercase.',
                     exampleCode: '{lower;THIS WILL BECOME LOWERCASE}',
                     exampleOut: 'this will become lowercase',
-                    execute: (_, [{ value: text }]) => text.toLowerCase()
+                    returns: 'string',
+                    execute: (_, [text]) => text.value.toLowerCase()
                 }
             ]
         });

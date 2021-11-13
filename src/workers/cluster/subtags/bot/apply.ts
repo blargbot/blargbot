@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UnknownSubtagError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
 import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
 
-export class ApplySubtag extends BaseSubtag {
+export class ApplySubtag extends Subtag {
     public constructor() {
         super({
             name: 'apply',

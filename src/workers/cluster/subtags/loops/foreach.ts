@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class ForeachSubtag extends BaseSubtag {
+export class ForeachSubtag extends Subtag {
     public constructor() {
         super({
             name: 'foreach',

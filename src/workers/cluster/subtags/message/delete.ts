@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { guard, SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
 
-export class DeleteSubtag extends BaseSubtag {
+export class DeleteSubtag extends Subtag {
     public constructor() {
         super({
             name: 'delete',

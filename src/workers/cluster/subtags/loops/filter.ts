@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 
-export class FilterSubtag extends BaseSubtag {
+export class FilterSubtag extends Subtag {
     public constructor() {
         super({
             name: 'filter',

@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
@@ -7,7 +7,7 @@ function getUrls(message: Message): string {
     return JSON.stringify(message.attachments.map(a => a.url));
 }
 
-export class MessageAttachmentsSubtag extends BaseSubtag {
+export class MessageAttachmentsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'messageattachments',

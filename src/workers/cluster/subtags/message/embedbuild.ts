@@ -1,4 +1,4 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
@@ -59,7 +59,7 @@ type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 // custom message for fields missing values/names
 type EmbedBuildOptions = Overwrite<MessageEmbedOptions, { fields?: Array<Partial<EmbedFieldData>>; }>
 
-export class EmbedBuildSubag extends BaseSubtag {
+export class EmbedBuildSubag extends Subtag {
     public constructor() {
         super({
             name: 'embedbuild',

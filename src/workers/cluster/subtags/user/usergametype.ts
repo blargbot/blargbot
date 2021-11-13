@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
@@ -12,7 +12,7 @@ const gameTypes = {
     5: 'competing'
 } as const;
 
-export class UserGameTypeSubtag extends BaseSubtag {
+export class UserGameTypeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'usergametype',

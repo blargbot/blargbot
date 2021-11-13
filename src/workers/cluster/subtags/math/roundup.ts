@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class RoundUpSubtag extends BaseSubtag {
+export class RoundUpSubtag extends Subtag {
     public constructor() {
         super({
             name: 'roundup',

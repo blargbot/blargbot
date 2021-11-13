@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, shuffle, SubtagType } from '@cluster/utils';
 
-export class ShuffleSubtag extends BaseSubtag {
+export class ShuffleSubtag extends Subtag {
     public constructor() {
         super({
             name: 'shuffle',

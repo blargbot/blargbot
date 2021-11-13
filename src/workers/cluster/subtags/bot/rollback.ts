@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class RollbackSubtag extends BaseSubtag {
+export class RollbackSubtag extends Subtag {
     public constructor() {
         super({
             name: 'rollback',

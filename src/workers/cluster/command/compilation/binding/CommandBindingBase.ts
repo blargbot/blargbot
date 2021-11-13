@@ -34,7 +34,7 @@ export abstract class CommandBindingBase<TContext extends CommandContext> implem
     ): BindingSuccess<CommandBinderState<TContext>> {
         let args = state.arguments;
         if (value === undefined) {
-            // NOOP
+            // no-op
         } else {
             args = [...args, value];
         }

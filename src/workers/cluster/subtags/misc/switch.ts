@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class SwitchSubtag extends BaseSubtag {
+export class SwitchSubtag extends Subtag {
     public constructor() {
         super({
             name: 'switch',
@@ -10,6 +10,7 @@ export class SwitchSubtag extends BaseSubtag {
             definition: [
                 {
                     parameters: ['value', { repeat: ['case', '~then'], minCount: 1 }, '~default?'],
+                    returns: 'string',
                     execute: (_, [value, ...cases]) => this.switch(value.value, ...splitArgs(cases))
                 }
             ]

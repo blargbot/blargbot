@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, compare, parse, SubtagType } from '@cluster/utils';
 
-export class SortSubtag extends BaseSubtag {
+export class SortSubtag extends Subtag {
     public constructor() {
         super({
             name: 'sort',

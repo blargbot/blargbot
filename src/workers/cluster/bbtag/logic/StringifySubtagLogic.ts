@@ -11,4 +11,5 @@ export class StringifySubtagLogic<T extends { toString(): string; }> extends Sub
     protected async getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Promise<[string]> {
         return [(await this.logic.execute(context, args, subtag)).toString()];
     }
+
 }

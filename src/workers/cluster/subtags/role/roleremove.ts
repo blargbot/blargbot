@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
-export class RoleRemoveSubtag extends BaseSubtag {
+export class RoleRemoveSubtag extends Subtag {
     public constructor() {
         super({
             name: 'roleremove',
@@ -15,14 +15,16 @@ export class RoleRemoveSubtag extends BaseSubtag {
                     description: 'Removes `role` from the executing user. Returns `true` if role was removed, else an error will be shown.',
                     exampleCode: 'No more role! {roleremove;11111111111111111}',
                     exampleOut: 'No more role! true',
-                    execute: (ctx, args) => this.removeRole(ctx, args[0].value, ctx.user.id, '')
+                    returns: 'boolean',
+                    execute: (ctx, [role]) => this.removeRole(ctx, role.value, ctx.user.id, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
                     description: 'Remove the chosen `role` from  `user`. Returns `true` if role was removed, else an error will be shown. If `quiet` is specified, if a user can\'t be found it will simply return `false`',
                     exampleCode: 'Stupid cat no more role! {roleremove;Bot;Stupid cat}',
                     exampleOut: 'Stupid cat no more role! true',
-                    execute: (ctx, args) => this.removeRole(ctx, args[0].value, args[1].value, args[2].value)
+                    returns: 'boolean',
+                    execute: (ctx, [role, user, quiet]) => this.removeRole(ctx, role.value, user.value, quiet.value !== '')
                 }
             ]
         });
@@ -32,18 +34,18 @@ export class RoleRemoveSubtag extends BaseSubtag {
         context: BBTagContext,
         roleStr: string,
         userStr: string,
-        quietStr: string
-    ): Promise<string> {
+        quiet: boolean
+    ): Promise<boolean> {
         const topRole = discordUtil.getRoleEditPosition(context);
         if (topRole === 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
-        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
+        quiet ||= context.scopes.local.quiet ?? false;
         const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
 
         if (result.member === undefined) {
             if (quiet)
-                return 'false';
+                return false;
             throw new UserNotFoundError(userStr);
         }
 
@@ -56,7 +58,7 @@ export class RoleRemoveSubtag extends BaseSubtag {
         const roles = result.roles.filter((_, i) => result.hasRole[i]).map(role => role.id);
 
         if (roles.length === 0)
-            return 'false';
+            return false;
 
         try {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
@@ -64,10 +66,10 @@ export class RoleRemoveSubtag extends BaseSubtag {
             await result.member.edit({
                 roles: existingRoles.filter(roleID => !roles.includes(roleID))
             }, fullReason);
-            return 'true';
+            return true;
         } catch (err: unknown) {
             context.logger.error(err);
-            return 'false';
+            return false;
         }
     }
 }

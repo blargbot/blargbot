@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 
-export class RoleSetPermsSubtag extends BaseSubtag {
+export class RoleSetPermsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'rolesetperms',

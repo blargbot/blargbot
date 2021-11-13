@@ -1,10 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { TagV4StoredEventOptions } from '@core/types';
 import moment from 'moment-timezone';
 
-export class TimerSubtag extends BaseSubtag {
+export class TimerSubtag extends Subtag {
     public constructor() {
         super({
             name: 'timer',

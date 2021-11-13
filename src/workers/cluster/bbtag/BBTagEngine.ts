@@ -9,7 +9,7 @@ import { Client as Discord } from 'discord.js';
 import moment from 'moment';
 import { inspect } from 'util';
 
-import { BaseSubtag } from './BaseSubtag';
+import { Subtag } from './Subtag';
 import { BBTagContext } from './BBTagContext';
 import { BBTagRuntimeError, SubtagStackOverflowError, TagCooldownError } from './errors';
 import { TagCooldownManager } from './TagCooldownManager';
@@ -20,7 +20,7 @@ export class BBTagEngine {
     public get logger(): Logger { return this.cluster.logger; }
     public get database(): Database { return this.cluster.database; }
     public get util(): ClusterUtilities { return this.cluster.util; }
-    public get subtags(): ModuleLoader<BaseSubtag> { return this.cluster.subtags; }
+    public get subtags(): ModuleLoader<Subtag> { return this.cluster.subtags; }
 
     public constructor(
         public readonly cluster: Cluster

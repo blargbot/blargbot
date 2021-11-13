@@ -1,10 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 import { DiscordAPIError, EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 
-export class ReactRemoveSubtag extends BaseSubtag {
+export class ReactRemoveSubtag extends Subtag {
     public constructor() {
         super({
             name: 'reactremove',
@@ -13,11 +12,13 @@ export class ReactRemoveSubtag extends BaseSubtag {
             definition: [//! overwritten
                 {
                     parameters: ['channelID?', 'messageID'], // [channelID];<messageID>;[user];[reactions...]
-                    execute: (ctx, args, subtag) => this.removeReactions(ctx, subtag, args.map(arg => arg.value))
+                    returns: 'nothing',
+                    execute: (ctx, args) => this.removeReactions(ctx, args.map(arg => arg.value))
                 },
                 {
                     parameters: ['channelID', 'messageID', 'user', 'reactions+'], // [channelID];<messageID>;[user];[reactions...]
-                    execute: (ctx, args, subtag) => this.removeReactions(ctx, subtag, args.map(arg => arg.value))
+                    returns: 'nothing',
+                    execute: (ctx, args) => this.removeReactions(ctx, args.map(arg => arg.value))
                 }
             ]
         });
@@ -25,9 +26,8 @@ export class ReactRemoveSubtag extends BaseSubtag {
 
     public async removeReactions(
         context: BBTagContext,
-        subtag: SubtagCall,
         args: string[]
-    ): Promise<string | void> {
+    ): Promise<void> {
         let channel;
         let message;
         // Check if the first "emote" is actually a valid channel
@@ -43,7 +43,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
         try {
             message = await context.util.getMessage(channel, args[0]);
         } catch (e: unknown) {
-            // NOOP
+            // no-op
         }
         args.shift();
         if (message === undefined)
@@ -74,7 +74,7 @@ export class ReactRemoveSubtag extends BaseSubtag {
                 continue;
 
             try {
-                await context.limit.check(context, subtag, 'reactremove:requests');
+                await context.limit.check(context, 'reactremove:requests');
                 await message.reactions.cache.get(reaction)?.users.remove(user);
             } catch (err: unknown) {
                 if (err instanceof DiscordAPIError) {

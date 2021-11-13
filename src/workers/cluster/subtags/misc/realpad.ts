@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class RealPadSubtag extends BaseSubtag {
+export class RealPadSubtag extends Subtag {
     public constructor() {
         super({
             name: 'realpad',
@@ -13,14 +13,16 @@ export class RealPadSubtag extends BaseSubtag {
                     description: 'Pads `text` using space until it has `length` characters. Spaces are added on the right side.',
                     exampleCode: '{realpad;Hello;10} world!',
                     exampleOut: 'Hello      world!',
-                    execute: (_context, args) => this.realPad(args[0].value, args[1].value, ' ', 'right')
+                    returns: 'string',
+                    execute: (_, [text, length]) => this.realPad(text.value, length.value, ' ', 'right')
                 },
                 {
                     parameters: ['text', 'length', 'filler', 'direction?:right'],
                     description: 'Pads `text` using `filler` until it has `length` characters. `filler` is applied to the  `direction` of `text`. `filler` defaults to space.',
                     exampleCode: '{realpad;ABC;6;0;left}',
                     exampleOut: '000ABC',
-                    execute: (_context, args) => this.realPad(args[0].value, args[1].value, args[2].value, args[3].value.toLowerCase())
+                    returns: 'string',
+                    execute: (_, [text, length, filler, direction]) => this.realPad(text.value, length.value, filler.value, direction.value.toLowerCase())
                 }
             ]
         });

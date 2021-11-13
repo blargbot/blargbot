@@ -7,7 +7,7 @@ import { MessageEmbedOptions } from 'discord.js';
 import { BBTagContext } from './BBTagContext';
 import { compileSignatures, parseDefinitions } from './compilation';
 
-export abstract class BaseSubtag implements SubtagOptions {
+export abstract class Subtag implements SubtagOptions {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;

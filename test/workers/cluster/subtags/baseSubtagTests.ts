@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { BBTagContextState, Statement, SubtagCall, SubtagLogic, SubtagResult } from '@cluster/types';
 import { expect } from 'chai';
@@ -32,7 +32,7 @@ type HandleContext<AutoMock extends Record<string, unknown>> =
     }
 
 export function testExecuteNotEnoughArgs<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     cases: TestCases<Details, { expectedCount: number; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Error>
@@ -49,7 +49,7 @@ export function testExecuteNotEnoughArgs<Details = undefined, AutoMock extends R
 }
 
 export function testExecuteTooManyArgs<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     cases: TestCases<Details, { expectedCount: number; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Error>
@@ -66,7 +66,7 @@ export function testExecuteTooManyArgs<Details = undefined, AutoMock extends Rec
 }
 
 export function testExecuteFail<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     cases: TestCases<Details, { error: BBTagRuntimeError; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Error>
@@ -77,7 +77,7 @@ export function testExecuteFail<Details = undefined, AutoMock extends Record<str
 }
 
 export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagLogic<SubtagResult>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     cases: TestCases<Details, { expected?: Result; title?: string; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Result>
@@ -90,7 +90,7 @@ export function testExecute<Details = undefined, AutoMock extends Record<string,
 }
 
 function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagLogic<SubtagResult>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     automock: AutoMock | undefined,
     options: HandleConfig<AutoMock, Details, Result>,
     testCase: TestCase<Details, { expected?: Result; }>

@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
 import { GuildChannelCreateOptions, OverwriteData } from 'discord.js';
 
-export class ChannelCreateSubtag extends BaseSubtag {
+export class ChannelCreateSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelcreate',

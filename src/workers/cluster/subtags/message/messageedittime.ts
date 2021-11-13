@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
 
-export class MessageEditTimeSubtag extends BaseSubtag {
+export class MessageEditTimeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'messageedittime',

@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
 import moment from 'moment';
 
-export class MessageTimeSubtag extends BaseSubtag {
+export class MessageTimeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'messagetime',
@@ -16,12 +16,14 @@ export class MessageTimeSubtag extends BaseSubtag {
                     description: 'Returns the send time of the executing message in unix milliseconds.',
                     exampleCode: 'The timestamp of your message is "{timestamp}"',
                     exampleOut: 'The timestamp of your message is "1628782144703"',
+                    returns: 'string',
                     execute: (ctx) => ctx.message.createdTimestamp.toString()
                 },
                 {
                     parameters: ['format|messageid'],
                     description: 'If the first argument is a messageid, this will return the send time of `messageid` in unix. ' +
                         'Else this will return the send time of the executing message in `format`.',
+                    returns: 'string',
                     execute: (context, args) => {
                         if (/^\d{17,23}/.test(args[0].value))
                             return this.getMessageTime(context, context.channel.id, args[0].value, 'x');
@@ -31,6 +33,7 @@ export class MessageTimeSubtag extends BaseSubtag {
                 {
                     parameters: ['channel|messageid', 'messageid|format'],
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
+                    returns: 'string',
                     execute: async (context, args) => {
                         const channel = await context.queryChannel(args[0].value, { noErrors: true });
                         if (channel === undefined)
@@ -41,6 +44,7 @@ export class MessageTimeSubtag extends BaseSubtag {
                 {
                     parameters: ['channel', 'messageid', 'format'],
                     description: '{messagetime;<channel>;<messageid>;<format>}',
+                    returns: 'string',
                     execute: (context, args) => this.getMessageTime(context, args[0].value, args[1].value, args[2].value)
                 }
             ]

@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
-export class RandIntSubtag extends BaseSubtag {
+export class RandIntSubtag extends Subtag {
     public constructor() {
         super({
             name: 'randint',

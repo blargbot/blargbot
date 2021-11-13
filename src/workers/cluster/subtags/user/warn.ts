@@ -1,9 +1,9 @@
 import { Cluster } from '@cluster';
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class WarnSubtag extends BaseSubtag {
+export class WarnSubtag extends Subtag {
     public constructor(
         public readonly cluster: Cluster
     ) {

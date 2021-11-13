@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class IncrementSubtag extends BaseSubtag {
+export class IncrementSubtag extends Subtag {
     public constructor() {
         super({
             name: 'increment',

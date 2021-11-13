@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
-export class FunctionSubtag extends BaseSubtag {
+export class FunctionSubtag extends Subtag {
     public constructor() {
         super({
             name: 'function',

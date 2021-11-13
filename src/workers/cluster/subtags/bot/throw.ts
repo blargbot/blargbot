@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class ThrowSubtag extends BaseSubtag {
+export class ThrowSubtag extends Subtag {
     public constructor() {
         super({
             name: 'throw',

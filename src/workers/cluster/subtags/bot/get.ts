@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
+import { BBTagContext, Subtag, tagVariableScopes } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class GetSubtag extends BaseSubtag {
+export class GetSubtag extends Subtag {
     public constructor() {
         super({
             name: 'get',

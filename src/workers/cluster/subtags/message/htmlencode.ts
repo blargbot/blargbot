@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import { encode } from 'html-entities';
 
-export class HtmlDecodeSubtag extends BaseSubtag {
+export class HtmlDecodeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'htmlencode',

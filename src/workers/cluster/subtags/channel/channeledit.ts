@@ -1,11 +1,11 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, mapping, SubtagType } from '@cluster/utils';
 import { TypeMapping } from '@core/types';
 import { guard } from '@core/utils';
 import { ChannelData, GuildChannels, ThreadEditData } from 'discord.js';
 
-export class ChannelEditSubtag extends BaseSubtag {
+export class ChannelEditSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channeledit',

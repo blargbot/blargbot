@@ -23,7 +23,7 @@ function throwNotDeclared<T extends keyof CommandVariableTypeMap>(key: T, getVal
     if (getValue !== undefined) {
         try {
             return getValue();
-        } catch { /*NOOP*/ }
+        } catch { /*no-op*/ }
     }
     const err = new Error(`Value was not declared as a ${key}`);
     Error.captureStackTrace(err, throwNotDeclared);

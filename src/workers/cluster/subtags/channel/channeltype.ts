@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { AnyChannel } from 'discord.js';
 
-export class ChannelTypeSubtag extends BaseSubtag {
+export class ChannelTypeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channeltype',

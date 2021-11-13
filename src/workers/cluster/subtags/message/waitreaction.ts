@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Statement, SubtagArgument } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-export class WaitReactionSubtag extends BaseSubtag {
+export class WaitReactionSubtag extends Subtag {
     public constructor() {
         super({
             name: 'waitreaction',
@@ -31,8 +31,8 @@ export class WaitReactionSubtag extends BaseSubtag {
                     exampleCode: '{waitreaction;12345678912345;stupid cat}',
                     exampleIn: '(reaction is added)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","🤔"]',
-                    returns: 'array',
-                    execute: (ctx, args) => this.awaitReaction(ctx, args[0].value, args[1].value, '', 'true', '60')
+                    returns: 'id[]',
+                    execute: (ctx, [messages, userIDs]) => this.awaitReaction(ctx, messages.value, userIDs.value, '', 'true', '60')
                 },
                 {
                     parameters: ['messages', 'userIDs', 'reactions', '~condition?:true'],
@@ -40,8 +40,8 @@ export class WaitReactionSubtag extends BaseSubtag {
                     exampleCode: '{waitreaction;12345678912345;{userid;stupid cat};["🤔", "👀"];{bool;{reaction};==;👀}}',
                     exampleIn: '(🤔 was reacted)\n(👀 was reacted)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","👀"]',
-                    returns: 'array',
-                    execute: (ctx, args) => this.awaitReaction(ctx, args[0].value, args[1].value, args[2].value, args[3], '60')
+                    returns: 'string[]',
+                    execute: (ctx, [messages, userIDs, reactions, condition]) => this.awaitReaction(ctx, messages.value, userIDs.value, reactions.value, condition, '60')
                 },
                 {
                     parameters: ['messages', 'userIDs', 'reactions', '~condition:true', 'timeout:60'],
@@ -49,8 +49,8 @@ export class WaitReactionSubtag extends BaseSubtag {
                     exampleCode: '{waitreaction;12345678912345;["{userid;stupid cat}","{userid;titansmasher}"];["🤔", "👀"];;120}',
                     exampleIn: '(some random user reacted with 🤔)\n(titansmasher reacted with 🤔)',
                     exampleOut: '["111111111111111","12345678912345","135556895086870528","🤔"]',
-                    returns: 'array',
-                    execute: (ctx, args) => this.awaitReaction(ctx, args[0].value, args[1].value, args[2].value, args[3], args[4].value)
+                    returns: 'string[]',
+                    execute: (ctx, [messages, userIDs, reactions, condition, timeout]) => this.awaitReaction(ctx, messages.value, userIDs.value, reactions.value, condition, timeout.value)
                 }
             ]
         });

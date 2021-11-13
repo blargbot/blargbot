@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class DumpSubtag extends BaseSubtag {
+export class DumpSubtag extends Subtag {
     public constructor() {
         super({
             name: 'dump',

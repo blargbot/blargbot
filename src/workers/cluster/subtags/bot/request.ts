@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -26,7 +26,7 @@ interface ResponseObject {
     url: string;
 }
 
-export class RequestSubtag extends BaseSubtag {
+export class RequestSubtag extends Subtag {
     public constructor() {
         super({
             name: 'request',
@@ -172,7 +172,7 @@ export class RequestSubtag extends BaseSubtag {
                 if (typeof response.body === 'string')
                     response.body = JSON.parse(response.body);
             } catch (e: unknown) {
-                //noop
+                //no-op
             }
             const stringified = JSON.stringify(response);
             //console.log(stringified);

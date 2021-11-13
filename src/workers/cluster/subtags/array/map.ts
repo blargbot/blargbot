@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class MapSubtag extends BaseSubtag {
+export class MapSubtag extends Subtag {
     public constructor() {
         super({
             name: 'map',

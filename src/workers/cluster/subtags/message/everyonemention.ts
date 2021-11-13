@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class EveryoneMentionSubtag extends BaseSubtag {
+export class EveryoneMentionSubtag extends Subtag {
     public constructor() {
         super({
             name: 'everyonemention',

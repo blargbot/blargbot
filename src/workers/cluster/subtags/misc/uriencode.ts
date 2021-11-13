@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class UriEncodeSubtag extends BaseSubtag {
+export class UriEncodeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'uriencode',
@@ -12,7 +12,8 @@ export class UriEncodeSubtag extends BaseSubtag {
                     description: 'Encodes `text` in URI format. Useful for constructing links.',
                     exampleCode: '{uriencode;Hello world!}',
                     exampleOut: 'Hello%20world!',
-                    execute: (_, [{ value: text }]) => encodeURIComponent(text)
+                    returns: 'string',
+                    execute: (_, [text]) => encodeURIComponent(text.value)
                 }
             ]
         });

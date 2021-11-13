@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class PushSubtag extends BaseSubtag {
+export class PushSubtag extends Subtag {
     public constructor() {
         super({
             name: 'push',

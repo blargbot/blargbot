@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class JoinSubtag extends BaseSubtag {
+export class JoinSubtag extends Subtag {
     public constructor() {
         super({
             name: 'join',

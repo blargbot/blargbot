@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class TrimSubtag extends BaseSubtag {
+export class TrimSubtag extends Subtag {
     public constructor() {
         super({
             name: 'trim',
@@ -12,7 +12,8 @@ export class TrimSubtag extends BaseSubtag {
                     description: 'Trims whitespace and newlines before and after `text`.',
                     exampleCode: 'Hello {trim;{space;10}beautiful{space;10}} World',
                     exampleOut: 'Hello beautiful World',
-                    execute: (_, [{ value: text }]) => text.trim()
+                    returns: 'string',
+                    execute: (_, [text]) => text.value.trim()
                 }
             ]
         });

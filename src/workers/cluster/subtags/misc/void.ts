@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class VoidSubtag extends BaseSubtag {
+export class VoidSubtag extends Subtag {
     public constructor() {
         super({
             name: 'void',
@@ -13,7 +13,8 @@ export class VoidSubtag extends BaseSubtag {
                     description: 'Executes `code` but does not return the output from it. Useful for silent functionality',
                     exampleCode: '{void;This won\'t be output!}',
                     exampleOut: '',
-                    execute: () => ''
+                    returns: 'nothing',
+                    execute: () => { /*no-op*/ }
                 }
             ]
         });

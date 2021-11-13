@@ -29,7 +29,7 @@ export class DisabledInRule implements RuntimeLimitRule {
     }
 
     public load(): void {
-        // NOOP
+        // no-op
     }
 }
 

@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 
-export class RoleSetPosSubtag extends BaseSubtag {
+export class RoleSetPosSubtag extends Subtag {
     public constructor() {
         super({
             name: 'rolesetpos',

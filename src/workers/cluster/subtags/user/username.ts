@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class UserNameSubtag extends BaseSubtag {
+export class UserNameSubtag extends Subtag {
     public constructor() {
         super({
             name: 'username',

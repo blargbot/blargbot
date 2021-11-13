@@ -64,7 +64,7 @@ export function get(input: JObject | JArray, path: string | string[]): JToken {
             try {
                 obj = JSON.parse(obj);
             } catch (err: unknown) {
-                // NOOP
+                // no-op
             }
         }
 
@@ -110,7 +110,7 @@ export function set(input: JObject | JArray, path: string | string[], value: JTo
                     try {
                         _c = JSON.parse(_c);
                     } catch (err: unknown) {
-                        // NOOP
+                        // no-op
                     }
                 }
                 // set to an object if it's a primative

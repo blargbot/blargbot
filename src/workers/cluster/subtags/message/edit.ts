@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedFieldData, MessageEmbed, MessageEmbedOptions } from 'discord.js';
 
-export class EditSubtag extends BaseSubtag {
+export class EditSubtag extends Subtag {
     public constructor() {
         super({
             name: 'edit',
@@ -80,7 +80,7 @@ export class EditSubtag extends BaseSubtag {
                     embeds
                 });
             } catch (err: unknown) {
-                // NOOP
+                // no-op
             }
         } catch (err: unknown) {
             throw new BBTagRuntimeError('Unable to get message');

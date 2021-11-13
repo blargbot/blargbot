@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
+import { BBTagContext, Subtag, tagVariableScopes } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class SetSubtag extends BaseSubtag {
+export class SetSubtag extends Subtag {
     public constructor() {
         super({
             name: 'set',
