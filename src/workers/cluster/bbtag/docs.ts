@@ -4,8 +4,8 @@ import { bbtagUtil, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluste
 import { humanize } from '@core/utils';
 import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
 
-import { Subtag } from './Subtag';
 import { limits } from './limits';
+import { Subtag } from './Subtag';
 
 interface CategoryChoice {
     label: string;

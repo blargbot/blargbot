@@ -1,7 +1,7 @@
 import { createSafeRegExp } from '@cluster/utils';
 
-import { Subtag } from './Subtag';
 import { BBTagRuntimeError } from './errors';
+import { Subtag } from './Subtag';
 
 export abstract class RegexSubtag extends Subtag {
 
