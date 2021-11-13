@@ -11,11 +11,11 @@ import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
 import { ScopeManager } from '.';
-import { Subtag } from './Subtag';
 import { BBTagEngine } from './BBTagEngine';
 import { VariableCache } from './Caching';
 import { BBTagRuntimeError, UnknownSubtagError } from './errors';
 import { limits } from './limits';
+import { Subtag } from './Subtag';
 import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
 
@@ -154,7 +154,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public addError(error: BBTagRuntimeError, subtag?: SubtagCall): string {
         this.errors.push({ subtag: subtag, error });
-        return this.scopes.local.fallback ?? error.bberror;
+        return error.display ?? this.scopes.local.fallback ?? `\`${error.message}\``;
     }
 
     public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {
@@ -286,16 +286,16 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return await (this.state.outputMessage ??= this._sendOutput(text));
     }
 
-    public async getCached(key: `tag_${string}`, getIfNotSet: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
-    public async getCached(key: `cc_${string}`, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
-    public async getCached(key: string, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
-        key = key.split('_').slice(1).join('_');
-        if (key in this.state.cache)
-            return this.state.cache[key];
+    public async getCached(type: 'tag', key: string, getIfNotSet: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
+    public async getCached(type: 'cc', key: string, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
+    public async getCached(type: string, key: string, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
+        const cacheKey = `${type}_${key}`;
+        if (cacheKey in this.state.cache)
+            return this.state.cache[cacheKey];
         const fetchedValue = await getIfNotSet(key);
         if (fetchedValue !== undefined)
-            return this.state.cache[key] = fetchedValue;
-        return this.state.cache[key] = null;
+            return this.state.cache[cacheKey] = fetchedValue;
+        return this.state.cache[cacheKey] = null;
     }
 
     public static async deserialize(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContext> {
@@ -377,8 +377,9 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             limit: this.limit.serialize(),
             tempVars: this.variables.list
                 .filter(v => v.key.startsWith('~'))
-                .reduce<Record<string, JToken>>((p, v) => {
-                    p[v.key] = v.value;
+                .reduce<JObject>((p, v) => {
+                    if (v.value !== undefined)
+                        p[v.key] = v.value;
                     return p;
                 }, {})
         };

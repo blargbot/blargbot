@@ -13,6 +13,7 @@ export class ThrowSubtag extends Subtag {
                     description: 'Throws `error`.',
                     exampleCode: '{throw;Custom Error}',
                     exampleOut: '\u200B`Custom Error`\u200B',
+                    returns: 'error',
                     execute: (_, [error]) => {
                         throw new BBTagRuntimeError(error.value, 'A user defined error');
                     }

@@ -79,13 +79,14 @@ export class EmbedBuildSubag extends Subtag {
                     exampleOut: '{"title":"hello!","description":"I am an example embed","fields":[' +
                         '{"name":"Field 1","value":"This is the first field!"},' +
                         '{"name":"Field 2","value":"This is the next field and is inline!","inline":true}]}',
+                    returns: 'json',
                     execute: (_, args) => this.buildEmbed(args.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public buildEmbed(args: string[]): string {
+    public buildEmbed(args: string[]): JObject {
         const embed: EmbedBuildOptions = {};
 
         for (const entry of args) {
@@ -110,9 +111,9 @@ export class EmbedBuildSubag extends Subtag {
                     throw new BBTagRuntimeError('Field missing name', `Field at index ${i}`);
             }
         }
-        if (!guard.checkEmbedSize([<MessageEmbedOptions>embed])) //? Is this even how discord counts this?
+        if (!guard.checkEmbedSize([<MessageEmbedOptions>embed]))
             throw new BBTagRuntimeError('Embed too long', JSON.stringify(embed));
-        return JSON.stringify(embed);
+        return embed as JObject;
     }
 
     private setField(

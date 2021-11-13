@@ -14,7 +14,8 @@ export class ChannelCategoriesSubtag extends Subtag {
                     parameters: [],
                     exampleCode: 'This guild has {length;{categories}} categories.',
                     exampleOut: 'This guild has 7 categories.',
-                    execute: (ctx) => JSON.stringify(ctx.guild.channels.cache.filter(guard.isCategoryChannel).map(c => c.id))
+                    returns: 'id[]',
+                    execute: (ctx) => ctx.guild.channels.cache.filter(guard.isCategoryChannel).map(c => c.id)
                 }
             ]
         });

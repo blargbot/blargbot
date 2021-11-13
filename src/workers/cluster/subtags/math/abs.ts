@@ -1,6 +1,6 @@
 import { Subtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 
 export class AbsSubtag extends Subtag {
     public constructor() {
@@ -14,6 +14,7 @@ export class AbsSubtag extends Subtag {
                     description: 'Gets the absolute value of `number`',
                     exampleCode: '{abs;-535}',
                     exampleOut: '535',
+                    returns: 'number',
                     execute: (_, [value]) => this.abs(value.value)
                 },
                 {
@@ -21,13 +22,14 @@ export class AbsSubtag extends Subtag {
                     description: 'Gets the absolute value of each `numbers` and returns an array containing the results',
                     exampleCode: '{abs;-535;123;-42}',
                     exampleOut: '[535, 123, 42]',
+                    returns: 'number[]',
                     execute: (_, args) => this.absAll(args.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public absAll(values: string[]): string {
+    public absAll(values: string[]): number[] {
         const result = [];
         for (const value of values) {
             const parsed = parse.float(value, false);
@@ -35,13 +37,13 @@ export class AbsSubtag extends Subtag {
                 throw new NotANumberError(value);
             result.push(Math.abs(parsed));
         }
-        return bbtagUtil.tagArray.serialize(result);
+        return result;
     }
 
-    public abs(value: string): string {
+    public abs(value: string): number {
         const val = parse.float(value, false);
         if (val === undefined)
             throw new NotANumberError(value);
-        return Math.abs(val).toString();
+        return Math.abs(val);
     }
 }

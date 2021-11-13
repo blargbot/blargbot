@@ -12,6 +12,7 @@ export class GuildIdSubtag extends Subtag {
                     parameters: [],
                     exampleCode: 'The guild\'s id is {guildid}',
                     exampleOut: 'The guild\'s id is 1234567890123456',
+                    returns: 'id',
                     execute: (ctx) => ctx.guild.id
                 }
             ]

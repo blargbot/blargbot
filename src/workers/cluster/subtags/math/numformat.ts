@@ -13,6 +13,7 @@ export class NumFormatSubtag extends Subtag {
                     description: 'Rounds `number` to `roundTo` digits. `roundTo` can be left empty.',
                     exampleCode: '{numformat;123456.789;2}\n{numformat;123456.789;-3}\n{numformat;100.10000}',
                     exampleOut: '123456.79\n123000\n100.1',
+                    returns: 'string',
                     execute: (_, [numberStr, roundToStr]) => this.numFormat(numberStr.value, roundToStr.value, '.', '')
                 },
                 {
@@ -20,6 +21,7 @@ export class NumFormatSubtag extends Subtag {
                     description: 'Rounds `number` to `roundTo` digits. Uses `decimal` as the decimal separator and `thousands` for the thousands separator. To skip `roundTo` or `decimal` leave them empty.',
                     exampleCode: '{numformat;3.1415;4;,}\n{numformat;100000;;;.}',
                     exampleOut: '3,1415\n100.000',
+                    returns: 'string',
                     execute: (_, [numberStr, roundToStr, decimal, thousands]) => this.numFormat(numberStr.value, roundToStr.value, decimal.value, thousands.value)
                 }
             ]

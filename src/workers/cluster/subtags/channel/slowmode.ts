@@ -13,21 +13,15 @@ export class SlowmodeSubtag extends Subtag {
                     description: 'Removes slowmode for the current channel.',
                     exampleCode: '{slowmode}',
                     exampleOut: '(slowmode is now disabled)',
-                    execute: (context): string | void => {
-                        try {
-                            void context.channel.edit({
-                                rateLimitPerUser: 0
-                            }, context.scopes.local.reason ?? 'Initiated from BBTag by ' + humanize.fullName(context.user));
-                        } catch (err: unknown) {
-                            throw new BBTagRuntimeError('Missing required permissions');
-                        }
-                    }
+                    returns: 'nothing',
+                    execute: (ctx) => this.setSlowmode(ctx, ctx.channel.id, '0')
                 },
                 {
                     parameters: ['channel|time'],
                     description: 'Removes slowmode from `channel`. If `channel` cannot be resolved directly, it will enable slowmode for the current channel and set the cooldown to `time`',
                     exampleCode: '{slowmode;testing-grounds}\n{slowmode;10}',
                     exampleOut: '(disabled slowmode in testing-grounds)\n(set slow mode to 10 seconds)',
+                    returns: 'nothing',
                     execute: (ctx, args) => this.setSlowmode(ctx, args[0].value, '')
                 },
                 {
@@ -35,6 +29,7 @@ export class SlowmodeSubtag extends Subtag {
                     description: 'Enables slowmode in `channel` and set the cooldown to `time`. If `channel` cannot be resolved directly, it will remove slowmode in the current channel (unless `channel` is a valid number, then the slowmode cooldown will be set to `channel` in the current channel).', //TODO thank backwards compatibility
                     exampleCode: '{slowmode;testing-grounds;10}\n{slowmode;50;doesn\'t matter}',
                     exampleOut: '(set slowmode cooldown to 10 seconds in testing-grounds)\n(set slowmode to 50s in the current channel)',
+                    returns: 'nothing',
                     execute: (ctx, args) => this.setSlowmode(ctx, args[0].value, args[1].value)
                 }
             ]
@@ -45,7 +40,7 @@ export class SlowmodeSubtag extends Subtag {
         context: BBTagContext,
         channelStr: string,
         timeStr: string
-    ): Promise<string | void> {
+    ): Promise<void> {
         let time = parse.int(timeStr);
         let channel;
         const lookupChannel = await context.queryChannel(channelStr, { noLookup: true });//TODO yikes

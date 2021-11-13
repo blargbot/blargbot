@@ -35,9 +35,8 @@ export class UserCreateDatSubtag extends Subtag {
         const user = await context.queryUser(userStr, { noLookup: quiet });
 
         if (user === undefined) {
-            // We dont want this error to appear in the output
-            context.scopes.local.fallback = '';
-            throw new UserNotFoundError(userStr);
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return moment(user.createdAt).utcOffset(0).format(format);

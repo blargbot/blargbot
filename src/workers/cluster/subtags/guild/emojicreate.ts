@@ -21,7 +21,8 @@ export class EmojiCreateSubtag extends Subtag {
                         '`image` is either a link to an image, or a base64 encoded data url (`data:<content-type>;base64,<base64-data>`). You may need to use {semi} for the latter.' + 'Returns the new emojis\'s ID.',
                     exampleCode: '{emojicreate;fancy_emote;https://some.cool/image.png}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, args) => this.createEmoji(ctx, args[0].value, args[1].value, '')
+                    returns: 'id',
+                    execute: (ctx, [name, image]) => this.createEmoji(ctx, name.value, image.value, '')
                 },
                 {
                     parameters: ['name', 'image', 'roles'],
@@ -31,7 +32,8 @@ export class EmojiCreateSubtag extends Subtag {
                         'Returns the new emojis\'s ID.',
                     exampleCode: '{emojicreate;fancy_emote;https://some.cool/image.png;["Cool gang"]}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, args) => this.createEmoji(ctx, args[0].value, args[1].value, args[2].value)
+                    returns: 'id',
+                    execute: (ctx, [name, image, roles]) => this.createEmoji(ctx, name.value, image.value, roles.value)
                 }
             ]
         });
@@ -42,7 +44,7 @@ export class EmojiCreateSubtag extends Subtag {
         name: string,
         imageStr: string,
         rolesStr: string
-    ): Promise<string | void> {
+    ): Promise<string> {
         const permission = context.permissions;
 
         if (!permission.has('MANAGE_EMOJIS_AND_STICKERS')) {
@@ -64,6 +66,7 @@ export class EmojiCreateSubtag extends Subtag {
         } else if (!options.image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
+
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
         const roleArray = await bbtagUtil.tagArray.getArray(context, rolesStr);
         if (roleArray !== undefined) {
@@ -80,11 +83,11 @@ export class EmojiCreateSubtag extends Subtag {
             const emoji = await context.guild.emojis.create(options.image, options.name, { reason: fullReason, roles: options.roles });
             return emoji.id;
         } catch (err: unknown) {
-            context.logger.error(err);
             if (err instanceof Error) {
                 const parts = err.message.split('\n').map(m => m.trim());
                 throw new BBTagRuntimeError('Failed to create emoji: ' + (parts.length > 1 ? parts[1] : parts[0]));
             }
+            throw err;
         }
     }
 }

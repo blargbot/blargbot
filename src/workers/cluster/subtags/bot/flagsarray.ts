@@ -13,13 +13,14 @@ export class FlagsArraySubtag extends Subtag {
                     exampleCode: '{flagsarray}',
                     exampleIn: 'Hello -dc world',
                     exampleOut: '["_","d","c"]',
+                    returns: 'string[]',
                     execute: (ctx) => this.flagKeys(ctx)
                 }
             ]
         });
     }
 
-    public flagKeys(context: BBTagContext): string {
-        return JSON.stringify(Object.keys(context.flaggedInput));
+    public flagKeys(context: BBTagContext): string[] {
+        return Object.keys(context.flaggedInput);
     }
 }

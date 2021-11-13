@@ -1,6 +1,6 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtagUtil, SubtagType } from '@cluster/utils';
 
 export class PopSubtag extends Subtag {
     public constructor() {
@@ -13,13 +13,14 @@ export class PopSubtag extends Subtag {
                     description: 'Returns the last element in `array`. If provided a variable, this will remove the last element from `array`as well.',
                     exampleCode: '{pop;["this", "is", "an", "array"]}',
                     exampleOut: 'array',
+                    returns: 'json|nothing',
                     execute: (context, [array]) => this.pop(context, array.value)
                 }
             ]
         });
     }
 
-    public async pop(context: BBTagContext, arrayStr: string): Promise<string> {
+    public async pop(context: BBTagContext, arrayStr: string): Promise<JToken | undefined> {
         const { n: varName, v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
@@ -31,6 +32,6 @@ export class PopSubtag extends Subtag {
         if (varName !== undefined)
             await context.variables.set(varName, array);
 
-        return parse.string(result);
+        return result;
     }
 }

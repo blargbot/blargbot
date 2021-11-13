@@ -1,7 +1,6 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { Message } from 'discord.js';
 
 export class MessageSenderSubtag extends Subtag {
     public constructor() {
@@ -15,6 +14,7 @@ export class MessageSenderSubtag extends Subtag {
                     description: 'Returns the id of the author of the executing message.',
                     exampleCode: 'That was sent by "{sender}"',
                     exampleOut: 'That was sent by "1111111111111"',
+                    returns: 'id',
                     execute: (ctx) => this.getMessageSender(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
@@ -22,6 +22,7 @@ export class MessageSenderSubtag extends Subtag {
                     description: 'Returns the id of the author of `messageid` in the current channel.',
                     exampleCode: 'Message 1111111111111 was sent by {sender;1111111111111}',
                     exampleOut: 'Message 1111111111111 was sent by 2222222222222',
+                    returns: 'id',
                     execute: (ctx, args) => this.getMessageSender(ctx, ctx.channel.id, args[0].value, false)
                 },
                 {
@@ -29,6 +30,7 @@ export class MessageSenderSubtag extends Subtag {
                     description: 'Returns the id of the author of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
                     exampleCode: 'Message 1111111111111 in #support was sent by {sender;support;1111111111111}',
                     exampleOut: 'Message 1111111111111 in #support was sent by 2222222222222',
+                    returns: 'id',
                     execute: (ctx, args) => this.getMessageSender(ctx, args[0].value, args[1].value, args[2].value !== '')
                 }
             ]
@@ -44,14 +46,12 @@ export class MessageSenderSubtag extends Subtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
-            if (quiet)
-                return '';
-            throw new ChannelNotFoundError(channelStr);
+            throw new ChannelNotFoundError(channelStr)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        let message: Message | undefined;
         try {
-            message = await context.util.getMessage(channel, messageStr);
+            const message = await context.util.getMessage(channel, messageStr);
             if (message === undefined)
                 throw new MessageNotFoundError(channel, messageStr);
             return message.author.id;

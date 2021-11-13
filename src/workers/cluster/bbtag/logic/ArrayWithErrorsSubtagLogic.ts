@@ -1,7 +1,6 @@
 import { SubtagArgumentArray, SubtagCall, SubtagLogic } from '@cluster/types';
 
 import { BBTagContext } from '../BBTagContext';
-import { BBTagRuntimeError } from '../errors';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class ArrayWithErrorsSubtagLogic extends SubtagLogicWrapper {
@@ -20,7 +19,7 @@ export class ArrayWithErrorsSubtagLogic extends SubtagLogicWrapper {
         yield ']';
     }
 
-    protected formatError(error: BBTagRuntimeError, fallback: string | undefined): Iterable<string> {
-        return [fallback ?? JSON.stringify(error.bberror), ']'];
+    protected formatError(display: string): Iterable<string> {
+        return [JSON.stringify(display), ']'];
     }
 }

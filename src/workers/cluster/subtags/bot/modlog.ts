@@ -1,7 +1,6 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
-import { User } from 'discord.js';
 
 export class ModlogSubtag extends Subtag {
     public constructor() {
@@ -16,6 +15,7 @@ export class ModlogSubtag extends Subtag {
                         '`moderator` must be a valid user if provided.',
                     exampleCode: 'You did a bad! {modlog;Bad;{userid}',
                     exampleOut: 'You did a bad! (modlog entry)',
+                    returns: 'nothing',
                     execute: (ctx, args) => this.createModlog(ctx, args[0].value, args[1].value, args[2].value, '', '')
                 },
                 {
@@ -24,6 +24,7 @@ export class ModlogSubtag extends Subtag {
                         '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. .',
                     exampleCode: 'You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}',
                     exampleOut: 'You did a bad! (modlog entry with white embed colour and reason \'They did a bad!\'',
+                    returns: 'nothing',
                     execute: (ctx, args) => this.createModlog(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value)
                 }
             ]
@@ -37,16 +38,15 @@ export class ModlogSubtag extends Subtag {
         modStr: string,
         reason: string,
         colorStr: string
-    ): Promise<string | void> {
+    ): Promise<void> {
         const user = await context.queryUser(userStr);
         const color = colorStr !== '' ? parse.color(colorStr) : undefined;
-        let mod: User | undefined;
-
-        if (modStr !== '')
-            mod = await context.queryUser(modStr); //TODO no user found for this?
+        const mod = modStr === '' ? undefined : await context.queryUser(modStr);
+        //TODO no user found for this?
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
+
         await context.util.cluster.moderation.modLog.logCustom(context.guild, action, user, mod ?? context.discord.user, reason, color);
     }
 }

@@ -16,7 +16,7 @@ export class MapSubtag extends Subtag {
                         ' will be the new value of the element. This will return the new array, and will not modify the original.',
                     exampleCode: '{map;~item;["apples","oranges","pears"];{upper;{get;~item}}}',
                     exampleOut: '["APPLES","ORANGES","PEARS"]',
-                    returns: 'arrayWithErrors',
+                    returns: '(string|error)[]',
                     execute: (context, [varName, array, code]) => this.map(context, varName.value, array.value, code)
                 }
             ]

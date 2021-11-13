@@ -17,7 +17,8 @@ export class JsonSetSubtag extends Subtag {
                     description: 'Deletes the value at `path`. `input` can be a JSON object or array',
                     exampleCode: '{set;~json;{json;{"key" : "value"}}}\n{jset;~json;key}\n{get;~json}',
                     exampleOut: '{}',
-                    execute: async (ctx, args) => this.deleteValue(ctx, args[0].value, args[1].value)
+                    returns: 'json|nothing',
+                    execute: (ctx, [input, path]) => this.deleteValue(ctx, input.value, path.value)
                 },
                 {
                     parameters: ['input:{}', 'path', 'value', 'create?'],
@@ -26,7 +27,8 @@ export class JsonSetSubtag extends Subtag {
                         'If `create` is not empty, will create/convert any missing keys.',
                     exampleCode: '{jsonset;;path.to.key;value;create}',
                     exampleOut: '{"path":{"to":{"key":"value"}}}',
-                    execute: async (ctx, args) => this.setValue(ctx, args[0].value, args[1].value, args[2].value, args[3].value)
+                    returns: 'json|nothing',
+                    execute: (ctx, [input, path, value, create]) => this.setValue(ctx, input.value, path.value, value.value, create.value)
                 }
             ]
         });
@@ -36,12 +38,12 @@ export class JsonSetSubtag extends Subtag {
         context: BBTagContext,
         input: string,
         path: string
-    ): Promise<string | void> {
+    ): Promise<JToken | undefined> {
         let obj: JArray | JObject | ReturnObject;
         try {
             let varname: string | undefined;
             const arr = await bbtagUtil.tagArray.getArray(context, input);
-            if (arr !== undefined && Array.isArray(arr.v))
+            if (arr !== undefined)
                 obj = arr.v;
             else {
                 const parsedObject = await json.parse(context, input);
@@ -54,11 +56,13 @@ export class JsonSetSubtag extends Subtag {
                 await context.variables.set(arr.n, obj);
             } else if (varname !== undefined) {
                 await context.variables.set(varname, JSON.stringify(modifiedObj));
-            } else return JSON.stringify(modifiedObj);
+            } else
+                return modifiedObj;
+            return undefined;
         } catch (e: unknown) {
-            context.logger.error(e);
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);
+            throw e;
         }
     }
 
@@ -68,7 +72,7 @@ export class JsonSetSubtag extends Subtag {
         path: string,
         value: string,
         createStr: string
-    ): Promise<string | void> {
+    ): Promise<JToken | undefined> {
         const create = createStr !== '' ? true : false;
         let obj: JArray | JObject | ReturnObject;
         try {
@@ -87,10 +91,13 @@ export class JsonSetSubtag extends Subtag {
                 await context.variables.set(arr.n, obj);
             } else if (varname !== undefined) {
                 await context.variables.set(varname, JSON.stringify(modifiedObj));
-            } else return JSON.stringify(modifiedObj);
+            } else
+                return modifiedObj;
+            return undefined;
         } catch (e: unknown) {
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);
+            throw e;
         }
     }
 }

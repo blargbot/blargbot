@@ -52,16 +52,14 @@ export class UserSetRolesSubtag extends Subtag {
             noErrors: context.scopes.local.noLookupErrors
         });
         if (member === undefined) {
-            if (quiet)
-                return false;
-            throw new UserNotFoundError(userStr);
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
 
         const roleArr = await bbtagUtil.tagArray.getArray(context, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
-            if (quiet)
-                return false;
-            throw new NotAnArrayError(rolesStr);
+            throw new NotAnArrayError(rolesStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
 
         const parsedRoles: Role[] = [];
@@ -72,9 +70,8 @@ export class UserSetRolesSubtag extends Subtag {
                 noErrors: context.scopes.local.noLookupErrors
             });
             if (role === undefined) {
-                if (quiet)
-                    return false;
-                throw new RoleNotFoundError(userStr);
+                throw new RoleNotFoundError(userStr)
+                    .withDisplay(quiet ? 'false' : undefined);
             }
             parsedRoles.push(role);
         }

@@ -13,6 +13,7 @@ export class CommandNameSubtag extends Subtag {
                     exampleCode: 'This command is {commandname}',
                     exampleIn: 'b!cc test',
                     exampleOut: 'This command is test',
+                    returns: 'string',
                     execute: (ctx) => ctx.rootTagName
                 }
             ]

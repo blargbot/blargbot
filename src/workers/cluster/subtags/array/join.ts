@@ -13,6 +13,7 @@ export class JoinSubtag extends Subtag {
                     description: 'Joins the elements of `array` together with `text` as the separator.',
                     exampleCode: '{join;["this", "is", "an", "array"];!}',
                     exampleOut: 'this!is!an!array',
+                    returns: 'string',
                     execute: (context, [array, join]) => this.join(context, array.value, join.value)
                 }
             ]

@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class EmbedSubtag extends Subtag {
@@ -17,11 +17,15 @@ export class EmbedSubtag extends Subtag {
                         '[here](https://leovoel.github.io/embed-visualizer/)',
                     exampleCode: '{embed;{lb}"title":"Hello!"{rb}}',
                     exampleOut: '(an embed with "Hello!" as the title)',
-                    execute: (ctx, args) => {
-                        ctx.state.embeds = parse.embed(JSON.stringify(args.map(arg => arg.value)));
-                    }
+                    returns: 'nothing',
+                    execute: (ctx, embeds) => this.setEmbed(ctx, embeds.map(e => e.value))
                 }
             ]
         });
+    }
+
+    public setEmbed(context: BBTagContext, embedStr: string[]): void {
+        context.state.embeds = embedStr.flatMap(e => parse.embed(e) ?? []);
+
     }
 }

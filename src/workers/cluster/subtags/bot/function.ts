@@ -18,6 +18,7 @@ export class FunctionSubtag extends Subtag {
                         '\n\nPlease note that there is a recursion limit of 200 which is also shared by `{exec}`, `{execcc}` and `{inject}`.',
                     exampleCode: '{function;test;{paramsarray}} {func.test;1;2;3;4}',
                     exampleOut: '["1","2","3","4"]',
+                    returns: 'nothing',
                     execute: (ctx, args) => this.createFunction(ctx, args[0].value, args[1])
                 }
             ]
@@ -28,7 +29,7 @@ export class FunctionSubtag extends Subtag {
         context: BBTagContext,
         funcName: string,
         code: SubtagArgument
-    ): string | void {
+    ): void {
         let name = funcName.toLowerCase();
         if (name.startsWith('func.'))
             name = name.slice(5);

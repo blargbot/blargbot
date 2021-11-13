@@ -13,7 +13,8 @@ export class LangSubtag extends Subtag {
                     description: 'Specifies which `language` should be used when viewing the raw of this tag',
                     exampleCode: 'This will be displayed with js! {lang;js}.',
                     exampleOut: 'This will be displayed with js!.',
-                    execute: () => ''
+                    returns: 'nothing',
+                    execute: () => { /* no-op */ }
                 }
             ]
         });

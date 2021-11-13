@@ -35,9 +35,8 @@ export class IsStaffSubtag extends Subtag {
         const member = await context.queryMember(userStr, { noLookup: quiet });
 
         if (member === undefined) {
-            // We dont want this error to appear in the output
-            context.scopes.local.fallback = '';
-            throw new UserNotFoundError(userStr);
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return await context.util.isUserStaff(member);

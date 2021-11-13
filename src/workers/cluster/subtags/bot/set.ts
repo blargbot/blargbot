@@ -12,6 +12,7 @@ export class SetSubtag extends Subtag {
                     description: 'Sets the `name` variable to nothing.',
                     exampleCode: '{set;~var;something}\n{set;~var}\n{get;~var}',
                     exampleOut: '(returns nothing)',
+                    returns: 'nothing',
                     execute: async (ctx, [{ value: variableName }]) => await ctx.variables.set(variableName, undefined)
                 },
                 {
@@ -25,6 +26,7 @@ export class SetSubtag extends Subtag {
                     exampleCode:
                         '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
                     exampleOut: 'This is local var1\nThis is temporary var2',
+                    returns: 'nothing',
                     execute: async (ctx, [{ value: variableName }, { value }]) => await this.set(ctx, variableName, value)
                 },
                 {
@@ -36,6 +38,7 @@ export class SetSubtag extends Subtag {
                         'If the array itself needs to be returned instead of object, in for example `{jset;;array;{get;~array}}`, you can use `{slice;<arrayname>;0}`. In array subtags `{get} will work as intended.`',
                     exampleCode: '{set;var3;this;is;an;array}\n{get;var3}',
                     exampleOut: '{"v":["this","is","an","array"],"n":"var3"}',
+                    returns: 'nothing',
                     execute: async (ctx, args) => await this.setArray(ctx, args[0].value, args.slice(1).map((arg) => arg.value))
                 }
             ]

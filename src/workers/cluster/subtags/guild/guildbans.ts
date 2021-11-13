@@ -13,6 +13,7 @@ export class GuildBansSubtag extends Subtag {
                     parameters: [],
                     exampleCode: 'This guild has {length;{guildbans}} banned users.',
                     exampleOut: 'This guild has 123 banned users.',
+                    returns: 'id[]',
                     execute: (ctx) => this.getGuildBans(ctx)
                 }
             ]
@@ -21,9 +22,9 @@ export class GuildBansSubtag extends Subtag {
 
     public async getGuildBans(
         context: BBTagContext
-    ): Promise<string> {
+    ): Promise<string[]> {
         try {
-            return JSON.stringify((await context.guild.bans.fetch()).map(u => u.user.id));
+            return (await context.guild.bans.fetch()).map(u => u.user.id);
         } catch (err: unknown) {
             throw new BBTagRuntimeError('Missing required permissions');
         }

@@ -40,14 +40,12 @@ export class UserHasRoleSubtag extends Subtag {
         const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
 
         if (result.member === undefined) {
-            if (quiet)
-                return false;
-            throw new UserNotFoundError(userStr);
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
         if (result.roles.length === 0) {
-            if (quiet)
-                return false;
-            throw new RoleNotFoundError(userStr);
+            throw new RoleNotFoundError(userStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
 
         return result.hasRole.some(b => b);

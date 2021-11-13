@@ -16,6 +16,7 @@ export class ApplySubtag extends Subtag {
                         'If `args` is an array, it will get deconstructed to it\'s individual elements.',
                     exampleCode: '{apply;randint;[1,4]}',
                     exampleOut: '3',
+                    returns: 'string',
                     execute: (ctx, [subtagName, ...args], subtag) => this.defaultApply(ctx, subtagName.value, args.map(a => a.value), subtag)
                 }
             ]

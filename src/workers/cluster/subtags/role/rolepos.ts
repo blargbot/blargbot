@@ -30,9 +30,8 @@ export class RolePosSubtag extends Subtag {
         const role = await context.queryRole(roleId, { noLookup: quiet });
 
         if (role === undefined) {
-            // We dont want this error to appear in the output
-            context.scopes.local.fallback = '';
-            throw new RoleNotFoundError(roleId);
+            throw new RoleNotFoundError(roleId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return role.position;

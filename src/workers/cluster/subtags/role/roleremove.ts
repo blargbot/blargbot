@@ -44,9 +44,8 @@ export class RoleRemoveSubtag extends Subtag {
         const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
 
         if (result.member === undefined) {
-            if (quiet)
-                return false;
-            throw new UserNotFoundError(userStr);
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
 
         if (result.roles.length === 0)

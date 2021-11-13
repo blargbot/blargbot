@@ -12,6 +12,7 @@ export class GuildNameSubtag extends Subtag {
                     parameters: [],
                     exampleCode: 'This guild\'s name is {guildname}.',
                     exampleOut: 'This guild\'s name is TestGuild.',
+                    returns: 'string',
                     execute: (ctx) => ctx.guild.name
                 }
             ]

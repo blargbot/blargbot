@@ -13,15 +13,17 @@ export class FlagSubtag extends Subtag {
                     exampleCode: '{flag;a} {flag;_}',
                     exampleIn: 'Hello, -a world!',
                     exampleOut: 'world! Hello,',
-                    execute: (ctx, [{ value: flagName }]) => this.getFlag(ctx, flagName)
+                    returns: 'string|nothing',
+                    execute: (ctx, [flagName]) => this.getFlag(ctx, flagName.value)
                 }
             ]
         });
     }
 
-    public getFlag(context: BBTagContext, flagName: string): string {
-        if (guard.isLetter(flagName) || flagName === '_')
-            return context.flaggedInput[flagName]?.merge().value ?? '';
-        return '';
+    public getFlag(context: BBTagContext, flagName: string): string | undefined {
+        if (!guard.isLetter(flagName) && flagName !== '_')
+            return undefined;
+
+        return context.flaggedInput[flagName]?.merge().value;
     }
 }

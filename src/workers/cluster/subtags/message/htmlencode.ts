@@ -13,7 +13,8 @@ export class HtmlDecodeSubtag extends Subtag {
                     description: 'Encodes `text` with escaped html entities.',
                     exampleCode: '{htmlencode;<hello, world>}',
                     exampleOut: '&lt;hello, world&gt;',
-                    execute: (_, args) => encode(args.map(arg => arg.value).join(';'))
+                    returns: 'string',
+                    execute: (_, args) => encode(args.map(arg => arg.value).join(';')) // TODO: use subtag.source
                 }
             ]
         });

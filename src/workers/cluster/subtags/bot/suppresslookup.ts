@@ -13,16 +13,14 @@ export class SuppressLookupSubtag extends Subtag {
                     description: 'Sets whether error messages in the lookup system (query canceled, nothing found) should be suppressed. `value` must be a boolean, and defaults to `true`.',
                     exampleCode: '{suppresslookup}',
                     exampleOut: '',
+                    returns: 'nothing',
                     execute: (ctx, [value]) => this.suppress(ctx, value.value)
                 }
             ]
         });
     }
 
-    public suppress(
-        context: BBTagContext,
-        value: string
-    ): string | void {
+    public suppress(context: BBTagContext, value: string): void {
         let suppress: boolean | undefined = true;
         if (value !== '') {
             suppress = parse.boolean(value);

@@ -14,12 +14,12 @@ export class DebugSubtag extends Subtag {
                         'The line number is also included in the debug entry',
                     exampleCode: '{debug;current value;{get;~i}}',
                     exampleOut: '(in debug output)[10]current value 1',
+                    returns: 'nothing',
                     execute: (ctx, args, subtag) => {
                         ctx.debug.push({
                             subtag,
                             text: args.map(arg => arg.value).join(' ')
                         });
-                        return '';
                     }
                 }
             ]

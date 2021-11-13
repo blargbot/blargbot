@@ -37,9 +37,8 @@ export class UserIdSubtag extends Subtag {
         const user = await context.queryUser(userId, { noLookup: quiet });
 
         if (user === undefined) {
-            // We dont want this error to appear in the output
-            context.scopes.local.fallback = '';
-            throw new UserNotFoundError(userId);
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return user.id;

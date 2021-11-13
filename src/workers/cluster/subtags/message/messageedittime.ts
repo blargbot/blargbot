@@ -16,21 +16,14 @@ export class MessageEditTimeSubtag extends Subtag {
                     description: 'Returns the edit time of the executing message in unix milliseconds.',
                     exampleCode: 'The edit timestamp of your message is "{messageedittime}"',
                     exampleOut: 'The edit timestamp of your message is "1628782144703"',
-                    execute: async (context) => {
-                        try {
-                            const message = await context.util.getMessage(context.channel, context.message.id);
-                            if (message === undefined)
-                                throw new MessageNotFoundError(context.channel, context.message.id);
-                            return message.editedTimestamp !== null ? moment(message.editedTimestamp).format('x') : moment().format('x');
-                        } catch (e: unknown) {
-                            throw new MessageNotFoundError(context.channel, context.message.id);
-                        }
-                    }
+                    returns: 'string',
+                    execute: (ctx) => this.getMessageEditTime(ctx, ctx.channel.id, ctx.message.id, 'x')
                 },
                 {
                     parameters: ['format|messageid'],
                     description: 'If the first argument is a messageid, this will return the edit time of `messageid` in unix. ' +
                         'Else this will return the edit time of the executing message in `format`.',
+                    returns: 'string',
                     execute: (context, args) => {
                         if (/^\d{17,23}/.test(args[0].value))
                             return this.getMessageEditTime(context, context.channel.id, args[0].value, 'x');
@@ -40,6 +33,7 @@ export class MessageEditTimeSubtag extends Subtag {
                 {
                     parameters: ['channel|messageid', 'messageid|format'],
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
+                    returns: 'string',
                     execute: async (context, args) => {
                         const channel = await context.queryChannel(args[0].value, { noErrors: true });
                         if (channel === undefined)
@@ -50,6 +44,7 @@ export class MessageEditTimeSubtag extends Subtag {
                 {
                     parameters: ['channel', 'messageid', 'format'],
                     description: '{messagetime;<channel>;<messageid>;<format>}',
+                    returns: 'string',
                     execute: (context, args) => this.getMessageEditTime(context, args[0].value, args[1].value, args[2].value)
                 }
             ]

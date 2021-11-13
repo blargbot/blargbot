@@ -14,7 +14,7 @@ export class FilterSubtag extends Subtag {
                         '\n\n While inside the `code` parameter, none of the following subtags may be used: `' + overrides.filter.join(', ') + '`',
                     exampleCode: '{set;~array;apples;apple juice;grapefruit}\n{filter;~element;~array;{bool;{get;~element};startswith;apple}}',
                     exampleOut: '["apples","apple juice"]',
-                    returns: 'array',
+                    returns: 'json[]',
                     execute: (ctx, [variable, array, code]) => this.filter(ctx, variable.value, array.value, code)
                 }
             ]

@@ -16,48 +16,31 @@ export class GetSubtag extends Subtag {
                         '. For more information, use `b!t docs variable` or `b!cc docs variable`',
                     exampleCode: '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
                     exampleOut: 'This is local var1\nThis is temporary var2',
+                    returns: 'json|nothing',
                     execute: async (ctx, [{ value: variableName }]) => await this.get(ctx, variableName)
                 },
                 {
                     parameters: ['name', 'index'],
                     description: 'When variable `name` is an array this will return the element at index `index`.' +
                         ' If `index` is empty the entire array will be returned. If variable is not an array it will return the whole variable.',
+                    returns: 'json|nothing',
                     execute: async (ctx, [{ value: variableName }, { value: index }]) => await this.getArray(ctx, variableName, index)
                 }
             ]
         });
     }
 
-    public async get(context: BBTagContext, variableName: string): Promise<string> {
+    public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
         const arr = await bbtagUtil.tagArray.getArray(context, variableName);
         if (arr !== undefined && Array.isArray(arr.v))
             return JSON.stringify(arr);
-        const result = await context.variables.get(variableName);
-        switch (typeof result) {
-            case 'object':
-                return JSON.stringify(result);
-            case 'number':
-            case 'string':
-            case 'boolean':
-                return result.toString();
-            case 'undefined':
-                return '';
-        }
+        return await context.variables.get(variableName);
     }
 
-    public async getArray(context: BBTagContext, variableName: string, index: string | number): Promise<string> {
+    public async getArray(context: BBTagContext, variableName: string, index: string | number): Promise<JToken | undefined> {
         const result = await context.variables.get(variableName);
         if (!Array.isArray(result)) {
-            switch (typeof result) {
-                case 'object':
-                    return JSON.stringify(result);
-                case 'number':
-                case 'string':
-                case 'boolean':
-                    return result.toString();
-                case 'undefined':
-                    return '';
-            }
+            return result;
         }
 
         if (index === '')
@@ -67,19 +50,9 @@ export class GetSubtag extends Subtag {
         if (isNaN(index))
             throw new NotANumberError(index);
 
-        if (result[index] === undefined)
+        if (index < 0 || index >= result.length)
             throw new BBTagRuntimeError('Index out of range');
 
-        const itemAtIndex = result[index];
-        switch (typeof itemAtIndex) {
-            case 'object':
-                return JSON.stringify(itemAtIndex);
-            case 'number':
-            case 'string':
-            case 'boolean':
-                return itemAtIndex.toString();
-            case 'undefined':
-                return '';
-        }
+        return result[index];
     }
 }

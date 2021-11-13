@@ -12,8 +12,9 @@ export class InjectSubtag extends Subtag {
                     description: 'Executes any arbitrary BBTag that is within `code` and returns the result. Useful for making dynamic code, or as a testing tool (`{inject;{args}}`)',
                     exampleCode: 'Random Number: {inject;{lb}randint{semi}1{semi}4{rb}}',
                     exampleOut: 'Random Number: 3',
-                    execute: async (context, [{ value: code }]) => {
-                        const result = await context.engine.execute(code, context);
+                    returns: 'string',
+                    execute: async (context, [code]) => {
+                        const result = await context.engine.execute(code.value, context);
                         return result.content;
                     }
                 }

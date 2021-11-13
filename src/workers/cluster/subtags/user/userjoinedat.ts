@@ -40,9 +40,8 @@ export class UserJoinedAtSubtag extends Subtag {
         const member = await context.queryMember(userId, { noLookup: quiet });
 
         if (member === undefined) {
-            // We dont want this error to appear in the output
-            context.scopes.local.fallback = '';
-            throw new UserNotFoundError(userId);
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return moment(member.joinedAt).utcOffset(0).format(format);

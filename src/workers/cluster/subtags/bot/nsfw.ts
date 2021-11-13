@@ -13,7 +13,8 @@ export class NsfwSubtag extends Subtag {
                         '`message` is the error to show',
                     exampleCode: 'This command is not safe! {nsfw}',
                     exampleOut: 'This command is not safe!',
-                    execute: (context, [{ value: text }]) => context.state.nsfw = text
+                    returns: 'nothing',
+                    execute: (context, [{ value: text }]) => { context.state.nsfw = text; }
                 }
             ]
         });

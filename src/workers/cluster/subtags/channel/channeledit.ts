@@ -26,6 +26,7 @@ export class ChannelEditSubtag extends Subtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}',
                     exampleOut: '11111111111111111',
+                    returns: 'id',
                     execute: (ctx, args) => this.channelEdit(ctx, [...args.map(arg => arg.value), '{}'])
                 }
             ]

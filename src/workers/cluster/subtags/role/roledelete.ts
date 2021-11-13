@@ -32,9 +32,8 @@ export class RoleDeleteSubtag extends Subtag {
         });
 
         if (role === undefined) {
-            // We dont want this error to appear in the output
-            context.scopes.local.fallback = '';
-            throw new RoleNotFoundError(roleStr);
+            throw new RoleNotFoundError(roleStr)
+                .withDisplay(quiet ? '' : undefined);
         }
 
         if (role.position >= topRole)

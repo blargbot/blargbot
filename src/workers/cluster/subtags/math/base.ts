@@ -15,6 +15,7 @@ export class BaseNumberSubtag extends Subtag {
                     description: 'Converts `integer` from a base `origin` number into a base `radix` number. `radix` and `origin` must be between 2 and 36.',
                     exampleCode: '{base;FF;16;10}',
                     exampleOut: '255',
+                    returns: 'string',
                     execute: (ctx, [integer, origin, radix]) => this.toBase(ctx, integer.value, origin.value, radix.value)
                 }
             ]

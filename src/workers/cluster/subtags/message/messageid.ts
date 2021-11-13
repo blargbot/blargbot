@@ -12,6 +12,7 @@ export class MessageIdSubtag extends Subtag {
                     parameters: [],
                     exampleCode: 'The message id was {messageid}',
                     exampleOut: 'The message id was 111111111111111111',
+                    returns: 'id',
                     execute: (ctx) => ctx.message.id
                 }
             ]

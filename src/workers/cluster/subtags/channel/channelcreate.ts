@@ -15,6 +15,7 @@ export class ChannelCreateSubtag extends Subtag {
                     description: 'Creates a channel of type `type`',
                     exampleCode: '{channelcreate;super-voice-channel;voice}',
                     exampleOut: '11111111111111111',
+                    returns: 'id',
                     execute: (ctx, [name, type]) => this.channelCreate(ctx, name.value, type.value, '{}')
                 },
                 {
@@ -31,6 +32,7 @@ export class ChannelCreateSubtag extends Subtag {
                         'Returns the new channel\'s ID.',
                     exampleCode: '{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}',
                     exampleOut: '22222222222222222',
+                    returns: 'id',
                     execute: (ctx, [name, type, options]) => this.channelCreate(ctx, name.value, type.value, options.value)
                 }
             ]

@@ -14,6 +14,7 @@ export class ChannelNameSubtag extends Subtag {
                     description: 'Returns the name of the current channel.',
                     exampleCode: 'This channel\'s name is {channelname}',
                     exampleOut: 'This channel\'s name is test-channel',
+                    returns: 'string',
                     execute: (ctx) => ctx.channel.name
                 },
                 {
@@ -21,6 +22,7 @@ export class ChannelNameSubtag extends Subtag {
                     description: 'Returns the name of the given `channel`. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: '{channelname;111111111111111}',
                     exampleOut: 'cooler-test-channel',
+                    returns: 'string',
                     execute: (ctx, [channel, quiet]) => this.getChannelName(ctx, channel.value, quiet.value !== '')
                 }
             ]
@@ -35,9 +37,8 @@ export class ChannelNameSubtag extends Subtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
-            if (quiet)
-                return '';
-            throw new ChannelNotFoundError(channelStr);
+            throw new ChannelNotFoundError(channelStr)
+                .withDisplay(quiet ? '' : undefined);
         }
         return channel.name;
     }

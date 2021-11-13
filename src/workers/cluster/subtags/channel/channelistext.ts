@@ -15,13 +15,15 @@ export class ChannelIsText extends Subtag {
                     description: 'Checks if the current channel is a text channel.',
                     exampleCode: '{if;{istext};Yeah you can write stuff here;How did you even call the command?}',
                     exampleOut: 'Yeah you can write stuff here',
-                    execute: (ctx) => guard.isTextableChannel(ctx.channel).toString()
+                    returns: 'boolean',
+                    execute: (ctx) => guard.isTextableChannel(ctx.channel)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
                     description: 'Checks if `channel` is a text channel. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{istext;feature discussions}',
                     exampleOut: 'true',
+                    returns: 'boolean',
                     execute: (ctx, [channel, quiet]) => this.isTextChannel(ctx, channel.value, quiet.value !== '')
                 }
             ]
@@ -32,14 +34,13 @@ export class ChannelIsText extends Subtag {
         context: BBTagContext,
         channelStr: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
-            if (quiet)
-                return '';
-            throw new ChannelNotFoundError(channelStr);
+            throw new ChannelNotFoundError(channelStr)
+                .withDisplay(quiet ? '' : undefined);
         }
-        return guard.isTextableChannel(channel).toString();
+        return guard.isTextableChannel(channel);
     }
 }

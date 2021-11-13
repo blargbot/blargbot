@@ -67,8 +67,8 @@ export class BanSubtag extends Subtag {
             throw new UserNotFoundError(userStr);
         const daysToDelete = parse.int(daysToDeleteStr, false);
         if (daysToDelete === undefined) {
-            context.scopes.local.fallback = 'false';
-            throw new NotANumberError(daysToDelete);
+            throw new NotANumberError(daysToDelete)
+                .withDisplay('false');
         }
         const noPerms = nopermsStr !== '' ? true : false;
         let duration: Duration | undefined;

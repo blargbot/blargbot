@@ -14,6 +14,7 @@ export class ChannelIdSubtag extends Subtag {
                     description: 'Returns the ID of the current channel.',
                     exampleCode: '{channelid}',
                     exampleOut: '111111111111111',
+                    returns: 'id',
                     execute: (ctx) => ctx.channel.id
                 },
                 {
@@ -21,6 +22,7 @@ export class ChannelIdSubtag extends Subtag {
                     description: 'Returns the ID of the given channel. If it cannot be found returns `No channel found`, or nothing if `quiet` is `true`.',
                     exampleCode: '{channelid;cool channel}\n{channelid;some channel that doesn\'t exist;true}',
                     exampleOut: '111111111111111\n(nothing is returned here)',
+                    returns: 'id',
                     execute: (ctx, [channel, quiet]) => this.getChannelId(ctx, channel.value, quiet.value !== '')
 
                 }
@@ -36,9 +38,8 @@ export class ChannelIdSubtag extends Subtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
-            if (quiet)
-                return '';
-            throw new ChannelNotFoundError(channelStr);
+            throw new ChannelNotFoundError(channelStr)
+                .withDisplay(quiet ? '' : undefined);
         }
         return channel.id;
     }

@@ -38,9 +38,8 @@ export class UserAvatarSubtag extends Subtag {
         const member = await context.queryMember(userId, { noLookup: quiet });
 
         if (member === undefined) {
-            // We dont want this error to appear in the output
-            context.scopes.local.fallback = '';
-            throw new UserNotFoundError(userId);
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
         return member.displayAvatarURL({ dynamic: true, format: 'png', size: 512 });

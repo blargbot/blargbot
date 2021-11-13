@@ -12,6 +12,7 @@ export class MaxSubtag extends Subtag {
                     description: 'Returns the largest entry out of `numbers`. If an array is provided, it will be expanded to its individual values.',
                     exampleCode: '{max;50;2;65}',
                     exampleOut: '65',
+                    returns: 'number',
                     execute: (_, args) => this.max(args.map(arg => arg.value))
                 }
             ]
@@ -20,13 +21,13 @@ export class MaxSubtag extends Subtag {
 
     public max(
         args: string[]
-    ): string {
+    ): number {
         const flattenedArgs = bbtagUtil.tagArray.flattenArray(args);
         const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
 
         if (parsedArgs.filter(isNaN).length > 0)
-            return 'NaN';
+            return NaN;
 
-        return Math.max(...parsedArgs).toString();
+        return Math.max(...parsedArgs);
     }
 }

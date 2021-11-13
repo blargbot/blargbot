@@ -9,9 +9,9 @@ import { Client as Discord } from 'discord.js';
 import moment from 'moment';
 import { inspect } from 'util';
 
-import { Subtag } from './Subtag';
 import { BBTagContext } from './BBTagContext';
 import { BBTagRuntimeError, SubtagStackOverflowError, TagCooldownError } from './errors';
+import { Subtag } from './Subtag';
 import { TagCooldownManager } from './TagCooldownManager';
 
 export class BBTagEngine {
@@ -80,8 +80,9 @@ export class BBTagEngine {
             },
             database: {
                 committed: context.dbObjectsCommitted,
-                values: context.variables.list.reduce<Record<string, JToken>>((v, c) => {
-                    v[c.key] = c.value;
+                values: context.variables.list.reduce<JObject>((v, c) => {
+                    if (c.value !== undefined)
+                        v[c.key] = c.value;
                     return v;
                 }, {})
             }

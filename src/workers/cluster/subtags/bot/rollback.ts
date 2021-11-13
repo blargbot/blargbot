@@ -18,6 +18,7 @@ export class RollbackSubtag extends Subtag {
                     description: 'Rollback all variables',
                     exampleCode: '{set;var;Hello!}\n{commit}\n{set;var;GoodBye!}\n{rollback}\n{get;var}',
                     exampleOut: 'Hello!',
+                    returns: 'nothing',
                     execute: (ctx) => this.rollback(ctx, [])
                 },
                 {
@@ -25,6 +26,7 @@ export class RollbackSubtag extends Subtag {
                     description: 'Rollback provided `variables`',
                     exampleCode: '{set;var;Hello!}\n{commit;varr}\n{set;var;GoodBye!}\n{rollback;var}\n{get;var}',
                     exampleOut: 'Hello!',
+                    returns: 'nothing',
                     execute: async (ctx, args) => this.rollback(ctx, args.map((arg) => arg.value))
                 }
             ]
@@ -38,7 +40,7 @@ export class RollbackSubtag extends Subtag {
         const values = args.length === 0
             ? context.variables.list.map(entry => entry.key)
             : bbtagUtil.tagArray.flattenArray(args)
-                .map((value) => typeof value === 'object' ? JSON.stringify(value) : value?.toString() ?? '');
+                .map((value) => typeof value === 'object' ? JSON.stringify(value) : value.toString());
         for (const variable of values)
             await context.variables.reset(variable);
     }

@@ -19,4 +19,20 @@ export class MessageIdQueue {
         return this.#messageQueue[guildId]?.includes(messageId)
             ?? false;
     }
+
+    public remove(guildId: string, messageId: string): boolean {
+        const messageQueue = this.#messageQueue[guildId];
+        if (messageQueue === undefined)
+            return false;
+
+        let success = false;
+        for (let i = messageQueue.length - 1; i >= 0; i--) {
+            if (messageQueue[i] === messageId) {
+                messageQueue.splice(i, 1);
+                success = true;
+            }
+        }
+        return success;
+
+    }
 }

@@ -12,6 +12,7 @@ export class FunctionInvokeSubtag extends Subtag {
             definition: [
                 {
                     parameters: ['args*'],
+                    returns: 'string',
                     execute: (ctx, args) => this.invokeFunction(ctx, args.subtagName.slice(5), args.map(arg => arg.value))
                 }
             ]

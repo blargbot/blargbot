@@ -7,11 +7,11 @@ export const mapJToken: TypeMapping<JToken> = createMapping(value => {
     switch (typeof value) {
         case 'bigint':
         case 'symbol':
+        case 'undefined':
         case 'function': return result.failed;
         case 'boolean':
         case 'number':
         case 'object':
-        case 'string':
-        case 'undefined': return result.success(value);
+        case 'string': return result.success(value as JToken);
     }
 });

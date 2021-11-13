@@ -41,7 +41,8 @@ export class LockSubtag extends Subtag {
                         '\nMiddle' +
                         '\nEnd' +
                         '\nThis order is guaranteed always. Without a lock it isnt',
-                    execute: async (ctx, [{ value: mode }, { value: key }, code]) => await this.lock(ctx, mode, key, code)
+                    returns: 'string',
+                    execute: async (ctx, [mode, key, code]) => await this.lock(ctx, mode.value, key.value, code)
                 }
             ]
         });

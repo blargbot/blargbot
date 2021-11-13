@@ -11,7 +11,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
     ) {
     }
 
-    public async upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void> {
+    public async upsert(values: Record<string, JToken | undefined>, type: SubtagVariableType, scope: string): Promise<void> {
         const trans = await this.postgres.transaction();
         for (const [key, value] of Object.entries(values)) {
             const query = {
@@ -31,7 +31,7 @@ export class PostgresDbTagVariablesTable implements TagVariablesTable {
         return await trans.commit();
     }
 
-    public async get(name: string, type: SubtagVariableType, scope: string): Promise<JToken> {
+    public async get(name: string, type: SubtagVariableType, scope: string): Promise<JToken | undefined> {
         const model = await this.postgres.bbtagVariables.findOne({
             where: {
                 name: name.substring(0, 255),

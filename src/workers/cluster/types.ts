@@ -169,7 +169,7 @@ export interface SerializedBBTagContext {
     author: string;
     authorizer: string;
     tagVars: boolean;
-    tempVars: Record<string, JToken>;
+    tempVars: JObject;
     limit: SerializedRuntimeLimit;
 }
 
@@ -274,7 +274,7 @@ export interface ExecutionResult {
     };
     database: {
         committed: number;
-        values: Record<string, JToken>;
+        values: JObject;
     };
 }
 export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
@@ -354,12 +354,15 @@ export type SubtagReturnTypeMap = {
     'boolean|number': boolean | number | bigint;
     'boolean[]': Iterated<boolean>;
     'string': string;
+    'string|nothing': string | undefined;
     'string[]': Iterated<string>;
+    '(string|error)[]': Iterated<string>;
     'id': string;
     'id[]': Iterated<string>;
     'json': JToken;
+    'json|nothing': JToken | undefined;
     'json[]': Iterated<JToken>;
-    '(json|error)[]': Iterated<JToken>;
+    'json[]|nothing': Iterated<JToken> | undefined;
     'nothing': void;
     'error': never;
     'loop': Iterated<string>;

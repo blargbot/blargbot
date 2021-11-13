@@ -4,12 +4,13 @@ import { BBTagContext } from '../BBTagContext';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class StringSubtagLogic extends SubtagLogicWrapper {
-    public constructor(public readonly logic: SubtagLogic<Awaitable<string>>) {
+    public constructor(public readonly logic: SubtagLogic<Awaitable<string | undefined>>) {
         super();
     }
 
-    protected async getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Promise<[string]> {
-        return [await this.logic.execute(context, args, subtag)];
+    protected async getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Promise<[string] | []> {
+        const value = await this.logic.execute(context, args, subtag);
+        return value === undefined ? [] : [value];
     }
 
     public static withConversion<T>(convert: (value: T) => string): new (logic: SubtagLogic<Awaitable<T>>) => SubtagLogicWrapper {
