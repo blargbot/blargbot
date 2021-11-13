@@ -2,17 +2,23 @@ import { mapping } from '@cluster/utils';
 import { MalformedEmbed, TypeMappingImpl } from '@core/types';
 import { ColorResolvable, Constants, MessageEmbedOptions } from 'discord.js';
 
-export function parseEmbed(embedText: string): MessageEmbedOptions[] | MalformedEmbed[] | undefined {
-    if (embedText.trim().length === 0)
+export function parseEmbed(embedText: undefined, allowMalformed?: true): undefined;
+export function parseEmbed(embedText: string | undefined, allowMalformed?: true): Array<MessageEmbedOptions | MalformedEmbed> | undefined;
+export function parseEmbed(embedText: string | undefined, allowMalformed: false): MessageEmbedOptions[] | undefined;
+export function parseEmbed(embedText: string | undefined, allowMalformed = true): Array<MessageEmbedOptions | MalformedEmbed> | undefined {
+    if (embedText === undefined || embedText.trim().length === 0)
         return undefined;
 
     const embeds = mapEmbeds(embedText);
     if (!embeds.valid)
         return undefined;
 
-    if (Array.isArray(embeds.value))
-        return embeds.value;
-    return [embeds.value];
+    const results = Array.isArray(embeds.value) ? embeds.value : [embeds.value];
+    if (!allowMalformed && results.some(r => 'malformed' in r))
+        return undefined;
+
+    return results;
+
 }
 
 const mapEmbedCore = mapping.object<MessageEmbedOptions>({

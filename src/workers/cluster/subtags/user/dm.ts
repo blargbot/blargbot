@@ -1,6 +1,6 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 
 const dmCache: DMCache = {};
 
@@ -34,9 +34,9 @@ export class DMSubtag extends Subtag {
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
-        const messageAsEmbed = discordUtil.parseEmbed(messageStr, false);
-        const embed = messageAsEmbed ?? discordUtil.parseEmbed(embedStr);
-        const content = messageAsEmbed === undefined ? messageStr : undefined;
+        const messageAsEmbeds = parse.embed(messageStr, false);
+        const embeds = messageAsEmbeds ?? parse.embed(embedStr);
+        const content = messageAsEmbeds === undefined ? messageStr : undefined;
 
         try {
             const dmChannel = member.user.dmChannel ?? await member.createDM();
@@ -55,7 +55,7 @@ export class DMSubtag extends Subtag {
             }
             await context.util.send(dmChannel.id, {
                 content,
-                embeds: embed !== undefined ? [embed] : undefined,
+                embeds,
                 nsfw: context.state.nsfw
             });
             cache.count++;
