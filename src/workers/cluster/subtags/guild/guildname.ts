@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class GuildNameSubtag extends Subtag {
@@ -13,9 +13,13 @@ export class GuildNameSubtag extends Subtag {
                     exampleCode: 'This guild\'s name is {guildname}.',
                     exampleOut: 'This guild\'s name is TestGuild.',
                     returns: 'string',
-                    execute: (ctx) => ctx.guild.name
+                    execute: (ctx) => this.getGuildName(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildName(context: BBTagContext): string {
+        return context.guild.name;
     }
 }

@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class NsfwSubtag extends Subtag {
@@ -14,9 +14,13 @@ export class NsfwSubtag extends Subtag {
                     exampleCode: 'This command is not safe! {nsfw}',
                     exampleOut: 'This command is not safe!',
                     returns: 'nothing',
-                    execute: (context, [text]) => { context.state.nsfw = text.value; }
+                    execute: (context, [text]) => this.setNsfw(context, text.value)
                 }
             ]
         });
+    }
+
+    public setNsfw(context: BBTagContext, message: string): void {
+        context.state.nsfw = message;
     }
 }

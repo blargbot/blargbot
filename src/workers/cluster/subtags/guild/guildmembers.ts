@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class GuildMembersSubtag extends Subtag {
@@ -13,9 +13,13 @@ export class GuildMembersSubtag extends Subtag {
                     exampleCode: 'This guild has {length;{guildmembers}} members.',
                     exampleOut: 'This guild has 123 members.',
                     returns: 'id[]',
-                    execute: (ctx) => ctx.guild.members.cache.map(m => m.user.id)
+                    execute: (ctx) => this.getGuildMembers(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildMembers(context: BBTagContext): string[] {
+        return context.guild.members.cache.map(m => m.user.id);
     }
 }

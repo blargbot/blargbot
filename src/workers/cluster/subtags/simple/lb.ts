@@ -14,9 +14,13 @@ export class LbSubtag extends Subtag {
                     exampleCode: 'This is a bracket! {lb}',
                     exampleOut: 'This is a bracket! {',
                     returns: 'string',
-                    execute: () => '{'
+                    execute: () => this.getOpenBrace()
                 }
             ]
         });
+    }
+
+    public getOpenBrace(): '{' {
+        return '{';
     }
 }

@@ -14,7 +14,7 @@ export class ChannelsSubtag extends Subtag {
                     exampleCode: 'This guild has {length;{channels}} channels.',
                     exampleOut: 'This guild has {length;{channels}} channels.',
                     returns: 'id[]',
-                    execute: (ctx) => ctx.guild.channels.cache.map(c => c.id)
+                    execute: (ctx) => this.getChannels(ctx)
                 },
                 {
                     parameters: ['category', 'quiet?'],
@@ -28,11 +28,11 @@ export class ChannelsSubtag extends Subtag {
         });
     }
 
-    public async getChannelsInCategory(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<string[]> {
+    public getChannels(context: BBTagContext): string[] {
+        return context.guild.channels.cache.map(c => c.id);
+    }
+
+    public async getChannelsInCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string[]> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {

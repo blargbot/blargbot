@@ -14,9 +14,13 @@ export class LangSubtag extends Subtag {
                     exampleCode: 'This will be displayed with js! {lang;js}.',
                     exampleOut: 'This will be displayed with js!.',
                     returns: 'nothing',
-                    execute: () => { /* NOOP */ }
+                    execute: () => this.godIHateThisSubtag()
                 }
             ]
         });
+    }
+
+    public godIHateThisSubtag(): void {
+        /* NOOP */
     }
 }

@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class GuildSizeSubtag extends Subtag {
@@ -14,9 +14,13 @@ export class GuildSizeSubtag extends Subtag {
                     exampleCode: 'This guild has {guildsize} members.',
                     exampleOut: 'This guild has 123 members.',
                     returns: 'number',
-                    execute: (ctx) => ctx.guild.memberCount
+                    execute: (ctx) => this.getGuildMemberCount(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildMemberCount(context: BBTagContext): number {
+        return context.guild.memberCount;
     }
 }

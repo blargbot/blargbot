@@ -14,9 +14,13 @@ export class HtmlDecodeSubtag extends Subtag {
                     exampleCode: '{htmldecode;&lt;hello, world&gt;}',
                     exampleOut: '<hello, world>',
                     returns: 'string',
-                    execute: (_, text) => decode(text.map(arg => arg.value).join(';'))
+                    execute: (_, text) => this.htmlDecode(text.map(arg => arg.value).join(';'))
                 }
             ]
         });
+    }
+
+    public htmlDecode(text: string): string {
+        return decode(text);
     }
 }

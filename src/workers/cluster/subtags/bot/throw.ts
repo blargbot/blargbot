@@ -14,11 +14,13 @@ export class ThrowSubtag extends Subtag {
                     exampleCode: '{throw;Custom Error}',
                     exampleOut: '\u200B`Custom Error`\u200B',
                     returns: 'error',
-                    execute: (_, [error]) => {
-                        throw new BBTagRuntimeError(error.value, 'A user defined error');
-                    }
+                    execute: (_, [error]) => this.throwError(error.value)
                 }
             ]
         });
+    }
+
+    public throwError(message: string): never {
+        throw new BBTagRuntimeError(message, 'A user defined error');
     }
 }

@@ -15,7 +15,7 @@ export class ChannelIsNsfw extends Subtag {
                     exampleCode: '{if;{isnsfw};Spooky nsfw stuff;fluffy bunnies}',
                     exampleOut: 'fluffy bunnies',
                     returns: 'boolean',
-                    execute: (ctx) => !guard.isThreadChannel(ctx.channel) && ctx.channel.nsfw
+                    execute: (ctx) => this.isNsfwChannel(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],

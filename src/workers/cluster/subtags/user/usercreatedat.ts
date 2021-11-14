@@ -15,7 +15,7 @@ export class UserCreateDatSubtag extends Subtag {
                     exampleCode: 'Your account was created on {usercreatedat}',
                     exampleOut: 'Your account was created on 2017-02-06T18:58:10+00:00',
                     returns: 'string',
-                    execute: (ctx, [format]) => moment(ctx.user.createdAt).utcOffset(0).format(format.value)
+                    execute: (ctx, [format]) => this.getUserCreatedAt(ctx, format.value, ctx.user.id, true)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],

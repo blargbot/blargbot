@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class ReasonSubtag extends Subtag {
@@ -13,11 +13,14 @@ export class ReasonSubtag extends Subtag {
                     exampleCode: '{reason;This will show up in the audit logs!}{roleadd;111111111111}',
                     exampleOut: '("This will show up in the audit logs" showed up)',
                     returns: 'nothing',
-                    execute: (ctx, [reason]) => {
-                        ctx.scopes.local.reason = reason.value;
-                    }
+                    execute: (ctx, [reason]) => this.setReason(ctx, reason.value)
                 }
             ]
         });
+    }
+
+    public setReason(context: BBTagContext, reason: string): void {
+        context.scopes.local.reason = reason;
+
     }
 }

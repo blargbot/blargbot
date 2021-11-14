@@ -13,9 +13,13 @@ export class RbSubtag extends Subtag {
                     exampleCode: 'This is a bracket! {rb}',
                     exampleOut: 'This is a bracket! }',
                     returns: 'string',
-                    execute: () => '}'
+                    execute: () => this.getCloseBrace()
                 }
             ]
         });
+    }
+
+    public getCloseBrace(): '}' {
+        return '}';
     }
 }

@@ -15,9 +15,13 @@ export class Md5Subtag extends Subtag {
                     exampleCode: '{md5;Woosh whap phew!}',
                     exampleOut: '71d97a11f770a34d7f8cf1f1d8749d85',
                     returns: 'string',
-                    execute: (_, [text]) => md5(text.value)
+                    execute: (_, [text]) => this.md5Hash(text.value)
                 }
             ]
         });
+    }
+
+    public md5Hash(value: string): string {
+        return md5(value);
     }
 }

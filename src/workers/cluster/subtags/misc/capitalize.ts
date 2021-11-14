@@ -13,7 +13,7 @@ export class CapitalizeSubtag extends Subtag {
                     exampleCode: '{capitalize;hello world!}\n{capitalize;hELLO world}',
                     exampleOut: 'Hello world!\nHELLO world',
                     returns: 'string',
-                    execute: (_, [text]) => text.value[0].toUpperCase() + text.value[0].substr(1)
+                    execute: (_, [text]) => this.capitalize(text.value, false)
                 },
                 {
                     parameters: ['text', 'lower'],
@@ -21,9 +21,14 @@ export class CapitalizeSubtag extends Subtag {
                     exampleCode: '{capitalize;hELLO WORLD;true}\n{capitalize;hello WORLD;anything goes here}\n{capitalize;foo BAR;}',
                     exampleOut: 'Hello world\nHello world\nFoo bar',
                     returns: 'string',
-                    execute: (_, [text]) => text.value[0].toUpperCase() + text.value.substr(1).toLowerCase()
+                    execute: (_, [text]) => this.capitalize(text.value, true)
                 }
             ]
         });
+    }
+
+    public capitalize(text: string, lowercase: boolean): string {
+        const rest = text.slice(1);
+        return text[0].toUpperCase() + (lowercase ? rest.toLowerCase() : rest);
     }
 }

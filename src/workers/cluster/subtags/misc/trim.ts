@@ -13,9 +13,13 @@ export class TrimSubtag extends Subtag {
                     exampleCode: 'Hello {trim;{space;10}beautiful{space;10}} World',
                     exampleOut: 'Hello beautiful World',
                     returns: 'string',
-                    execute: (_, [text]) => text.value.trim()
+                    execute: (_, [text]) => this.trim(text.value)
                 }
             ]
         });
+    }
+
+    public trim(text: string): string {
+        return text.trim();
     }
 }

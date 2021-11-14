@@ -13,9 +13,13 @@ export class SemiSubtag extends Subtag {
                     exampleCode: 'This is a semicolon! {semi}',
                     exampleOut: 'This is a semicolon! ;',
                     returns: 'string',
-                    execute: () => ';'
+                    execute: () => this.getSemiColon()
                 }
             ]
         });
+    }
+
+    public getSemiColon(): ';' {
+        return ';';
     }
 }

@@ -14,7 +14,7 @@ export class UserRolesSubtag extends Subtag {
                     exampleCode: 'Your roles are {userroles}!',
                     exampleOut: 'Your roles are ["1111111111111111","2222222222222222"]!',
                     returns: 'id[]',
-                    execute: (ctx) => ctx.member.roles.cache.map(r => r.id)
+                    execute: (ctx) => this.getUserRoles(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

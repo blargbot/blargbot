@@ -13,9 +13,13 @@ export class LowerSubtag extends Subtag {
                     exampleCode: '{lower;THIS WILL BECOME LOWERCASE}',
                     exampleOut: 'this will become lowercase',
                     returns: 'string',
-                    execute: (_, [text]) => text.value.toLowerCase()
+                    execute: (_, [text]) => this.lowercase(text.value)
                 }
             ]
         });
+    }
+
+    public lowercase(value: string): string {
+        return value.toLowerCase();
     }
 }

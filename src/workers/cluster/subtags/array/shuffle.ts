@@ -15,7 +15,7 @@ export class ShuffleSubtag extends Subtag {
                     exampleIn: 'one two three',
                     exampleOut: 'three one two',
                     returns: 'nothing',
-                    execute: (ctx) => shuffle(ctx.input)
+                    execute: (ctx) => this.shuffleInput(ctx)
                 },
                 {
                     parameters: ['array'],
@@ -27,6 +27,10 @@ export class ShuffleSubtag extends Subtag {
                 }
             ]
         });
+    }
+
+    public shuffleInput(context: BBTagContext): void {
+        shuffle(context.input);
     }
 
     public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {

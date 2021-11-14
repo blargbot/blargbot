@@ -15,7 +15,7 @@ export class UserGameSubtag extends Subtag {
                     exampleCode: 'You are playing {usergame}',
                     exampleOut: 'You are playing with bbtag',
                     returns: 'string',
-                    execute: (ctx) => ctx.member.presence?.activities[0]?.name ?? 'nothing'
+                    execute: (ctx) => this.getUserGame(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

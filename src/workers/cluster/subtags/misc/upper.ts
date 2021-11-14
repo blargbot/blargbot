@@ -13,9 +13,13 @@ export class UpperSubtag extends Subtag {
                     exampleCode: '{upper;this will become uppercase}',
                     exampleOut: 'THIS WILL BECOME UPPERCASE',
                     returns: 'string',
-                    execute: (_, [text]) => text.value.toUpperCase()
+                    execute: (_, [text]) => this.uppercase(text.value)
                 }
             ]
         });
+    }
+
+    public uppercase(text: string): string {
+        return text.toUpperCase();
     }
 }

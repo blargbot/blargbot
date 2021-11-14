@@ -16,7 +16,7 @@ export class ChannelIsVoice extends Subtag {
                     exampleCode: '{if;{isvoice};How did you even call the command?;Yeah you can write stuff here}',
                     exampleOut: 'Yeah you can write stuff here',
                     returns: 'boolean',
-                    execute: (ctx) => guard.isVoiceChannel(ctx.channel)
+                    execute: (ctx) => this.isVoiceChannel(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],

@@ -13,9 +13,13 @@ export class UriDecodeSubtag extends Subtag {
                     exampleCode: '{uridecode;Hello%20world}',
                     exampleOut: 'Hello world!',
                     returns: 'string',
-                    execute: (_, [text]) => decodeURIComponent(text.value)
+                    execute: (_, [text]) => this.decodeUri(text.value)
                 }
             ]
         });
+    }
+
+    public decodeUri(text: string): string {
+        return decodeURIComponent(text);
     }
 }

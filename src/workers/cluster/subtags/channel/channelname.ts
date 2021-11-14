@@ -15,7 +15,7 @@ export class ChannelNameSubtag extends Subtag {
                     exampleCode: 'This channel\'s name is {channelname}',
                     exampleOut: 'This channel\'s name is test-channel',
                     returns: 'string',
-                    execute: (ctx) => ctx.channel.name
+                    execute: (ctx) => this.getChannelName(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],

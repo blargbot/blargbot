@@ -13,9 +13,13 @@ export class ZwsSubtag extends Subtag {
                     exampleCode: '{zws}',
                     exampleOut: '\u200B',
                     returns: 'string',
-                    execute: () => '\u200B'
+                    execute: () => this.getZws()
                 }
             ]
         });
+    }
+
+    public getZws(): '\u200B' {
+        return '\u200B';
     }
 }

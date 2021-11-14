@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class ArgsarraySubtag extends Subtag {
@@ -14,9 +14,13 @@ export class ArgsarraySubtag extends Subtag {
                     exampleIn: 'Hello world!',
                     exampleOut: 'Your input was ["Hello","world!"]',
                     returns: 'string[]',
-                    execute: (ctx) => ctx.input
+                    execute: (ctx) => this.getInput(ctx)
                 }
             ]
         });
+    }
+
+    public getInput(context: BBTagContext): string[] {
+        return context.input;
     }
 }

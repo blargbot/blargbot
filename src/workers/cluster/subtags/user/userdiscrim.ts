@@ -15,7 +15,7 @@ export class UserDiscrimSubtag extends Subtag {
                     exampleCode: 'Your discrim is {userdiscrim}',
                     exampleOut: 'Your discrim is 1234',
                     returns: 'string',
-                    execute: (ctx) => ctx.user.discriminator
+                    execute: (ctx) => this.getUserDiscrim(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

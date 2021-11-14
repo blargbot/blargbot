@@ -16,7 +16,7 @@ export class ChannelIsText extends Subtag {
                     exampleCode: '{if;{istext};Yeah you can write stuff here;How did you even call the command?}',
                     exampleOut: 'Yeah you can write stuff here',
                     returns: 'boolean',
-                    execute: (ctx) => guard.isTextableChannel(ctx.channel)
+                    execute: (ctx) => this.isTextChannel(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],

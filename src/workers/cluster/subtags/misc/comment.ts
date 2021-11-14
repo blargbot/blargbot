@@ -14,9 +14,13 @@ export class CommentSubtag extends Subtag {
                     exampleCode: 'This is a sentence. {//;This is a comment.}',
                     exampleOut: 'This is a sentence.',
                     returns: 'nothing',
-                    execute: () => { /*NOOP*/ }
+                    execute: () => this.doNothing()
                 }
             ]
         });
+    }
+
+    public doNothing(): void {
+        /*NOOP*/
     }
 }

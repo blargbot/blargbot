@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class CommandNameSubtag extends Subtag {
@@ -14,9 +14,13 @@ export class CommandNameSubtag extends Subtag {
                     exampleIn: 'b!cc test',
                     exampleOut: 'This command is test',
                     returns: 'string',
-                    execute: (ctx) => ctx.rootTagName
+                    execute: (ctx) => this.getTagName(ctx)
                 }
             ]
         });
+    }
+
+    public getTagName(context: BBTagContext): string {
+        return context.rootTagName;
     }
 }

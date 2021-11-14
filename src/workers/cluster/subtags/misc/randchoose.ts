@@ -22,10 +22,14 @@ export class RandChooseSubtag extends Subtag {
                     exampleCode: 'I feel like eating {randchoose;cake;pie;pudding} today',
                     exampleOut: 'I feel like eating pudding today.',
                     returns: 'string',
-                    execute: (_, choices) => randChoose<SubtagArgument>(choices).wait()
+                    execute: (_, choices) => this.randChooseArg(choices)
                 }
             ]
         });
+    }
+
+    public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
+        return randChoose(choices).wait();
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {

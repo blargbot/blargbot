@@ -16,7 +16,7 @@ export class ChannelIsThread extends Subtag {
                     exampleCode: '{if;{isthread};Cool, this is a thread channel!;Boo, this is a regular text channel}',
                     exampleOut: 'Cool, this is a thread channel!',
                     returns: 'boolean',
-                    execute: (ctx) => guard.isThreadChannel(ctx.channel)
+                    execute: (ctx) => this.isThreadChannel(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],

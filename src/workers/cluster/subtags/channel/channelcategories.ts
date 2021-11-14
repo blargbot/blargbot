@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
@@ -15,9 +15,13 @@ export class ChannelCategoriesSubtag extends Subtag {
                     exampleCode: 'This guild has {length;{categories}} categories.',
                     exampleOut: 'This guild has 7 categories.',
                     returns: 'id[]',
-                    execute: (ctx) => ctx.guild.channels.cache.filter(guard.isCategoryChannel).map(c => c.id)
+                    execute: (ctx) => this.getChannelCategories(ctx)
                 }
             ]
         });
+    }
+
+    public getChannelCategories(context: BBTagContext): string[] {
+        return context.guild.channels.cache.filter(guard.isCategoryChannel).map(c => c.id);
     }
 }

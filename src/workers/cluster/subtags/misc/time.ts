@@ -19,7 +19,7 @@ export class TimeSubtag extends Subtag {
                     exampleIn: 'The current date is {time}',
                     exampleOut: 'The current date is {time}',
                     returns: 'string',
-                    execute: (_, [format]) => moment().format(format.value)
+                    execute: (_, [format]) => this.formatTime(moment(), format.value)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'time', 'parseFormat?'],

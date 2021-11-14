@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class IsccSubtag extends Subtag {
@@ -13,9 +13,13 @@ export class IsccSubtag extends Subtag {
                     exampleCode: '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}',
                     exampleOut: 'Boo, this only works in cc\'s',
                     returns: 'boolean',
-                    execute: (ctx) => ctx.isCC
+                    execute: (ctx) => this.isCC(ctx)
                 }
             ]
         });
+    }
+
+    public isCC(context: BBTagContext): boolean {
+        return context.isCC;
     }
 }

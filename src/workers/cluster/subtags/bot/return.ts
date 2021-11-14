@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { RuntimeReturnState } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
@@ -15,12 +15,14 @@ export class ReturnSubtag extends Subtag {
                     exampleCode: 'This will display. {return} This will not.',
                     exampleOut: 'This will display.',
                     returns: 'nothing',
-                    execute: (context, [forcedStr]) => {
-                        const forced = parse.boolean(forcedStr.value, true);
-                        context.state.return = forced ? RuntimeReturnState.ALL : RuntimeReturnState.CURRENTTAG;
-                    }
+                    execute: (context, [forcedStr]) => this.setReturn(context, forcedStr.value)
                 }
             ]
         });
+    }
+
+    public setReturn(context: BBTagContext, forcedStr: string): void {
+        const forced = parse.boolean(forcedStr, true);
+        context.state.return = forced ? RuntimeReturnState.ALL : RuntimeReturnState.CURRENTTAG;
     }
 }

@@ -14,7 +14,7 @@ export class UserNickSubtag extends Subtag {
                     exampleCode: 'Your nick is {usernick}!',
                     exampleOut: 'Your nick is Cool Dude 1337!',
                     returns: 'string',
-                    execute: (ctx) => (ctx.member.nickname ?? ctx.user.username).replace(/@/g, '@\u200b')
+                    execute: (ctx) => this.getUserNick(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

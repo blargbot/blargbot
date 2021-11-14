@@ -13,9 +13,13 @@ export class SplitSubtag extends Subtag {
                     exampleCode: '{split;Hello! This is a sentence.;{space}}',
                     exampleOut: '["Hello!","This","is","a","sentence."]',
                     returns: 'string[]',
-                    execute: (_, [text, splitter]) => text.value.split(splitter.value)
+                    execute: (_, [text, splitter]) => this.split(text.value, splitter.value)
                 }
             ]
         });
+    }
+
+    public split(text: string, splitter: string): string[] {
+        return text.split(splitter);
     }
 }

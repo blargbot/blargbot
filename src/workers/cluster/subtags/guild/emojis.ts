@@ -15,7 +15,7 @@ export class EmojisSubtag extends Subtag {
                     exampleCode: 'This guild has {length;{emojis}} emojis.',
                     exampleOut: 'This guild has 23 emojis.',
                     returns: 'string[]',
-                    execute: (context) => context.guild.emojis.cache.map(e => `<${e.animated ?? false ? 'a' : ''}:${e.name ?? ''}:${e.id}>`)
+                    execute: (context) => this.getAllEmojis(context)
                 },
                 {
                     parameters: ['role'],
@@ -27,6 +27,10 @@ export class EmojisSubtag extends Subtag {
                 }
             ]
         });
+    }
+
+    public getAllEmojis(context: BBTagContext): string[] {
+        return context.guild.emojis.cache.map(e => `<${e.animated ?? false ? 'a' : ''}:${e.name ?? ''}:${e.id}>`);
     }
 
     //! Doesn't work, but compatibility™

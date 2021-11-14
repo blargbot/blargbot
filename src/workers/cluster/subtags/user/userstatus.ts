@@ -15,7 +15,7 @@ export class UserStatusSubtag extends Subtag {
                     exampleCode: 'You are currently {userstatus}',
                     exampleOut: 'You are currently online',
                     returns: 'string',
-                    execute: (ctx) => ctx.member.presence?.status ?? 'offline'
+                    execute: (ctx) => this.getUserStatus(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

@@ -1,4 +1,5 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
 export class DebugSubtag extends Subtag {
@@ -15,14 +16,13 @@ export class DebugSubtag extends Subtag {
                     exampleCode: '{debug;current value;{get;~i}}',
                     exampleOut: '(in debug output)[10]current value 1',
                     returns: 'nothing',
-                    execute: (ctx, text, subtag) => {
-                        ctx.debug.push({
-                            subtag,
-                            text: text.map(arg => arg.value).join(' ')
-                        });
-                    }
+                    execute: (ctx, text, subtag) => this.addDebug(ctx, text.map(x => x.value).join(' '), subtag)
                 }
             ]
         });
+    }
+
+    public addDebug(context: BBTagContext, text: string, subtag: SubtagCall): void {
+        context.debug.push({ subtag, text });
     }
 }

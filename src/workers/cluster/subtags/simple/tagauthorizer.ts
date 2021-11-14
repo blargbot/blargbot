@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 export class TagAuthorizerSubtag extends Subtag {
@@ -14,9 +14,13 @@ export class TagAuthorizerSubtag extends Subtag {
                     exampleCode: '{username;{tagauthorizer}} authorized this tag!',
                     exampleOut: 'stupid cat authorized this tag!',
                     returns: 'id',
-                    execute: (ctx) => ctx.authorizer
+                    execute: (ctx) => this.getAuthorizer(ctx)
                 }
             ]
         });
+    }
+
+    public getAuthorizer(context: BBTagContext): string {
+        return context.authorizer;
     }
 }

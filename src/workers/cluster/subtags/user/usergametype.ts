@@ -25,7 +25,7 @@ export class UserGameTypeSubtag extends Subtag {
                     exampleCode: 'You are {usergametype} right now!',
                     exampleOut: 'You are streaming right now!',
                     returns: 'string',
-                    execute: (ctx) => ctx.member.presence?.activities[0]?.type.toLowerCase() ?? ''
+                    execute: (ctx) => this.getUserGameType(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

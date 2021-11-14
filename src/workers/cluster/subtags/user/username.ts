@@ -14,7 +14,7 @@ export class UserNameSubtag extends Subtag {
                     exampleCode: 'Your username is {username}!',
                     exampleOut: 'Your username is Cool Dude 1337!',
                     returns: 'string',
-                    execute: (ctx) => ctx.user.username.replace(/@/g, '@\u200b')
+                    execute: (ctx) => this.getUserName(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

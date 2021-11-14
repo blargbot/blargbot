@@ -15,7 +15,7 @@ export class ChannelIdSubtag extends Subtag {
                     exampleCode: '{channelid}',
                     exampleOut: '111111111111111',
                     returns: 'id',
-                    execute: (ctx) => ctx.channel.id
+                    execute: (ctx) => this.getChannelId(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],

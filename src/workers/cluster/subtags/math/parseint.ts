@@ -13,9 +13,13 @@ export class ParseIntSubtag extends Subtag {
                     exampleCode: '{parseint;abcd} {parseint;1234} {parseint;12cd}',
                     exampleOut: 'NaN 1234 12',
                     returns: 'number',
-                    execute: (_, [number]) => parse.int(number.value)
+                    execute: (_, [number]) => this.parseInt(number.value)
                 }
             ]
         });
+    }
+
+    public parseInt(number: string): number {
+        return parse.int(number);
     }
 }

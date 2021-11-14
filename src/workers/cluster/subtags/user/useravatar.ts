@@ -15,7 +15,7 @@ export class UserAvatarSubtag extends Subtag {
                     exampleCode: 'Your avatar is {useravatar}',
                     exampleOut: 'Your discrim is (avatar url)',
                     returns: 'string',
-                    execute: (ctx) => ctx.user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
+                    execute: (ctx) => this.getUserAvatarUrl(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

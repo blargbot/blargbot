@@ -15,7 +15,7 @@ export class ChannelTypeSubtag extends Subtag {
                     exampleCode: '{channeltype}',
                     exampleOut: 'text',
                     returns: 'string',
-                    execute: (ctx) => channelTypes[ctx.channel.type]
+                    execute: (ctx) => this.getChannelType(ctx, ctx.channel.id, true)
                 },
                 {
                     parameters: ['channel', 'quiet?'],
@@ -23,18 +23,14 @@ export class ChannelTypeSubtag extends Subtag {
                     exampleCode: '{channeltype;cool channel}\n{channeltype;some channel that doesn\'t exist;true}',
                     exampleOut: 'voice\n(nothing is returned here)',
                     returns: 'string',
-                    execute: (ctx, [channel, quiet]) => this.getChannelId(ctx, channel.value, quiet.value !== '')
+                    execute: (ctx, [channel, quiet]) => this.getChannelType(ctx, channel.value, quiet.value !== '')
 
                 }
             ]
         });
     }
 
-    public async getChannelId(
-        context: BBTagContext,
-        channelStr: string,
-        quiet: boolean
-    ): Promise<typeof channelTypes[keyof typeof channelTypes] | ''> {
+    public async getChannelType(context: BBTagContext, channelStr: string, quiet: boolean): Promise<typeof channelTypes[keyof typeof channelTypes] | ''> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {

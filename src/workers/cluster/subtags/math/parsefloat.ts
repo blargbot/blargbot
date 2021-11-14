@@ -13,9 +13,13 @@ export class ParseFloattSubtag extends Subtag {
                     exampleCode: '{parsefloat;abcd} {parsefloat;12.34} {parsefloat;1.2cd}',
                     exampleOut: 'NaN 12.34 1.2',
                     returns: 'number',
-                    execute: (_, [number]) => parse.float(number.value)
+                    execute: (_, [number]) => this.parseFloat(number.value)
                 }
             ]
         });
+    }
+
+    public parseFloat(number: string): number {
+        return parse.float(number);
     }
 }

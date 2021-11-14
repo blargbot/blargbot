@@ -17,7 +17,7 @@ export class MessageTimeSubtag extends Subtag {
                     exampleCode: 'The timestamp of your message is "{timestamp}"',
                     exampleOut: 'The timestamp of your message is "1628782144703"',
                     returns: 'string',
-                    execute: (ctx) => ctx.message.createdTimestamp.toString()
+                    execute: (ctx) => this.getMessageTime(ctx, ctx.channel.id, ctx.message.id, 'x')
                 },
                 {
                     parameters: ['format|messageid'],

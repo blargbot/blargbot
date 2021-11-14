@@ -14,9 +14,13 @@ export class HtmlDecodeSubtag extends Subtag {
                     exampleCode: '{htmlencode;<hello, world>}',
                     exampleOut: '&lt;hello, world&gt;',
                     returns: 'string',
-                    execute: (_, text) => encode(text.map(arg => arg.value).join(';')) // TODO: use subtag.source
+                    execute: (_, text) => this.htmlEncode(text.map(arg => arg.value).join(';')) // TODO: use subtag.source
                 }
             ]
         });
+    }
+
+    public htmlEncode(html: string): string {
+        return encode(html);
     }
 }
