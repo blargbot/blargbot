@@ -56,7 +56,7 @@ export class ReactListSubtag extends Subtag {
         try {
             message = await context.util.getMessage(channel.id, args[0]);
         } catch (e: unknown) {
-            // no-op
+            // NOOP
         }
         if (message === undefined)
             throw new MessageNotFoundError(channel, args[0]);

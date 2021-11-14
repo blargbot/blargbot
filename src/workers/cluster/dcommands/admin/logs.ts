@@ -88,7 +88,7 @@ export class LogsCommand extends BaseGuildCommand {
         if (logs === undefined) {
             try {
                 await info.edit('Generating your logs...\nThis seems to be taking longer than usual. I\'ll ping you when I\'m finished.');
-            } catch { /* no-op */ }
+            } catch { /* NOOP */ }
             logs = await generatePromise;
             ping = `Sorry that took so long, ${context.author.toString()}.\n`;
         }

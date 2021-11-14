@@ -37,7 +37,7 @@ export abstract class BaseWorker<Contracts extends IPCContracts> {
     }
 
     public stop(): Promise<void> | void {
-        // no-op
+        // NOOP
     }
 
     public on<Event extends IPCContractNames<Contracts>>(event: Event, handler: GetWorkerProcessMessageHandler<Contracts, Event>): this {

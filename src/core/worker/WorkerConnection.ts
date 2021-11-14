@@ -97,7 +97,7 @@ export abstract class WorkerConnection<T extends string, Contracts extends IPCCo
 
         try {
             await this.ipc.request('stop', undefined);
-        } catch { /* no-op */ }
+        } catch { /* NOOP */ }
 
         if (<boolean>this.ipc.process.connected)
             this.ipc.process.kill(code);

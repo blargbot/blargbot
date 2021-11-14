@@ -14,7 +14,7 @@ export class VoidSubtag extends Subtag {
                     exampleCode: '{void;This won\'t be output!}',
                     exampleOut: '',
                     returns: 'nothing',
-                    execute: () => { /*no-op*/ }
+                    execute: () => { /*NOOP*/ }
                 }
             ]
         });

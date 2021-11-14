@@ -73,7 +73,7 @@ export class ColorSubtag extends Subtag {
 
         let inputFormat: undefined | ColorFormat;
         if (inputStr === undefined) {
-            // no-op
+            // NOOP
         } else if (isColorFormat(inputStr)) {
             inputFormat = inputStr.toLowerCase();
         } else {

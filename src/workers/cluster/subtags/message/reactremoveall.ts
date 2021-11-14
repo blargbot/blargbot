@@ -34,7 +34,7 @@ export class ReactRemoveAllSubtag extends Subtag {
         try {
             message = await context.util.getMessage(channel, messageID);
         } catch (e: unknown) {
-            // no-op
+            // NOOP
         }
 
         if (message === undefined)

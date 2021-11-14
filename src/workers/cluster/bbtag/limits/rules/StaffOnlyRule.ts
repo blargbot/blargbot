@@ -15,6 +15,6 @@ export const staffOnlyRule: RuntimeLimitRule = Object.seal({
         return null;
     },
     load() {
-        // no-op
+        // NOOP
     }
 });

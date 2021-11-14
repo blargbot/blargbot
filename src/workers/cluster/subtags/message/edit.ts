@@ -85,7 +85,7 @@ export class EditSubtag extends Subtag {
                     embeds
                 });
             } catch (err: unknown) {
-                // no-op
+                // NOOP
             }
         } catch (err: unknown) {
             throw new BBTagRuntimeError('Unable to get message');

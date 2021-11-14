@@ -17,7 +17,7 @@ export class DiscordGuildCreateHandler extends DiscordEventService<'guildCreate'
                 await this.cluster.util.sendDM(guild.ownerId, `Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
             } catch (err: unknown) {
                 this.cluster.logger.error(err);
-                // no-op
+                // NOOP
             }
             await guild.leave();
             return;

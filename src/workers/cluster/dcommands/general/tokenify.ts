@@ -26,7 +26,7 @@ export class TokenifyCommand extends BaseGlobalCommand {
                 : pasta[i].toLowerCase());
 
             if (i === pasta.length - 1)
-                newPasta.length; // no-op
+                newPasta.length; // NOOP
             else if (randInt(1, 20) === 1)
                 newPasta.push('.');
             else if (randInt(1, 30) === 1)

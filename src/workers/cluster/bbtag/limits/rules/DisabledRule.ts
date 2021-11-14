@@ -13,6 +13,6 @@ export const disabledRule: RuntimeLimitRule = Object.seal({
         return null;
     },
     load(): void {
-        // no-op
+        // NOOP
     }
 });

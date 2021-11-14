@@ -60,7 +60,7 @@ export class DeleteSubtag extends Subtag {
         try {
             await msg.delete();
         } catch (e: unknown) {
-            // NO-OP
+            // NOOP
         }
         //TODO return something like true/false
     }

@@ -20,7 +20,7 @@ export class ClusterUtilities extends BaseUtilities {
         const result = await query.getResult();
         try {
             await query.prompt?.delete();
-        } catch { /* no-op */ }
+        } catch { /* NOOP */ }
         return result;
     }
 
@@ -39,7 +39,7 @@ export class ClusterUtilities extends BaseUtilities {
             return {
                 prompt: undefined,
                 getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
-                cancel() { /* no-op */ }
+                cancel() { /* NOOP */ }
             };
         }
 
@@ -47,7 +47,7 @@ export class ClusterUtilities extends BaseUtilities {
             return {
                 prompt: undefined,
                 getResult: () => Promise.resolve({ state: 'SUCCESS', value: Object.values(valueMap)[0] }),
-                cancel() { /* no-op */ }
+                cancel() { /* NOOP */ }
             };
         }
 
@@ -85,7 +85,7 @@ export class ClusterUtilities extends BaseUtilities {
 
         const prompt = await this.send(options.context, { ...options.prompt, ...createChoiceBody(component) });
         if (prompt === undefined)
-            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* no-op */ } };
+            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
         return {
             prompt,
@@ -115,7 +115,7 @@ export class ClusterUtilities extends BaseUtilities {
         const result = await query.getResult();
         try {
             await query.prompt?.delete();
-        } catch { /* no-op */ }
+        } catch { /* NOOP */ }
         return result;
     }
 
@@ -133,7 +133,7 @@ export class ClusterUtilities extends BaseUtilities {
             return {
                 prompt: undefined,
                 getResult: () => Promise.resolve({ state: 'NO_OPTIONS' }),
-                cancel() { /* no-op */ }
+                cancel() { /* NOOP */ }
             };
         }
 
@@ -141,7 +141,7 @@ export class ClusterUtilities extends BaseUtilities {
             return {
                 prompt: undefined,
                 getResult: () => Promise.resolve({ state: 'EXCESS_OPTIONS' }),
-                cancel() { /* no-op */ }
+                cancel() { /* NOOP */ }
             };
         }
 
@@ -164,7 +164,7 @@ export class ClusterUtilities extends BaseUtilities {
 
         const prompt = await this.send(options.context, { ...options.prompt, ...createMultipleBody(component) });
         if (prompt === undefined)
-            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* no-op */ } };
+            return { prompt: undefined, getResult: () => Promise.resolve({ state: 'FAILED' }), cancel() { /* NOOP */ } };
 
         return {
             prompt,
@@ -197,7 +197,7 @@ export class ClusterUtilities extends BaseUtilities {
         const result = await query.getResult();
         try {
             await query.prompt?.delete();
-        } catch { /* no-op */ }
+        } catch { /* NOOP */ }
         return result;
     }
 
@@ -222,7 +222,7 @@ export class ClusterUtilities extends BaseUtilities {
         const prompt = await this.send(options.context, { ...payload, ...createConfirmBody(component) });
         if (prompt === undefined) {
             awaiter.cancel();
-            return { prompt, getResult: () => Promise.resolve(options.fallback), cancel() { /* no-op */ } };
+            return { prompt, getResult: () => Promise.resolve(options.fallback), cancel() { /* NOOP */ } };
         }
 
         return {
@@ -286,7 +286,7 @@ export class ClusterUtilities extends BaseUtilities {
             return {
                 messages: messages,
                 getResult() { return Promise.resolve({ state: 'FAILED', related: messages }); },
-                cancel() { /* no-op */ }
+                cancel() { /* NOOP */ }
             };
         }
 

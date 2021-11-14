@@ -171,7 +171,7 @@ export class RequestSubtag extends Subtag {
                 if (typeof response.body === 'string')
                     return { ...response, body: JSON.parse(response.body) };
             } catch (e: unknown) {
-                //no-op
+                //NOOP
             }
             return { ...response, body: bodyStr };
         } catch (e: unknown) {
