@@ -17,7 +17,7 @@ export class OperatorSubtag extends Subtag {
                     parameters: ['values+'],
                     description: '',
                     returns: 'boolean|number',
-                    execute: (_, args) => this.applyOperation(args)
+                    execute: (_, values) => this.applyOperation(values)
                 }
             ]
         });

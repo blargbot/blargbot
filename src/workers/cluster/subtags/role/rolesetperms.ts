@@ -26,7 +26,7 @@ export class RoleSetPermsSubtag extends Subtag {
                     exampleCode: 'The admin role now has the administrator permission. {rolesetperms;admin;8}',
                     exampleOut: 'The admin role now has the administrator permission.',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.roleSetPerms(ctx, args[0].value, args[1].value, args[2].value)
+                    execute: (ctx, [role, permissions, quiet]) => this.roleSetPerms(ctx, role.value, permissions.value, quiet.value)
                 }
             ]
         });

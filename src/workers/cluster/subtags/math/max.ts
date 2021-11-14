@@ -13,16 +13,14 @@ export class MaxSubtag extends Subtag {
                     exampleCode: '{max;50;2;65}',
                     exampleOut: '65',
                     returns: 'number',
-                    execute: (_, args) => this.max(args.map(arg => arg.value))
+                    execute: (_, values) => this.max(values.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public max(
-        args: string[]
-    ): number {
-        const flattenedArgs = bbtagUtil.tagArray.flattenArray(args);
+    public max(values: string[]): number {
+        const flattenedArgs = bbtagUtil.tagArray.flattenArray(values);
         const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
 
         if (parsedArgs.filter(isNaN).length > 0)

@@ -23,7 +23,7 @@ export class AbsSubtag extends Subtag {
                     exampleCode: '{abs;-535;123;-42}',
                     exampleOut: '[535, 123, 42]',
                     returns: 'number[]',
-                    execute: (_, args) => this.absAll(args.map(arg => arg.value))
+                    execute: (_, values) => this.absAll(values.map(arg => arg.value))
                 }
             ]
         });

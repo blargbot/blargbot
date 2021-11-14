@@ -33,7 +33,7 @@ export class ColorSubtag extends Subtag {
                     exampleCode: '{color;#4286f4;RGB}',
                     exampleOut: '[66,134,244]',
                     returns: 'string',
-                    execute: (ctx, args) => this.parseColor(ctx, args[0].value, args[1].value, undefined)
+                    execute: (ctx, [color, format]) => this.parseColor(ctx, color.value, format.value, undefined)
                 },
                 {
                     parameters: ['color', 'outputFormat:hex', 'inputFormat'],
@@ -41,7 +41,7 @@ export class ColorSubtag extends Subtag {
                     exampleCode: '{color;[66,134,244];hex;RGB}',
                     exampleOut: '#4286f4',
                     returns: 'string',
-                    execute: (ctx, args) => this.parseColor(ctx, args[0].value, args[1].value, args[2].value)
+                    execute: (ctx, [color, outFormat, inFormat]) => this.parseColor(ctx, color.value, outFormat.value, inFormat.value)
                 }
             ]
         });

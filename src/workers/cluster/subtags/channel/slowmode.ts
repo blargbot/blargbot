@@ -22,7 +22,7 @@ export class SlowmodeSubtag extends Subtag {
                     exampleCode: '{slowmode;testing-grounds}\n{slowmode;10}',
                     exampleOut: '(disabled slowmode in testing-grounds)\n(set slow mode to 10 seconds)',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.setSlowmode(ctx, args[0].value, '')
+                    execute: (ctx, [channel]) => this.setSlowmode(ctx, channel.value, '')
                 },
                 {
                     parameters: ['channel', 'time:0'],
@@ -30,7 +30,7 @@ export class SlowmodeSubtag extends Subtag {
                     exampleCode: '{slowmode;testing-grounds;10}\n{slowmode;50;doesn\'t matter}',
                     exampleOut: '(set slowmode cooldown to 10 seconds in testing-grounds)\n(set slowmode to 50s in the current channel)',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.setSlowmode(ctx, args[0].value, args[1].value)
+                    execute: (ctx, [channel, time]) => this.setSlowmode(ctx, channel.value, time.value)
                 }
             ]
         });

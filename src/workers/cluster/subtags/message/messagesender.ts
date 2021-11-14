@@ -23,7 +23,7 @@ export class MessageSenderSubtag extends Subtag {
                     exampleCode: 'Message 1111111111111 was sent by {sender;1111111111111}',
                     exampleOut: 'Message 1111111111111 was sent by 2222222222222',
                     returns: 'id',
-                    execute: (ctx, args) => this.getMessageSender(ctx, ctx.channel.id, args[0].value, false)
+                    execute: (ctx, [messageId]) => this.getMessageSender(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -31,7 +31,7 @@ export class MessageSenderSubtag extends Subtag {
                     exampleCode: 'Message 1111111111111 in #support was sent by {sender;support;1111111111111}',
                     exampleOut: 'Message 1111111111111 in #support was sent by 2222222222222',
                     returns: 'id',
-                    execute: (ctx, args) => this.getMessageSender(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    execute: (ctx, [channel, message, quiet]) => this.getMessageSender(ctx, channel.value, message.value, quiet.value !== '')
                 }
             ]
         });

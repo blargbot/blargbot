@@ -27,7 +27,7 @@ export class CommitSubtag extends Subtag {
                     exampleCode: '{set;var;Hello!}\n{commit;var}\n{set;var;GoodBye!}\n{rollback;var}\n{get;var}',
                     exampleOut: 'Hello!',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.commit(ctx, args.map((arg) => arg.value))
+                    execute: (ctx, variables) => this.commit(ctx, variables.map((arg) => arg.value))
                 }
             ]
         });

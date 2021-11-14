@@ -14,7 +14,7 @@ export class RoleSetMentionableSubtag extends Subtag {
                     exampleCode: 'The admin role is now mentionable. {rolesetmentionable;admin}',
                     exampleOut: 'The admin role is now mentionable.',
                     returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, args) => this.setRolementionable(ctx, args[0].value, 'true', false)
+                    execute: (ctx, [role]) => this.setRolementionable(ctx, role.value, 'true', false)
                 },
                 {
                     parameters: ['role', 'value:true', 'quiet?'],
@@ -24,7 +24,7 @@ export class RoleSetMentionableSubtag extends Subtag {
                     exampleCode: 'The admin role is no longer mentionable. {rolesetmentionable;admin;false}',
                     exampleOut: 'The admin role is no longer mentionable.',
                     returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, args) => this.setRolementionable(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    execute: (ctx, [role, value, quiet]) => this.setRolementionable(ctx, role.value, value.value, quiet.value !== '')
                 }
             ]
         });

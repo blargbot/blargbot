@@ -19,7 +19,7 @@ export class FunctionSubtag extends Subtag {
                     exampleCode: '{function;test;{paramsarray}} {func.test;1;2;3;4}',
                     exampleOut: '["1","2","3","4"]',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.createFunction(ctx, args[0].value, args[1])
+                    execute: (ctx, [name, code]) => this.createFunction(ctx, name.value, code)
                 }
             ]
         });

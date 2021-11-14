@@ -14,7 +14,7 @@ export class RoleSetColorSubtag extends Subtag {
                     exampleCode: 'The admin role is now colourless. {rolesetcolor;admin}',
                     exampleOut: 'The admin role is now colourless.',
                     returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, args) => this.setRolecolor(ctx, args[0].value, '', false)
+                    execute: (ctx, [role]) => this.setRolecolor(ctx, role.value, '', false)
                 },
                 {
                     parameters: ['role', 'color', 'quiet?'],
@@ -23,7 +23,7 @@ export class RoleSetColorSubtag extends Subtag {
                     exampleCode: 'The admin role is now white. {rolesetcolor;admin;white}',
                     exampleOut: 'The admin role is now white.',
                     returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, args) => this.setRolecolor(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    execute: (ctx, [role, color, quiet]) => this.setRolecolor(ctx, role.value, color.value, quiet.value !== '')
                 }
             ]
         });

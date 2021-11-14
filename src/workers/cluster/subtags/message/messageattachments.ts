@@ -23,7 +23,7 @@ export class MessageAttachmentsSubtag extends Subtag {
                     exampleCode: 'Someone sent a message with attachments: "{messageattachments;1111111111111}"',
                     exampleOut: 'Someone sent a message with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
                     returns: 'string[]',
-                    execute: (ctx, args) => this.getMessageAttachments(ctx, ctx.channel.id, args[0].value, false)
+                    execute: (ctx, [messageId]) => this.getMessageAttachments(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -31,7 +31,7 @@ export class MessageAttachmentsSubtag extends Subtag {
                     exampleCode: 'Someone sent a message in #support with attachments: "{messageattachments;support;1111111111111}"',
                     exampleOut: 'Someone sent a message in #support with attachments: "["https://cdn.discordapp.com/attachments/1111111111111/111111111111111/thisisntreal.png"]"',
                     returns: 'string[]',
-                    execute: (ctx, args) => this.getMessageAttachments(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    execute: (ctx, [channel, message, quiet]) => this.getMessageAttachments(ctx, channel.value, message.value, quiet.value !== '')
                 }
             ]
         });

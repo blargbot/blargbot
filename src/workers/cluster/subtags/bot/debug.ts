@@ -15,10 +15,10 @@ export class DebugSubtag extends Subtag {
                     exampleCode: '{debug;current value;{get;~i}}',
                     exampleOut: '(in debug output)[10]current value 1',
                     returns: 'nothing',
-                    execute: (ctx, args, subtag) => {
+                    execute: (ctx, text, subtag) => {
                         ctx.debug.push({
                             subtag,
-                            text: args.map(arg => arg.value).join(' ')
+                            text: text.map(arg => arg.value).join(' ')
                         });
                     }
                 }

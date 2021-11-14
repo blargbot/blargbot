@@ -27,7 +27,7 @@ export class ChannelEditSubtag extends Subtag {
                     exampleCode: '{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}',
                     exampleOut: '11111111111111111',
                     returns: 'id',
-                    execute: (ctx, args) => this.channelEdit(ctx, [...args.map(arg => arg.value), '{}'])
+                    execute: (ctx, [channel, options]) => this.channelEdit(ctx, channel.value, options.value)
                 }
             ]
         });
@@ -35,9 +35,10 @@ export class ChannelEditSubtag extends Subtag {
 
     public async channelEdit(
         context: BBTagContext,
-        args: string[]
+        channelStr: string,
+        options: string
     ): Promise<string> {
-        const channel = await context.queryChannel(args[0]);
+        const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
@@ -48,8 +49,8 @@ export class ChannelEditSubtag extends Subtag {
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         return guard.isThreadChannel(channel)
-            ? await this.channelEditCore(context, channel, args[1], mapThreadOptions)
-            : await this.channelEditCore(context, channel, args[1], mapChannelOptions);
+            ? await this.channelEditCore(context, channel, options, mapThreadOptions)
+            : await this.channelEditCore(context, channel, options, mapChannelOptions);
     }
 
     private async channelEditCore<T>(

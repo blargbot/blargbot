@@ -23,7 +23,7 @@ export class MessageEmbedsSubtag extends Subtag {
                     exampleCode: 'Someone sent a message with embeds: "{messageembeds;1111111111111}"',
                     exampleOut: 'Someone sent a message with attachments: "[{"title":"Hello!"}]"',
                     returns: 'json[]',
-                    execute: (ctx, args) => this.getMessageEmbeds(ctx, ctx.channel.id, args[0].value, false)
+                    execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
@@ -31,7 +31,7 @@ export class MessageEmbedsSubtag extends Subtag {
                     exampleCode: 'Someone sent a message in #support with embeds: "{messageembeds;support;1111111111111}"',
                     exampleOut: 'Someone sent a message in #support with embeds: "[{"title":"Hello!"}]"',
                     returns: 'json[]',
-                    execute: (ctx, args) => this.getMessageEmbeds(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    execute: (ctx, [channel, message, quiet]) => this.getMessageEmbeds(ctx, channel.value, message.value, quiet.value !== '')
                 }
             ]
         });

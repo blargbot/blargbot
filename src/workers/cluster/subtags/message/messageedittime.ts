@@ -24,28 +24,28 @@ export class MessageEditTimeSubtag extends Subtag {
                     description: 'If the first argument is a messageid, this will return the edit time of `messageid` in unix. ' +
                         'Else this will return the edit time of the executing message in `format`.',
                     returns: 'string',
-                    execute: (context, args) => {
-                        if (/^\d{17,23}/.test(args[0].value))
-                            return this.getMessageEditTime(context, context.channel.id, args[0].value, 'x');
-                        return this.getMessageEditTime(context, context.channel.id, context.message.id, args[0].value);
+                    execute: (context, [formatOrMessageId]) => {
+                        if (/^\d{17,23}/.test(formatOrMessageId.value))
+                            return this.getMessageEditTime(context, context.channel.id, formatOrMessageId.value, 'x');
+                        return this.getMessageEditTime(context, context.channel.id, context.message.id, formatOrMessageId.value);
                     }
                 },
                 {
                     parameters: ['channel|messageid', 'messageid|format'],
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
                     returns: 'string',
-                    execute: async (context, args) => {
-                        const channel = await context.queryChannel(args[0].value, { noErrors: true });
+                    execute: async (context, [channelOrMessageId, messageIdOrFormat]) => {
+                        const channel = await context.queryChannel(channelOrMessageId.value, { noErrors: true });
                         if (channel === undefined)
-                            return this.getMessageEditTime(context, context.channel.id, args[0].value, args[1].value);
-                        return this.getMessageEditTime(context, args[0].value, args[1].value, 'x');
+                            return this.getMessageEditTime(context, context.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
+                        return this.getMessageEditTime(context, channelOrMessageId.value, messageIdOrFormat.value, 'x');
                     }
                 },
                 {
                     parameters: ['channel', 'messageid', 'format'],
                     description: '{messagetime;<channel>;<messageid>;<format>}',
                     returns: 'string',
-                    execute: (context, args) => this.getMessageEditTime(context, args[0].value, args[1].value, args[2].value)
+                    execute: (context, [channel, message, format]) => this.getMessageEditTime(context, channel.value, message.value, format.value)
                 }
             ]
         });

@@ -19,14 +19,14 @@ export class EditSubtag extends Subtag {
                 {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
                     returns: 'nothing',
-                    execute: async (ctx, args) => {
-                        const channel = await ctx.queryChannel(args[0].value, { noLookup: true });
+                    execute: async (ctx, [chanOrMessage, messageOrText, content]) => {
+                        const channel = await ctx.queryChannel(chanOrMessage.value, { noLookup: true });
                         if (channel === undefined)
                             //{edit;msg;text;embed}
-                            return this.edit(ctx, ctx.channel.id, args[0].value, args[1].value, args[2].value);
+                            return this.edit(ctx, ctx.channel.id, chanOrMessage.value, messageOrText.value, content.value);
 
                         //{edit;channel;msg;text|embed}
-                        return this.edit(ctx, channel.id, args[1].value, args[2].value);
+                        return this.edit(ctx, channel.id, messageOrText.value, content.value);
 
                     }
                 },

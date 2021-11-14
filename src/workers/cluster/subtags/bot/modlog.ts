@@ -16,7 +16,7 @@ export class ModlogSubtag extends Subtag {
                     exampleCode: 'You did a bad! {modlog;Bad;{userid}',
                     exampleOut: 'You did a bad! (modlog entry)',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.createModlog(ctx, args[0].value, args[1].value, args[2].value, '', '')
+                    execute: (ctx, [action, user, moderator]) => this.createModlog(ctx, action.value, user.value, moderator.value, '', '')
                 },
                 {
                     parameters: ['action', 'user', 'moderator', 'reason', 'color'],
@@ -25,7 +25,7 @@ export class ModlogSubtag extends Subtag {
                     exampleCode: 'You did a bad! {modlog;Bad;{userid};;They did a bad;#ffffff}',
                     exampleOut: 'You did a bad! (modlog entry with white embed colour and reason \'They did a bad!\'',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.createModlog(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value)
+                    execute: (ctx, [action, user, moderator, reason, color]) => this.createModlog(ctx, action.value, user.value, moderator.value, reason.value, color.value)
                 }
             ]
         });

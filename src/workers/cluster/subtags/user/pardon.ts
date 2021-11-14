@@ -18,7 +18,7 @@ export class PardonSubtag extends Subtag {
                     exampleCode: 'Be pardoned! {pardon}',
                     exampleOut: 'Be pardoned! 0',
                     returns: 'number',
-                    execute: (ctx, args) => this.pardon(ctx, args[0].value, '1', '')
+                    execute: (ctx, [user]) => this.pardon(ctx, user.value, '1', '')
                 },
                 {
                     parameters: ['user', 'count:1', 'reason?'],
@@ -26,7 +26,7 @@ export class PardonSubtag extends Subtag {
                     exampleCode: 'Be pardoned 9001 times, Stupid cat! {pardon;Stupid cat;9001}',
                     exampleOut: 'Be pardoned 9001 times, Stupid cat! 0',
                     returns: 'number',
-                    execute: (ctx, args) => this.pardon(ctx, args[0].value, args[1].value, args[2].value)
+                    execute: (ctx, [user, count, reason]) => this.pardon(ctx, user.value, count.value, reason.value)
                 }
             ]
         });

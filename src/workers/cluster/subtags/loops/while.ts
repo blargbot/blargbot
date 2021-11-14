@@ -14,7 +14,7 @@ export class WhileSubtag extends Subtag {
                     exampleCode: '{set;~x;0}\n{set;~end;false}\n{while;{get;~end};\n\t{if;{increment;~x};==;10;\n\t\t{set;~end;true}\n\t}\n}\n{get;~end}',
                     exampleOut: '10',
                     returns: 'loop',
-                    execute: (ctx, args) => this.while(ctx, args[0], '==', 'true', args[1])
+                    execute: (ctx, [bool, code]) => this.while(ctx, bool, '==', 'true', code)
                 },
                 {
                     parameters: ['~value1', '~evaluator', '~value2', '~code'],
@@ -24,7 +24,7 @@ export class WhileSubtag extends Subtag {
                     exampleCode: '{set;~x;0}\n{while;{get;~x};<=;10;{increment;~x},}.',
                     exampleOut: '1,2,3,4,5,6,7,8,9,10,11,',
                     returns: 'loop',
-                    execute: (ctx, args) => this.while(ctx, args[0], args[1], args[2], args[3])
+                    execute: (ctx, [val1, evaluator, val2, code]) => this.while(ctx, val1, evaluator, val2, code)
                 }
             ]
         });

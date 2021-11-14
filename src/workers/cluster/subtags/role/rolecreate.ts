@@ -19,17 +19,17 @@ export class RoleCreateSubtag extends Subtag {
                     exampleCode: '{rolecreate;Super cool role!}',
                     exampleOut: '11111111111111111',
                     returns: 'id',
-                    execute: (ctx, args) => this.createRole(ctx, args[0].value, '#000000', '0', 'false', 'false')
+                    execute: (ctx, [name]) => this.createRole(ctx, name.value, '#000000', '0', 'false', 'false')
                 },
                 {
                     parameters: ['name', 'color:000000', 'permissions?:0'],
                     returns: 'id',
-                    execute: (ctx, args) => this.createRole(ctx, args[0].value, args[1].value, args[2].value, 'false', 'false')
+                    execute: (ctx, [name, color, permissions]) => this.createRole(ctx, name.value, color.value, permissions.value, 'false', 'false')
                 },
                 {
                     parameters: ['name', 'color:000000', 'permissions:0', 'mentionable:false', 'hoisted?:false'],
                     returns: 'id',
-                    execute: (ctx, args) => this.createRole(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value)
+                    execute: (ctx, [name, color, permissions, mentionable, hoisted]) => this.createRole(ctx, name.value, color.value, permissions.value, mentionable.value, hoisted.value)
                 }
             ]
         });

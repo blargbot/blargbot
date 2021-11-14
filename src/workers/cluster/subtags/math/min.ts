@@ -13,15 +13,13 @@ export class MinSubtag extends Subtag {
                     exampleCode: '{min;50;2;65}',
                     exampleOut: '2',
                     returns: 'number',
-                    execute: (_, args) => this.min(args.map(arg => arg.value))
+                    execute: (_, values) => this.min(values.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public min(
-        args: string[]
-    ): number {
+    public min(args: string[]): number {
         const flattenedArgs = bbtagUtil.tagArray.flattenArray(args);
         const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
 

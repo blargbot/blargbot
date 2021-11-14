@@ -43,7 +43,7 @@ export class RequestSubtag extends Subtag {
                     exampleCode: '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
                     exampleOut: 'Hello, world!',
                     returns: 'json',
-                    execute: (ctx, args) => this.requestUrl(ctx, args[0].value, '', '')
+                    execute: (ctx, [url]) => this.requestUrl(ctx, url.value, '', '')
                 },
                 {
                     parameters: ['url', 'options', 'data?'],
@@ -55,7 +55,7 @@ export class RequestSubtag extends Subtag {
                     exampleCode: '{jget;{request;https://example.com/update/user;{jset;;method;POST};{jset;;user;Stupid cat}};body}',
                     exampleOut: 'Stupid cat updated!',
                     returns: 'json',
-                    execute: (ctx, args) => this.requestUrl(ctx, args[0].value, args[1].value, args[2].value)
+                    execute: (ctx, [url, options, data]) => this.requestUrl(ctx, url.value, options.value, data.value)
                 }
             ]
         });

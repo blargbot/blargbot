@@ -28,7 +28,7 @@ export class BanSubtag extends Subtag {
                     exampleCode: '{ban;Stupid cat;4}',
                     exampleOut: 'true',
                     returns: 'boolean|number',
-                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, 'Tag Ban', '', '')
+                    execute: (ctx, [user, deleteDays]) => this.banMember(ctx, user.value, deleteDays.value, 'Tag Ban', '', '')
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban?'],
@@ -36,7 +36,7 @@ export class BanSubtag extends Subtag {
                     exampleCode: '{ban;Stupid cat;;Not clicking enough kittens;30d}',
                     exampleOut: 'true (stupid cat will be unbanned after 30d)',
                     returns: 'boolean|number',
-                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, '')
+                    execute: (ctx, [user, deleteDays, reason, unbanAfter]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, '')
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban', 'noPerms'],
@@ -45,7 +45,7 @@ export class BanSubtag extends Subtag {
                     exampleCode: '{ban;Stupid cat;;For being stupid;;anythingcangohere}',
                     exampleOut: 'true (anyone can use this cc regardless of perms)',
                     returns: 'boolean|number',
-                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value)
+                    execute: (ctx, [user, deleteDays, reason, unbanAfter, noPerms]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, noPerms.value)
                 }
             ]
         });

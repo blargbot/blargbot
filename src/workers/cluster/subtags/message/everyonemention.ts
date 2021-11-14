@@ -14,7 +14,7 @@ export class EveryoneMentionSubtag extends Subtag {
                     exampleCode: '{everyonemention}',
                     exampleOut: '@everyone',
                     returns: 'string',
-                    execute: (ctx, args) => this.everyoneMention(ctx, args[0].value)
+                    execute: (ctx, [mention]) => this.everyoneMention(ctx, mention.value)
                 }
             ]
         });

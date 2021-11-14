@@ -14,7 +14,7 @@ export class HereMentionSubtag extends Subtag {
                     exampleCode: '{heremention}',
                     exampleOut: '@here',
                     returns: 'string',
-                    execute: (ctx, args) => this.hereMention(ctx, args[0].value)
+                    execute: (ctx, [mention]) => this.hereMention(ctx, mention.value)
                 }
             ]
         });

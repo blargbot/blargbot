@@ -27,7 +27,7 @@ export class RollbackSubtag extends Subtag {
                     exampleCode: '{set;var;Hello!}\n{commit;varr}\n{set;var;GoodBye!}\n{rollback;var}\n{get;var}',
                     exampleOut: 'Hello!',
                     returns: 'nothing',
-                    execute: async (ctx, args) => this.rollback(ctx, args.map((arg) => arg.value))
+                    execute: async (ctx, variables) => this.rollback(ctx, variables.map((arg) => arg.value))
                 }
             ]
         });

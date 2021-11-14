@@ -14,7 +14,7 @@ export class RoleSetNameSubtag extends Subtag {
                     exampleCode: '{rolesetname;admin}',
                     exampleOut: '',
                     returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, args) => this.setRolename(ctx, args[0].value, '', false)
+                    execute: (ctx, [role]) => this.setRolename(ctx, role.value, '', false)
                 },
                 {
                     parameters: ['role', 'name', 'quiet?'],
@@ -23,7 +23,7 @@ export class RoleSetNameSubtag extends Subtag {
                     exampleCode: 'The admin role is now called administrator. {rolesetname;admin;administrator}',
                     exampleOut: 'The admin role is now called administrator.',
                     returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, args) => this.setRolename(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    execute: (ctx, [role, name, quiet]) => this.setRolename(ctx, role.value, name.value, quiet.value !== '')
                 }
             ]
         });
