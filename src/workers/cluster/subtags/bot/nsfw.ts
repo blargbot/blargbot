@@ -14,7 +14,7 @@ export class NsfwSubtag extends Subtag {
                     exampleCode: 'This command is not safe! {nsfw}',
                     exampleOut: 'This command is not safe!',
                     returns: 'nothing',
-                    execute: (context, [{ value: text }]) => { context.state.nsfw = text; }
+                    execute: (context, [text]) => { context.state.nsfw = text.value; }
                 }
             ]
         });

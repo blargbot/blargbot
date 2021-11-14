@@ -16,7 +16,7 @@ export class SubtagExistsSubtag extends Subtag {
                     exampleIn: '{subtagexists;ban} {subtagexists;AllenKey}',
                     exampleOut: 'true false',
                     returns: 'boolean',
-                    execute: (_, [{ value: subtag }]) => this.cluster.subtags.get(subtag) !== undefined
+                    execute: (_, [subtag]) => this.cluster.subtags.get(subtag.value) !== undefined
                 }
             ]
         });

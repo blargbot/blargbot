@@ -17,14 +17,14 @@ export class GetSubtag extends Subtag {
                     exampleCode: '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
                     exampleOut: 'This is local var1\nThis is temporary var2',
                     returns: 'json|nothing',
-                    execute: async (ctx, [{ value: variableName }]) => await this.get(ctx, variableName)
+                    execute: async (ctx, [name]) => await this.get(ctx, name.value)
                 },
                 {
                     parameters: ['name', 'index'],
                     description: 'When variable `name` is an array this will return the element at index `index`.' +
                         ' If `index` is empty the entire array will be returned. If variable is not an array it will return the whole variable.',
                     returns: 'json|nothing',
-                    execute: async (ctx, [{ value: variableName }, { value: index }]) => await this.getArray(ctx, variableName, index)
+                    execute: async (ctx, [name, index]) => await this.getArray(ctx, name.value, index.value)
                 }
             ]
         });

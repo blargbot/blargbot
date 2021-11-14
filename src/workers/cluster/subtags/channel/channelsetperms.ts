@@ -17,7 +17,7 @@ export class ChannelSetPermsSubtag extends Subtag {
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222}',
                     exampleOut: '11111111111111111',
                     returns: 'id',
-                    execute: (ctx, [{ value: channel }, { value: type }, { value: item }]) => this.channelDeleteOverwrite(ctx, channel, type.toLowerCase(), item)
+                    execute: (ctx, [channel, type, item]) => this.channelDeleteOverwrite(ctx, channel.value, type.value.toLowerCase(), item.value)
                 },
                 {
                     parameters: ['channel', 'type', 'memberid|roleid', 'allow', 'deny?'],

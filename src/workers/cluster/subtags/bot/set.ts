@@ -13,7 +13,7 @@ export class SetSubtag extends Subtag {
                     exampleCode: '{set;~var;something}\n{set;~var}\n{get;~var}',
                     exampleOut: '(returns nothing)',
                     returns: 'nothing',
-                    execute: async (ctx, [{ value: variableName }]) => await ctx.variables.set(variableName, undefined)
+                    execute: async (ctx, [name]) => await ctx.variables.set(name.value, undefined)
                 },
                 {
                     parameters: ['name', 'value'],
@@ -27,7 +27,7 @@ export class SetSubtag extends Subtag {
                         '{set;var1;This is local var1}\n{set;~var2;This is temporary var2}\n{get;var1}\n{get;~var2}',
                     exampleOut: 'This is local var1\nThis is temporary var2',
                     returns: 'nothing',
-                    execute: async (ctx, [{ value: variableName }, { value }]) => await this.set(ctx, variableName, value)
+                    execute: async (ctx, [name, value]) => await this.set(ctx, name.value, value.value)
                 },
                 {
                     parameters: ['name', 'values+2'],
@@ -39,7 +39,7 @@ export class SetSubtag extends Subtag {
                     exampleCode: '{set;var3;this;is;an;array}\n{get;var3}',
                     exampleOut: '{"v":["this","is","an","array"],"n":"var3"}',
                     returns: 'nothing',
-                    execute: async (ctx, args) => await this.setArray(ctx, args[0].value, args.slice(1).map((arg) => arg.value))
+                    execute: async (ctx, [name, ...values]) => await this.setArray(ctx, name.value, values.map((arg) => arg.value))
                 }
             ]
         });

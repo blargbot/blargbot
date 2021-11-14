@@ -15,8 +15,8 @@ export class ReturnSubtag extends Subtag {
                     exampleCode: 'This will display. {return} This will not.',
                     exampleOut: 'This will display.',
                     returns: 'nothing',
-                    execute: (context, [{ value: forcedStr }]) => {
-                        const forced = parse.boolean(forcedStr, true);
+                    execute: (context, [forcedStr]) => {
+                        const forced = parse.boolean(forcedStr.value, true);
                         context.state.return = forced ? RuntimeReturnState.ALL : RuntimeReturnState.CURRENTTAG;
                     }
                 }

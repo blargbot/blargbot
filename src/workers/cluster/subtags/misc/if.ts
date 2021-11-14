@@ -20,25 +20,25 @@ export class IfSubtag extends Subtag {
                     parameters: ['boolean', '~then'],
                     description: 'If `boolean` is `true`, return `then`, else do nothing.',
                     returns: 'string',
-                    execute: (_, [{ value: bool }, thenCode]) => this.simpleBooleanCheck(bool, thenCode)
+                    execute: (_, [bool, thenCode]) => this.simpleBooleanCheck(bool.value, thenCode)
                 },
                 {
                     parameters: ['boolean', '~then', '~else'],
                     description: 'If `boolean` is `true`, return `then`, else execute `else`',
                     returns: 'string',
-                    execute: (_, [{ value: bool }, thenCode, elseCode]) => this.simpleBooleanCheck(bool, thenCode, elseCode)
+                    execute: (_, [bool, thenCode, elseCode]) => this.simpleBooleanCheck(bool.value, thenCode, elseCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then'],
                     description: '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`.',
                     returns: 'string',
-                    execute: (_, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode]) => this.evaluatorCheck(value1, evaluator, value2, thenCode)
+                    execute: (_, [value1, evaluator, value2, thenCode]) => this.evaluatorCheck(value1.value, evaluator.value, value2.value, thenCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then', '~else'],
                     description: '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
                     returns: 'string',
-                    execute: (_, [{ value: value1 }, { value: evaluator }, { value: value2 }, thenCode, elseCode]) => this.evaluatorCheck(value1, evaluator, value2, thenCode, elseCode)
+                    execute: (_, [value1, evaluator, value2, thenCode, elseCode]) => this.evaluatorCheck(value1.value, evaluator.value, value2.value, thenCode, elseCode)
                 }
             ]
         });

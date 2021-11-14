@@ -23,7 +23,7 @@ export class DeleteSubtag extends Subtag {
                     exampleIn: '{//;The message with ID `111111111111111111` will be deleted}\n{delete;111111111111111111}',
                     exampleOut: '(the message `111111111111111111` got deleted idk how to do examples for this)',
                     returns: 'nothing',
-                    execute: (ctx, [{ value: msgId }]) => this.deleteMessage(ctx, ctx.channel.id, msgId)
+                    execute: (ctx, [messageId]) => this.deleteMessage(ctx, ctx.channel.id, messageId.value)
                 },
                 {
                     parameters: ['channel', 'messageId'],
@@ -31,7 +31,7 @@ export class DeleteSubtag extends Subtag {
                     exampleIn: '{//;The message with ID `2222222222222222` from channel `1111111111111111` will be deleted}\n{delete;111111111111111111;2222222222222222}',
                     exampleOut: '(the message `2222222222222222` from channel `1111111111111111` got deleted)',
                     returns: 'nothing',
-                    execute: (ctx, args) => this.deleteMessage(ctx, args[0].value, args[1].value)
+                    execute: (ctx, [channel, messageId]) => this.deleteMessage(ctx, channel.value, messageId.value)
                 }
             ]
         });
