@@ -1,6 +1,7 @@
 import { SubtagArgumentArray, SubtagCall, SubtagLogic } from '@cluster/types';
 
 import { BBTagContext } from '../BBTagContext';
+import { BBTagRuntimeError } from '../errors';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class ArrayWithErrorsSubtagLogic extends SubtagLogicWrapper {
@@ -8,18 +9,23 @@ export class ArrayWithErrorsSubtagLogic extends SubtagLogicWrapper {
         super();
     }
 
-    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string> {
+    protected async *getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {
         const values = await this.logic.execute(context, args, subtag);
         if (Array.isArray(values))
             return yield JSON.stringify(values);
 
-        yield '[';
-        for await (const item of this.toAsyncIterable(values))
-            yield JSON.stringify(item);
-        yield ']';
-    }
+        const result = [];
+        try {
+            for await (const item of this.toAsyncIterable(values)) {
+                yield undefined;
+                result.push(item);
+            }
+        } catch (err: unknown) {
+            if (!(err instanceof BBTagRuntimeError))
+                throw err;
+            result.push(context.addError(err, subtag));
+        }
 
-    protected formatError(display: string): Iterable<string> {
-        return [JSON.stringify(display), ']'];
+        yield JSON.stringify(result);
     }
 }

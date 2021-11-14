@@ -10,14 +10,11 @@ export abstract class SubtagLogicWrapper implements SubtagLogic<SubtagResult> {
         } catch (error: unknown) {
             if (!(error instanceof BBTagRuntimeError))
                 throw error;
-            yield* await this.formatError(context.addError(error, subtag));
+            yield context.addError(error, subtag);
         }
     }
 
     protected abstract getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Awaitable<SubtagResult | Iterable<string | undefined>>;
-    protected formatError(display: string): Awaitable<SubtagResult | Iterable<string | undefined>> {
-        return [display];
-    }
 
     // eslint-disable-next-line @typescript-eslint/require-await
     protected async *toAsyncIterable<T>(source: AsyncIterable<T> | Iterable<T>): AsyncGenerator<T, void, undefined> {
