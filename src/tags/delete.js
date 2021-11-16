@@ -35,7 +35,7 @@ module.exports =
 
             if (msg.id !== messageId)
                 try {
-                    msg = await bot.getMessage(channel.id, messageId);
+                    msg = await bu.getMessage(channel.id, messageId);
                 } catch (err) {
                     return Builder.errors.noMessageFound(subtag, context);
                 }

@@ -92,7 +92,7 @@ ${snippet.content}
                 let msg3 = await bu.send(snippet.snippet ? snippetChannel : commandChannel, content);
                 await msg3.addReaction(snippet.snippet ? '👍' : ':calp:298905944224563201');
 
-                let msg2 = await bot.getMessage(queue, snippet.msgid);
+                let msg2 = await bu.getMessage(queue, snippet.msgid);
                 content = msg2.content.split('\n');
                 content[0] = `✅ **Approved** \`${snippet.id}\``;
                 await r.table('snippet').get(snippet.id).update({ status: 'approved' });
@@ -107,7 +107,7 @@ ${snippet.content}
                 if (!snippet) return await bu.send(msg, 'There is no snippet with that ID.');
                 if (snippet.status) return await bu.send(msg, `That snippet has already been ${snippet.status}!`);
                 let reason = words.slice(3).join(' ');
-                let msg2 = await bot.getMessage(queue, snippet.msgid);
+                let msg2 = await bu.getMessage(queue, snippet.msgid);
                 let content = msg2.content.split('\n');
                 content[0] = `❌ **Rejected** \`${snippet.id}\``;
                 await r.table('snippet').get(snippet.id).update({ status: 'rejected' });

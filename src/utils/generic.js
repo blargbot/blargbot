@@ -675,8 +675,12 @@ bu.getMessage = async function (channelId, messageId) {
         let messageAttempt = channel.messages.get(messageId);
         if (messageAttempt) return messageAttempt;
         try {
-            return await bot.getMessage(channelId, messageId);
-        } catch (e) { }
+            const msg = await bot.getMessage(channelId, messageId);
+            channel.messages.set(msg);
+            return msg;
+        } catch (e) {
+            console.error(e);
+        }
     }
     return null;
 };
@@ -728,15 +732,6 @@ bu.getRole = async function (msg, query, options = {}) {
             return null;
         }
     }
-};
-
-bu.getMessage = async function (channelId, messageId) {
-    if (/^\d{17,23}$/.test(messageId)) {
-        try {
-            return await bot.getMessage(channelId, messageId);
-        } catch (e) { }
-    }
-    return null;
 };
 
 /**
@@ -1211,21 +1206,42 @@ bu.logEvent = async function (guildid, userids, event, fields, embed) {
     }
 };
 
-bu.getAudit = async function (guildId, targetId, type) {
+const auditCache = {};
+
+async function getAudit(guildId, type) {
     try {
         let guild = bot.guilds.get(guildId);
-        let user = bot.users.get(targetId);
-        let al = await bot.getGuildAuditLogs(guild.id, 50, null, type);
+        return await bot.getGuildAuditLogs(guild.id, 50, null, type);
+    } catch (err) {
+        // may not have audit log perms
+        return null;
+    }
+}
+
+bu.getAudit = async function(guildId, targetId, type) {
+    if (!auditCache[guildId]) {
+        auditCache[guildId] = {};
+    }
+    if (!auditCache[guildId][type]) {
+        auditCache[guildId][type] = new Promise(async res => {
+            await bu.sleep(1000);
+            const al = await getAudit(guildId, type);
+            res(al);
+
+            delete auditCache[guildId][type];
+        });
+    }
+    const al = await auditCache[guildId][type];
+
+    if (al) {
         for (const e of al.entries) {
             if (e.targetID === targetId) {
                 return e;
             }
         }
-        return null;
-    } catch (err) {
-        // may not have audit log perms
-        return null;
     }
+
+    return null;
 };
 
 bu.getFullName = function (user) {

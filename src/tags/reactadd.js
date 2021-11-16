@@ -38,7 +38,7 @@ module.exports =
             // Check that the current first "emote" is a message id
             if (/^\d{17,23}$/.test(emotes[0])) {
                 try {
-                    message = await bot.getMessage(channel.id, emotes[0]);
+                    message = await bu.getMessage(channel.id, emotes[0]);
                 } catch (e) { }
                 finally {
                     if (!message) return Builder.errors.noMessageFound(subtag, context);

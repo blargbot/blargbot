@@ -6,7 +6,7 @@ bot.on('messageReactionAdd', async function (msg, emoji, user) {
 
     if (!msg.author) {
         try {
-            msg = await bot.getMessage(msg.channel.id, msg.id);
+            msg = await bu.getMessage(msg.channel.id, msg.id);
         } catch (err) {
             console.warn(`Was unable to retrieve reacted message?\n- ${err.message}\n- Channel: ${msg.channel.id}\n- Bot has seen channel: ${!!bot.getChannel(msg.channel.id)}\n- Emoji: ${JSON.stringify(emoji)}`);
             return;

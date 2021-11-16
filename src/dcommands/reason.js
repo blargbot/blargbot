@@ -28,7 +28,7 @@ class ReasonCommand extends BaseCommand {
                 let modlog = storedGuild.modlog;
                 let index = latest ? modlog.length - 1 : caseid;
                 if (modlog.length > 0 && modlog[index]) {
-                    let msg2 = await bot.getMessage(val, modlog[index].msgid);
+                    let msg2 = await bu.getMessage(val, modlog[index].msgid);
 
                     var content = msg2.content;
                     content = content.replace(/\*\*Reason:\*\*.+?\n/, `**Reason:** ${words.join(' ')}\n`);

@@ -46,6 +46,7 @@ bot.on('guildMemberUpdate', async (guild, member, oldMember) => {
 
             if (roles.length > 0) {
                 let e = await bu.getAudit(guild.id, member.user.id, 25);
+                console.log(e);
                 for (const role of roles) {
                     let r = guild.roles.get(role.id);
                     if (!r) continue;

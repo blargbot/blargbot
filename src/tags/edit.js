@@ -69,7 +69,7 @@ module.exports =
 
             let message;
             try {
-                message = await bot.getMessage(channel.id, messageId);
+                message = await bu.getMessage(channel.id, messageId);
             }
             catch (err) {
                 if (err.code == 10008)

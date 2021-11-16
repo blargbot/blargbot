@@ -150,7 +150,7 @@ class PollCommand extends BaseCommand {
 
     async event(args) {
         console.debug('poll has been triggered');
-        let msg3 = await bot.getMessage(args.channel, args.msg);
+        let msg3 = await bu.getMessage(args.channel, args.msg);
         let reactions = [];
         for (let key in msg3.reactions) {
             msg3.reactions[key].emoji = key;

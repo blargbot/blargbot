@@ -23,7 +23,7 @@ bot.on('guildBanRemove', async function (guild, user) {
     if (lastCase && lastCase.userid == user.id) {
         let val = await bu.guildSettings.get(guild.id, 'modlog');
 
-        let msg2 = await bot.getMessage(val, lastCase.msgid);
+        let msg2 = await bu.getMessage(val, lastCase.msgid);
         let embed = msg2.embeds[0];
 
         if (embed && (Date.now() - Date.now() - moment(embed.timestamp).format('x')) <= 60000) {

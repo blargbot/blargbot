@@ -10,7 +10,7 @@
 bot.on('messageUpdate', async function (msg, oldmsg) {
     if (!oldmsg) {
         try {
-            msg = await bot.getMessage(msg.channel.id, msg.id);
+            msg = await bu.getMessage(msg.channel.id, msg.id);
         } catch (err) {
             return; // Message wasn't found
         }

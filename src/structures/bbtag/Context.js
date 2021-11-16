@@ -287,7 +287,7 @@ class Context {
     static async deserialize(obj) {
         let msg;
         try {
-            msg = await bot.getMessage(obj.msg.channel.id, obj.msg.id);
+            msg = await bu.getMessage(obj.msg.channel.id, obj.msg.id);
         } catch (err) {
             let channel = await bot.getChannel(obj.msg.channel.id);
             let member;
