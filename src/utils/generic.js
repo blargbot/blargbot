@@ -1497,7 +1497,7 @@ bu.postStats = function () {
 
         let shards = [];
         for (const shardId of bot.shards.map(s => s.id)) {
-            shards[shardId] = bot.guilds.filter(g => g.shard.id === shardId);
+            shards[shardId] = bot.guilds.filter(g => g.shard.id === shardId).length;
         }
         request.post({
             url: `https://discordbots.org/api/bots/${bot.user.id}/stats`,
