@@ -288,7 +288,9 @@ class Context {
         let msg;
         try {
             msg = await bu.getMessage(obj.msg.channel.id, obj.msg.id);
-        } catch (err) {
+        } catch (err) { /*no-op*/ };
+
+        if (!msg) {
             let channel = await bot.getChannel(obj.msg.channel.id);
             let member;
             if (channel == null) {
@@ -308,7 +310,8 @@ class Context {
                 attachments: obj.msg.attachments,
                 embeds: obj.msg.embeds
             };
-        }
+        };
+
         let result = new Context({
             msg,
             isCC: obj.isCC,
