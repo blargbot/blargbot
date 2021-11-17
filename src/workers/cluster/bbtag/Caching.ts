@@ -38,12 +38,12 @@ export class VariableCache {
         }
     }
 
-    public async get(variable: string): Promise<JToken> {
+    public async get(variable: string): Promise<JToken | undefined> {
         const entry = await this.#get(variable);
         return entry.value;
     }
 
-    public async set(variable: string, value: JToken): Promise<void> {
+    public async set(variable: string, value: JToken | undefined): Promise<void> {
         const forced = variable.startsWith('!');
         if (forced)
             variable = variable.slice(1);
@@ -67,7 +67,7 @@ export class VariableCache {
         const vars = (variables?.map(key => this.#cache[key]) ?? Object.values(this.#cache))
             .filter(guard.hasValue);
 
-        const pools = new Map<TagVariableScope, Record<string, JToken>>();
+        const pools = new Map<TagVariableScope, Record<string, JToken | undefined>>();
         for (const v of vars) {
             if (!v.changed)
                 continue;
@@ -98,7 +98,7 @@ export class VariableCache {
 class CacheEntry {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #signature: string;
-    public value: JToken;
+    public value: JToken | undefined;
 
     public get changed(): boolean { return this.#signature !== JSON.stringify(this.value); }
 

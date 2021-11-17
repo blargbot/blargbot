@@ -1,7 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class UserNickSubtag extends BaseSubtag {
+export class UserNickSubtag extends Subtag {
     public constructor() {
         super({
             name: 'usernick',
@@ -12,13 +13,15 @@ export class UserNickSubtag extends BaseSubtag {
                     description: 'Returns the nickname of the executing user.',
                     exampleCode: 'Your nick is {usernick}!',
                     exampleOut: 'Your nick is Cool Dude 1337!',
-                    execute: (ctx) => (ctx.member.nickname ?? ctx.user.username).replace(/@/g, '@\u200b')
+                    returns: 'string',
+                    execute: (ctx) => this.getUserNick(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns `user`\'s nickname. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat\'s nickname is {usernick;Stupid cat}!',
                     exampleOut: 'Stupid cat\'s nickname is Secretly Awoken',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserNick(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -31,14 +34,13 @@ export class UserNickSubtag extends BaseSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const member = await context.queryMember(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            const member = await context.util.getMember(context.guild, user.id);
-            if (member !== undefined)
-                return (member.nickname ?? user.username).replace(/@/g, '@\u200b');
+        if (member === undefined) {
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return member.displayName.replace(/@/g, '@\u200b');
     }
 }

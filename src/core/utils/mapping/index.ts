@@ -18,12 +18,14 @@ import { mapObject } from './mapObject';
 import { mapRecord } from './mapRecord';
 import { mapRegex } from './mapRegex';
 import { mapString } from './mapString';
+import { mapTuple } from './mapTuple';
 import { mapUnknown } from './mapUnknown';
 import { result } from './result';
 
 export const mapping = Object.seal({
     create: createMapping,
     array: mapArray,
+    tuple: mapTuple,
     base64: mapBase64,
     bigInt: mapBigInt,
     boolean: mapBoolean,

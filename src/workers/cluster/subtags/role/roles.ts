@@ -1,7 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class RolesSubtag extends BaseSubtag {
+export class RolesSubtag extends Subtag {
     public constructor() {
         super({
             name: 'roles',
@@ -12,6 +13,7 @@ export class RolesSubtag extends BaseSubtag {
                     description: 'Returns an array of roles on the current guild.',
                     exampleCode: 'The roles on this guild are: {roles}.',
                     exampleOut: 'The roles on this guild are: ["11111111111111111","22222222222222222"].',
+                    returns: 'id[]',
                     execute: (ctx) => this.getGuildRoles(ctx)
                 },
                 {
@@ -19,33 +21,30 @@ export class RolesSubtag extends BaseSubtag {
                     description: 'Returns `user`\'s roles in the current guild. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat has the roles: {roles;Stupid cat}',
                     exampleOut: 'Stupid cat has the roles: ["11111111111111111","22222222222222222"]',
+                    returns: 'id[]',
                     execute: (ctx, [userId, quiet]) => this.getUserRoles(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
     }
 
-    public getGuildRoles(
-        context: BBTagContext
-    ): string {
-        return JSON.stringify(context.member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id));
+    public getGuildRoles(context: BBTagContext): string[] {
+        return context.member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id);
     }
 
     public async getUserRoles(
         context: BBTagContext,
         userId: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<string[]> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const member = await context.queryMember(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            const member = await context.util.getMember(context.guild, user.id);
-            if (member !== undefined) {
-                return JSON.stringify(member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id));
-            }
+        if (member === undefined) {
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id);
     }
 }

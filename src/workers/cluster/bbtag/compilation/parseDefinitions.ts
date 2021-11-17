@@ -1,14 +1,17 @@
-import { SubtagHandlerCallSignature, SubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter } from '@cluster/types';
+import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagLogic, SubtagResult, SubtagReturnTypeMap } from '@cluster/types';
+import { parse } from '@cluster/utils';
 
-export function parseDefinitions(definitions: readonly SubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
+import { ArraySubtagLogic, ArrayWithErrorsSubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic';
+
+export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
     return definitions.map(parseDefinition);
 }
 
-function parseDefinition(definition: SubtagHandlerDefinition): SubtagHandlerCallSignature {
+function parseDefinition(definition: AnySubtagHandlerDefinition): SubtagHandlerCallSignature {
     return {
         ...definition,
         parameters: definition.parameters.map(parseArgument),
-        execute: definition.execute
+        implementation: getExecute(definition)
     };
 }
 
@@ -70,3 +73,31 @@ function createParameterGroup(parameters: SubtagHandlerParameter[], minCount: nu
     }
     return { nested, minRepeats: minCount };
 }
+
+function getExecute(definition: AnySubtagHandlerDefinition): SubtagLogic<SubtagResult> {
+    const wrapper = logicWrappers[definition.returns];
+    return new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>);
+}
+
+const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<SubtagResult> } = {
+    ['unknown']: DeferredSubtagLogic,
+    ['number']: StringifySubtagLogic,
+    ['hex']: StringSubtagLogic.withConversion(val => val.toString(16).padStart(6, '0')),
+    ['number[]']: ArraySubtagLogic,
+    ['boolean']: StringifySubtagLogic,
+    ['boolean|number']: StringifySubtagLogic,
+    ['boolean[]']: ArraySubtagLogic,
+    ['string']: StringSubtagLogic,
+    ['string|nothing']: StringSubtagLogic,
+    ['string[]']: ArraySubtagLogic,
+    ['(string|error)[]']: ArrayWithErrorsSubtagLogic,
+    ['json']: StringSubtagLogic.withConversion(parse.string),
+    ['json|nothing']: StringSubtagLogic.withConversion(parse.string),
+    ['json[]']: ArraySubtagLogic,
+    ['json[]|nothing']: ArraySubtagLogic,
+    ['nothing']: IgnoreSubtagLogic,
+    ['id']: StringSubtagLogic,
+    ['id[]']: ArraySubtagLogic,
+    ['loop']: StringIterableSubtagLogic,
+    ['error']: IgnoreSubtagLogic
+};

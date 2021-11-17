@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
-export class UserHasRoleSubtag extends BaseSubtag {
+export class UserHasRoleSubtag extends Subtag {
     public constructor() {
         super({
             name: 'userhasrole',
@@ -16,14 +16,16 @@ export class UserHasRoleSubtag extends BaseSubtag {
                     description: 'Checks if the executing user has *any* of the provided `roleids`.',
                     exampleCode: '{if;{userhasrole;{roleid;moderator}};You are a moderator; You are not a moderator}',
                     exampleOut: 'You are a moderator',
-                    execute: (ctx, args) => this.userHasRole(ctx, args[0].value, '', false)
+                    returns: 'boolean',
+                    execute: (ctx, [roles]) => this.userHasRole(ctx, roles.value, '', false)
                 },
                 {
                     parameters: ['roleids', 'user', 'quiet?'],
                     description: 'Checks if `user` has *any* of the provided `roleids`. If `quiet` is specified, if `user` or any `roleid` can\'t be found it will simply return `false`.',
                     exampleCode: '{if;{userhasrole;{userid;moderator};Stupid cat};Stupid cat is a moderator;Stupid cat is not a moderator}',
                     exampleOut: 'Stupid cat is a moderator',
-                    execute: (ctx, args) => this.userHasRole(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    returns: 'boolean',
+                    execute: (ctx, [roles, user, quiet]) => this.userHasRole(ctx, roles.value, user.value, quiet.value !== '')
                 }
             ]
         });
@@ -34,20 +36,18 @@ export class UserHasRoleSubtag extends BaseSubtag {
         roleStr: string,
         userStr: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<boolean> {
         const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
 
         if (result.member === undefined) {
-            if (quiet)
-                return 'false';
-            throw new UserNotFoundError(userStr);
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
         if (result.roles.length === 0) {
-            if (quiet)
-                return 'false';
-            throw new RoleNotFoundError(userStr);
+            throw new RoleNotFoundError(userStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
 
-        return result.hasRole.reduce((a, b) => a || b, false).toString();
+        return result.hasRole.some(b => b);
     }
 }

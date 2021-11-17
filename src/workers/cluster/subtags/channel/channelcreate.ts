@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
 import { GuildChannelCreateOptions, OverwriteData } from 'discord.js';
 
-export class ChannelCreateSubtag extends BaseSubtag {
+export class ChannelCreateSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelcreate',
@@ -15,6 +15,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
                     description: 'Creates a channel of type `type`',
                     exampleCode: '{channelcreate;super-voice-channel;voice}',
                     exampleOut: '11111111111111111',
+                    returns: 'id',
                     execute: (ctx, [name, type]) => this.channelCreate(ctx, name.value, type.value, '{}')
                 },
                 {
@@ -31,6 +32,7 @@ export class ChannelCreateSubtag extends BaseSubtag {
                         'Returns the new channel\'s ID.',
                     exampleCode: '{channelcreate;super-channel;;{json;{"parentID":"11111111111111111"}}}',
                     exampleOut: '22222222222222222',
+                    returns: 'id',
                     execute: (ctx, [name, type, options]) => this.channelCreate(ctx, name.value, type.value, options.value)
                 }
             ]

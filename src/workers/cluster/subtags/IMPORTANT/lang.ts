@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class LangSubtag extends BaseSubtag {
+export class LangSubtag extends Subtag {
     public constructor() {
         super({
             name: 'lang',
@@ -13,9 +13,14 @@ export class LangSubtag extends BaseSubtag {
                     description: 'Specifies which `language` should be used when viewing the raw of this tag',
                     exampleCode: 'This will be displayed with js! {lang;js}.',
                     exampleOut: 'This will be displayed with js!.',
-                    execute: () => ''
+                    returns: 'nothing',
+                    execute: () => this.godIHateThisSubtag()
                 }
             ]
         });
+    }
+
+    public godIHateThisSubtag(): void {
+        /* NOOP */
     }
 }

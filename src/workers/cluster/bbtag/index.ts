@@ -1,7 +1,8 @@
 import { get as getLock } from './lock';
 
 export * from './arguments';
-export * from './BaseSubtag';
+export * from './Subtag';
+export * from './RegexSubtag';
 export * from './BBTagContext';
 export * from './Caching';
 export * from './docs';

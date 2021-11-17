@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class Argslength extends BaseSubtag {
+export class Argslength extends Subtag {
     public constructor() {
         super({
             name: 'argslength',
@@ -13,9 +13,14 @@ export class Argslength extends BaseSubtag {
                     exampleCode: 'You said {argslength} words.',
                     exampleIn: 'I am saying things.',
                     exampleOut: 'You said 4 words.',
-                    execute: (ctx) => ctx.input.length.toString()
+                    returns: 'number',
+                    execute: (ctx) => this.getArgsLength(ctx)
                 }
             ]
         });
+    }
+
+    public getArgsLength(context: BBTagContext): number {
+        return context.input.length;
     }
 }

@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 
 const dmCache: DMCache = {};
 
-export class DMSubtag extends BaseSubtag {
+export class DMSubtag extends Subtag {
     public constructor() {
         super({
             name: 'dm',
@@ -17,6 +17,7 @@ export class DMSubtag extends BaseSubtag {
                         'Please note that `embed` is the JSON for an embed object, don\'t put the `{embed}` subtag there, as nothing will show.',
                     exampleCode: '{dm;stupid cat;Hello;{embedbuild;title:You\'re cool}}',
                     exampleOut: 'DM: Hello\nEmbed: You\'re cool',
+                    returns: 'nothing',
                     execute: (ctx, [user, content, embed]) => this.sendDm(ctx, user.value, content.value, embed.value)
                 }
             ]
@@ -28,18 +29,14 @@ export class DMSubtag extends BaseSubtag {
         userStr: string,
         messageStr: string,
         embedStr?: string
-    ): Promise<string | void> {
+    ): Promise<void> {
         const member = await context.queryMember(userStr);
-        let content: string | undefined = messageStr;
-        let embed = discordUtil.parseEmbed(messageStr);
-
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
-        if (embed !== undefined && embed.malformed !== true)
-            content = undefined;
-        else
-            embed = discordUtil.parseEmbed(embedStr);
+        const messageAsEmbeds = parse.embed(messageStr, false);
+        const embeds = messageAsEmbeds ?? parse.embed(embedStr);
+        const content = messageAsEmbeds === undefined ? messageStr : undefined;
 
         try {
             const dmChannel = member.user.dmChannel ?? await member.createDM();
@@ -58,7 +55,7 @@ export class DMSubtag extends BaseSubtag {
             }
             await context.util.send(dmChannel.id, {
                 content,
-                embeds: embed !== undefined ? [embed] : undefined,
+                embeds,
                 nsfw: context.state.nsfw
             });
             cache.count++;

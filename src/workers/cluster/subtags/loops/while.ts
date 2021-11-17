@@ -1,9 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { TooManyLoopsError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValue, SubtagCall } from '@cluster/types';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { RuntimeReturnState, SubtagArgument } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class WhileSubtag extends BaseSubtag {
+export class WhileSubtag extends Subtag {
     public constructor() {
         super({
             name: 'while',
@@ -14,7 +13,8 @@ export class WhileSubtag extends BaseSubtag {
                     description: 'This will continuously execute `code` for as long as `boolean` returns `true`.',
                     exampleCode: '{set;~x;0}\n{set;~end;false}\n{while;{get;~end};\n\t{if;{increment;~x};==;10;\n\t\t{set;~end;true}\n\t}\n}\n{get;~end}',
                     exampleOut: '10',
-                    execute: (ctx, args, subtag) => this.executeWhile(ctx, args[0], '==', 'true', args[1], subtag)
+                    returns: 'loop',
+                    execute: (ctx, [bool, code]) => this.while(ctx, bool, '==', 'true', code)
                 },
                 {
                     parameters: ['~value1', '~evaluator', '~value2', '~code'],
@@ -23,57 +23,44 @@ export class WhileSubtag extends BaseSubtag {
                         'Valid evaluators are `' + Object.keys(bbtagUtil.operators.compare).join('`, `') + '`.',
                     exampleCode: '{set;~x;0}\n{while;{get;~x};<=;10;{increment;~x},}.',
                     exampleOut: '1,2,3,4,5,6,7,8,9,10,11,',
-                    execute: (ctx, args, subtag) => this.executeWhile(ctx, args[0], args[1], args[2], args[3], subtag)
+                    returns: 'loop',
+                    execute: (ctx, [val1, evaluator, val2, code]) => this.while(ctx, val1, evaluator, val2, code)
                 }
             ]
         });
     }
 
-    public async executeWhile(
+    public async * while(
         context: BBTagContext,
-        val1Raw: SubtagArgumentValue,
-        evaluator: SubtagArgumentValue | string,
-        val2Raw: SubtagArgumentValue | string,
-        codeRaw: SubtagArgumentValue,
-        subtag: SubtagCall
-    ): Promise<string> {
-        let result = '';
-        try {
-            while (result.length < 1000000) {
-                await context.limit.check(context, subtag, 'while:loops');
-                let right = await val1Raw.execute();
-                let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
-                let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
+        val1Raw: SubtagArgument,
+        evaluator: SubtagArgument | string,
+        val2Raw: SubtagArgument | string,
+        codeRaw: SubtagArgument
+    ): AsyncIterable<string> {
+        while (context.state.return === RuntimeReturnState.NONE) {
+            await context.limit.check(context, 'while:loops');
 
-                if (bbtagUtil.operators.isCompareOperator(operator)) {
-                    //operator = operator;
-                } else if (bbtagUtil.operators.isCompareOperator(left)) {
-                    //operator = left;
-                    [left, operator] = [operator, left];
-                } else if (bbtagUtil.operators.isCompareOperator(right)) {
-                    //operator = right;
-                    [operator, right] = [right, operator];
-                }
+            let right = await val1Raw.execute();
+            let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
+            let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
 
-                if (bbtagUtil.operators.isCompareOperator(operator)) {
-                    if (bbtagUtil.operators.compare[operator](right, left))
-                        result += await codeRaw.execute();
-                    else {
-                        break;
-                    }
-                } else {
-                    //TODO invalid operator stuff here
-                    result += await codeRaw.execute();
-                }
+            if (bbtagUtil.operators.isCompareOperator(operator)) {
+                //operator = operator;
+            } else if (bbtagUtil.operators.isCompareOperator(left)) {
+                //operator = left;
+                [left, operator] = [operator, left];
+            } else if (bbtagUtil.operators.isCompareOperator(right)) {
+                //operator = right;
+                [operator, right] = [right, operator];
             }
-        } catch (error: unknown) {
-            if (!(error instanceof TooManyLoopsError))
-                throw error;
 
-            //* Not sure how I feel about subtags appending this error to the result. imo this should be the error should be returned
-            // TODO change to be a AsyncIterable
-            result += context.addError(error, subtag);
+            if (!bbtagUtil.operators.isCompareOperator(operator))
+                //TODO invalid operator stuff here
+                yield await codeRaw.execute();
+            else if (!bbtagUtil.operators.compare[operator](right, left))
+                break;
+            else
+                yield await codeRaw.execute();
         }
-        return result;
     }
 }

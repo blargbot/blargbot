@@ -340,14 +340,12 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
     private validateRegex(context: GuildCommandContext, pattern: string): string | undefined {
         const result = createSafeRegExp(pattern);
-        if (!result.success) {
-            switch (result.reason) {
-                case 'tooLong': return this.error('Regex is too long!');
-                case 'invalid': return this.error('Regex is invalid!');
-                case 'unsafe': return this.error('Regex is unsafe!\n') +
-                    'If you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\n' +
-                    'You can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>';
-            }
+        switch (result.state) {
+            case 'tooLong': return this.error('Regex is too long!');
+            case 'invalid': return this.error('Regex is invalid!');
+            case 'unsafe': return this.error('Regex is unsafe!\n' +
+                'If you are 100% sure your regex is valid, it has likely been blocked due to how I detect catastrophic backtracking.\n' +
+                'You can find more info about catastrophic backtracking here: <https://www.regular-expressions.info/catastrophic.html>');
         }
         const testPhrases = [];
         for (const set of [letters, numbers, symbols, holyShitSymbols]) {

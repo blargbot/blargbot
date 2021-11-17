@@ -1,8 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { createSafeRegExp, SubtagType } from '@cluster/utils';
+import { RegexSubtag } from '@cluster/bbtag';
+import { SubtagType } from '@cluster/utils';
 
-export class RegexTestSubtag extends BaseSubtag {
+export class RegexTestSubtag extends RegexSubtag {
     public constructor() {
         super({
             name: 'regextest',
@@ -15,31 +14,15 @@ export class RegexTestSubtag extends BaseSubtag {
                         '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',
                     exampleCode: '{regextest;apple;/p+/i} {regextest;banana;/p+/i}',
                     exampleOut: 'true false',
-                    execute: (_context, [{ value: text }, { raw: regexStr }]): string | void => {
-                        try {
-                            const regexResult = createSafeRegExp(regexStr);
-                            if (!regexResult.success) {
-                                let reason: string;
-                                switch (regexResult.reason) {
-                                    case 'invalid':
-                                        reason = 'Invalid Regex';
-                                        break;
-                                    case 'tooLong':
-                                        reason = 'Regex too long';
-                                        break;
-                                    case 'unsafe':
-                                        reason = 'Unsafe Regex';
-                                }
-                                throw new BBTagRuntimeError(reason);
-                            }
-                            return regexResult.regex.test(text).toString();
-                        } catch (e: unknown) {
-                            if (e instanceof Error)
-                                throw new BBTagRuntimeError(e.message);
-                        }
-                    }
+                    returns: 'boolean',
+                    execute: (_, [text, regex]) => this.regexTest(text.value, regex.raw)
                 }
             ]
         });
+    }
+
+    public regexTest(text: string, regexStr: string): boolean {
+        const regex = this.createRegex(regexStr);
+        return regex.test(text);
     }
 }

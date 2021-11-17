@@ -1,4 +1,5 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 import Color from 'color';
 
@@ -19,7 +20,7 @@ interface RGBColor extends Color {
 }
 
 type ConvertedColor = RGBColor | { color: string; model: 'hex'; } | string;
-export class ColorSubtag extends BaseSubtag {
+export class ColorSubtag extends Subtag {
     public constructor() {
         super({
             name: 'color',
@@ -31,14 +32,16 @@ export class ColorSubtag extends BaseSubtag {
                     description: 'Converts a color to `outputFormat`.',
                     exampleCode: '{color;#4286f4;RGB}',
                     exampleOut: '[66,134,244]',
-                    execute: (ctx, args) => this.parseColor(ctx, args[0].value, args[1].value, undefined)
+                    returns: 'string',
+                    execute: (ctx, [color, format]) => this.parseColor(ctx, color.value, format.value, undefined)
                 },
                 {
                     parameters: ['color', 'outputFormat:hex', 'inputFormat'],
                     description: 'Converts a color of `inputFormat` to `outputFormat`. If `inputFormat` is left empty, it will be automatically calculated.',
                     exampleCode: '{color;[66,134,244];hex;RGB}',
                     exampleOut: '#4286f4',
-                    execute: (ctx, args) => this.parseColor(ctx, args[0].value, args[1].value, args[2].value as ColorFormat)
+                    returns: 'string',
+                    execute: (ctx, [color, outFormat, inFormat]) => this.parseColor(ctx, color.value, outFormat.value, inFormat.value)
                 }
             ]
         });
@@ -50,35 +53,23 @@ export class ColorSubtag extends BaseSubtag {
         outputStr: string,
         inputStr: string | undefined
     ): Promise<string> {
-        if (colorStr === '') return '`Invalid color`'; //TODO Would be better to use this.customError to add it to debug. This applies to the Invalid input/output formats too.
+        if (colorStr === '')
+            throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
         const arr = await getArray(context, colorStr);
-        let input: string | string[];
-        if (arr === undefined || !Array.isArray(arr.v)) {
-            input = colorStr;
-        } else {
-            input = arr.v.map(elem => elem?.toString()).join(',');
-        }
+        const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
         let parsedInput;
-        if (typeof input === 'string') {
-            const match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(input);
-            if (match !== null) {
-                const r = parseInt(match[1]);
-                const g = parseInt(match[2]);
-                const b = parseInt(match[3]);
-                parsedInput = [r, g, b];
-            } else if (inputStr?.toLowerCase() === 'hsl') {
-                input = input.split(',');
-                parsedInput = [];
-                for (const i of input) {
-                    parsedInput.push(i);
-                }
-            } else parsedInput = input;
+        const match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(input);
+        if (match !== null) {
+            const r = parseInt(match[1]);
+            const g = parseInt(match[2]);
+            const b = parseInt(match[3]);
+            parsedInput = [r, g, b];
+        } else if (inputStr?.toLowerCase() === 'hsl') {
+            parsedInput = input.split(',');
         } else {
             parsedInput = input;
         }
-
-        let color: Color | undefined;
 
         let inputFormat: undefined | ColorFormat;
         if (inputStr === undefined) {
@@ -86,27 +77,29 @@ export class ColorSubtag extends BaseSubtag {
         } else if (isColorFormat(inputStr)) {
             inputFormat = inputStr.toLowerCase();
         } else {
-            return '`Invalid input method`';
+            throw new BBTagRuntimeError('Invalid input method', `${JSON.stringify(inputStr)} is not valid`);
         }
 
         let outputFormat: ColorFormat;
         if (isColorFormat(outputStr)) {
             outputFormat = outputStr.toLowerCase();
         } else {
-            return '`Invalid input method`';
+            throw new BBTagRuntimeError('Invalid input method', `${JSON.stringify(outputStr)} is not valid`);
         }
 
+        let color: Color | undefined;
         try {
             color = Color(parsedInput, inputFormat);
         } catch (e: unknown) {
             color = Color(`#${parsedInput.toString()}`, inputFormat);
         }
 
-        if (typeof color === 'undefined') return '`Invalid color`';
-        if (!formats.includes(outputFormat)) return '`Invalid output method`';
+        if (typeof color === 'undefined')
+            throw new BBTagRuntimeError('Invalid color', colorStr);
+        if (!formats.includes(outputFormat))
+            throw new BBTagRuntimeError('Invalid output method', `${JSON.stringify(outputFormat)} is not a valid`);
 
         let converted = color[outputFormat]() as ConvertedColor;
-
         if (typeof converted === 'object') {
             if (converted.model === 'rgb' && typeof converted.color !== 'undefined') {
                 for (let i = 0; i < converted.color.length; i++) {
@@ -117,11 +110,14 @@ export class ColorSubtag extends BaseSubtag {
             if (typeof converted.color === 'object') {
                 return JSON.stringify(converted.color);
             }
-            if (converted.color?.indexOf('#') === 0) converted.color = converted.color.replace('#', '');
+            if (converted.color?.indexOf('#') === 0)
+                converted.color = converted.color.replace('#', '');
             return converted.color !== undefined ? converted.color : '';
 
         }
-        if (converted.startsWith('#')) converted = converted.replace('#', '');
+
+        if (converted.startsWith('#'))
+            converted = converted.replace('#', '');
         return converted;
 
     }

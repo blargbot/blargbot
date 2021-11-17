@@ -1,4 +1,4 @@
-import { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
+import type { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
 import { Snowflake } from 'catflake';
 import { ChannelInteraction, Client as Discord, EmbedFieldData, FileOptions, Guild, GuildMember, InteractionButtonOptions, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
@@ -8,7 +8,7 @@ import { Binder } from './Binder';
 import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from './Configuration';
 import { WorkerConnection } from './worker';
 
-export type MalformedEmbed = { fields: [EmbedFieldData]; malformed: boolean; };
+export type MalformedEmbed = { fields: [EmbedFieldData]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
 export type DMContext = string | Message | User | GuildMember;
 export type SendContext = UserChannelInteraction | ChannelInteraction | TextBasedChannels | string
@@ -941,8 +941,8 @@ export interface DumpsTable {
 }
 
 export interface TagVariablesTable {
-    upsert(values: Record<string, JToken>, type: SubtagVariableType, scope: string): Promise<void>;
-    get(name: string, type: SubtagVariableType, scope: string): Promise<JToken>;
+    upsert(values: Record<string, JToken | undefined>, type: SubtagVariableType, scope: string): Promise<void>;
+    get(name: string, type: SubtagVariableType, scope: string): Promise<JToken | undefined>;
 }
 
 export interface SuggestorsTable {

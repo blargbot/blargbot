@@ -1,7 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { RoleNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class RoleNameSubtag extends BaseSubtag {
+export class RoleNameSubtag extends Subtag {
     public constructor() {
         super({
             name: 'rolename',
@@ -12,6 +13,7 @@ export class RoleNameSubtag extends BaseSubtag {
                     description: 'Returns `role`\'s name. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role name is: {rolename;admin}.',
                     exampleOut: 'The admin role name is: Adminstrator.',
+                    returns: 'string',
                     execute: (ctx, [roleId, quiet]) => this.getRoleName(ctx, roleId.value, quiet.value !== '')
                 }
             ]
@@ -26,10 +28,11 @@ export class RoleNameSubtag extends BaseSubtag {
         quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleId, { noLookup: quiet });
 
-        if (role !== undefined) {
-            return role.name;
+        if (role === undefined) {
+            throw new RoleNotFoundError(roleId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return role.name;
     }
 }

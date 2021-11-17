@@ -58,8 +58,8 @@ export interface TagVariableScope {
     readonly name: string;
     readonly prefix: string;
     readonly description: string;
-    setter(context: BBTagContext, values: Record<string, JToken>): Promise<void>;
-    getter(context: BBTagContext, name: string): Promise<JToken>;
+    setter(context: BBTagContext, values: Record<string, JToken | undefined>): Promise<void>;
+    getter(context: BBTagContext, name: string): Promise<JToken | undefined>;
     getLock(context: BBTagContext, key: string): ReadWriteLock;
 }
 

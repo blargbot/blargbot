@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildIdSubtag extends BaseSubtag {
+export class GuildIdSubtag extends Subtag {
     public constructor() {
         super({
             name: 'guildid',
@@ -12,9 +12,14 @@ export class GuildIdSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'The guild\'s id is {guildid}',
                     exampleOut: 'The guild\'s id is 1234567890123456',
-                    execute: (ctx) => ctx.guild.id
+                    returns: 'id',
+                    execute: (ctx) => this.getGuildId(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildId(context: BBTagContext): string {
+        return context.guild.id;
     }
 }

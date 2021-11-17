@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class RollbackSubtag extends BaseSubtag {
+export class RollbackSubtag extends Subtag {
     public constructor() {
         super({
             name: 'rollback',
@@ -18,6 +18,7 @@ export class RollbackSubtag extends BaseSubtag {
                     description: 'Rollback all variables',
                     exampleCode: '{set;var;Hello!}\n{commit}\n{set;var;GoodBye!}\n{rollback}\n{get;var}',
                     exampleOut: 'Hello!',
+                    returns: 'nothing',
                     execute: (ctx) => this.rollback(ctx, [])
                 },
                 {
@@ -25,7 +26,8 @@ export class RollbackSubtag extends BaseSubtag {
                     description: 'Rollback provided `variables`',
                     exampleCode: '{set;var;Hello!}\n{commit;varr}\n{set;var;GoodBye!}\n{rollback;var}\n{get;var}',
                     exampleOut: 'Hello!',
-                    execute: async (ctx, args) => this.rollback(ctx, args.map((arg) => arg.value))
+                    returns: 'nothing',
+                    execute: async (ctx, variables) => this.rollback(ctx, variables.map((arg) => arg.value))
                 }
             ]
         });
@@ -38,7 +40,7 @@ export class RollbackSubtag extends BaseSubtag {
         const values = args.length === 0
             ? context.variables.list.map(entry => entry.key)
             : bbtagUtil.tagArray.flattenArray(args)
-                .map((value) => typeof value === 'object' ? JSON.stringify(value) : value?.toString() ?? '');
+                .map((value) => typeof value === 'object' ? JSON.stringify(value) : value.toString());
         for (const variable of values)
             await context.variables.reset(variable);
     }

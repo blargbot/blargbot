@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildIcon extends BaseSubtag {
+export class GuildIcon extends Subtag {
     public constructor() {
         super({
             name: 'guildicon',
@@ -12,9 +12,14 @@ export class GuildIcon extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'The guild\'s icon is {guildicon}',
                     exampleOut: 'The guild\'s icon is (icon url)',
-                    execute: (ctx) => ctx.guild.iconURL({ size: 512, format: 'png', dynamic: true }) ?? ''
+                    returns: 'string|nothing',
+                    execute: (ctx) => this.getGuildIcon(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildIcon(context: BBTagContext): string | undefined {
+        return context.guild.iconURL({ size: 512, format: 'png', dynamic: true }) ?? undefined;
     }
 }

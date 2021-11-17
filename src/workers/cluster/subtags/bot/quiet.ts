@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class QuietSubtag extends BaseSubtag {
+export class QuietSubtag extends Subtag {
     public constructor() {
         super({
             name: 'quiet',
@@ -12,11 +12,14 @@ export class QuietSubtag extends BaseSubtag {
                     description: 'Tells any subtags that rely on a `quiet` field to be/not be quiet based on `isQuiet. `isQuiet` must be a boolean',
                     exampleCode: '{quiet} {usermention;cat}',
                     exampleOut: 'cat',
-                    execute: (ctx, [quiet]) => {
-                        ctx.scopes.local.quiet = parse.boolean(quiet.value);
-                    }
+                    returns: 'nothing',
+                    execute: (ctx, [quiet]) => this.setQuiet(ctx, quiet.value)
                 }
             ]
         });
+    }
+
+    public setQuiet(context: BBTagContext, valueStr: string): void {
+        context.scopes.local.quiet = parse.boolean(valueStr);
     }
 }

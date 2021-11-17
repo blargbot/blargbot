@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class MinSubtag extends BaseSubtag {
+export class MinSubtag extends Subtag {
     public constructor() {
         super({
             name: 'min',
@@ -12,21 +12,20 @@ export class MinSubtag extends BaseSubtag {
                     description: 'Returns the smallest entry out of `numbers`. If an array is provided, it will be expanded to its individual values.',
                     exampleCode: '{min;50;2;65}',
                     exampleOut: '2',
-                    execute: (_, args) => this.min(args.map(arg => arg.value))
+                    returns: 'number',
+                    execute: (_, values) => this.min(values.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public min(
-        args: string[]
-    ): string {
+    public min(args: string[]): number {
         const flattenedArgs = bbtagUtil.tagArray.flattenArray(args);
         const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
 
         if (parsedArgs.filter(isNaN).length > 0)
-            return 'NaN';
+            return NaN;
 
-        return Math.min(...parsedArgs).toString();
+        return Math.min(...parsedArgs);
     }
 }

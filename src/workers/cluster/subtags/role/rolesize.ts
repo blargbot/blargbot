@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { RoleNotFoundError } from '@cluster/bbtag/errors';
 import { /*parse,*/ SubtagType } from '@cluster/utils'; //TODO uncomment parse module for new code
 
-export class RoleSizeSubtag extends BaseSubtag {
+export class RoleSizeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'rolesize',
@@ -14,27 +14,23 @@ export class RoleSizeSubtag extends BaseSubtag {
                     description: 'Returns the amount of people in role `role`',
                     exampleCode: 'There are {rolesize;11111111111111111} people in the role!',
                     exampleOut: 'There are 5 people in the role!',
-                    execute: async (context, [{ value: roleStr }]) => {
-                        //! Above code is the 'new' way, below code is the old way
-                        const role = await context.util.getRole(context.guild.id, roleStr);
-
-                        if (role === undefined)
-                            throw new RoleNotFoundError(roleStr);
-                        return context.guild.members.cache.filter(m => m.roles.cache.has(role.id)).size.toString();
-                    } //TODO new execute code which is more consistent with other role subtags
-                    // execute: async (context, [{value: roleStr}, {value: quietStr}], subtag) => {
-                    //     const quiet = typeof context.scope.quiet === 'boolean' ? context.scope.quiet : parse.boolean(quietStr);
-                    //     const role = await context.getRole(roleStr, {
-                    //         quiet, suppress: context.scope.suppressLookup,
-                    //         label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-                    //     });
-
-                    // if (role === undefined)
-                    //         throw new RoleNotFoundError(roleStr);
-                    //     return context.guild.members.filter(m => m.roles.includes(role.id)).length.toString();
-                    // }
+                    returns: 'number',
+                    execute: (ctx, [role/*, quiet */]) => this.getRoleSize(ctx, role.value/*, quiet.value !== '' */)
                 }
             ]
         });
+    }
+
+    public async getRoleSize(context: BBTagContext, roleStr: string/*, quiet: boolean*/): Promise<number> {
+        /* quiet ||= context.scopes.local.quiet ?? false */
+        /* const role = await context.queryRole(roleStr, {
+            quiet
+        }) */
+        const role = await context.util.getRole(context.guild.id, roleStr);
+
+        if (role === undefined)
+            throw new RoleNotFoundError(roleStr);
+
+        return context.guild.members.cache.filter(m => m.roles.cache.has(role.id)).size;
     }
 }

@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
-export class SpliceSubtag extends BaseSubtag {
+export class SpliceSubtag extends Subtag {
     public constructor() {
         super({
             name: 'splice',
@@ -15,7 +15,8 @@ export class SpliceSubtag extends BaseSubtag {
                     description: 'Removes `deleteCount` elements from `array` starting at `start`.',
                     exampleCode: '{splice;["this", "is", "an", "array"];1;1}',
                     exampleOut: '["is"]',
-                    execute: (ctx, args) => this.spliceArray(ctx, args[0].value, args[1].value, args[2].value, [])
+                    returns: 'json[]',
+                    execute: (ctx, [array, start, delCount]) => this.spliceArray(ctx, array.value, start.value, delCount.value, [])
                 },
                 {
                     parameters: ['array', 'start', 'deleteCount:0', 'items+'],
@@ -23,7 +24,8 @@ export class SpliceSubtag extends BaseSubtag {
                         'Then, adds each `item` at that position in `array`. Returns the removed items.',
                     exampleCode: '{set;~array;["this", "is", "an", "array"]} {splice;{get;~array};1;1;was} {get;~array}',
                     exampleOut: '["is"] {"v":["this","was","an","array"],"n":"~array"}',
-                    execute: (ctx, args) => this.spliceArray(ctx, args[0].value, args[1].value, args[2].value, args.slice(3).map(arg => arg.value))
+                    returns: 'json[]',
+                    execute: (ctx, [array, start, delCount, ...items]) => this.spliceArray(ctx, array.value, start.value, delCount.value, items.map(arg => arg.value))
                 }
             ]
         });
@@ -35,12 +37,12 @@ export class SpliceSubtag extends BaseSubtag {
         startStr: string,
         countStr: string,
         replaceItems: string[]
-    ): Promise<string> {
+    ): Promise<JArray> {
         const arr = await bbtagUtil.tagArray.getArray(context, arrStr);
         const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
 
         const insert = bbtagUtil.tagArray.flattenArray(replaceItems);
-        if (arr === undefined || !Array.isArray(arr.v))
+        if (arr === undefined)
             throw new NotAnArrayError(replaceItems);
 
         const start = parse.int(startStr, false) ?? fallback.value;
@@ -55,6 +57,6 @@ export class SpliceSubtag extends BaseSubtag {
         if (arr.n !== undefined)
             await context.variables.set(arr.n, arr.v);
 
-        return bbtagUtil.tagArray.serialize(result);
+        return result;
     }
 }

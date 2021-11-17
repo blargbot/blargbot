@@ -1,10 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.compare;
 
-export class BoolSubtag extends BaseSubtag {
+export class BoolSubtag extends Subtag {
     public constructor() {
         super({
             name: 'bool',
@@ -18,7 +18,8 @@ export class BoolSubtag extends BaseSubtag {
                         'The positions of `evaluator` and `arg1` can be swapped.',
                     exampleCode: '{bool;5;<=;10}',
                     exampleOut: 'true',
-                    execute: (_, args) => this.runCondition(args[0].value, args[1].value, args[2].value)
+                    returns: 'boolean',
+                    execute: (_, [arg1, evaluator, arg2]) => this.runCondition(arg1.value, evaluator.value, arg2.value)
                 }
             ]
         });
@@ -28,7 +29,7 @@ export class BoolSubtag extends BaseSubtag {
         left: string,
         evaluator: string,
         right: string
-    ): string {
+    ): boolean {
         let operator;
         if (bbtagUtil.operators.isCompareOperator(evaluator)) {
             operator = evaluator;
@@ -43,10 +44,12 @@ export class BoolSubtag extends BaseSubtag {
         }
 
         const leftBool = parse.boolean(left, undefined, false);
-        if (leftBool !== undefined) left = leftBool.toString();
+        if (leftBool !== undefined)
+            left = leftBool.toString();
         const rightBool = parse.boolean(right, undefined, false);
-        if (rightBool !== undefined) right = rightBool.toString();
+        if (rightBool !== undefined)
+            right = rightBool.toString();
 
-        return operators[operator](left, right).toString();
+        return operators[operator](left, right);
     }
 }

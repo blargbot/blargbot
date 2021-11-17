@@ -1,9 +1,9 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
-export class SubstringSubtag extends BaseSubtag {
+export class SubstringSubtag extends Subtag {
     public constructor() {
         super({
             name: 'substring',
@@ -15,20 +15,23 @@ export class SubstringSubtag extends BaseSubtag {
                         '`end` defaults to the length of text.',
                     exampleCode: 'Hello {substring;world;2;3}!',
                     exampleOut: 'Hello r!',
-                    execute: (context, [text, startStr, endStr]) => {
-                        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
-                        const start = parse.int(startStr.value, false) ?? fallback.value;
-                        if (start === undefined)
-                            throw new NotANumberError(startStr.value);
-
-                        const end = parse.int(endStr.value !== '' ? endStr.value : text.value.length, false) ?? fallback.value;
-                        if (end === undefined)
-                            throw new NotANumberError(endStr.value);
-
-                        return text.value.substring(start, end);
-                    }
+                    returns: 'string',
+                    execute: (ctx, [text, start, end]) => this.substring(ctx, text.value, start.value, end.value)
                 }
             ]
         });
+    }
+
+    public substring(context: BBTagContext, text: string, startStr: string, endStr: string): string {
+        const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
+        const start = parse.int(startStr, false) ?? fallback.value;
+        if (start === undefined)
+            throw new NotANumberError(startStr);
+
+        const end = parse.int(endStr !== '' ? endStr : text, false) ?? fallback.value;
+        if (end === undefined)
+            throw new NotANumberError(endStr);
+
+        return text.substring(start, end);
     }
 }

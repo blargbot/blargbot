@@ -1,4 +1,4 @@
-import { WarnDetails, WarnResult } from '@cluster/types';
+import { PardonResult, WarnDetails, WarnResult } from '@cluster/types';
 import { ModerationType } from '@cluster/utils';
 import { GuildMember, User } from 'discord.js';
 
@@ -12,11 +12,11 @@ export class WarnManager extends ModerationManagerBase {
 
     public async warn(member: GuildMember, moderator: User, count: number, reason?: string): Promise<WarnResult> {
         if (count === 0)
-            return { type: ModerationType.WARN, count: 0, state: 'countZero' };
+            return { type: ModerationType.WARN, warnings: 0, state: 'countZero' };
         if (count < 0)
-            return { type: ModerationType.WARN, count: 0, state: 'countNegative' };
+            return { type: ModerationType.WARN, warnings: 0, state: 'countNegative' };
         if (isNaN(count))
-            return { type: ModerationType.WARN, count: 0, state: 'countNaN' };
+            return { type: ModerationType.WARN, warnings: 0, state: 'countNaN' };
 
         const oldCount = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
         const banAt = await this.cluster.database.guilds.getSetting(member.guild.id, 'banat') ?? Infinity;
@@ -25,7 +25,7 @@ export class WarnManager extends ModerationManagerBase {
         let newCount = Math.max(0, oldCount + Math.max(count, 0));
         let result: WarnResult = {
             type: ModerationType.WARN,
-            count: newCount,
+            warnings: newCount,
             state: 'success'
         };
 
@@ -35,7 +35,7 @@ export class WarnManager extends ModerationManagerBase {
             result = {
                 type: ModerationType.BAN,
                 state: await this.manager.bans.ban(member.guild, member.user, moderator, true, undefined, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`),
-                count: newCount
+                warnings: newCount
             };
             if (result.state === 'success')
                 newCount = 0;
@@ -43,7 +43,7 @@ export class WarnManager extends ModerationManagerBase {
             result = {
                 type: ModerationType.KICK,
                 state: await this.manager.bans.kick(member, moderator, true, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
-                count: newCount
+                warnings: newCount
             };
         }
 
@@ -51,21 +51,22 @@ export class WarnManager extends ModerationManagerBase {
         return result;
     }
 
-    public async pardon(member: GuildMember, moderator: User, count: number, reason?: string): Promise<number | 'countNaN' | 'countNegative' | 'countZero'> {
-        if (count === 0)
-            return 'countZero';
-        if (count < 0)
-            return 'countNegative';
-        if (isNaN(count))
-            return 'countNaN';
-
+    public async pardon(member: GuildMember, moderator: User, count: number, reason?: string): Promise<PardonResult> {
         const oldWarnings = await this.cluster.database.guilds.getWarnings(member.guild.id, member.id) ?? 0;
+
+        if (count === 0)
+            return { warnings: oldWarnings, state: 'countZero' };
+        if (count < 0)
+            return { warnings: oldWarnings, state: 'countNegative' };
+        if (isNaN(count))
+            return { warnings: oldWarnings, state: 'countNaN' };
+
         const newCount = Math.max(0, oldWarnings - Math.max(count, 0));
 
         await this.modLog.logPardon(member.guild, member.user, count, newCount, moderator, reason);
         await this.cluster.database.guilds.setWarnings(member.guild.id, member.id, newCount === 0 ? undefined : newCount);
 
-        return newCount;
+        return { warnings: newCount, state: 'success' };
     }
 
     public async details(member: GuildMember): Promise<WarnDetails> {

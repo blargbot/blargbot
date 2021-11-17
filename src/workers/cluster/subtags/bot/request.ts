@@ -1,4 +1,4 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -17,7 +17,7 @@ interface OptionsObject {
 }
 
 interface ResponseObject {
-    body?: Buffer | JToken;
+    body: Buffer;
     text?: string;
     status: number;
     statusText: string;
@@ -26,7 +26,7 @@ interface ResponseObject {
     url: string;
 }
 
-export class RequestSubtag extends BaseSubtag {
+export class RequestSubtag extends Subtag {
     public constructor() {
         super({
             name: 'request',
@@ -42,7 +42,8 @@ export class RequestSubtag extends BaseSubtag {
                     description: 'Performs a GET request to `url`. ',
                     exampleCode: '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
                     exampleOut: 'Hello, world!',
-                    execute: (ctx, args) => this.requestUrl(ctx, args[0].value, '', '')
+                    returns: 'json',
+                    execute: (ctx, [url]) => this.requestUrl(ctx, url.value, '', '')
                 },
                 {
                     parameters: ['url', 'options', 'data?'],
@@ -53,7 +54,8 @@ export class RequestSubtag extends BaseSubtag {
                         'If the method is GET and a JSON object is provided for `data`, it will be formatted as query strings.',
                     exampleCode: '{jget;{request;https://example.com/update/user;{jset;;method;POST};{jset;;user;Stupid cat}};body}',
                     exampleOut: 'Stupid cat updated!',
-                    execute: (ctx, args) => this.requestUrl(ctx, args[0].value, args[1].value, args[2].value)
+                    returns: 'json',
+                    execute: (ctx, [url, options, data]) => this.requestUrl(ctx, url.value, options.value, data.value)
                 }
             ]
         });
@@ -64,7 +66,7 @@ export class RequestSubtag extends BaseSubtag {
         url: string,
         optionsStr: string,
         dataStr: string
-    ): Promise<string | void> {
+    ): Promise<JObject> {
         let domain;
         if (domainRegex.test(url)) {
             const domainRegexMatches = domainRegex.exec(url);
@@ -112,7 +114,7 @@ export class RequestSubtag extends BaseSubtag {
                     throw new BBTagRuntimeError(e.message);
             }
         }
-        let dataObject: JToken;
+        let dataObject: JToken | undefined;
         if (dataStr !== '') {
             try {
                 dataObject = JSON.parse(dataStr);
@@ -158,29 +160,24 @@ export class RequestSubtag extends BaseSubtag {
             if (!(res.status >= 200 && res.status < 400))
                 throw Error(`${res.status} ${res.statusText}`);
 
-            if (!(response.body instanceof Buffer)) {
-                return JSON.stringify(response);
-            }
-
+            let bodyStr: string;
             if (contentType === null || contentType.startsWith('text') === true)
-                response.body = response.body.toString('utf8');
+                bodyStr = response.body.toString('utf8');
             else if (contentType.includes('application/json'))
-                response.body = response.body.toString('utf-8');
+                bodyStr = response.body.toString('utf-8');
             else
-                response.body = response.body.toString('base64');
+                bodyStr = response.body.toString('base64');
             try {
                 if (typeof response.body === 'string')
-                    response.body = JSON.parse(response.body);
+                    return { ...response, body: JSON.parse(response.body) };
             } catch (e: unknown) {
-                //noop
+                //NOOP
             }
-            const stringified = JSON.stringify(response);
-            //console.log(stringified);
-            return stringified;
+            return { ...response, body: bodyStr };
         } catch (e: unknown) {
-            context.logger.error(e);
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);
+            throw e;
         }
     }
 }

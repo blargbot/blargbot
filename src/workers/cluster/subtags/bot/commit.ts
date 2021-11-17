@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class CommitSubtag extends BaseSubtag {
+export class CommitSubtag extends Subtag {
     public constructor() {
         super({
             name: 'commit',
@@ -18,6 +18,7 @@ export class CommitSubtag extends BaseSubtag {
                     description: 'Commit all variables',
                     exampleCode: '{set;var;Hello!}\n{commit}\n{set;var;GoodBye!}\n{rollback}\n{get;var}',
                     exampleOut: 'Hello!',
+                    returns: 'nothing',
                     execute: (ctx) => this.commit(ctx, [])
                 },
                 {
@@ -25,7 +26,8 @@ export class CommitSubtag extends BaseSubtag {
                     description: 'Commit provided `variables`',
                     exampleCode: '{set;var;Hello!}\n{commit;var}\n{set;var;GoodBye!}\n{rollback;var}\n{get;var}',
                     exampleOut: 'Hello!',
-                    execute: async (ctx, args) => this.commit(ctx, args.map((arg) => arg.value))
+                    returns: 'nothing',
+                    execute: (ctx, variables) => this.commit(ctx, variables.map((arg) => arg.value))
                 }
             ]
         });
@@ -38,7 +40,7 @@ export class CommitSubtag extends BaseSubtag {
         const values = args.length === 0
             ? context.variables.list.map(entry => entry.key)
             : bbtagUtil.tagArray.flattenArray(args)
-                .map(value => typeof value === 'object' ? JSON.stringify(value) : value?.toString() ?? '');
+                .map(value => typeof value === 'object' ? JSON.stringify(value) : value.toString());
         await context.variables.persist(values);
     }
 }

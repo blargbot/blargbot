@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class NsfwSubtag extends BaseSubtag {
+export class NsfwSubtag extends Subtag {
     public constructor() {
         super({
             name: 'nsfw',
@@ -13,9 +13,14 @@ export class NsfwSubtag extends BaseSubtag {
                         '`message` is the error to show',
                     exampleCode: 'This command is not safe! {nsfw}',
                     exampleOut: 'This command is not safe!',
-                    execute: (context, [{ value: text }]) => context.state.nsfw = text
+                    returns: 'nothing',
+                    execute: (context, [text]) => this.setNsfw(context, text.value)
                 }
             ]
         });
+    }
+
+    public setNsfw(context: BBTagContext, message: string): void {
+        context.state.nsfw = message;
     }
 }

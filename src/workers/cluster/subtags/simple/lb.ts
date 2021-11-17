@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class LbSubtag extends BaseSubtag {
+export class LbSubtag extends Subtag {
     public constructor() {
         super({
             name: 'lb',
@@ -13,9 +13,14 @@ export class LbSubtag extends BaseSubtag {
                     description: 'Returns `{`',
                     exampleCode: 'This is a bracket! {lb}',
                     exampleOut: 'This is a bracket! {',
-                    execute: () => '{'
+                    returns: 'string',
+                    execute: () => this.getOpenBrace()
                 }
             ]
         });
+    }
+
+    public getOpenBrace(): '{' {
+        return '{';
     }
 }

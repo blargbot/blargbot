@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildOwnerIdSubtag extends BaseSubtag {
+export class GuildOwnerIdSubtag extends Subtag {
     public constructor() {
         super({
             name: 'guildownerid',
@@ -12,9 +12,14 @@ export class GuildOwnerIdSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'The owner\'s id is {guildownerid}.',
                     exampleOut: 'The owner\'s id is 1234567890123456.',
-                    execute: (ctx) => ctx.guild.ownerId
+                    returns: 'id',
+                    execute: (ctx) => this.getGuildOwnerId(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildOwnerId(context: BBTagContext): string {
+        return context.guild.ownerId;
     }
 }

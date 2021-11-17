@@ -1,8 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { createSafeRegExp, SubtagType } from '@cluster/utils';
+import { RegexSubtag } from '@cluster/bbtag';
+import { SubtagType } from '@cluster/utils';
 
-export class RegexSplitSubtag extends BaseSubtag {
+export class RegexSplitSubtag extends RegexSubtag {
     public constructor() {
         super({
             name: 'regexsplit',
@@ -15,31 +14,15 @@ export class RegexSplitSubtag extends BaseSubtag {
                         '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',
                     exampleCode: '{regexsplit;Hello      there, I       am hungry;/[\\s,]+/}',
                     exampleOut: '["Hello","there","I","am","hungry"]',
-                    execute: (_context, [{ value: text }, { raw: regexStr }]): string | void => {
-                        try {
-                            const regexResult = createSafeRegExp(regexStr);
-                            if (!regexResult.success) {
-                                let reason: string;
-                                switch (regexResult.reason) {
-                                    case 'invalid':
-                                        reason = 'Invalid Regex';
-                                        break;
-                                    case 'tooLong':
-                                        reason = 'Regex too long';
-                                        break;
-                                    case 'unsafe':
-                                        reason = 'Unsafe Regex';
-                                }
-                                throw new BBTagRuntimeError(reason);
-                            }
-                            return JSON.stringify(text.split(regexResult.regex));
-                        } catch (e: unknown) {
-                            if (e instanceof Error)
-                                throw new BBTagRuntimeError(e.message);
-                        }
-                    }
+                    returns: 'string[]',
+                    execute: (_, [text, regex]) => this.regexSplit(text.value, regex.raw)
                 }
             ]
         });
+    }
+
+    public regexSplit(text: string, regexStr: string): string[] {
+        const regex = this.createRegex(regexStr);
+        return text.split(regex);
     }
 }

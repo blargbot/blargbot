@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { guard, SubtagType } from '@cluster/utils';
 
-export class FlagSubtag extends BaseSubtag {
+export class FlagSubtag extends Subtag {
     public constructor() {
         super({
             name: 'flag',
@@ -13,15 +13,17 @@ export class FlagSubtag extends BaseSubtag {
                     exampleCode: '{flag;a} {flag;_}',
                     exampleIn: 'Hello, -a world!',
                     exampleOut: 'world! Hello,',
-                    execute: (ctx, [{ value: flagName }]) => this.getFlag(ctx, flagName)
+                    returns: 'string|nothing',
+                    execute: (ctx, [flagName]) => this.getFlag(ctx, flagName.value)
                 }
             ]
         });
     }
 
-    public getFlag(context: BBTagContext, flagName: string): string {
-        if (guard.isLetter(flagName) || flagName === '_')
-            return context.flaggedInput[flagName]?.merge().value ?? '';
-        return '';
+    public getFlag(context: BBTagContext, flagName: string): string | undefined {
+        if (!guard.isLetter(flagName) && flagName !== '_')
+            return undefined;
+
+        return context.flaggedInput[flagName]?.merge().value;
     }
 }

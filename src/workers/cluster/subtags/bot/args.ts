@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ArgsSubtag extends BaseSubtag {
+export class ArgsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'args',
@@ -14,6 +14,7 @@ export class ArgsSubtag extends BaseSubtag {
                     exampleCode: 'You said {args}',
                     exampleIn: 'Hello world! BBtag is so cool',
                     exampleOut: 'You said Hello world! BBtag is so cool',
+                    returns: 'string',
                     execute: (ctx) => this.getAllArgs(ctx)
                 },
                 {
@@ -22,6 +23,7 @@ export class ArgsSubtag extends BaseSubtag {
                     exampleCode: '{args;1}',
                     exampleIn: 'Hello world! BBtag is so cool',
                     exampleOut: 'world!',
+                    returns: 'string',
                     execute: (ctx, [index]) => this.getArg(ctx, index.value)
                 },
                 {
@@ -30,6 +32,7 @@ export class ArgsSubtag extends BaseSubtag {
                     exampleCode: '{args;2;4}',
                     exampleIn: 'Hello world! BBtag is so cool',
                     exampleOut: 'BBtag is',
+                    returns: 'string',
                     execute: (ctx, [start, end]) => this.getArgs(ctx, start.value, end.value)
                 }
             ]

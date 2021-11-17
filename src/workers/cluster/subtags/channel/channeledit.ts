@@ -1,11 +1,11 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, mapping, SubtagType } from '@cluster/utils';
 import { TypeMapping } from '@core/types';
 import { guard } from '@core/utils';
 import { ChannelData, GuildChannels, ThreadEditData } from 'discord.js';
 
-export class ChannelEditSubtag extends BaseSubtag {
+export class ChannelEditSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channeledit',
@@ -26,7 +26,8 @@ export class ChannelEditSubtag extends BaseSubtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channeledit;11111111111111111;{j;{"name": "super-cool-channel"}}}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, args) => this.channelEdit(ctx, [...args.map(arg => arg.value), '{}'])
+                    returns: 'id',
+                    execute: (ctx, [channel, options]) => this.channelEdit(ctx, channel.value, options.value)
                 }
             ]
         });
@@ -34,9 +35,10 @@ export class ChannelEditSubtag extends BaseSubtag {
 
     public async channelEdit(
         context: BBTagContext,
-        args: string[]
+        channelStr: string,
+        options: string
     ): Promise<string> {
-        const channel = await context.queryChannel(args[0]);
+        const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
@@ -47,8 +49,8 @@ export class ChannelEditSubtag extends BaseSubtag {
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         return guard.isThreadChannel(channel)
-            ? await this.channelEditCore(context, channel, args[1], mapThreadOptions)
-            : await this.channelEditCore(context, channel, args[1], mapChannelOptions);
+            ? await this.channelEditCore(context, channel, options, mapThreadOptions)
+            : await this.channelEditCore(context, channel, options, mapChannelOptions);
     }
 
     private async channelEditCore<T>(

@@ -34,7 +34,7 @@ export class ModLogManager {
                 const banObject = await guild.bans.fetch(user.id);
                 reason = banObject.reason ?? undefined;
             } catch (e: unknown) {
-                //no-op
+                //NOOP
             }
         }
         await this.logAction({

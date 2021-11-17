@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { between, parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
-export class BaseNumberSubtag extends BaseSubtag {
+export class BaseNumberSubtag extends Subtag {
     public constructor() {
         super({
             name: 'base',
@@ -15,6 +15,7 @@ export class BaseNumberSubtag extends BaseSubtag {
                     description: 'Converts `integer` from a base `origin` number into a base `radix` number. `radix` and `origin` must be between 2 and 36.',
                     exampleCode: '{base;FF;16;10}',
                     exampleOut: '255',
+                    returns: 'string',
                     execute: (ctx, [integer, origin, radix]) => this.toBase(ctx, integer.value, origin.value, radix.value)
                 }
             ]

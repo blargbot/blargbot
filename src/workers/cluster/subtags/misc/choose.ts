@@ -1,9 +1,9 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValue } from '@cluster/types';
+import { SubtagArgument } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ChooseSubtag extends BaseSubtag {
+export class ChooseSubtag extends Subtag {
     public constructor() {
         super({
             name: 'choose',
@@ -14,14 +14,15 @@ export class ChooseSubtag extends BaseSubtag {
                     description: 'Chooses from the given `options`, where `choice` is the index of the option to select.',
                     exampleCode: 'I feel like eating {choose;1;cake;pie;pudding} today.',
                     exampleOut: 'I feel like eating pie today.',
-                    execute: (_, args) => this.choose(args[0].value, args.slice(1))
+                    returns: 'string',
+                    execute: (_, [choice, ...options]) => this.choose(choice.value, options)
                 }
             ]
         });
     }
     public choose(
         choice: string,
-        options: SubtagArgumentValue[]
+        options: SubtagArgument[]
     ): Promise<string> | string {
         const index = parse.int(choice, false);
 

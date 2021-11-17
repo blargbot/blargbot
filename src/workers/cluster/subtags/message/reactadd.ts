@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Message, MessageEmbedOptions } from 'discord.js';
 
-export class ReactAddSubtag extends BaseSubtag {
+export class ReactAddSubtag extends Subtag {
     public constructor() {
         super({
             name: 'reactadd',
@@ -14,14 +14,17 @@ export class ReactAddSubtag extends BaseSubtag {
             definition: [//! Overwritten
                 {
                     parameters: ['reaction'],
+                    returns: 'nothing',
                     execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
                 },
                 {
                     parameters: ['messageid', 'reaction'],
+                    returns: 'nothing',
                     execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
                 },
                 {
                     parameters: ['channel', 'messageid', 'reactions+'],
+                    returns: 'nothing',
                     execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
                 }
             ]
@@ -31,7 +34,7 @@ export class ReactAddSubtag extends BaseSubtag {
     public async addReactions(
         context: BBTagContext,
         args: string[]
-    ): Promise<string | void> {
+    ): Promise<void> {
         let message: Message | undefined;
 
         // Check if the first "emote" is actually a valid channel

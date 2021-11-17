@@ -1,11 +1,9 @@
-import { Cluster } from '@cluster';
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class IsStaffSubtag extends BaseSubtag {
-    public constructor(
-        cluster: Cluster
-    ) {
+export class IsStaffSubtag extends Subtag {
+    public constructor() {
         super({
             name: 'isstaff',
             aliases: ['ismod'],
@@ -16,9 +14,8 @@ export class IsStaffSubtag extends BaseSubtag {
                     description: 'Checks if the tag author is staff',
                     exampleCode: '{if;{isstaff};The author is a staff member!;The author is not a staff member :(}',
                     exampleOut: 'The author is a staff member!',
-                    execute: async (context) => {
-                        return (await context.isStaff).toString();
-                    }
+                    returns: 'boolean',
+                    execute: ctx => ctx.isStaff
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -26,15 +23,22 @@ export class IsStaffSubtag extends BaseSubtag {
                         'If the `user` cannot be found `false` will be returned.',
                     exampleCode: '{if;{isstaff;{userid}};You are a staff member!;You are not a staff member :(}',
                     exampleOut: 'You are not a staff member :(',
-                    execute: async (context, args) => {
-                        const user = await context.queryUser(args[0].value, { noLookup: args[1].value !== '' });
-
-                        if (user === undefined) return false.toString();
-
-                        return (await cluster.util.isUserStaff(user.id, context.guild.id)).toString();
-                    }
+                    returns: 'boolean',
+                    execute: (ctx, [user, quiet]) => this.isStaff(ctx, user.value, quiet.value !== '')
                 }
             ]
         });
+    }
+
+    public async isStaff(context: BBTagContext, userStr: string, quiet: boolean): Promise<boolean> {
+        quiet ||= context.scopes.local.quiet ?? false;
+        const member = await context.queryMember(userStr, { noLookup: quiet });
+
+        if (member === undefined) {
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? '' : undefined);
+        }
+
+        return await context.util.isUserStaff(member);
     }
 }

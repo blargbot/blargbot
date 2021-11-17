@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { Subtag } from '@cluster/bbtag';
+import { SubtagType } from '@cluster/utils';
 
-export class SplitSubtag extends BaseSubtag {
+export class SplitSubtag extends Subtag {
     public constructor() {
         super({
             name: 'split',
@@ -12,10 +12,14 @@ export class SplitSubtag extends BaseSubtag {
                     description: 'Splits `text` using `splitter`, and the returns an array.',
                     exampleCode: '{split;Hello! This is a sentence.;{space}}',
                     exampleOut: '["Hello!","This","is","a","sentence."]',
-                    execute: (_, [{value: text}, {value: splitter}]) => bbtagUtil.tagArray.serialize(text.split(splitter))
-
+                    returns: 'string[]',
+                    execute: (_, [text, splitter]) => this.split(text.value, splitter.value)
                 }
             ]
         });
+    }
+
+    public split(text: string, splitter: string): string[] {
+        return text.split(splitter);
     }
 }

@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class ArgsarraySubtag extends BaseSubtag {
+export class ArgsarraySubtag extends Subtag {
     public constructor() {
         super({
             name: 'argsarray',
@@ -13,9 +13,14 @@ export class ArgsarraySubtag extends BaseSubtag {
                     exampleCode: 'Your input was {argsarray}',
                     exampleIn: 'Hello world!',
                     exampleOut: 'Your input was ["Hello","world!"]',
-                    execute: (ctx) => JSON.stringify(ctx.input)
+                    returns: 'string[]',
+                    execute: (ctx) => this.getInput(ctx)
                 }
             ]
         });
+    }
+
+    public getInput(context: BBTagContext): string[] {
+        return context.input;
     }
 }

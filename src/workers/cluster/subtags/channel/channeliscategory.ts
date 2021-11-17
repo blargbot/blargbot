@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-export class ChannelIsCategorySubtag extends BaseSubtag {
+export class ChannelIsCategorySubtag extends Subtag {
     public constructor() {
         super({
             name: 'channeliscategory',
@@ -15,6 +15,7 @@ export class ChannelIsCategorySubtag extends BaseSubtag {
                     description: 'Checks if `channel` is a category. If it cannot be found returns `No channel found`, or `false` if `quiet` is `true`.',
                     exampleCode: '{channeliscategory;cool category}\n{channeliscategory;category that doesn\'t exist}',
                     exampleOut: 'true\n(nothing is returned here)',
+                    returns: 'boolean',
                     execute: (ctx, [channel, quiet]) => this.isCategory(ctx, channel.value, quiet.value !== '')
 
                 }
@@ -26,14 +27,13 @@ export class ChannelIsCategorySubtag extends BaseSubtag {
         context: BBTagContext,
         channelStr: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
-            if (quiet)
-                return '';
-            throw new ChannelNotFoundError(channelStr);
+            throw new ChannelNotFoundError(channelStr)
+                .withDisplay(quiet ? '' : undefined);
         }
-        return guard.isCategoryChannel(channel).toString();
+        return guard.isCategoryChannel(channel);
     }
 }

@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class JsonCleanSubtag extends BaseSubtag {
+export class JsonCleanSubtag extends Subtag {
     public constructor() {
         super({
             name: 'jsonclean',
@@ -13,12 +13,15 @@ export class JsonCleanSubtag extends BaseSubtag {
                     description: 'Using the `input` as a base, cleans up the JSON file structure, parsing stringified nested objects/arrays. Will not mutate the original object.',
                     exampleCode: '{jsonclean;{j;{"test":"[]"}}}',
                     exampleOut: '{"test":[]}',
-                    execute: async (context, [{value: input}]) => {
-                        const obj = await bbtagUtil.json.parse(context, input);
-                        return JSON.stringify(bbtagUtil.json.clean(obj.object));
-                    }
+                    returns: 'json',
+                    execute: (ctx, [input]) => this.cleanJson(ctx, input.value)
                 }
             ]
         });
+    }
+
+    public async cleanJson(context: BBTagContext, input: string): Promise<JToken> {
+        const obj = await bbtagUtil.json.parse(context, input);
+        return bbtagUtil.json.clean(obj.object);
     }
 }

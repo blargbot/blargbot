@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class FlagsArraySubtag extends BaseSubtag {
+export class FlagsArraySubtag extends Subtag {
     public constructor() {
         super({
             name: 'flagsarray',
@@ -13,13 +13,14 @@ export class FlagsArraySubtag extends BaseSubtag {
                     exampleCode: '{flagsarray}',
                     exampleIn: 'Hello -dc world',
                     exampleOut: '["_","d","c"]',
+                    returns: 'string[]',
                     execute: (ctx) => this.flagKeys(ctx)
                 }
             ]
         });
     }
 
-    public flagKeys(context: BBTagContext): string {
-        return JSON.stringify(Object.keys(context.flaggedInput));
+    public flagKeys(context: BBTagContext): string[] {
+        return Object.keys(context.flaggedInput);
     }
 }

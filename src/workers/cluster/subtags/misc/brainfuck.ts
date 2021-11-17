@@ -1,11 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { default as Brainfuck } from 'brainfuck-node';
 
 const bfClient = new Brainfuck();
-
-export class BrainFuckSubtag extends BaseSubtag {
+export class BrainFuckSubtag extends Subtag {
     public constructor() {
         super({
             name: 'brainfuck',
@@ -16,17 +15,20 @@ export class BrainFuckSubtag extends BaseSubtag {
                     description: 'Interprets `code` as brainfuck, using `input` as the text for `,`.',
                     exampleCode: '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
                     exampleOut: 'Hello World!',
-                    execute: (_, [code, input]) => {
-                        try {
-                            return bfClient.execute(code.value, input.value).output;
-                        } catch (e: unknown) {
-                            if (e instanceof Error)
-                                throw new BBTagRuntimeError(e.message);
-                            throw new BBTagRuntimeError('Unexpected error from brainfuck');
-                        }
-                    }
+                    returns: 'string',
+                    execute: (_, [code, input]) => this.runBrainfuck(code.value, input.value)
                 }
             ]
         });
+    }
+
+    public runBrainfuck(code: string, input: string): string {
+        try {
+            return bfClient.execute(code, input).output;
+        } catch (e: unknown) {
+            if (e instanceof Error)
+                throw new BBTagRuntimeError(e.message);
+            throw new BBTagRuntimeError('Unexpected error from brainfuck');
+        }
     }
 }

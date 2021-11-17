@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class IsccSubtag extends BaseSubtag {
+export class IsccSubtag extends Subtag {
     public constructor() {
         super({
             name: 'iscc',
@@ -12,9 +12,14 @@ export class IsccSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}',
                     exampleOut: 'Boo, this only works in cc\'s',
-                    execute: (ctx) => (ctx.isCC === true).toString()
+                    returns: 'boolean',
+                    execute: (ctx) => this.isCC(ctx)
                 }
             ]
         });
+    }
+
+    public isCC(context: BBTagContext): boolean {
+        return context.isCC;
     }
 }
