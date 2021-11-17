@@ -91,7 +91,7 @@ class BanCommand extends BaseCommand {
                 });
               if(reason)
                   return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>). Ban reason: ${reason}`, duration.asMilliseconds()];
-              return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>).`, duration.asMiliseconds()]
+              return [`:ok_hand: The user will be unbanned at <t:${unban_at}:F> (<t:${unban_at}:R>).`, duration.asMilliseconds()];
 
             } else {
                 return [`:ok_hand:`, true];
