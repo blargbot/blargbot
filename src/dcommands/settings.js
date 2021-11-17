@@ -81,6 +81,11 @@ bu.settings = {
         desc: 'The number of warnings before a kick. Set to 0 or below to disable.',
         type: 'int'
     },
+    actonlimitsonly: {
+        name: 'Act on Limits Only',
+        desc: 'Whether to kick/ban on a warning count that is in between the kickat and banat values.',
+        type: 'bool'
+    },
     adminrole: {
         name: 'Admin Role Name',
         desc: 'The name of the Admin role.',
@@ -205,6 +210,7 @@ class SettingsCommand extends BaseCommand {
             let cleverbot = settings.nocleverbot || false;
             let kickAt = settings.kickat || 'Disabled';
             let banAt = settings.banat || 'Disabled';
+            let actonlimitsonly = settings.actonlimitsonly || false;
             let social = settings.social || 'Disabled';
             let adminRoleName = settings.adminrole || 'Admin';
             let embed = {
@@ -257,6 +263,7 @@ Kick Override : ${kickPerms}
                         value: `\`\`\`
 Kick At : ${kickAt}
  Ban At : ${banAt}
+ Act on Limits Only : ${actonlimitsonly}
 \`\`\``,
                         inline: true
                     },
