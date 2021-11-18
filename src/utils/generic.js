@@ -676,7 +676,7 @@ bu.getMessage = async function (channelId, messageId) {
         if (messageAttempt) return messageAttempt;
         try {
             const msg = await bot.getMessage(channelId, messageId);
-            channel.messages.set(msg);
+            channel.messages.add(msg);
             return msg;
         } catch (e) {
             console.error(e);
