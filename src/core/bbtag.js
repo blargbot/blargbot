@@ -354,7 +354,7 @@ function generateDebug(code, context) {
             let json = JSON.stringify(context.variables.cache[key].value);
             json.replace(/\n/, '\n' + offset);
             return key + ': ' + json;
-        }).slice(0, 24);
+        });
     let subtags = Object.keys(context.state.subtags).map(s => {
         return {
             name: s, times: context.state.subtags[s],
