@@ -6,7 +6,7 @@ import { UpdateRequest } from 'rethinkdb';
 import { RethinkDb } from './RethinkDb';
 import { RethinkDbTable } from './RethinkDbTable';
 
-export abstract class RethinkDbCachedTable<Table, KeyName extends keyof PropertiesOfType<Table, string>> extends RethinkDbTable<Table> {
+export abstract class RethinkDbCachedTable<Table extends { [P in KeyName]: string }, KeyName extends string> extends RethinkDbTable<Table> {
     protected readonly cache: Cache<string, Table>;
 
     protected constructor(

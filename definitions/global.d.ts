@@ -36,21 +36,20 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/ban-types
     type DeepMutable<T> = T extends Exclude<Primitive, object> ? T : { -readonly [P in keyof T]: DeepMutable<T[P]>; };
     type FilteredKeys<T, U> = { [P in keyof T]: T[P] extends U ? P : never }[keyof T];
-    type SplitString<T extends string> = T extends '' ? []
-        : T extends `${infer _1}${infer _2}${infer _3}${infer _4}${infer _5}${infer _6}${infer _rest}` ? [_1, _2, _3, _4, _5, _6, ...SplitString<_rest>]
-        : T extends `${infer _1}${infer _2}${infer _3}${infer _4}${infer _5}${infer _rest}` ? [_1, _2, _3, _4, _5, ...SplitString<_rest>]
-        : T extends `${infer _1}${infer _2}${infer _3}${infer _4}${infer _rest}` ? [_1, _2, _3, _4, ...SplitString<_rest>]
-        : T extends `${infer _1}${infer _2}${infer _3}${infer _rest}` ? [_1, _2, _3, ...SplitString<_rest>]
-        : T extends `${infer _1}${infer _2}${infer _rest}` ? [_1, _2, ...SplitString<_rest>]
-        : T extends `${infer _1}${infer _rest}` ? [_1, ...SplitString<_rest>]
-        : string[];
+    type SplitString<T extends string, Splitter extends string> = string extends T | Splitter ? string[] : _StringSplitHelper<T, Splitter, []>;
+    type _StringSplitHelper<T extends string, Splitter extends string, Result extends string[]> =
+        T extends `${infer R}${Splitter}${infer Rest}` ? _StringSplitHelper<Rest, Splitter, [...Result, R]>
+        : Splitter extends '' ? Result
+        : [...Result, T];
+
+    type x = SplitString<'aaa', 'a'>
 
     interface ObjectConstructor {
         keys<TKey extends string>(value: { [P in TKey]?: unknown }): TKey[];
         keys<TString extends string>(value: TString): Array<`${number}`>;
         keys<TArray extends unknown[]>(value: TArray): Array<`${number}`>;
         keys(value: number | boolean | bigint): [];
-        values<T>(value: Exclude<T, undefined | null>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T> : Array<T[keyof T]>;
+        values<T>(value: Exclude<T, undefined | null>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T, ''> : Array<T[keyof T]>;
         entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[TKey & string, TValue]>;
         entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]?: TValue; }): Array<[TKey & string, TValue | undefined]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
@@ -94,7 +93,6 @@ declare global {
     }
 
     type Awaitable<T> = T | PromiseLike<T>;
-    type Awaited<T> = T extends PromiseLike<infer R> ? Awaited<R> : T;
     type ExcludeExact<T, U> = T extends U ? U extends T ? never : T : T;
 
     namespace NodeJS {
@@ -108,7 +106,7 @@ declare global {
     interface String {
         toLowerCase<T extends string>(this: T): Lowercase<T>;
         toUpperCase<T extends string>(this: T): Uppercase<T>;
-        split<T extends string>(this: T, splitter: ''): SplitString<T>;
+        split<T extends string, Splitter extends string>(this: T, splitter: Splitter): SplitString<T, Splitter>;
         toString<T extends string>(this: T): T;
     }
 
