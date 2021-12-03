@@ -1,8 +1,8 @@
 import isSafeRegex from 'safe-regex';
 
-export function createSafeRegExp(term: string): { success: true; regex: RegExp; } | { success: false; reason: 'tooLong' | 'invalid' | 'unsafe'; } {
+export function createSafeRegExp(term: string): { state: 'success'; regex: RegExp; } | { state: 'tooLong' | 'invalid' | 'unsafe'; } {
     if (term.length > 2000)
-        return { success: false, reason: 'tooLong' };
+        return { state: 'tooLong' };
 
     let body: string;
     let flags: string | undefined;
@@ -10,7 +10,7 @@ export function createSafeRegExp(term: string): { success: true; regex: RegExp; 
     if (term.startsWith('/')) {
         const flagStart = term.lastIndexOf('/');
         if (flagStart === -1)
-            return { success: false, reason: 'invalid' };
+            return { state: 'invalid' };
         body = term.slice(1, flagStart);
         flags = term.slice(flagStart + 1);
     } else {
@@ -20,14 +20,14 @@ export function createSafeRegExp(term: string): { success: true; regex: RegExp; 
     const result = new RegExp(body, flags);
 
     if (!isSafeRegex(result))
-        return { success: false, reason: 'unsafe' };
+        return { state: 'unsafe' };
 
-    return { success: true, regex: result };
+    return { state: 'success', regex: result };
 }
 
 export function testRegexSafe(term: string, text: string): boolean {
     const result = createSafeRegExp(term);
-    if (!result.success)
+    if (result.state !== 'success')
         return false;
     return result.regex.test(text);
 }

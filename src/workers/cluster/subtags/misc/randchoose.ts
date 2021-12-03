@@ -1,7 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { bbtagUtil, parse, randInt, SubtagType } from '@cluster/utils';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { SubtagArgument } from '@cluster/types';
+import { bbtagUtil, randChoose, SubtagType } from '@cluster/utils';
 
-export class RandChooseSubtag extends BaseSubtag {
+export class RandChooseSubtag extends Subtag {
     public constructor() {
         super({
             name: 'randchoose',
@@ -12,24 +13,30 @@ export class RandChooseSubtag extends BaseSubtag {
                     description: 'Picks one random entry from `choiceArray`.',
                     exampleCode: 'I feel like eating {randchoose;["pie", "cake", "pudding"]} today',
                     exampleOut: 'I feel like eating pie today',
-                    execute: async (context, [{value: arr}]) => {
-                        const choices = await bbtagUtil.tagArray.getArray(context, arr);
-                        if (choices === undefined || !Array.isArray(choices.v))
-                            return arr;
-                        return parse.string(choices.v[randInt(0, choices.v.length - 1)]);
-                    }
+                    returns: 'json',
+                    execute: (ctx, [choice]) => this.randChoose(ctx, choice.value)
                 },
                 {
                     parameters: ['~choices+2'],
                     description: 'Picks one random entry from `choices`',
                     exampleCode: 'I feel like eating {randchoose;cake;pie;pudding} today',
                     exampleOut: 'I feel like eating pudding today.',
-                    execute: (_, args) => {
-                        const selection = randInt(0, args.length - 1);
-                        return args[selection].wait();
-                    }
+                    returns: 'string',
+                    execute: (_, choices) => this.randChooseArg(choices)
                 }
             ]
         });
+    }
+
+    public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
+        return randChoose(choices).wait();
+    }
+
+    public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
+        const choices = await bbtagUtil.tagArray.getArray(context, arrayStr);
+        if (choices === undefined)
+            return arrayStr;
+
+        return randChoose(choices.v);
     }
 }

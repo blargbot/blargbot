@@ -46,7 +46,7 @@ export class WarnCommand extends BaseGuildCommand {
             case 'moderatorNoPerms': return this.warning(preamble, `They went over the limit for ${actionStr}s but you dont have permission to ${actionStr} them.`);
             case 'success': {
                 switch (result.type) {
-                    case ModerationType.WARN: return this.success(`${preamble} They now have ${result.count} warnings.`);
+                    case ModerationType.WARN: return this.success(`${preamble} They now have ${result.warnings} warnings.`);
                     case ModerationType.BAN: return this.success(`${preamble} They went over the limit for bans and so have been banned.`);
                     case ModerationType.KICK: return this.success(`${preamble} They went over the limit for kicks and so have been kicked.`);
                 }

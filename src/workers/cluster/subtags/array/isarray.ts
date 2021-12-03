@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class IsArraySubtag extends BaseSubtag {
+export class IsArraySubtag extends Subtag {
     public constructor() {
         super({
             name: 'isarray',
@@ -12,14 +12,15 @@ export class IsArraySubtag extends BaseSubtag {
                     description: 'Determines whether `text` is a valid array.',
                     exampleCode: '{isarray;["array?"]} {isarray;array?}',
                     exampleOut: 'true false',
-                    execute: (_, [array]) => this.isArray(array.value).toString()
+                    returns: 'boolean',
+                    execute: (_, [array]) => this.isArray(array.value)
                 }
             ]
         });
     }
 
     public isArray(arrayStr: string): boolean {
-        const { v: array } = bbtagUtil.tagArray.deserialize(arrayStr) ?? {};
+        const array = bbtagUtil.tagArray.deserialize(arrayStr);
         return array !== undefined;
     }
 }

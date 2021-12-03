@@ -1,10 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotABooleanError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const operators = bbtagUtil.operators.logic;
 
-export class LogicSubtag extends BaseSubtag {
+export class LogicSubtag extends Subtag {
     public constructor() {
         super({
             name: 'logic',
@@ -17,13 +17,14 @@ export class LogicSubtag extends BaseSubtag {
                         'See `{operators}` for a shorter way of performing logic operations.',
                     exampleCode: '{logic;&&;true;false}',
                     exampleOut: 'false',
-                    execute: (_, args) => this.applyLogicOperation(args.map(arg => arg.value))
+                    returns: 'boolean',
+                    execute: (_, values) => this.applyLogicOperation(values.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public applyLogicOperation(args: string[]): string {
+    public applyLogicOperation(args: string[]): boolean {
         let operator;
 
         for (let i = 0; i < args.length; i++) {
@@ -42,7 +43,7 @@ export class LogicSubtag extends BaseSubtag {
             const value = parse.boolean(values[0]);
             if (value === undefined)
                 throw new NotABooleanError(values[0]);
-            return operators[operator]([value]).toString();
+            return operators[operator]([value]);
         }
         const parsed = values.map((value) => {
             const parsed = parse.boolean(value);
@@ -50,6 +51,6 @@ export class LogicSubtag extends BaseSubtag {
                 throw new NotABooleanError(value);
             return parsed;
         });
-        return operators[operator](parsed).toString();
+        return operators[operator](parsed);
     }
 }

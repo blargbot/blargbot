@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ParamsSubtag extends BaseSubtag {
+export class ParamsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'params',
@@ -13,6 +13,7 @@ export class ParamsSubtag extends BaseSubtag {
                     description: 'Gets the whole input given to the current function call',
                     exampleCode: '{func;test;You gave the parameters `{params}`}\n{func.test;Hello world!;BBtag is so cool}',
                     exampleOut: 'You gave the parameters `Hello world! BBtag is so cool`',
+                    returns: 'string',
                     execute: (ctx) => this.getAllParams(ctx)
                 },
                 {
@@ -20,6 +21,7 @@ export class ParamsSubtag extends BaseSubtag {
                     description: 'Gets a parameter passed to the current function call',
                     exampleCode: '{func;test;The first parameter is `{params;0}`}\n{func.test;Hello world!;BBtag is so cool}',
                     exampleOut: 'The first parameter is `Hello world!`',
+                    returns: 'string',
                     execute: (ctx, [index]) => this.getParam(ctx, index.value)
                 },
                 {
@@ -27,6 +29,7 @@ export class ParamsSubtag extends BaseSubtag {
                     description: 'Gets all the parameters given from `start` up to `end`. If `end` is `n` then all parameters after `start` will be returned',
                     exampleCode: '{func;test;The first parameter is `{params;2;4}`}\n{func.test;A;B;C;D;E;F}',
                     exampleOut: 'C D',
+                    returns: 'string',
                     execute: (ctx, [start, end]) => this.getParams(ctx, start.value, end.value)
                 }
             ]

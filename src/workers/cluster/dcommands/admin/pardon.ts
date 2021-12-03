@@ -33,11 +33,11 @@ export class PardonCommand extends BaseGuildCommand {
         const count = parse.int(flags.c?.merge().value ?? 1);
 
         const result = await context.cluster.moderation.warns.pardon(member, context.author, count, reason);
-        switch (result) {
+        switch (result.state) {
             case 'countNaN': return this.error(`${flags.c?.merge().value ?? ''} isnt a number!`);
             case 'countNegative': return this.error('I cant give a negative amount of pardons!');
             case 'countZero': return this.error('I cant give zero pardons!');
-            default: return this.success(`**${humanize.fullName(member.user)}** has been given ${p(count, 'a pardon', `${count} pardons`)}. They now have ${result} warnings.`);
+            case 'success': return this.success(`**${humanize.fullName(member.user)}** has been given ${p(count, 'a pardon', `${count} pardons`)}. They now have ${result.warnings} warnings.`);
         }
     }
 }

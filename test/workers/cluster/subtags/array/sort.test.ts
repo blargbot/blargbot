@@ -54,7 +54,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['{"n":"~arr","v":["testing","test","456test","4test",99999,"abc678def","abc4def"]}'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     set: ['4test', '456test', 99999, 'abc4def', 'abc678def', 'test', 'testing']
@@ -62,7 +62,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['{"n":"~arr","v":["testing","test","456test","4test",99999,"abc678def","abc4def"]}', 'false'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     set: ['4test', '456test', 99999, 'abc4def', 'abc678def', 'test', 'testing']
@@ -70,7 +70,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['{"n":"~arr","v":["testing","test","456test","4test",99999,"abc678def","abc4def"]}', 'true'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     set: ['testing', 'test', 'abc678def', 'abc4def', 99999, '456test', '4test']
@@ -78,7 +78,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['{"n":"~arr","v":["testing","test","456test","4test",99999,"abc678def","abc4def"]}', 'ajsiid'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     set: ['testing', 'test', 'abc678def', 'abc4def', 99999, '456test', '4test']
@@ -86,7 +86,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['~arr'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     get: ['testing', 'test', '456test', '4test', 99999, 'abc678def', 'abc4def'],
@@ -95,7 +95,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['~arr', 'false'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     get: ['testing', 'test', '456test', '4test', 99999, 'abc678def', 'abc4def'],
@@ -104,7 +104,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['~arr', 'true'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     get: ['testing', 'test', '456test', '4test', 99999, 'abc678def', 'abc4def'],
@@ -113,7 +113,7 @@ describe('{sort}', () => {
             },
             {
                 args: ['~arr', 'aiouhsdiaod'],
-                expected: undefined,
+                expected: '',
                 details: {
                     dbName: '~arr',
                     get: ['testing', 'test', '456test', '4test', 99999, 'abc678def', 'abc4def'],

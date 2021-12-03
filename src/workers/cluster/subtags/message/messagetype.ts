@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Constants } from 'discord.js';
 
-export class MessageTypeSubtag extends BaseSubtag {
+export class MessageTypeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'messagetype',
@@ -15,6 +15,7 @@ export class MessageTypeSubtag extends BaseSubtag {
                     description: 'Returns the message type of the executing message.',
                     exampleCode: '{messagetype}',
                     exampleOut: '0',
+                    returns: 'number',
                     execute: async (ctx) => this.getCurrentMessageType(ctx)
                 },
                 {
@@ -22,6 +23,7 @@ export class MessageTypeSubtag extends BaseSubtag {
                     description: '`channel` defaults to the current channel.\n\nReturns the message type of `messageID` in `channel`',
                     exampleCode: '{messagetype;12345678912345;123465145791}\n{messagetype;1234567891234}',
                     exampleOut: '19\n0',
+                    returns: 'number',
                     execute: async (ctx, [channel, messageId]) => this.getMessageType(ctx, channel.value, messageId.value)
                 }
             ]
@@ -30,18 +32,18 @@ export class MessageTypeSubtag extends BaseSubtag {
 
     public async getCurrentMessageType(
         context: BBTagContext
-    ): Promise<string> {
+    ): Promise<number> {
         const msg = await context.util.getMessage(context.channel, context.message.id);
         if (msg === undefined)
             throw new MessageNotFoundError(context.channel, context.message.id);
-        return Constants.MessageTypes.indexOf(msg.type).toString();
+        return Constants.MessageTypes.indexOf(msg.type);
     }
 
     public async getMessageType(
         context: BBTagContext,
         channelStr: string,
         messageId: string
-    ): Promise<string> {
+    ): Promise<number> {
         const channel = await context.queryChannel(channelStr);
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
@@ -55,6 +57,6 @@ export class MessageTypeSubtag extends BaseSubtag {
             throw new MessageNotFoundError(channel, messageId);
         }
 
-        return Constants.MessageTypes.indexOf(message.type).toString();
+        return Constants.MessageTypes.indexOf(message.type);
     }
 }

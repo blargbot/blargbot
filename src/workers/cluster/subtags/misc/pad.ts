@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class PadSubtag extends BaseSubtag {
+export class PadSubtag extends Subtag {
     public constructor() {
         super({
             name: 'pad',
@@ -14,6 +14,7 @@ export class PadSubtag extends BaseSubtag {
                     description: 'Places `text` ontop of `back` with it being aligned to the opposite of `direction`. If `text` is longer than `back` then it will simply overlap',
                     exampleCode: '{pad;left;000000;ABC}',
                     exampleOut: '000ABC',
+                    returns: 'string',
                     execute: (_, [direction, back, text]) => this.pad(direction.value, back.value, text.value)
                 }
             ]

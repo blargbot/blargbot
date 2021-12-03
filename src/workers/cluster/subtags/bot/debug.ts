@@ -1,7 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { SubtagCall } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
-export class DebugSubtag extends BaseSubtag {
+export class DebugSubtag extends Subtag {
     public constructor() {
         super({
             name: 'debug',
@@ -14,15 +15,14 @@ export class DebugSubtag extends BaseSubtag {
                         'The line number is also included in the debug entry',
                     exampleCode: '{debug;current value;{get;~i}}',
                     exampleOut: '(in debug output)[10]current value 1',
-                    execute: (ctx, args, subtag) => {
-                        ctx.debug.push({
-                            subtag,
-                            text: args.map(arg => arg.value).join(' ')
-                        });
-                        return '';
-                    }
+                    returns: 'nothing',
+                    execute: (ctx, text, subtag) => this.addDebug(ctx, text.map(x => x.value).join(' '), subtag)
                 }
             ]
         });
+    }
+
+    public addDebug(context: BBTagContext, text: string, subtag: SubtagCall): void {
+        context.debug.push({ subtag, text });
     }
 }

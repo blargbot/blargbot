@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import { encode } from 'html-entities';
 
-export class HtmlDecodeSubtag extends BaseSubtag {
+export class HtmlDecodeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'htmlencode',
@@ -13,9 +13,14 @@ export class HtmlDecodeSubtag extends BaseSubtag {
                     description: 'Encodes `text` with escaped html entities.',
                     exampleCode: '{htmlencode;<hello, world>}',
                     exampleOut: '&lt;hello, world&gt;',
-                    execute: (_, args) => encode(args.map(arg => arg.value).join(';'))
+                    returns: 'string',
+                    execute: (_, text) => this.htmlEncode(text.map(arg => arg.value).join(';')) // TODO: use subtag.source
                 }
             ]
         });
+    }
+
+    public htmlEncode(html: string): string {
+        return encode(html);
     }
 }

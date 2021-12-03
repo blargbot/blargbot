@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class EscapeBbtagSubtag extends BaseSubtag {
+export class EscapeBbtagSubtag extends Subtag {
     public constructor() {
         super({
             name: 'escapebbtag',
@@ -14,11 +14,14 @@ export class EscapeBbtagSubtag extends BaseSubtag {
                         '\n**NOTE:** Brackets inside code must come in pairs. A `{` has to be followed by a `}` somewhere and a `} has to have a {` before it',
                     exampleCode: '{escapebbtag;{set;~index;1}}',
                     exampleOut: '{set;~index;1}',
-                    execute: (_, args) => {
-                        return args.map(arg => arg.raw).join(';');
-                    }
+                    returns: 'string',
+                    execute: (_, inputs) => this.escape(inputs.map(arg => arg.raw).join(';')) // TODO: subtag.source ?
                 }
             ]
         });
+    }
+
+    public escape(text: string): string {
+        return text;
     }
 }

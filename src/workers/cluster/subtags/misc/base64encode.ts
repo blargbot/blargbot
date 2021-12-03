@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class Base64encodeSubtag extends BaseSubtag {
+export class Base64encodeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'base64encode',
@@ -13,15 +13,14 @@ export class Base64encodeSubtag extends BaseSubtag {
                     description: 'Converts the provided text to base64.',
                     exampleCode: '{base64decode;Fancy!}',
                     exampleOut: 'RmFuY3kh!',
-                    execute: (_, args) => this.encode(args.map(arg => arg.value))
+                    returns: 'string',
+                    execute: (_, [text]) => this.encode(text.value)
                 }
             ]
         });
     }
 
-    public encode(args: string[]): string {
-        const text = args[0];
-        const b64 = Buffer.from(text).toString('base64');
-        return b64;
+    public encode(text: string): string {
+        return Buffer.from(text).toString('base64');
     }
 }

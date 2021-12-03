@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext, tagVariableScopes } from '@cluster/bbtag';
+import { BBTagContext, Subtag, tagVariableScopes } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValue } from '@cluster/types';
+import { SubtagArgument } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import ReadWriteLock from 'rwlock';
 
-export class LockSubtag extends BaseSubtag {
+export class LockSubtag extends Subtag {
     public constructor() {
         super({
             name: 'lock',
@@ -41,7 +41,8 @@ export class LockSubtag extends BaseSubtag {
                         '\nMiddle' +
                         '\nEnd' +
                         '\nThis order is guaranteed always. Without a lock it isnt',
-                    execute: async (ctx, [{ value: mode }, { value: key }, code]) => await this.lock(ctx, mode, key, code)
+                    returns: 'string',
+                    execute: async (ctx, [mode, key, code]) => await this.lock(ctx, mode.value, key.value, code)
                 }
             ]
         });
@@ -51,7 +52,7 @@ export class LockSubtag extends BaseSubtag {
         context: BBTagContext,
         mode: string,
         key: string,
-        code: SubtagArgumentValue
+        code: SubtagArgument
     ): Promise<string> {
         if (context.scopes.local.inLock)
             throw new BBTagRuntimeError('Lock cannot be nested');

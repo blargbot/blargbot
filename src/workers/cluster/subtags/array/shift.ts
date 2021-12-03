@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class ShiftSubtag extends BaseSubtag {
+export class ShiftSubtag extends Subtag {
     public constructor() {
         super({
             name: 'shift',
@@ -13,13 +13,14 @@ export class ShiftSubtag extends BaseSubtag {
                     description: 'Returns the first element in `array`. If used with a variable this will remove the first element from `array` as well.',
                     exampleCode: '{shift;["this", "is", "an", "array"]}',
                     exampleOut: 'this',
+                    returns: 'json|nothing',
                     execute: (context, [array]) => this.shift(context, array.value)
                 }
             ]
         });
     }
 
-    public async shift(context: BBTagContext, arrayStr: string): Promise<string> {
+    public async shift(context: BBTagContext, arrayStr: string): Promise<JToken | undefined> {
         const { n: varName, v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
@@ -31,6 +32,6 @@ export class ShiftSubtag extends BaseSubtag {
         if (varName !== undefined)
             await context.variables.set(varName, array);
 
-        return parse.string(result);
+        return result;
     }
 }

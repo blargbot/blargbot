@@ -1,37 +1,29 @@
-import { ArgumentResolver, SubHandler, SubHandlerCollection, SubtagHandler, SubtagHandlerCallSignature } from '@cluster/types';
+import { ArgumentResolver, CompositeSubtagHandler, ConditionalSubtagHandler, SubtagHandlerCallSignature } from '@cluster/types';
 
 import { NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';
 import { createArgumentResolvers } from './createResolvers';
 
-export function compileSignatures(signatures: readonly SubtagHandlerCallSignature[]): SubtagHandler {
-    const binding: SubHandlerCollection = { byNumber: {}, byTest: [] };
+export function compileSignatures(signatures: readonly SubtagHandlerCallSignature[]): CompositeSubtagHandler {
+    const handlers: ConditionalSubtagHandler[] = [];
     let minArgs = Number.MAX_SAFE_INTEGER;
     let maxArgs = 0;
 
     for (const signature of signatures) {
-        const { byTest, byNumber } = createArgumentResolvers(signature);
-        for (const entry of byTest) {
-            minArgs = Math.min(minArgs, entry.minArgCount);
-            maxArgs = Math.max(maxArgs, entry.maxArgCount);
-            binding.byTest.push({ test: entry.test, execute: createSubHandler(signature, entry) });
-        }
-
-        for (const argLength of Object.keys(byNumber).map(i => parseInt(i))) {
-            if (argLength in binding.byNumber)
-                throw new Error(`arglength ${argLength} has more than 1 matching pattern!`);
-            binding.byNumber[argLength] = createSubHandler(signature, byNumber[argLength]);
-            minArgs = Math.min(minArgs, argLength);
-            maxArgs = Math.max(maxArgs, argLength);
+        for (const resolver of createArgumentResolvers(signature)) {
+            minArgs = Math.min(minArgs, resolver.argRange[0]);
+            maxArgs = Math.max(maxArgs, resolver.argRange[1]);
+            const handler = createConditionalHandler(signature, resolver);
+            handlers.push(handler);
         }
     }
 
     return {
-        async execute(context, subtagName, call) {
-            const execute = binding.byNumber[call.args.length]
-                ?? binding.byTest.find(({ test }) => test(call.args.length))?.execute;
+        handlers,
+        execute(context, subtagName, call) {
+            const handler = handlers.find(handler => handler.canHandle(call));
 
-            if (execute !== undefined)
-                return await execute(context, subtagName, call);
+            if (handler !== undefined)
+                return handler.execute(context, subtagName, call);
 
             if (call.args.length < minArgs)
                 throw new NotEnoughArgumentsError(minArgs, call.args.length);
@@ -43,14 +35,19 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
     };
 }
 
-function createSubHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): SubHandler {
-    return async (context, subtagName, call) => {
-        const args = [];
-        for (const arg of resolver.resolve(context, subtagName, call)) {
-            args.push(arg);
-            if (arg.parameter.autoResolve)
-                await arg.execute();
+function createConditionalHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): ConditionalSubtagHandler {
+    return {
+        canHandle(subtag) {
+            return resolver.canResolve(subtag);
+        },
+        async * execute(context, subtagName, call) {
+            const args = [];
+            for (const arg of resolver.resolve(context, subtagName, call)) {
+                args.push(arg);
+                if (arg.parameter.autoResolve)
+                    await arg.execute();
+            }
+            yield* signature.implementation.execute(context, Object.assign(args, { subtagName }), call);
         }
-        return await signature.execute(context, Object.assign(args, { subtagName }), call);
     };
 }

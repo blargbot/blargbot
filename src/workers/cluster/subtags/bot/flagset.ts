@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { guard, SubtagType } from '@cluster/utils';
 
-export class FlagSetSubtag extends BaseSubtag {
+export class FlagSetSubtag extends Subtag {
     public constructor() {
         super({
             name: 'flagset',
@@ -13,15 +13,17 @@ export class FlagSetSubtag extends BaseSubtag {
                     exampleCode: '{flagset;a} {flagset;_}',
                     exampleIn: 'Hello, -a world!',
                     exampleOut: 'true false',
-                    execute: (ctx, [{ value: flagName }]) => this.isFlagSet(ctx, flagName)
+                    returns: 'boolean',
+                    execute: (ctx, [flagName]) => this.isFlagSet(ctx, flagName.value)
                 }
             ]
         });
     }
 
-    public isFlagSet(context: BBTagContext, flagName: string): 'true' | 'false' {
-        if (guard.isLetter(flagName) || flagName === '_')
-            return (context.flaggedInput[flagName] !== undefined).toString();
-        return 'false';
+    public isFlagSet(context: BBTagContext, flagName: string): boolean {
+        if (!guard.isLetter(flagName) && flagName !== '_')
+            return false;
+
+        return context.flaggedInput[flagName] !== undefined;
     }
 }

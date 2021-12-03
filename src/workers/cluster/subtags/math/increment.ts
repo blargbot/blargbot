@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class IncrementSubtag extends BaseSubtag {
+export class IncrementSubtag extends Subtag {
     public constructor() {
         super({
             name: 'increment',
@@ -13,6 +13,7 @@ export class IncrementSubtag extends BaseSubtag {
                     description: 'Increases `varName`\'s value by `1`. ',
                     exampleCode: '{set;~counter;0} {repeat;{increment;~counter},;10}',
                     exampleOut: '1,2,3,4,5,6,7,8,9,10',
+                    returns: 'number',
                     execute: (ctx, [varName]) => this.increment(ctx, varName.value, '1', 'true')
                 },
                 {
@@ -21,13 +22,14 @@ export class IncrementSubtag extends BaseSubtag {
                         '`floor` is a boolean, and if it is `true` then the value will be rounded down.',
                     exampleCode: '{set;~counter;0} {repeat;{increment;~counter;-2},;10}',
                     exampleOut: '2,4,6,8,10,12,14,16,18,20',
+                    returns: 'number',
                     execute: (ctx, [varName, amount, floor]) => this.increment(ctx, varName.value, amount.value, floor.value)
                 }
             ]
         });
     }
 
-    public async increment(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<string> {
+    public async increment(context: BBTagContext, varName: string, amountStr: string, floorStr: string): Promise<number> {
         let amount = parse.float(amountStr, false);
         if (amount === undefined)
             throw new NotANumberError(amountStr);
@@ -59,6 +61,6 @@ export class IncrementSubtag extends BaseSubtag {
         value += amount;
         await context.variables.set(varName, value);
 
-        return value.toString();
+        return value;
     }
 }

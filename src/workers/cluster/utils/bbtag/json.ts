@@ -9,10 +9,10 @@ export interface ReturnObject {
 }
 
 export async function parse(context: BBTagContext, input: string): Promise<ReturnObject> {
-    let obj: BBTagArray | JToken;
+    let obj: BBTagArray | JToken | undefined;
     let variable: string | undefined;
     const arr = await getArray(context, input);
-    if (arr !== undefined && Array.isArray(arr.v)) {
+    if (arr !== undefined) {
         obj = arr.v;
     } else {
         try {
@@ -55,8 +55,8 @@ export function parseSync(input: string): JObject | JArray {
         obj = {};
     return obj;
 }
-export function get(input: JObject | JArray, path: string | string[]): JToken {
-    let obj: JToken = input;
+export function get(input: JObject | JArray, path: string | string[]): JToken | undefined {
+    let obj: undefined | JToken = input;
     if (typeof path === 'string')
         path = path.split('.');
     for (const part of path) {
@@ -91,11 +91,11 @@ export function get(input: JObject | JArray, path: string | string[]): JToken {
     return obj;
 }
 
-export function set(input: JObject | JArray, path: string | string[], value: JToken, forceCreate = false): JToken {
+export function set<T extends JObject | JArray>(input: T, path: string | string[], value: JToken | undefined, forceCreate = false): T {
     if (typeof path === 'string')
         path = path.split('.');
     const comps = path;
-    let obj: JToken = input;
+    let obj: undefined | JToken = input;
     if (forceCreate) {
         for (let i = 0; i < comps.length - 1; i++) {
             const p = comps[i];
@@ -135,9 +135,7 @@ export function set(input: JObject | JArray, path: string | string[], value: JTo
     try {
         for (let i = 0; i < comps.length - 1; i++) {
             const p = comps[i];
-            if (obj === undefined)
-                throw Error(`Cannot set property ${p} of undefined`);
-            else if (obj === null)
+            if (obj === null)
                 throw Error(`Cannot set property ${p} of null`);
 
             if (Array.isArray(obj))
@@ -146,10 +144,16 @@ export function set(input: JObject | JArray, path: string | string[], value: JTo
                 obj = obj[p];
         }
         const finalPart = comps[comps.length - 1];
-        if (Array.isArray(obj))
+        if (value === undefined) {
+            if (Array.isArray(obj))
+                obj.splice(parseInt(finalPart), 1);
+            else if (typeof obj === 'object' && obj !== null)
+                delete obj[finalPart];
+        } else if (Array.isArray(obj))
             obj[parseInt(finalPart)] = value;
         else if (typeof obj === 'object' && obj !== null)
             obj[finalPart] = value;
+
     } catch (err: unknown) {
         if (err instanceof Error)
             throw err;
@@ -176,13 +180,13 @@ export function clean(input: JToken): JToken {
             input[i] = clean(input[i]);
         }
     } else if (typeof input === 'object' && input !== null) {
-        if (input.n !== undefined && input.v !== undefined && Array.isArray(input.v)) {
+        if ('n' in input && 'v' in input) {
             return clean(input.v);
         }
 
-        for (const [key, value] of Object.entries(input)) {
+        for (const [key, value] of Object.entries(input))
             input[key] = clean(value);
-        }
+
     }
     return input;
 }

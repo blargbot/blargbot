@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildSizeSubtag extends BaseSubtag {
+export class GuildSizeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'guildsize',
@@ -13,9 +13,14 @@ export class GuildSizeSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'This guild has {guildsize} members.',
                     exampleOut: 'This guild has 123 members.',
-                    execute: (ctx) => ctx.guild.memberCount.toString()
+                    returns: 'number',
+                    execute: (ctx) => this.getGuildMemberCount(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildMemberCount(context: BBTagContext): number {
+        return context.guild.memberCount;
     }
 }

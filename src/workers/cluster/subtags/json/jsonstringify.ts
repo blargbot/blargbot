@@ -1,10 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 const json = bbtagUtil.json;
 
-export class JsonStringifySubtag extends BaseSubtag {
+export class JsonStringifySubtag extends Subtag {
     public constructor() {
         super({
             name: 'jsonstringify',
@@ -16,22 +16,19 @@ export class JsonStringifySubtag extends BaseSubtag {
                     description: 'Pretty-prints the provided JSON `input` with the provided `indent`.',
                     exampleCode: '{jsonstringify;["one","two","three"]}',
                     exampleOut: '[\n    "one",\n    "two",\n    "three"\n]',
-                    execute: async (context, [{ value: input }, { value: indentStr }]) => {
-                        const indent = parse.int(indentStr, false);
-                        if (indent === undefined)
-                            throw new NotANumberError(indentStr);
-
-                        let obj: JObject | JArray;
-                        const arr = await bbtagUtil.tagArray.getArray(context, input);
-                        if (arr !== undefined && Array.isArray(arr.v)) {
-                            obj = arr.v;
-                        } else {
-                            obj = (await json.parse(context, input)).object;
-                        }
-                        return JSON.stringify(obj, null, indent);
-                    }
+                    returns: 'string',
+                    execute: (ctx, [input, indent]) => this.jsonStringify(ctx, input.value, indent.value)
                 }
             ]
         });
+    }
+    public async jsonStringify(context: BBTagContext, input: string, indentStr: string): Promise<string> {
+        const indent = parse.int(indentStr, false);
+        if (indent === undefined)
+            throw new NotANumberError(indentStr);
+
+        const arr = await bbtagUtil.tagArray.getArray(context, input);
+        const obj = arr?.v ?? (await json.parse(context, input)).object;
+        return JSON.stringify(obj, null, indent);
     }
 }

@@ -1,10 +1,10 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 import { Permissions } from 'discord.js';
 
-export class ChannelSetPermsSubtag extends BaseSubtag {
+export class ChannelSetPermsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'channelsetperms',
@@ -16,7 +16,8 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222}',
                     exampleOut: '11111111111111111',
-                    execute: (ctx, [{ value: channel }, { value: type }, { value: item }]) => this.channelDeleteOverwrite(ctx, channel, type.toLowerCase(), item)
+                    returns: 'id',
+                    execute: (ctx, [channel, type, item]) => this.channelDeleteOverwrite(ctx, channel.value, type.value.toLowerCase(), item.value)
                 },
                 {
                     parameters: ['channel', 'type', 'memberid|roleid', 'allow', 'deny?'],
@@ -26,6 +27,7 @@ export class ChannelSetPermsSubtag extends BaseSubtag {
                         'Returns the channel\'s ID.',
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222;1024;2048}',
                     exampleOut: '11111111111111111',
+                    returns: 'id',
                     execute: (ctx, [channel, type, entityId, allow, deny]) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.int(allow.value), parse.int(deny.value))
                 }
             ]

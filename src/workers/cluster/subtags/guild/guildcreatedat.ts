@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment';
 
-export class GuildCreateDat extends BaseSubtag {
+export class GuildCreateDat extends Subtag {
     public constructor() {
         super({
             name: 'guildcreatedat',
@@ -14,9 +14,14 @@ export class GuildCreateDat extends BaseSubtag {
                         'formatted accordingly. Leave blank for default formatting. See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
                     exampleCode: 'This guild was created on {guildcreatedat;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'This guild was created on 2016/01/01 01:00:00',
-                    execute: (ctx, [format]) => moment(ctx.guild.createdAt).utcOffset(0).format(format.value)
+                    returns: 'string',
+                    execute: (ctx, [format]) => this.getGuildCreatedDate(ctx, format.value)
                 }
             ]
         });
+    }
+
+    public getGuildCreatedDate(context: BBTagContext, format: string): string {
+        return moment(context.guild.createdAt).utcOffset(0).format(format);
     }
 }

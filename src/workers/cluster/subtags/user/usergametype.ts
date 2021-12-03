@@ -1,6 +1,6 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { ActivityType } from 'discord.js';
 
 const gameTypes = {
     default: '',
@@ -10,9 +10,9 @@ const gameTypes = {
     3: 'watching',
     4: 'custom',
     5: 'competing'
-};
+} as const;
 
-export class UserGameTypeSubtag extends BaseSubtag {
+export class UserGameTypeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'usergametype',
@@ -24,13 +24,15 @@ export class UserGameTypeSubtag extends BaseSubtag {
                     description: 'Returns how the executing user is playing a game (playing, streaming).',
                     exampleCode: 'You are {usergametype} right now!',
                     exampleOut: 'You are streaming right now!',
-                    execute: (ctx) => ctx.member.presence?.activities[0]?.type.toLowerCase() ?? ''
+                    returns: 'string',
+                    execute: (ctx) => this.getUserGameType(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns how `user` is playing a game. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat is {usergametype;Stupid cat} cats',
                     exampleOut: 'Stupid cat is streaming cats',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserGameType(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -41,17 +43,15 @@ export class UserGameTypeSubtag extends BaseSubtag {
         context: BBTagContext,
         userId: string,
         quiet: boolean
-    ): Promise<Lowercase<ActivityType> | ''> {
+    ): Promise<typeof gameTypes[keyof typeof gameTypes]> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const member = await context.queryMember(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            const member = await context.util.getMember(context.guild, user.id);
-            if (member !== undefined) {
-                return member.presence?.activities[0]?.type.toLowerCase() ?? '';
-            }
+        if (member === undefined) {
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return member.presence?.activities[0]?.type.toLowerCase() ?? '';
     }
 }

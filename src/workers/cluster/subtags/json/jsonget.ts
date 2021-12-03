@@ -1,10 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
 const json = bbtagUtil.json;
 
-export class JsonGetSubtag extends BaseSubtag {
+export class JsonGetSubtag extends Subtag {
     public constructor() {
         super({
             name: 'jsonget',
@@ -18,31 +18,31 @@ export class JsonGetSubtag extends BaseSubtag {
                         '`path` is a dot-noted series of properties.',
                     exampleCode: '{jsonget;{j;{\n  "array": [\n    "zero",\n    { "value": "one" },\n    "two"\n  ]\n}};array.1.value}',
                     exampleOut: 'one',
-                    execute: async (context, [{ value: input }, { value: path }]): Promise<string | void> => {
-                        if (input === '')
-                            input = '{}';
-
-                        let obj: JObject | JArray;
-                        const arr = await bbtagUtil.tagArray.getArray(context, input);
-                        if (arr !== undefined && Array.isArray(arr.v)) {
-                            obj = arr.v;
-                        } else {
-                            obj = (await json.parse(context, input)).object;
-                        }
-
-                        try {
-                            const value = json.get(obj, path);
-                            if (typeof value === 'object')
-                                return JSON.stringify(value);
-                            else if (value !== undefined)
-                                return value.toString();
-                        } catch (err: unknown) {
-                            if (err instanceof Error)
-                                throw new BBTagRuntimeError(err.message);
-                        }
-                    }
+                    returns: 'json|nothing',
+                    execute: (ctx, [input, path]) => this.jsonGet(ctx, input.value, path.value)
                 }
             ]
         });
+    }
+
+    public async jsonGet(context: BBTagContext, input: string, path: string): Promise<JToken | undefined> {
+        if (input === '')
+            input = '{}';
+
+        let obj: JObject | JArray;
+        const arr = await bbtagUtil.tagArray.getArray(context, input);
+        if (arr !== undefined) {
+            obj = arr.v;
+        } else {
+            obj = (await json.parse(context, input)).object;
+        }
+
+        try {
+            return json.get(obj, path);
+        } catch (err: unknown) {
+            if (err instanceof Error)
+                throw new BBTagRuntimeError(err.message);
+            throw err;
+        }
     }
 }

@@ -1,7 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class UserGameSubtag extends BaseSubtag {
+export class UserGameSubtag extends Subtag {
     public constructor() {
         super({
             name: 'usergame',
@@ -13,13 +14,15 @@ export class UserGameSubtag extends BaseSubtag {
                     description: 'Returns the game the executing user is playing. ',
                     exampleCode: 'You are playing {usergame}',
                     exampleOut: 'You are playing with bbtag',
-                    execute: (ctx) => ctx.member.presence?.activities[0]?.name ?? 'nothing'
+                    returns: 'string',
+                    execute: (ctx) => this.getUserGame(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns the game `user` is playing. If `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat is playing {usergame;Stupid cat}',
                     exampleOut: 'Stupid cat is playing nothing',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserGame(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -32,14 +35,13 @@ export class UserGameSubtag extends BaseSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const member = await context.queryMember(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            const member = await context.util.getMember(context.guild, user.id);
-            if (member !== undefined)
-                return member.presence?.activities[0]?.name ?? 'nothing';
+        if (member === undefined) {
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return member.presence?.activities[0]?.name ?? 'nothing';
     }
 }

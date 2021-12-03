@@ -1,12 +1,12 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValueArray } from '@cluster/types';
+import { SubtagArgumentArray } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { MessageEmbedOptions } from 'discord.js';
 
 const { all: allOperators, logic, numeric, compare } = bbtagUtil.operators;
 
-export class OperatorSubtag extends BaseSubtag {
+export class OperatorSubtag extends Subtag {
     public constructor() {
         super({
             name: 'operator',
@@ -16,13 +16,14 @@ export class OperatorSubtag extends BaseSubtag {
                 {
                     parameters: ['values+'],
                     description: '',
-                    execute: (_, args) => this.applyOperation(args)
+                    returns: 'boolean|number',
+                    execute: (_, values) => this.applyOperation(values)
                 }
             ]
         });
     }
 
-    public applyOperation(args: SubtagArgumentValueArray): string {
+    public applyOperation(args: SubtagArgumentArray): number | boolean {
         if (args.subtagName.toLowerCase() === 'operator')
             throw new BBTagRuntimeError('Invalid operator \'operator\'');
 
@@ -46,7 +47,7 @@ export class OperatorSubtag extends BaseSubtag {
     public applyComparisonOperation(
         operator: keyof typeof compare,
         values: string[]
-    ): string {
+    ): boolean {
         if (['startswith', 'includes', 'contains', 'endswith'].includes(operator)) {
             const firstValue = values[0];
             values = values.slice(1);
@@ -54,7 +55,7 @@ export class OperatorSubtag extends BaseSubtag {
                 return compare[operator](firstValue, value);
             });
 
-            return logic['&&'](operatedValues).toString();
+            return logic['&&'](operatedValues);
         }
 
         const flattenedValues = bbtagUtil.tagArray.flattenArray(values).map((arg) => {
@@ -74,40 +75,41 @@ export class OperatorSubtag extends BaseSubtag {
         });
 
         const pairedValues = this.generatePairs(flattenedValues);
-        const operatedValues = pairedValues.map((pair) => compare[operator](pair[0], pair[1]));
-        return logic['&&'](operatedValues).toString();
+        const operatedValues = pairedValues.map(args => compare[operator](...args));
+        return logic['&&'](operatedValues);
     }
 
-    public generatePairs(array: string[]): string[][] {
-        const pairedArrays: string[][] = [];
+    public generatePairs(array: string[]): Array<[string, string]> {
+        const pairedArrays: Array<[string, string]> = [];
         for (let i = 0; i < array.length; i++) {
             if (i === array.length - 1) break;
             pairedArrays.push([array[i], array[i + 1]]);
         }
         return pairedArrays;
     }
+
     public applyNumericOperation(
         operator: keyof typeof numeric,
         values: string[]
-    ): string {
+    ): number {
         return bbtagUtil.tagArray.flattenArray(values).map((arg) => {
             if (typeof arg === 'string')
                 arg = parse.float(arg);
             if (typeof arg !== 'number' || isNaN(arg))
                 throw new NotANumberError(arg);
             return arg;
-        }).reduce(numeric[operator]).toString();
+        }).reduce(numeric[operator]);
     }
 
     public applyLogicOperation(
         operator: keyof typeof logic,
         values: string[]
-    ): string {
+    ): boolean {
         if (operator === '!') {
             const value = parse.boolean(values[0]);
             if (value === undefined)
                 throw new NotABooleanError(values[0]);
-            return logic[operator]([value]).toString();
+            return logic[operator]([value]);
         }
 
         const parsed = values.map((value) => {
@@ -116,7 +118,7 @@ export class OperatorSubtag extends BaseSubtag {
                 throw new NotABooleanError(value);
             return bool;
         });
-        return logic[operator](parsed).toString();
+        return logic[operator](parsed);
     }
 
     public enrichDocs(

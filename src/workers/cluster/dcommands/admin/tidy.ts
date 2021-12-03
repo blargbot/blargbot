@@ -144,7 +144,7 @@ async function buildFilter(context: GuildCommandContext, options: TidyOptions): 
         conditions.push(m => /https?:\/\/.+?\../.test(m.content));
     if (options.query !== '') {
         const result = createSafeRegExp(options.query);
-        if (!result.success)
+        if (result.state !== 'success')
             return 'INVALID_REGEX';
         conditions.push(m => result.regex.test(m.content));
     }

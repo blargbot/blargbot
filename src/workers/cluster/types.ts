@@ -169,7 +169,7 @@ export interface SerializedBBTagContext {
     author: string;
     authorizer: string;
     tagVars: boolean;
-    tempVars: Record<string, JToken>;
+    tempVars: JObject;
     limit: SerializedRuntimeLimit;
 }
 
@@ -226,7 +226,7 @@ export interface RuntimeDebugEntry {
 export interface RuntimeLimit {
     addRules(rulekey: string | string[], ...rules: RuntimeLimitRule[]): this;
     readonly scopeName: string;
-    check(context: BBTagContext, subtag: SubtagCall, subtagName: string): Awaitable<void>;
+    check(context: BBTagContext, subtagName: string): Awaitable<void>;
     rulesFor(subtagName: string): string[];
     serialize(): SerializedRuntimeLimit;
     load(state: SerializedRuntimeLimit): void;
@@ -274,20 +274,29 @@ export interface ExecutionResult {
     };
     database: {
         committed: number;
-        values: Record<string, JToken>;
+        values: JObject;
     };
 }
-export type SubtagResult =
-    | string
-    | undefined
-    | void;
-
 export interface SubtagHandlerCallSignature extends SubtagSignatureDetails {
-    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Awaitable<SubtagResult>;
+    readonly implementation: SubtagLogic<SubtagResult>;
+}
+
+export type SubtagResult = AsyncIterable<string | undefined>;
+
+export interface SubtagLogic<T> {
+    execute(context: BBTagContext, args: SubtagArgumentArray, call: SubtagCall): T;
+}
+
+export interface CompositeSubtagHandler extends SubtagHandler {
+    readonly handlers: readonly ConditionalSubtagHandler[];
+}
+
+export interface ConditionalSubtagHandler extends SubtagHandler {
+    canHandle(call: SubtagCall): boolean;
 }
 
 export interface SubtagHandler {
-    readonly execute: (this: unknown, context: BBTagContext, subtagName: string, call: SubtagCall) => Awaitable<SubtagResult>;
+    execute(context: BBTagContext, subtagName: string, call: SubtagCall): SubtagResult;
 }
 
 export type SubtagHandlerValueParameter =
@@ -325,11 +334,41 @@ export interface SubtagSignatureDetails<TArgs = SubtagHandlerParameter> {
     readonly exampleCode?: string;
     readonly exampleIn?: string;
     readonly exampleOut?: string;
+    readonly returns: keyof SubtagReturnTypeMap;
 }
 
-export interface SubtagHandlerDefinition extends SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup> {
-    readonly execute: (this: unknown, context: BBTagContext, args: SubtagArgumentValueArray, subtagCall: SubtagCall) => Awaitable<SubtagResult>;
+interface SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap>
+    extends SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup>,
+    SubtagLogic<Awaitable<SubtagReturnTypeMap[Type]>> {
+    readonly returns: Type;
 }
+
+type Iterated<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
+
+export type SubtagReturnTypeMap = {
+    'unknown': SubtagResult;
+    'hex': number;
+    'number': number | bigint;
+    'number[]': Iterated<number>;
+    'boolean': boolean;
+    'boolean|number': boolean | number | bigint;
+    'boolean[]': Iterated<boolean>;
+    'string': string;
+    'string|nothing': string | undefined;
+    'string[]': Iterated<string>;
+    '(string|error)[]': Iterated<string>;
+    'id': string;
+    'id[]': Iterated<string>;
+    'json': JToken;
+    'json|nothing': JToken | undefined;
+    'json[]': Iterated<JToken>;
+    'json[]|nothing': Iterated<JToken> | undefined;
+    'nothing': void;
+    'error': never;
+    'loop': Iterated<string>;
+}
+
+export type AnySubtagHandlerDefinition = { [P in keyof SubtagReturnTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagReturnTypeMap];
 
 export interface SubtagHandlerDefinitionParameterGroup {
     readonly minCount?: number;
@@ -564,7 +603,7 @@ export interface CommandListResult {
     [commandName: string]: ICommandDetails | undefined;
 }
 
-export interface SubtagArgumentValue {
+export interface SubtagArgument {
     readonly parameter: SubtagHandlerValueParameter;
     readonly isCached: boolean;
     readonly value: string;
@@ -574,37 +613,16 @@ export interface SubtagArgumentValue {
     execute(): Promise<string>;
 }
 
-export interface SubtagArgumentValueArray extends ReadonlyArray<SubtagArgumentValue> {
+export interface SubtagArgumentArray extends ReadonlyArray<SubtagArgument> {
     readonly subtagName: string;
 }
 
-export type SubHandler = (context: BBTagContext, subtagName: string, call: SubtagCall) => Promise<SubtagResult>;
 export interface ArgumentResolver {
-    resolve(context: BBTagContext, subtagName: string, call: SubtagCall): Iterable<SubtagArgumentValue>;
+    readonly argRange: readonly [min: number, max: number];
+    canResolve(subtag: SubtagCall): boolean;
+    resolve(context: BBTagContext, subtagName: string, subtag: SubtagCall): Iterable<SubtagArgument>;
 }
 
-export interface SubHandlerCollection {
-    byNumber: { [argLength: number]: SubHandler | undefined; };
-    byTest: Array<{
-        execute: SubHandler;
-        test: (argCount: number) => boolean;
-    }>;
-}
-
-export interface ArgumentResolvers {
-    byNumber: { [argLength: number]: ArgumentResolver; };
-    byTest: Array<ArgumentResolver & {
-        test: (argCount: number) => boolean; minArgCount: number; maxArgCount: number;
-    }>;
-}
-
-export interface ArgumentResolverPermutations {
-    greedy: number[];
-    permutations: Array<{
-        beforeGreedy: number[];
-        afterGreedy: number[];
-    }>;
-}
 export interface ClusterStats {
     readonly id: number;
     readonly time: number;
@@ -668,7 +686,7 @@ export interface SubtagOptions {
 }
 
 export interface RuntimeLimitRule {
-    check(context: BBTagContext, subtagName: string, subtag: SubtagCall): Awaitable<void>;
+    check(context: BBTagContext, subtagName: string): Awaitable<void>;
     displayText(subtagName: string, scopeName: string): string;
     state(): JToken;
     load(state: JToken): void;
@@ -741,7 +759,7 @@ export interface WarnDetails {
 
 export interface WarnResultBase<ModType extends ModerationType, TResult extends string> {
     readonly type: ModType;
-    readonly count: number;
+    readonly warnings: number;
     readonly state: TResult;
 }
 
@@ -749,6 +767,12 @@ export type WarnResult =
     | WarnResultBase<ModerationType.BAN, BanResult>
     | WarnResultBase<ModerationType.KICK, KickResult>
     | WarnResultBase<ModerationType.WARN, 'success' | 'countNaN' | 'countNegative' | 'countZero'>;
+
+export interface PardonResult {
+    readonly warnings: number;
+    readonly state: 'success' | 'countNaN' | 'countNegative' | 'countZero';
+
+}
 
 export type CommandBinderParseResult =
     | CommandBinderValue

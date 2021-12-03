@@ -1,4 +1,4 @@
-import { RuntimeLimit, RuntimeLimitRule, SerializedRuntimeLimit, SubtagCall } from '@cluster/types';
+import { RuntimeLimit, RuntimeLimitRule, SerializedRuntimeLimit } from '@cluster/types';
 
 import { BBTagContext } from '../BBTagContext';
 import { limits } from './index';
@@ -35,7 +35,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
         return this;
     }
 
-    public async check(context: BBTagContext, subtag: SubtagCall, rulekey: string): Promise<void> {
+    public async check(context: BBTagContext, rulekey: string): Promise<void> {
         const [rootKey, subKey] = this.getKeys(rulekey);
         const set = this.#rules[rootKey] ?? {};
         const collection = set[subKey];
@@ -43,7 +43,7 @@ export abstract class BaseRuntimeLimit implements RuntimeLimit {
             return undefined;
 
         for (const rule of collection)
-            await rule.check(context, rootKey, subtag);
+            await rule.check(context, rootKey);
     }
 
     public rulesFor(rulekey: string): string[] {

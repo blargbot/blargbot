@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
-export class RoleAddSubtag extends BaseSubtag {
+export class RoleAddSubtag extends Subtag {
     public constructor() {
         super({
             name: 'roleadd',
@@ -15,14 +15,16 @@ export class RoleAddSubtag extends BaseSubtag {
                     description: 'Gives the executing user `role`. Returns `true` if role was given, else an error will be shown.',
                     exampleCode: 'Have a role! {roleadd;11111111111111111}',
                     exampleOut: 'Have a role! true',
-                    execute: (ctx, args) => this.addRole(ctx, args[0].value, ctx.user.id, '')
+                    returns: 'boolean',
+                    execute: (ctx, [role]) => this.addRole(ctx, role.value, ctx.user.id, false)
                 },
                 {
                     parameters: ['role', 'user', 'quiet?'],
                     description: 'Gives `user` the chosen `role`. Returns `true` if role was given, else an error will be shown. If `quiet` is specified, if a user can\'t be found it will simply return `false`',
                     exampleCode: 'Stupid cat have a role! {roleadd;Bot;Stupid cat}',
                     exampleOut: 'Stupid cat have a role! true',
-                    execute: (ctx, args) => this.addRole(ctx, args[0].value, args[1].value, args[2].value)
+                    returns: 'boolean',
+                    execute: (ctx, [role, user, quiet]) => this.addRole(ctx, role.value, user.value, quiet.value !== '')
                 }
             ]
         });
@@ -32,19 +34,18 @@ export class RoleAddSubtag extends BaseSubtag {
         context: BBTagContext,
         roleStr: string,
         userStr: string,
-        quietStr: string
-    ): Promise<string> {
+        quiet: boolean
+    ): Promise<boolean> {
         const topRole = discordUtil.getRoleEditPosition(context);
         if (topRole === 0)
             throw new BBTagRuntimeError('Author cannot add roles');
 
-        const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
+        quiet ||= context.scopes.local.quiet ?? false;
         const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
 
         if (result.member === undefined) {
-            if (quiet)
-                return 'false';
-            throw new UserNotFoundError(userStr);
+            throw new UserNotFoundError(userStr)
+                .withDisplay(quiet ? 'false' : undefined);
         }
 
         if (result.roles.length === 0)
@@ -56,7 +57,7 @@ export class RoleAddSubtag extends BaseSubtag {
         const roles = result.roles.filter((_, i) => !result.hasRole[i]);
 
         if (roles.length === 0)
-            return 'false';
+            return false;
 
         try {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
@@ -64,10 +65,10 @@ export class RoleAddSubtag extends BaseSubtag {
             await result.member.edit({
                 roles: existingRoles.concat(...roles.map(r => r.id))
             }, fullReason);
-            return 'true';
+            return true;
         } catch (err: unknown) {
             context.logger.error(err);
-            return 'false';
+            return false;
         }
     }
 }

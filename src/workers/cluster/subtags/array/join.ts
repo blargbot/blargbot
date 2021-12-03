@@ -1,8 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class JoinSubtag extends BaseSubtag {
+export class JoinSubtag extends Subtag {
     public constructor() {
         super({
             name: 'join',
@@ -13,6 +13,7 @@ export class JoinSubtag extends BaseSubtag {
                     description: 'Joins the elements of `array` together with `text` as the separator.',
                     exampleCode: '{join;["this", "is", "an", "array"];!}',
                     exampleOut: 'this!is!an!array',
+                    returns: 'string',
                     execute: (context, [array, join]) => this.join(context, array.value, join.value)
                 }
             ]

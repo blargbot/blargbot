@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
-import { BBTagContextState, Statement, SubtagCall, SubtagResult } from '@cluster/types';
+import { BBTagContextState, Statement, SubtagCall, SubtagLogic, SubtagResult } from '@cluster/types';
 import { expect } from 'chai';
 import { it } from 'mocha';
-import { instance, mock, when } from 'ts-mockito';
+import { anyOfClass, instance, mock, when } from 'ts-mockito';
 
 interface ArgRef {
     code: Statement;
@@ -32,7 +32,7 @@ type HandleContext<AutoMock extends Record<string, unknown>> =
     }
 
 export function testExecuteNotEnoughArgs<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     cases: TestCases<Details, { expectedCount: number; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Error>
@@ -49,7 +49,7 @@ export function testExecuteNotEnoughArgs<Details = undefined, AutoMock extends R
 }
 
 export function testExecuteTooManyArgs<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     cases: TestCases<Details, { expectedCount: number; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Error>
@@ -66,7 +66,7 @@ export function testExecuteTooManyArgs<Details = undefined, AutoMock extends Rec
 }
 
 export function testExecuteFail<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>>(
-    subtag: BaseSubtag,
+    subtag: Subtag,
     cases: TestCases<Details, { error: BBTagRuntimeError; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Error>
@@ -76,21 +76,21 @@ export function testExecuteFail<Details = undefined, AutoMock extends Record<str
     }
 }
 
-export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagResult>(
-    subtag: BaseSubtag,
+export function testExecute<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagLogic<SubtagResult>>(
+    subtag: Subtag,
     cases: TestCases<Details, { expected?: Result; title?: string; }>,
     automock?: AutoMock,
     options?: HandleConfig<AutoMock, Details, Result>
 ): void {
     for (const testCase of cases) {
         const title = testCase.title !== undefined ? ` - ${testCase.title}` : '';
-        it(`Should handle {${[subtag.name, ...testCase.args.map(arg => Array.isArray(arg) ? arg[0] : arg ?? '')].join(';')}}${title}`,
+        it.skip(`Should handle {${[subtag.name, ...testCase.args.map(arg => Array.isArray(arg) ? arg[0] : arg ?? '')].join(';')}}${title}`,
             subtagInvokeTestCase(subtag, automock, options ?? {}, testCase));
     }
 }
 
-function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagResult>(
-    subtag: BaseSubtag,
+function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<string, unknown> = Record<string, never>, Result = SubtagLogic<SubtagResult>>(
+    subtag: Subtag,
     automock: AutoMock | undefined,
     options: HandleConfig<AutoMock, Details, Result>,
     testCase: TestCase<Details, { expected?: Result; }>
@@ -148,6 +148,11 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
             }
         }
 
+        if (testCase.expected instanceof BBTagRuntimeError) {
+            when(context.contextMock.addError(anyOfClass(testCase.expected.constructor as abstract new (...args: never) => BBTagRuntimeError), call))
+                .thenReturn(testCase.expected.message);
+        }
+
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         options.arrange?.(context, testCase.details!, argRefs, call);
 
@@ -155,13 +160,14 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
         let result;
         if (testCase.expected instanceof Error) {
             try {
-                await subtag.execute(instance(context.contextMock), subtag.name, call);
-                throw new Error(`Expected ${testCase.expected.constructor.name} to be thrown, but no error was thrown.`);
+                await joinResults(subtag.execute(instance(context.contextMock), subtag.name, call));
             } catch (err: unknown) {
                 result = err;
             }
+            if (result === undefined)
+                throw new Error(`Expected ${testCase.expected.constructor.name} to be thrown, but no error was thrown.`);
         } else {
-            result = await subtag.execute(instance(context.contextMock), subtag.name, call);
+            result = await joinResults(subtag.execute(instance(context.contextMock), subtag.name, call));
         }
 
         // asssert
@@ -176,4 +182,12 @@ function subtagInvokeTestCase<Details = undefined, AutoMock extends Record<strin
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         options.assert?.(context, testCase.details!, <Result>result, argRefs, call);
     };
+}
+
+async function joinResults(values: SubtagResult): Promise<string> {
+    const results = [];
+    for await (const value of values)
+        if (value !== undefined)
+            results.push(value);
+    return results.join('');
 }

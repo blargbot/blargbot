@@ -1,7 +1,7 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class DumpSubtag extends BaseSubtag {
+export class DumpSubtag extends Subtag {
     public constructor() {
         super({
             name: 'dump',
@@ -12,6 +12,7 @@ export class DumpSubtag extends BaseSubtag {
                     description: 'Dumps the provided text to a blargbot output page. These expire after 7 days.',
                     exampleCode: '{dump;Hello, world!}',
                     exampleOut: 'https://blargbot.xyz/output/1111111111111111',
+                    returns: 'string',
                     execute: (ctx, [text]) => this.createDump(ctx, text.value)
                 }
             ]

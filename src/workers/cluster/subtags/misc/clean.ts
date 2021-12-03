@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class CleanSubtag extends BaseSubtag {
+export class CleanSubtag extends Subtag {
     public constructor() {
         super({
             name: 'clean',
@@ -12,6 +12,7 @@ export class CleanSubtag extends BaseSubtag {
                     description: 'Removes all duplicated whitespace from `text`, meaning a cleaner output.',
                     exampleCode: '{clean;Hello!  \n\n  Im     here    to help}',
                     exampleOut: 'Hello!\nIm here to help',
+                    returns: 'string',
                     execute: (_, [text]) => this.clean(text.value)
                 }
             ]

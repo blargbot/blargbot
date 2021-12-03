@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class MessageIdSubtag extends BaseSubtag {
+export class MessageIdSubtag extends Subtag {
     public constructor() {
         super({
             name: 'messageid',
@@ -12,9 +12,14 @@ export class MessageIdSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'The message id was {messageid}',
                     exampleOut: 'The message id was 111111111111111111',
-                    execute: (ctx) => ctx.message.id
+                    returns: 'id',
+                    execute: (ctx) => this.getMessageId(ctx)
                 }
             ]
         });
+    }
+
+    public getMessageId(context: BBTagContext): string {
+        return context.message.id;
     }
 }

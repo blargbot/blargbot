@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagArgumentValue } from '@cluster/types';
+import { SubtagArgument } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
-export class FunctionSubtag extends BaseSubtag {
+export class FunctionSubtag extends Subtag {
     public constructor() {
         super({
             name: 'function',
@@ -18,7 +18,8 @@ export class FunctionSubtag extends BaseSubtag {
                         '\n\nPlease note that there is a recursion limit of 200 which is also shared by `{exec}`, `{execcc}` and `{inject}`.',
                     exampleCode: '{function;test;{paramsarray}} {func.test;1;2;3;4}',
                     exampleOut: '["1","2","3","4"]',
-                    execute: (ctx, args) => this.createFunction(ctx, args[0].value, args[1])
+                    returns: 'nothing',
+                    execute: (ctx, [name, code]) => this.createFunction(ctx, name.value, code)
                 }
             ]
         });
@@ -27,8 +28,8 @@ export class FunctionSubtag extends BaseSubtag {
     public createFunction(
         context: BBTagContext,
         funcName: string,
-        code: SubtagArgumentValue
-    ): string | void {
+        code: SubtagArgument
+    ): void {
         let name = funcName.toLowerCase();
         if (name.startsWith('func.'))
             name = name.slice(5);

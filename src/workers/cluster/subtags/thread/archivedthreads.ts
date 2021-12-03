@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, guard, SubtagType } from '@cluster/utils';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { ChannelNotFoundError, InvalidChannelError } from '@cluster/bbtag/errors';
+import { guard, SubtagType } from '@cluster/utils';
 
-export class ArchivedThreadsSubtag extends BaseSubtag {
+export class ArchivedThreadsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'archivedthreads',
@@ -13,16 +13,21 @@ export class ArchivedThreadsSubtag extends BaseSubtag {
                     description: '`channel` defaults to the current channel\n\nLists all archived threads in `channel`.\nReturns an array of thread channel IDs.',
                     exampleCode: '{archivedthreads;123456789123456}',
                     exampleOut: '["123456789012345", "98765432198765"]',
-                    execute: async (context, [channelStr]) => {
-                        const channel = await context.queryChannel(channelStr.value);
-                        if (channel === undefined)
-                            throw new ChannelNotFoundError(channelStr.value);
-                        if (guard.isThreadableChannel(channel))
-                            return JSON.stringify((await channel.threads.fetchArchived()).threads.map(t => t.id));
-                        throw new BBTagRuntimeError(discordUtil.notThreadable(channel));
-                    }
+                    returns: 'id[]',
+                    execute: (ctx, [channel]) => this.getArchivedThreads(ctx, channel.value)
                 }
             ]
         });
+    }
+
+    public async getArchivedThreads(context: BBTagContext, channelStr: string): Promise<string[]> {
+        const channel = await context.queryChannel(channelStr);
+        if (channel === undefined)
+            throw new ChannelNotFoundError(channelStr);
+
+        if (!guard.isThreadableChannel(channel))
+            throw new InvalidChannelError(channel);
+
+        return (await channel.threads.fetchArchived()).threads.map(t => t.id);
     }
 }

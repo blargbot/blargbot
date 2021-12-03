@@ -1,9 +1,10 @@
-import { BaseSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError, TooManyLoopsError } from '@cluster/bbtag/errors';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
+import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { CompareOperator } from '@cluster/utils/bbtag/operators';
 
-export class ForSubtag extends BaseSubtag {
+export class ForSubtag extends Subtag {
     public constructor() {
         super({
             name: 'for',
@@ -16,50 +17,50 @@ export class ForSubtag extends BaseSubtag {
                         'This is very useful for repeating an action (or similar action) a set number of times. Edits to `variable` inside `code` will be ignored',
                     exampleCode: '{for;~index;0;<;10;{get;~index},}',
                     exampleOut: '0,1,2,3,4,5,6,7,8,9,',
-                    execute: async (context, args, subtag) => {
-                        const errors = [];
-                        const varName = args[0].value;
-                        const initial = parse.float(args[1].value);
-                        const operator = args[2].value;
-                        const limit = parse.float(args[3].value);
-                        const increment = parse.float(args[4].value);
-                        const code = args[5];
-                        let result = '';
-
-                        if (isNaN(initial)) errors.push('Initial must be a number');
-                        if (!bbtagUtil.operators.isCompareOperator(operator)) errors.push('Invalid operator');
-                        if (isNaN(limit)) errors.push('Limit must be a number');
-                        if (isNaN(increment)) errors.push('Increment must be a number');
-                        if (errors.length > 0) throw new BBTagRuntimeError(errors.join(', '));
-
-                        for (let i = initial; bbtagUtil.operators.compare[operator as CompareOperator](i.toString(), limit.toString()); i += increment) {
-                            try {
-                                await context.limit.check(context, subtag, 'for:loops');
-                            } catch (error: unknown) {
-                                if (!(error instanceof TooManyLoopsError))
-                                    throw error;
-                                result += context.addError(error);
-                                break;
-                            }
-
-                            await context.variables.set(varName, i);
-                            result += await code.execute();
-                            const varValue = await context.variables.get(varName);
-                            i = parse.float(parse.string(varValue));
-                            if (isNaN(i)) {
-                                // TODO change to be a AsyncIterable
-                                result += context.addError(new NotANumberError(varValue), subtag);
-                                break;
-                            }
-
-                            if (context.state.return !== 0)
-                                break;
-                        }
-                        await context.variables.reset(varName);
-                        return result;
-                    }
+                    returns: 'loop',
+                    execute: (ctx, [variable, initial, operator, limit, increment, code]) => this.for(ctx, variable.value, initial.value, operator.value, limit.value, increment.value, code)
                 }
             ]
         });
+    }
+
+    public async * for(
+        context: BBTagContext,
+        varName: string,
+        initialStr: string,
+        operator: string,
+        limitStr: string,
+        incrementStr: string,
+        code: SubtagArgument
+    ): AsyncIterable<string> {
+        const errors = [];
+        const initial = parse.float(initialStr);
+        const limit = parse.float(limitStr);
+        const increment = parse.float(incrementStr);
+
+        if (isNaN(initial)) errors.push('Initial must be a number');
+        if (!bbtagUtil.operators.isCompareOperator(operator)) errors.push('Invalid operator');
+        if (isNaN(limit)) errors.push('Limit must be a number');
+        if (isNaN(increment)) errors.push('Increment must be a number');
+        if (errors.length > 0) throw new BBTagRuntimeError(errors.join(', '));
+
+        try {
+            for (let i = initial; bbtagUtil.operators.compare[operator as CompareOperator](i.toString(), limit.toString()); i += increment) {
+                await context.limit.check(context, 'for:loops');
+                await context.variables.set(varName, i);
+                yield await code.execute();
+
+                const varValue = await context.variables.get(varName);
+                i = parse.float(parse.string(varValue));
+
+                if (isNaN(i))
+                    throw new NotANumberError(varValue);
+
+                if (context.state.return !== 0)
+                    break;
+            }
+        } finally {
+            await context.variables.reset(varName);
+        }
     }
 }

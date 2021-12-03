@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedFieldData, MessageEmbed, MessageEmbedOptions } from 'discord.js';
 
-export class EditSubtag extends BaseSubtag {
+export class EditSubtag extends Subtag {
     public constructor() {
         super({
             name: 'edit',
@@ -13,22 +13,27 @@ export class EditSubtag extends BaseSubtag {
             definition: [//! Overwritten
                 {
                     parameters: ['messageId', 'text|embed'],
-                    execute: (ctx, args) => this.edit(ctx, ctx.channel.id, args[0].value, args[1].value)
+                    returns: 'nothing',
+                    execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.channel.id, messageId.value, content.value)
                 },
                 {
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
-                    execute: async (ctx, args) => {
-                        const channel = await ctx.queryChannel(args[0].value, { noLookup: true });
-                        if (channel === undefined) {//{edit;msg;text;embed}
-                            await this.edit(ctx, ctx.channel.id, args[0].value, args[1].value, args[2].value);
-                        } else {//{edit;channel;msg;text|embed}
-                            await this.edit(ctx, channel.id, args[1].value, args[2].value);
-                        }
+                    returns: 'nothing',
+                    execute: async (ctx, [chanOrMessage, messageOrText, content]) => {
+                        const channel = await ctx.queryChannel(chanOrMessage.value, { noLookup: true });
+                        if (channel === undefined)
+                            //{edit;msg;text;embed}
+                            return this.edit(ctx, ctx.channel.id, chanOrMessage.value, messageOrText.value, content.value);
+
+                        //{edit;channel;msg;text|embed}
+                        return this.edit(ctx, channel.id, messageOrText.value, content.value);
+
                     }
                 },
                 {
                     parameters: ['channelId', 'messageID', 'text', 'embed'],
-                    execute: (ctx, args) => this.edit(ctx, args[0].value, args[1].value, args[2].value, args[3].value)
+                    returns: 'nothing',
+                    execute: (ctx, [channelId, messageId, text, embed]) => this.edit(ctx, channelId.value, messageId.value, text.value, embed.value)
                 }
             ]
         });
@@ -40,7 +45,7 @@ export class EditSubtag extends BaseSubtag {
         messageStr: string,
         contentStr: string,
         embedStr?: string
-    ): Promise<string | void> {
+    ): Promise<void> {
         const channel = await context.queryChannel(channelStr, { noLookup: true });
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);

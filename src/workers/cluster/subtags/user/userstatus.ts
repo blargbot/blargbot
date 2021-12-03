@@ -1,7 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class UserStatusSubtag extends BaseSubtag {
+export class UserStatusSubtag extends Subtag {
     public constructor() {
         super({
             name: 'userstatus',
@@ -13,13 +14,15 @@ export class UserStatusSubtag extends BaseSubtag {
                     description: 'Returns the status of the user.',
                     exampleCode: 'You are currently {userstatus}',
                     exampleOut: 'You are currently online',
-                    execute: (ctx) => ctx.member.presence?.status ?? 'offline'
+                    returns: 'string',
+                    execute: (ctx) => this.getUserStatus(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
                     description: 'Returns the status of `user`. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
                     exampleCode: 'Stupid cat is currently {userstatus;stupid cat}',
                     exampleOut: 'Stupid cat is currently online',
+                    returns: 'string',
                     execute: (ctx, [userId, quiet]) => this.getUserStatus(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -32,14 +35,13 @@ export class UserStatusSubtag extends BaseSubtag {
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const member = await context.queryMember(userId, { noLookup: quiet });
 
-        if (user !== undefined) {
-            const member = await context.util.getMember(context.guild, user.id);
-            if (member !== undefined)
-                return member.presence?.status ?? 'offline';
+        if (member === undefined) {
+            throw new UserNotFoundError(userId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return member.presence?.status ?? 'offline';
     }
 }

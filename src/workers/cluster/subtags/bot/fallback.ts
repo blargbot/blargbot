@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class FallBackSubtag extends BaseSubtag {
+export class FallBackSubtag extends Subtag {
     public constructor() {
         super({
             name: 'fallback',
@@ -12,9 +12,14 @@ export class FallBackSubtag extends BaseSubtag {
                     description: 'Should any tag fail to parse, it will be replaced with `message` instead of an error.',
                     exampleCode: '{fallback;This tag failed} {randint}',
                     exampleOut: 'This tag failed',
-                    execute: (ctx, [message]) => { ctx.scopes.local.fallback = message.value; }
+                    returns: 'nothing',
+                    execute: (ctx, [message]) => this.setFallback(ctx, message.value)
                 }
             ]
         });
+    }
+
+    public setFallback(context: BBTagContext, value: string): void {
+        context.scopes.local.fallback = value;
     }
 }

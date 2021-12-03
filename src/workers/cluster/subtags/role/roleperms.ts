@@ -1,7 +1,8 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { RoleNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class RolePermsSubtag extends BaseSubtag {
+export class RolePermsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'roleperms',
@@ -13,6 +14,7 @@ export class RolePermsSubtag extends BaseSubtag {
                     description: 'Returns `role`\'s permission number. If `quiet` is specified, if `role` can\'t be found it will simply return nothing.',
                     exampleCode: 'The admin role\'s permissions are: {roleperms;admin}.',
                     exampleOut: 'The admin role\'s permissions are: 8.',
+                    returns: 'number',
                     execute: (ctx, [userId, quiet]) => this.getRolePerms(ctx, userId.value, quiet.value !== '')
                 }
             ]
@@ -23,14 +25,15 @@ export class RolePermsSubtag extends BaseSubtag {
         context: BBTagContext,
         roleId: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<bigint> {
         quiet ||= context.scopes.local.quiet ?? false;
         const role = await context.queryRole(roleId, { noLookup: quiet });
 
-        if (role !== undefined) {
-            return role.permissions.bitfield.toString();
+        if (role === undefined) {
+            throw new RoleNotFoundError(roleId)
+                .withDisplay(quiet ? '' : undefined);
         }
 
-        return quiet ? '' : ''; //TODO add behaviour for this????
+        return role.permissions.bitfield;
     }
 }

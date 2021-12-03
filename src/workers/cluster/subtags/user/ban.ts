@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Duration } from 'moment';
 
@@ -13,7 +13,7 @@ const errorMap = {
     //'alreadyBanned': 'User has already been banned' //TODO JS blarg returns true for this
 };
 
-export class BanSubtag extends BaseSubtag {
+export class BanSubtag extends Subtag {
     public constructor(
         public readonly cluster: Cluster
     ) {
@@ -27,14 +27,16 @@ export class BanSubtag extends BaseSubtag {
                     description: 'Bans `user`. If the ban is succesful `true` will be returned, else it will return an error.',
                     exampleCode: '{ban;Stupid cat;4}',
                     exampleOut: 'true',
-                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, 'Tag Ban', '', '')
+                    returns: 'boolean|number',
+                    execute: (ctx, [user, deleteDays]) => this.banMember(ctx, user.value, deleteDays.value, 'Tag Ban', '', '')
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban?'],
                     description: 'Bans `user` for duration `timeToUnban` with `reason`.',
                     exampleCode: '{ban;Stupid cat;;Not clicking enough kittens;30d}',
                     exampleOut: 'true (stupid cat will be unbanned after 30d)',
-                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, '')
+                    returns: 'boolean|number',
+                    execute: (ctx, [user, deleteDays, reason, unbanAfter]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, '')
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban', 'noPerms'],
@@ -42,7 +44,8 @@ export class BanSubtag extends BaseSubtag {
                         'Only provide this if you know what you\'re doing.',
                     exampleCode: '{ban;Stupid cat;;For being stupid;;anythingcangohere}',
                     exampleOut: 'true (anyone can use this cc regardless of perms)',
-                    execute: (ctx, args) => this.banMember(ctx, args[0].value, args[1].value, args[2].value, args[3].value, args[4].value)
+                    returns: 'boolean|number',
+                    execute: (ctx, [user, deleteDays, reason, unbanAfter, noPerms]) => this.banMember(ctx, user.value, deleteDays.value, reason.value, unbanAfter.value, noPerms.value)
                 }
             ]
         });
@@ -55,16 +58,18 @@ export class BanSubtag extends BaseSubtag {
         reason: string,
         timeToUnbanStr: string,
         nopermsStr: string
-    ): Promise<string> {
+    ): Promise<boolean | number> {
         const user = await context.queryUser(userStr, {
             noLookup: true, noErrors: context.scopes.local.noLookupErrors ?? false
         });
 
         if (user === undefined)
             throw new UserNotFoundError(userStr);
-        const daysToDelete = parse.int(daysToDeleteStr);
-        if (isNaN(daysToDelete))
-            return 'false'; //TODO this.notANumber(context, subtag)
+        const daysToDelete = parse.int(daysToDeleteStr, false);
+        if (daysToDelete === undefined) {
+            throw new NotANumberError(daysToDelete)
+                .withDisplay('false');
+        }
         const noPerms = nopermsStr !== '' ? true : false;
         let duration: Duration | undefined;
 
@@ -74,7 +79,7 @@ export class BanSubtag extends BaseSubtag {
         const response = await this.cluster.moderation.bans.ban(context.guild, user, context.discord.user, noPerms, daysToDelete, reason, duration);
 
         if (response === 'success' || response === 'alreadyBanned')
-            return duration !== undefined ? duration.asMilliseconds().toString() : 'true';
+            return duration !== undefined ? duration.asMilliseconds() : true;
         throw new BBTagRuntimeError(errorMap[response]);
     }
 }

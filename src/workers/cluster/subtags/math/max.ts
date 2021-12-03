@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class MaxSubtag extends BaseSubtag {
+export class MaxSubtag extends Subtag {
     public constructor() {
         super({
             name: 'max',
@@ -12,21 +12,20 @@ export class MaxSubtag extends BaseSubtag {
                     description: 'Returns the largest entry out of `numbers`. If an array is provided, it will be expanded to its individual values.',
                     exampleCode: '{max;50;2;65}',
                     exampleOut: '65',
-                    execute: (_, args) => this.max(args.map(arg => arg.value))
+                    returns: 'number',
+                    execute: (_, values) => this.max(values.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public max(
-        args: string[]
-    ): string {
-        const flattenedArgs = bbtagUtil.tagArray.flattenArray(args);
+    public max(values: string[]): number {
+        const flattenedArgs = bbtagUtil.tagArray.flattenArray(values);
         const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
 
         if (parsedArgs.filter(isNaN).length > 0)
-            return 'NaN';
+            return NaN;
 
-        return Math.max(...parsedArgs).toString();
+        return Math.max(...parsedArgs);
     }
 }

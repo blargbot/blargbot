@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class CommentSubtag extends BaseSubtag {
+export class CommentSubtag extends Subtag {
     public constructor() {
         super({
             name: 'comment',
@@ -13,9 +13,14 @@ export class CommentSubtag extends BaseSubtag {
                     parameters: ['~anything*'],
                     exampleCode: 'This is a sentence. {//;This is a comment.}',
                     exampleOut: 'This is a sentence.',
-                    execute: () => ''
+                    returns: 'nothing',
+                    execute: () => this.doNothing()
                 }
             ]
         });
+    }
+
+    public doNothing(): void {
+        /*NOOP*/
     }
 }

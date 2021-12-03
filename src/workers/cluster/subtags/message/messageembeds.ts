@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Message } from 'discord.js';
 
-export class MessageEmbedsSubtag extends BaseSubtag {
+export class MessageEmbedsSubtag extends Subtag {
     public constructor() {
         super({
             name: 'messageembeds',
@@ -14,6 +14,7 @@ export class MessageEmbedsSubtag extends BaseSubtag {
                     description: 'Returns an array of embeds of the invoking message.',
                     exampleCode: 'You sent an embed: "{messageembeds}"',
                     exampleOut: 'You sent an embed: "[{"title":"Hello!"}]"',
+                    returns: 'json[]',
                     execute: (ctx) => this.getMessageEmbeds(ctx, ctx.channel.id, ctx.message.id, false)
                 },
                 {
@@ -21,14 +22,16 @@ export class MessageEmbedsSubtag extends BaseSubtag {
                     description: 'Returns an array of embeds of `messageid` in the current channel',
                     exampleCode: 'Someone sent a message with embeds: "{messageembeds;1111111111111}"',
                     exampleOut: 'Someone sent a message with attachments: "[{"title":"Hello!"}]"',
-                    execute: (ctx, args) => this.getMessageEmbeds(ctx, ctx.channel.id, args[0].value, false)
+                    returns: 'json[]',
+                    execute: (ctx, [messageId]) => this.getMessageEmbeds(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
                     description: 'Returns an array of embeds of `messageid` from `channel`. If `quiet` is provided and `channel` cannot be found, this will return an empty array.',
                     exampleCode: 'Someone sent a message in #support with embeds: "{messageembeds;support;1111111111111}"',
                     exampleOut: 'Someone sent a message in #support with embeds: "[{"title":"Hello!"}]"',
-                    execute: (ctx, args) => this.getMessageEmbeds(ctx, args[0].value, args[1].value, args[2].value !== '')
+                    returns: 'json[]',
+                    execute: (ctx, [channel, message, quiet]) => this.getMessageEmbeds(ctx, channel.value, message.value, quiet.value !== '')
                 }
             ]
         });
@@ -39,13 +42,12 @@ export class MessageEmbedsSubtag extends BaseSubtag {
         channelStr: string,
         messageStr: string,
         quiet: boolean
-    ): Promise<string> {
+    ): Promise<JObject[]> {
         quiet ||= context.scopes.local.quiet ?? false;
         const channel = await context.queryChannel(channelStr, { noLookup: quiet });
         if (channel === undefined) {
-            if (quiet)
-                return '[]';
-            throw new ChannelNotFoundError(channelStr);
+            throw new ChannelNotFoundError(channelStr)
+                .withDisplay(quiet ? '[]' : undefined);
         }
 
         let message: Message | undefined;
@@ -53,7 +55,7 @@ export class MessageEmbedsSubtag extends BaseSubtag {
             message = await context.util.getMessage(channel, messageStr);
             if (message === undefined)
                 throw new MessageNotFoundError(channel, messageStr);
-            return JSON.stringify(message.embeds);
+            return message.embeds.map(e => e.toJSON() as JObject);
         } catch (e: unknown) {
             throw new MessageNotFoundError(channel, messageStr);
         }

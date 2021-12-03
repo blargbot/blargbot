@@ -1,8 +1,8 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class SpaceSubtag extends BaseSubtag {
+export class SpaceSubtag extends Subtag {
     public constructor() {
         super({
             name: 'space',
@@ -14,15 +14,19 @@ export class SpaceSubtag extends BaseSubtag {
                     description: 'Will be replaced by `count` spaces. If `count` is less than `0`, no spaces will be returned.',
                     exampleCode: 'Hello,{space;4}world!',
                     exampleOut: 'Hello,    world!',
-                    execute: (ctx, [countStr]) => {
-                        const count = parse.int(countStr.value, false) ?? parse.int(ctx.scopes.local.fallback ?? '', false);
-                        if (count === undefined)
-                            throw new NotANumberError(countStr.value);
-
-                        return ''.padStart(count < 0 ? 0 : count, ' ');
-                    }
+                    returns: 'string',
+                    execute: (ctx, [count]) => this.getSpaces(ctx, count.value)
                 }
             ]
         });
+    }
+
+    public getSpaces(ctx: BBTagContext, countStr: string): string {
+        const count = parse.int(countStr, false) ?? parse.int(ctx.scopes.local.fallback ?? '', false);
+        if (count === undefined)
+            throw new NotANumberError(countStr);
+
+        // TODO: limit count
+        return ''.padStart(count < 0 ? 0 : count, ' ');
     }
 }

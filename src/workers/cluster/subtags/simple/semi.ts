@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class SemiSubtag extends BaseSubtag {
+export class SemiSubtag extends Subtag {
     public constructor() {
         super({
             name: 'semi',
@@ -12,9 +12,14 @@ export class SemiSubtag extends BaseSubtag {
                     description: 'Returns `;`',
                     exampleCode: 'This is a semicolon! {semi}',
                     exampleOut: 'This is a semicolon! ;',
-                    execute: () => ';'
+                    returns: 'string',
+                    execute: () => this.getSemiColon()
                 }
             ]
         });
+    }
+
+    public getSemiColon(): ';' {
+        return ';';
     }
 }

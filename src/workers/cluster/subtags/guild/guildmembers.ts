@@ -1,7 +1,7 @@
-import { BaseSubtag } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildMembersSubtag extends BaseSubtag {
+export class GuildMembersSubtag extends Subtag {
     public constructor() {
         super({
             name: 'guildmembers',
@@ -12,9 +12,14 @@ export class GuildMembersSubtag extends BaseSubtag {
                     parameters: [],
                     exampleCode: 'This guild has {length;{guildmembers}} members.',
                     exampleOut: 'This guild has 123 members.',
-                    execute: (ctx) => JSON.stringify(ctx.guild.members.cache.map(m => m.user.id))
+                    returns: 'id[]',
+                    execute: (ctx) => this.getGuildMembers(ctx)
                 }
             ]
         });
+    }
+
+    public getGuildMembers(context: BBTagContext): string[] {
+        return context.guild.members.cache.map(m => m.user.id);
     }
 }

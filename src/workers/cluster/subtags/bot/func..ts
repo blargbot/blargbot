@@ -1,9 +1,9 @@
-import { BaseSubtag, BBTagContext } from '@cluster/bbtag';
+import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagStackOverflowError, UnknownSubtagError } from '@cluster/bbtag/errors';
 import { RuntimeReturnState } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
-export class FunctionInvokeSubtag extends BaseSubtag {
+export class FunctionInvokeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'func.',
@@ -12,6 +12,7 @@ export class FunctionInvokeSubtag extends BaseSubtag {
             definition: [
                 {
                     parameters: ['args*'],
+                    returns: 'string',
                     execute: (ctx, args) => this.invokeFunction(ctx, args.subtagName.slice(5), args.map(arg => arg.value))
                 }
             ]
