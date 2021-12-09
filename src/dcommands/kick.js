@@ -65,7 +65,7 @@ class KickCommand extends BaseCommand {
             );
 
             if (reason)
-                return [`:ok_hand: Kicked ${user.username}. Reason: ${reason}`, 'Success'];
+                return [`:ok_hand: Kicked ${user.username}. Reason: ${(Array.isArray(reason) ? reason.join(' ') : reason)}`, 'Success'];
             return [`:ok_hand: Kicked ${user.username}.`, 'Success'];
         } catch (err) {
             console.error(err);
