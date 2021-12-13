@@ -22,8 +22,6 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
                 try {
                     return await this.master.eval(userId, code);
                 } catch (err: unknown) {
-                    if (err instanceof Error)
-                        return { success: false, error: err.toString() };
                     return { success: false, error: inspect(err) };
                 }
             }

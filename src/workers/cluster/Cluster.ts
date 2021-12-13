@@ -131,8 +131,6 @@ export class Cluster extends BaseClient {
             const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
         } catch (err: unknown) {
-            if (err instanceof Error)
-                return { success: false, error: err.toString() };
             return { success: false, error: inspect(err) };
         }
     }
