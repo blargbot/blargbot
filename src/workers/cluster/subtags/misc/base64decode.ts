@@ -1,7 +1,7 @@
 import { Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class Base64decodeSubtag extends Subtag {
+export class Base64DecodeSubtag extends Subtag {
     public constructor() {
         super({
             name: 'base64decode',
