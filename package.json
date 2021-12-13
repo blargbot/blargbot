@@ -100,9 +100,9 @@
         "build": "tsc",
         "build:watch": "tsc -w",
         "rebuild": "yarn clean && yarn build",
-        "lint": "eslint --ext .ts ./",
+        "lint": "eslint --ext .ts,.mts,.cts ./",
         "prepare": "husky install",
-        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
+        "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"**/*.mjs\" \"**/*.mjs.map\" \"**/*.cjs\" \"**/*.cjs.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
     },
     "repository": {
         "type": "git",

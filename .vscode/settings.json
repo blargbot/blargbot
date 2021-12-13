@@ -4,7 +4,15 @@
         "**/*.js": {
             "when": "$(basename).ts"
         },
-        "**/*.js.map": true
+        "**/*.js.map": true,
+        "**/*.cjs": {
+            "when": "$(basename).cts"
+        },
+        "**/*.cjs.map": true,
+        "**/*.mjs": {
+            "when": "$(basename).mts"
+        },
+        "**/*.mjs.map": true
     },
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true

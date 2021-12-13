@@ -107,36 +107,9 @@
     "overrides": [
         {
             "files": [
-                "*.js"
-            ],
-            "rules": {
-                "no-undef": "off",
-                "no-console": "off",
-                "eqeqeq": "off"
-            }
-        },
-        {
-            "files": [
-                "*.js"
-            ],
-            "excludedFiles": [
-                "**/website_old/public/**/*.js"
-            ],
-            "env": {
-                "node": true
-            }
-        },
-        {
-            "files": [
-                "**/website_old/public/**/*.js"
-            ],
-            "env": {
-                "browser": true
-            }
-        },
-        {
-            "files": [
-                "*.ts"
+                "*.ts",
+                "*.cts",
+                "*.mts"
             ],
             "env": {
                 "node": true
