@@ -17,6 +17,8 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
         }
     }
 
+    const autoResolveOnFail = signatures.every(s => s.parameters.every(p => 'nested' in p ? p.nested.every(p => p.autoResolve) : p.autoResolve));
+
     return {
         handlers,
         execute(context, subtagName, call) {
@@ -25,12 +27,23 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
             if (handler !== undefined)
                 return handler.execute(context, subtagName, call);
 
-            if (call.args.length < minArgs)
-                throw new NotEnoughArgumentsError(minArgs, call.args.length);
-            else if (call.args.length > maxArgs)
-                throw new TooManyArgumentsError(maxArgs, call.args.length);
+            return {
+                async *[Symbol.asyncIterator]() {
+                    if (autoResolveOnFail) {
+                        for (const arg of call.args) {
+                            await context.eval(arg);
+                            yield undefined;
+                        }
+                    }
 
-            throw new Error(`Missing handler for ${call.args.length} arguments!`);
+                    if (call.args.length < minArgs)
+                        throw new NotEnoughArgumentsError(minArgs, call.args.length);
+                    else if (call.args.length > maxArgs)
+                        throw new TooManyArgumentsError(maxArgs, call.args.length);
+                    throw new Error(`Missing handler for ${call.args.length} arguments!`);
+                }
+            };
+
         }
     };
 }

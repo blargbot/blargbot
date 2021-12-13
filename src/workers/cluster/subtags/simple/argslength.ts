@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class Argslength extends Subtag {
+export class ArgsLengthSubtag extends Subtag {
     public constructor() {
         super({
             name: 'argslength',

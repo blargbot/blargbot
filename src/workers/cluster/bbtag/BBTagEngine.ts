@@ -10,7 +10,7 @@ import moment from 'moment';
 import { inspect } from 'util';
 
 import { BBTagContext } from './BBTagContext';
-import { BBTagRuntimeError, SubtagStackOverflowError, TagCooldownError } from './errors';
+import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors';
 import { Subtag } from './Subtag';
 import { TagCooldownManager } from './TagCooldownManager';
 
@@ -183,8 +183,7 @@ export class BBTagEngine {
                 }
             ]
         });
-        const bbError = new BBTagRuntimeError('An internal server error has occurred', error instanceof Error ? error.message : undefined);
-        return context.addError(bbError, bbtag);
+        return context.addError(new InternalServerError(error), bbtag);
     }
 
     public check(source: string): AnalysisResults {

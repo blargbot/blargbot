@@ -1,32 +1,32 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
-import { ArgsArraySubtag } from '@cluster/subtags/simple/argsarray';
+import { ArgsLengthSubtag } from '@cluster/subtags/simple/argslength';
 
 import { runSubtagTests, TestError } from '../SubtagTestSuite';
 
 runSubtagTests({
-    subtag: new ArgsArraySubtag(),
+    subtag: new ArgsLengthSubtag(),
     cases: [
         {
-            code: '{argsarray}',
-            expected: '[]',
+            code: '{argslength}',
+            expected: '0',
             setup(ctx) { ctx.options.inputRaw = ''; }
         },
         {
-            code: '{argsarray}',
-            expected: '["this","is","a","test"]',
+            code: '{argslength}',
+            expected: '4',
             setup(ctx) { ctx.options.inputRaw = 'this is a test'; }
         },
         {
-            code: '{argsarray}',
-            expected: '["this","is a","test"]',
+            code: '{argslength}',
+            expected: '3',
             setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
         },
         {
-            code: '{argsarray;{error}}',
+            code: '{argslength;{error}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 11, end: 18, error: new TestError(11) },
-                { start: 0, end: 19, error: new TooManyArgumentsError(0, 1) }
+                { start: 12, end: 19, error: new TestError(12) },
+                { start: 0, end: 20, error: new TooManyArgumentsError(0, 1) }
             ]
         }
     ]

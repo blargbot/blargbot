@@ -1,5 +1,7 @@
 import 'module-alias/register';
 
+import * as chai from 'chai';
+import chaiExclude from 'chai-exclude';
 import * as mockito from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
 import { Mocker } from 'ts-mockito/lib/Mock';
@@ -10,6 +12,8 @@ import { ResolvePromiseMethodStub } from 'ts-mockito/lib/stub/ResolvePromiseMeth
 import { ReturnValueMethodStub } from 'ts-mockito/lib/stub/ReturnValueMethodStub';
 import { ThrowErrorMethodStub } from 'ts-mockito/lib/stub/ThrowErrorMethodStub';
 import { isProxy } from 'util/types';
+
+chai.use(chaiExclude);
 
 Object.assign(mockito, <Partial<typeof mockito>>{
     mock(obj?: unknown) {

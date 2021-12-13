@@ -2,6 +2,7 @@ export * from './ArgumentLengthError';
 export * from './BBTagRuntimeError';
 export * from './BBTagTypeError';
 export * from './ChannelNotFoundError';
+export * from './InternalServerError';
 export * from './InvalidChannelError';
 export * from './MessageNotFoundError';
 export * from './NotABooleanError';

@@ -1,14 +1,16 @@
 import { Cluster } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
-import { BBTagContextOptions, LocatedRuntimeError } from '@cluster/types';
-import { bbtagUtil, guard } from '@cluster/utils';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
+import { BBTagContextOptions, SourceMarker, SubtagCall } from '@cluster/types';
+import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { expect } from 'chai';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
 import { BaseData, Client as Discord, Collection, Constants, Guild, KnownGuildTextableChannel, Message, Shard, ShardManager, User } from 'eris';
 import { describe, it } from 'mocha';
-import { anyString, instance, mock, setStrict, when } from 'ts-mockito';
+import { anyOfClass, anyString, instance, mock, setStrict, when } from 'ts-mockito';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 
 export interface SubtagTestCase {
@@ -18,12 +20,19 @@ export interface SubtagTestCase {
     readonly setup?: (context: SubtagTestContext) => Awaitable<void>;
     readonly assert?: (context: SubtagTestContext, result: string) => Awaitable<void>;
     readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
-    readonly errors?: LocatedRuntimeError[];
+    readonly errors?: ReadonlyArray<{ start?: SourceMarker | number | string; end?: SourceMarker | number | string; error: BBTagRuntimeError; }>;
+    readonly subtags?: readonly Subtag[];
+}
+
+export class TestError extends BBTagRuntimeError {
+    public constructor(index: number) {
+        super(`{error} called at ${index}`);
+    }
 }
 
 export interface SubtagTestSuiteData extends Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'> {
     readonly cases: SubtagTestCase[];
-    readonly subtag: Subtag | Subtag[];
+    readonly subtag: Subtag;
 }
 
 export class Mock<T> {
@@ -115,11 +124,14 @@ export class SubtagTestContext {
             author: sender.user
         }, this.discord.instance);
 
+        const limit = new Mock(BaseRuntimeLimit);
+        limit.setup(m => m.check(anyOfClass(BBTagContext), anyString())).thenResolve();
+
         return new BBTagContext(engine, {
             author: sender.id,
             inputRaw: '',
             isCC: false,
-            limit: 'tagLimit',
+            limit: limit.instance,
             message: message,
             ...this.options
         });
@@ -216,8 +228,7 @@ export class SubtagTestContext {
 /* eslint-enable @typescript-eslint/naming-convention */
 
 export function runSubtagTests(data: SubtagTestSuiteData): void {
-    const subtags = Array.isArray(data.subtag) ? data.subtag : [data.subtag];
-    const suite = new SubtagTestSuite(...subtags);
+    const suite = new SubtagTestSuite(data.subtag);
     if (data.setup !== undefined)
         suite.setup(data.setup);
     if (data.assert !== undefined)
@@ -229,6 +240,35 @@ export function runSubtagTests(data: SubtagTestSuiteData): void {
     suite.run();
 }
 
+export function sourceMarker(location: string | number | SourceMarker): SourceMarker
+export function sourceMarker(location: string | number | SourceMarker | undefined): SourceMarker | undefined
+export function sourceMarker(location: string | number | SourceMarker | undefined): SourceMarker | undefined {
+    if (typeof location === 'number')
+        return { index: location, line: 0, column: location };
+    if (typeof location === 'object')
+        return location;
+    if (typeof location === 'undefined')
+        return undefined;
+    const { index = '0', line = '0', column } = location.match(/^(?<index>\d+)(?::(?<line>\d+):(?<column>\d+))?$/)?.groups
+        ?? {} as Record<string, string | undefined>;
+    return { index: parseInt(index), line: parseInt(line), column: parseInt(column ?? index) };
+}
+
+export class TestSubtag extends Subtag {
+    public constructor() {
+        super({
+            name: 'error',
+            category: SubtagType.SIMPLE,
+            definition: [],
+            hidden: true
+        });
+    }
+
+    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+        throw new TestError(subtag.start.index);
+    }
+}
+
 export class SubtagTestSuite {
     readonly #global: {
         setup: Array<Required<SubtagTestCase>['setup']>;
@@ -236,10 +276,10 @@ export class SubtagTestSuite {
         teardown: Array<Required<SubtagTestCase>['teardown']>;
     } = { setup: [], assert: [], teardown: [] };
     readonly #testCases: SubtagTestCase[] = [];
-    readonly #subtags: Subtag[];
+    readonly #subtag: Subtag;
 
-    public constructor(...subtags: Subtag[]) {
-        this.#subtags = subtags;
+    public constructor(subtag: Subtag) {
+        this.#subtag = subtag;
     }
 
     public setup(setup: Required<SubtagTestCase>['setup']): this {
@@ -265,13 +305,13 @@ export class SubtagTestSuite {
     }
 
     public run(): void {
-        describe(`{${this.#subtags[0].name}}`, () => {
+        describe(`{${this.#subtag.name}}`, () => {
             for (const testCase of this.#testCases) {
                 const title = testCase.expected === undefined
                     ? `should handle ${JSON.stringify(testCase.code)}`
                     : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)}`;
                 it(title, async () => {
-                    const test = new SubtagTestContext(this.#subtags);
+                    const test = new SubtagTestContext([this.#subtag, new TestSubtag(), ...testCase.subtags ?? []]);
                     try {
                         // arrange
                         for (const setup of this.#global.setup)
@@ -291,8 +331,11 @@ export class SubtagTestSuite {
                         for (const assert of this.#global.assert)
                             await assert(test, result);
 
-                        expect(context.errors.map(err => err.subtag)).to.deep.equal(testCase.errors?.map(err => err.subtag) ?? []);
-                        expect(context.errors.map(err => err.error.toString())).to.deep.equal(testCase.errors?.map(err => err.error.toString()) ?? []);
+                        expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
+                            .excludingEvery('stack')
+                            .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
+                                'Error details didnt match the expectation');
+
                     } finally {
                         for (const teardown of this.#global.teardown)
                             await teardown(test);
