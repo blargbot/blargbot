@@ -31,7 +31,7 @@ export type WorkerPoolEventHandler<TWorker extends WorkerConnection<string, IPCC
 export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };
 export type GlobalEvalResult = Record<string, EvalResult>;
-export type EvalResult = { success: false; error: unknown; } | { success: true; result: unknown; };
+export type EvalResult = { success: false; error: string; } | { success: true; result: unknown; };
 export type EvalType = 'master' | 'global' | `cluster${number}`
 
 export type IPCContract<Worker, Master> = { workerGets: Worker; masterGets: Master; };

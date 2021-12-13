@@ -8,6 +8,7 @@ import { BaseService } from '@core/serviceTypes';
 import { EvalResult } from '@core/types';
 import { ImagePool } from '@image';
 import moment, { duration, Moment } from 'moment-timezone';
+import { inspect } from 'util';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
@@ -44,11 +45,24 @@ export class Cluster extends BaseClient {
         options: ClusterOptions
     ) {
         super(logger, config, {
-            restMode: true,
-            allowedMentions: {},
+            autoreconnect: true,
+            allowedMentions: {
+                everyone: false,
+                roles: false,
+                users: false
+            },
+            getAllUsers: false,
+            disableEvents: {
+                ['TYPING_START']: true,
+                ['VOICE_STATE_UPDATE']: true
+            },
             maxShards: options.shardCount,
             firstShardID: options.firstShardId,
             lastShardID: options.lastShardId,
+            restMode: true,
+            defaultImageFormat: 'png',
+            defaultImageSize: 512,
+            messageLimit: 5,
             intents: [
                 'guilds',
                 'guildMembers',
@@ -117,7 +131,9 @@ export class Cluster extends BaseClient {
             const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
         } catch (err: unknown) {
-            return { success: false, error: err };
+            if (err instanceof Error)
+                return { success: false, error: err.toString() };
+            return { success: false, error: inspect(err) };
         }
     }
 }

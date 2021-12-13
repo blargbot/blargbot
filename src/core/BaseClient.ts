@@ -33,15 +33,23 @@ export class BaseClient {
     }
 
     public async start(): Promise<void> {
-        const shards = getRange(this.discord.options.firstShardID ?? 0, this.discord.options.lastShardID ?? 0);
-        const remainingShards = new Set(shards);
+        const promises = [
+            this.database.connect().then(() => this.logger.init('database connected'))
+        ];
 
-        await Promise.all([
-            this.database.connect().then(() => this.logger.init('database connected')),
-            new Promise(resolve => this.discord.once('ready', resolve)).then(() => this.logger.init('discord connected')),
-            createShardReadyWaiter(this.discord, remainingShards, this.logger),
-            this.discord.connect()
-        ]);
+        if (this.discord.options.maxShards !== undefined) {
+            const shards = getRange(this.discord.options.firstShardID ?? 0, this.discord.options.lastShardID ?? 0);
+            const remainingShards = new Set(shards);
+
+            promises.push(
+                new Promise(resolve => this.discord.once('ready', resolve)).then(() => this.logger.init('discord connected')),
+                createShardReadyWaiter(this.discord, remainingShards, this.logger),
+                this.discord.connect()
+            );
+        }
+
+        await Promise.all(promises);
+
         const application = await this.discord.getOAuthApplication();
         this.#owners = application.team?.members.filter(m => m.membership_state === OAuthTeamMemberState.ACCEPTED).map(m => m.user.id)
             ?? [application.owner.id];

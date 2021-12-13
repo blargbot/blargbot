@@ -3,6 +3,7 @@ import { parse } from '@cluster/utils';
 import { WorkerPoolEventService } from '@core/serviceTypes';
 import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@core/types';
 import { Master } from '@master';
+import { inspect } from 'util';
 
 export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, 'meval'> {
     public constructor(private readonly master: Master) {
@@ -20,8 +21,10 @@ export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnectio
             case 'master': {
                 try {
                     return await this.master.eval(userId, code);
-                } catch (ex: unknown) {
-                    return { success: false, error: ex };
+                } catch (err: unknown) {
+                    if (err instanceof Error)
+                        return { success: false, error: err.toString() };
+                    return { success: false, error: inspect(err) };
                 }
             }
             case 'global': {

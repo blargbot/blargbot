@@ -9,6 +9,7 @@ import { MasterOptions } from '@master/types';
 import { ApiPool } from '@workers/api';
 import moment from 'moment';
 import fetch from 'node-fetch';
+import { inspect } from 'util';
 
 import { ClusterLogManager, ClusterStatsManager } from './managers';
 import { MasterWorker } from './MasterWorker';
@@ -29,7 +30,9 @@ export class Master extends BaseClient {
     ) {
         super(logger, config, {
             restMode: true,
-            intents: []
+            intents: [],
+            defaultImageFormat: 'png',
+            defaultImageSize: 512
         });
 
         this.worker = options.worker;
@@ -78,13 +81,15 @@ export class Master extends BaseClient {
             throw new Error(`User ${author} does not have permission to run eval`);
 
         try {
-            const code = text.includes('\n')
+            const code = !text.includes('\n')
                 ? `async () => ${text}`
                 : `async () => { ${text} }`;
             const func = eval(code) as () => Promise<unknown>;
             return { success: true, result: await func.call(this) };
         } catch (err: unknown) {
-            return { success: false, error: err };
+            if (err instanceof Error)
+                return { success: false, error: err.toString() };
+            return { success: false, error: inspect(err) };
         }
     }
 }
