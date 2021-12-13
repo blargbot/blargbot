@@ -21,6 +21,11 @@ export interface SubtagTestCase {
     readonly errors?: LocatedRuntimeError[];
 }
 
+export interface SubtagTestSuiteData extends Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'> {
+    readonly cases: SubtagTestCase[];
+    readonly subtag: Subtag | Subtag[];
+}
+
 export class Mock<T> {
     #mock: T;
 
@@ -210,6 +215,20 @@ export class SubtagTestContext {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
+export function runSubtagTests(data: SubtagTestSuiteData): void {
+    const subtags = Array.isArray(data.subtag) ? data.subtag : [data.subtag];
+    const suite = new SubtagTestSuite(...subtags);
+    if (data.setup !== undefined)
+        suite.setup(data.setup);
+    if (data.assert !== undefined)
+        suite.assert(data.assert);
+    if (data.teardown !== undefined)
+        suite.teardown(data.teardown);
+    for (const testCase of data.cases)
+        suite.addTestCase(testCase);
+    suite.run();
+}
+
 export class SubtagTestSuite {
     readonly #global: {
         setup: Array<Required<SubtagTestCase>['setup']>;
@@ -217,12 +236,10 @@ export class SubtagTestSuite {
         teardown: Array<Required<SubtagTestCase>['teardown']>;
     } = { setup: [], assert: [], teardown: [] };
     readonly #testCases: SubtagTestCase[] = [];
-    readonly #subtag: Subtag;
-    readonly #otherSubtags: Subtag[];
+    readonly #subtags: Subtag[];
 
-    public constructor(subtag: Subtag, ...otherSubtags: Subtag[]) {
-        this.#subtag = subtag;
-        this.#otherSubtags = otherSubtags;
+    public constructor(...subtags: Subtag[]) {
+        this.#subtags = subtags;
     }
 
     public setup(setup: Required<SubtagTestCase>['setup']): this {
@@ -248,13 +265,13 @@ export class SubtagTestSuite {
     }
 
     public run(): void {
-        describe(`{${this.#subtag.name}}`, () => {
+        describe(`{${this.#subtags[0].name}}`, () => {
             for (const testCase of this.#testCases) {
                 const title = testCase.expected === undefined
                     ? `should handle ${JSON.stringify(testCase.code)}`
                     : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)}`;
                 it(title, async () => {
-                    const test = new SubtagTestContext([this.#subtag, ...this.#otherSubtags]);
+                    const test = new SubtagTestContext(this.#subtags);
                     try {
                         // arrange
                         for (const setup of this.#global.setup)

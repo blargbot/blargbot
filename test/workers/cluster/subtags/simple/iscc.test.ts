@@ -1,20 +1,19 @@
 import { IsCCSubtag } from '@cluster/subtags/simple/iscc';
 
-import { SubtagTestSuite } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
-new SubtagTestSuite(new IsCCSubtag())
-    .addTestCase({
-        code: '{iscc}',
-        expected: 'true',
-        setup(ctx) {
-            ctx.options.isCC = true;
+runSubtagTests({
+    subtag: new IsCCSubtag(),
+    cases: [
+        {
+            code: '{iscc}',
+            expected: 'true',
+            setup(ctx) { ctx.options.isCC = true; }
+        },
+        {
+            code: '{iscc}',
+            expected: 'false',
+            setup(ctx) { ctx.options.isCC = false; }
         }
-    })
-    .addTestCase({
-        code: '{iscc}',
-        expected: 'false',
-        setup(ctx) {
-            ctx.options.isCC = false;
-        }
-    })
-    .run();
+    ]
+});

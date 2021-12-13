@@ -1,27 +1,24 @@
 import { ArgsArraySubtag } from '@cluster/subtags/simple/argsarray';
 
-import { SubtagTestSuite } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
-new SubtagTestSuite(new ArgsArraySubtag())
-    .addTestCase({
-        code: '{argsarray}',
-        expected: '[]',
-        setup(ctx) {
-            ctx.options.inputRaw = '';
+runSubtagTests({
+    subtag: new ArgsArraySubtag(),
+    cases: [
+        {
+            code: '{argsarray}',
+            expected: '[]',
+            setup(ctx) { ctx.options.inputRaw = ''; }
+        },
+        {
+            code: '{argsarray}',
+            expected: '["this","is","a","test"]',
+            setup(ctx) { ctx.options.inputRaw = 'this is a test'; }
+        },
+        {
+            code: '{argsarray}',
+            expected: '["this","is a","test"]',
+            setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
         }
-    })
-    .addTestCase({
-        code: '{argsarray}',
-        expected: '["this","is","a","test"]',
-        setup(ctx) {
-            ctx.options.inputRaw = 'this is a test';
-        }
-    })
-    .addTestCase({
-        code: '{argsarray}',
-        expected: '["this","is a","test"]',
-        setup(ctx) {
-            ctx.options.inputRaw = 'this "is a" test';
-        }
-    })
-    .run();
+    ]
+});
