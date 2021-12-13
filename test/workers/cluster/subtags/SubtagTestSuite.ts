@@ -27,6 +27,7 @@ export interface SubtagTestCase {
 export class TestError extends BBTagRuntimeError {
     public constructor(index: number) {
         super(`{error} called at ${index}`);
+        this.display = '';
     }
 }
 
