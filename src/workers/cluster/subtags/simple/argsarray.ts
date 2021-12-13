@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class ArgsarraySubtag extends Subtag {
+export class ArgsArraySubtag extends Subtag {
     public constructor() {
         super({
             name: 'argsarray',

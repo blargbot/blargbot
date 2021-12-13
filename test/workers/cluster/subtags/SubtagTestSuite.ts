@@ -1,13 +1,14 @@
 import { Cluster } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
-import { BBTagContextOptions } from '@cluster/types';
+import { BBTagContextOptions, LocatedRuntimeError } from '@cluster/types';
 import { bbtagUtil, guard } from '@cluster/utils';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
+import { expect } from 'chai';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
 import { BaseData, Client as Discord, Collection, Constants, Guild, KnownGuildTextableChannel, Message, Shard, ShardManager, User } from 'eris';
 import { describe, it } from 'mocha';
-import { instance, mock, setStrict, when } from 'ts-mockito';
+import { anyString, instance, mock, setStrict, when } from 'ts-mockito';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 
 export interface SubtagTestCase {
@@ -17,6 +18,7 @@ export interface SubtagTestCase {
     readonly setup?: (context: SubtagTestContext) => Awaitable<void>;
     readonly assert?: (context: SubtagTestContext, result: string) => Awaitable<void>;
     readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
+    readonly errors?: LocatedRuntimeError[];
 }
 
 export class Mock<T> {
@@ -51,7 +53,7 @@ export class SubtagTestContext {
     public readonly message: APIMessage = { ...SubtagTestContext.#messageDefaults() };
     public readonly guild: APIGuild = { ...SubtagTestContext.#guildDefaults() };
 
-    public constructor() {
+    public constructor(subtags: Iterable<Subtag>) {
         this.logger = new Mock<Logger>(undefined, false);
         this.discord = new Mock(Discord);
         this.cluster = new Mock(Cluster);
@@ -77,14 +79,11 @@ export class SubtagTestContext {
         this.discord.setup(m => m.guilds).thenReturn(new Collection(Guild));
         this.discord.setup(m => m.users).thenReturn(new Collection(User));
 
-        this.cluster.setup(c => c.subtags)
-            .thenReturn(new ModuleLoader(
-                `${__dirname}/../../../../src/workers/cluster/subtags`,
-                Subtag,
-                [],
-                this.logger.instance,
-                s => [s.name, ...s.aliases]
-            ));
+        const subtagLoader = new Mock<ModuleLoader<Subtag>>(ModuleLoader);
+        const subtagMap = new Map([...subtags].flatMap(s => [s.name, ...s.aliases].map(n => [n, s])));
+        subtagLoader.setup(m => m.get(anyString())).thenCall((name: string) => subtagMap.get(name));
+
+        this.cluster.setup(c => c.subtags).thenReturn(subtagLoader.instance);
     }
 
     public createContext(): BBTagContext {
@@ -218,10 +217,12 @@ export class SubtagTestSuite {
         teardown: Array<Required<SubtagTestCase>['teardown']>;
     } = { setup: [], assert: [], teardown: [] };
     readonly #testCases: SubtagTestCase[] = [];
-    readonly #subtag: string;
+    readonly #subtag: Subtag;
+    readonly #otherSubtags: Subtag[];
 
-    public constructor(subtag: string) {
+    public constructor(subtag: Subtag, ...otherSubtags: Subtag[]) {
         this.#subtag = subtag;
+        this.#otherSubtags = otherSubtags;
     }
 
     public setup(setup: Required<SubtagTestCase>['setup']): this {
@@ -247,10 +248,13 @@ export class SubtagTestSuite {
     }
 
     public run(): void {
-        describe(`{${this.#subtag}}`, () => {
+        describe(`{${this.#subtag.name}}`, () => {
             for (const testCase of this.#testCases) {
-                it(`should handle ${testCase.code}`, async () => {
-                    const test = new SubtagTestContext();
+                const title = testCase.expected === undefined
+                    ? `should handle ${JSON.stringify(testCase.code)}`
+                    : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)}`;
+                it(title, async () => {
+                    const test = new SubtagTestContext([this.#subtag, ...this.#otherSubtags]);
                     try {
                         // arrange
                         for (const setup of this.#global.setup)
@@ -263,10 +267,15 @@ export class SubtagTestSuite {
                         const result = await context.eval(code);
 
                         // assert
+                        if (testCase.expected !== undefined)
+                            expect(result).to.equal(testCase.expected);
+
                         await testCase.assert?.(test, result);
                         for (const assert of this.#global.assert)
                             await assert(test, result);
 
+                        expect(context.errors.map(err => err.subtag)).to.deep.equal(testCase.errors?.map(err => err.subtag) ?? []);
+                        expect(context.errors.map(err => err.error.toString())).to.deep.equal(testCase.errors?.map(err => err.error.toString()) ?? []);
                     } finally {
                         for (const teardown of this.#global.teardown)
                             await teardown(test);

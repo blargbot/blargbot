@@ -1,6 +1,8 @@
-import { SubtagTestSuite } from '../SubtagTestSuite.test';
+import { IsCCSubtag } from '@cluster/subtags/simple/iscc';
 
-new SubtagTestSuite('iscc')
+import { SubtagTestSuite } from '../SubtagTestSuite';
+
+new SubtagTestSuite(new IsCCSubtag())
     .addTestCase({
         code: '{iscc}',
         expected: 'true',
