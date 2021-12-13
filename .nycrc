@@ -2,19 +2,31 @@
   "cache": false,
   "check-coverage": false,
   "extension": [
-    ".ts"
+    ".ts",
+    ".cts",
+    ".mts"
   ],
   "include": [
     "**/*.js",
-    "**/*.ts"
+    "**/*.ts",
+    "**/*.mjs",
+    "**/*.mts",
+    "**/*.cjs",
+    "**/*.cts"
   ],
   "exclude": [
     "coverage/**",
     "node_modules/**",
     "**/*.d.ts",
     "**/*.test.ts",
+    "**/*.d.mts",
+    "**/*.test.mts",
+    "**/*.d.cts",
+    "**/*.test.cts",
     "test/**",
-    "*.ts"
+    "*.ts",
+    "*.mts",
+    "*.cts"
   ],
   "sourceMap": true,
   "reporter": [

@@ -1,18 +1,18 @@
 {
     "files.exclude": {
         "node_modules": true,
+        "**/*.js.map": true,
         "**/*.js": {
             "when": "$(basename).ts"
         },
-        "**/*.js.map": true,
+        "**/*.cjs.map": true,
         "**/*.cjs": {
             "when": "$(basename).cts"
         },
-        "**/*.cjs.map": true,
+        "**/*.mjs.map": true,
         "**/*.mjs": {
             "when": "$(basename).mts"
-        },
-        "**/*.mjs.map": true
+        }
     },
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
