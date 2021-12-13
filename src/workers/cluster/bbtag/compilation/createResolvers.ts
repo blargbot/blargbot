@@ -138,10 +138,10 @@ function* getParameterMap(
     greedy: readonly number[],
     afterGreedy: readonly number[]
 ): Generator<{ readonly argIndex: number; readonly default: SubtagArgument; }> {
-    let param = 0;
+    let param = -1;
     let arg = 0;
     for (const next of getParameterOrder(argCount, beforeGreedy, greedy, afterGreedy)) {
-        for (; param < next - 1; param++)
+        for (param++; param < next; param++)
             yield { argIndex: -1, default: defaultArgs[param] };
         yield { argIndex: arg++, default: defaultArgs[param = next] };
     }
