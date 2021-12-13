@@ -85,7 +85,7 @@ export class Cluster extends BaseClient {
             custom: new CustomCommandManager(this),
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
         });
-        this.subtags = new ModuleLoader(`${__dirname}/subtags`, Subtag, [this], this.logger, t => [t.name, ...t.aliases]);
+        this.subtags = new ModuleLoader(`${__dirname}/subtags`, Subtag, [], this.logger, t => [t.name, ...t.aliases]);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);

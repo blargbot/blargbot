@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class IsccSubtag extends Subtag {
+export class IsCCSubtag extends Subtag {
     public constructor() {
         super({
             name: 'iscc',
