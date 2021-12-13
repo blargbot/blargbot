@@ -58,7 +58,7 @@ async function migrateChangelog(discord: Discord, rethink: r.Connection, logger:
             const channel = await discord.getRESTChannel(channelId);
             if (guard.isTextableChannel(channel)) {
                 try {
-                    await discord.followChannel(channel.id, changelogChannel.id);
+                    await discord.followChannel(changelogChannel.id, channel.id);
                     await channel.createMessage('Hi! Ive recently received an update to how changelogs work. This channel was subscribed, so I have migrated it to the new method! You can unsubscribe by running `b!changelog unsubscribe`');
                 } catch (ex: unknown) {
                     logger.error('[migrateChangelog] Guild:', guildId, 'Channel:', channelId, ex);

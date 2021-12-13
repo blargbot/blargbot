@@ -1,7 +1,7 @@
 import { codeBlock, defaultStaff, discordUtil, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
-import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Permission, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
+import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Permission, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster';
@@ -72,12 +72,12 @@ export class ClusterUtilities extends BaseUtilities {
             [component.selectId]: () => true,
             [component.prevId]: async i => {
                 component.page--;
-                await i.editOriginalMessage(createChoiceBody(component));
+                await i.editParent(createChoiceBody(component));
                 return false;
             },
             [component.nextId]: async i => {
                 component.page++;
-                await i.editOriginalMessage(createChoiceBody(component));
+                await i.editParent(createChoiceBody(component));
                 return false;
             }
         });
@@ -326,8 +326,8 @@ export class ClusterUtilities extends BaseUtilities {
         const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
         return this.cluster.awaiter.components.wait(validIds, async (interaction) => {
-            if (!actorFilter(interaction.user)) {
-                await interaction.createFollowup({ content: rejectMessage });
+            if (!actorFilter(interaction.member?.user ?? interaction.user)) {
+                await interaction.createMessage({ content: rejectMessage, flags: Constants.MessageFlags.EPHEMERAL });
                 return false;
             }
 
@@ -359,7 +359,7 @@ export class ClusterUtilities extends BaseUtilities {
                 emoji: { name: u.bot ? '🤖' : '👤' },
                 value: u,
                 description: `Id: ${u.id}`
-            }))
+            })).sort((a, b) => a.label > b.label ? 1 : -1)
         });
     }
 
@@ -375,7 +375,7 @@ export class ClusterUtilities extends BaseUtilities {
                 emoji: { name: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝' },
                 value: u,
                 description: `Id: ${u.id}`
-            }))
+            })).sort((a, b) => a.label > b.label ? 1 : -1)
         });
     }
 
@@ -395,7 +395,7 @@ export class ClusterUtilities extends BaseUtilities {
                 emoji: { name: m.user.bot ? '🤖' : '👤' },
                 value: m,
                 description: `Id: ${m.id}`
-            }))
+            })).sort((a, b) => a.label > b.label ? 1 : -1)
         });
     }
 
@@ -410,11 +410,12 @@ export class ClusterUtilities extends BaseUtilities {
                 ? 'ℹ️ Please select a role from the drop down'
                 : `ℹ️ Multiple roles matching \`${options.filter}\` found! Please select one from the drop down.`),
             placeholder: options.placeholder ?? 'Select a role',
-            choices: matches.map(r => ({
-                label: `${r.name}`,
-                value: r,
-                description: `Id: ${r.id} Color: #${r.color.toString(16).padStart(6, '0')}`
-            }))
+            choices: matches
+                .map(r => ({
+                    label: r.name,
+                    value: r,
+                    description: `Id: ${r.id} Color: #${r.color.toString(16).padStart(6, '0')}`
+                })).sort((a, b) => a.label > b.label ? 1 : -1)
         });
     }
 
@@ -429,17 +430,19 @@ export class ClusterUtilities extends BaseUtilities {
                 ? 'ℹ️ Please select a channel from the drop down'
                 : `ℹ️ Multiple channels matching \`${options.filter}\` found! Please select one from the drop down.`),
             placeholder: options.placeholder ?? 'Select a channel',
-            choices: matches.map(c => ({
-                id: c.id,
-                value: c,
-                details: getChannelLookupSelect(c),
-                parent: guard.isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
-            })).map(x => ({
-                ...x.details,
-                emoji: { name: x.details.emoji },
-                description: `Id: ${x.id}${x.parent !== undefined ? ` Parent: ${getChannelLookupName(x.parent)}` : ''}`,
-                value: x.value
-            }))
+            choices: sortChannels(matches)
+                .map(c => ({
+                    id: c.id,
+                    value: c,
+                    details: getChannelLookupSelect(c),
+                    parent: guard.isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
+                }))
+                .map(x => ({
+                    ...x.details,
+                    emoji: { name: x.details.emoji },
+                    description: `Id: ${x.id}${x.parent !== undefined ? ` Parent: ${getChannelLookupName(x.parent)}` : ''}`,
+                    value: x.value
+                }))
         });
     }
 
@@ -750,7 +753,7 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessage
     const prev: InteractionButton = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.prevId,
-        emoji: { name: ':bigarrowleft:876227640976097351' }, // TODO config
+        emoji: { name: 'bigarrowleft', id: '876227640976097351' }, // TODO config
         style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === 0
     };
@@ -758,7 +761,7 @@ function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessage
     const next: InteractionButton = {
         type: Constants.ComponentTypes.BUTTON,
         custom_id: options.nextId,
-        emoji: { name: ':bigarrowright:876227816998461511' }, // TODO config
+        emoji: { name: 'bigarrowright', id: '876227816998461511' }, // TODO config
         style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === options.lastPage
     };
@@ -852,4 +855,60 @@ function* disableComponentsCore(components: Iterable<ActionRow | Button | Select
                 break;
         }
     }
+}
+
+function sortChannels<T extends KnownChannel>(channels: Iterable<T>): T[] {
+    const channelGroups = {
+        nonGuild: [] as Array<T & KnownPrivateChannel>,
+        nonGroup: [] as Array<T & KnownGuildChannel>,
+        groups: {} as Record<string, { parent: KnownCategoryChannel; includeParent: boolean; children: Array<T & KnownGuildChannel>; } | undefined>
+    };
+
+    for (const channel of channels) {
+        if (guard.isPrivateChannel(channel)) {
+            channelGroups.nonGuild.push(channel);
+            continue;
+        }
+
+        if (!guard.isGuildChannel(channel))
+            continue;
+
+        if (guard.hasValue(channel.parentID)) {
+            const parent = channel.guild.channels.get(channel.parentID);
+            if (parent === undefined || !guard.isCategoryChannel(parent)) {
+                channelGroups.nonGroup.push(channel);
+            } else {
+                const group = channelGroups.groups[channel.parentID] ??= { parent, includeParent: false, children: [] };
+                group.children.push(channel);
+            }
+        } else if (guard.isCategoryChannel(channel)) {
+            const group = channelGroups.groups[channel.id] ??= { parent: channel, includeParent: true, children: [] };
+            group.includeParent = true;
+        } else {
+            channelGroups.nonGroup.push(channel);
+        }
+    }
+
+    return [
+        ...channelGroups.nonGuild.sort((a, b) => a.recipient.username > b.recipient.username ? 1 : -1),
+        ...channelGroups.nonGroup.sort(compareGuildChannels),
+        ...Object.values(channelGroups.groups)
+            .filter(guard.hasValue)
+            .sort((a, b) => a.parent.position - b.parent.position)
+            .flatMap(g => {
+                const result = g.children.sort(compareGuildChannels) as T[];
+                if (g.includeParent)
+                    result.unshift(g.parent as T);
+                return result;
+            })
+    ];
+}
+
+function compareGuildChannels(left: KnownGuildChannel, right: KnownGuildChannel): number {
+    return guard.isVoiceChannel(left) ? guard.isVoiceChannel(right)
+        ? left.position - right.position
+        : 1
+        : guard.isVoiceChannel(right)
+            ? -1
+            : left.position - right.position;
 }

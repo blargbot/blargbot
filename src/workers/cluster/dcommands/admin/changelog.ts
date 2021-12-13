@@ -1,8 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { guard, humanize } from '@core/utils';
-import { Constants, Webhook } from 'eris';
+import { humanize } from '@core/utils';
+import { Webhook } from 'eris';
 
 export class ChangelogCommand extends BaseGuildCommand {
     public constructor() {
@@ -29,11 +29,7 @@ export class ChangelogCommand extends BaseGuildCommand {
         if (typeof current !== 'undefined')
             return this.info('This channel is already subscribed to my changelog updates!');
 
-        const changelogChannel = await context.util.getChannel(context.config.discord.channels.changelog);
-        if (changelogChannel === undefined || !guard.isGuildChannel(changelogChannel) || changelogChannel.type !== Constants.ChannelTypes.GUILD_NEWS)
-            return this.error('It looks like I cant find the where to get changelog messages from! Please try again later.');
-
-        await context.discord.followChannel(context.channel.id, changelogChannel.id);
+        await context.discord.followChannel(context.config.discord.channels.changelog, context.channel.id);
         return this.success('This channel will now get my changelog updates!');
     }
 
