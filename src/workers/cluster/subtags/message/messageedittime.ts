@@ -66,7 +66,7 @@ export class MessageEditTimeSubtag extends Subtag {
             if (message === undefined)
                 throw new MessageNotFoundError(channel, messageStr);
 
-            return message.editedTimestamp === null ? moment().format('x') : moment(message.editedTimestamp).format(format);
+            return message.editedTimestamp === undefined ? moment().format('x') : moment(message.editedTimestamp).format(format);
         } catch (e: unknown) {
             throw new MessageNotFoundError(channel, messageStr);
         }

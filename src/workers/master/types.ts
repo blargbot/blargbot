@@ -6,6 +6,7 @@ export interface MasterOptions {
     readonly worker: MasterWorker;
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
 export type MasterIPCContract = {
 
 }
