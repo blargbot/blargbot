@@ -24,6 +24,8 @@ export interface SubtagTestCase {
     readonly subtags?: readonly Subtag[];
 }
 
+type TestSuiteConfig = { [P in keyof Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'>]-?: Array<Required<SubtagTestCase>[P]> };
+
 export class TestError extends BBTagRuntimeError {
     public constructor(index: number) {
         super(`{error} called at ${index}`);
@@ -271,11 +273,7 @@ export class TestSubtag extends Subtag {
 }
 
 export class SubtagTestSuite {
-    readonly #global: {
-        setup: Array<Required<SubtagTestCase>['setup']>;
-        assert: Array<Required<SubtagTestCase>['assert']>;
-        teardown: Array<Required<SubtagTestCase>['teardown']>;
-    } = { setup: [], assert: [], teardown: [] };
+    readonly #global: TestSuiteConfig = { setup: [], assert: [], teardown: [] };
     readonly #testCases: SubtagTestCase[] = [];
     readonly #subtag: Subtag;
 
@@ -311,38 +309,40 @@ export class SubtagTestSuite {
                 const title = testCase.expected === undefined
                     ? `should handle ${JSON.stringify(testCase.code)}`
                     : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)}`;
-                it(title, async () => {
-                    const test = new SubtagTestContext([this.#subtag, new TestSubtag(), ...testCase.subtags ?? []]);
-                    try {
-                        // arrange
-                        for (const setup of this.#global.setup)
-                            await setup(test);
-                        await testCase.setup?.(test);
-                        const code = bbtagUtil.parse(testCase.code);
-                        const context = test.createContext();
-
-                        // act
-                        const result = await context.eval(code);
-
-                        // assert
-                        if (testCase.expected !== undefined)
-                            expect(result).to.equal(testCase.expected);
-
-                        await testCase.assert?.(test, result);
-                        for (const assert of this.#global.assert)
-                            await assert(test, result);
-
-                        expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
-                            .excludingEvery('stack')
-                            .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
-                                'Error details didnt match the expectation');
-
-                    } finally {
-                        for (const teardown of this.#global.teardown)
-                            await teardown(test);
-                    }
-                });
+                it(title, async () => runTestCase(this.#subtag, testCase, this.#global));
             }
         });
+    }
+}
+
+async function runTestCase(subtag: Subtag, testCase: SubtagTestCase, config: TestSuiteConfig): Promise<void> {
+    const test = new SubtagTestContext([subtag, new TestSubtag(), ...testCase.subtags ?? []]);
+    try {
+        // arrange
+        for (const setup of config.setup)
+            await setup(test);
+        await testCase.setup?.(test);
+        const code = bbtagUtil.parse(testCase.code);
+        const context = test.createContext();
+
+        // act
+        const result = await context.eval(code);
+
+        // assert
+        if (testCase.expected !== undefined)
+            expect(result).to.equal(testCase.expected);
+
+        await testCase.assert?.(test, result);
+        for (const assert of config.assert)
+            await assert(test, result);
+
+        expect(context.errors.map(err => ({ error: err.error, start: err.subtag?.start, end: err.subtag?.end })))
+            .excludingEvery('stack')
+            .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
+                'Error details didnt match the expectation');
+
+    } finally {
+        for (const teardown of config.teardown)
+            await teardown(test);
     }
 }
