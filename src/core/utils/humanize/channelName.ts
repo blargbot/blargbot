@@ -1,5 +1,5 @@
 import { guard } from '@core/utils';
-import { KnownChannel } from 'discord.js';
+import { KnownChannel } from 'eris';
 
 import { fullName } from './fullName';
 
@@ -9,5 +9,5 @@ export function channelName(channel: KnownChannel): string {
     if (guard.isPrivateChannel(channel) && 'recipient' in channel)
         return `${fullName(channel.recipient)} (DM)`;
 
-    return `${channel.id} (UNKNOWN)`;
+    return channel; // never
 }

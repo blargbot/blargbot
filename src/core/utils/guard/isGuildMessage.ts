@@ -1,7 +1,9 @@
-import { GuildMessage, GuildPartialMessage, Message, PartialMessage } from 'discord.js';
+import { KnownGuildTextableChannel, KnownMessage, Message, PossiblyUncachedGuildMessage, PossiblyUncachedMessage } from 'eris';
 
 import { isGuildChannel } from './isGuildChannel';
 
-export function isGuildMessage<T extends Message | PartialMessage>(message: T): message is T extends Message ? GuildMessage<T> : T extends PartialMessage ? GuildPartialMessage<T> : never {
+export function isGuildMessage<T extends KnownMessage>(message: T): message is T & Message<KnownGuildTextableChannel>;
+export function isGuildMessage<T extends PossiblyUncachedMessage>(message: T): message is T & PossiblyUncachedGuildMessage;
+export function isGuildMessage<T extends PossiblyUncachedMessage>(message: T): message is T & PossiblyUncachedGuildMessage {
     return isGuildChannel(message.channel);
 }

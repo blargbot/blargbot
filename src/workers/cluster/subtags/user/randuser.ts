@@ -20,7 +20,7 @@ export class RandUserSubtag extends Subtag {
     }
 
     public randomUser(context: BBTagContext): string {
-        const members = context.guild.members.cache.map(m => m.id);
+        const members = context.guild.members.map(m => m.id);
         return members[Math.floor(Math.random() * members.length)];
     }
 }

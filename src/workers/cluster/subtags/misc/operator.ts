@@ -2,7 +2,7 @@ import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgumentArray } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 
 const { all: allOperators, logic, numeric, compare } = bbtagUtil.operators;
 
@@ -122,8 +122,8 @@ export class OperatorSubtag extends Subtag {
     }
 
     public enrichDocs(
-        docs: MessageEmbedOptions
-    ): MessageEmbedOptions {
+        docs: EmbedOptions
+    ): EmbedOptions {
         const numericOperationDesc = `\`${Object.keys(numeric).join(', ')}\`\n` +
             'Numeric operators have the exact same behaviour as the operators in `{math}`. ' +
             'All `values` need to be `numbers`, if an argument is an array (of one level) it will be flattened.' +

@@ -1,8 +1,9 @@
 import { Cluster } from '@cluster';
 import { PollResponse } from '@cluster/types';
+import { parse } from '@cluster/utils';
 import { PollEventOptions } from '@core/types';
-import { guard, pluralise as p } from '@core/utils';
-import { EmojiIdentifierResolvable, GuildTextBasedChannels, User, Util } from 'discord.js';
+import { pluralise as p } from '@core/utils';
+import { KnownGuildTextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
 export class PollManager {
@@ -12,9 +13,9 @@ export class PollManager {
     }
 
     public async createPoll(
-        channel: GuildTextBasedChannels,
+        channel: KnownGuildTextableChannel,
         author: User,
-        options: EmojiIdentifierResolvable[],
+        emojis: string[],
         title: string,
         description: string | undefined,
         colour: number,
@@ -24,27 +25,16 @@ export class PollManager {
         if (duration.asMilliseconds() === 0)
             return { state: 'TOO_SHORT' };
 
-        if (options.length === 0)
+        if (emojis.length === 0)
             return { state: 'OPTIONS_EMPTY' };
 
         const emoji = [];
         const unknownOptions = [];
-        for (const option of options) {
-            const val = Util.resolvePartialEmoji(option);
-            if (val === null) {
-                unknownOptions.push(option);
-                continue;
-            }
-
-            if (guard.hasValue(val.id)) {
-                const resolved = this.cluster.discord.emojis.resolve(val.id);
-                if (resolved === null)
-                    unknownOptions.push(option);
-                else
-                    emoji.push(resolved.id);
-            } else if (guard.hasValue(val.name)) {
-                emoji.push(val.name);
-            }
+        for (const e of emojis) {
+            const parsed = parse.emoji(e, true);
+            if (parsed.length === 0)
+                unknownOptions.push(e);
+            emoji.push(...parsed);
         }
 
         if (unknownOptions.length > 0)
@@ -59,12 +49,12 @@ export class PollManager {
             embeds: [
                 {
                     author: {
-                        iconURL: this.cluster.util.embedifyAuthor(author).iconURL,
+                        icon_url: this.cluster.util.embedifyAuthor(author).icon_url,
                         name: title
                     },
                     description: description,
                     footer: { text: 'The poll will end' },
-                    timestamp: endTime.valueOf(),
+                    timestamp: endTime.toDate(),
                     color: colour
                 }
             ]
@@ -103,21 +93,17 @@ export class PollManager {
             if (user === undefined)
                 return;
             author = {
-                iconURL: this.cluster.util.embedifyAuthor(user).iconURL,
+                icon_url: this.cluster.util.embedifyAuthor(user).icon_url,
                 name: options.content
             };
         }
 
         const results = {} as Record<string, number>;
-        for (const reaction of message.reactions.cache.values()) {
-            const key = reaction.emoji.id ?? reaction.emoji.name;
-            if (key === null)
-                continue;
-
+        for (const [key, reaction] of Object.entries(message.reactions)) {
             if (options.strict?.includes(key) === false)
                 continue;
 
-            results[reaction.emoji.toString()] = reaction.count - +reaction.me;
+            results[key] = reaction.count - +reaction.me;
         }
 
         const bestCount = Math.max(0, ...Object.values(results));

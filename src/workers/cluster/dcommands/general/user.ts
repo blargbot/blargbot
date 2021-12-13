@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, guard, parse } from '@cluster/utils';
-import { Activity, GuildMember, MessageEmbedOptions, User } from 'discord.js';
+import { CommandType, discordUtil, guard, parse } from '@cluster/utils';
+import { Activity, Constants, EmbedOptions, Member, User } from 'eris';
 import moment from 'moment';
 
 export class UserCommand extends BaseGlobalCommand {
@@ -18,12 +18,12 @@ export class UserCommand extends BaseGlobalCommand {
         });
     }
 
-    public async getUser(context: CommandContext, user: User): Promise<MessageEmbedOptions> {
+    public async getUser(context: CommandContext, user: User): Promise<EmbedOptions> {
         const result = {
-            ...<MessageEmbedOptions>{},
+            ...<EmbedOptions>{},
             author: context.util.embedifyAuthor(user),
             thumbnail: {
-                url: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
+                url: user.avatarURL
             },
             description: `**User Id**: ${user.id}\n**Created**: ${timestamp(user.createdAt)}`
         };
@@ -32,23 +32,24 @@ export class UserCommand extends BaseGlobalCommand {
             const member = await context.util.getMember(context.channel.guild, user.id);
             if (member !== undefined) {
                 result.description += `\n**Joined**: ${timestamp(member.joinedAt)}
-**Permissions**: [${member.permissions.bitfield}](https://discordapi.com/permissions.html#${member.permissions.bitfield})`;
+**Permission**: [${member.permissions.allow}](https://discordapi.com/permissions.html#${member.permissions.allow})`;
                 result.fields = [
                     {
                         name: 'Roles',
-                        value: member.roles.cache
-                            .filter(r => r.position !== 0) // @everyone
-                            .sort((a, b) => b.position - a.position) // descending
-                            .map(r => r.toString())
+                        value: member.roles
+                            .map(r => ({ id: r, pos: member.guild.roles.get(r)?.position ?? -Infinity }))
+                            .filter(r => r.pos !== 0) // @everyone
+                            .sort((a, b) => b.pos - a.pos) // descending
+                            .map(r => `<@&${r.id}>`)
                             .join(' ') + '\u200b'
                     }
                 ];
-                if (member.nickname !== null)
-                    result.author.name += ` (${member.nickname})`;
-                result.color = member.roles.color?.color;
+                if (member.nick !== null)
+                    result.author.name += ` (${member.nick})`;
+                result.color = discordUtil.getMemberColor(member);
                 result.footer = {
-                    iconURL: `https://cdn.discordapp.com/emojis/${getStatusEmoteId(context, member)}.png`,
-                    text: getActivityString(member.presence?.activities[0])
+                    icon_url: `https://cdn.discordapp.com/emojis/${getStatusEmoteId(context, member)}.png`,
+                    text: getActivityString(member.activities?.[0])
                 };
             }
         }
@@ -61,7 +62,7 @@ export class UserCommand extends BaseGlobalCommand {
 
 }
 
-function timestamp(value: Date | null): string {
+function timestamp(value: number | null): string {
     if (value === null)
         return '-';
 
@@ -69,17 +70,16 @@ function timestamp(value: Date | null): string {
     return `<t:${unix}>`;
 }
 
-function getStatusEmoteId(context: CommandContext, member: GuildMember): string {
+function getStatusEmoteId(context: CommandContext, member: Member): string {
     const emote = getStatusEmote(context, member);
     return parse.entityId(emote) ?? '';
 }
 
-function getStatusEmote(context: CommandContext, member: GuildMember): string {
-    switch (member.presence?.status) {
+function getStatusEmote(context: CommandContext, member: Member): string {
+    switch (member.status) {
         case 'dnd': return context.config.discord.emotes.busy;
         case 'idle': return context.config.discord.emotes.away;
         case 'online': return context.config.discord.emotes.online;
-        case 'invisible':
         case 'offline':
         case undefined: return context.config.discord.emotes.offline;
     }
@@ -88,11 +88,11 @@ function getStatusEmote(context: CommandContext, member: GuildMember): string {
 function getActivityString(activity: Activity | undefined): string {
     switch (activity?.type) {
         case undefined: return 'Not doing anything';
-        case 'COMPETING': return `Competing in ${activity.name}`;
-        case 'CUSTOM': return activity.name;
-        case 'LISTENING': return `Listening to ${activity.name}`;
-        case 'PLAYING': return `Playing ${activity.name}`;
-        case 'STREAMING': return `Streaming ${activity.details ?? ''}`.trim();
-        case 'WATCHING': return `Watching ${activity.name}`;
+        case Constants.ActivityTypes.COMPETING: return `Competing in ${activity.name}`;
+        case Constants.ActivityTypes.CUSTOM: return activity.name;
+        case Constants.ActivityTypes.LISTENING: return `Listening to ${activity.name}`;
+        case Constants.ActivityTypes.GAME: return `Playing ${activity.name}`;
+        case Constants.ActivityTypes.STREAMING: return `Streaming ${activity.details ?? ''}`.trim();
+        case Constants.ActivityTypes.WATCHING: return `Watching ${activity.name}`;
     }
 }

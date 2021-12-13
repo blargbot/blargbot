@@ -30,14 +30,14 @@ export class EmojisSubtag extends Subtag {
     }
 
     public getAllEmojis(context: BBTagContext): string[] {
-        return context.guild.emojis.cache.map(e => `<${e.animated ?? false ? 'a' : ''}:${e.name ?? ''}:${e.id}>`);
+        return context.guild.emojis.map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
     }
 
     //! Doesn't work, but compatibility™
     //* The code commented below is the working code, however to keep compatibility the old code is still used
     public /*async*/ getEmojisForRole(context: BBTagContext/*, roleStr*/): /*Promise<*/string[]/*>*/ {
-        const emojis = context.guild.emojis.cache.filter(e => e.roles.cache.size > 0)
-            .map(e => `<${e.animated ?? false ? 'a' : ''}:${e.name ?? ''}:${e.id}>`);
+        const emojis = context.guild.emojis.filter(e => e.roles.length > 0)
+            .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
         return emojis;
 
         // const role = await context.getRole(roleStr, {

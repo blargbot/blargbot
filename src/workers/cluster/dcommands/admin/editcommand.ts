@@ -3,7 +3,7 @@ import { GuildCommandContext } from '@cluster/types';
 import { codeBlock, CommandType } from '@cluster/utils';
 import { CommandPermissions } from '@core/types';
 import { guard } from '@core/utils';
-import { MessageEmbedOptions, Role } from 'discord.js';
+import { EmbedOptions, Role } from 'eris';
 
 export class EditCommandCommand extends BaseGuildCommand {
     public constructor() {
@@ -50,7 +50,7 @@ export class EditCommandCommand extends BaseGuildCommand {
         });
     }
 
-    public async list(context: GuildCommandContext): Promise<string | MessageEmbedOptions> {
+    public async list(context: GuildCommandContext): Promise<string | EmbedOptions> {
         const lines = [];
         const commandNames = new Set<string>();
         const defaultPerms = new Map<unknown, string>();
@@ -68,16 +68,16 @@ export class EditCommandCommand extends BaseGuildCommand {
             const roles = [];
             for (const roleStr of command.roles) {
                 const role = await context.util.getRole(context.channel.guild, roleStr)
-                    ?? context.channel.guild.roles.cache.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
+                    ?? context.channel.guild.roles.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
                 if (role !== undefined)
                     roles.push(role);
             }
 
             if (roles.length > 0)
-                lines.push(`- Roles: ${roles.map(r => r.toString()).join(', ')}`);
+                lines.push(`- Roles: ${roles.map(r => r.mention).join(', ')}`);
 
             if (command.permission !== (defaultPerms.get(command.implementation) ?? '0'))
-                lines.push(`- Permissions: ${command.permission}`);
+                lines.push(`- Permission: ${command.permission}`);
 
             const tagged = [
                 command.disabled === true ? 'Disabled' : undefined,

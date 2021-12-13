@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 import moment from 'moment-timezone';
 
 export class UserBoostDataSubtag extends Subtag {
@@ -45,10 +45,10 @@ export class UserBoostDataSubtag extends Subtag {
         return this.getUserBoostDate(member, format);
     }
 
-    public getUserBoostDate(user: GuildMember, format: string): string {
-        if (user.premiumSinceTimestamp === null)
+    public getUserBoostDate(user: Member, format: string): string {
+        if (user.premiumSince === 0)
             throw new BBTagRuntimeError('User not boosting');
 
-        return moment(user.premiumSinceTimestamp).format(format);
+        return moment(user.premiumSince).format(format);
     }
 }

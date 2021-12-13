@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { WhitelistResponse } from '@cluster/types';
 import { bbtagUtil, codeBlock, guard, humanize, mapping } from '@cluster/utils';
 import { GuildTriggerTag } from '@core/types';
-import { GuildEmoji, GuildMessage, Message, ReactionEmoji, User } from 'discord.js';
+import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
 
 export class AutoresponseManager {
     /* eslint-disable @typescript-eslint/explicit-member-accessibility */
@@ -30,7 +30,7 @@ export class AutoresponseManager {
         if (isChange) {
             if (!this.cluster.util.isBotStaff(userId)) {
                 const user = await this.cluster.util.getUser(userId);
-                const guild = this.cluster.discord.guilds.cache.get(guildId);
+                const guild = this.cluster.discord.guilds.get(guildId);
                 const code = Buffer.from(JSON.stringify(<ArData>{ channel: channelId, guild: guildId })).toString('base64');
                 const message = await this.cluster.util.send(
                     this.cluster.config.discord.channels.autoresponse,
@@ -44,7 +44,7 @@ ${reason.length === 0 ? '*No reason given*' : reason}
 
 ${codeBlock(code, 'js')}`
                 );
-                await Promise.all(Object.keys(emojiValues).map(emoji => message?.react(emoji)));
+                await Promise.all(Object.keys(emojiValues).map(emoji => message?.addReaction(emoji)));
                 return 'requested';
             }
 
@@ -69,7 +69,7 @@ ${codeBlock(code, 'js')}`
         this.#debugOutput[`${guildId}|${id}|${userId}`] = { channelId, messageId };
     }
 
-    public async execute(msg: Message, everything: boolean): Promise<void> {
+    public async execute(msg: KnownMessage, everything: boolean): Promise<void> {
         if (msg.author.discriminator === '0000' || !guard.isGuildMessage(msg))
             return;
 
@@ -83,7 +83,7 @@ ${codeBlock(code, 'js')}`
         await Promise.all(promises);
     }
 
-    private async executeCore(msg: GuildMessage, id: `${number}` | 'everything', tag: GuildTriggerTag): Promise<void> {
+    private async executeCore(msg: Message<KnownGuildTextableChannel>, id: `${number}` | 'everything', tag: GuildTriggerTag): Promise<void> {
         const result = await this.cluster.bbtag.execute(tag.content, {
             message: msg,
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
@@ -103,13 +103,12 @@ ${codeBlock(code, 'js')}`
         delete this.#debugOutput[key];
         await this.cluster.util.send(debugCtx.channelId, {
             ...bbtagUtil.createDebugOutput(result),
-            reply: { messageReference: debugCtx.messageId }
+            messageReference: { messageID: debugCtx.messageId }
         });
     }
 
-    public async handleWhitelistApproval(message: Message, emoji: GuildEmoji | ReactionEmoji, user: User): Promise<void> {
+    public async handleWhitelistApproval(message: KnownMessage, emoji: PartialEmoji, user: User): Promise<void> {
         if (message.channel.id !== this.cluster.config.discord.channels.autoresponse
-            || emoji.name === null
             || !guard.hasProperty(emojiValues, emoji.name)
             || !this.cluster.util.isBotStaff(user.id))
             return;
@@ -127,16 +126,16 @@ ${codeBlock(code, 'js')}`
 
         const promises: Array<Promise<unknown>> = [];
         promises.push(this.whitelist(mapped.value.guild, mapped.value.channel, user.id, reason, whitelist));
-        for (const [, m] of await message.channel.messages.fetch()) {
+        for (const m of await message.channel.getMessages()) {
             if (m.author.id === this.cluster.discord.user.id && m.content.includes(match[0])) {
                 promises.push(m.edit(`${emoji.name} ${m.content.replace(match[0], reason)}`));
-                promises.push(m.reactions.removeAll());
+                promises.push(m.removeReactions());
             }
         }
         await Promise.all(promises);
     }
 
-    private async * findAutoresponses(msg: GuildMessage, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; }> {
+    private async * findAutoresponses(msg: Message<KnownGuildTextableChannel>, everything: boolean): AsyncGenerator<{ command: GuildTriggerTag; id: `${number}` | 'everything'; }> {
         const ars = await this.cluster.database.guilds.getAutoresponses(msg.channel.guild.id);
         if (everything) {
             if (ars.everything !== undefined)

@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
-import { Message, MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions, KnownMessage } from 'eris';
 
 export class ReactListSubtag extends Subtag {
     public constructor() {
@@ -43,7 +43,7 @@ export class ReactListSubtag extends Subtag {
         args: string[]
     ): Promise<Iterable<string>> {
         let channel;
-        let message: Message | undefined;
+        let message: KnownMessage | undefined;
 
         // Check if the first "emote" is actually a valid channel
         channel = await context.queryChannel(args[0], { noLookup: true });
@@ -70,20 +70,16 @@ export class ReactListSubtag extends Subtag {
 
         // Default to listing what emotes there are
         if (parsedEmojis.length === 0)
-            return message.reactions.cache.map(r => r.emoji.toString());
+            return Object.keys(message.reactions);
 
         // List all users per reaction
         const users: string[] = [];
         const errors = [];
         for (let emote of parsedEmojis) {
             emote = emote.replace(/^a?:/gi, '');
-            if (!message.reactions.cache.has(emote)) {
-                continue;
-            }
             try {
-                const reactionUsers = await message.reactions.cache.get(emote)?.users.fetch();
-                if (reactionUsers !== undefined)
-                    users.push(...reactionUsers.keys());
+                const reactionUsers = await message.getReaction(emote);
+                users.push(...reactionUsers.map(u => u.id));
             } catch (err: unknown) {
                 if (err instanceof Error)
                     if (err.message === 'Unknown Emoji')
@@ -102,10 +98,10 @@ export class ReactListSubtag extends Subtag {
         const msg = await context.util.getMessage(context.channel, messageId, true);
         if (msg === undefined)
             throw new MessageNotFoundError(context.channel, messageId);
-        return msg.reactions.cache.map(r => r.emoji.toString());
+        return Object.keys(msg.reactions);
     }
 
-    public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {
+    public enrichDocs(embed: EmbedOptions): EmbedOptions {
         embed.fields = [
             {
                 name: 'Usage',

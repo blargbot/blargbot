@@ -2,7 +2,7 @@ import { AnySubtagHandlerDefinition, CompositeSubtagHandler, SubtagCall, SubtagH
 import { SubtagType } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { Timer } from '@core/Timer';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from './BBTagContext';
 import { compileSignatures, parseDefinitions } from './compilation';
@@ -45,7 +45,7 @@ export abstract class Subtag implements SubtagOptions {
         }
     }
 
-    public enrichDocs(docs: MessageEmbedOptions): MessageEmbedOptions {
+    public enrichDocs(docs: EmbedOptions): EmbedOptions {
         return docs;
     }
 }

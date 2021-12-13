@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { KnownChannel } from 'discord.js';
+import { KnownChannel } from 'eris';
 
 export class BlacklistCommandBase extends BaseGuildCommand {
     public constructor() {
@@ -27,7 +27,7 @@ export class BlacklistCommandBase extends BaseGuildCommand {
         await context.cluster.database.guilds.setChannelSetting(context.channel.guild.id, channel.id, 'blacklisted', wasBlacklisted !== true);
 
         return wasBlacklisted === true
-            ? this.success(`${channel.toString()} is no longer blacklisted.`)
-            : this.success(`${channel.toString()} is now blacklisted`);
+            ? this.success(`${channel.mention} is no longer blacklisted.`)
+            : this.success(`${channel.mention} is now blacklisted`);
     }
 }

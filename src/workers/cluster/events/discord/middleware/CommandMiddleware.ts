@@ -3,16 +3,16 @@ import { CommandContext } from '@cluster/command';
 import { CommandResult } from '@cluster/types';
 import { IMiddleware, NextMiddleware } from '@core/types';
 import { humanize, pluralise as p, runMiddleware } from '@core/utils';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 
-export class CommandMiddleware implements IMiddleware<Message, boolean> {
+export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {
     public constructor(
         private readonly cluster: Cluster,
         private readonly middleware: ReadonlyArray<IMiddleware<CommandContext, CommandResult>>
     ) {
     }
 
-    public async execute(message: Message, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(message: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         const prefix = await this.cluster.prefixes.findPrefix(message);
         if (prefix === undefined)
             return await next();

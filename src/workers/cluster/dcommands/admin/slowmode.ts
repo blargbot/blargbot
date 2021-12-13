@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { Constants, DiscordAPIError, KnownChannel } from 'discord.js';
+import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
 export class SlowmodeCommand extends BaseGuildCommand {
     public constructor() {
@@ -37,12 +37,12 @@ export class SlowmodeCommand extends BaseGuildCommand {
 
         try {
             await channel.edit({ rateLimitPerUser: time });
-            return this.success(`Slowmode has been set to 1 message every ${time} seconds in ${channel.toString()}`);
+            return this.success(`Slowmode has been set to 1 message every ${time} seconds in ${channel.mention}`);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError) {
+            if (err instanceof DiscordRESTError) {
                 switch (err.code) {
-                    case Constants.APIErrors.MISSING_PERMISSIONS:
-                        return this.error(`I dont have permission to set slowmode in ${channel.toString()}!`);
+                    case ApiError.MISSING_PERMISSIONS:
+                        return this.error(`I dont have permission to set slowmode in ${channel.mention}!`);
                 }
             }
             throw err;
@@ -57,12 +57,12 @@ export class SlowmodeCommand extends BaseGuildCommand {
 
         try {
             await channel.edit({ rateLimitPerUser: 0 });
-            return this.success(`Slowmode has been disabled in ${channel.toString()}`);
+            return this.success(`Slowmode has been disabled in ${channel.mention}`);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError) {
+            if (err instanceof DiscordRESTError) {
                 switch (err.code) {
-                    case Constants.APIErrors.MISSING_PERMISSIONS:
-                        return this.error(`I dont have permission to set slowmode in ${channel.toString()}!`);
+                    case ApiError.MISSING_PERMISSIONS:
+                        return this.error(`I dont have permission to set slowmode in ${channel.mention}!`);
                 }
             }
             throw err;

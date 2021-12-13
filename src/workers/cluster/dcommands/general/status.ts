@@ -1,6 +1,6 @@
 import { BaseGlobalCommand } from '@cluster/command';
 import { CommandType, randChoose } from '@cluster/utils';
-import { FileOptions } from 'discord.js';
+import { FileContent } from 'eris';
 import fetch from 'node-fetch';
 
 export class StatusCommand extends BaseGlobalCommand {
@@ -18,7 +18,7 @@ export class StatusCommand extends BaseGlobalCommand {
         });
     }
 
-    public async getStatus(status: number, animal: string | undefined): Promise<string | FileOptions> {
+    public async getStatus(status: number, animal: string | undefined): Promise<string | FileContent> {
         animal = animal?.toLowerCase();
         const service = statusKeys.has(animal) ? statusSites[animal] : randChoose(Object.values(statusSites));
         const response = await fetch(`${service}${status}.jpg`);
@@ -35,7 +35,7 @@ export class StatusCommand extends BaseGlobalCommand {
 
         return {
             name: `${status}.jpg`,
-            attachment: content
+            file: content
         };
     }
 }

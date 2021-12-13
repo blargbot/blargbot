@@ -61,7 +61,7 @@ export class RoleAddSubtag extends Subtag {
 
         try {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            const existingRoles = [...result.member.roles.cache.keys()];
+            const existingRoles = result.member.roles;
             await result.member.edit({
                 roles: existingRoles.concat(...roles.map(r => r.id))
             }, fullReason);

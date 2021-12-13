@@ -1,10 +1,8 @@
-import { Permissions } from 'discord.js';
+import { Constants } from 'eris';
 
-export const defaultStaff = new Permissions([
-    'KICK_MEMBERS',
-    'BAN_MEMBERS',
-    'ADMINISTRATOR',
-    'MANAGE_CHANNELS',
-    'MANAGE_GUILD',
-    'MANAGE_MESSAGES'
-]).bitfield;
+export const defaultStaff = Constants.Permissions.kickMembers
+    | Constants.Permissions.banMembers
+    | Constants.Permissions.administrator
+    | Constants.Permissions.manageChannels
+    | Constants.Permissions.manageGuild
+    | Constants.Permissions.manageMessages;

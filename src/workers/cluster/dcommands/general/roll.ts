@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { codeBlock, CommandType, parse, pluralise as p, randChoose, randInt, repeat } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 
 export class RollCommand extends BaseGlobalCommand {
     public constructor() {
@@ -17,7 +17,7 @@ export class RollCommand extends BaseGlobalCommand {
         });
     }
 
-    public rollDice(context: CommandContext, dice: string, modifier?: number): MessageEmbedOptions | string {
+    public rollDice(context: CommandContext, dice: string, modifier?: number): EmbedOptions | string {
         switch (dice.toLowerCase()) {
             case 'cat': return {
                 author: context.util.embedifyAuthor(context.author),

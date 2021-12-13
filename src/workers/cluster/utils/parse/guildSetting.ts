@@ -1,7 +1,7 @@
 import { ClusterUtilities } from '@cluster';
 import { StoredGuildSettings } from '@core/types';
 import { guard, parse } from '@core/utils';
-import { UserChannelInteraction } from 'discord.js';
+import { UserChannelInteraction } from 'eris';
 
 import { guildSettings } from '../constants';
 
@@ -62,7 +62,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             return {
                 success: true,
                 value: result.value.id as StoredGuildSettings[T],
-                display: result.value.toString()
+                display: result.value.mention
             };
         }
         case 'role': {
@@ -74,7 +74,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
             return {
                 success: true,
                 value: result.value.id as StoredGuildSettings[T],
-                display: result.value.toString()
+                display: result.value.mention
             };
         }
     }

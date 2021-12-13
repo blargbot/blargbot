@@ -1,6 +1,6 @@
 import { bbtagUtil, guard, ModerationType } from '@cluster/utils';
 import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@core/types';
-import { GuildMessage } from 'discord.js';
+import { KnownGuildTextableChannel, Message } from 'eris';
 
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
@@ -14,7 +14,7 @@ export class CensorManager extends ModerationManagerBase {
         this.#debugOutput = {};
     }
 
-    public async censor(message: GuildMessage): Promise<boolean> {
+    public async censor(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
         if (await this.censorMentions(message))
             return true;
 
@@ -70,7 +70,7 @@ export class CensorManager extends ModerationManagerBase {
                 delete this.#debugOutput[key];
                 await this.cluster.util.send(debugCtx.channelId, {
                     ...bbtagUtil.createDebugOutput(result),
-                    reply: { messageReference: debugCtx.messageId }
+                    messageReference: { messageID: debugCtx.messageId }
                 });
             }
         }
@@ -78,13 +78,13 @@ export class CensorManager extends ModerationManagerBase {
         return true;
     }
 
-    private async censorMentions(message: GuildMessage): Promise<boolean> {
+    private async censorMentions(message: Message<KnownGuildTextableChannel>): Promise<boolean> {
         const antimention = await this.cluster.database.guilds.getSetting(message.channel.guild.id, 'antimention');
         if (antimention === undefined)
             return false;
 
         const parsedAntiMention = typeof antimention === 'string' ? parseInt(antimention) : antimention;
-        if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.users.size + message.mentions.roles.size < parsedAntiMention)
+        if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.length + message.roleMentions.length < parsedAntiMention)
             return false;
 
         switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, false, 1, 'Mention spam')) {
@@ -100,7 +100,7 @@ export class CensorManager extends ModerationManagerBase {
         }
     }
 
-    private isCensorExempt(message: GuildMessage, exemptions?: GuildCensorExceptions): boolean {
+    private isCensorExempt(message: Message<KnownGuildTextableChannel>, exemptions?: GuildCensorExceptions): boolean {
         if (exemptions === undefined)
             return false;
 
@@ -110,7 +110,7 @@ export class CensorManager extends ModerationManagerBase {
 
         return channels.includes(message.channel.id)
             || users.includes(message.author.id)
-            || roles.some(r => message.member.roles.cache.has(r));
+            || roles.some(r => message.member.roles.includes(r));
     }
 
     public setDebug(guildId: string, id: number, userId: string, channelId: string, messageId: string, type: 'ban' | 'delete' | 'kick'): void {

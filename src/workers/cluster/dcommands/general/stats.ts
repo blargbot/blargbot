@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { avatarColours, CommandType, humanize, randChoose } from '@cluster/utils';
-import discordjs, { MessageEmbedOptions } from 'discord.js';
+import eris, { EmbedOptions } from 'eris';
 import moment from 'moment';
 
 export class StatsCommand extends BaseGlobalCommand {
@@ -18,7 +18,7 @@ export class StatsCommand extends BaseGlobalCommand {
         });
     }
 
-    public async getStats(context: CommandContext): Promise<MessageEmbedOptions> {
+    public async getStats(context: CommandContext): Promise<EmbedOptions> {
         const clusterStats = Object.values(await context.cluster.worker.request('getClusterStats', undefined));
         const mappedStats = { guilds: 0, users: 0, channels: 0, rss: 0 };
         clusterStats.forEach(c => {
@@ -34,7 +34,7 @@ export class StatsCommand extends BaseGlobalCommand {
             title: 'Bot Statistics',
             footer: {
                 text: 'blargbot',
-                icon_url: context.discord.user.avatarURL() ?? undefined
+                icon_url: context.discord.user.avatarURL
             },
             fields: [{
                 name: 'Guilds',
@@ -77,8 +77,8 @@ export class StatsCommand extends BaseGlobalCommand {
                 inline: true
             },
             {
-                name: 'Djs',
-                value: discordjs.version,
+                name: 'Eris',
+                value: eris.VERSION,
                 inline: true
             },
             {

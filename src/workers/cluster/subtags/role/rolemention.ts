@@ -33,6 +33,6 @@ export class RoleMentionSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return role.toString();
+        return role.mention;
     }
 }

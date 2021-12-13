@@ -1,12 +1,13 @@
 import { guard } from '@cluster/utils';
 import { GuildTable, UserTable } from '@core/types';
-import { Message } from 'discord.js';
+import { Client as Discord, KnownMessage } from 'eris';
 
 export class PrefixManager {
     public constructor(
         private readonly defaultPrefix: string,
         private readonly guilds: GuildTable,
-        private readonly users: UserTable
+        private readonly users: UserTable,
+        private readonly discord: Discord
     ) {
     }
 
@@ -50,15 +51,13 @@ export class PrefixManager {
         return await this.users.setSetting(userId, 'prefixes', [...prefixes]);
     }
 
-    public async findPrefix(message: Message): Promise<string | undefined> {
+    public async findPrefix(message: KnownMessage): Promise<string | undefined> {
         const prefixes = [
             this.defaultPrefix,
             ...await this.getUserPrefixes(message.author.id)
         ];
 
-        if (message.client.isReady())
-            prefixes.push(`<@${message.client.user.id}>`, `<@!${message.client.user.id}>`);
-
+        prefixes.push(`<@${this.discord.user.id}>`, `<@!${this.discord.user.id}>`);
         if (guard.isGuildMessage(message))
             prefixes.push(...await this.getGuildPrefixes(message.channel.guild.id));
 

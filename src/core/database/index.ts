@@ -5,7 +5,7 @@ import Airtable from 'airtable';
 import { AirtableBase } from 'airtable/lib/airtable_base';
 import AirtableError from 'airtable/lib/airtable_error';
 import { auth as CassandraAuth, Client as Cassandra } from 'cassandra-driver';
-import { Client as Discord } from 'discord.js';
+import { Client as Discord } from 'eris';
 
 import { AirtableSuggestionsTable } from './AirtableSuggestionsTable';
 import { AirtableSuggestorsTable } from './AirtableSuggestorsTable';
@@ -38,7 +38,7 @@ export class Database {
     readonly #suggestors: AirtableSuggestorsTable;
     readonly #suggestions: AirtableSuggestionsTable;
     readonly #logger: Logger;
-    readonly #discord: Discord<true>;
+    readonly #discord: Discord;
     /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get guilds(): GuildTable { return this.#guilds; }
@@ -111,8 +111,8 @@ export class Database {
             this.#dumps.migrate()
         ]);
 
-        this.#guilds.watchChanges(id => this.#discord.guilds.cache.get(id) !== undefined);
-        this.#users.watchChanges(id => this.#discord.users.cache.get(id) !== undefined);
+        this.#guilds.watchChanges(id => this.#discord.guilds.get(id) !== undefined);
+        this.#users.watchChanges(id => this.#discord.users.get(id) !== undefined);
     }
 
     private async retryConnect(dbName: string, connect: () => Promise<unknown>, intervalMs: number, maxAttempts = Infinity): Promise<void> {

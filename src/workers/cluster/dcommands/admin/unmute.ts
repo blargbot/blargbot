@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { FlagResult, GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 
 export class UnmuteCommand extends BaseGuildCommand {
     public constructor() {
@@ -22,7 +22,7 @@ export class UnmuteCommand extends BaseGuildCommand {
         });
     }
 
-    public async unmute(context: GuildCommandContext, member: GuildMember, flags: FlagResult): Promise<string> {
+    public async unmute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value;
 
         switch (await context.cluster.moderation.mutes.unmute(member, context.author, reason)) {

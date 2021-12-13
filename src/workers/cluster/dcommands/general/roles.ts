@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 
 export class RolesCommand extends BaseGuildCommand {
     public constructor() {
@@ -18,13 +18,13 @@ export class RolesCommand extends BaseGuildCommand {
         });
     }
 
-    public showRoles(context: GuildCommandContext): MessageEmbedOptions {
+    public showRoles(context: GuildCommandContext): EmbedOptions {
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
             title: 'Roles',
-            description: context.channel.guild.roles.cache
+            description: [...context.channel.guild.roles.values()]
                 .sort((a, b) => b.position - a.position)
-                .map(r => r.toString())
+                .map(r => r.mention)
                 .join('\n')
         };
     }

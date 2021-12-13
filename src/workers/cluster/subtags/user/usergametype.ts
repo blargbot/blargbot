@@ -52,6 +52,7 @@ export class UserGameTypeSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return member.presence?.activities[0]?.type.toLowerCase() ?? '';
+        const activityId = member.activities?.[0]?.type ?? 'default';
+        return gameTypes[activityId].toLowerCase();
     }
 }

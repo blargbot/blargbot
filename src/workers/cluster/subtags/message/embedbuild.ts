@@ -1,7 +1,7 @@
 import { Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, parse, SubtagType } from '@cluster/utils';
-import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
+import { EmbedField, EmbedOptions } from 'eris';
 
 const fields = [
     {
@@ -57,7 +57,7 @@ const fields = [
 
 type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 // custom message for fields missing values/names
-type EmbedBuildOptions = Overwrite<MessageEmbedOptions, { fields?: Array<Partial<EmbedFieldData>>; }>
+type EmbedBuildOptions = Overwrite<EmbedOptions, { fields?: Array<Partial<EmbedField>>; }>
 
 export class EmbedBuildSubag extends Subtag {
     public constructor() {
@@ -111,7 +111,7 @@ export class EmbedBuildSubag extends Subtag {
                     throw new BBTagRuntimeError('Field missing name', `Field at index ${i}`);
             }
         }
-        if (!guard.checkEmbedSize([<MessageEmbedOptions>embed]))
+        if (!guard.checkEmbedSize([<EmbedOptions>embed]))
             throw new BBTagRuntimeError('Embed too long', JSON.stringify(embed));
         return embed as JObject;
     }
@@ -154,7 +154,7 @@ export class EmbedBuildSubag extends Subtag {
             case 'footer.icon_url':
                 if (!guard.isUrl(value))
                     throw new BBTagRuntimeError('Invalid footer.icon_url', value);
-                embed.footer = { ...embed.footer, icon_url: value };
+                embed.footer = { text: '', ...embed.footer, icon_url: value };
                 break;
             case 'footer.text':
                 if (value.length > discordUtil.getLimit('embed.footer.text'))
@@ -179,12 +179,12 @@ export class EmbedBuildSubag extends Subtag {
             case 'author.url':
                 if (!guard.isUrl(value))
                     throw new BBTagRuntimeError('Invalid author.url', value);
-                embed.author = { ...embed.author, url: value };
+                embed.author = { name: '', ...embed.author, url: value };
                 break;
             case 'author.icon_url':
                 if (!guard.isUrl(value))
                     throw new BBTagRuntimeError('Invalid author.icon_url', value);
-                embed.author = { ...embed.author, icon_url: value };
+                embed.author = { name: '', ...embed.author, icon_url: value };
                 break;
             case 'fields.name':
                 if (embed.fields !== undefined && embed.fields.length >= discordUtil.getLimit('embed.fields'))

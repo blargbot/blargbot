@@ -1,7 +1,7 @@
-import { AnyChannel, GuildChannels } from 'discord.js';
+import { KnownChannel, KnownGuildChannel } from 'eris';
 
 import { isGuildChannel } from './isGuildChannel';
 
-export function isGuildRelated<T extends { channel: AnyChannel; }>(obj: T): obj is T & { channel: T['channel'] & GuildChannels; } {
+export function isGuildRelated<T extends { channel: C; }, C extends KnownChannel>(obj: T): obj is T & { channel: C & KnownGuildChannel; } {
     return isGuildChannel(obj.channel);
 }

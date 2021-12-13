@@ -1,6 +1,6 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { guard, SubtagType } from '@cluster/utils';
 
 export class ChannelsSubtag extends Subtag {
     public constructor() {
@@ -29,7 +29,7 @@ export class ChannelsSubtag extends Subtag {
     }
 
     public getChannels(context: BBTagContext): string[] {
-        return context.guild.channels.cache.map(c => c.id);
+        return context.guild.channels.map(c => c.id);
     }
 
     public async getChannelsInCategory(context: BBTagContext, channelStr: string, quiet: boolean): Promise<string[]> {
@@ -39,8 +39,8 @@ export class ChannelsSubtag extends Subtag {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
         }
-        if (channel.type !== 'GUILD_CATEGORY')
+        if (!guard.isCategoryChannel(channel))
             return [];
-        return channel.children.map(c => c.id);
+        return channel.channels.map(c => c.id);
     }
 }

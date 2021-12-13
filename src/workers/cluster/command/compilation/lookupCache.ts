@@ -1,6 +1,6 @@
 import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@cluster/types';
 import { guard } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 
 import { CommandContext } from '../CommandContext';
 import { createCommandArgument } from './commandArgument';
@@ -38,7 +38,7 @@ function getGuildLookupCache<TContext extends GuildCommandContext>(context: TCon
         findSender: createLookup(
             'sender',
             'a sender',
-            async query => (await context.util.findSenders(context.channel.guild, query)).map(s => s instanceof GuildMember ? s.user : s),
+            async query => (await context.util.findSenders(context.channel.guild, query)).map(s => s instanceof Member ? s.user : s),
             async (options, query) => {
                 const result = await context.querySender({ choices: options, filter: query });
                 return result.state === 'SUCCESS' ? result.value : undefined;

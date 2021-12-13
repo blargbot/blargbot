@@ -1,8 +1,8 @@
 import { IMiddleware, NextMiddleware } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 
-export class IgnoreBotsMiddleware implements IMiddleware<Message, boolean> {
-    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
+export class IgnoreBotsMiddleware implements IMiddleware<KnownMessage, boolean> {
+    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (context.author.bot)
             return false;
         return await next();

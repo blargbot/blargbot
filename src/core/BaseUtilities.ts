@@ -1,6 +1,6 @@
-import { DMContext, SendContext, SendPayload, StoredUser } from '@core/types';
+import { DMContext, SendContent, SendContext, SendPayload, StoredUser } from '@core/types';
 import { Snowflake } from 'catflake';
-import { AnyChannel, ChannelInteraction, Client as Discord, ClientUser, Constants, DiscordAPIError, EmojiIdentifierResolvable, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageEmbedAuthor, MessageEmbedOptions, MessageOptions, MessageReaction, Role, Team, TextBasedChannels, User, UserChannelInteraction, Webhook } from 'discord.js';
+import { ApiError, ChannelInteraction, Client as Discord, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment';
 
 import { BaseClient } from './BaseClient';
@@ -11,8 +11,8 @@ import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
 
 export class BaseUtilities {
-    public get user(): ClientUser { return this.client.discord.user; }
-    public get discord(): Discord<true> { return this.client.discord; }
+    public get user(): ExtendedUser { return this.client.discord.user; }
+    public get discord(): Discord { return this.client.discord; }
     public get database(): Database { return this.client.database; }
     public get logger(): Logger { return this.client.logger; }
     public get config(): Configuration { return this.client.config; }
@@ -22,7 +22,7 @@ export class BaseUtilities {
     ) {
     }
 
-    private async getSendChannel(context: SendContext): Promise<TextBasedChannels> {
+    private async getSendChannel(context: SendContext): Promise<KnownTextableChannel> {
         // Process context into a channel and maybe a message
         switch (typeof context) {
             // Id provided, get channel object
@@ -54,33 +54,27 @@ export class BaseUtilities {
         return `${scheme}://${host}${port}/${path ?? ''}`;
     }
 
-    public embedifyAuthor(target: GuildMember | User | Guild | Team | StoredUser): MessageEmbedAuthor {
+    public embedifyAuthor(target: Member | User | Guild | StoredUser): EmbedAuthor {
         if (target instanceof User) {
             return {
-                iconURL: target.displayAvatarURL({ size: 512, dynamic: true, format: 'png' }),
+                icon_url: target.avatarURL,
                 name: humanize.fullName(target),
                 url: this.websiteLink(target === this.discord.user ? undefined : `user/${target.id}`)
             };
-        } else if (target instanceof GuildMember) {
+        } else if (target instanceof Member) {
             return {
-                iconURL: target.user.displayAvatarURL({ size: 512, dynamic: true, format: 'png' }),
-                name: target.displayName,
+                icon_url: target.avatarURL,
+                name: target.nick ?? target.username,
                 url: this.websiteLink(`user/${target.id}`)
             };
         } else if (target instanceof Guild) {
             return {
-                iconURL: target.iconURL({ size: 512, dynamic: true, format: 'png' }) ?? undefined,
+                icon_url: target.iconURL ?? undefined,
                 name: target.name
-            };
-        } else if (target instanceof Team) {
-            return {
-                iconURL: target.iconURL({ size: 512, format: 'png' }) ?? undefined,
-                name: target.name,
-                url: this.websiteLink()
             };
         } else if ('userid' in target) {
             return {
-                iconURL: target.avatarURL,
+                icon_url: target.avatarURL,
                 name: target.username ?? 'UNKNOWN',
                 url: this.websiteLink(`user/${target.userid}`)
             };
@@ -89,7 +83,10 @@ export class BaseUtilities {
         return target; // never
     }
 
-    public async send(context: SendContext, payload: SendPayload): Promise<Message | undefined> {
+    public async send<T extends KnownTextableChannel>(context: T, payload: SendPayload): Promise<Message<T> | undefined>;
+    public async send<T extends KnownTextableChannel>(context: Message<T>, payload: SendPayload): Promise<Message<T> | undefined>;
+    public async send(context: SendContext, payload: SendPayload): Promise<KnownMessage | undefined>;
+    public async send(context: SendContext, payload: SendPayload): Promise<KnownMessage | undefined> {
         metrics.sendCounter.inc();
 
         let channel = await this.getSendChannel(context);
@@ -97,14 +94,14 @@ export class BaseUtilities {
 
         if (typeof payload === 'string')
             payload = { content: payload };
-        else if ('attachment' in payload)
+        else if ('file' in payload)
             payload = { files: [payload] };
         else if (isEmbed(payload))
             payload = { embeds: [payload] };
 
         const replyToExecuting = payload.replyToExecuting !== undefined ? delete payload.replyToExecuting : true;
-        if (payload.reply === undefined && replyToExecuting && context instanceof Message)
-            payload.reply = { messageReference: context, failIfNotExists: false };
+        if (payload.messageReference === undefined && replyToExecuting && context instanceof Message)
+            payload.messageReference = { failIfNotExists: false, messageID: context.id };
 
         // Send help messages to DMs if the message is marked as a help message
         if (payload.isHelp === true
@@ -112,14 +109,14 @@ export class BaseUtilities {
             && await this.database.guilds.getSetting(channel.guild.id, 'dmhelp') === true
             && author !== undefined) {
             await this.send(channel, '📧 DMing you the help 📧');
-            payload.content = `Here is the help you requested in ${channel.toString()}>:\n${payload.content ?? ''}`;
-            channel = author.dmChannel ?? await author.createDM();
+            payload.content = `Here is the help you requested in ${channel.mention}>:\n${payload.content ?? ''}`;
+            channel = await author.getDMChannel();
         }
 
         // Stringifies embeds if we lack permissions to send embeds
         if (payload.embeds !== undefined
             && guard.isGuildChannel(channel)
-            && channel.permissionsFor(this.user.id)?.any('EMBED_LINKS') !== true
+            && channel.permissionsOf(this.user.id).has('embedLinks') !== true
         ) {
             payload.content = `${payload.content ?? ''}${humanize.embed(payload.embeds)}`;
             delete payload.embeds;
@@ -129,7 +126,7 @@ export class BaseUtilities {
         if (payload.content?.length === 0)
             payload.content = undefined;
 
-        if (payload.nsfw !== undefined && 'nsfw' in channel && channel.nsfw) {
+        if (payload.nsfw !== undefined && guard.isGuildChannel(channel) && channel.nsfw) {
             payload.content = payload.nsfw;
             payload.embeds = payload.files = undefined;
         }
@@ -153,26 +150,25 @@ export class BaseUtilities {
         } else if (payload.content !== undefined && !guard.checkMessageSize(payload.content)) {
             payload.files ??= [];
             payload.files.unshift({
-                attachment: payload.content,
+                file: payload.content,
                 name: 'message.txt'
             });
             payload.content = undefined;
         }
         for (const file of payload.files ?? [])
-            if (typeof file === 'object' && 'attachment' in file && typeof file.attachment === 'string')
-                file.attachment = Buffer.from(file.attachment);
+            if (typeof file === 'object' && 'attachment' in file && typeof file.file === 'string')
+                file.file = Buffer.from(file.file);
 
         this.logger.debug('Sending content: ', JSON.stringify(payload));
         try {
-            return await channel.send(payload);
+            return await channel.createMessage(payload, payload.files);
         } catch (error: unknown) {
-            if (!(error instanceof DiscordAPIError))
+            if (!(error instanceof DiscordRESTError))
                 throw error;
 
             const code = error.code;
-            if (!guard.hasProperty(sendErrors, code)) {
+            if (!guard.hasProperty(sendErrors, code))
                 return undefined;
-            }
 
             let result = await sendErrors[code](this, channel, payload, error);
             if (typeof result === 'string' && author !== undefined && await this.canDmErrors(author.id)) {
@@ -185,14 +181,14 @@ export class BaseUtilities {
 
                 await this.sendDM(author.id, {
                     content: result,
-                    reply: payload.reply
+                    messageReference: payload.messageReference
                 });
             }
             return undefined;
         }
     }
 
-    public async sendDM(context: DMContext, payload: SendPayload): Promise<Message | undefined> {
+    public async sendDM(context: DMContext, payload: SendPayload): Promise<KnownMessage | undefined> {
         let user: User | undefined;
         switch (typeof context) {
             case 'string': {
@@ -219,12 +215,12 @@ export class BaseUtilities {
         if (user === undefined)
             throw new Error('Not a user');
 
-        return await this.send(user.dmChannel ?? await user.createDM(), payload);
+        return await this.send(await user.getDMChannel(), payload);
     }
 
-    public async addReactions(context: Message, reactions: Iterable<EmojiIdentifierResolvable>): Promise<{ success: MessageReaction[]; failed: EmojiIdentifierResolvable[]; }> {
-        const results = { success: [] as MessageReaction[], failed: [] as EmojiIdentifierResolvable[] };
-        const reacted = new Set<EmojiIdentifierResolvable>();
+    public async addReactions(context: KnownMessage, reactions: Iterable<string>): Promise<{ success: string[]; failed: string[]; }> {
+        const results = { success: [] as string[], failed: [] as string[] };
+        const reacted = new Set<string>();
         let done = false;
         for (const reaction of reactions) {
             if (reacted.size === reacted.add(reaction).size)
@@ -236,16 +232,17 @@ export class BaseUtilities {
             }
 
             try {
-                results.success.push(await context.react(reaction));
+                await context.addReaction(reaction);
+                results.success.push(reaction);
             } catch (e: unknown) {
-                if (e instanceof DiscordAPIError) {
+                if (e instanceof DiscordRESTError) {
                     switch (e.code) {
-                        case Constants.APIErrors.MAXIMUM_REACTIONS:
-                        case Constants.APIErrors.MISSING_PERMISSIONS:
+                        case ApiError.MAXIMUM_REACTIONS:
+                        case ApiError.MISSING_PERMISSIONS:
                             done = true;
                         //fallthrough
-                        case Constants.APIErrors.REACTION_BLOCKED:
-                        case Constants.APIErrors.UNKNOWN_EMOJI:
+                        case ApiError.REACTION_BLOCKED:
+                        case ApiError.UNKNOWN_EMOJI:
                             results.failed.push(reaction);
                             continue;
                     }
@@ -281,7 +278,7 @@ export class BaseUtilities {
             if (guard.isGuildChannel(context)) {
                 const member = await this.getMember(context.guild, tag.substring(2));
                 if (member !== undefined)
-                    return member.displayName;
+                    return member.nick ?? member.username;
             }
             const user = await this.getUser(id);
             return user === undefined ? 'UNKNOWN USER' : `${user.username}#${user.discriminator}`;
@@ -313,7 +310,7 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateOutputPage(payload: MessageOptions | string, channel?: TextBasedChannels): Promise<Snowflake> {
+    public async generateOutputPage(payload: SendContent | string, channel?: KnownTextableChannel): Promise<Snowflake> {
         if (typeof payload === 'string')
             payload = { content: payload };
 
@@ -332,22 +329,9 @@ export class BaseUtilities {
         return storedUser?.dontdmerrors !== true;
     }
 
-    public getOwners(): Iterable<User> {
-        const owner = this.discord.application.owner;
-        if (owner === null)
-            return [];
-        if (!('members' in owner))
-            return [owner];
-
-        return owner.members
-            .filter(m => m.membershipState === 'ACCEPTED' && m.permissions.includes('*'))
-            .map(m => m.user)
-            .values();
-    }
-
     public isBotOwner(userId: string): boolean {
-        for (const owner of this.getOwners())
-            if (owner.id === userId)
+        for (const owner of this.client.ownerIds)
+            if (owner === userId)
                 return true;
         return false;
     }
@@ -372,9 +356,9 @@ export class BaseUtilities {
         return support?.value.includes(userId) ?? false;
     }
 
-    public async getChannel(channelId: string): Promise<AnyChannel | undefined>;
-    public async getChannel(guild: string | Guild, channelId: string): Promise<GuildChannels | undefined>;
-    public async getChannel(...args: [string] | [string | Guild, string]): Promise<AnyChannel | undefined> {
+    public async getChannel(channelId: string): Promise<KnownChannel | undefined>;
+    public async getChannel(guild: string | Guild, channelId: string): Promise<KnownGuildChannel | undefined>;
+    public async getChannel(...args: [string] | [string | Guild, string]): Promise<KnownChannel | undefined> {
         const _args = args.length === 2 ? args : [undefined, args[0]] as const;
 
         const guild = _args[0];
@@ -384,34 +368,32 @@ export class BaseUtilities {
 
         try {
             if (guild === undefined)
-                return await this.discord.channels.fetch(channelId) ?? undefined;
+                return this.discord.getChannel(channelId) ?? await this.discord.getRESTChannel(channelId);
             const _guild = typeof guild === 'string' ? await this.getGuild(guild) : guild;
-            return await _guild?.channels.fetch(channelId) ?? undefined;
+            return _guild?.channels.get(channelId) ?? await this.discord.getRESTChannel(channelId);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError && err.code === Constants.APIErrors.UNKNOWN_CHANNEL)
+            if (err instanceof DiscordRESTError && err.code === ApiError.UNKNOWN_CHANNEL)
                 return undefined;
             throw err;
         }
     }
 
-    public async findChannels(guild: string | Guild, query?: string): Promise<GuildChannels[]> {
+    public async findChannels(guild: string | Guild, query?: string): Promise<KnownGuildChannel[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
         if (typeof guild === 'string')
             return [];
 
+        const allChannels = [...guild.channels.values(), ...guild.threads.filter(guard.isThreadChannel)];
         if (query === undefined)
-            return [...guild.channels.cache.values()] as GuildChannels[];
+            return allChannels;
 
         const channel = await this.getChannel(guild, query);
         if (channel !== undefined)
             return [channel];
 
-        return findBest<GuildChannels>(
-            guild.channels.cache.filter(guard.isGuildChannel).values(),
-            (c) => this.channelMatchScore(c, query)
-        );
+        return findBest(allChannels, (c) => this.channelMatchScore(c, query));
     }
 
     public channelMatchScore(channel: KnownChannel, query: string): number {
@@ -437,15 +419,15 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await this.discord.users.fetch(userId);
+            return await this.discord.getRESTUser(userId);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError) {
+            if (err instanceof DiscordRESTError) {
                 switch (err.code) {
-                    case Constants.APIErrors.INVALID_FORM_BODY:
+                    case ApiError.INVALID_FORM_BODY:
                         this.logger.error('Error while getting user', userId, err);
                     // fallthrough
-                    case Constants.APIErrors.MISSING_ACCESS:
-                    case Constants.APIErrors.UNKNOWN_USER:
+                    case ApiError.MISSING_ACCESS:
+                    case ApiError.UNKNOWN_USER:
                         return undefined;
                 }
             }
@@ -459,15 +441,15 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await this.discord.guilds.fetch(guildId);
+            return this.discord.guilds.get(guildId) ?? await this.discord.getRESTGuild(guildId);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError) {
+            if (err instanceof DiscordRESTError) {
                 switch (err.code) {
-                    case Constants.APIErrors.INVALID_FORM_BODY:
+                    case ApiError.INVALID_FORM_BODY:
                         this.logger.error('Error while getting guild', guildId, err);
                     // fallthrough
-                    case Constants.APIErrors.MISSING_ACCESS:
-                    case Constants.APIErrors.UNKNOWN_GUILD:
+                    case ApiError.MISSING_ACCESS:
+                    case ApiError.UNKNOWN_GUILD:
                         return undefined;
                 }
             }
@@ -475,7 +457,7 @@ export class BaseUtilities {
         }
     }
 
-    public async getMessage(channel: string | KnownChannel, messageId: string, force?: boolean): Promise<Message | undefined> {
+    public async getMessage(channel: string | KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined> {
         messageId = parse.entityId(messageId) ?? '';
         if (messageId === '')
             return undefined;
@@ -486,15 +468,17 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await foundChannel.messages.fetch(messageId, { force });
+            if (force === true)
+                return await foundChannel.getMessage(messageId);
+            return foundChannel.messages.get(messageId) ?? await foundChannel.getMessage(messageId);
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError) {
+            if (err instanceof DiscordRESTError) {
                 switch (err.code) {
-                    case Constants.APIErrors.INVALID_FORM_BODY:
+                    case ApiError.INVALID_FORM_BODY:
                         this.logger.error('Error while getting message', messageId, 'in channel', foundChannel.id, err);
                     // fallthrough
-                    case Constants.APIErrors.MISSING_ACCESS:
-                    case Constants.APIErrors.UNKNOWN_MESSAGE:
+                    case ApiError.MISSING_ACCESS:
+                    case ApiError.UNKNOWN_MESSAGE:
                         return undefined;
                 }
             }
@@ -502,7 +486,7 @@ export class BaseUtilities {
         }
     }
 
-    public async getMember(guild: string | Guild, userId: string): Promise<GuildMember | undefined> {
+    public async getMember(guild: string | Guild, userId: string): Promise<Member | undefined> {
         userId = parse.entityId(userId) ?? '';
         if (userId === '')
             return undefined;
@@ -514,14 +498,14 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await guild.members.fetch(userId);
+            return guild.members.get(userId) ?? guild.getRESTMember(userId);
         } catch (error: unknown) {
-            if (error instanceof DiscordAPIError) {
+            if (error instanceof DiscordRESTError) {
                 switch (error.code) {
-                    case Constants.APIErrors.UNKNOWN_MEMBER:
-                    case Constants.APIErrors.UNKNOWN_USER:
-                    case Constants.APIErrors.MISSING_ACCESS:
-                    case Constants.APIErrors.INVALID_FORM_BODY:
+                    case ApiError.UNKNOWN_MEMBER:
+                    case ApiError.UNKNOWN_USER:
+                    case ApiError.MISSING_ACCESS:
+                    case ApiError.INVALID_FORM_BODY:
                         return undefined;
                 }
             }
@@ -529,7 +513,7 @@ export class BaseUtilities {
         }
     }
 
-    public async findMembers(guild: string | Guild, query?: string): Promise<GuildMember[]> {
+    public async findMembers(guild: string | Guild, query?: string): Promise<Member[]> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
@@ -537,13 +521,13 @@ export class BaseUtilities {
             return [];
 
         if (query === undefined)
-            return [...guild.members.cache.values()];
+            return [...guild.members.values()];
 
         const member = await this.getMember(guild, query);
         if (member !== undefined)
             return [member];
 
-        return findBest(guild.members.cache.values(), m => this.memberMatchScore(m, query));
+        return findBest(guild.members.values(), m => this.memberMatchScore(m, query));
     }
 
     public async getWebhook(guild: string | Guild, webhookId: string): Promise<Webhook | undefined> {
@@ -554,13 +538,13 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            const webhooks = await guild.fetchWebhooks();
-            return webhooks.get(webhookId);
+            const webhooks = await guild.getWebhooks();
+            return webhooks.find(w => w.id === webhookId);
         } catch (error: unknown) {
-            if (error instanceof DiscordAPIError) {
+            if (error instanceof DiscordRESTError) {
                 switch (error.code) {
-                    case Constants.APIErrors.MISSING_PERMISSIONS:
-                    case Constants.APIErrors.MISSING_ACCESS:
+                    case ApiError.MISSING_PERMISSIONS:
+                    case ApiError.MISSING_ACCESS:
                         return undefined;
                 }
             }
@@ -575,14 +559,14 @@ export class BaseUtilities {
         if (typeof guild === 'string')
             return [];
 
-        let webhooks;
+        let webhooks: Webhook[];
         try {
-            webhooks = await guild.fetchWebhooks();
+            webhooks = await guild.getWebhooks();
         } catch (error: unknown) {
-            if (error instanceof DiscordAPIError) {
+            if (error instanceof DiscordRESTError) {
                 switch (error.code) {
-                    case Constants.APIErrors.MISSING_PERMISSIONS:
-                    case Constants.APIErrors.MISSING_ACCESS:
+                    case ApiError.MISSING_PERMISSIONS:
+                    case ApiError.MISSING_ACCESS:
                         return [];
                 }
             }
@@ -590,12 +574,12 @@ export class BaseUtilities {
         }
 
         if (query === undefined)
-            return [...webhooks.values()];
+            return webhooks;
 
-        return findBest(webhooks.values(), w => this.webhookMatchScore(w, query));
+        return findBest(webhooks, w => this.webhookMatchScore(w, query));
     }
 
-    public async getSender(guild: string | Guild, senderId: string): Promise<GuildMember | Webhook | undefined> {
+    public async getSender(guild: string | Guild, senderId: string): Promise<Member | Webhook | undefined> {
         senderId = parse.entityId(senderId) ?? '';
         if (senderId === '')
             return undefined;
@@ -613,7 +597,7 @@ export class BaseUtilities {
         return await this.getWebhook(guild, senderId);
     }
 
-    public async findSenders(guild: string | Guild, query?: string): Promise<Array<GuildMember | Webhook>> {
+    public async findSenders(guild: string | Guild, query?: string): Promise<Array<Member | Webhook>> {
         if (typeof guild === 'string')
             guild = await this.getGuild(guild) ?? guild;
 
@@ -628,16 +612,17 @@ export class BaseUtilities {
         if (query === undefined)
             return result.flat();
 
-        return findBest(result.flat(), s => s instanceof GuildMember ? this.memberMatchScore(s, query) : this.webhookMatchScore(s, query));
+        return findBest(result.flat(), s => s instanceof Member ? this.memberMatchScore(s, query) : this.webhookMatchScore(s, query));
     }
 
-    public memberMatchScore(member: GuildMember, query: string): number {
+    public memberMatchScore(member: Member, query: string): number {
         let score = this.userMatchScore(member.user, query);
-        const normalizedDisplayname = member.displayName.toLowerCase();
+        const displayName = member.nick ?? member.username;
+        const normalizedDisplayname = displayName.toLowerCase();
         const normalizedQuery = query.toLowerCase();
 
         if (humanize.fullName(member.user) === query) return Infinity;
-        if (member.displayName.startsWith(query)) score += 100;
+        if (displayName.startsWith(query)) score += 100;
         if (normalizedDisplayname.startsWith(normalizedQuery)) score += 10;
         if (normalizedDisplayname.includes(normalizedQuery)) score += 1;
         return score;
@@ -678,9 +663,9 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return await guild.roles.fetch(roleId) ?? undefined;
+            return guild.roles.get(roleId);
         } catch (error: unknown) {
-            if (error instanceof DiscordAPIError && error.code === Constants.APIErrors.UNKNOWN_ROLE)
+            if (error instanceof DiscordRESTError && error.code === ApiError.UNKNOWN_ROLE)
                 return undefined;
             throw error;
         }
@@ -694,13 +679,13 @@ export class BaseUtilities {
             return [];
 
         if (query === undefined)
-            return [...guild.roles.cache.values()];
+            return [...guild.roles.values()];
 
         const role = await this.getRole(guild, query);
         if (role !== undefined)
             return [role];
 
-        return findBest(guild.roles.cache.values(), r => this.roleMatchScore(r, query));
+        return findBest(guild.roles.values(), r => this.roleMatchScore(r, query));
     }
 
     public roleMatchScore(role: Role, query: string): number {
@@ -717,23 +702,23 @@ export class BaseUtilities {
 }
 
 const sendErrors = {
-    [Constants.APIErrors.UNKNOWN_CHANNEL]: () => { /* console.error('10003: Channel not found. ', channel); */ },
-    [Constants.APIErrors.CANNOT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendPayload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
-    [Constants.APIErrors.CANNOT_MESSAGE_USER]: () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
-    [Constants.APIErrors.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]: () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
-    [Constants.APIErrors.MISSING_PERMISSIONS]: (util: BaseUtilities) => {
+    [ApiError.UNKNOWN_CHANNEL]: () => { /* console.error('10003: Channel not found. ', channel); */ },
+    [ApiError.CANNOT_SEND_EMPTY_MESSAGE]: (util: BaseUtilities, _: unknown, payload: SendPayload) => { util.logger.error('50006: Tried to send an empty message:', payload); },
+    [ApiError.CANNOT_MESSAGE_USER]: () => { /* console.error('50007: Can\'t send a message to this user!'); */ },
+    [ApiError.CANNOT_SEND_MESSAGES_IN_VOICE_CHANNEL]: () => { /* console.error('50008: Can\'t send messages in a voice channel!'); */ },
+    [ApiError.MISSING_PERMISSIONS]: (util: BaseUtilities) => {
         util.logger.warn('50013: Tried sending a message, but had no permissions!');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to speak. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Send Messages` permission.';
     },
-    [Constants.APIErrors.MISSING_ACCESS]: (util: BaseUtilities) => {
+    [ApiError.MISSING_ACCESS]: (util: BaseUtilities) => {
         util.logger.warn('50001: Missing Access');
         return 'I tried to send a message in response to your command, ' +
             'but didn\'t have permission to see the channel. If you think this is an error, ' +
             'please contact the staff on your guild to give me the `Read Messages` permission.';
     },
-    [Constants.APIErrors.EMBED_DISABLED]: async (util: BaseUtilities, channel: TextBasedChannels) => {
+    [ApiError.EMBED_DISABLED]: async (util: BaseUtilities, channel: KnownTextableChannel) => {
         util.logger.warn('50004: Tried embeding a link, but had no permissions!');
         await util.send(channel, 'I don\'t have permission to embed links! This will break several of my commands. Please give me the `Embed Links` permission. Thanks!');
         return 'I tried to send a message in response to your command, ' +
@@ -743,16 +728,16 @@ const sendErrors = {
 
     // try to catch the mystery of the autoresponse-object-in-field-value error
     // https://stop-it.get-some.help/9PtuDEm.png
-    [Constants.APIErrors.INVALID_FORM_BODY]: (util: BaseUtilities, channel: TextBasedChannels, payload: SendPayload, error: DiscordAPIError) => {
+    [ApiError.INVALID_FORM_BODY]: (util: BaseUtilities, channel: KnownTextableChannel, payload: SendPayload, error: DiscordRESTError) => {
         util.logger.error(`${channel.id}|${guard.isGuildChannel(channel) ? channel.name : 'PRIVATE CHANNEL'}|${JSON.stringify(payload)}`, error);
     }
 } as const;
 
-function isEmbed(payload: SendPayload): payload is MessageEmbedOptions {
+function isEmbed(payload: SendPayload): payload is EmbedOptions {
     return typeof payload !== 'string' && embedKeys.some(k => k in payload);
 }
 
-const embedKeys = Object.keys<keyof MessageEmbedOptions>({
+const embedKeys = Object.keys<keyof EmbedOptions>({
     author: 0,
     color: 0,
     description: 0,
@@ -762,8 +747,7 @@ const embedKeys = Object.keys<keyof MessageEmbedOptions>({
     thumbnail: 0,
     timestamp: 0,
     title: 0,
-    url: 0,
-    video: 0
+    url: 0
 });
 
 function findBest<T>(options: Iterable<T>, evaluator: (value: T) => number): T[] {

@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Statement, SubtagArgument } from '@cluster/types';
-import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
+import { bbtagUtil, discordUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
 export class WaitReactionSubtag extends Subtag {
@@ -117,20 +117,22 @@ export class WaitReactionSubtag extends Subtag {
         const userSet = new Set(users);
         const reactionSet = new Set(parsedReactions);
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: string) => reactionSet.has(emoji);
-        const reaction = await context.util.cluster.awaiter.reactions.wait(messages, async ({ user, reaction, message }) => {
-            if (!userSet.has(user.id) || !checkReaction(reaction.emoji.toString()) || !guard.isGuildMessage(message))
+        const result = await context.util.cluster.awaiter.reactions.wait(messages, async ({ user, reaction, message }) => {
+            const emoji = discordUtil.emojiString(reaction);
+
+            if (!userSet.has(user.id) || !checkReaction(emoji) || !guard.isGuildMessage(message))
                 return false;
 
             context.scopes.pushScope();
-            context.scopes.local.reaction = reaction.emoji.toString();
+            context.scopes.local.reaction = emoji;
             context.scopes.local.reactUser = user.id;
             const childContext = context.makeChild({ message });
             const result = parse.boolean(await childContext.eval(condition));
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
         }, timeout * 1000);
 
-        if (reaction === undefined)
+        if (result === undefined)
             throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
-        return [reaction.message.channel.id, reaction.message.id, reaction.user.id, reaction.reaction.emoji.toString()];
+        return [result.message.channel.id, result.message.id, result.user.id, discordUtil.emojiString(result.reaction)];
     }
 }

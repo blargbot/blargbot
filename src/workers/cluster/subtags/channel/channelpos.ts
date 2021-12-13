@@ -2,7 +2,7 @@ import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { GuildChannels } from 'discord.js';
+import { GuildChannel } from 'eris';
 
 export class ChannelPosSubtag extends Subtag {
     public constructor() {
@@ -47,9 +47,9 @@ export class ChannelPosSubtag extends Subtag {
         return this.getChanelPositionCore(channel);
     }
 
-    private getChanelPositionCore(channel: GuildChannels): number {
+    private getChanelPositionCore(channel: GuildChannel): number {
         if (guard.isThreadChannel(channel))
-            throw new BBTagRuntimeError('Threads dont have a position', `${channel.toString()} is a thread and doesnt have a position`);
+            throw new BBTagRuntimeError('Threads dont have a position', `${channel.mention} is a thread and doesnt have a position`);
 
         return channel.position;
     }

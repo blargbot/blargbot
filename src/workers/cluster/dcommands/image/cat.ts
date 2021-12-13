@@ -1,7 +1,7 @@
 import { Cluster } from '@cluster';
 import { BaseGlobalCommand } from '@cluster/command';
 import { CommandType, randInt } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import { Handler as Wolken } from 'wolken';
 
 export class CatCommand extends BaseGlobalCommand {
@@ -23,7 +23,7 @@ export class CatCommand extends BaseGlobalCommand {
         this.client = new Wolken(cluster.config.general.wolke, 'Wolke', 'blargbot/6.0.0');
     }
 
-    public async render(): Promise<MessageEmbedOptions> {
+    public async render(): Promise<EmbedOptions> {
         const res = await this.client.getRandom({ type: 'animal_cat', allowNSFW: false });
         return {
             image: { url: res.url },

@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
+import { CommandType, guard, randChoose } from '@cluster/utils';
 import spellsJson from '@res/spells.json';
-import { Collection, MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 
 export class SpellCommand extends BaseGlobalCommand {
     public constructor() {
@@ -18,8 +18,8 @@ export class SpellCommand extends BaseGlobalCommand {
         });
     }
 
-    public async getSpell(context: CommandContext, name: string | undefined): Promise<MessageEmbedOptions | string> {
-        const spell = name === undefined ? spells.random() : await this.findSpell(context, name);
+    public async getSpell(context: CommandContext, name: string | undefined): Promise<EmbedOptions | string> {
+        const spell = name === undefined ? randChoose(Object.values(spells)) : await this.findSpell(context, name);
         if (spell === undefined)
             return this.error('I couldnt find that spell!');
 
@@ -44,7 +44,7 @@ export class SpellCommand extends BaseGlobalCommand {
     }
 
     private async findSpell(context: CommandContext, name: string): Promise<typeof spellsJson[number] | undefined> {
-        const exact = spells.get(name.toLowerCase());
+        const exact = spells[name.toLowerCase()];
         if (exact !== undefined)
             return exact;
 
@@ -53,7 +53,9 @@ export class SpellCommand extends BaseGlobalCommand {
             actors: context.author,
             prompt: '🪄 Multiple spells found! Please pick the right one',
             placeholder: 'Pick a spell',
-            choices: spells.filter(s => s.name.toLowerCase().includes(name.toLowerCase()))
+            choices: Object.values(spells)
+                .filter(guard.hasValue)
+                .filter(s => s.name.toLowerCase().includes(name.toLowerCase()))
                 .map(s => ({ label: s.name, description: `Level ${s.level} ${s.school}`, value: s }))
         });
 
@@ -61,9 +63,9 @@ export class SpellCommand extends BaseGlobalCommand {
     }
 }
 
-const spells = new Collection<string, typeof spellsJson[number]>();
+const spells: Record<string, typeof spellsJson[number] | undefined> = {};
 for (const spell of spellsJson) {
-    spells.set(spell.name.toLowerCase(), {
+    spells[spell.name.toLowerCase()] = {
         ...spell,
         desc: spell.desc
             .replace(/<\/?p>/gi, '\n')
@@ -71,7 +73,7 @@ for (const spell of spellsJson) {
             .replace(/\n{3,}/, '\n\n')
             .replace(/<\/?b>/gi, '**')
             .trim()
-    });
+    };
 }
 
 const componentMap = {

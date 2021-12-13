@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { User } from 'discord.js';
+import { User } from 'eris';
 
 export class RemoveVotebanCommand extends BaseGuildCommand {
     public constructor() {
@@ -26,7 +26,7 @@ export class RemoveVotebanCommand extends BaseGuildCommand {
 
     public async clearUser(context: GuildCommandContext, user: User): Promise<string> {
         await context.database.guilds.clearVoteBans(context.channel.guild.id, user.id);
-        return this.success(`Votebans for ${user.toString()} have been cleared`);
+        return this.success(`Votebans for ${user.mention} have been cleared`);
     }
 
     public async clearAll(context: GuildCommandContext): Promise<string> {

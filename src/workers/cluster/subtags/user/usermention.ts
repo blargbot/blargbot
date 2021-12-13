@@ -43,6 +43,6 @@ export class UserMentionSubtag extends Subtag {
 
         if (!context.state.allowedMentions.users.includes(user.id))
             context.state.allowedMentions.users.push(user.id);
-        return user.toString();
+        return user.mention;
     }
 }

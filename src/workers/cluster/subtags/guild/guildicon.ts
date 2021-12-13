@@ -20,6 +20,6 @@ export class GuildIcon extends Subtag {
     }
 
     public getGuildIcon(context: BBTagContext): string | undefined {
-        return context.guild.iconURL({ size: 512, format: 'png', dynamic: true }) ?? undefined;
+        return context.guild.iconURL ?? undefined;
     }
 }

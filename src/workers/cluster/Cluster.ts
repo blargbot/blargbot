@@ -1,6 +1,5 @@
 import { BBTagEngine, Subtag } from '@cluster/bbtag';
 import { ClusterOptions } from '@cluster/types';
-import { getRange } from '@cluster/utils';
 import { BaseClient } from '@core/BaseClient';
 import { Configuration } from '@core/Configuration';
 import { Logger } from '@core/Logger';
@@ -8,7 +7,6 @@ import { ModuleLoader } from '@core/modules';
 import { BaseService } from '@core/serviceTypes';
 import { EvalResult } from '@core/types';
 import { ImagePool } from '@image';
-import { Options, Util } from 'discord.js';
 import moment, { duration, Moment } from 'moment-timezone';
 
 import { ClusterUtilities } from './ClusterUtilities';
@@ -46,45 +44,29 @@ export class Cluster extends BaseClient {
         options: ClusterOptions
     ) {
         super(logger, config, {
-            allowedMentions: { parse: [] },
-            shardCount: options.shardCount,
-            shards: getRange(options.firstShardId, options.lastShardId),
-            /* eslint-disable @typescript-eslint/naming-convention */
-            makeCache: Options.cacheWithLimits({
-                MessageManager: 5,
-                ChannelManager: {
-                    sweepInterval: 3600,
-                    sweepFilter: Util.archivedThreadSweepFilter()
-                },
-                GuildChannelManager: {
-                    sweepInterval: 3600,
-                    sweepFilter: Util.archivedThreadSweepFilter()
-                },
-                ThreadManager: {
-                    sweepInterval: 3600,
-                    sweepFilter: Util.archivedThreadSweepFilter()
-                }
-            }),
-            /* eslint-enable @typescript-eslint/naming-convention */
+            restMode: true,
+            allowedMentions: {},
+            maxShards: options.shardCount,
+            firstShardID: options.firstShardId,
+            lastShardID: options.lastShardId,
             intents: [
-                'GUILDS',
-                'GUILD_MEMBERS',
-                'GUILD_BANS',
-                'GUILD_PRESENCES',
-                'GUILD_MESSAGES',
-                'GUILD_MESSAGE_REACTIONS',
-                'GUILD_EMOJIS_AND_STICKERS',
-                'DIRECT_MESSAGES',
-                'DIRECT_MESSAGE_REACTIONS'
-            ],
-            partials: ['CHANNEL', 'MESSAGE', 'REACTION']
+                'guilds',
+                'guildMembers',
+                'guildBans',
+                'guildPresences',
+                'guildMessages',
+                'guildMessageReactions',
+                'guildEmojisAndStickers',
+                'directMessages',
+                'directMessageReactions'
+            ]
         });
         this.id = options.id;
         this.createdAt = Object.freeze(moment());
         this.worker = options.worker;
         this.domains = new DomainManager(this.database.vars);
         this.images = new ImagePool(this.id, config.discord.images, this.logger);
-        this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users);
+        this.prefixes = new PrefixManager(this.config.discord.defaultPrefix, this.database.guilds, this.database.users, this.discord);
         this.commands = new AggregateCommandManager(this, {
             custom: new CustomCommandManager(this),
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)

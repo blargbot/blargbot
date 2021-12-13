@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@cluster/utils';
-import { Guild, MessageEmbedOptions, Permissions } from 'discord.js';
+import { EmbedOptions, Guild } from 'eris';
 
 export class SettingsCommand extends BaseGuildCommand {
     public constructor(cluster: Cluster) {
@@ -30,7 +30,7 @@ export class SettingsCommand extends BaseGuildCommand {
         });
     }
 
-    private async list(context: GuildCommandContext): Promise<string | { embeds: [MessageEmbedOptions]; }> {
+    private async list(context: GuildCommandContext): Promise<string | { embeds: [EmbedOptions]; }> {
         const storedGuild = await context.database.guilds.get(context.channel.guild.id);
         if (storedGuild === undefined)
             return this.error('Your guild is not correctly configured yet! Please try again later');
@@ -67,9 +67,9 @@ export class SettingsCommand extends BaseGuildCommand {
                             ])
                         },
                         {
-                            name: 'Permissions',
+                            name: 'Permission',
                             value: settingGroup([
-                                ['staffperms', settings.staffperms ?? new Permissions(defaultStaff).bitfield.toString()],
+                                ['staffperms', settings.staffperms ?? defaultStaff.toString()],
                                 ['kickoverride', settings.kickoverride],
                                 ['banoverride', settings.banoverride]
                             ])
@@ -130,8 +130,8 @@ function resolveChannel(guild: Guild, channelId: string | undefined): string | u
     // TODO channelId can be channel name, id or tag
     if (channelId === undefined)
         return undefined;
-    const channel = guild.channels.cache.get(channelId)
-        ?? guild.channels.cache.find(c => c.name.toLowerCase() === channelId.toLowerCase());
+    const channel = guild.channels.get(channelId)
+        ?? guild.channels.find(c => c.name.toLowerCase() === channelId.toLowerCase());
     if (channel === undefined)
         return `Unknown channel (${channelId})`;
     return `${channel.name} (${channel.id})`;
@@ -141,8 +141,8 @@ function resolveRole(guild: Guild, roleId: string | undefined): string | undefin
     // TODO roleId can be role name, id or tag
     if (roleId === undefined)
         return undefined;
-    const role = guild.roles.cache.get(roleId)
-        ?? guild.roles.cache.find(r => r.name.toLowerCase() === roleId.toLowerCase());
+    const role = guild.roles.get(roleId)
+        ?? guild.roles.find(r => r.name.toLowerCase() === roleId.toLowerCase());
     if (role === undefined)
         return `Unknown role (${roleId})`;
     return `${role.name} (${role.id})`;

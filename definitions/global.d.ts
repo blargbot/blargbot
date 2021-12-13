@@ -31,6 +31,7 @@ declare global {
     type Numeric = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
     type Alphanumeric = Letter | Numeric;
 
+    type Coalesce<T, U> = [T] extends [never] ? U : T;
     type Mutable<T> = { -readonly [P in keyof T]: T[P] }
     // eslint-disable-next-line @typescript-eslint/ban-types
     type DeepMutable<T> = T extends Exclude<Primitive, object> ? T : { -readonly [P in keyof T]: DeepMutable<T[P]>; };
@@ -44,7 +45,7 @@ declare global {
     type x = SplitString<'aaa', 'a'>
 
     interface ObjectConstructor {
-        keys<TKey extends string>(value: { [P in TKey]?: unknown }): TKey[];
+        keys<TKey extends string>(value: { [P in TKey]: unknown }): TKey[];
         keys<TString extends string>(value: TString): Array<`${number}`>;
         keys<TArray extends unknown[]>(value: TArray): Array<`${number}`>;
         keys(value: number | boolean | bigint): [];
@@ -87,6 +88,7 @@ declare global {
     interface Set<T> {
         has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
     }
+
     interface ReadonlySet<T> {
         has<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
     }
@@ -111,6 +113,10 @@ declare global {
 
     interface Number {
         toString<T extends number>(this: T): `${T}`;
+    }
+
+    interface BigInt {
+        toString<T extends bigint>(this: T): `${T}`;
     }
 
     function setTimeout<TArgs extends unknown[]>(callback: (...args: TArgs) => void, ms: number, ...args: TArgs): NodeJS.Timeout;

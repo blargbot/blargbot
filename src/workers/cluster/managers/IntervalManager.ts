@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { ExecutionResult } from '@cluster/types';
 import { guard, sleep, snowflake } from '@cluster/utils';
 import { GuildTriggerTag } from '@core/types';
-import { Collection, Guild, GuildMember, GuildTextBasedChannels } from 'discord.js';
+import { Guild, KnownGuildTextableChannel, Member } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 
@@ -17,7 +17,7 @@ export class IntervalManager {
         const nonce = Math.floor(Math.random() * 0xffffffff).toString(16).padStart(8, '0').toUpperCase();
 
         const intervals = (await this.cluster.database.guilds.getIntervals())
-            .map(i => ({ guild: this.cluster.discord.guilds.cache.get(i.guildId), interval: i.interval }))
+            .map(i => ({ guild: this.cluster.discord.guilds.get(i.guildId), interval: i.interval }))
             .filter((i): i is { guild: Guild; interval: GuildTriggerTag; } => i.guild !== undefined);
 
         this.cluster.logger.info(`[${nonce}] Running intervals on ${intervals.length} guilds`);
@@ -60,7 +60,7 @@ export class IntervalManager {
         const id = interval.authorizer ?? interval.author;
         const member = await this.cluster.util.getMember(guild, id);
         if (member === undefined) return 'MISSING_AUTHORIZER';
-        const channel = guild.channels.cache.find(guard.isTextableChannel);
+        const channel = guild.channels.find(guard.isTextableChannel);
         if (channel === undefined) return 'MISSING_CHANNEL';
 
         return await Promise.race([
@@ -69,15 +69,15 @@ export class IntervalManager {
         ]);
     }
 
-    private async invokeCore(member: GuildMember, channel: GuildTextBasedChannels, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
+    private async invokeCore(member: Member, channel: KnownGuildTextableChannel, interval: GuildTriggerTag): Promise<ExecutionResult | 'FAILED'> {
         try {
             const result = await this.cluster.bbtag.execute(interval.content, {
                 message: {
                     channel: channel,
                     author: member.user,
                     member: member,
-                    createdTimestamp: moment.now(),
-                    attachments: new Collection(),
+                    createdAt: moment.now(),
+                    attachments: [],
                     embeds: [],
                     content: '',
                     id: snowflake.create().toString()

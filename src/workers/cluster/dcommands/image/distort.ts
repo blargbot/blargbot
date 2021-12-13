@@ -1,7 +1,7 @@
 import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
 import { guard } from '@cluster/utils';
 import { ImageResult } from '@image/types';
-import { User } from 'discord.js';
+import { User } from 'eris';
 
 export class DistortCommand extends BaseGlobalImageCommand {
     public constructor() {
@@ -18,9 +18,11 @@ export class DistortCommand extends BaseGlobalImageCommand {
                     description: 'Turns an image into modern art.',
                     execute: (ctx, _, flags) => this.render(
                         ctx,
-                        ctx.message.attachments.first()?.url
-                        ?? flags.i?.merge().value
-                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }))
+                        ctx.message.attachments.length > 0
+                            ? ctx.message.attachments[0].url
+                            : flags.i?.merge().value
+                            ?? ctx.author.avatarURL
+                    )
                 }
             ],
             flags: [
@@ -30,7 +32,7 @@ export class DistortCommand extends BaseGlobalImageCommand {
     }
 
     public async renderUser(context: CommandContext, user: User): Promise<ImageResult | string> {
-        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }));
+        return await this.render(context, user.avatarURL);
     }
 
     public async render(context: CommandContext, url: string): Promise<ImageResult | string> {

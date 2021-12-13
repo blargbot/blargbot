@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 
 export class ToDoCommand extends BaseGlobalCommand {
     public constructor() {
@@ -27,7 +27,7 @@ export class ToDoCommand extends BaseGlobalCommand {
         });
     }
 
-    public async viewTodo(context: CommandContext): Promise<MessageEmbedOptions> {
+    public async viewTodo(context: CommandContext): Promise<EmbedOptions> {
         const todolist = await context.database.users.getTodo(context.author.id);
         return {
             author: context.util.embedifyAuthor(context.author),

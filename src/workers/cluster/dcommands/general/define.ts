@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType, mapping } from '@cluster/utils';
 import { guard, humanize } from '@core/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import fetch, { RequestInit } from 'node-fetch';
 
 export class DefineCommand extends BaseGlobalCommand {
@@ -19,7 +19,7 @@ export class DefineCommand extends BaseGlobalCommand {
         }, true);
     }
 
-    public async define(context: CommandContext, word: string): Promise<string | MessageEmbedOptions> {
+    public async define(context: CommandContext, word: string): Promise<string | EmbedOptions> {
         const response = await fetchSafe(`https://wordsapiv1.p.rapidapi.com/words/${word}`, {
             headers: {
                 'x-rapidapi-key': context.config.general.mashape,

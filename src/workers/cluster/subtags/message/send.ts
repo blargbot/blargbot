@@ -2,7 +2,7 @@ import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { MalformedEmbed } from '@core/types';
-import { FileOptions, MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions, FileContent } from 'eris';
 
 export class SendSubtag extends Subtag {
     public constructor() {
@@ -17,7 +17,7 @@ export class SendSubtag extends Subtag {
                         + 'If `fileContent` starts with `buffer:` then the following text will be parsed as base64 to a raw buffer.\n'
                         + '**Note:** `embed` is the JSON for an embed, don\'t put the `{embed}` subtag there, as nothing will show',
                     returns: 'id',
-                    execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value), { attachment: fileContent.value, name: fileName.value })
+                    execute: (ctx, [channel, message, embed, fileContent, fileName]) => this.send(ctx, channel.value, message.value, parse.embed(embed.value), { file: fileContent.value, name: fileName.value })
                 },
                 {
                     parameters: ['channel', 'message', 'embed'],
@@ -37,13 +37,13 @@ export class SendSubtag extends Subtag {
         });
     }
 
-    public async send(context: BBTagContext, channelId: string, message?: string, embed?: MessageEmbedOptions[] | MalformedEmbed[], file?: FileOptions): Promise<string> {
+    public async send(context: BBTagContext, channelId: string, message?: string, embed?: EmbedOptions[] | MalformedEmbed[], file?: FileContent): Promise<string> {
         const channel = await context.queryChannel(channelId, { noLookup: true });
         if (channel === undefined || !guard.isTextableChannel(channel))
             throw new ChannelNotFoundError(channelId);
 
-        if (typeof file?.attachment === 'string' && file.attachment.startsWith('buffer:'))
-            file.attachment = Buffer.from(file.attachment.slice(7), 'base64');
+        if (typeof file?.file === 'string' && file.file.startsWith('buffer:'))
+            file.file = Buffer.from(file.file.slice(7), 'base64');
 
         const disableEveryone = !context.isCC
             || (await context.database.guilds.getSetting(channel.guild.id, 'disableeveryone')
@@ -55,7 +55,7 @@ export class SendSubtag extends Subtag {
                 embeds: embed !== undefined ? embed : undefined,
                 nsfw: context.state.nsfw,
                 allowedMentions: {
-                    parse: disableEveryone ? [] : ['everyone'],
+                    everyone: !disableEveryone,
                     roles: context.isCC ? context.state.allowedMentions.roles : undefined,
                     users: context.isCC ? context.state.allowedMentions.users : undefined
                 },
@@ -77,7 +77,7 @@ export class SendSubtag extends Subtag {
     }
 }
 
-function resolveContent(content: string): [string | undefined, MessageEmbedOptions[] | undefined] {
+function resolveContent(content: string): [string | undefined, EmbedOptions[] | undefined] {
     const embeds = parse.embed(content);
     if (embeds === undefined || 'malformed' in embeds[0])
         return [content, undefined];

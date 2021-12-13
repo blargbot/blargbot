@@ -1,7 +1,7 @@
 import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
 import { guard } from '@core/utils';
 import { ImageResult } from '@image/types';
-import { User } from 'discord.js';
+import { User } from 'eris';
 
 export class PixelateCommand extends BaseGlobalImageCommand {
     public constructor() {
@@ -18,9 +18,10 @@ export class PixelateCommand extends BaseGlobalImageCommand {
                     description: 'Pixelates an image.',
                     execute: (ctx, [scale], flags) => this.render(
                         ctx,
-                        ctx.message.attachments.first()?.url
-                        ?? flags.i?.merge().value
-                        ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
+                        ctx.message.attachments.length > 0
+                            ? ctx.message.attachments[0].url
+                            : flags.i?.merge().value
+                            ?? ctx.author.avatarURL,
                         scale.asNumber
                     )
                 }
@@ -33,7 +34,7 @@ export class PixelateCommand extends BaseGlobalImageCommand {
     }
 
     public async renderUser(context: CommandContext, user: User, scale: number): Promise<ImageResult | string> {
-        return await this.render(context, user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }), scale);
+        return await this.render(context, user.avatarURL, scale);
     }
 
     public async render(context: CommandContext, url: string, scale: number): Promise<ImageResult | string> {

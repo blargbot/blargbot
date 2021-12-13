@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType, mapping, randInt } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import fetch from 'node-fetch';
 
 export class XKCDCommand extends BaseGlobalCommand {
@@ -18,7 +18,7 @@ export class XKCDCommand extends BaseGlobalCommand {
         });
     }
 
-    public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<string | MessageEmbedOptions> {
+    public async getComic(context: CommandContext, comicNumber: number | undefined): Promise<string | EmbedOptions> {
         if (comicNumber === undefined) {
             const comic = await this.requestComic(undefined);
             if (comic === undefined)

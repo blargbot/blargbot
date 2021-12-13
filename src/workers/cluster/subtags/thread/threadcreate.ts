@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
-import { GuildMessage } from 'discord.js';
+import { Constants, KnownMessage } from 'eris';
 
 const threadOptions = mapping.object({
     name: mapping.string,
@@ -43,14 +43,14 @@ export class ThreadCreateSubtag extends Subtag {
         if (!guard.isThreadableChannel(channel))
             throw new InvalidChannelError(channel);
 
-        let message: GuildMessage | undefined;
+        let message: KnownMessage | undefined;
         if (messageStr !== '') {
             try {
                 const maybeMessage = await context.util.getMessage(channel, messageStr);
                 if (maybeMessage === undefined)
                     throw new MessageNotFoundError(channel, messageStr);
                 if (!guard.isGuildMessage(maybeMessage))
-                    throw new BBTagRuntimeError('Message not in guild');
+                    throw new BBTagRuntimeError('KnownMessage not in guild');
                 message = maybeMessage;
             } catch (e: unknown) {
                 throw new MessageNotFoundError(channel, messageStr);
@@ -88,11 +88,17 @@ export class ThreadCreateSubtag extends Subtag {
             throw new BBTagRuntimeError('Guild cannot have private threads');
 
         try {
-            const threadChannel = await channel.threads.create({
-                name: input.name,
-                autoArchiveDuration: input.autoArchiveDuration,
-                startMessage: message?.id
-            });
+            const threadChannel = message === undefined
+                ? await channel.createThreadWithoutMessage({
+                    name: input.name,
+                    autoArchiveDuration: input.autoArchiveDuration,
+                    invitable: true,
+                    type: Constants.ChannelTypes.GUILD_PUBLIC_THREAD
+                })
+                : await channel.createThreadWithMessage(message.id, {
+                    name: input.name,
+                    autoArchiveDuration: input.autoArchiveDuration
+                });
             return threadChannel.id;
         } catch (e: unknown) {
             if (!(e instanceof Error))

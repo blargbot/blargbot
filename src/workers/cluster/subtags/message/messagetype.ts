@@ -1,7 +1,6 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { Constants } from 'discord.js';
 
 export class MessageTypeSubtag extends Subtag {
     public constructor() {
@@ -36,7 +35,7 @@ export class MessageTypeSubtag extends Subtag {
         const msg = await context.util.getMessage(context.channel, context.message.id);
         if (msg === undefined)
             throw new MessageNotFoundError(context.channel, context.message.id);
-        return Constants.MessageTypes.indexOf(msg.type);
+        return msg.type;
     }
 
     public async getMessageType(
@@ -57,6 +56,6 @@ export class MessageTypeSubtag extends Subtag {
             throw new MessageNotFoundError(channel, messageId);
         }
 
-        return Constants.MessageTypes.indexOf(message.type);
+        return message.type;
     }
 }

@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
-import { User } from 'discord.js';
+import { User } from 'eris';
 import moment from 'moment-timezone';
 
 export class TimezoneCommand extends BaseGlobalCommand {

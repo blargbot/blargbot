@@ -1,5 +1,5 @@
 import { humanize } from '@cluster/utils';
-import { KnownChannel } from 'discord.js';
+import { Constants, KnownChannel } from 'eris';
 
 import { BBTagRuntimeError } from './BBTagRuntimeError';
 
@@ -10,25 +10,25 @@ export class InvalidChannelError extends BBTagRuntimeError {
 
     private static getMessage(channel: KnownChannel): string {
         switch (channel.type) {
-            case 'GUILD_VOICE':
+            case Constants.ChannelTypes.GUILD_VOICE:
                 return 'Channel cannot be a voice channel';
-            case 'GUILD_STAGE_VOICE':
+            case Constants.ChannelTypes.GUILD_STAGE_VOICE:
                 return 'Channel cannot be a stage channel';
-            case 'GUILD_CATEGORY':
+            case Constants.ChannelTypes.GUILD_CATEGORY:
                 return 'Channel cannot be a category';
-            case 'GUILD_STORE':
+            case Constants.ChannelTypes.GUILD_STORE:
                 return 'Channel cannot be a store channel';
-            case 'GUILD_PRIVATE_THREAD':
-            case 'GUILD_PUBLIC_THREAD':
-            case 'GUILD_NEWS_THREAD':
+            case Constants.ChannelTypes.GUILD_PRIVATE_THREAD:
+            case Constants.ChannelTypes.GUILD_PUBLIC_THREAD:
+            case Constants.ChannelTypes.GUILD_NEWS_THREAD:
                 return 'Channel cannot be a thread channel';
-            case 'GUILD_NEWS':
+            case Constants.ChannelTypes.GUILD_NEWS:
                 return 'Channel cannot be a news channel';
-            case 'GUILD_TEXT':
+            case Constants.ChannelTypes.GUILD_TEXT:
                 return 'Channel cannot be a text channel';
-            case 'DM':
+            case Constants.ChannelTypes.DM:
                 return 'Channel cannot be a dm channel';
-            case 'GROUP_DM':
+            case Constants.ChannelTypes.GROUP_DM:
                 return 'Channel cannot be a group dm channel';
         }
     }

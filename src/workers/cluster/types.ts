@@ -3,8 +3,7 @@ import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command
 import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Snowflake } from 'catflake';
-import { Collection, ConstantsStatus, EmojiIdentifierResolvable, FileOptions, Guild, GuildMember, GuildTextBasedChannels, KnownChannel, Message, MessageAttachment, MessageEmbed, MessageEmbedOptions, MessageReaction, PartialMessageReaction, PrivateTextBasedChannels, Role, TextBasedChannels, User, Webhook } from 'discord.js';
+import { Attachment, Embed, EmbedOptions, FileContent, Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, PartialEmoji, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
@@ -35,8 +34,8 @@ export type ClusterIPCContract = {
 
 export interface ICommandManager<T = unknown> {
     readonly size: number;
-    get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>>;
-    list(location?: Guild | TextBasedChannels, user?: User): AsyncIterable<ICommand<T>>;
+    get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult<T>>;
+    list(location?: Guild | KnownTextableChannel, user?: User): AsyncIterable<ICommand<T>>;
     configure(user: User, names: readonly string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
     load(commands?: Iterable<string> | boolean): Promise<void>;
 }
@@ -152,12 +151,8 @@ export interface SerializedBBTagContext {
         content: string;
         channel: { id: string; serialized: string; };
         member: { id: string; serialized: string; };
-        attachments: Array<{
-            id: string;
-            name: string;
-            url: string;
-        }>;
-        embeds: MessageEmbedOptions[];
+        attachments: Attachment[];
+        embeds: Embed[];
     };
     isCC: boolean;
     state: Omit<BBTagContextState, 'cache' | 'overrides'>;
@@ -173,17 +168,16 @@ export interface SerializedBBTagContext {
     limit: SerializedRuntimeLimit;
 }
 
-export interface BBTagContextMessage {
-    id: string;
-    createdTimestamp: number;
-    content: string;
-    channel: GuildTextBasedChannels;
-    member: GuildMember;
-    author: User;
-    attachments: Collection<Snowflake, MessageAttachment>;
-    embeds: MessageEmbed[];
-}
-
+export type BBTagContextMessage = Pick<Message<KnownGuildTextableChannel>,
+    | 'id'
+    | 'createdAt'
+    | 'content'
+    | 'channel'
+    | 'member'
+    | 'author'
+    | 'attachments'
+    | 'embeds'
+>
 export interface BBTagContextState {
     query: {
         count: number;
@@ -195,8 +189,8 @@ export interface BBTagContextState {
     ownedMsgs: string[];
     return: RuntimeReturnState;
     stackSize: number;
-    embeds: undefined | MessageEmbedOptions[];
-    file: undefined | FileOptions;
+    embeds: undefined | EmbedOptions[];
+    file: undefined | FileContent;
     reactions: string[];
     nsfw: undefined | string;
     replace: undefined | { regex: RegExp | string; with: string; };
@@ -363,6 +357,8 @@ export type SubtagReturnTypeMap = {
     'json|nothing': JToken | undefined;
     'json[]': Iterated<JToken>;
     'json[]|nothing': Iterated<JToken> | undefined;
+    'embed': Embed;
+    'embed[]': Embed[];
     'nothing': void;
     'error': never;
     'loop': Iterated<string>;
@@ -470,7 +466,7 @@ export type CommandVariableTypeMap = {
     'channel': KnownChannel;
     'user': User;
     'sender': User | Webhook;
-    'member': GuildMember;
+    'member': Member;
     'duration': Duration;
     'boolean': boolean;
     'string': string;
@@ -639,7 +635,7 @@ export interface ClusterStats {
 
 export interface ShardStats {
     readonly id: number;
-    readonly status: keyof ConstantsStatus;
+    readonly status: Shard['status'];
     readonly latency: number;
     readonly guilds: number;
     readonly cluster: number;
@@ -692,15 +688,15 @@ export interface RuntimeLimitRule {
     load(state: JToken): void;
 }
 
-export type GuildCommandContext<TChannel extends GuildTextBasedChannels = GuildTextBasedChannels> = CommandContext<TChannel> & { message: { member: GuildMember; guildID: string; }; };
-export type PrivateCommandContext<TChannel extends PrivateTextBasedChannels = PrivateTextBasedChannels> = CommandContext<TChannel>;
+export type GuildCommandContext<TChannel extends KnownGuildTextableChannel = KnownGuildTextableChannel> = CommandContext<TChannel>;
+export type PrivateCommandContext<TChannel extends KnownPrivateChannel = KnownPrivateChannel> = CommandContext<TChannel>;
 
 export type CommandPropertiesSet = { [key in CommandType]: CommandProperties; }
 export interface CommandProperties {
     readonly name: string;
     readonly description: string;
     readonly defaultPerms: bigint;
-    readonly isVisible: (util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User) => boolean | Promise<boolean>;
+    readonly isVisible: (util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User) => boolean | Promise<boolean>;
     readonly color: number;
 }
 
@@ -736,11 +732,11 @@ export interface BasePollResponse<T extends string> {
 }
 
 export interface PollInvalidOption<T extends string = 'OPTIONS_INVALID'> extends BasePollResponse<T> {
-    readonly failedReactions: EmojiIdentifierResolvable[];
+    readonly failedReactions: string[];
 }
 
 export interface PollSuccess extends PollInvalidOption<'SUCCESS'> {
-    readonly message: Message;
+    readonly message: KnownMessage;
 }
 
 export type EnsureMutedRoleResult = 'success' | 'unconfigured' | 'noPerms';
@@ -827,7 +823,7 @@ export interface CommandBinderStateFailureReason {
 }
 
 export interface AwaitReactionsResponse {
-    message: Message;
-    reaction: MessageReaction | PartialMessageReaction;
+    message: KnownMessage;
+    reaction: PartialEmoji;
     user: User;
 }

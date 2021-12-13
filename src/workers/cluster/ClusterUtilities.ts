@@ -1,8 +1,7 @@
-import { codeBlock, defaultStaff, guard, humanize, parse, snowflake } from '@cluster/utils';
+import { codeBlock, defaultStaff, discordUtil, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
-import { BaseMessageComponentOptions, Guild, GuildChannels, GuildMember, KnownChannel, Message, MessageActionRow, MessageActionRowComponentResolvable, MessageActionRowOptions, MessageButton, MessageComponentInteraction, MessageOptions, MessageSelectMenu, MessageSelectOptionData, Permissions, Role, TextBasedChannels, User, Webhook } from 'discord.js';
-import { APIActionRowComponent, ButtonStyle, ComponentType } from 'discord-api-types';
+import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Permission, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster';
@@ -26,7 +25,7 @@ export class ClusterUtilities extends BaseUtilities {
 
     public async createChoiceQuery<T>(options: ChoiceQueryOptions<T>): Promise<ChoiceQuery<T>> {
         const valueMap: Record<string, T> = {};
-        const selectData: MessageSelectOptionData[] = [];
+        const selectData: SelectMenuOptions[] = [];
         const pageSize = 25;
 
         for (const option of options.choices) {
@@ -56,7 +55,7 @@ export class ClusterUtilities extends BaseUtilities {
 
         const component: ChoiceComponentOptions = {
             content: options.prompt?.content ?? '',
-            get select(): MessageSelectOptionData[] {
+            get select(): SelectMenuOptions[] {
                 return selectData.slice(this.page * pageSize, (this.page + 1) * pageSize);
             },
             page: 0,
@@ -73,12 +72,12 @@ export class ClusterUtilities extends BaseUtilities {
             [component.selectId]: () => true,
             [component.prevId]: async i => {
                 component.page--;
-                await i.update(createChoiceBody(component));
+                await i.editOriginalMessage(createChoiceBody(component));
                 return false;
             },
             [component.nextId]: async i => {
                 component.page++;
-                await i.update(createChoiceBody(component));
+                await i.editOriginalMessage(createChoiceBody(component));
                 return false;
             }
         });
@@ -95,10 +94,10 @@ export class ClusterUtilities extends BaseUtilities {
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
-                if (interaction.isSelectMenu())
-                    return { state: 'SUCCESS', value: valueMap[interaction.values[0]] };
+                if (interaction.data.component_type === Constants.ComponentTypes.SELECT_MENU)
+                    return { state: 'SUCCESS', value: valueMap[interaction.data.values[0]] };
 
-                if (interaction.customId === component.cancelId)
+                if (interaction.data.custom_id === component.cancelId)
                     return { state: 'CANCELLED' };
 
                 return { state: 'TIMED_OUT' };
@@ -121,7 +120,7 @@ export class ClusterUtilities extends BaseUtilities {
 
     public async createMultipleQuery<T>(options: MultipleQueryOptions<T>): Promise<MultipleQuery<T>> {
         const valueMap: Record<string, T> = {};
-        const selectData: MessageSelectOptionData[] = [];
+        const selectData: SelectMenuOptions[] = [];
 
         for (const option of options.choices) {
             const id = snowflake.create().toString();
@@ -174,10 +173,10 @@ export class ClusterUtilities extends BaseUtilities {
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
 
-                if (interaction.isSelectMenu())
-                    return { state: 'SUCCESS', value: interaction.values.map(id => valueMap[id]) };
+                if (interaction.data.component_type === Constants.ComponentTypes.SELECT_MENU)
+                    return { state: 'SUCCESS', value: interaction.data.values.map(id => valueMap[id]) };
 
-                if (interaction.customId === component.cancelId)
+                if (interaction.data.custom_id === component.cancelId)
                     return { state: 'CANCELLED' };
 
                 return { state: 'TIMED_OUT' };
@@ -230,7 +229,7 @@ export class ClusterUtilities extends BaseUtilities {
             async getResult() {
                 const interaction = await awaiter;
                 await cleanupQuery(prompt, interaction);
-                switch (interaction?.customId) {
+                switch (interaction?.data.custom_id) {
                     case component.confirmId: return true;
                     case undefined: return options.fallback;
                     default: return false;
@@ -262,7 +261,7 @@ export class ClusterUtilities extends BaseUtilities {
         };
 
         let parsed: { success: true; value: T | string; } | { success: false; } | undefined;
-        const messages: Message[] = [];
+        const messages: KnownMessage[] = [];
         const parse = options.parse ?? (m => ({ success: true, value: m.content }));
         const channel = options.context instanceof Message ? options.context.channel : options.context;
         const componentAwaiter = this.createComponentAwaiter(options.actors, '❌ This isnt for you to use!', options.timeout, { [component.cancelId]: () => true });
@@ -302,7 +301,7 @@ export class ClusterUtilities extends BaseUtilities {
                 if (result === undefined)
                     return { state: 'TIMED_OUT' };
 
-                if ('customId' in result)
+                if ('data' in result)
                     return { state: 'CANCELLED' };
 
                 messages.push(result);
@@ -322,28 +321,28 @@ export class ClusterUtilities extends BaseUtilities {
         actors: Iterable<string | User> | string | User,
         rejectMessage: string,
         timeout: number | undefined,
-        options: Record<string, (interaction: MessageComponentInteraction) => boolean | Promise<boolean>>
-    ): Awaiter<MessageComponentInteraction> {
+        options: Record<string, (interaction: ComponentInteraction) => boolean | Promise<boolean>>
+    ): Awaiter<ComponentInteraction> {
         const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
         return this.cluster.awaiter.components.wait(validIds, async (interaction) => {
             if (!actorFilter(interaction.user)) {
-                await interaction.reply({ content: rejectMessage, ephemeral: true });
+                await interaction.createFollowup({ content: rejectMessage });
                 return false;
             }
 
-            return await options[interaction.customId](interaction);
+            return await options[interaction.data.custom_id](interaction);
         }, timeout ?? 60000);
     }
 
-    public createMessageAwaiter(
-        channel: TextBasedChannels,
+    public createMessageAwaiter<T extends KnownTextableChannel = KnownTextableChannel>(
+        channel: T,
         actors: Iterable<string | User> | string | User,
         timeout: number | undefined,
-        filter: (message: Message) => Promise<boolean> | boolean
-    ): Awaiter<Message> {
+        filter: (message: Message<T>) => Promise<boolean> | boolean
+    ): Awaiter<Message<T>> {
         const actorFilter = createActorFilter(actors);
-        return this.cluster.awaiter.messages.wait([channel.id], async message => {
+        return this.cluster.awaiter.messages.wait([channel], async message => {
             return actorFilter(message.author) && await filter(message);
         }, timeout ?? 60000);
     }
@@ -357,7 +356,7 @@ export class ClusterUtilities extends BaseUtilities {
             placeholder: options.placeholder ?? 'Select a user',
             choices: [...options.choices].map(u => ({
                 label: humanize.fullName(u),
-                emoji: u.bot ? '🤖' : '👤',
+                emoji: { name: u.bot ? '🤖' : '👤' },
                 value: u,
                 description: `Id: ${u.id}`
             }))
@@ -373,16 +372,16 @@ export class ClusterUtilities extends BaseUtilities {
             placeholder: options.placeholder ?? 'Select a user',
             choices: [...options.choices].map(u => ({
                 label: u instanceof User ? humanize.fullName(u) : u.name,
-                emoji: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝',
+                emoji: { name: u instanceof User ? u.bot ? '🤖' : '👤' : '🪝' },
                 value: u,
                 description: `Id: ${u.id}`
             }))
         });
     }
 
-    public async queryMember(options: EntityFindQueryOptions): Promise<ChoiceResult<GuildMember>>
-    public async queryMember(options: EntityPickQueryOptions<GuildMember>): Promise<ChoiceResult<GuildMember>>
-    public async queryMember(options: EntityQueryOptions<GuildMember>): Promise<ChoiceResult<GuildMember>> {
+    public async queryMember(options: EntityFindQueryOptions): Promise<ChoiceResult<Member>>
+    public async queryMember(options: EntityPickQueryOptions<Member>): Promise<ChoiceResult<Member>>
+    public async queryMember(options: EntityQueryOptions<Member>): Promise<ChoiceResult<Member>> {
         const matches = 'guild' in options ? await this.findMembers(options.guild, options.filter) : [...options.choices];
 
         return await this.queryChoice({
@@ -392,8 +391,8 @@ export class ClusterUtilities extends BaseUtilities {
                 : `ℹ️ Multiple users matching \`${options.filter}\` found! Please select one from the drop down.`),
             placeholder: options.placeholder ?? 'Select a user',
             choices: matches.map(m => ({
-                label: `${m.displayName} (${humanize.fullName(m.user)})`,
-                emoji: m.user.bot ? '🤖' : '👤',
+                label: `${m.nick ?? m.username} (${humanize.fullName(m.user)})`,
+                emoji: { name: m.user.bot ? '🤖' : '👤' },
                 value: m,
                 description: `Id: ${m.id}`
             }))
@@ -419,7 +418,7 @@ export class ClusterUtilities extends BaseUtilities {
         });
     }
 
-    public async queryChannel(options: EntityFindQueryOptions): Promise<ChoiceResult<GuildChannels>>;
+    public async queryChannel(options: EntityFindQueryOptions): Promise<ChoiceResult<KnownGuildChannel>>;
     public async queryChannel<T extends KnownChannel>(options: EntityPickQueryOptions<T>): Promise<ChoiceResult<T>>;
     public async queryChannel(options: EntityQueryOptions<KnownChannel>): Promise<ChoiceResult<KnownChannel>> {
         const matches = 'guild' in options ? await this.findChannels(options.guild, options.filter) : [...options.choices];
@@ -431,15 +430,21 @@ export class ClusterUtilities extends BaseUtilities {
                 : `ℹ️ Multiple channels matching \`${options.filter}\` found! Please select one from the drop down.`),
             placeholder: options.placeholder ?? 'Select a channel',
             choices: matches.map(c => ({
-                ...getChannelLookupSelect(c),
-                description: `Id: ${c.id}${guard.isGuildChannel(c) && c.parent !== null ? ` Parent: ${getChannelLookupName(c.parent)}` : ''}`,
-                value: c
+                id: c.id,
+                value: c,
+                details: getChannelLookupSelect(c),
+                parent: guard.isGuildChannel(c) && c.parentID !== null ? c.guild.channels.get(c.parentID) : undefined
+            })).map(x => ({
+                ...x.details,
+                emoji: { name: x.details.emoji },
+                description: `Id: ${x.id}${x.parent !== undefined ? ` Parent: ${getChannelLookupName(x.parent)}` : ''}`,
+                value: x.value
             }))
         });
     }
 
     public async displayPaged(
-        channel: TextBasedChannels,
+        channel: KnownTextableChannel,
         user: User,
         filterText: string,
         getItems: (skip: number, take: number) => Promise<readonly string[]>,
@@ -481,10 +486,9 @@ export class ClusterUtilities extends BaseUtilities {
 
     /* eslint-disable @typescript-eslint/naming-convention */
     public async postStats(): Promise<void> {
-
         const stats = {
-            server_count: this.discord.guilds.cache.size,
-            shard_count: this.discord.ws.shards.size,
+            server_count: this.discord.guilds.size,
+            shard_count: this.discord.shards.size,
             shard_id: this.cluster.id
         };
         this.logger.log(stats);
@@ -527,8 +531,8 @@ export class ClusterUtilities extends BaseUtilities {
 
         if (this.config.general.botlistorgtoken.length > 0) {
             const shards = [];
-            for (const shardId of this.discord.ws.shards.keys()) {
-                shards[shardId] = this.discord.guilds.cache.filter(g => g.shard.id === shardId);
+            for (const shard of this.discord.shards.values()) {
+                shards[shard.id] = this.discord.guilds.filter(g => g.shard.id === shard.id);
             }
             promises.push(
                 fetch(`https://discordbots.org/api/bots/${this.user.id}/stats`, {
@@ -556,53 +560,54 @@ export class ClusterUtilities extends BaseUtilities {
     }
     /* eslint-enable @typescript-eslint/naming-convention */
 
-    public isBotHigher(member: GuildMember): boolean {
-        const bot = member.guild.me;
-        if (bot === null)
+    public isBotHigher(member: Member): boolean {
+        const bot = member.guild.members.get(this.discord.user.id);
+        if (bot === undefined)
             return false;
-        return bot.roles.highest.position > member.roles.highest.position;
+
+        return discordUtil.getMemberPosition(bot) > discordUtil.getMemberPosition(member);
     }
 
-    public async isUserStaff(member: GuildMember): Promise<boolean>;
+    public async isUserStaff(member: Member): Promise<boolean>;
     public async isUserStaff(userId: string, guildId: string): Promise<boolean>;
-    public async isUserStaff(guildId: string | Guild): Promise<(member: GuildMember) => boolean>;
+    public async isUserStaff(guildId: string | Guild): Promise<(member: Member) => boolean>;
     public async isUserStaff(
         ...args:
             | [userId: string, guildId: string]
-            | [member: GuildMember]
+            | [member: Member]
             | [guildId: string | Guild]
-    ): Promise<boolean | ((member: GuildMember) => boolean)> {
+    ): Promise<boolean | ((member: Member) => boolean)> {
         let member;
         if (args.length === 2) {
             if (args[0] === args[1]) return true;
             member = await this.getMember(args[1], args[0]);
-        } else if (args[0] instanceof GuildMember) {
+        } else if (args[0] instanceof Member) {
             member = args[0];
         } else {
             const guildId = typeof args[0] === 'string' ? args[0] : args[0].id;
 
             const allow = parse.bigInt(await this.database.guilds.getSetting(guildId, 'staffperms') ?? defaultStaff);
             if (allow !== undefined)
-                return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR') || this.hasPerms(m, allow));
+                return m => m.guild.id === guildId && (m.id === m.guild.ownerID || m.permissions.has('administrator') || this.hasPerms(m, allow));
 
-            return m => m.guild.id === guildId && (m.id === m.guild.ownerId || m.permissions.has('ADMINISTRATOR'));
+            return m => m.guild.id === guildId && (m.id === m.guild.ownerID || m.permissions.has('administrator'));
         }
 
         if (member === undefined) return false;
 
-        if (member.guild.ownerId === member.id) return true;
-        if (member.permissions.has('ADMINISTRATOR')) return true;
+        if (member.guild.ownerID === member.id) return true;
+        if (member.permissions.has('administrator')) return true;
 
         const allow = parse.bigInt(await this.database.guilds.getSetting(member.guild.id, 'staffperms') ?? defaultStaff);
         return allow !== undefined && this.hasPerms(member, allow);
     }
 
-    public hasPerms(member: GuildMember, allow: bigint): boolean {
+    public hasPerms(member: Member, allow: bigint): boolean {
         if (allow === 0n)
             return true;
 
-        const newPerm = new Permissions(allow);
-        return member.permissions.any(newPerm, true);
+        const checkPerms = new Permission(allow);
+        return Object.keys(Constants.Permissions).some(p => checkPerms.has(p) && member.permissions.has(p));
     }
 
     public isBotStaff(id: string): boolean {
@@ -622,7 +627,7 @@ interface ChoiceComponentOptions {
     readonly nextId: string;
     readonly lastPage: number;
     readonly placeholder: string | undefined;
-    readonly select: MessageSelectOptionData[];
+    readonly select: SelectMenuOptions[];
     page: number;
 }
 
@@ -630,7 +635,7 @@ interface MultipleComponentOptions {
     readonly selectId: string;
     readonly cancelId: string;
     readonly placeholder: string | undefined;
-    readonly select: MessageSelectOptionData[];
+    readonly select: SelectMenuOptions[];
     readonly maxCount?: number;
     readonly minCount?: number;
 }
@@ -647,8 +652,8 @@ interface TextComponentOptions {
     readonly cancelButton: QueryButton;
 }
 
-function createActorFilter(actors: Iterable<string | User | GuildMember> | string | User | GuildMember): (user: User) => boolean {
-    const userIds = new Set();
+function createActorFilter(actors: Iterable<string | User | Member> | string | User | Member): (user?: User) => boolean {
+    const userIds = new Set<string>();
     if (typeof actors === 'string')
         userIds.add(actors);
     else {
@@ -662,123 +667,122 @@ function createActorFilter(actors: Iterable<string | User | GuildMember> | strin
         case 0: return () => false;
         case 1: {
             const check = [...userIds][0];
-            return user => user.id === check;
+            return user => user?.id === check;
         }
         default:
-            return user => userIds.has(user.id);
+            return user => userIds.has(user?.id);
     }
 }
 
-function createConfirmBody(options: ConfirmComponentOptions): Pick<MessageOptions, 'components'> {
-    const confirm = {
-        style: 'SUCCESS',
+function createConfirmBody(options: ConfirmComponentOptions): Pick<AdvancedMessageContent, 'components'> {
+    const confirm: InteractionButton = {
+        style: Constants.ButtonStyles.SUCCESS,
         ...typeof options.confirmButton === 'string' ? { label: options.confirmButton } : options.confirmButton,
-        type: 'BUTTON',
-        customId: options.confirmId
-    } as const;
+        type: Constants.ComponentTypes.BUTTON,
+        custom_id: options.confirmId
+    };
 
-    const cancel = {
-        style: 'DANGER',
+    const cancel: InteractionButton = {
+        style: Constants.ButtonStyles.DANGER,
         ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
-        type: 'BUTTON',
-        customId: options.cancelId
-    } as const;
+        type: Constants.ComponentTypes.BUTTON,
+        custom_id: options.cancelId
+    };
 
     return {
         components: [
             {
-                type: 'ACTION_ROW',
+                type: Constants.ComponentTypes.ACTION_ROW,
                 components: [confirm, cancel]
             }
         ]
     };
 }
 
-function createMultipleBody(options: MultipleComponentOptions): Pick<MessageOptions, 'components'> {
-    const select = {
-        type: 'SELECT_MENU',
-        customId: options.selectId,
+function createMultipleBody(options: MultipleComponentOptions): Pick<AdvancedMessageContent, 'components'> {
+    const select: SelectMenu = {
+        type: Constants.ComponentTypes.SELECT_MENU,
+        custom_id: options.selectId,
         options: options.select,
         placeholder: options.placeholder,
-        maxValues: options.maxCount ?? options.select.length,
-        minValues: options.minCount ?? 0
-    } as const;
-    const cancel = {
-        type: 'BUTTON',
-        customId: options.cancelId,
-        emoji: '✖️',
-        style: 'DANGER'
-    } as const;
+        max_values: options.maxCount ?? options.select.length,
+        min_values: options.minCount ?? 0
+    };
+    const cancel: InteractionButton = {
+        type: Constants.ComponentTypes.BUTTON,
+        custom_id: options.cancelId,
+        emoji: { name: '✖️' },
+        style: Constants.ButtonStyles.DANGER
+    };
 
     return {
         components: [
-            { type: 'ACTION_ROW', components: [select] },
-            { type: 'ACTION_ROW', components: [cancel] }
+            { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
+            { type: Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
         ]
     };
 }
 
-function createChoiceBody(options: ChoiceComponentOptions): Pick<MessageOptions, 'components' | 'content'> {
-    const select = {
-        type: 'SELECT_MENU',
-        customId: options.selectId,
+function createChoiceBody(options: ChoiceComponentOptions): Pick<AdvancedMessageContent, 'components' | 'content'> {
+    const select: SelectMenu = {
+        type: Constants.ComponentTypes.SELECT_MENU,
+        custom_id: options.selectId,
         options: options.select,
         placeholder: options.placeholder
-    } as const;
-    const cancel = {
-        type: 'BUTTON',
-        customId: options.cancelId,
-        emoji: '✖️',
-        style: 'DANGER'
-    } as const;
+    };
+    const cancel: InteractionButton = {
+        type: Constants.ComponentTypes.BUTTON,
+        custom_id: options.cancelId,
+        emoji: { name: '✖️' },
+        style: Constants.ButtonStyles.DANGER
+    };
 
     if (options.lastPage === 0) {
         return {
             content: options.content,
             components: [
-                { type: 'ACTION_ROW', components: [select] },
-                { type: 'ACTION_ROW', components: [cancel] }
+                { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
+                { type: Constants.ComponentTypes.ACTION_ROW, components: [cancel] }
             ]
         };
     }
 
-    const prev = {
-        type: 'BUTTON',
-        customId: options.prevId,
-        emoji: ':bigarrowleft:876227640976097351', // TODO config
-        style: 'PRIMARY',
+    const prev: InteractionButton = {
+        type: Constants.ComponentTypes.BUTTON,
+        custom_id: options.prevId,
+        emoji: { name: ':bigarrowleft:876227640976097351' }, // TODO config
+        style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === 0
-    } as const;
+    };
 
-    const next = {
-
-        type: 'BUTTON',
-        customId: options.nextId,
-        emoji: ':bigarrowright:876227816998461511', // TODO config
-        style: 'PRIMARY',
+    const next: InteractionButton = {
+        type: Constants.ComponentTypes.BUTTON,
+        custom_id: options.nextId,
+        emoji: { name: ':bigarrowright:876227816998461511' }, // TODO config
+        style: Constants.ButtonStyles.PRIMARY,
         disabled: options.page === options.lastPage
-    } as const;
+    };
 
     return {
         content: `${options.content}\nPage ${options.page + 1}/${options.lastPage + 1}`.trim(),
         components: [
-            { type: 'ACTION_ROW', components: [select] },
-            { type: 'ACTION_ROW', components: [prev, cancel, next] }
+            { type: Constants.ComponentTypes.ACTION_ROW, components: [select] },
+            { type: Constants.ComponentTypes.ACTION_ROW, components: [prev, cancel, next] }
         ]
     };
 }
 
-function createTextBody(options: TextComponentOptions, disabled = false): Pick<MessageOptions, 'components'> {
+function createTextBody(options: TextComponentOptions, disabled = false): Pick<AdvancedMessageContent, 'components'> {
 
     return {
         components: [
             {
-                type: 'ACTION_ROW',
+                type: Constants.ComponentTypes.ACTION_ROW,
                 components: [{
-                    style: 'SECONDARY',
+                    style: Constants.ButtonStyles.SECONDARY,
                     ...typeof options.cancelButton === 'string' ? { label: options.cancelButton } : options.cancelButton,
-                    type: 'BUTTON',
-                    customId: options.cancelId,
+                    type: Constants.ComponentTypes.BUTTON,
+                    custom_id: options.cancelId,
                     disabled: disabled
                 }]
             }
@@ -793,91 +797,59 @@ function getChannelLookupName(channel: KnownChannel): string {
 
 function getChannelLookupSelect(channel: KnownChannel): { label: string; emoji: string; } {
     switch (channel.type) {
-        case 'DM': return { emoji: '🕵️', label: 'DM' };
-        case 'GROUP_DM': return { emoji: '👥', label: 'Group DM' };
-        case 'GUILD_CATEGORY': return { emoji: '📁', label: channel.name };
-        case 'GUILD_NEWS': return { emoji: '📰', label: channel.name };
-        case 'GUILD_NEWS_THREAD': return { emoji: '✏️', label: channel.name };
-        case 'GUILD_PRIVATE_THREAD': return { emoji: '✏️', label: channel.name };
-        case 'GUILD_PUBLIC_THREAD': return { emoji: '✏️', label: channel.name };
-        case 'GUILD_STAGE_VOICE': return { emoji: '🔈', label: channel.name };
-        case 'GUILD_STORE': return { emoji: '🛒', label: channel.name };
-        case 'GUILD_TEXT': return { emoji: '✏️', label: channel.name };
-        case 'GUILD_VOICE': return { emoji: '🔈', label: channel.name };
+        case Constants.ChannelTypes.DM: return { emoji: '🕵️', label: 'DM' };
+        case Constants.ChannelTypes.GROUP_DM: return { emoji: '👥', label: 'Group DM' };
+        case Constants.ChannelTypes.GUILD_CATEGORY: return { emoji: '📁', label: channel.name };
+        case Constants.ChannelTypes.GUILD_NEWS: return { emoji: '📰', label: channel.name };
+        case Constants.ChannelTypes.GUILD_NEWS_THREAD: return { emoji: '✏️', label: channel.name };
+        case Constants.ChannelTypes.GUILD_PRIVATE_THREAD: return { emoji: '✏️', label: channel.name };
+        case Constants.ChannelTypes.GUILD_PUBLIC_THREAD: return { emoji: '✏️', label: channel.name };
+        case Constants.ChannelTypes.GUILD_STAGE_VOICE: return { emoji: '🔈', label: channel.name };
+        case Constants.ChannelTypes.GUILD_STORE: return { emoji: '🛒', label: channel.name };
+        case Constants.ChannelTypes.GUILD_TEXT: return { emoji: '✏️', label: channel.name };
+        case Constants.ChannelTypes.GUILD_VOICE: return { emoji: '🔈', label: channel.name };
     }
 }
 
-async function cleanupQuery(...items: Array<Message | MessageComponentInteraction | undefined>): Promise<void> {
+async function cleanupQuery(...items: Array<KnownMessage | ComponentInteraction | undefined>): Promise<void> {
     const promises = [];
     for (const item of items) {
-        if (item instanceof MessageComponentInteraction)
-            promises.push(item.update({ components: disableComponents(item.message.components ?? []) }));
-        else if (item?.editable === true && item.components.length > 0)
+        if (item instanceof ComponentInteraction)
+            promises.push(item.editOriginalMessage({ components: disableComponents(item.message.components ?? []) }));
+        else if (item?.components !== undefined && item.components.length > 0)
             promises.push(item.edit({ components: disableComponents(item.components) }));
     }
 
     await Promise.allSettled(promises);
 }
 
-function disableComponents(components: Iterable<MessageActionRow | APIActionRowComponent>): Array<Required<BaseMessageComponentOptions> & MessageActionRowOptions> {
+function disableComponents(components: Iterable<ActionRow>): ActionRow[] {
     return [...disableComponentsCore(components)];
 }
 
-function* disableComponentsCore(components: Iterable<MessageActionRow | APIActionRowComponent>): Generator<Required<BaseMessageComponentOptions> & MessageActionRowOptions> {
+function disableComponentsCore<T extends ActionRow | Button | SelectMenu>(components: Iterable<T>): Iterable<T>;
+function disableComponentsCore(components: Iterable<ActionRow | Button | SelectMenu>): Iterable<ActionRow | Button | SelectMenu>;
+function* disableComponentsCore(components: Iterable<ActionRow | Button | SelectMenu>): Iterable<ActionRow | Button | SelectMenu> {
     for (const component of components) {
         switch (component.type) {
-            case 'ACTION_ROW':
-                yield component.spliceComponents(0, Infinity, component.components.map(c => c.setDisabled(true)));
-                break;
-            case 1:
+            case Constants.ComponentTypes.ACTION_ROW:
                 yield {
-                    type: 'ACTION_ROW',
-                    components: component.components.map<MessageActionRowComponentResolvable>(c => {
-                        switch (c.type) {
-                            case ComponentType.SelectMenu: return new MessageSelectMenu({
-                                customId: c.custom_id,
-                                disabled: true,
-                                maxValues: c.max_values,
-                                minValues: c.min_values,
-                                placeholder: c.placeholder,
-                                type: 'SELECT_MENU',
-                                options: c.options?.map<MessageSelectOptionData>(op => ({
-                                    label: op.label,
-                                    value: op.value,
-                                    default: op.default,
-                                    description: op.description,
-                                    emoji: op.emoji?.id
-                                }))
-                            });
-                            case ComponentType.Button: return new MessageButton({
-                                disabled: true,
-                                label: c.label,
-                                emoji: c.emoji?.id,
-                                type: 'BUTTON',
-                                ...c.style === ButtonStyle.Link
-                                    ? { style: convertStyle(c.style), url: c.url }
-                                    : { style: convertStyle(c.style), customId: c.custom_id }
-                            });
-                            default: {
-                                const x: never = c;
-                                return x;
-                            }
-                        }
-                    })
+                    type: Constants.ComponentTypes.ACTION_ROW,
+                    components: [...disableComponentsCore(component.components)]
+                };
+                break;
+            case Constants.ComponentTypes.BUTTON:
+                yield {
+                    ...component,
+                    disabled: true
+                };
+                break;
+            case Constants.ComponentTypes.SELECT_MENU:
+                yield {
+                    ...component,
+                    disabled: true
                 };
                 break;
         }
     }
-}
-
-const dumbTypes: { [P in keyof typeof ButtonStyle as number & typeof ButtonStyle[P]]: Uppercase<P> } = {
-    [ButtonStyle.Link]: 'LINK',
-    [ButtonStyle.Danger]: 'DANGER',
-    [ButtonStyle.Primary]: 'PRIMARY',
-    [ButtonStyle.Secondary]: 'SECONDARY',
-    [ButtonStyle.Success]: 'SUCCESS'
-} as const;
-
-function convertStyle<T extends ButtonStyle>(apiStyle: T): (typeof dumbTypes)[T] {
-    return dumbTypes[apiStyle];
 }

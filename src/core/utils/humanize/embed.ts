@@ -1,13 +1,12 @@
 import { guard } from '@core/utils';
-import { MessageEmbed, MessageEmbedOptions } from 'discord.js';
-import { APIEmbed } from 'discord-api-types';
+import { Embed, EmbedOptions } from 'eris';
 import moment from 'moment';
 
-export function embed(embeds: ReadonlyArray<(MessageEmbedOptions | MessageEmbed | APIEmbed) & { asString?: string; }>): string {
+export function embed(embeds: ReadonlyArray<(EmbedOptions | Embed) & { asString?: string; }>): string {
     return [...embedsIter(embeds)].join('\n').trim();
 }
 
-function* embedsIter(embeds: ReadonlyArray<(MessageEmbedOptions | MessageEmbed | APIEmbed) & { asString?: string; }>): Generator<string> {
+function* embedsIter(embeds: ReadonlyArray<(EmbedOptions | Embed) & { asString?: string; }>): Generator<string> {
     for (const embed of embeds) {
         if ('asString' in embed && embed.asString !== undefined) {
             yield embed.asString;
@@ -15,7 +14,7 @@ function* embedsIter(embeds: ReadonlyArray<(MessageEmbedOptions | MessageEmbed |
         }
 
         if (guard.hasValue(embed.author))
-            yield `__**${embed.author.name ?? ''}**__`;
+            yield `__**${embed.author.name}**__`;
         if (guard.hasValue(embed.title))
             yield embed.title;
         if (guard.hasValue(embed.description))

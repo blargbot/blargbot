@@ -76,7 +76,7 @@ export class UpdateCommand extends BaseGlobalCommand {
                 content: this.success(`Command: \`${command}\``),
                 files: [
                     {
-                        attachment: Buffer.from(result),
+                        file: Buffer.from(result),
                         name: 'output.txt'
                     }
                 ]
@@ -89,7 +89,7 @@ export class UpdateCommand extends BaseGlobalCommand {
                 files: [
                     {
                         // eslint-disable-next-line no-control-regex
-                        attachment: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
+                        file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
                         name: 'output.txt'
                     }
                 ]

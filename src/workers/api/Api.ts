@@ -20,6 +20,7 @@ export class Api extends BaseClient {
         options: ApiOptions
     ) {
         super(logger, config, {
+            restMode: true,
             intents: []
         });
 

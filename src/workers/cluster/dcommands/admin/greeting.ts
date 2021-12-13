@@ -1,7 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
-import { KnownChannel, MessageOptions } from 'discord.js';
+import { SendContent } from '@core/types';
+import { KnownChannel } from 'eris';
 
 export class GreetingCommand extends BaseGuildCommand {
     public constructor() {
@@ -69,7 +70,7 @@ export class GreetingCommand extends BaseGuildCommand {
         return this.success('The greeting message has been set');
     }
 
-    public async getGreeting(context: GuildCommandContext): Promise<string | MessageOptions> {
+    public async getGreeting(context: GuildCommandContext): Promise<string | SendContent> {
         const greeting = await context.database.guilds.getGreeting(context.channel.guild.id);
         if (greeting === undefined)
             return this.error('No greeting message has been set yet!');
@@ -78,7 +79,7 @@ export class GreetingCommand extends BaseGuildCommand {
 
         const message = channel === undefined
             ? 'The raw code for the greeting message is'
-            : `The raw code for the greeting message (sent in ${channel.toString()}) is`;
+            : `The raw code for the greeting message (sent in ${channel.mention}) is`;
         const response = this.info(`${message}:\n${codeBlock(greeting.content)}`);
 
         return guard.checkMessageSize(response)
@@ -88,7 +89,7 @@ export class GreetingCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: 'greeting.bbtag',
-                        attachment: greeting.content
+                        file: greeting.content
                     }
                 ]
             };
@@ -118,10 +119,10 @@ export class GreetingCommand extends BaseGuildCommand {
             return this.error('The greeting channel must be a text channel!');
 
         await context.database.guilds.setSetting(context.channel.guild.id, 'greetChan', channel.id);
-        return this.success(`Greeting messages will now be sent in ${channel.toString()}`);
+        return this.success(`Greeting messages will now be sent in ${channel.mention}`);
     }
 
-    public async debug(context: GuildCommandContext): Promise<string | MessageOptions> {
+    public async debug(context: GuildCommandContext): Promise<string | SendContent> {
         const result = await context.cluster.greetings.greet(context.message.member);
         switch (result) {
             case 'CHANNEL_MISSING': return this.error('I wasnt able to locate a channel to sent the message in!');

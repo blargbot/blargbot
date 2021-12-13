@@ -46,7 +46,7 @@ export class RoleSetPermsSubtag extends Subtag {
         const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scopes.local.noLookupErrors });
         const perms = parse.int(permsStr);
 
-        const allowedPerms = context.permissions.valueOf();
+        const allowedPerms = context.permissions.allow;
         const mappedPerms = BigInt(perms) & allowedPerms;
 
         if (role === undefined)

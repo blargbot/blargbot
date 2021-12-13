@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 
 export class KickCommand extends BaseGuildCommand {
     public constructor() {
@@ -21,7 +21,7 @@ export class KickCommand extends BaseGuildCommand {
         });
     }
 
-    public async kick(context: GuildCommandContext, member: GuildMember, reason: string | undefined): Promise<string> {
+    public async kick(context: GuildCommandContext, member: Member, reason: string | undefined): Promise<string> {
         switch (await context.cluster.moderation.bans.kick(member, context.author, true, reason)) {
             case 'memberTooHigh': return this.error(`I don't have permission to kick **${humanize.fullName(member.user)}**! Their highest role is above my highest role.`);
             case 'moderatorTooLow': return this.error(`You don't have permission to kick **${humanize.fullName(member.user)}**! Their highest role is above your highest role.`);

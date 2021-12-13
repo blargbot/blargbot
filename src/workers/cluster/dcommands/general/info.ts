@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
 import { humanize } from '@core/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
 const year = [undefined, 'year', 'years'];
@@ -25,7 +25,7 @@ export class InfoCommand extends BaseGlobalCommand {
             ]
         });
     }
-    public showInfo(context: CommandContext): MessageEmbedOptions | string {
+    public showInfo(context: CommandContext): EmbedOptions | string {
         if (context.cluster.contributors.patrons.length === 0)
             return this.warning('Im still waking up! Try again in a minute or two');
 

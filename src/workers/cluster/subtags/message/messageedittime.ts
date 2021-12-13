@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
 export class MessageEditTimeSubtag extends Subtag {
@@ -72,7 +72,7 @@ export class MessageEditTimeSubtag extends Subtag {
         }
     }
 
-    public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {
+    public enrichDocs(embed: EmbedOptions): EmbedOptions {
         embed.fields = [{
             name: '**Usage**',
             value: '```{messageedittime}```Returns the edit time of the executing message in unix milliseconds.' +
@@ -92,16 +92,16 @@ export class MessageEditTimeSubtag extends Subtag {
             value: '```{messageedittime;<messageid>;[format]}```' +
                 '`format` defaults to `x` if left empty or omitted\n\n' +
                 'Returns the edit time of `messageid` in `format`.\n\n' +
-                '**Example code:**\n> Message 11111111111111 was edited at {messagetime;11111111111111;HH:mm}\n' +
-                '**Example out:**\n> Message 11111111111111 was edited at 18:06'
+                '**Example code:**\n> KnownMessage 11111111111111 was edited at {messagetime;11111111111111;HH:mm}\n' +
+                '**Example out:**\n> KnownMessage 11111111111111 was edited at 18:06'
         },
         {
             name: '\u200b',
             value: '```{messageedittime;<channel>;<messageid>;[format]}```' +
                 '`format` defaults to `x`\n\n' +
                 'Returns the edit time of `messageid` from `channel` in `format`.\n\n' +
-                '**Example code:**\n> Message 11111111111111 in #support was edited at {messageedittime;support;11111111111111;HH:mm}\n' +
-                '**Example out:**\n> Message 11111111111111 in #support was edited at 18:09'
+                '**Example code:**\n> KnownMessage 11111111111111 in #support was edited at {messageedittime;support;11111111111111;HH:mm}\n' +
+                '**Example out:**\n> KnownMessage 11111111111111 in #support was edited at 18:09'
         }];
         return embed;
     }

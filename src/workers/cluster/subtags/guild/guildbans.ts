@@ -24,7 +24,7 @@ export class GuildBansSubtag extends Subtag {
         context: BBTagContext
     ): Promise<string[]> {
         try {
-            return (await context.guild.bans.fetch()).map(u => u.user.id);
+            return (await context.guild.getBans()).map(u => u.user.id);
         } catch (err: unknown) {
             throw new BBTagRuntimeError('Missing required permissions');
         }

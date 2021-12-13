@@ -1,62 +1,59 @@
-import { Permissions, PermissionString } from 'discord.js';
+import { Constants, Permission } from 'eris';
 
-export function permissions(permissions: bigint | readonly PermissionString[] | Permissions, hideAdminUnlessAlone = false): string[] {
-    permissions = typeof permissions === 'bigint' ? new Permissions(permissions)
-        : Array.isArray(permissions) ? new Permissions(permissions)
-            : new Permissions(permissions);
+export function permissions(permissions: bigint | ReadonlyArray<keyof Constants['Permissions']> | Permission, hideAdminUnlessAlone = false): string[] {
+    let flags = typeof permissions === 'bigint' ? permissions
+        : Array.isArray(permissions) ? permissions.reduce((p, c) => p | Constants.Permissions[c], 0n)
+            : permissions.allow;
 
-    const hasAdmin = permissions.has('ADMINISTRATOR');
-    if (hasAdmin)
-        permissions.remove('ADMINISTRATOR');
-    if (permissions.bitfield === 0n && hideAdminUnlessAlone)
-        return [permMap['ADMINISTRATOR']];
+    if (hideAdminUnlessAlone && flags !== Constants.Permissions.administrator)
+        flags &= ~Constants.Permissions.administrator; // remove admin flag
 
-    const result = permissions.toArray().map(p => permMap[p]);
-    if (hasAdmin && !hideAdminUnlessAlone)
-        result.push(permMap['ADMINISTRATOR']);
-    return result;
+    return Object.keys(permMap)
+        .map(BigInt)
+        .filter(f => (flags & f) === f)
+        .map(f => permMap[f.toString() as keyof typeof permMap]);
 }
 
-const permMap: Record<PermissionString, string> = {
-    ['ADD_REACTIONS']: 'add reactions',
-    ['ADMINISTRATOR']: 'administrator',
-    ['ATTACH_FILES']: 'attach files',
-    ['BAN_MEMBERS']: 'ban members',
-    ['CHANGE_NICKNAME']: 'change my nickname',
-    ['CONNECT']: 'connect to voice',
-    ['CREATE_INSTANT_INVITE']: 'create invites',
-    ['DEAFEN_MEMBERS']: 'deafen users',
-    ['EMBED_LINKS']: 'send embeds',
-    ['KICK_MEMBERS']: 'kick members',
-    ['MANAGE_CHANNELS']: 'manage channels',
-    ['MANAGE_EMOJIS_AND_STICKERS']: 'manage emojis/stickers',
-    ['MANAGE_GUILD']: 'manage server',
-    ['MANAGE_MESSAGES']: 'manage messages',
-    ['MANAGE_NICKNAMES']: 'manage nicknames',
-    ['MANAGE_ROLES']: 'manage roles',
-    ['MANAGE_THREADS']: 'manage threads',
-    ['MANAGE_WEBHOOKS']: 'manage webhooks',
-    ['MENTION_EVERYONE']: 'mention everyone',
-    ['MOVE_MEMBERS']: 'move members',
-    ['MUTE_MEMBERS']: 'mute members',
-    ['PRIORITY_SPEAKER']: 'be a priority speaker',
-    ['READ_MESSAGE_HISTORY']: 'read message history',
-    ['REQUEST_TO_SPEAK']: 'request to speak',
-    ['SEND_MESSAGES']: 'send messages',
-    ['SEND_TTS_MESSAGES']: 'send text-to-speach messages',
-    ['SPEAK']: 'speak',
-    ['STREAM']: 'stream',
-    ['USE_APPLICATION_COMMANDS']: 'use application commands',
-    ['USE_EXTERNAL_EMOJIS']: 'use external emojis',
-    ['USE_EXTERNAL_STICKERS']: 'use external stickers',
-    ['USE_PRIVATE_THREADS']: 'use private threads',
-    ['USE_PUBLIC_THREADS']: 'use public threads',
-    ['USE_VAD']: 'use voice activity',
-    ['VIEW_AUDIT_LOG']: 'view the audit log',
-    ['VIEW_CHANNEL']: 'view channel',
-    ['VIEW_GUILD_INSIGHTS']: 'view insights',
-    ['CREATE_PRIVATE_THREADS']: 'create private threads',
-    ['CREATE_PUBLIC_THREADS']: 'create public threads',
-    ['SEND_MESSAGES_IN_THREADS']: 'send messages in threads',
-    ['START_EMBEDDED_ACTIVITIES']: 'start embedded activities'
-};
+const permMap = {
+    [Constants.Permissions.addReactions.toString()]: 'add reactions',
+    [Constants.Permissions.administrator.toString()]: 'administrator',
+    [Constants.Permissions.attachFiles.toString()]: 'attach files',
+    [Constants.Permissions.banMembers.toString()]: 'ban members',
+    [Constants.Permissions.changeNickname.toString()]: 'change my nickname',
+    [Constants.Permissions.voiceConnect.toString()]: 'connect to voice',
+    [Constants.Permissions.createInstantInvite.toString()]: 'create invites',
+    [Constants.Permissions.voiceDeafenMembers.toString()]: 'deafen users',
+    [Constants.Permissions.embedLinks.toString()]: 'send embeds',
+    [Constants.Permissions.kickMembers.toString()]: 'kick members',
+    [Constants.Permissions.manageChannels.toString()]: 'manage channels',
+    [Constants.Permissions.manageEmojisAndStickers.toString()]: 'manage emojis/stickers',
+    [Constants.Permissions.manageGuild.toString()]: 'manage server',
+    [Constants.Permissions.manageMessages.toString()]: 'manage messages',
+    [Constants.Permissions.manageNicknames.toString()]: 'manage nicknames',
+    [Constants.Permissions.manageRoles.toString()]: 'manage roles',
+    [Constants.Permissions.manageThreads.toString()]: 'manage threads',
+    [Constants.Permissions.manageWebhooks.toString()]: 'manage webhooks',
+    [Constants.Permissions.mentionEveryone.toString()]: 'mention everyone',
+    [Constants.Permissions.voiceMoveMembers.toString()]: 'move members',
+    [Constants.Permissions.voiceMuteMembers.toString()]: 'mute members',
+    [Constants.Permissions.voicePrioritySpeaker.toString()]: 'be a priority speaker',
+    [Constants.Permissions.readMessageHistory.toString()]: 'read message history',
+    [Constants.Permissions.voiceRequestToSpeak.toString()]: 'request to speak',
+    [Constants.Permissions.sendMessages.toString()]: 'send messages',
+    [Constants.Permissions.sendTTSMessages.toString()]: 'send text-to-speach messages',
+    [Constants.Permissions.voiceSpeak.toString()]: 'speak',
+    [Constants.Permissions.stream.toString()]: 'stream',
+    [Constants.Permissions.useApplicationCommands.toString()]: 'use application commands',
+    [Constants.Permissions.useExternalEmojis.toString()]: 'use external emojis',
+    [Constants.Permissions.useExternalStickers.toString()]: 'use external stickers',
+    // [Constants.Permissions.usePrivateThreads.toString()]: 'use private threads',
+    // [Constants.Permissions.usePublicThreads.toString()]: 'use public threads',
+    [Constants.Permissions.voiceUseVAD.toString()]: 'use voice activity',
+    [Constants.Permissions.viewAuditLog.toString()]: 'view the audit log',
+    [Constants.Permissions.viewChannel.toString()]: 'view channel',
+    [Constants.Permissions.viewGuildInsights.toString()]: 'view insights',
+    [Constants.Permissions.createPrivateThreads.toString()]: 'create private threads',
+    [Constants.Permissions.createPublicThreads.toString()]: 'create public threads',
+    [Constants.Permissions.sendMessagesInThreads.toString()]: 'send messages in threads',
+    [Constants.Permissions.startEmbeddedActivities.toString()]: 'start embedded activities'
+} as const;

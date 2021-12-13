@@ -38,7 +38,7 @@ export class ExecCommand extends BaseGlobalCommand {
                 content: this.success(`Command: \`${command}\``),
                 files: [
                     {
-                        attachment: Buffer.from(cleanConsole(await execCommandline(command))),
+                        file: Buffer.from(cleanConsole(await execCommandline(command))),
                         name: 'output.txt'
                     }
                 ]
@@ -51,7 +51,7 @@ export class ExecCommand extends BaseGlobalCommand {
                 files: [
                     {
                         // eslint-disable-next-line no-control-regex
-                        attachment: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
+                        file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
                         name: 'output.txt'
                     }
                 ]

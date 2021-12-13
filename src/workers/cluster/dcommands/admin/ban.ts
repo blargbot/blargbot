@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { FlagResult, GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize, parse } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 import moment from 'moment';
 
 export class BanCommand extends BaseGuildCommand {
@@ -28,7 +28,7 @@ export class BanCommand extends BaseGuildCommand {
         });
     }
 
-    public async ban(context: GuildCommandContext, member: GuildMember, days: number, flags: FlagResult): Promise<string> {
+    public async ban(context: GuildCommandContext, member: Member, days: number, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value;
         const rawDuration = flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined;
         const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;

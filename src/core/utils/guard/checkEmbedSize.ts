@@ -1,10 +1,9 @@
 import * as discordUtil from '@core/utils/discord';
-import { MessageEmbed, MessageEmbedOptions } from 'discord.js';
-import { APIEmbed } from 'discord-api-types';
+import { Embed, EmbedOptions } from 'eris';
 
 import { hasValue } from './hasValue';
 
-export function checkEmbedSize(embed: ReadonlyArray<MessageEmbedOptions | MessageEmbed | APIEmbed> | undefined): boolean {
+export function checkEmbedSize(embed: ReadonlyArray<EmbedOptions | Embed> | undefined): boolean {
     if (embed === undefined) return true;
     for (const [value, limit] of getEmbedValueLimits(embed))
         if (hasValue(value) && value.length > limit)
@@ -13,7 +12,7 @@ export function checkEmbedSize(embed: ReadonlyArray<MessageEmbedOptions | Messag
     return true;
 }
 
-function* getEmbedValueLimits(embeds: ReadonlyArray<MessageEmbedOptions | MessageEmbed | APIEmbed>): IterableIterator<[value: { length: number; } | null | undefined, limit: number]> {
+function* getEmbedValueLimits(embeds: ReadonlyArray<EmbedOptions | Embed>): IterableIterator<[value: { length: number; } | null | undefined, limit: number]> {
     const allValues: string[] = [];
     const append = <T>(value: T): T => {
         if (typeof value === 'string')

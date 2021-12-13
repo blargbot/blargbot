@@ -34,6 +34,6 @@ export class RolePermsSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return role.permissions.bitfield;
+        return role.permissions.allow;
     }
 }

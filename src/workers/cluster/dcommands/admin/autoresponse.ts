@@ -1,9 +1,9 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
-import { GuildAutoresponse, GuildFilteredAutoresponse, GuildTriggerTag, SendPayload } from '@core/types';
+import { GuildAutoresponse, GuildFilteredAutoresponse, GuildTriggerTag, SendContent, SendPayload } from '@core/types';
 import { codeBlock, guard } from '@core/utils';
-import { EmbedFieldData, MessageEmbedOptions, MessageOptions } from 'discord.js';
+import { EmbedField, EmbedOptions } from 'eris';
 
 export class AutoResponseCommand extends BaseGuildCommand {
     public constructor() {
@@ -113,7 +113,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
         return this.success(`Updated the code for ${id === 'everything' ? 'the everything autoresponse' : `autoresponse ${id}`}`);
     }
 
-    public async getRaw(context: GuildCommandContext, id: string): Promise<string | MessageOptions> {
+    public async getRaw(context: GuildCommandContext, id: string): Promise<string | SendContent> {
         const accessError = this.checkArAccess(context);
         if (accessError !== undefined)
             return accessError;
@@ -132,7 +132,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: `autoresponse_${match.id}.bbtag`,
-                        attachment: match.ar.executes.content
+                        file: match.ar.executes.content
                     }
                 ]
             };
@@ -172,12 +172,12 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
 
-        const embed: MessageEmbedOptions & Required<Pick<MessageEmbedOptions, 'fields'>> = {
+        const embed: EmbedOptions & Required<Pick<EmbedOptions, 'fields'>> = {
             fields: [],
             title: 'Autoresponses'
         };
 
-        const arField = (id: string, trigger: string, triggerType?: string): EmbedFieldData => {
+        const arField = (id: string, trigger: string, triggerType?: string): EmbedField => {
             return {
                 name: `Autoresponse \`${id}\``,
                 value: `**Trigger${triggerType ?? ''}:**\n${trigger}`,

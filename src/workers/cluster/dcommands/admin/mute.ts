@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { FlagResult, GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize, parse } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 import moment from 'moment';
 
 export class MuteCommand extends BaseGuildCommand {
@@ -33,7 +33,7 @@ export class MuteCommand extends BaseGuildCommand {
         });
     }
 
-    public async mute(context: GuildCommandContext, member: GuildMember, flags: FlagResult): Promise<string> {
+    public async mute(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const muteAvailable = await this.checkMuteAvailable(context);
         if (muteAvailable !== true)
             return muteAvailable;

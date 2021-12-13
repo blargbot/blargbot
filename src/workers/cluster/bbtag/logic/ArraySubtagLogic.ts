@@ -4,7 +4,7 @@ import { BBTagContext } from '../BBTagContext';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class ArraySubtagLogic extends SubtagLogicWrapper {
-    public constructor(public readonly logic: SubtagLogic<Awaitable<AsyncIterable<JToken> | Iterable<JToken> | undefined>>) {
+    public constructor(public readonly logic: SubtagLogic<Awaitable<AsyncIterable<unknown> | Iterable<unknown> | undefined>>) {
         super();
     }
 

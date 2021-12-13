@@ -1,7 +1,6 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, parse, SubtagType } from '@cluster/utils';
-import { Role } from 'discord.js';
 
 export class UserSetRolesSubtag extends Subtag {
     public constructor() {
@@ -62,7 +61,7 @@ export class UserSetRolesSubtag extends Subtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const parsedRoles: Role[] = [];
+        const parsedRoles: string[] = [];
 
         for (const roleElement of roleArr.v) {
             const role = await context.queryRole(parse.string(roleElement), {
@@ -73,7 +72,7 @@ export class UserSetRolesSubtag extends Subtag {
                 throw new RoleNotFoundError(userStr)
                     .withDisplay(quiet ? 'false' : undefined);
             }
-            parsedRoles.push(role);
+            parsedRoles.push(role.id);
         }
 
         try {

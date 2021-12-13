@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { FlagResult, GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize, parse, pluralise as p } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 
 export class PardonCommand extends BaseGuildCommand {
     public constructor() {
@@ -28,7 +28,7 @@ export class PardonCommand extends BaseGuildCommand {
         });
     }
 
-    public async pardon(context: GuildCommandContext, member: GuildMember, flags: FlagResult): Promise<string> {
+    public async pardon(context: GuildCommandContext, member: Member, flags: FlagResult): Promise<string> {
         const reason = flags.r?.merge().value;
         const count = parse.int(flags.c?.merge().value ?? 1);
 

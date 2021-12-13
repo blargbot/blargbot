@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, guard, humanize } from '@cluster/utils';
 import { StoredGuildEventLogType } from '@core/types';
-import { EmbedFieldData, KnownChannel, MessageEmbedOptions, Role, User, Webhook } from 'discord.js';
+import { EmbedField, EmbedOptions, KnownChannel, Role, User, Webhook } from 'eris';
 
 export class LogCommand extends BaseGuildCommand {
     public constructor() {
@@ -92,14 +92,14 @@ export class LogCommand extends BaseGuildCommand {
         });
 
         if (channel !== undefined)
-            return this.success(`I will now log the following events in ${channel.toString()}:\n${eventStrings.join('\n')}`);
+            return this.success(`I will now log the following events in ${channel.mention}:\n${eventStrings.join('\n')}`);
         return this.success(`I will no longer log the following events:\n${eventStrings.join('\n')}`);
     }
 
-    public async listEvents(context: GuildCommandContext): Promise<MessageEmbedOptions> {
+    public async listEvents(context: GuildCommandContext): Promise<EmbedOptions> {
         const channels = await context.database.guilds.getLogChannels(context.channel.guild.id);
         const ignoreUsers = await context.database.guilds.getLogIgnores(context.channel.guild.id);
-        const ignoreUsersField: EmbedFieldData = {
+        const ignoreUsersField: EmbedField = {
             name: 'Ignored users',
             value: ignoreUsers.size === 0 ? 'No ignored users' : [...ignoreUsers].map(id => `<@${id}> (${id})`).join('\n'),
             inline: true

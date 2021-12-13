@@ -2,7 +2,7 @@ import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { Permissions } from 'discord.js';
+import { Constants } from 'eris';
 
 export class ChannelSetPermsSubtag extends Subtag {
     public constructor() {
@@ -28,7 +28,7 @@ export class ChannelSetPermsSubtag extends Subtag {
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222;1024;2048}',
                     exampleOut: '11111111111111111',
                     returns: 'id',
-                    execute: (ctx, [channel, type, entityId, allow, deny]) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.int(allow.value), parse.int(deny.value))
+                    execute: (ctx, [channel, type, entityId, allow, deny]) => this.channelSetPerms(ctx, channel.value, type.value, entityId.value, parse.bigInt(allow.value), parse.bigInt(deny.value))
                 }
             ]
         });
@@ -37,7 +37,7 @@ export class ChannelSetPermsSubtag extends Subtag {
     public async channelDeleteOverwrite(
         context: BBTagContext,
         channelStr: string,
-        type: string,
+        typeStr: string,
         item: string
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr);
@@ -48,18 +48,17 @@ export class ChannelSetPermsSubtag extends Subtag {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        const permission = channel.permissionsFor(context.authorizer);
-        if (permission?.has('MANAGE_CHANNELS') !== true)
+        const permission = channel.permissionsOf(context.authorizer);
+        if (permission.has('manageChannels') !== true)
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        if (!['member', 'role'].includes(type))
-            throw new BBTagRuntimeError('Type must be member or role');
+        const type = this.getOverwriteType(typeStr);
 
         //TODO lookup for items, argumentsshould be allowed to be usernames / channelnames
         try {
-            const override = channel.permissionOverwrites.cache.get(item);
+            const override = channel.permissionOverwrites.get(item);
             if (override !== undefined && override.type === type)
-                await override.delete();
+                await channel.deletePermission(override.id);
             return channel.id;
         } catch (e: unknown) {
             throw new BBTagRuntimeError('Failed to edit channel: no perms');
@@ -71,8 +70,8 @@ export class ChannelSetPermsSubtag extends Subtag {
         channelStr: string,
         typeStr: string,
         entityId: string,
-        allow: number,
-        deny: number
+        allow: bigint | undefined,
+        deny: bigint | undefined
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr);
 
@@ -82,40 +81,37 @@ export class ChannelSetPermsSubtag extends Subtag {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        const permission = channel.permissionsFor(context.authorizer);
-        if (permission?.has('MANAGE_CHANNELS') !== true)
+        const permission = channel.permissionsOf(context.authorizer);
+        if (permission.has('manageChannels') !== true)
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        if (!['member', 'role'].includes(typeStr))
-            throw new BBTagRuntimeError('Type must be member or role');
-        const type: 'member' | 'role' = typeStr as 'member' | 'role';
-
+        const type = this.getOverwriteType(typeStr);
         try {
             const fullReason = discordUtil.formatAuditReason(
                 context.user,
                 context.scopes.local.reason ?? ''
             );
-            const overwrite = channel.permissionOverwrites.cache.get(entityId);
+            const overwrite = channel.permissionOverwrites.get(entityId);
             if (overwrite !== undefined && overwrite.type === type) {
-                if (isNaN(allow) && isNaN(deny)) {
-                    await overwrite.edit({});//* Feel like this shouldn't be here but backwards compatibility
+                if (allow === undefined && deny === undefined) {
+                    // NOOP
                 } else {
-                    const allowed = new Permissions(BigInt(isNaN(allow) ? 0 : Math.floor(allow))).toArray();
-                    const denied = new Permissions(BigInt(isNaN(deny) ? 0 : Math.floor(deny))).toArray();
-                    await overwrite.edit(
-                        Object.fromEntries([
-                            ...Object.keys(Permissions.FLAGS).map(k => [k, null] as const),
-                            ...allowed.map(str => [str, true] as const),
-                            ...denied.map(str => [str, false] as const)
-                        ]),
-                        fullReason
-                    );
+                    await channel.editPermission(overwrite.id, allow ?? 0n, deny ?? 0n, type, fullReason);
                 }
             }
             return channel.id;
         } catch (err: unknown) {
             context.logger.error(err);
             throw new BBTagRuntimeError('Failed to edit channel: no perms');
+        }
+    }
+
+    private getOverwriteType(typeStr: string): Constants['PermissionOverwriteTypes'][keyof Constants['PermissionOverwriteTypes']] {
+
+        switch (typeStr) {
+            case 'member': return Constants.PermissionOverwriteTypes.USER;
+            case 'role': return Constants.PermissionOverwriteTypes.ROLE;
+            default: throw new BBTagRuntimeError('Type must be member or role');
         }
     }
 }

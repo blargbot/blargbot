@@ -1,9 +1,10 @@
 import { ClusterUtilities } from '@cluster';
 import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
 import { CommandType, commandTypeDetails, guard, randChoose } from '@cluster/utils';
+import { SendContent } from '@core/types';
 import { ImageResult } from '@image/types';
 import cahData from '@res/cah.json';
-import { Guild, MessageOptions, TextBasedChannels, User } from 'discord.js';
+import { Guild, KnownTextableChannel, User } from 'eris';
 
 export class CAHCommand extends BaseGlobalImageCommand {
     public constructor() {
@@ -27,7 +28,7 @@ export class CAHCommand extends BaseGlobalImageCommand {
         });
     }
 
-    public async isVisible(util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User): Promise<boolean> {
+    public async isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> {
         if (!await super.isVisible(util, location, user))
             return false;
 
@@ -54,13 +55,13 @@ export class CAHCommand extends BaseGlobalImageCommand {
         return await this.renderImage(context, 'cah', { black: black.text.replaceAll('_', '______'), white: white });
     }
 
-    public listPacks(unofficial: boolean): MessageOptions {
+    public listPacks(unofficial: boolean): SendContent {
         const packNames = unofficial ? packs.all : packs.official;
         return {
             content: this.info('These are the packs I know about:'),
             files: [
                 {
-                    attachment: packNames.join('\n'),
+                    file: packNames.join('\n'),
                     name: 'cah-packs.txt'
                 }
             ]

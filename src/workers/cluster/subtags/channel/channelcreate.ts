@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
-import { GuildChannelCreateOptions, OverwriteData } from 'discord.js';
+import { Constants, CreateChannelOptions, Overwrite } from 'eris';
 
 export class ChannelCreateSubtag extends Subtag {
     public constructor() {
@@ -46,10 +46,10 @@ export class ChannelCreateSubtag extends Subtag {
         optionsJson: string
     ): Promise<string> {
         const permissions = context.permissions;
-        if (permissions.has('MANAGE_CHANNELS') !== true)
+        if (permissions.has('manageChannels') !== true)
             throw new BBTagRuntimeError('Author cannot create channels');
 
-        let options: GuildChannelCreateOptions;
+        let options: CreateChannelOptions;
         try {
             const mapped = mapOptions(optionsJson);
             if (!mapped.valid)
@@ -59,13 +59,13 @@ export class ChannelCreateSubtag extends Subtag {
             throw new BBTagRuntimeError('Invalid JSON');
         }
 
-        options.type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : undefined;
+        const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : Constants.ChannelTypes.GUILD_TEXT;
 
         try {
             options.reason = context.scopes.local.reason !== undefined
                 ? discordUtil.formatAuditReason(context.user, context.scopes.local.reason)
                 : options.reason;
-            const channel = await context.guild.channels.create(name, options);
+            const channel = await context.guild.createChannel(name, type, options);
             return channel.id;
         } catch (err: unknown) {
             context.logger.error(err);
@@ -75,32 +75,31 @@ export class ChannelCreateSubtag extends Subtag {
 }
 
 const channelTypes = {
-    text: 'GUILD_TEXT',
-    voice: 'GUILD_VOICE',
-    category: 'GUILD_CATEGORY',
-    news: 'GUILD_NEWS',
-    store: 'GUILD_STORE'
+    text: Constants.ChannelTypes.GUILD_TEXT,
+    voice: Constants.ChannelTypes.GUILD_VOICE,
+    category: Constants.ChannelTypes.GUILD_CATEGORY,
+    news: Constants.ChannelTypes.GUILD_NEWS,
+    store: Constants.ChannelTypes.GUILD_STORE
 } as const;
 
 const mapOptions = mapping.json(
-    mapping.object<GuildChannelCreateOptions>({
+    mapping.object<CreateChannelOptions>({
         bitrate: mapping.number.optional,
         nsfw: mapping.boolean.optional,
-        parent: ['parentID', mapping.string.optional],
+        parentID: mapping.string.optional,
         rateLimitPerUser: mapping.number.optional,
         topic: mapping.string.optional,
         userLimit: mapping.number.optional,
-        permissionOverwrites: mapping.array<OverwriteData>(
-            mapping.object<OverwriteData>({
-                allow: mapping.bigInt.optional,
-                deny: mapping.bigInt.optional,
+        permissionOverwrites: mapping.array(
+            mapping.object<Overwrite>({
+                allow: mapping.bigInt.optional.map(v => v ?? 0n),
+                deny: mapping.bigInt.optional.map(v => v ?? 0n),
                 id: mapping.string,
                 type: mapping.in('role', 'member')
+                    .map(v => v === 'member' ? 'user' : v)
+                    .map(v => Constants.PermissionOverwriteTypes[v.toUpperCase()])
             })
         ).optional,
-        reason: mapping.string.optional,
-        position: mapping.number.optional,
-        type: [undefined],
-        rtcRegion: [undefined]
+        reason: mapping.string.optional
     })
 );

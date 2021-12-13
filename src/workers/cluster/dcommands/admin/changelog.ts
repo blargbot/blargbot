@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
 import { guard, humanize } from '@core/utils';
-import { Webhook } from 'discord.js';
+import { Constants, Webhook } from 'eris';
 
 export class ChangelogCommand extends BaseGuildCommand {
     public constructor() {
@@ -30,10 +30,10 @@ export class ChangelogCommand extends BaseGuildCommand {
             return this.info('This channel is already subscribed to my changelog updates!');
 
         const changelogChannel = await context.util.getChannel(context.config.discord.channels.changelog);
-        if (changelogChannel === undefined || !guard.isGuildChannel(changelogChannel) || changelogChannel.type !== 'GUILD_NEWS')
+        if (changelogChannel === undefined || !guard.isGuildChannel(changelogChannel) || changelogChannel.type !== Constants.ChannelTypes.GUILD_NEWS)
             return this.error('It looks like I cant find the where to get changelog messages from! Please try again later.');
 
-        await changelogChannel.addFollower(context.channel.id, `${humanize.fullName(context.author)} subscribed channel to changelog updates`);
+        await context.discord.followChannel(context.channel.id, changelogChannel.id);
         return this.success('This channel will now get my changelog updates!');
     }
 
@@ -42,18 +42,19 @@ export class ChangelogCommand extends BaseGuildCommand {
         if (typeof current !== 'object')
             return current ?? this.info('This channel is not subscribed to my changelog updates!');
 
-        await current.delete(`${humanize.fullName(context.author)} unsubscribed channel to changelog updates`);
+        await context.discord.deleteWebhook(current.id, undefined, `${humanize.fullName(context.author)} unsubscribed channel to changelog updates`);
         return this.success('This channel will no longer get my changelog updates!');
     }
 
     private async getCurrentSubscription(context: GuildCommandContext): Promise<Webhook | string | undefined> {
-        if (context.channel.guild.me?.permissions.has('MANAGE_WEBHOOKS') !== true)
+        const self = context.channel.guild.members.get(context.discord.user.id);
+        if (self?.permissions.has('manageWebhooks') !== true)
             return this.error('I need the manage webhooks permission to subscribe this channel to changelogs!');
 
-        const webhooks = await context.channel.guild.fetchWebhooks();
+        const webhooks = await context.channel.guild.getWebhooks();
         return webhooks.find(hook =>
-            hook.sourceChannel?.id === context.config.discord.channels.changelog
-            && hook.channelId === context.channel.id
+            hook.source_channel?.id === context.config.discord.channels.changelog
+            && hook.channel_id === context.channel.id
         );
     }
 }

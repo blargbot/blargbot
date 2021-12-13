@@ -42,6 +42,6 @@ export class UserStatusSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return member.presence?.status ?? 'offline';
+        return member.status ?? 'offline';
     }
 }

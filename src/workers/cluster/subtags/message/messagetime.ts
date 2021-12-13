@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
 export class MessageTimeSubtag extends Subtag {
@@ -65,13 +65,13 @@ export class MessageTimeSubtag extends Subtag {
             const message = await context.util.getMessage(channel.id, messageStr);
             if (message === undefined)
                 throw new MessageNotFoundError(channel, messageStr);
-            return moment(message.createdTimestamp).format(format);
+            return moment(message.timestamp).format(format);
         } catch (e: unknown) {
             throw new MessageNotFoundError(channel, messageStr);
         }
     }
 
-    public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {
+    public enrichDocs(embed: EmbedOptions): EmbedOptions {
         embed.fields = [{
             name: '**Usage**',
             value: '```{messagetime}```Returns the send time of the executing message in unix milliseconds.\n\n' +
@@ -91,16 +91,16 @@ export class MessageTimeSubtag extends Subtag {
             value: '```{messagetime;<messageid>;[format]}```' +
                 '`format` defaults to `x` if left empty or omitted\n\n' +
                 'Returns the send time of `messageid` in `format`.\n\n' +
-                '**Example code:**\n> Message 11111111111111 was sent at {messagetime;11111111111111;HH:mm}\n' +
-                '**Example out:**\n> Message 11111111111111 was sent at 18:06'
+                '**Example code:**\n> KnownMessage 11111111111111 was sent at {messagetime;11111111111111;HH:mm}\n' +
+                '**Example out:**\n> KnownMessage 11111111111111 was sent at 18:06'
         },
         {
             name: '\u200b',
             value: '```{messagetime;<channel>;<messageid>;[format]}```' +
                 '`format` defaults to `x`\n\n' +
                 'Returns the send time of `messageid` from `channel` in `format`.\n\n' +
-                '**Example code:**\n> Message 11111111111111 in #support was sent at {messagetime;support;11111111111111;HH:mm}\n' +
-                '**Example out:**\n> Message 11111111111111 in #support was sent at 18:09'
+                '**Example code:**\n> KnownMessage 11111111111111 in #support was sent at {messagetime;support;11111111111111;HH:mm}\n' +
+                '**Example out:**\n> KnownMessage 11111111111111 in #support was sent at 18:09'
         }];
         return embed;
     }

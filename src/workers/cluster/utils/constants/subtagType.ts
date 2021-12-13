@@ -52,7 +52,7 @@ export const tagTypeDetails: SubtagPropertiesSet = {
         desc: 'Subtags that integrate with blargbots custom functions.'
     },
     [SubtagType.MESSAGE]: {
-        name: 'Message',
+        name: 'KnownMessage',
         desc: 'Subtags that interact with messages.'
     },
     [SubtagType.CHANNEL]: {

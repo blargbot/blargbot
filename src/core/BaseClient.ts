@@ -1,14 +1,17 @@
 import { BaseUtilities } from '@core/BaseUtilities';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
-import { Client as Discord, ClientOptions as DiscordOptions } from 'discord.js';
+import { Client as Discord, ClientOptions as DiscordOptions, OAuthTeamMemberState } from 'eris';
 
 import { Configuration } from './Configuration';
+import { getRange } from './utils';
 
 export class BaseClient {
+    #owners: readonly string[] = [];
     public readonly util: BaseUtilities;
     public readonly database: Database;
-    public readonly discord: Discord<true>;
+    public readonly discord: Discord;
+    public get ownerIds(): readonly string[] { return this.#owners; }
 
     public constructor(
         public readonly logger: Logger,
@@ -17,7 +20,7 @@ export class BaseClient {
     ) {
         this.util = new BaseUtilities(this);
 
-        this.discord = new Discord(discordConfig);
+        this.discord = new Discord(this.config.discord.token, discordConfig);
 
         this.database = new Database({
             logger: this.logger,
@@ -30,14 +33,35 @@ export class BaseClient {
     }
 
     public async start(): Promise<void> {
+        const shards = getRange(this.discord.options.firstShardID ?? 0, this.discord.options.lastShardID ?? 0);
+        const remainingShards = new Set(shards);
+
         await Promise.all([
             this.database.connect().then(() => this.logger.init('database connected')),
-            new Promise(resolve => this.discord.once('ready', resolve)),
-            this.discord.login(this.config.discord.token).then(() => this.logger.init('discord connected'))
+            new Promise(resolve => this.discord.once('ready', resolve)).then(() => this.logger.init('discord connected')),
+            createShardReadyWaiter(this.discord, remainingShards, this.logger),
+            this.discord.connect()
         ]);
-        await this.discord.application.fetch();
-        //? Caches home guild and bot user perms for logging channels
-        const homeGuild = await this.discord.guilds.fetch(this.config.discord.guilds.home);
-        await homeGuild.members.fetch(this.discord.user.id);
+        const application = await this.discord.getOAuthApplication();
+        this.#owners = application.team?.members.filter(m => m.membership_state === OAuthTeamMemberState.ACCEPTED).map(m => m.user.id)
+            ?? [application.owner.id];
     }
+}
+
+function createShardReadyWaiter(discord: Discord, shards: Set<number>, logger: Logger): Promise<void> {
+    return new Promise(res => {
+        function shardReady(shardId: number): void {
+            if (!shards.delete(shardId))
+                return;
+
+            if (shards.size > 0)
+                return logger.info('Shard', shardId, 'is ready. Remaining shards: [', ...[...shards].flatMap(s => [s, ',']).slice(0, -1), ']');
+
+            discord.off('shardReady', shardReady);
+            logger.info('Shard', shardId, 'is ready. All shards ready');
+            res();
+        }
+
+        discord.on('shardReady', shardReady);
+    });
 }

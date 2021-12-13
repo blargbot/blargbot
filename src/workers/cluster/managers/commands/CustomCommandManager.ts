@@ -4,7 +4,7 @@ import { CommandGetCoreResult, CommandSignature, FlagDefinition, ICommand } from
 import { guard, humanize } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { CommandPermissions, NamedGuildCommandTag, StoredTag } from '@core/types';
-import { Guild, TextBasedChannels, User } from 'discord.js';
+import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { BaseCommandManager } from './BaseCommandManager';
 
@@ -15,7 +15,7 @@ export class CustomCommandManager extends BaseCommandManager<NamedGuildCommandTa
         super(cluster);
     }
 
-    protected async getCore(name: string, location?: Guild | TextBasedChannels): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
+    protected async getCore(name: string, location?: Guild | KnownTextableChannel): Promise<CommandGetCoreResult<NamedGuildCommandTag>> {
         if (location === undefined)
             return { state: 'NOT_FOUND' };
 
@@ -37,7 +37,7 @@ export class CustomCommandManager extends BaseCommandManager<NamedGuildCommandTa
         return { state: 'FOUND', detail: new NormalizedCommandTag(command, impl) };
     }
 
-    protected async allCommandNames(location?: Guild | TextBasedChannels): Promise<Iterable<string>> {
+    protected async allCommandNames(location?: Guild | KnownTextableChannel): Promise<Iterable<string>> {
         if (location === undefined)
             return [];
 

@@ -1,8 +1,9 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { CommandType } from '@cluster/utils';
+import { CommandType, discordUtil } from '@cluster/utils';
 import { guard, humanize } from '@core/utils';
-import { KnownChannel, MessageEmbedOptions, MessageMentionOptions, NewsChannel, Role, TextChannel, ThreadChannel } from 'discord.js';
+import { AllowedMentions, Constants, EmbedOptions, KnownChannel, KnownGuildTextableChannel, Role } from 'eris';
+import moment from 'moment-timezone';
 
 export class AnnounceCommand extends BaseGuildCommand {
     public constructor() {
@@ -62,13 +63,13 @@ export class AnnounceCommand extends BaseGuildCommand {
                 return this.error('Oops, seems like your config changes didnt save! Please try again.');
         }
 
-        const topRole = context.message.member.roles.color;
-        const mentions: MessageMentionOptions = config.role.id === config.role.guild.id
-            ? { parse: ['everyone'] }
+        const color = discordUtil.getMemberColor(context.message.member);
+        const mentions: AllowedMentions = config.role.id === config.role.guild.id
+            ? { everyone: true }
             : { roles: [config.role.id] };
-        const embed: MessageEmbedOptions = {
+        const embed: EmbedOptions = {
             description: message,
-            color: topRole?.color,
+            color: color,
             author: {
                 name: 'Announcement',
                 icon_url: 'http://i.imgur.com/zcGyun6.png',
@@ -76,13 +77,13 @@ export class AnnounceCommand extends BaseGuildCommand {
             },
             footer: {
                 text: humanize.fullName(context.author),
-                icon_url: context.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
+                icon_url: context.author.avatarURL
             },
-            timestamp: context.timestamp
+            timestamp: moment(context.timestamp).toDate()
         };
 
         const announcement = await context.send(config.channel, {
-            content: config.role.toString(),
+            content: config.role.mention,
             embeds: [embed],
             allowedMentions: mentions
         });
@@ -90,7 +91,7 @@ export class AnnounceCommand extends BaseGuildCommand {
         if (announcement === undefined)
             return this.error('I wasnt able to send that message for some reason!');
 
-        if (announcement.crosspostable)
+        if (announcement.channel.type === Constants.ChannelTypes.GUILD_NEWS)
             await announcement.crosspost();
 
         return this.success('I\'ve sent the announcement!');
@@ -111,10 +112,10 @@ export class AnnounceCommand extends BaseGuildCommand {
             return this.error(`${reason}. Please use \`${context.prefix}announce configure\` to reconfigure your announcements`);
         }
 
-        return this.info(`Announcements will be sent in ${config.channel.toString()} and will mention ${config.role.toString()}`);
+        return this.info(`Announcements will be sent in ${config.channel.mention} and will mention ${config.role.mention}`);
     }
 
-    private async getConfigSafe(context: GuildCommandContext): Promise<{ channel: TextChannel | NewsChannel | ThreadChannel | undefined; role: Role | undefined; } | undefined> {
+    private async getConfigSafe(context: GuildCommandContext): Promise<{ channel: KnownGuildTextableChannel | undefined; role: Role | undefined; } | undefined> {
         const config = await context.database.guilds.getAnnouncements(context.channel.guild.id);
         if (config === undefined)
             return undefined;
@@ -122,7 +123,7 @@ export class AnnounceCommand extends BaseGuildCommand {
         let channel = await context.util.getChannel(config.channel);
         const role = await context.util.getRole(context.channel.guild.id, config.role);
 
-        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel) || guard.isThreadChannel(channel) && channel.archived === true)
+        if (channel === undefined || !guard.isGuildChannel(channel) || !guard.isTextableChannel(channel) || guard.isThreadChannel(channel) && channel.threadMetadata.archived)
             channel = undefined;
 
         return { channel, role };
@@ -131,7 +132,7 @@ export class AnnounceCommand extends BaseGuildCommand {
     private async configureCore(context: GuildCommandContext, channel: KnownChannel | undefined, role: Role | undefined): Promise<boolean | string> {
         if (channel === undefined) {
             const result = await context.queryChannel({
-                choices: context.channel.guild.channels.cache.filter(guard.isTextableChannel).values(),
+                choices: context.channel.guild.channels.filter(guard.isTextableChannel).values(),
                 prompt: this.info('Please select the channel that announcements should be put in.')
             });
 

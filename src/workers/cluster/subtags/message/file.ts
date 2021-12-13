@@ -20,8 +20,8 @@ export class FileSubtag extends Subtag {
     }
 
     public attachFile(context: BBTagContext, fileName: string, fileContent: string): void {
-        context.state.file = { attachment: fileContent, name: fileName };
+        context.state.file = { file: fileContent, name: fileName };
         if (fileContent.startsWith('buffer:'))
-            context.state.file.attachment = Buffer.from(fileContent.substring(7), 'base64');
+            context.state.file.file = Buffer.from(fileContent.substring(7), 'base64');
     }
 }

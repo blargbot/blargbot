@@ -2,7 +2,7 @@ import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { CommandDefinition, CommandOptions, CommandResult } from '@cluster/types';
 import { commandTypeDetails, runMiddleware } from '@cluster/utils';
 import { IMiddleware, NextMiddleware } from '@core/types';
-import { Guild, TextBasedChannels, User } from 'discord.js';
+import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { BaseCommand } from './BaseCommand';
 import { CommandContext } from './CommandContext';
@@ -35,7 +35,7 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
         this.handler = new InvokeCommandHandlerMiddleware(signatures, this);
     }
 
-    public async isVisible(util: ClusterUtilities, location?: Guild | TextBasedChannels, user?: User): Promise<boolean> {
+    public async isVisible(util: ClusterUtilities, location?: Guild | KnownTextableChannel, user?: User): Promise<boolean> {
         return await commandTypeDetails[this.category].isVisible(util, location, user);
     }
 

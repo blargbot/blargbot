@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { ClusterStats, ShardStats } from '@cluster/types';
 import { CommandType, discordUtil, guard, humanize } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
 export class ShardsCommand extends BaseGlobalCommand {
@@ -35,23 +35,23 @@ export class ShardsCommand extends BaseGlobalCommand {
             ]
         });
     }
-    public async showAllShards(context: CommandContext, downOnly: boolean): Promise<string | MessageEmbedOptions> {
+    public async showAllShards(context: CommandContext, downOnly: boolean): Promise<string | EmbedOptions> {
         const shardConfig = context.config.discord.shards;
         const clusterCount = Math.ceil(shardConfig.max / shardConfig.perCluster);
         const clusterData = await context.cluster.worker.request('getClusterStats', undefined);
         let clusters = Object.values(clusterData).filter(guard.hasValue);
         if (downOnly) {
             clusters = clusters.filter(cluster => {
-                const downedShards = cluster.shards.filter(shard => shard.status !== 'READY');
+                const downedShards = cluster.shards.filter(shard => shard.status !== 'ready');
                 return downedShards.length > 0;
             });
             if (clusters.length === 0)
                 return this.info('No shards are currently down!');
             clusters = clusters.map(c => {
-                c.shards.filter(s => s.status !== 'READY');
+                c.shards.filter(s => s.status !== 'ready');
                 return {
                     ...c,
-                    shards: c.shards.filter(s => s.status !== 'READY')
+                    shards: c.shards.filter(s => s.status !== 'ready')
                 };
             });
         }
@@ -78,7 +78,7 @@ export class ShardsCommand extends BaseGlobalCommand {
         };
     }
 
-    public async showGuildShards(context: CommandContext, guildIDStr: string): Promise<string | MessageEmbedOptions> {
+    public async showGuildShards(context: CommandContext, guildIDStr: string): Promise<string | EmbedOptions> {
         if (!/\d{17,23}/.test(guildIDStr))
             return this.error(`\`${guildIDStr}\` is not a valid guildID`);
         const guildData = await discordUtil.cluster.getGuildClusterStats(context.cluster, guildIDStr);
@@ -90,7 +90,7 @@ export class ShardsCommand extends BaseGlobalCommand {
     public async showClusterShards(
         context: CommandContext,
         clusterID: number
-    ): Promise<string | MessageEmbedOptions> {
+    ): Promise<string | EmbedOptions> {
         const clusterStats = await discordUtil.cluster.getClusterStats(context.cluster, clusterID);
         const isValidCluster = Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster) - 1 >= clusterID && clusterID >= 0;
         if (clusterStats === undefined)
@@ -98,8 +98,8 @@ export class ShardsCommand extends BaseGlobalCommand {
         return this.shardEmbed(context, clusterStats, '');
     }
 
-    public shardEmbed(context: CommandContext, clusterData: ClusterStats, embedDesc: string, shard?: ShardStats): MessageEmbedOptions {
-        const embed: MessageEmbedOptions = {};
+    public shardEmbed(context: CommandContext, clusterData: ClusterStats, embedDesc: string, shard?: ShardStats): EmbedOptions {
+        const embed: EmbedOptions = {};
         embed.title = shard !== undefined ? `Shard ${shard.id}` : `Cluster ${clusterData.id}`;
         embed.url = context.util.websiteLink('shards');
         embed.description = embedDesc;

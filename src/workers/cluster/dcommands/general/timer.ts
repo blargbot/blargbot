@@ -25,7 +25,7 @@ export class TimerCommand extends BaseGlobalCommand {
         if (duration.asMilliseconds() <= 0)
             return this.error('I cant set a timer for 0 seconds!');
 
-        const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : context.author.dmChannel ?? await context.author.createDM();
+        const channel = inChannel && guard.isGuildCommandContext(context) ? context.channel : await context.author.getDMChannel();
         const source = inChannel && guard.isGuildCommandContext(context) ? context.channel.guild.id : context.author.id;
 
         await context.cluster.timeouts.insert('timer', {

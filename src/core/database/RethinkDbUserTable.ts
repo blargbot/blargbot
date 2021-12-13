@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { MutableStoredUser, StoredUser, StoredUsername, StoredUserSettings, UserTable, UserTodo } from '@core/types';
 import { guard } from '@core/utils';
-import { User } from 'discord.js';
+import { User } from 'eris';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';
 
@@ -101,7 +101,7 @@ export class RethinkDbUserTable extends RethinkDbCachedTable<MutableStoredUser, 
                 currentUser.discriminator = update.discriminator = user.discriminator;
             }
 
-            const avatarUrl = user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 });
+            const avatarUrl = user.avatarURL;
             if (currentUser.avatarURL !== avatarUrl) {
                 currentUser.avatarURL = update.avatarURL = avatarUrl;
             }

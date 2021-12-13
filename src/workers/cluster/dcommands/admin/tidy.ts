@@ -2,8 +2,7 @@ import { BaseGuildCommand, SingleThreadMiddleware } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
 import { createSafeRegExp, guard, pluralise as p } from '@core/utils';
-import { Snowflake } from 'catflake';
-import { Collection, Constants, DiscordAPIError, Message, TextBasedChannels, User } from 'discord.js';
+import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 
@@ -55,7 +54,7 @@ export class TidyCommand extends BaseGuildCommand {
             case 'INVALID_USER': return this.error('I couldnt find some of the users you gave!');
         }
 
-        const messages: Message[] = [];
+        const messages: KnownMessage[] = [];
         let searched = 0;
         let nextTyping = await checkTyping(context.channel, moment());
         for await (const message of fetchMessages(context)) {
@@ -124,16 +123,16 @@ interface TidyOptions {
 }
 
 interface DeleteResult {
-    success: Set<Message>;
-    failed: Set<Message>;
+    success: Set<KnownMessage>;
+    failed: Set<KnownMessage>;
     nextTyping: Moment;
 }
 
-async function buildFilter(context: GuildCommandContext, options: TidyOptions): Promise<'INVALID_REGEX' | 'INVALID_USER' | ((message: Message) => boolean)> {
-    const conditions: Array<(message: Message) => boolean> = [];
+async function buildFilter(context: GuildCommandContext, options: TidyOptions): Promise<'INVALID_REGEX' | 'INVALID_USER' | ((message: KnownMessage) => boolean)> {
+    const conditions: Array<(message: KnownMessage) => boolean> = [];
 
     if (options.attachments)
-        conditions.push(m => m.attachments.size > 0);
+        conditions.push(m => m.attachments.length > 0);
     if (options.botsOnly)
         conditions.push(m => m.author.bot);
     if (options.embeds)
@@ -163,19 +162,19 @@ async function buildFilter(context: GuildCommandContext, options: TidyOptions): 
 
 }
 
-async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<Message> {
+async function* fetchMessages(context: GuildCommandContext): AsyncGenerator<KnownMessage> {
     let lastId: string | undefined = context.message.id;
-    let messages: Collection<Snowflake, Message>;
+    let messages: KnownMessage[];
     do {
         await context.channel.sendTyping();
-        messages = await context.channel.messages.fetch({ before: lastId, limit: 100 }, { cache: false, force: true });
+        messages = await context.channel.getMessages({ before: lastId, limit: 100 });
         for (const message of messages.values())
             yield message;
-        lastId = messages.last()?.id;
-    } while (messages.size > 0);
+        lastId = messages[messages.length - 1].id;
+    } while (messages.length > 0);
 }
 
-function buildSummary(messages: Iterable<Message>): string {
+function buildSummary(messages: Iterable<KnownMessage>): string {
     const grouped = {} as Record<string, { user: User; count: number; }>;
     for (const message of messages) {
         grouped[message.author.id] ??= { user: message.author, count: 0 };
@@ -184,11 +183,11 @@ function buildSummary(messages: Iterable<Message>): string {
 
     return Object.values(grouped)
         .sort((a, b) => b.count - a.count)
-        .map(({ user, count }) => `${user.toString()} - ${count} ${p(count, 'message')}`)
+        .map(({ user, count }) => `${user.mention} - ${count} ${p(count, 'message')}`)
         .join('\n');
 }
 
-async function checkTyping(channel: TextBasedChannels, nextTyping: Moment): Promise<Moment> {
+async function checkTyping(channel: KnownTextableChannel, nextTyping: Moment): Promise<Moment> {
     if (!nextTyping.isSameOrBefore(moment()))
         return nextTyping;
 
@@ -196,7 +195,7 @@ async function checkTyping(channel: TextBasedChannels, nextTyping: Moment): Prom
     return moment().add(5, 's');
 }
 
-async function deleteMessages(context: GuildCommandContext, nextTyping: Moment, messages: Message[]): Promise<DeleteResult> {
+async function deleteMessages(context: GuildCommandContext, nextTyping: Moment, messages: KnownMessage[]): Promise<DeleteResult> {
     const remaining = new Set(messages);
     const result: DeleteResult = { success: new Set(), failed: new Set(), nextTyping };
 
@@ -206,27 +205,27 @@ async function deleteMessages(context: GuildCommandContext, nextTyping: Moment, 
     return result;
 }
 
-async function bulkDelete(context: GuildCommandContext, messages: Set<Message>, result: DeleteResult): Promise<void> {
+async function bulkDelete(context: GuildCommandContext, messages: Set<KnownMessage>, result: DeleteResult): Promise<void> {
     const cutoff = moment().add(-2, 'weeks').add(10, 'minutes');
-    const within2Weeks = [...messages].filter(m => cutoff.isBefore(m.createdTimestamp));
+    const within2Weeks = [...messages].filter(m => cutoff.isBefore(m.createdAt));
     while (within2Weeks.length > 0) {
         result.nextTyping = await checkTyping(context.channel, result.nextTyping);
         try {
             const toDelete = [...new Set(within2Weeks.splice(0, 100))];
-            await context.channel.bulkDelete(toDelete.map(m => m.id));
+            await context.channel.deleteMessages(toDelete.map(m => m.id));
             toDelete.forEach(message => {
                 result.success.add(message);
                 messages.delete(message);
             });
         } catch (err: unknown) {
-            if (err instanceof DiscordAPIError && err.code === Constants.APIErrors.MISSING_PERMISSIONS)
+            if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
                 return;
             throw err;
         }
     }
 }
 
-async function deleteIndividual(context: GuildCommandContext, messages: Set<Message>, result: DeleteResult): Promise<void> {
+async function deleteIndividual(context: GuildCommandContext, messages: Set<KnownMessage>, result: DeleteResult): Promise<void> {
     const promises = [];
     let state: 'discover' | 'noperms' | 'deleteall' = 'discover';
     for (const message of messages) {
@@ -254,18 +253,18 @@ async function deleteIndividual(context: GuildCommandContext, messages: Set<Mess
     await Promise.all(promises);
 }
 
-async function deleteIndividualSafe(context: GuildCommandContext, message: Message, result: DeleteResult): Promise<'SUCCESS' | 'NO_PERMS' | 'FAILED'> {
+async function deleteIndividualSafe(context: GuildCommandContext, message: KnownMessage, result: DeleteResult): Promise<'SUCCESS' | 'NO_PERMS' | 'FAILED'> {
     try {
         await message.delete();
         result.success.add(message);
         return 'SUCCESS';
     } catch (err: unknown) {
-        if (err instanceof DiscordAPIError) {
+        if (err instanceof DiscordRESTError) {
             switch (err.code) {
-                case Constants.APIErrors.UNKNOWN_MESSAGE:
+                case ApiError.UNKNOWN_MESSAGE:
                     result.success.add(message);
                     return 'FAILED';
-                case Constants.APIErrors.MISSING_PERMISSIONS:
+                case ApiError.MISSING_PERMISSIONS:
                     result.failed.add(message);
                     return 'NO_PERMS';
                 default:

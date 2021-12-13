@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { discordUtil, guard, humanize } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { StoredGuildEventLogType } from '@core/types';
-import { DiscordAPIError, EmbedFieldData, Guild, GuildAuditLogs, GuildAuditLogsAction, GuildMember, GuildTextBasedChannels, Message, MessageEmbedAuthor, MessageEmbedOptions, PartialMessage, PartialUser, User } from 'discord.js';
+import { ApiError, AuditLogActionType, DiscordRESTError, EmbedAuthor, EmbedField, EmbedOptions, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 
@@ -22,7 +22,7 @@ export class EventLogManager {
             await this.logEvent('memberunban', channel, this.eventLogEmbed('User Was Unbanned', user, 0x17c914));
     }
 
-    public async userJoined(member: GuildMember): Promise<void> {
+    public async userJoined(member: Member): Promise<void> {
         const channel = await this.getLogChannel('memberjoin', member.guild.id);
         if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id)) {
             await this.logEvent('memberjoin', channel, this.eventLogEmbed('User Joined', member.user, 0x1ad8bc, {
@@ -33,17 +33,17 @@ export class EventLogManager {
         }
     }
 
-    public async userLeft(member: GuildMember): Promise<void> {
+    public async userLeft(member: Member): Promise<void> {
         const channel = await this.getLogChannel('memberleave', member.guild.id);
         if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id))
             await this.logEvent('memberleave', channel, this.eventLogEmbed('User Left', member.user, 0xd8761a));
     }
 
-    public async messagesDeleted(messages: ReadonlyArray<Message | PartialMessage>): Promise<void> {
+    public async messagesDeleted(messages: readonly PossiblyUncachedMessage[]): Promise<void> {
         if (messages.length === 0)
             return;
 
-        const guildId = 'guild' in messages[0].channel ? messages[0].channel.guild.id : undefined;
+        const guildId = 'guild' in messages[0].channel ? messages[0].channel.guild?.id : undefined;
         if (guildId === undefined)
             return;
 
@@ -57,8 +57,8 @@ export class EventLogManager {
             return;
 
         await Promise.all(details.map(d => this.logMessageDeleted(guildId, d, logChannel)));
-        await this.logEvent('messagedelete', logChannel, this.eventLogEmbed('Message Deleted', undefined, 0xaf1d1d, {
-            description: 'Bulk Message Delete',
+        await this.logEvent('messagedelete', logChannel, this.eventLogEmbed('KnownMessage Deleted', undefined, 0xaf1d1d, {
+            description: 'Bulk KnownMessage Delete',
             fields: [
                 { name: 'Count', value: `${messages.length}`, inline: true },
                 { name: 'Channel', value: messages.map(m => `<#${m.channel.id}>`).join('\n'), inline: true }
@@ -66,8 +66,8 @@ export class EventLogManager {
         }));
     }
 
-    public async messageDeleted(message: Message | PartialMessage): Promise<void> {
-        const guildId = 'guild' in message.channel ? message.channel.guild.id : undefined;
+    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
+        const guildId = 'guild' in message.channel ? message.channel.guild?.id : undefined;
         if (guildId === undefined)
             return;
 
@@ -82,38 +82,38 @@ export class EventLogManager {
         await this.logMessageDeleted(guildId, details, logChannel);
     }
 
-    public async messageUpdated(message: Message | PartialMessage, oldMessage: Message | PartialMessage): Promise<void> {
+    public async messageUpdated(message: Message<PossiblyUncachedTextableChannel>, oldMessage: OldMessage | null): Promise<void> {
         const guildId = guard.isGuildMessage(message) ? message.channel.guild.id : undefined;
         if (guildId === undefined)
             return;
 
         const logChannel = await this.getLogChannel('messageupdate', guildId);
-        if (logChannel === undefined || message.author !== null && await this.isExempt(guildId, message.author.id))
+        if (logChannel === undefined || await this.isExempt(guildId, message.author.id))
             return;
 
         const lastUpdate = moment(message.editedTimestamp ?? message.createdAt);
 
-        const embed = this.eventLogEmbed('Message Updated', message.author ?? undefined, 0x771daf, {
+        const embed = this.eventLogEmbed('KnownMessage Updated', message.author, 0x771daf, {
             fields: [
-                { name: 'Message Id', value: message.id, inline: true },
+                { name: 'KnownMessage Id', value: message.id, inline: true },
                 { name: 'Channel', value: message.channel.toString(), inline: true },
-                await this.getContentEmbedField(guildId, 'Old Message', oldMessage.content ?? undefined, lastUpdate, 2),
-                await this.getContentEmbedField(guildId, 'New Message', message.content ?? undefined, lastUpdate, 2)
+                await this.getContentEmbedField(guildId, 'Old KnownMessage', oldMessage?.content, lastUpdate, 2),
+                await this.getContentEmbedField(guildId, 'New KnownMessage', message.content, lastUpdate, 2)
             ]
         });
         await this.logEvent('messageupdate', logChannel, embed);
     }
 
-    public async roleRemoved(member: GuildMember, roleId: string): Promise<void> {
+    public async roleRemoved(member: Member, roleId: string): Promise<void> {
         const channel = await this.getLogChannel(`role:${roleId}`, member.guild.id);
         if (channel === undefined || await this.isExempt(member.guild.id, member.user.id))
             return;
 
         const now = moment();
-        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, 'ROLE_UPDATE');
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.ROLE_UPDATE);
         const audit = auditEvents?.entries.find(e => e.target === member && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
-        const moderator = audit?.executor ?? undefined;
+        const moderator = audit?.member ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Removed', member.user, 0, {
             fields: [
                 { name: 'Role', value: `<@&${roleId}> (${roleId})`, inline: true },
@@ -123,16 +123,16 @@ export class EventLogManager {
         }));
     }
 
-    public async roleAdded(member: GuildMember, roleId: string): Promise<void> {
+    public async roleAdded(member: Member, roleId: string): Promise<void> {
         const channel = await this.getLogChannel(`role:${roleId}`, member.guild.id);
         if (channel === undefined || await this.isExempt(member.guild.id, member.user.id))
             return;
 
         const now = moment();
-        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, 'ROLE_UPDATE');
+        const auditEvents = await tryGetAuditLogs(member.guild, 50, undefined, AuditLogActionType.ROLE_UPDATE);
         const audit = auditEvents?.entries.find(e => e.target === member && moment(e.createdAt).isAfter(now.add(-1, 'second')));
         const reason = audit?.reason ?? undefined;
-        const moderator = audit?.executor ?? undefined;
+        const moderator = audit?.member ?? undefined;
         await this.logEvent(`role:${roleId}`, channel, this.eventLogEmbed('Special Role Added', member.user, 0, {
             fields: [
                 { name: 'Role', value: `<@&${roleId}> (${roleId})`, inline: true },
@@ -142,19 +142,19 @@ export class EventLogManager {
         }));
     }
 
-    public async nicknameUpdated(member: GuildMember, oldNickname: string | undefined): Promise<void> {
+    public async nicknameUpdated(member: Member, oldNickname: string | undefined): Promise<void> {
         const channel = await this.getLogChannel('nickupdate', member.guild.id);
         if (channel !== undefined && !await this.isExempt(member.guild.id, member.user.id)) {
             await this.logEvent('nickupdate', channel, this.eventLogEmbed('Nickname Updated', member.user, 0xd8af1a, {
                 fields: [
-                    { name: 'Old Nickname', value: oldNickname ?? member.user.username, inline: true },
-                    { name: 'New Nickname', value: member.nickname ?? member.user.username, inline: true }
+                    { name: 'Old Nickname', value: oldNickname ?? member.username, inline: true },
+                    { name: 'New Nickname', value: member.nick ?? member.username, inline: true }
                 ]
             }));
         }
     }
 
-    public async userTagUpdated(user: User, oldUser: PartialUser | User): Promise<void> {
+    public async userTagUpdated(user: User, oldUser: User): Promise<void> {
         const embed = this.eventLogEmbed('Username Updated', user, 0xd8af1a, {
             fields: [
                 { name: 'Old Name', value: humanize.fullName(oldUser), inline: true },
@@ -163,7 +163,7 @@ export class EventLogManager {
         });
 
         await Promise.all(
-            this.cluster.discord.guilds.cache
+            this.cluster.discord.guilds
                 .map(async guild => {
                     if (await this.cluster.util.getMember(guild, user.id) === undefined)
                         return;
@@ -175,15 +175,15 @@ export class EventLogManager {
         );
     }
 
-    public async userAvatarUpdated(user: User, oldUser: PartialUser | User): Promise<void> {
+    public async userAvatarUpdated(user: User, oldUser: User): Promise<void> {
         const embed = this.eventLogEmbed('Avatar Updated', user, 0xd8af1a, {
-            image: { url: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }) },
-            thumbnail: { url: oldUser.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }) },
+            image: { url: user.avatarURL },
+            thumbnail: { url: oldUser.avatarURL },
             description: '➡️ Old avatar\n⬇️ New avatar'
         });
 
         await Promise.all(
-            this.cluster.discord.guilds.cache
+            this.cluster.discord.guilds
                 .map(async guild => {
                     if (await this.cluster.util.getMember(guild, user.id) === undefined)
                         return;
@@ -196,7 +196,7 @@ export class EventLogManager {
 
     }
 
-    private async getContentEmbedField(guildId: string, name: string, content: string | undefined, timestamp: Moment | undefined, contentCount = 1): Promise<EmbedFieldData> {
+    private async getContentEmbedField(guildId: string, name: string, content: string | undefined, timestamp: Moment | undefined, contentCount = 1): Promise<EmbedField> {
         switch (content) {
             case undefined: {
                 if (await this.cluster.database.guilds.getSetting(guildId, 'makelogs') !== true)
@@ -214,10 +214,10 @@ export class EventLogManager {
         }
     }
 
-    private async logMessageDeleted(guildId: string, message: MessageDetails, logChannel: GuildTextBasedChannels): Promise<void> {
-        const embed = this.eventLogEmbed('Message Deleted', message.author, 0xaf1d1d, {
+    private async logMessageDeleted(guildId: string, message: MessageDetails, logChannel: KnownGuildTextableChannel): Promise<void> {
+        const embed = this.eventLogEmbed('KnownMessage Deleted', message.author, 0xaf1d1d, {
             fields: [
-                { name: 'Message Id', value: message.id, inline: true },
+                { name: 'KnownMessage Id', value: message.id, inline: true },
                 { name: 'Channel', value: `<#${message.channelId}>`, inline: true },
                 await this.getContentEmbedField(guildId, 'Content', message.content, undefined)
             ]
@@ -226,7 +226,7 @@ export class EventLogManager {
         await this.logEvent('messagedelete', logChannel, embed);
     }
 
-    private async getMessageDetails(message: Message | { id: string; channel: { id: string; }; }): Promise<MessageDetails> {
+    private async getMessageDetails(message: KnownMessage | { id: string; channel: { id: string; }; }): Promise<MessageDetails> {
         if ('content' in message)
             return { ...message, authorId: message.author.id, channelId: message.channel.id };
 
@@ -250,7 +250,7 @@ export class EventLogManager {
         };
     }
 
-    private eventLogEmbed(title: string, user: User | string | undefined, colour: number, partial: Partial<MessageEmbedOptions> = {}): MessageEmbedOptions {
+    private eventLogEmbed(title: string, user: User | string | undefined, colour: number, partial: Partial<EmbedOptions> = {}): EmbedOptions {
         return {
             ...partial,
             title: `ℹ️ ${title}`,
@@ -260,7 +260,7 @@ export class EventLogManager {
         };
     }
 
-    private async getLogChannel(type: StoredGuildEventLogType, guildId: string): Promise<GuildTextBasedChannels | undefined> {
+    private async getLogChannel(type: StoredGuildEventLogType, guildId: string): Promise<KnownGuildTextableChannel | undefined> {
         const channelId = await this.cluster.database.guilds.getLogChannel(guildId, type);
         if (channelId === undefined)
             return undefined;
@@ -277,7 +277,7 @@ export class EventLogManager {
         return userIds.every(id => ignoreUsers.has(id));
     }
 
-    private async logEvent(type: StoredGuildEventLogType, channel: GuildTextBasedChannels, embed: MessageEmbedOptions): Promise<void> {
+    private async logEvent(type: StoredGuildEventLogType, channel: KnownGuildTextableChannel, embed: EmbedOptions): Promise<void> {
         const result = await this.cluster.util.send(channel, { embeds: [embed] });
         if (result !== undefined)
             return;
@@ -285,13 +285,13 @@ export class EventLogManager {
         if (!await this.cluster.database.guilds.setLogChannel(channel.guild.id, type, undefined))
             return;
 
-        const defaultChannel = channel.guild.channels.cache.find(guard.isTextableChannel);
+        const defaultChannel = channel.guild.channels.find(guard.isTextableChannel);
         if (defaultChannel !== undefined)
             await this.cluster.util.send(defaultChannel, `❌ Disabled logging of the \`${type}\` event because the channel <#${channel.id}> doesnt exist or I dont have permission to post messages in it!`);
     }
 }
 
-function toEmbedAuthor(util: BaseUtilities, user: string | User | undefined): MessageEmbedAuthor | undefined {
+function toEmbedAuthor(util: BaseUtilities, user: string | User | undefined): EmbedAuthor | undefined {
     switch (typeof user) {
         case 'undefined': return undefined;
         case 'string': return {
@@ -301,11 +301,11 @@ function toEmbedAuthor(util: BaseUtilities, user: string | User | undefined): Me
     }
 }
 
-async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, type?: GuildAuditLogsAction): Promise<GuildAuditLogs | undefined> {
+async function tryGetAuditLogs(guild: Guild, limit?: number, before?: string, type?: AuditLogActionType): Promise<GuildAuditLog | undefined> {
     try {
-        return await guild.fetchAuditLogs({ limit, before, type });
+        return await guild.getAuditLog({ limit, before, actionType: type });
     } catch (err: unknown) {
-        if (err instanceof DiscordAPIError && err.code === 50013 /* Missing Permissions */)
+        if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
             return undefined;
         throw err;
     }

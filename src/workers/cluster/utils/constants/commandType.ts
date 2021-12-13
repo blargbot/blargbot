@@ -1,6 +1,6 @@
 import { CommandPropertiesSet } from '@cluster/types';
 import { guard } from '@cluster/utils';
-import { Guild } from 'discord.js';
+import { Guild } from 'eris';
 
 import { defaultStaff } from './defaultStaff';
 

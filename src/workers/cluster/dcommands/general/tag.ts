@@ -3,8 +3,8 @@ import { getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand, CommandContext } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@cluster/utils';
-import { SendPayload, StoredTag } from '@core/types';
-import { EmbedField, EmbedFieldData, FileOptions, MessageEmbedOptions, MessageOptions, User } from 'discord.js';
+import { SendContent, SendPayload, StoredTag } from '@core/types';
+import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
@@ -170,7 +170,7 @@ export class TagCommand extends BaseGuildCommand {
         tagName: string,
         input: string | undefined,
         debug: boolean
-    ): Promise<string | MessageOptions | undefined> {
+    ): Promise<string | SendContent | undefined> {
         const match = await this.requestReadableTag(context, tagName, false);
         if (typeof match !== 'object')
             return match;
@@ -200,7 +200,7 @@ export class TagCommand extends BaseGuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | MessageOptions | undefined> {
+    ): Promise<string | SendContent | undefined> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
             inputRaw: input,
@@ -226,10 +226,11 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
         if (content === undefined) {
-            const firstAttachment = context.message.attachments.first();
-            if (firstAttachment !== undefined)
-                if (firstAttachment.name?.endsWith('.bbtag') === true || firstAttachment.name?.endsWith('.txt') === true)
+            if (context.message.attachments.length > 0) {
+                const firstAttachment = context.message.attachments[0];
+                if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
                     content = await (await fetch(firstAttachment.url)).text();
+            }
         }
 
         return await this.saveTag(context, 'edited', match.name, content, match);
@@ -254,10 +255,11 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
         if (content === undefined) {
-            const firstAttachment = context.message.attachments.first();
-            if (firstAttachment !== undefined)
-                if (firstAttachment.name?.endsWith('.bbtag') === true || firstAttachment.name?.endsWith('.txt') === true)
+            if (context.message.attachments.length > 0) {
+                const firstAttachment = context.message.attachments[0];
+                if (firstAttachment.filename.endsWith('.bbtag') || firstAttachment.filename.endsWith('.txt'))
                     content = await (await fetch(firstAttachment.url)).text();
+            }
         }
         return await this.saveTag(context, 'set', match.name, content, match.tag);
     }
@@ -284,7 +286,7 @@ export class TagCommand extends BaseGuildCommand {
         return this.success(`The \`${from.name}\` tag has been renamed to \`${to.name}\`.`);
     }
 
-    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
+    public async getRawTag(context: GuildCommandContext, tagName: string | undefined): Promise<string | { content: string; files: FileContent[]; } | undefined> {
         const match = await this.requestReadableTag(context, tagName);
         if (typeof match !== 'object')
             return match;
@@ -297,7 +299,7 @@ export class TagCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: match.name + '.bbtag',
-                        attachment: match.content
+                        file: match.content
                     }
                 ]
             };
@@ -400,15 +402,15 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        const fields: EmbedFieldData[] = [];
-        const embed: MessageEmbedOptions = {
+        const fields: EmbedField[] = [];
+        const embed: EmbedOptions = {
             title: `__**Tag | ${match.name}**__`,
             fields: fields,
             color: 978212,
             timestamp: new Date(),
             footer: {
                 text: humanize.fullName(context.author),
-                icon_url: context.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
+                icon_url: context.author.avatarURL
             }
         };
 
@@ -739,10 +741,10 @@ export class TagCommand extends BaseGuildCommand {
         user: User,
         messageId: string,
         details: Record<string, string>): Promise<void> {
-        const files: FileOptions[] = [];
+        const files: FileContent[] = [];
         const fields: EmbedField[] = [];
         if ('tag' in details && 'content' in details)
-            files.push({ name: details.tag + '.bbtag', attachment: details.content });
+            files.push({ name: details.tag + '.bbtag', file: details.content });
 
         for (const [key, detail] of Object.entries(details)) {
             fields.push({
@@ -760,7 +762,7 @@ export class TagCommand extends BaseGuildCommand {
                     fields,
                     author: {
                         name: humanize.fullName(user),
-                        icon_url: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
+                        icon_url: user.avatarURL,
                         url: context.util.websiteLink(`user/${user.id}`)
                     },
                     timestamp: new Date(),

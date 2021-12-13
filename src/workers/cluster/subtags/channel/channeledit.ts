@@ -3,7 +3,7 @@ import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, mapping, SubtagType } from '@cluster/utils';
 import { TypeMapping } from '@core/types';
 import { guard } from '@core/utils';
-import { ChannelData, GuildChannels, ThreadEditData } from 'discord.js';
+import { EditChannelOptions, KnownGuildChannel } from 'eris';
 
 export class ChannelEditSubtag extends Subtag {
     public constructor() {
@@ -43,31 +43,25 @@ export class ChannelEditSubtag extends Subtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
 
-        const permission = channel.permissionsFor(context.authorizer);
+        const permission = channel.permissionsOf(context.authorizer);
 
-        if (permission?.has('MANAGE_CHANNELS') !== true)
+        if (permission.has('manageChannels') !== true)
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
-        return guard.isThreadChannel(channel)
-            ? await this.channelEditCore(context, channel, options, mapThreadOptions)
-            : await this.channelEditCore(context, channel, options, mapChannelOptions);
+        const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
+        return await this.channelEditCore(context, channel, options, mapping);
     }
 
-    private async channelEditCore<T>(
+    private async channelEditCore(
         context: BBTagContext,
-        channel: Extract<GuildChannels, { edit(data: T, fullReason?: string): Promise<unknown>; }>,
+        channel: KnownGuildChannel,
         editJson: string,
-        mapping: TypeMapping<T>
+        mapping: TypeMapping<EditChannelOptions>
     ): Promise<string> {
-        let options: T;
-        try {
-            const mapped = mapping(editJson);
-            if (!mapped.valid)
-                throw new BBTagRuntimeError('Invalid JSON');
-            options = mapped.value;
-        } catch (e: unknown) {
+        const mapped = mapping(editJson);
+        if (!mapped.valid)
             throw new BBTagRuntimeError('Invalid JSON');
-        }
+        const options = mapped.value;
 
         try {
             const fullReason = discordUtil.formatAuditReason(
@@ -84,30 +78,43 @@ export class ChannelEditSubtag extends Subtag {
 }
 
 const mapChannelOptions = mapping.json(
-    mapping.object<ChannelData>({
+    mapping.object<EditChannelOptions>({
         bitrate: mapping.number.optional,
         name: mapping.string.optional,
         nsfw: mapping.boolean.optional,
-        parent: ['parentID', mapping.string.optional],
+        parentID: mapping.string.optional,
         rateLimitPerUser: mapping.number.optional,
         topic: mapping.string.optional,
         userLimit: mapping.number.optional,
         defaultAutoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
-        lockPermissions: mapping.boolean.optional,
-        permissionOverwrites: [undefined],
-        position: mapping.number.optional,
+        locked: mapping.boolean.optional,
         rtcRegion: [undefined],
-        type: [undefined]
+        archived: [undefined],
+        autoArchiveDuration: [undefined],
+        icon: [undefined],
+        invitable: [undefined],
+        ownerID: [undefined],
+        videoQualityMode: [undefined]
     })
 );
 
 const mapThreadOptions = mapping.json(
-    mapping.object<ThreadEditData>({
+    mapping.object<EditChannelOptions>({
         archived: mapping.boolean.optional,
         autoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
         locked: mapping.boolean.optional,
         name: mapping.string.optional,
         rateLimitPerUser: mapping.number,
-        invitable: mapping.boolean.optional
+        invitable: mapping.boolean.optional,
+        bitrate: [undefined],
+        defaultAutoArchiveDuration: [undefined],
+        icon: [undefined],
+        nsfw: [undefined],
+        ownerID: [undefined],
+        parentID: [undefined],
+        rtcRegion: [undefined],
+        topic: [undefined],
+        userLimit: [undefined],
+        videoQualityMode: [undefined]
     })
 );

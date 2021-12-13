@@ -1,7 +1,7 @@
 import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
 import { guard } from '@cluster/utils';
 import { ImageResult, TriggeredOptions } from '@image/types';
-import { User } from 'discord.js';
+import { User } from 'eris';
 
 export class TriggeredCommand extends BaseGlobalImageCommand {
     public constructor() {
@@ -25,8 +25,9 @@ export class TriggeredCommand extends BaseGlobalImageCommand {
                     description: 'Shows everyone how triggered you are.',
                     execute: (ctx, _, flags) => this.render(ctx, {
                         avatar: flags.i?.merge().value
-                            ?? ctx.message.attachments.first()?.url
-                            ?? ctx.author.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }),
+                            ?? (ctx.message.attachments.length > 0
+                                ? ctx.message.attachments[0].url
+                                : ctx.author.avatarURL),
                         blur: flags.b !== undefined,
                         greyscale: flags.g !== undefined,
                         horizontal: flags.h !== undefined,
@@ -51,7 +52,7 @@ export class TriggeredCommand extends BaseGlobalImageCommand {
     public async renderUser(context: CommandContext, user: User, options: Omit<TriggeredOptions, 'avatar'>): Promise<ImageResult | string> {
         return await this.render(context, {
             ...options,
-            avatar: user.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
+            avatar: user.avatarURL
         });
     }
 

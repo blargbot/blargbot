@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType, guard } from '@cluster/utils';
-import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
+import { Constants, EmbedField, EmbedOptions } from 'eris';
 
 export class PatchCommand extends BaseGlobalCommand {
     public constructor() {
@@ -31,8 +31,8 @@ export class PatchCommand extends BaseGlobalCommand {
 
         const role = await context.util.getRole(channel.guild, context.config.discord.roles.updates);
         const { major = 0, minor = 0, patch = 0 } = await context.database.vars.get('version') ?? {};
-        const fields: EmbedFieldData[] = [];
-        const embed: MessageEmbedOptions = {
+        const fields: EmbedField[] = [];
+        const embed: EmbedOptions = {
             author: { name: `Version ${major}.${minor}.${patch}` },
             fields: fields,
             color: 0x2df952
@@ -61,7 +61,7 @@ export class PatchCommand extends BaseGlobalCommand {
             return this.info('Patch cancelled');
 
         const changelog = await context.send(channel, {
-            content: role?.toString(),
+            content: role?.mention,
             embeds: [embed],
             allowedMentions: {
                 roles: role === undefined ? undefined : [role.id]
@@ -71,7 +71,7 @@ export class PatchCommand extends BaseGlobalCommand {
         if (changelog === undefined)
             return this.error('I wasnt able to send the patch notes!');
 
-        if (changelog.crosspostable)
+        if (changelog.channel.type === Constants.ChannelTypes.GUILD_NEWS)
             await changelog.crosspost();
 
         return this.success('Done!');

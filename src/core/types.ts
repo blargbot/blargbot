@@ -1,25 +1,26 @@
 import type { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
 import { Logger } from '@core/Logger';
 import { Snowflake } from 'catflake';
-import { ChannelInteraction, Client as Discord, EmbedFieldData, FileOptions, Guild, GuildMember, InteractionButtonOptions, Message, MessageEmbedOptions, MessageOptions, MessageSelectOptionData, TextBasedChannels, User, UserChannelInteraction } from 'discord.js';
+import { AdvancedMessageContent, ChannelInteraction, Client as Discord, Embed, EmbedField, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenuOptions, User, UserChannelInteraction } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 
 import { Binder } from './Binder';
 import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from './Configuration';
 import { WorkerConnection } from './worker';
 
-export type MalformedEmbed = { fields: [EmbedFieldData]; malformed: true; };
+export type MalformedEmbed = { fields: [EmbedField]; malformed: true; };
 export type ModuleResult<TModule> = { names: Iterable<string>; module: TModule; };
-export type DMContext = string | Message | User | GuildMember;
-export type SendContext = UserChannelInteraction | ChannelInteraction | TextBasedChannels | string
-export type SendEmbed = MessageEmbedOptions & { asString?: string; }
-export type SendFiles = FileOptions | FileOptions[]
-export interface SendOptions extends MessageOptions {
+export type DMContext = string | KnownMessage | User | Member;
+export type SendContext = UserChannelInteraction | ChannelInteraction | KnownTextableChannel | string
+export type SendEmbed = EmbedOptions & { asString?: string; }
+export type SendFiles = FileContent | FileContent[]
+export interface SendContent extends AdvancedMessageContent {
     nsfw?: string;
     isHelp?: boolean;
     replyToExecuting?: boolean;
+    files?: FileContent[];
 }
-export type SendPayload = SendOptions | MessageEmbedOptions | string | FileOptions;
+export type SendPayload = SendContent | EmbedOptions | string | FileContent;
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -89,9 +90,9 @@ type ConfirmQueryOptionsFallback<T extends boolean | undefined> = T extends unde
     : { fallback: boolean; };
 
 export interface QueryOptionsBase {
-    context: TextBasedChannels | Message;
+    context: KnownTextableChannel | KnownMessage;
     actors: Iterable<string | User> | string | User;
-    prompt?: string | Omit<SendOptions, 'components'>;
+    prompt?: string | Omit<SendContent, 'components'>;
     timeout?: number;
 }
 
@@ -119,7 +120,7 @@ export type ConfirmQueryOptions<T extends boolean | undefined = undefined> = Con
 
 export interface ChoiceQueryOptions<T> extends QueryOptionsBase {
     placeholder: string;
-    choices: Iterable<Omit<MessageSelectOptionData, 'value'> & { value: T; }>;
+    choices: Iterable<Omit<SelectMenuOptions, 'value'> & { value: T; }>;
 }
 
 export interface TextQueryOptionsBase<T> extends QueryOptionsBase {
@@ -140,12 +141,12 @@ export interface TextQueryOptions extends TextQueryOptionsBase<string> {
 export type SlimTextQueryOptions = Omit<TextQueryOptions, 'context' | 'actors'>;
 
 export interface TextQueryOptionsParser<T> {
-    (message: Message): Promise<TextQueryOptionsParseResult<T>> | TextQueryOptionsParseResult<T>;
+    (message: KnownMessage): Promise<TextQueryOptionsParseResult<T>> | TextQueryOptionsParseResult<T>;
 }
 
 export type TextQueryOptionsParseResult<T> =
     | { readonly success: true; readonly value: T; }
-    | { readonly success: false; readonly error?: string | Omit<SendOptions, 'components'>; }
+    | { readonly success: false; readonly error?: string | Omit<SendContent, 'components'>; }
 
 export interface MultipleQueryOptions<T> extends ChoiceQueryOptions<T> {
     minCount?: number;
@@ -153,19 +154,19 @@ export interface MultipleQueryOptions<T> extends ChoiceQueryOptions<T> {
 }
 
 export interface ChoiceQuery<T> extends QueryBase<ChoiceQueryResult<T>> {
-    prompt: Message | undefined;
+    prompt: KnownMessage | undefined;
 }
 
 export interface MultipleQuery<T> extends QueryBase<MultipleResult<T>> {
-    prompt: Message | undefined;
+    prompt: KnownMessage | undefined;
 }
 
 export interface ConfirmQuery<T extends boolean | undefined = undefined> extends QueryBase<T> {
-    prompt: Message | undefined;
+    prompt: KnownMessage | undefined;
 }
 
 export interface TextQuery<T> extends QueryBase<TextQueryResult<T>> {
-    messages: readonly Message[];
+    messages: readonly KnownMessage[];
 }
 
 export type ChoiceQueryResult<T> = QueryResult<'NO_OPTIONS' | 'TIMED_OUT' | 'CANCELLED' | 'FAILED', T>;
@@ -174,7 +175,7 @@ export type TextQueryResult<T> = QueryResult<'FAILED' | 'TIMED_OUT' | 'CANCELLED
 
 export type QueryButton =
     | string
-    | Partial<Omit<InteractionButtonOptions, 'disabled' | 'type' | 'customId'>>
+    | Partial<Omit<InteractionButton, 'disabled' | 'type' | 'customId'>>
 
 export type EntityQueryOptions<T> =
     | EntityPickQueryOptions<T>
@@ -232,7 +233,7 @@ export interface Suggestion {
     Type: string[];
     Title: string;
     Description: string;
-    Message: string;
+    KnownMessage: string;
     Channel: string;
     Author: string[];
     Edits?: number;
@@ -747,7 +748,7 @@ export interface ChatlogMessage {
     readonly msgid: string;
     readonly channelid: string;
     readonly guildid: string;
-    readonly embeds: unknown[];
+    readonly embeds: Embed[];
 }
 
 export interface Chatlog extends ChatlogMessage {
@@ -782,7 +783,7 @@ export interface BBTagVariable {
 
 export interface DatabaseOptions {
     readonly logger: Logger;
-    readonly discord: Discord<true>;
+    readonly discord: Discord;
     readonly rethink: RethinkConfiguration;
     readonly cassandra: CassandraConfiguration;
     readonly postgres: PostgresConfiguration;
@@ -959,11 +960,13 @@ export interface SuggestionsTable {
 export type TypeMappingResult<T> = { readonly valid: false; } | { readonly valid: true; readonly value: T; };
 export type NormalizedTypeMapping<T, TUnion, TArgs extends unknown[] = []> = TypeMapping<Exclude<T, undefined | null> | TUnion, TArgs>;
 export type TypeMappingImpl<T, TArgs extends unknown[] = []> = (value: unknown, ...args: TArgs) => TypeMappingResult<T>;
+
 export interface TypeMapping<T, TArgs extends unknown[] = []> extends TypeMappingImpl<T, TArgs> {
     readonly required: NormalizedTypeMapping<T, never, TArgs>;
     readonly optional: NormalizedTypeMapping<T, undefined, TArgs>;
     readonly nullable: NormalizedTypeMapping<T, null, TArgs>;
     readonly nullish: NormalizedTypeMapping<T, null | undefined, TArgs>;
+    map<R>(mapping: (value: T) => R): TypeMapping<R, TArgs>;
 }
 
 export type TypeMappings<T, TArgs extends unknown[] = []> = {

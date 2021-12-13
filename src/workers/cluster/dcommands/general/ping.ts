@@ -20,7 +20,7 @@ export class PingCommand extends BaseGlobalCommand {
     public async ping(context: CommandContext): Promise<undefined> {
         const content = messages[randInt(0, messages.length - 1)];
         const message = await context.reply(this.info(content));
-        await message?.edit(this.success(`Pong! (${message.createdTimestamp - context.timestamp}ms)`));
+        await message?.edit(this.success(`Pong! (${message.createdAt - context.timestamp}ms)`));
         return undefined;
     }
 }

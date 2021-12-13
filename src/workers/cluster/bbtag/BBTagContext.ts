@@ -6,7 +6,7 @@ import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { ChoiceQueryResult, EntityPickQueryOptions, NamedGuildCommandTag, StoredTag } from '@core/types';
-import { Base, Client as Discord, Collection, Guild, GuildChannels, GuildMember, GuildTextBasedChannels, MessageAttachment, MessageEmbed, MessageEmbedOptions, Permissions, Role, User } from 'discord.js';
+import { Base, Client as Discord, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -54,16 +54,16 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public readonly callStack: SubtagCallStack;
 
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
-    public get channel(): GuildTextBasedChannels { return this.message.channel; }
-    public get member(): GuildMember { return this.message.member; }
+    public get channel(): KnownGuildTextableChannel { return this.message.channel; }
+    public get member(): Member { return this.message.member; }
     public get guild(): Guild { return this.message.channel.guild; }
     public get user(): User { return this.message.author; }
     public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
     public get database(): Database { return this.engine.database; }
     public get logger(): Logger { return this.engine.logger; }
-    public get permissions(): Permissions { return (this.guild.members.cache.get(this.authorizer) ?? { permissions: new Permissions(undefined) }).permissions; }
+    public get permissions(): Permission { return this.guild.members.get(this.authorizer)?.permissions ?? new Permission(0n); }
     public get util(): ClusterUtilities { return this.engine.util; }
-    public get discord(): Discord<true> { return this.engine.discord; }
+    public get discord(): Discord { return this.engine.discord; }
     public get subtags(): ModuleLoader<Subtag> { return this.engine.subtags; }
     public get cooldownEnd(): Moment { return this.cooldowns.get(this); }
 
@@ -162,7 +162,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return member?.user;
     }
 
-    public async queryMember(query: string, options: FindEntityOptions = {}): Promise<GuildMember | undefined> {
+    public async queryMember(query: string, options: FindEntityOptions = {}): Promise<Member | undefined> {
         return await this.queryEntity(
             query, 'user', 'User',
             async id => await this.util.getMember(this.guild, id),
@@ -182,7 +182,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         );
     }
 
-    public async queryChannel(query: string, options: FindEntityOptions = {}): Promise<GuildChannels | undefined> {
+    public async queryChannel(query: string, options: FindEntityOptions = {}): Promise<KnownGuildChannel | undefined> {
         return await this.queryEntity(
             query, 'channel', 'Channel',
             async id => await this.util.getChannel(this.guild, id),
@@ -255,7 +255,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                     embeds: this.state.embeds !== undefined ? this.state.embeds : undefined,
                     nsfw: this.state.nsfw,
                     allowedMentions: {
-                        parse: disableEveryone ? [] : ['everyone'],
+                        everyone: !disableEveryone,
                         roles: this.isCC ? this.state.allowedMentions.roles : undefined,
                         users: this.isCC ? this.state.allowedMentions.users : undefined
                     },
@@ -317,13 +317,13 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
             message = {
                 id: obj.msg.id,
-                createdTimestamp: obj.msg.timestamp,
+                createdAt: obj.msg.timestamp,
                 content: obj.msg.content,
                 channel: channel,
                 member,
                 author: member.user,
-                attachments: new Collection(obj.msg.attachments.map(att => [att.id, new MessageAttachment(att.url, att.name)])),
-                embeds: obj.msg.embeds.map(e => new MessageEmbed(e))
+                attachments: obj.msg.attachments,
+                embeds: obj.msg.embeds
             };
         }
         const limit = new limits[obj.limit.type]();
@@ -357,12 +357,12 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return {
             msg: {
                 id: this.message.id,
-                timestamp: this.message.createdTimestamp,
+                timestamp: this.message.createdAt,
                 content: this.message.content,
                 channel: serializeEntity(this.channel),
                 member: serializeEntity(this.member),
-                attachments: this.message.attachments.map(a => ({ id: a.id, name: a.name ?? 'file', url: a.url })),
-                embeds: this.message.embeds.map(e => <MessageEmbedOptions>e.toJSON())
+                attachments: this.message.attachments,
+                embeds: this.message.embeds
             },
             isCC: this.isCC,
             state: newState,

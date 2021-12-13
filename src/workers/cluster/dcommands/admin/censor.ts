@@ -1,9 +1,9 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { GuildCensor, GuildTriggerTag } from '@core/types';
+import { GuildCensor, GuildTriggerTag, SendContent } from '@core/types';
 import { codeBlock, guard } from '@core/utils';
-import { KnownChannel, MessageEmbedOptions, MessageOptions, Role, User } from 'discord.js';
+import { EmbedOptions, KnownChannel, Role, User } from 'eris';
 
 export class CensorCommand extends BaseGuildCommand {
     public constructor() {
@@ -170,7 +170,7 @@ export class CensorCommand extends BaseGuildCommand {
 
     public async ignoreUser(context: GuildCommandContext, user: User, ignored: boolean): Promise<string> {
         await context.database.guilds.censorIgnoreUser(context.channel.guild.id, user.id, ignored);
-        return this.success(`${user.toString()} is now exempt from all censors`);
+        return this.success(`${user.mention} is now exempt from all censors`);
     }
 
     public async ignoreChannel(context: GuildCommandContext, channel: KnownChannel, ignored: boolean): Promise<string> {
@@ -178,12 +178,12 @@ export class CensorCommand extends BaseGuildCommand {
             return this.error('The channel must be on this server!');
 
         await context.database.guilds.censorIgnoreChannel(context.channel.guild.id, channel.id, ignored);
-        return this.success(`Messages sent in ${channel.toString()} are now exempt from all censors`);
+        return this.success(`Messages sent in ${channel.mention} are now exempt from all censors`);
     }
 
     public async ignoreRole(context: GuildCommandContext, role: Role, ignored: boolean): Promise<string> {
         await context.database.guilds.censorIgnoreRole(context.channel.guild.id, role.id, ignored);
-        return this.success(`Anyone with the role ${role.toString()} is now exempt from all censors`);
+        return this.success(`Anyone with the role ${role.mention} is now exempt from all censors`);
     }
 
     public async setMessage(context: GuildCommandContext, id: number | undefined, type: string, code: string | undefined): Promise<string> {
@@ -232,7 +232,7 @@ export class CensorCommand extends BaseGuildCommand {
         );
     }
 
-    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string): Promise<string | MessageOptions> {
+    public async getRawMessage(context: GuildCommandContext, id: number | undefined, type: string): Promise<string | SendContent> {
         if (!allowedTypes.has(type))
             return this.error(`\`${type}\` is not a valid type`);
 
@@ -257,7 +257,7 @@ export class CensorCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: `censor-${type}-${id ?? 'default'}.bbtag`,
-                        attachment: rule.content
+                        file: rule.content
                     }
                 ]
             };
@@ -275,7 +275,7 @@ export class CensorCommand extends BaseGuildCommand {
         return this.success(`The next message that you send that triggers censor \`${id}\` will send the debug output here`);
     }
 
-    public async list(context: GuildCommandContext): Promise<MessageEmbedOptions> {
+    public async list(context: GuildCommandContext): Promise<EmbedOptions> {
         const censors = await context.database.guilds.getCensors(context.channel.guild.id) ?? {};
 
         const users = censors.exception?.user ?? [];
@@ -310,7 +310,7 @@ export class CensorCommand extends BaseGuildCommand {
         };
     }
 
-    public async showInfo(context: GuildCommandContext, id: number): Promise<string | MessageEmbedOptions> {
+    public async showInfo(context: GuildCommandContext, id: number): Promise<string | EmbedOptions> {
         const censor = await context.database.guilds.getCensor(context.channel.guild.id, id);
         if (censor === undefined)
             return this.error(`Censor \`${id}\` doesnt exist`);

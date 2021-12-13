@@ -26,7 +26,7 @@ export class GuildSetIconSubtag extends Subtag {
     public async setGuildIcon(context: BBTagContext, image: string): Promise<void> {
         const permission = context.permissions;
 
-        if (!permission.has('MANAGE_GUILD')) {
+        if (!permission.has('manageGuild')) {
             throw new BBTagRuntimeError('Author cannot modify the guild');
         }
 

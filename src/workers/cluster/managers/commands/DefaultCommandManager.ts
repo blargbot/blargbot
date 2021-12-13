@@ -6,7 +6,7 @@ import { metrics } from '@core/Metrics';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { CommandPermissions, NextMiddleware } from '@core/types';
-import { Guild, TextBasedChannels, User } from 'discord.js';
+import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { BaseCommandManager } from './BaseCommandManager';
 
@@ -29,7 +29,7 @@ export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
         ]);
     }
 
-    protected async getCore(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetCoreResult<BaseCommand>> {
+    protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<BaseCommand>> {
         const command = this.modules.get(name);
         if (command === undefined || !await command.isVisible(this.cluster.util, location, user))
             return { state: 'NOT_FOUND' };

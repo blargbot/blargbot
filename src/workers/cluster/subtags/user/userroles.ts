@@ -41,6 +41,6 @@ export class UserRolesSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return member.roles.cache.keys();
+        return member.roles;
     }
 }

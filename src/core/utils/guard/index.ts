@@ -7,6 +7,8 @@ export * from './isClass';
 export * from './isGuildChannel';
 export * from './isGuildMessage';
 export * from './isGuildRelated';
+export * from './isWellKnownChannel';
+export * from './isWellKnownMessage';
 export * from './isLetter';
 export * from './isPrivateChannel';
 export * from './isThreadChannel';

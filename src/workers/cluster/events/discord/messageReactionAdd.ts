@@ -1,38 +1,28 @@
 import { Cluster } from '@cluster';
 import { DiscordEventService } from '@core/serviceTypes';
-import { Message, MessageReaction, PartialMessage, PartialMessageReaction, PartialUser, User } from 'discord.js';
+import { KnownMessage, Member, PossiblyUncachedMessage, Uncached, User } from 'eris';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {
     public constructor(public readonly cluster: Cluster) {
-        super(cluster.discord, 'messageReactionAdd', cluster.logger);
+        super(cluster.discord, 'messageReactionAdd', cluster.logger, async (message, emoji, user) => {
+            const _message = await this.resolveMessage(message);
+            if (_message === undefined)
+                return;
+
+            const _user = await this.resolveUser(user);
+            if (_user === undefined)
+                return;
+
+            await this.cluster.autoresponses.handleWhitelistApproval(_message, emoji, _user);
+            await this.cluster.awaiter.reactions.tryConsume({ message: _message, user: _user, reaction: emoji });
+        });
     }
 
-    public async execute(maybeReaction: MessageReaction | PartialMessageReaction, maybeUser: User | PartialUser): Promise<void> {
-        const message = await this.resolveMessage(maybeReaction.message);
-        if (message === undefined)
-            return;
-
-        const user = await this.resolveUser(maybeUser);
-        if (user === undefined)
-            return;
-
-        await this.cluster.autoresponses.handleWhitelistApproval(message, maybeReaction.emoji, user);
-        await this.cluster.awaiter.reactions.tryConsume({ message, user, reaction: maybeReaction });
+    protected async resolveMessage(message: PossiblyUncachedMessage): Promise<KnownMessage | undefined> {
+        return await this.cluster.util.getMessage(message.channel.id, message.id);
     }
 
-    protected async resolveMessage(message: Message | PartialMessage): Promise<Message | undefined> {
-        if (!message.partial)
-            return message;
-
-        try {
-            return await message.channel.messages.fetch(message.id);
-        } catch (err: unknown) {
-            return undefined;
-        }
-
-    }
-
-    protected async resolveUser(maybeUser: User | PartialUser): Promise<User | undefined> {
-        return !maybeUser.partial ? maybeUser : await this.cluster.util.getUser(maybeUser.id);
+    protected async resolveUser(maybeUser: Member | Uncached): Promise<User | undefined> {
+        return maybeUser instanceof Member ? maybeUser.user : await this.cluster.util.getUser(maybeUser.id);
     }
 }

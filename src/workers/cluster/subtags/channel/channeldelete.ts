@@ -29,9 +29,9 @@ export class ChannelDeleteSubtag extends Subtag {
          */
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');
-        const permission = channel.permissionsFor(context.authorizer);
+        const permission = channel.permissionsOf(context.authorizer);
 
-        if (permission?.has('MANAGE_CHANNELS') !== true)
+        if (permission.has('manageChannels') !== true)
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         try {

@@ -28,6 +28,7 @@ export class Master extends BaseClient {
         options: MasterOptions
     ) {
         super(logger, config, {
+            restMode: true,
             intents: []
         });
 

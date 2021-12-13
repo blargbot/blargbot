@@ -43,7 +43,7 @@ export class ReactRemoveAllSubtag extends Subtag {
         if (!(await context.isStaff || context.ownsMessage(message.id)))
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');
 
-        await message.reactions.removeAll();
+        await message.removeReactions();
         //TODO meaningful output please
     }
 }

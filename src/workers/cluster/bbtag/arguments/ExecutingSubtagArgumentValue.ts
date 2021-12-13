@@ -1,5 +1,5 @@
 import { RuntimeReturnState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../BBTagContext';
 import { ArgumentLengthError } from '../errors';
@@ -66,7 +66,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
     }
 }
 
-function buildLengthEmbed(context: BBTagContext, subtag: SubtagCall, subtagName: string): MessageEmbedOptions {
+function buildLengthEmbed(context: BBTagContext, subtag: SubtagCall, subtagName: string): EmbedOptions {
     return {
         fields: [
             { name: 'Details', value: `Guild: ${context.guild.id}\nChannel: ${context.channel.id}\nAuthor: <@${context.author}>\nUser: <@${context.user.id}>`, inline: true },

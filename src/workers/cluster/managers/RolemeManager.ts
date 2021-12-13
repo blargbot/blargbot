@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { ExecutionResult } from '@cluster/types';
 import { GuildRolemeEntry } from '@core/types';
 import { guard } from '@core/utils';
-import { GuildMessage, Message } from 'discord.js';
+import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
 
 export class RolemeManager {
     public constructor(
@@ -11,7 +11,7 @@ export class RolemeManager {
 
     }
 
-    public async execute(message: Message): Promise<void> {
+    public async execute(message: KnownMessage): Promise<void> {
         if (!guard.isGuildMessage(message))
             return;
 
@@ -24,7 +24,7 @@ export class RolemeManager {
             if (message.content !== roleme.message && (roleme.casesensitive || message.content.toLowerCase() !== roleme.message.toLowerCase()))
                 continue;
 
-            const roleList = new Set(message.member.roles.cache.keys());
+            const roleList = new Set(message.member.roles);
             roleme.add.forEach(r => roleList.add(r));
             roleme.remove.forEach(r => roleList.delete(r));
 
@@ -38,7 +38,7 @@ export class RolemeManager {
         }
     }
 
-    public async invokeMessage(trigger: GuildMessage, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
+    public async invokeMessage(trigger: Message<KnownGuildTextableChannel>, roleme: GuildRolemeEntry): Promise<ExecutionResult> {
         const tag = roleme.output ?? {
             content: 'Your roles have been edited!',
             author: ''

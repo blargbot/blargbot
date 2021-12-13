@@ -3,6 +3,7 @@ import { metrics } from '@core/Metrics';
 import { Chatlog, ChatlogMessage, ChatlogSearchOptions, ChatlogsTable, ChatlogType, TypeMappingResult } from '@core/types';
 import { mapping, snowflake } from '@core/utils';
 import { Client as Cassandra } from 'cassandra-driver';
+import { Embed } from 'eris';
 import { Duration } from 'moment-timezone';
 
 export class CassandraDbChatlogTable implements ChatlogsTable {
@@ -132,7 +133,7 @@ const mapChatlog = mapping.object<Chatlog>({
     attachment: mapping.string.optional,
     channelid: mapping.string,
     content: mapping.string,
-    embeds: mapping.json(mapping.array(mapping.unknown)),
+    embeds: mapping.json(mapping.array(v => mapping.fake<Embed>(v))),
     guildid: mapping.string,
     id: mapping.string,
     msgid: mapping.string,

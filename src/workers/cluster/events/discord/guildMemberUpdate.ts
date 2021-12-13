@@ -1,14 +1,14 @@
 import { Cluster } from '@cluster';
 import { guard } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
-import { GuildMember, PartialGuildMember } from 'discord.js';
+import { Member, OldMember } from 'eris';
 
-export class DiscordGuildMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {
+export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {
     public constructor(protected readonly cluster: Cluster) {
-        super(cluster.discord, 'guildMemberUpdate', cluster.logger);
+        super(cluster.discord, 'guildMemberUpdate', cluster.logger, (_, member, oldMember) => this.execute(member, oldMember));
     }
 
-    public async execute(oldMember: GuildMember | PartialGuildMember, member: GuildMember): Promise<void> {
+    public async execute(member: Member, oldMember: OldMember | null): Promise<void> {
         if (member.id === this.cluster.discord.user.id)
             return;
 
@@ -18,17 +18,17 @@ export class DiscordGuildMemberUpdateHandler extends DiscordEventService<'guildM
             return;
         }
 
-        if (oldMember.nickname !== member.nickname)
-            promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nickname ?? undefined));
+        if (oldMember.nick !== member.nick)
+            promises.push(this.cluster.moderation.eventLog.nicknameUpdated(member, oldMember.nick ?? undefined));
 
-        for (const pair of join(member.roles.cache.values(), oldMember.roles.cache.values())) {
+        for (const pair of join(member.roles, oldMember.roles)) {
             if (pair[0] === pair[1])
                 continue;
 
             if (pair[0] === undefined)
-                promises.push(this.cluster.moderation.eventLog.roleRemoved(member, pair[1].id));
+                promises.push(this.cluster.moderation.eventLog.roleRemoved(member, pair[1]));
             if (pair[1] === undefined)
-                promises.push(this.cluster.moderation.eventLog.roleAdded(member, pair[0].id));
+                promises.push(this.cluster.moderation.eventLog.roleAdded(member, pair[0]));
         }
 
         await Promise.all(promises);

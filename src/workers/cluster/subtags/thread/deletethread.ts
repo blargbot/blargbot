@@ -25,7 +25,7 @@ export class DeleteThreadSubtag extends Subtag {
         if (!guard.isThreadChannel(context.channel))
             throw new BBTagRuntimeError('Not a thread channel');
 
-        if (!context.permissions.has('MANAGE_THREADS'))
+        if (!context.permissions.has('manageThreads'))
             throw new BBTagRuntimeError('I need to be able to manage threads to delete one');
 
         try {

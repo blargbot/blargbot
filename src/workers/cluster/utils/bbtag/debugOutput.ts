@@ -1,11 +1,11 @@
 import { ExecutionResult, SubtagCall } from '@cluster/types';
+import { SendContent } from '@core/types';
 import { codeBlock, humanize } from '@core/utils';
-import { MessageOptions } from 'discord.js';
 import moment from 'moment';
 
 import { stringify } from './stringify';
 
-export function createDebugOutput(result: ExecutionResult): MessageOptions {
+export function createDebugOutput(result: ExecutionResult): SendContent {
     const performance: Record<string, unknown> = {};
     for (const [key, times] of Object.entries(result.duration.subtag)) {
         if (times !== undefined && times.length > 0) {
@@ -28,7 +28,7 @@ export function createDebugOutput(result: ExecutionResult): MessageOptions {
         files: [
             {
                 name: 'bbtag.debug.json',
-                attachment: JSON.stringify({
+                file: JSON.stringify({
                     tagName: result.tagName,
                     userInput: result.input,
                     code: result.source,

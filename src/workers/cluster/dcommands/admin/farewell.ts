@@ -1,7 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
-import { KnownChannel, MessageOptions } from 'discord.js';
+import { SendContent } from '@core/types';
+import { KnownChannel } from 'eris';
 
 export class FarewellCommand extends BaseGuildCommand {
     public constructor() {
@@ -68,7 +69,7 @@ export class FarewellCommand extends BaseGuildCommand {
         return this.success('The farewell message has been set');
     }
 
-    public async getFarewell(context: GuildCommandContext): Promise<string | MessageOptions> {
+    public async getFarewell(context: GuildCommandContext): Promise<string | SendContent> {
         const farewell = await context.database.guilds.getFarewell(context.channel.guild.id);
         if (farewell === undefined)
             return this.error('No farewell message has been set yet!');
@@ -77,7 +78,7 @@ export class FarewellCommand extends BaseGuildCommand {
 
         const message = channel === undefined
             ? 'The raw code for the farewell message is'
-            : `The raw code for the farewell message (sent in ${channel.toString()}) is`;
+            : `The raw code for the farewell message (sent in ${channel.mention}) is`;
         const response = this.info(`${message}:\n${codeBlock(farewell.content)}`);
 
         return guard.checkMessageSize(response)
@@ -87,7 +88,7 @@ export class FarewellCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: 'farewell.bbtag',
-                        attachment: farewell.content
+                        file: farewell.content
                     }
                 ]
             };
@@ -117,10 +118,10 @@ export class FarewellCommand extends BaseGuildCommand {
             return this.error('The farewell channel must be a text channel!');
 
         await context.database.guilds.setSetting(context.channel.guild.id, 'farewellchan', channel.id);
-        return this.success(`Farewell messages will now be sent in ${channel.toString()}`);
+        return this.success(`Farewell messages will now be sent in ${channel.mention}`);
     }
 
-    public async debug(context: GuildCommandContext): Promise<string | MessageOptions> {
+    public async debug(context: GuildCommandContext): Promise<string | SendContent> {
         const result = await context.cluster.greetings.farewell(context.message.member);
         switch (result) {
             case 'CHANNEL_MISSING': return this.error('I wasnt able to locate a channel to sent the message in!');

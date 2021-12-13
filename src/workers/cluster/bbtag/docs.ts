@@ -2,7 +2,7 @@ import { CommandContext } from '@cluster/command';
 import { SubtagHandlerCallSignature, SubtagHandlerValueParameter } from '@cluster/types';
 import { bbtagUtil, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluster/utils';
 import { humanize } from '@core/utils';
-import { EmbedFieldData, MessageEmbedOptions } from 'discord.js';
+import { EmbedField, EmbedOptions } from 'eris';
 
 import { limits } from './limits';
 import { Subtag } from './Subtag';
@@ -13,7 +13,7 @@ interface CategoryChoice {
     value: SubtagType | 'all';
 }
 
-export async function getDocsEmbed(context: CommandContext, topic: string | undefined): Promise<MessageEmbedOptions | string | undefined> {
+export async function getDocsEmbed(context: CommandContext, topic: string | undefined): Promise<EmbedOptions | string | undefined> {
     const embed = await getTopicBody(context, topic);
     if (embed === undefined)
         return undefined;
@@ -25,7 +25,7 @@ export async function getDocsEmbed(context: CommandContext, topic: string | unde
     return embed;
 }
 
-async function getTopicBody(context: CommandContext, topic: string | undefined): Promise<MessageEmbedOptions | string | undefined> {
+async function getTopicBody(context: CommandContext, topic: string | undefined): Promise<EmbedOptions | string | undefined> {
     const words = topic === undefined ? [] : humanize.smartSplit(topic);
 
     switch (words[0]?.toLowerCase()) {
@@ -179,7 +179,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
     }
 }
 
-function toField(subtag: Subtag, signature: SubtagHandlerCallSignature, index: number): EmbedFieldData {
+function toField(subtag: Subtag, signature: SubtagHandlerCallSignature, index: number): EmbedField {
     let description = codeBlock(bbtagUtil.stringifyParameters(subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .flatMap<SubtagHandlerValueParameter>(p => 'nested' in p ? p.nested : [p])
@@ -201,7 +201,7 @@ function toField(subtag: Subtag, signature: SubtagHandlerCallSignature, index: n
     return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
 }
 
-function subtagDocs(context: CommandContext, subtag: Subtag): MessageEmbedOptions {
+function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
     const description = [];
     if (typeof subtag.deprecated === 'string')
         description.push(`**This subtag is deprecated and has been replaced by {${subtag.deprecated}}**`);
@@ -213,7 +213,7 @@ function subtagDocs(context: CommandContext, subtag: Subtag): MessageEmbedOption
         description.push(subtag.desc);
 
     const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
-    const limitField: EmbedFieldData = { name: '__Usage limits__', value: '' };
+    const limitField: EmbedField = { name: '__Usage limits__', value: '' };
 
     for (const limitClass of Object.values(limits)) {
         const limit = new limitClass();
@@ -275,7 +275,7 @@ async function lookupSubtag(context: CommandContext, input: string): Promise<Sub
     }
 }
 
-async function subtagsEmbed(context: CommandContext, input?: string): Promise<MessageEmbedOptions | string> {
+async function subtagsEmbed(context: CommandContext, input?: string): Promise<EmbedOptions | string> {
     const categories = Object.values(SubtagType)
         .filter((p): p is SubtagType => typeof p !== 'string')
         .filter(p => tagTypeDetails[p].hidden !== true);
@@ -333,7 +333,7 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Me
 
 }
 
-async function categoriesEmbed(context: CommandContext, categories: SubtagType[]): Promise<MessageEmbedOptions | string> {
+async function categoriesEmbed(context: CommandContext, categories: SubtagType[]): Promise<EmbedOptions | string> {
     const mappedCategories: CategoryChoice[] = [{
         label: 'All',
         description: 'Displays all subtags',

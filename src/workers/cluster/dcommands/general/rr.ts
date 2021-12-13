@@ -29,8 +29,8 @@ export class RussianRouletteCommand extends BaseGlobalCommand {
             context: context.message,
             actors: context.author,
             prompt: `You load ${p(bullets, 'a', numMap[bullets])} ${p(bullets, 'bullet')} into your revolver, give it a spin, and place it against your head`,
-            confirm: { label: 'Put the gun down', emoji: '😅' },
-            cancel: { label: 'Pull the trigger', emoji: '😖' },
+            confirm: { label: 'Put the gun down', emoji: { name: '😅' } },
+            cancel: { label: 'Pull the trigger', emoji: { name: '😖' } },
             fallback: true // "cancel" is the positive action here
         });
 

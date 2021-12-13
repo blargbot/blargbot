@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
-import { EmbedFieldData, MessageEmbed, MessageEmbedOptions } from 'discord.js';
+import { EmbedField, EmbedOptions } from 'eris';
 
 export class EditSubtag extends Subtag {
     public constructor() {
@@ -51,7 +51,7 @@ export class EditSubtag extends Subtag {
             throw new ChannelNotFoundError(channelStr);
 
         let content: string | undefined;
-        let embeds: MessageEmbed[] | MessageEmbedOptions[] | undefined;
+        let embeds: EmbedOptions[] | undefined;
         if (embedStr !== undefined) {
             embeds = parse.embed(embedStr);
             content = contentStr;
@@ -78,7 +78,7 @@ export class EditSubtag extends Subtag {
             if (embedStr === '_delete') embeds = [];
 
             if (content.trim() === '' && embeds.length === 0)
-                throw new BBTagRuntimeError('Message cannot be empty');
+                throw new BBTagRuntimeError('KnownMessage cannot be empty');
             try {
                 await message.edit({
                     content,
@@ -92,8 +92,8 @@ export class EditSubtag extends Subtag {
         }
     }
 
-    public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {
-        const limitField = <EmbedFieldData>embed.fields?.pop();
+    public enrichDocs(embed: EmbedOptions): EmbedOptions {
+        const limitField = <EmbedField>embed.fields?.pop();
 
         embed.fields = [
             {

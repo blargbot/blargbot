@@ -1,8 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
+import { SendContent } from '@core/types';
 import { humanize } from '@core/utils';
-import { MessageOptions } from 'discord.js';
 
 export class IntervalCommand extends BaseGuildCommand {
     public constructor() {
@@ -68,7 +68,7 @@ export class IntervalCommand extends BaseGuildCommand {
         return this.success('The interval has been deleted');
     }
 
-    public async getRaw(context: GuildCommandContext): Promise<string | MessageOptions> {
+    public async getRaw(context: GuildCommandContext): Promise<string | SendContent> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return this.error('There is no interval currently set up!');
@@ -81,7 +81,7 @@ export class IntervalCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: 'interval.bbtag',
-                        attachment: interval.content
+                        file: interval.content
                     }
                 ]
             };
@@ -96,7 +96,7 @@ export class IntervalCommand extends BaseGuildCommand {
         return this.success('Your permissions will now be used when the interval runs');
     }
 
-    public async debug(context: GuildCommandContext): Promise<string | MessageOptions> {
+    public async debug(context: GuildCommandContext): Promise<string | SendContent> {
         const interval = await context.database.guilds.getInterval(context.channel.guild.id);
         if (interval === undefined)
             return this.error('There is no interval currently set up!');

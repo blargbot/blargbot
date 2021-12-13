@@ -2,14 +2,17 @@ import { guard } from '@cluster/utils';
 import { Logger } from '@core/Logger';
 import { metrics } from '@core/Metrics';
 import { IMiddleware, NextMiddleware } from '@core/types';
-import { Message } from 'discord.js';
+import { Client as Discord, KnownMessage } from 'eris';
 
-export class IgnoreSelfMiddleware implements IMiddleware<Message, boolean> {
-    public constructor(private readonly logger: Logger) {
+export class IgnoreSelfMiddleware implements IMiddleware<KnownMessage, boolean> {
+    readonly #discord: Discord;
+
+    public constructor(private readonly logger: Logger, discord: Discord) {
+        this.#discord = discord;
     }
 
-    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
-        if (context.author.id !== context.client.user?.id) {
+    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
+        if (context.author.id !== this.#discord.user.id) {
             metrics.messageCounter.inc();
             return await next();
         }

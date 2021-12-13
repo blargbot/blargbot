@@ -1,5 +1,5 @@
 import { humanize } from '@cluster/utils';
-import { KnownChannel } from 'discord.js';
+import { KnownChannel } from 'eris';
 
 import { BBTagRuntimeError } from './BBTagRuntimeError';
 

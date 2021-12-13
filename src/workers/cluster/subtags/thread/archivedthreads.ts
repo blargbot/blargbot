@@ -28,6 +28,6 @@ export class ArchivedThreadsSubtag extends Subtag {
         if (!guard.isThreadableChannel(channel))
             throw new InvalidChannelError(channel);
 
-        return (await channel.threads.fetchArchived()).threads.map(t => t.id);
+        return (await channel.getArchivedThreads('public')).threads.map(t => t.id);
     }
 }

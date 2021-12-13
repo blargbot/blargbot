@@ -4,9 +4,9 @@ import { BaseGuildCommand } from '@cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
 import { Configuration } from '@core/Configuration';
-import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendPayload } from '@core/types';
+import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
-import { FileOptions, MessageEmbedOptions, MessageOptions, Role } from 'discord.js';
+import { EmbedOptions, FileContent, Role } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
@@ -158,7 +158,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
         content: string,
         input: string,
         debug: boolean
-    ): Promise<string | MessageOptions | undefined> {
+    ): Promise<string | SendContent | undefined> {
         const result = await context.bbtag.execute(content, {
             message: context.message,
             inputRaw: input,
@@ -185,7 +185,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
         commandName: string,
         input: string | undefined,
         debug: boolean
-    ): Promise<string | MessageOptions | undefined> {
+    ): Promise<string | SendContent | undefined> {
         const match = await this.requestReadableCommand(context, commandName, false);
         if (typeof match !== 'object')
             return match;
@@ -264,7 +264,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
         return this.success(`The \`${from.name}\` custom command has been renamed to \`${to.name}\`.`);
     }
 
-    public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string; files: FileOptions[]; } | undefined> {
+    public async getRawCommand(context: GuildCommandContext, commandName: string | undefined): Promise<string | { content: string; files: FileContent[]; } | undefined> {
         const match = await this.requestReadableCommand(context, commandName);
         if (typeof match !== 'object')
             return match;
@@ -280,13 +280,13 @@ export class CustomCommandCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: match.name + '.bbtag',
-                        attachment: match.content
+                        file: match.content
                     }
                 ]
             };
     }
 
-    public async listCommands(context: GuildCommandContext): Promise<{ embeds: [MessageEmbedOptions]; } | string | undefined> {
+    public async listCommands(context: GuildCommandContext): Promise<{ embeds: [EmbedOptions]; } | string | undefined> {
         const grouped: Record<string, string[]> = {};
         for await (const command of context.cluster.commands.custom.list(context.channel.guild)) {
             for await (const role of this.getRoles(context, command)) {
@@ -316,7 +316,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
         if (guard.isGuildCommandContext(context)) {
             for (const roleStr of command.roles) {
                 const role = await context.util.getRole(context.channel.guild, roleStr)
-                    ?? context.channel.guild.roles.cache.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
+                    ?? context.channel.guild.roles.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
 
                 if (role !== undefined)
                     yield role.name;
@@ -506,7 +506,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
             content: this.success('No problem, my job here is done.'),
             files: [
                 {
-                    attachment: JSON.stringify(<SignedGuildShrinkwrap>{
+                    file: JSON.stringify(<SignedGuildShrinkwrap>{
                         signature: signShrinkwrap(shrinkwrap, context.config),
                         payload: shrinkwrap
                     }, null, 2),
@@ -517,7 +517,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
     }
 
     public async installCommands(context: GuildCommandContext, shrinkwrapUrl?: string): Promise<string> {
-        shrinkwrapUrl ??= context.message.attachments.first()?.url;
+        shrinkwrapUrl ??= context.message.attachments[0]?.url;
         if (shrinkwrapUrl === undefined)
             return this.error('You have to upload the installation file, or give me a URL to one.');
 

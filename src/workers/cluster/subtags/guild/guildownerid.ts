@@ -20,6 +20,6 @@ export class GuildOwnerIdSubtag extends Subtag {
     }
 
     public getGuildOwnerId(context: BBTagContext): string {
-        return context.guild.ownerId;
+        return context.guild.ownerID;
     }
 }

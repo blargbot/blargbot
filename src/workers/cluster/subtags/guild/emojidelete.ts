@@ -23,13 +23,13 @@ export class EmojiDeleteSubtag extends Subtag {
     public async deleteEmoji(context: BBTagContext, emojiId: string): Promise<void> {
         const permission = context.permissions;
 
-        if (!permission.has('MANAGE_EMOJIS_AND_STICKERS')) {
+        if (!permission.has('manageEmojisAndStickers')) {
             throw new BBTagRuntimeError('Author cannot delete emojis');
         }
 
         try {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await context.guild.emojis.cache.get(emojiId)?.delete(fullReason);
+            await context.guild.deleteEmoji(emojiId, fullReason);
         } catch (err: unknown) {
             if (err instanceof Error) {
                 const parts = err.message.split('\n').map(m => m.trim());

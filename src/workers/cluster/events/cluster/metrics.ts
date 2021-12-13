@@ -13,7 +13,7 @@ export class ClusterMetricsHandler extends ClusterEventService<'metrics'> {
     }
 
     public getMetrics(): metric[] {
-        metrics.userGauge.set(this.cluster.discord.users.cache.size);
+        metrics.userGauge.set(this.cluster.discord.users.size);
         return metrics.aggregated.getMetricsAsJSON();
     }
 }

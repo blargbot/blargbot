@@ -1,22 +1,22 @@
 import { Cluster } from '@cluster';
 import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware, SendTypingMiddleware } from '@cluster/command';
-import { humanize, runMiddleware } from '@cluster/utils';
+import { guard, humanize, runMiddleware } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
 import { IMiddleware } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment';
 
 import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatlogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
-    private readonly middleware: Array<IMiddleware<Message, boolean>>;
+    private readonly middleware: Array<IMiddleware<KnownMessage, boolean>>;
 
     public constructor(
         public readonly cluster: Cluster
     ) {
-        super(cluster.discord, 'messageCreate', cluster.logger);
+        super(cluster.discord, 'messageCreate', cluster.logger, (msg) => this.execute(msg));
         this.middleware = [
-            new IgnoreSelfMiddleware(cluster.logger),
+            new IgnoreSelfMiddleware(cluster.logger, cluster.discord),
             new UpsertUserMiddleware(cluster.database.users),
             new ChatlogMiddleware(cluster.moderation.chatLog),
             new CensorMiddleware(cluster.moderation.censors),
@@ -42,13 +42,16 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         ];
     }
 
-    public async execute(message: Message): Promise<void> {
+    public async execute(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
+        if (!guard.isWellKnownMessage(message))
+            return;
+
         const options = Object.seal({
             id: message.id,
             logger: this.logger,
-            start: moment().valueOf()
+            start: performance.now()
         });
         const handled = await runMiddleware(this.middleware, message, options, () => false);
-        this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', moment().diff(options.start), 'ms');
+        this.cluster.logger.debug('Message by', humanize.fullName(message.author), handled ? 'handled' : 'ignored', 'in', performance.now() - options.start, 'ms');
     }
 }

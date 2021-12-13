@@ -5,7 +5,7 @@ import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
-import { Client as Discord } from 'discord.js';
+import { Client as Discord } from 'eris';
 import moment from 'moment';
 import { inspect } from 'util';
 
@@ -16,7 +16,7 @@ import { TagCooldownManager } from './TagCooldownManager';
 
 export class BBTagEngine {
     private readonly cooldowns: TagCooldownManager;
-    public get discord(): Discord<true> { return this.cluster.discord; }
+    public get discord(): Discord { return this.cluster.discord; }
     public get logger(): Logger { return this.cluster.logger; }
     public get database(): Database { return this.cluster.database; }
     public get util(): ClusterUtilities { return this.cluster.util; }
@@ -178,7 +178,7 @@ export class BBTagEngine {
             ],
             files: [
                 {
-                    attachment: inspect(error),
+                    file: inspect(error),
                     name: 'error.txt'
                 }
             ]

@@ -42,6 +42,6 @@ export class UserGameSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return member.presence?.activities[0]?.name ?? 'nothing';
+        return member.activities?.[0]?.name ?? 'nothing';
     }
 }

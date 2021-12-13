@@ -40,7 +40,7 @@ export class RoleSetPosSubtag extends Subtag {
             throw new BBTagRuntimeError('Desired position above author');
 
         try {
-            await role.edit({ position: pos });
+            await role.editPosition(pos);
             return true;
         } catch (err: unknown) {
             if (!quiet)

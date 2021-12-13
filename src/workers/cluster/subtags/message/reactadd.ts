@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
-import { Message, MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions, KnownMessage } from 'eris';
 
 export class ReactAddSubtag extends Subtag {
     public constructor() {
@@ -35,7 +35,7 @@ export class ReactAddSubtag extends Subtag {
         context: BBTagContext,
         args: string[]
     ): Promise<void> {
-        let message: Message | undefined;
+        let message: KnownMessage | undefined;
 
         // Check if the first "emote" is actually a valid channel
         let channel = await context.queryChannel(args[0], { noErrors: true, noLookup: true });
@@ -43,8 +43,7 @@ export class ReactAddSubtag extends Subtag {
             channel = context.channel;
         else
             args.shift();
-        if (channel === undefined)
-            throw new ChannelNotFoundError(args[0]);
+
         // Check that the current first "emote" is a message id
         if (/^\d{17,23}$/.test(args[0])) {
             try {
@@ -56,8 +55,8 @@ export class ReactAddSubtag extends Subtag {
                 throw new MessageNotFoundError(channel, args[0]);
             args.shift();
         }
-        const permissions = channel.permissionsFor(context.discord.user);
-        if (permissions === null || !permissions.has('ADD_REACTIONS'))
+        const permissions = channel.permissionsOf(context.discord.user.id);
+        if (!permissions.has('addReactions'))
             throw new BBTagRuntimeError('I dont have permission to Add Reactions');
         // Find all actual emotes in remaining emotes
         const parsed = parse.emoji(args.join('|'), true);
@@ -79,7 +78,7 @@ export class ReactAddSubtag extends Subtag {
         }
     }
 
-    public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {
+    public enrichDocs(embed: EmbedOptions): EmbedOptions {
         embed.fields = [{
             name: 'Usage',
             value: '```\n{reactadd;<reactions...>}```\n' +

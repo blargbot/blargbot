@@ -29,7 +29,10 @@ export class RolesSubtag extends Subtag {
     }
 
     public getGuildRoles(context: BBTagContext): string[] {
-        return context.member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id);
+        return context.member.roles
+            .map(r => ({ r, p: context.guild.roles.get(r)?.position ?? -Infinity }))
+            .sort((a, b) => b.p - a.p)
+            .map(r => r.r);
     }
 
     public async getUserRoles(
@@ -45,6 +48,9 @@ export class RolesSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return member.roles.cache.sort((a, b) => b.position - a.position).map(r => r.id);
+        return member.roles
+            .map(r => ({ r, p: member.guild.roles.get(r)?.position ?? -Infinity }))
+            .sort((a, b) => b.p - a.p)
+            .map(r => r.r);
     }
 }

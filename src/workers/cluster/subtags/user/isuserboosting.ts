@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 
 export class IsUserBoostingSubtag extends Subtag {
     public constructor() {
@@ -42,7 +42,7 @@ export class IsUserBoostingSubtag extends Subtag {
         return this.isUserBoosting(member);
     }
 
-    public isUserBoosting(member: GuildMember): boolean {
-        return member.premiumSinceTimestamp !== null;
+    public isUserBoosting(member: Member): boolean {
+        return member.premiumSince !== 0;
     }
 }

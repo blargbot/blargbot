@@ -1,7 +1,7 @@
 import { Logger } from '@core/Logger';
 import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableGuildCensorExceptions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
 import { guard } from '@core/utils';
-import { Guild } from 'discord.js';
+import { Guild } from 'eris';
 import { UpdateData } from 'rethinkdb';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';

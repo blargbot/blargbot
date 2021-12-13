@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
-import { DiscordAPIError, EmbedFieldData, MessageEmbedOptions } from 'discord.js';
+import { ApiError, DiscordRESTError, EmbedField, EmbedOptions } from 'eris';
 
 export class ReactRemoveSubtag extends Subtag {
     public constructor() {
@@ -36,8 +36,8 @@ export class ReactRemoveSubtag extends Subtag {
             channel = context.channel;
         else
             args.shift();
-        const permissions = channel.permissionsFor(context.discord.user);
-        if (permissions === null || !permissions.has('MANAGE_MESSAGES'))
+        const permissions = channel.permissionsOf(context.discord.user.id);
+        if (!permissions.has('manageMessages'))
             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
         // Check that the current first "emote" is a message id
         try {
@@ -66,23 +66,20 @@ export class ReactRemoveSubtag extends Subtag {
 
         // Default to all emotes
         if (parsedEmojis.length === 0)
-            parsedEmojis = [...message.reactions.cache.keys()];
+            parsedEmojis = Object.keys(message.reactions);
 
         const errored = [];
         for (const reaction of parsedEmojis) {
-            if (!message.reactions.cache.has(reaction))
-                continue;
-
             try {
                 await context.limit.check(context, 'reactremove:requests');
-                await message.reactions.cache.get(reaction)?.users.remove(user);
+                await message.removeReaction(reaction, user.id);
             } catch (err: unknown) {
-                if (err instanceof DiscordAPIError) {
+                if (err instanceof DiscordRESTError) {
                     switch (err.code) {
-                        case 10014:
+                        case ApiError.UNKNOWN_EMOJI:
                             errored.push(reaction);
                             break;
-                        case 50013:
+                        case ApiError.MISSING_PERMISSIONS:
                             throw new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions');
                         default:
                             throw err;
@@ -96,8 +93,8 @@ export class ReactRemoveSubtag extends Subtag {
             throw new BBTagRuntimeError('Unknown Emoji: ' + errored.join(', '));
     }
 
-    public enrichDocs(embed: MessageEmbedOptions): MessageEmbedOptions {
-        const limitField = <EmbedFieldData>embed.fields?.pop();
+    public enrichDocs(embed: EmbedOptions): EmbedOptions {
+        const limitField = <EmbedField>embed.fields?.pop();
 
         embed.fields = [
             {

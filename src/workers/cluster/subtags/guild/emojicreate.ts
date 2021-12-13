@@ -47,7 +47,7 @@ export class EmojiCreateSubtag extends Subtag {
     ): Promise<string> {
         const permission = context.permissions;
 
-        if (!permission.has('MANAGE_EMOJIS_AND_STICKERS')) {
+        if (!permission.has('manageEmojisAndStickers')) {
             throw new BBTagRuntimeError('Author cannot create emojis');
         }
 
@@ -80,7 +80,7 @@ export class EmojiCreateSubtag extends Subtag {
 
         try {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason !== undefined ? context.scopes.local.reason : '');
-            const emoji = await context.guild.emojis.create(options.image, options.name, { reason: fullReason, roles: options.roles });
+            const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, fullReason);
             return emoji.id;
         } catch (err: unknown) {
             if (err instanceof Error) {

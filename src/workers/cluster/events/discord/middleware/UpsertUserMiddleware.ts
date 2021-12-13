@@ -1,11 +1,11 @@
 import { IMiddleware, NextMiddleware, UserTable } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 
-export class UpsertUserMiddleware implements IMiddleware<Message, boolean> {
+export class UpsertUserMiddleware implements IMiddleware<KnownMessage, boolean> {
     public constructor(private readonly database: UserTable) {
     }
 
-    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         const process = this.database.upsert(context.author);
         const result = await next();
         await process;

@@ -1,11 +1,14 @@
 import { MalformedEmbed, TypeMappingImpl } from '@core/types';
 import { mapping } from '@core/utils';
-import { ColorResolvable, Constants, MessageEmbedOptions } from 'discord.js';
+import Color from 'color';
+import { EmbedOptions } from 'eris';
+
+import { parseColor } from './parseColor';
 
 export function parseEmbed(embedText: undefined, allowMalformed?: true): undefined;
-export function parseEmbed(embedText: string | undefined, allowMalformed?: true): Array<MessageEmbedOptions | MalformedEmbed> | undefined;
-export function parseEmbed(embedText: string | undefined, allowMalformed: false): MessageEmbedOptions[] | undefined;
-export function parseEmbed(embedText: string | undefined, allowMalformed = true): Array<MessageEmbedOptions | MalformedEmbed> | undefined {
+export function parseEmbed(embedText: string | undefined, allowMalformed?: true): Array<EmbedOptions | MalformedEmbed> | undefined;
+export function parseEmbed(embedText: string | undefined, allowMalformed: false): EmbedOptions[] | undefined;
+export function parseEmbed(embedText: string | undefined, allowMalformed = true): Array<EmbedOptions | MalformedEmbed> | undefined {
     if (embedText === undefined || embedText.trim().length === 0)
         return undefined;
 
@@ -21,59 +24,51 @@ export function parseEmbed(embedText: string | undefined, allowMalformed = true)
 
 }
 
-const mapEmbedCore = mapping.object<MessageEmbedOptions>({
-    author: mapping.object<Exclude<MessageEmbedOptions['author'], undefined>>({
-        iconURL: mapping.string.optional,
+const mapEmbedCore = mapping.object<EmbedOptions>({
+    author: mapping.object<Exclude<EmbedOptions['author'], undefined>>({
         icon_url: mapping.string.optional,
-        name: mapping.string.optional,
-        proxyIconURL: mapping.string.optional,
-        proxy_icon_url: mapping.string.optional,
+        name: mapping.string.optional.map(v => v ?? ''),
         url: mapping.string.optional
     }).optional,
-    color: mapping.choice<ColorResolvable[]>(
+    color: mapping.choice<number[]>(
         mapping.number,
-        mapping.in(...Object.keys(Constants.Colors)),
+        v => {
+            if (typeof v !== 'string')
+                return mapping.failed;
+            const parsed = parseColor(v);
+            if (parsed === undefined)
+                return mapping.failed;
+            return mapping.success(parsed);
+        },
         mapping.tuple<[number, number, number]>([
             mapping.number,
             mapping.number,
             mapping.number
-        ]),
-        mapping.regex<`#${number}`>(/#\d+/)
+        ]).map(v => Color.rgb(...v).value()),
+        mapping.regex<`#${number}`>(/^#\d+$/).map(v => parseInt(v.slice(1), 16))
     ).optional,
     description: mapping.string.optional,
-    fields: mapping.array(mapping.object<Exclude<MessageEmbedOptions['fields'], undefined>[number]>({
+    fields: mapping.array(mapping.object<Exclude<EmbedOptions['fields'], undefined>[number]>({
         inline: mapping.boolean.optional,
         name: mapping.string,
         value: mapping.string
     })).optional,
-    footer: mapping.object<Exclude<MessageEmbedOptions['footer'], undefined>>({
-        iconURL: mapping.string.optional,
+    footer: mapping.object<Exclude<EmbedOptions['footer'], undefined>>({
         icon_url: mapping.string.optional,
-        proxyIconURL: mapping.string.optional,
-        proxy_icon_url: mapping.string.optional,
-        text: mapping.string.optional
+        text: mapping.string.optional.map(v => v ?? '')
     }).optional,
-    image: mapping.object<Exclude<MessageEmbedOptions['image'], undefined>>({
-        height: mapping.number.optional,
-        proxyURL: mapping.string.optional,
-        proxy_url: mapping.string.optional,
-        url: mapping.string.optional,
-        width: mapping.number.optional
+    image: mapping.object<Exclude<EmbedOptions['image'], undefined>>({
+        url: mapping.string.optional
     }).optional,
-    thumbnail: mapping.object<Exclude<MessageEmbedOptions['thumbnail'], undefined>>({
-        url: mapping.string.optional,
-        proxyURL: mapping.string.optional,
-        proxy_url: mapping.string.optional,
-        height: mapping.number.optional,
-        width: mapping.number.optional
+    thumbnail: mapping.object<Exclude<EmbedOptions['thumbnail'], undefined>>({
+        url: mapping.string.optional
     }).optional,
-    timestamp: mapping.choice<Array<Exclude<MessageEmbedOptions['timestamp'], undefined>>>(
-        mapping.number,
+    timestamp: mapping.choice<Array<Exclude<EmbedOptions['timestamp'], undefined>>>(
+        mapping.string,
         mapping.date
     ).optional,
     title: mapping.string.optional,
-    url: mapping.string.optional,
-    video: [undefined]
+    url: mapping.string.optional
 });
 
 const mapMalformedEmbed: TypeMappingImpl<MalformedEmbed> = value => mapping.success({

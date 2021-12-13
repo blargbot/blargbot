@@ -1,9 +1,9 @@
 import { BBTagContext } from '@cluster/bbtag';
 import { bbtagUtil } from '@cluster/utils';
-import { GuildMember, Role } from 'discord.js';
+import { Member, Role } from 'eris';
 
 interface CheckRolesResult {
-    member: GuildMember | undefined;
+    member: Member | undefined;
     roles: Role[];
     hasRole: boolean[];
 }
@@ -27,7 +27,7 @@ export async function checkRoles(
     const roles = deserialized?.v.map(v => v?.toString() ?? 'null') ?? [roleStr];
     for (const entry of roles) {
         const match = roleExpr.exec(entry);
-        const role = context.guild.roles.cache.get(match !== null ? match[1] : ''); //TODO context.getRole
+        const role = context.guild.roles.get(match !== null ? match[1] : ''); //TODO context.getRole
         if (role === undefined)
             continue;
         result.roles.push(role);
@@ -35,7 +35,7 @@ export async function checkRoles(
 
     result.hasRole = result.roles.map(role => {
         if (result.member !== undefined)
-            return result.member.roles.cache.has(role.id);
+            return result.member.roles.includes(role.id);
         return false;
     });
     return result;

@@ -2,11 +2,11 @@ import { Cluster } from '@cluster';
 import { guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { DiscordEventService } from '@core/serviceTypes';
-import { Guild } from 'discord.js';
+import { Guild } from 'eris';
 
 export class DiscordGuildCreateHandler extends DiscordEventService<'guildCreate'> {
     public constructor(protected readonly cluster: Cluster) {
-        super(cluster.discord, 'guildCreate', cluster.logger);
+        super(cluster.discord, 'guildCreate', cluster.logger, (guild) => this.execute(guild));
     }
 
     public async execute(guild: Guild): Promise<void> {
@@ -14,7 +14,7 @@ export class DiscordGuildCreateHandler extends DiscordEventService<'guildCreate'
         const blacklisted = await this.cluster.database.vars.get('guildBlacklist');
         if (blacklisted?.values[guild.id] === true) {
             try {
-                await this.cluster.util.sendDM(guild.ownerId, `Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
+                await this.cluster.util.sendDM(guild.ownerID, `Greetings! I regret to inform you that your guild, **${guild.name}** (${guild.id}), is on my blacklist. Sorry about that! I'll be leaving now. I hope you have a nice day.`);
             } catch (err: unknown) {
                 this.cluster.logger.error(err);
                 // NOOP
@@ -43,7 +43,7 @@ If you are the owner of this server, here are a few things to know.
 ❓ If you have any questions, comments, or concerns, please do \`${prefix}feedback <feedback>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
 
-        for (const channel of guild.channels.cache.filter(guard.isTextableChannel).values()) {
+        for (const channel of guild.channels.filter(guard.isTextableChannel).values()) {
             if (await this.cluster.util.send(channel, welcomeMessage) !== undefined) {
                 break;
             }

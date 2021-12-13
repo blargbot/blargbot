@@ -1,8 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
-import { GuildRolemeEntry } from '@core/types';
-import { MessageEmbedOptions, MessageOptions } from 'discord.js';
+import { GuildRolemeEntry, SendContent } from '@core/types';
+import { Constants, EmbedOptions } from 'eris';
 
 export class RolemeCommand extends BaseGuildCommand {
     public constructor() {
@@ -149,8 +149,8 @@ export class RolemeCommand extends BaseGuildCommand {
                 context: context.message,
                 actors: context.author,
                 prompt: this.question('Is the trigger case sensitive?'),
-                cancel: { style: 'SECONDARY', label: 'No' },
-                confirm: { style: 'SECONDARY', label: 'Yes' }
+                cancel: { style: Constants.ButtonStyles.SECONDARY, label: 'No' },
+                confirm: { style: Constants.ButtonStyles.SECONDARY, label: 'Yes' }
             });
 
             if (caseSensitive === undefined)
@@ -175,14 +175,14 @@ export class RolemeCommand extends BaseGuildCommand {
                 context: context.message,
                 actors: context.author,
                 prompt: this.question('Please mention all the channels you want the roleme to be available in'),
-                parse: message => ({ success: true, value: [...message.mentions.channels.values()] }),
-                cancel: { label: 'All channels', style: 'PRIMARY' }
+                parse: message => ({ success: true, value: message.channelMentions }),
+                cancel: { label: 'All channels', style: Constants.ButtonStyles.PRIMARY }
             });
 
             switch (channels.state) {
                 case 'CANCELLED': break;
                 case 'SUCCESS':
-                    result.channels = channels.value.map(c => c.id);
+                    result.channels = channels.value;
                     break;
                 default: return 'TIMED_OUT';
             }
@@ -251,7 +251,7 @@ export class RolemeCommand extends BaseGuildCommand {
         return this.success(`Roleme ${id} has now had its message set`);
     }
 
-    public async getRawMessage(context: GuildCommandContext, id: number): Promise<string | MessageOptions> {
+    public async getRawMessage(context: GuildCommandContext, id: number): Promise<string | SendContent> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return this.error(`Roleme ${id} doesnt exist`);
@@ -267,13 +267,13 @@ export class RolemeCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: 'interval.bbtag',
-                        attachment: roleme.output.content
+                        file: roleme.output.content
                     }
                 ]
             };
     }
 
-    public async debugMessage(context: GuildCommandContext, id: number): Promise<string | MessageOptions> {
+    public async debugMessage(context: GuildCommandContext, id: number): Promise<string | SendContent> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return this.error(`Roleme ${id} doesnt exist`);
@@ -304,7 +304,7 @@ export class RolemeCommand extends BaseGuildCommand {
         return this.success(`Your permissions will now be used for roleme ${id}`);
     }
 
-    public async showInfo(context: GuildCommandContext, id: number): Promise<string | MessageEmbedOptions> {
+    public async showInfo(context: GuildCommandContext, id: number): Promise<string | EmbedOptions> {
         const roleme = await context.database.guilds.getRoleme(context.channel.guild.id, id);
         if (roleme === undefined)
             return this.error(`Roleme ${id} doesnt exist`);
@@ -321,13 +321,13 @@ export class RolemeCommand extends BaseGuildCommand {
                 { name: 'Roles removed', value: toRemove, inline: true },
                 { name: 'Channels', value: roleme.channels.length === 0 ? 'Anywhere' : roleme.channels.map(c => `<#${c}>`).join('\n'), inline: true },
                 ...roleme.output === undefined ? [] : [
-                    { name: 'Message', value: `**Author:** <@${roleme.output.author}>\n**Authorizer:** <@${roleme.output.authorizer ?? roleme.output.author}>`, inline: true }
+                    { name: 'KnownMessage', value: `**Author:** <@${roleme.output.author}>\n**Authorizer:** <@${roleme.output.authorizer ?? roleme.output.author}>`, inline: true }
                 ]
             ]
         };
     }
 
-    public async listRolemes(context: GuildCommandContext): Promise<string | MessageEmbedOptions> {
+    public async listRolemes(context: GuildCommandContext): Promise<string | EmbedOptions> {
         const rolemes = Object.entries(await context.database.guilds.getRolemes(context.channel.guild.id) ?? {})
             .filter((e): e is [string, GuildRolemeEntry] => e[1] !== undefined);
 
@@ -367,7 +367,7 @@ export class RolemeCommand extends BaseGuildCommand {
                     return { success: true, value: roles } as const;
                 return { success: false, error: this.error('I couldnt find any of the roles from your message, please try again.') } as const;
             },
-            cancel: { label: 'No roles', style: 'PRIMARY' }
+            cancel: { label: 'No roles', style: Constants.ButtonStyles.PRIMARY }
         });
 
         switch (result.state) {

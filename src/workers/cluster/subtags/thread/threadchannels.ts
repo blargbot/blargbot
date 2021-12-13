@@ -23,15 +23,16 @@ export class ThreadChannelsSubtag extends Subtag {
 
     public async listThreadChannels(context: BBTagContext, channelStr: string): Promise<string[]> {
         if (channelStr === '')
-            return (await context.guild.channels.fetchActiveThreads()).threads.map(t => t.id);
+            return (await context.guild.getActiveThreads()).threads.map(t => t.id);
 
         const channel = await context.queryChannel(channelStr);
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        if (guard.isThreadableChannel(channel))
-            return (await channel.threads.fetchActive()).threads.map(t => t.id);
+        if (!guard.isThreadableChannel(channel))
+            throw new InvalidChannelError(channel);
 
-        throw new InvalidChannelError(channel);
+        const activeThreads = await channel.guild.getActiveThreads();
+        return activeThreads.threads.filter(t => t.parentID === channel.id).map(t => t.id);
     }
 }

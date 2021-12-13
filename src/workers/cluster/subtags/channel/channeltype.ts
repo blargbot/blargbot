@@ -1,6 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
+import { Constants } from 'eris';
 
 export class ChannelTypeSubtag extends Subtag {
     public constructor() {
@@ -42,16 +43,15 @@ export class ChannelTypeSubtag extends Subtag {
 }
 
 const channelTypes = {
-    ['GUILD_TEXT']: 'text',
-    ['DM']: 'dm',
-    ['GUILD_VOICE']: 'voice',
-    ['GROUP_DM']: 'group-dm',
-    ['GUILD_CATEGORY']: 'category',
-    ['GUILD_NEWS']: 'news',
-    ['GUILD_STORE']: 'store',
-    ['GUILD_NEWS_THREAD']: 'news-thread',
-    ['GUILD_PRIVATE_THREAD']: 'private-thread',
-    ['GUILD_PUBLIC_THREAD']: 'public-thread',
-    ['GUILD_STAGE_VOICE']: 'stage-voice',
-    ['UNKNOWN']: 'unknown'
+    [Constants.ChannelTypes.GUILD_TEXT]: 'text',
+    [Constants.ChannelTypes.DM]: 'dm',
+    [Constants.ChannelTypes.GUILD_VOICE]: 'voice',
+    [Constants.ChannelTypes.GROUP_DM]: 'group-dm',
+    [Constants.ChannelTypes.GUILD_CATEGORY]: 'category',
+    [Constants.ChannelTypes.GUILD_NEWS]: 'news',
+    [Constants.ChannelTypes.GUILD_STORE]: 'store',
+    [Constants.ChannelTypes.GUILD_NEWS_THREAD]: 'news-thread',
+    [Constants.ChannelTypes.GUILD_PRIVATE_THREAD]: 'private-thread',
+    [Constants.ChannelTypes.GUILD_PUBLIC_THREAD]: 'public-thread',
+    [Constants.ChannelTypes.GUILD_STAGE_VOICE]: 'stage-voice'
 } as const;

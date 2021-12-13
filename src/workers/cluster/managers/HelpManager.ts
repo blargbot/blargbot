@@ -2,7 +2,7 @@ import { ClusterUtilities } from '@cluster';
 import { CommandParameter, ICommand, ICommandManager } from '@cluster/types';
 import { codeBlock, guard, humanize } from '@cluster/utils';
 import { SendPayload } from '@core/types';
-import { EmbedFieldData, KnownChannel, TextBasedChannels, User } from 'discord.js';
+import { EmbedField, KnownChannel, KnownTextableChannel, User } from 'eris';
 
 export class HelpManager {
     public constructor(
@@ -11,8 +11,8 @@ export class HelpManager {
     ) {
     }
 
-    public async listCommands(channel: TextBasedChannels, author: User, prefix: string): Promise<SendPayload> {
-        const fields: EmbedFieldData[] = [];
+    public async listCommands(channel: KnownTextableChannel, author: User, prefix: string): Promise<SendPayload> {
+        const fields: EmbedField[] = [];
 
         const allNames = new Set<string>();
         const groupedCommands: Record<string, string[] | undefined> = {};
@@ -50,7 +50,7 @@ export class HelpManager {
         };
     }
 
-    public async viewCommand(channel: TextBasedChannels, author: User, prefix: string, commandName: string, page: number): Promise<SendPayload> {
+    public async viewCommand(channel: KnownTextableChannel, author: User, prefix: string, commandName: string, page: number): Promise<SendPayload> {
         const result = await this.commands.get(commandName, channel, author);
         switch (result.state) {
             case 'ALLOWED': break;
@@ -74,7 +74,7 @@ export class HelpManager {
         if (page < 0)
             return '❌ Page the page number must be 1 or higher';
 
-        const fields: EmbedFieldData[] = [];
+        const fields: EmbedField[] = [];
         const { detail: command } = result;
 
         const aliases = [...command.aliases].filter(a => a !== name);
@@ -134,7 +134,7 @@ export class HelpManager {
         if (guard.isGuildChannel(channel)) {
             for (const roleStr of command.roles) {
                 const role = await this.util.getRole(channel.guild, roleStr)
-                    ?? channel.guild.roles.cache.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
+                    ?? channel.guild.roles.find(r => r.name.toLowerCase() === roleStr.toLowerCase());
 
                 if (role !== undefined)
                     yield role.name;

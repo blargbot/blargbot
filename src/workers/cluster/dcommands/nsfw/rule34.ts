@@ -1,7 +1,7 @@
 import { BaseGlobalCommand } from '@cluster/command';
 import { CommandType, mapping, shuffle } from '@cluster/utils';
+import { SendContent } from '@core/types';
 import { humanize } from '@core/utils';
-import { MessageOptions } from 'discord.js';
 import fetch from 'node-fetch';
 import xml2js from 'xml2js';
 
@@ -21,7 +21,7 @@ export class Rule34Command extends BaseGlobalCommand {
         });
     }
 
-    public async getRule34(tags: readonly string[]): Promise<string | MessageOptions> {
+    public async getRule34(tags: readonly string[]): Promise<string | SendContent> {
         if (tags.length === 0)
             return this.error('You need to provide some tags');
 

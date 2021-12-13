@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { ClusterStats, ShardStats } from '@cluster/types';
 import { CommandType, discordUtil, guard, humanize } from '@cluster/utils';
-import { MessageEmbedOptions } from 'discord.js';
+import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
 export class ShardCommand extends BaseGlobalCommand {
@@ -25,14 +25,14 @@ export class ShardCommand extends BaseGlobalCommand {
     }
     public async showCurrentShard(
         context: CommandContext
-    ): Promise<string | MessageEmbedOptions> {
+    ): Promise<string | EmbedOptions> {
         if (guard.isGuildCommandContext(context))
             return await this.showGuildShard(context, context.channel.guild.id);
 
         return this.showCurrentDMShard(context);
     }
 
-    public async showGuildShard(context: CommandContext, guildID: string): Promise<string | MessageEmbedOptions> {
+    public async showGuildShard(context: CommandContext, guildID: string): Promise<string | EmbedOptions> {
         if (!/\d{17,23}/.test(guildID))
             return this.error('`' + guildID + '` is not a valid guildID');
         const clusterData = await discordUtil.cluster.getGuildClusterStats(context.cluster, guildID);
@@ -42,12 +42,12 @@ export class ShardCommand extends BaseGlobalCommand {
         return this.shardEmbed(context, clusterData.cluster, clusterData.shard, descPrefix + ` is on shard \`${clusterData.shard.id}\` and cluster \`${clusterData.cluster.id}\``);
     }
 
-    public showCurrentDMShard(context: CommandContext): MessageEmbedOptions {
+    public showCurrentDMShard(context: CommandContext): EmbedOptions {
         const clusterData = discordUtil.cluster.getStats(context.cluster);
         return this.shardEmbed(context, clusterData, clusterData.shards[0], 'Discord DMs are on shard `0` in cluster `' + context.cluster.id.toString() + '`'); // should be cluster 0 always but idk
     }
 
-    public shardEmbed(context: CommandContext, clusterData: ClusterStats, shard: ShardStats, shardDesc: string): MessageEmbedOptions {
+    public shardEmbed(context: CommandContext, clusterData: ClusterStats, shard: ShardStats, shardDesc: string): EmbedOptions {
         return {
             title: `Shard ${shard.id}`,
             url: context.util.websiteLink('shards'),

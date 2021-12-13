@@ -22,6 +22,6 @@ export class ChannelCategoriesSubtag extends Subtag {
     }
 
     public getChannelCategories(context: BBTagContext): string[] {
-        return context.guild.channels.cache.filter(guard.isCategoryChannel).map(c => c.id);
+        return context.guild.channels.filter(guard.isCategoryChannel).map(c => c.id);
     }
 }

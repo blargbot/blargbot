@@ -22,7 +22,7 @@ export class ClusterGetGuildPermssionHandler extends ClusterEventService<'getGui
             userId: member.id,
             guild: {
                 id: member.guild.id,
-                iconUrl: member.guild.iconURL({ dynamic: true, format: 'png', size: 512 }) ?? undefined,
+                iconUrl: member.guild.iconURL ?? undefined,
                 name: member.guild.name
             },
             ...Object.fromEntries(await Promise.all([

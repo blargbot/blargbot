@@ -42,6 +42,6 @@ export class UserAvatarSubtag extends Subtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return member.displayAvatarURL({ dynamic: true, format: 'png', size: 512 });
+        return member.avatarURL;
     }
 }

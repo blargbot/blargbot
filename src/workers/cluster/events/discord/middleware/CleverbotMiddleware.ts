@@ -2,15 +2,15 @@ import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { guard } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { IMiddleware, NextMiddleware } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';
 
-export class CleverbotMiddleware implements IMiddleware<Message, boolean> {
+export class CleverbotMiddleware implements IMiddleware<KnownMessage, boolean> {
     public constructor(private readonly util: ClusterUtilities) {
     }
 
-    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (await next())
             return true;
 
@@ -26,7 +26,7 @@ export class CleverbotMiddleware implements IMiddleware<Message, boolean> {
         return true;
     }
 
-    private async reply(context: Message): Promise<void> {
+    private async reply(context: KnownMessage): Promise<void> {
         metrics.cleverbotStats.inc();
         await context.channel.sendTyping();
         const query = await this.util.resolveTags(context, context.content);

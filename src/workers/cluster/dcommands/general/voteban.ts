@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { CommandType, pluralise as p } from '@cluster/utils';
-import { GuildMember, MessageEmbedOptions } from 'discord.js';
+import { CommandType, discordUtil, pluralise as p } from '@cluster/utils';
+import { EmbedOptions, Member } from 'eris';
 
 export class VoteBanCommand extends BaseGuildCommand {
     public constructor() {
@@ -35,7 +35,7 @@ export class VoteBanCommand extends BaseGuildCommand {
         });
     }
 
-    public async getTop(context: GuildCommandContext): Promise<MessageEmbedOptions> {
+    public async getTop(context: GuildCommandContext): Promise<EmbedOptions> {
         const votebans = await context.database.guilds.getVoteBans(context.channel.guild.id);
 
         const entries = votebans === undefined ? [] : Object.entries(votebans)
@@ -52,41 +52,41 @@ export class VoteBanCommand extends BaseGuildCommand {
         };
     }
 
-    public async getVotes(context: GuildCommandContext, user: GuildMember): Promise<MessageEmbedOptions> {
+    public async getVotes(context: GuildCommandContext, user: Member): Promise<EmbedOptions> {
         const votes = await context.database.guilds.getVoteBans(context.channel.guild.id, user.id) ?? [];
 
         return {
             author: context.util.embedifyAuthor(user),
-            color: user.roles.color?.color,
+            color: discordUtil.getMemberColor(user),
             title: this.info('Vote ban signatures'),
-            description: votes.length === 0 ? `No one has voted to ban ${user.toString()} yet.`
+            description: votes.length === 0 ? `No one has voted to ban ${user.mention} yet.`
                 : votes.length > 20 ? `${votes.slice(0, 15).map(v => `<@${v}>`).join('\n')}\n... and ${votes.length - 15} more`
                     : votes.map(v => `<@${v}>`).join('\n')
         };
     }
 
-    public async sign(context: GuildCommandContext, user: GuildMember, reason: string | undefined): Promise<string> {
+    public async sign(context: GuildCommandContext, user: Member, reason: string | undefined): Promise<string> {
         if (await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
-            return this.error(`I know youre eager, but you have already signed the petition to ban ${user.toString()}!`);
+            return this.error(`I know youre eager, but you have already signed the petition to ban ${user.mention}!`);
 
         const newTotal = await context.database.guilds.addVoteBan(context.channel.guild.id, user.id, context.author.id, reason);
         if (newTotal === false)
             return this.error('Seems the petitions office didnt like that one! Please try again');
 
-        return this.success(`${context.author.toString()} has signed to ban ${user.toString()}! ` +
+        return this.success(`${context.author.mention} has signed to ban ${user.mention}! ` +
             `A total of **${newTotal} ${p(newTotal, 'person** has', 'people** have')} signed the petition now.` +
             (reason !== undefined ? `\n**Reason**: ${reason}` : ''));
     }
 
-    public async unsign(context: GuildCommandContext, user: GuildMember): Promise<string> {
+    public async unsign(context: GuildCommandContext, user: Member): Promise<string> {
         if (!await context.database.guilds.hasVoteBanned(context.channel.guild.id, user.id, context.author.id))
-            return this.error(`Thats very kind of you, but you havent even signed to ban ${user.toString()} yet!`);
+            return this.error(`Thats very kind of you, but you havent even signed to ban ${user.mention} yet!`);
 
         const newTotal = await context.database.guilds.removeVoteBan(context.channel.guild.id, user.id, context.author.id);
         if (newTotal === false)
             return this.error('Seems the petitions office didnt like that one! Please try again');
 
-        return this.success(`${context.author.toString()} reconsidered and forgiven ${user.toString()}! ` +
+        return this.success(`${context.author.mention} reconsidered and forgiven ${user.mention}! ` +
             `A total of **${newTotal} ${p(newTotal, 'person** has', 'people** have')} signed the petition now.`);
     }
 }

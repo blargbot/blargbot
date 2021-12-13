@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType } from '@cluster/utils';
-import { User } from 'discord.js';
+import { User } from 'eris';
 import moment from 'moment';
 
 export class TimeCommand extends BaseGlobalCommand {
@@ -36,13 +36,13 @@ export class TimeCommand extends BaseGlobalCommand {
     public async getUserTime(context: CommandContext, user: User): Promise<string> {
         const timezone = await context.database.users.getSetting(user.id, 'timezone');
         if (timezone === undefined)
-            return this.error(`${user.toString()} has not set their timezone with the \`${context.prefix}timezone\` command yet.`);
+            return this.error(`${user.mention} has not set their timezone with the \`${context.prefix}timezone\` command yet.`);
 
         const now = moment().tz(timezone);
         if (now.zoneAbbr() === '')
-            return this.error(`${user.toString()} doesnt have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`);
+            return this.error(`${user.mention} doesnt have a valid timezone set. They need to update it with the \`${context.prefix}timezone\` command`);
 
-        return this.info(`It is currently **${now.format('LT')}** for **${user.toString()}**.`);
+        return this.info(`It is currently **${now.format('LT')}** for **${user.mention}**.`);
     }
 
     public getTime(timezone: string): string {

@@ -1,16 +1,16 @@
 import { ClusterUtilities } from '@cluster/ClusterUtilities';
 import { guard, randInt } from '@cluster/utils';
 import { IMiddleware, NextMiddleware } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 
-export class TableflipMiddleware implements IMiddleware<Message, boolean> {
+export class TableflipMiddleware implements IMiddleware<KnownMessage, boolean> {
     public constructor(private readonly util: ClusterUtilities) {
     }
 
-    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         const result = next();
         const flipDir = context.content.includes('(╯°□°）╯︵ ┻━┻') ? 'unflip'
-            : context.content.includes('┬─┬﻿ ノ( ゜-゜ノ)') ? 'flip'
+            : context.content.includes('┬─┬ ノ( ゜-゜ノ)') ? 'flip'
                 : undefined;
 
         if (flipDir === undefined)

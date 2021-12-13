@@ -3,7 +3,7 @@ import { CommandGetCoreResult, CommandGetResult, ICommand, ICommandManager, Perm
 import { defaultStaff, guard } from '@cluster/utils';
 import { CommandPermissions } from '@core/types';
 import { parse } from '@core/utils';
-import { Guild, TextBasedChannels, User } from 'discord.js';
+import { Guild, KnownGuildTextableChannel, User } from 'eris';
 
 export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     public abstract readonly size: number;
@@ -15,11 +15,11 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public load(_commands?: Iterable<string> | boolean): Promise<void> { return Promise.resolve(); }
-    protected abstract getCore(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetCoreResult<T>>;
-    protected abstract allCommandNames(location?: Guild | TextBasedChannels): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
+    protected abstract getCore(name: string, location?: Guild | KnownGuildTextableChannel, user?: User): Promise<CommandGetCoreResult<T>>;
+    protected abstract allCommandNames(location?: Guild | KnownGuildTextableChannel): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
     public abstract configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;
 
-    public async get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult<T>> {
+    public async get(name: string, location?: Guild | KnownGuildTextableChannel, user?: User): Promise<CommandGetResult<T>> {
         const result = await this.getCore(name.toLowerCase(), location, user);
         if (result.state !== 'FOUND')
             return result;
@@ -34,7 +34,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
         return { state: 'ALLOWED', detail: result.detail };
     }
 
-    public async *list(location?: Guild | TextBasedChannels, user?: User): AsyncGenerator<ICommand<T>> {
+    public async *list(location?: Guild | KnownGuildTextableChannel, user?: User): AsyncGenerator<ICommand<T>> {
         for await (const name of await this.allCommandNames(location)) {
             const result = await this.get(name, location, user);
             if (result.state === 'ALLOWED')
@@ -44,7 +44,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
 
     protected async checkPermissions(
         user: User,
-        location: Guild | TextBasedChannels,
+        location: Guild | KnownGuildTextableChannel,
         permissions: CommandPermissions
     ): Promise<PermissionCheckResult> {
         if (this.cluster.util.isBotOwner(user.id))
@@ -71,7 +71,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
             // User isnt in the guild and so cannot use commands
             return { state: 'NOT_IN_GUILD' };
 
-        if (guild.ownerId === user.id || member.permissions.has('ADMINISTRATOR'))
+        if (guild.ownerID === user.id || member.permissions.has('administrator'))
             // Guild owners/admins can use all commands
             return { state: 'ALLOWED' };
 
@@ -99,15 +99,15 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
 
                 const id = parse.entityId(r, '@&', true);
                 if (id !== undefined)
-                    return member.guild.roles.cache.get(id)?.id;
+                    return member.guild.roles.get(id)?.id;
 
                 const norm = r.toLowerCase();
-                return member.guild.roles.cache.find(r => r.name.toLowerCase() === norm)?.id;
+                return member.guild.roles.find(r => r.name.toLowerCase() === norm)?.id;
             }).filter(guard.hasValue);
 
         if (roleIds.length > 0) {
             // User has one of the roles this command is linked to or the admin role?
-            if (member.roles.cache.hasAny(...roleIds))
+            if (member.roles.some(r => roleIds.includes(r)))
                 return { state: 'ALLOWED' };
             result = { state: 'MISSING_ROLE', detail: roleIds };
         }

@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
 import { guard, humanize, ModlogColour } from '@cluster/utils';
-import { EmbedField, Guild, MessageEmbedOptions, User } from 'discord.js';
+import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
 
 export class ModLogManager {
@@ -31,7 +31,7 @@ export class ModLogManager {
     public async logBan(guild: Guild, user: User, moderator?: User, reason?: string): Promise<void> {
         if (moderator === undefined && reason === undefined) {
             try {
-                const banObject = await guild.bans.fetch(user.id);
+                const banObject = await guild.getBan(user.id);
                 reason = banObject.reason ?? undefined;
             } catch (e: unknown) {
                 //NOOP
@@ -188,13 +188,21 @@ export class ModLogManager {
             return 'SUCCESS_NO_MESSAGE';
 
         const message = await this.cluster.util.getMessage(channelId, modlog.msgid);
-        if (message === undefined || !message.editable)
+        if (message === undefined || message.author.id !== this.cluster.discord.user.id)
             return 'SUCCESS_NO_MESSAGE';
 
         await message.edit({
             embeds: message.embeds.map(e => {
-                return e.setFooter(`${humanize.fullName(moderator)} (${moderator.id})`, moderator.displayAvatarURL({ dynamic: true, format: 'png', size: 512 }))
-                    .spliceFields(e.fields.findIndex(f => f.name === 'Reason'), 1, { name: 'Reason', value: reason, inline: true });
+                const fields = [...e.fields ?? []];
+                fields.splice(fields.findIndex(f => f.name === 'Reason'), 1, { name: 'Reason', value: reason, inline: true });
+                return {
+                    ...e,
+                    fields,
+                    footer: {
+                        text: `${humanize.fullName(moderator)} (${moderator.id})`,
+                        icon_url: moderator.avatarURL
+                    }
+                };
             })
         });
         return 'SUCCESS';
@@ -212,7 +220,7 @@ export class ModLogManager {
 
         reason ??= `Responsible moderator, please do \`reason ${caseId}\` to set.`;
 
-        const embed: MessageEmbedOptions = {
+        const embed: EmbedOptions = {
             title: `Case ${caseId}`,
             color: color,
             timestamp: new Date(),
@@ -225,7 +233,7 @@ export class ModLogManager {
         if (moderator !== undefined) {
             embed.footer = {
                 text: `${humanize.fullName(moderator)} (${moderator.id})`,
-                iconURL: moderator.displayAvatarURL({ dynamic: true, format: 'png', size: 512 })
+                icon_url: moderator.avatarURL
             };
         }
         if (Array.isArray(user)) {
@@ -238,7 +246,7 @@ export class ModLogManager {
             caseid: caseId,
             modid: moderator?.id,
             msgid: modlogMessage?.id,
-            channelid: modlogMessage?.channelId,
+            channelid: modlogMessage?.channel.id,
             reason: reason,
             type: type,
             userid: Array.isArray(user) ? user.map(u => u.id).join(',') : user.id

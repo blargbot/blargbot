@@ -27,15 +27,15 @@ export class ChannelSetPosSubtag extends Subtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO No channel found error
 
-        const permission = channel.permissionsFor(context.authorizer);
+        const permission = channel.permissionsOf(context.authorizer);
 
-        if (permission?.has('MANAGE_CHANNELS') !== true)
+        if (permission.has('manageChannels') !== true)
             throw new BBTagRuntimeError('Author cannot move this channel');
 
         const pos = parse.int(posStr);//TODO not a number error
         //TODO maybe also check if the position doesn't exceed any bounds? Like amount of channels / greater than -1?
         try {
-            await channel.edit({ position: pos });
+            await channel.editPosition(pos);
         } catch (err: unknown) {
             context.logger.error(err);
             throw new BBTagRuntimeError('Failed to move channel: no perms');

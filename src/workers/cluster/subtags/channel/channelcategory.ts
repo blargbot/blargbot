@@ -40,10 +40,10 @@ export class ChannelCategorySubtag extends Subtag {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
 
-        if (channel.parent === null)
+        if (channel.parentID === null)
             throw new BBTagRuntimeError('Channel has no parent')
                 .withDisplay('');
 
-        return channel.parent.id;
+        return channel.parentID;
     }
 }

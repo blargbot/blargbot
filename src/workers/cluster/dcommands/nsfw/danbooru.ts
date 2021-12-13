@@ -1,6 +1,6 @@
 import { BaseGlobalCommand } from '@cluster/command';
 import { CommandType, humanize, mapping, shuffle } from '@cluster/utils';
-import { MessageOptions } from 'discord.js';
+import { SendContent } from '@core/types';
 import fetch from 'node-fetch';
 
 export class DanbooruCommand extends BaseGlobalCommand {
@@ -18,7 +18,7 @@ export class DanbooruCommand extends BaseGlobalCommand {
         });
     }
 
-    public async getDanbooru(tags: readonly string[]): Promise<string | MessageOptions> {
+    public async getDanbooru(tags: readonly string[]): Promise<string | SendContent> {
         if (tags.length === 0)
             return this.error('You need to provide some tags');
 

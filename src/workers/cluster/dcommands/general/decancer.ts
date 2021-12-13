@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType, discordUtil, guard, humanize } from '@cluster/utils';
-import { User } from 'discord.js';
+import { User } from 'eris';
 
 export class DecancerCommand extends BaseGlobalCommand {
     public constructor() {
@@ -31,14 +31,14 @@ export class DecancerCommand extends BaseGlobalCommand {
             return this.decancerText(user.username);
 
         if (!await context.util.isUserStaff(context.message.member))
-            return this.decancerText(member.displayName);
+            return this.decancerText(member.nick ?? member.username);
 
-        const decancered = humanize.decancer(member.displayName);
+        const decancered = humanize.decancer(member.nick ?? member.username);
         try {
             await member.edit({ nick: decancered }, discordUtil.formatAuditReason(context.author, 'Decancered nickname/username'));
-            return this.success(`Successfully decancered **${member.toString()}**'s name to: \`${decancered}\``);
+            return this.success(`Successfully decancered **${member.mention}**'s name to: \`${decancered}\``);
         } catch {
-            return this.decancerText(member.displayName, decancered);
+            return this.decancerText(member.nick ?? member.username, decancered);
         }
     }
 

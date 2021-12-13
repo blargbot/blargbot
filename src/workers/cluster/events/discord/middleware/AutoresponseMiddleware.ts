@@ -1,12 +1,12 @@
 import { AutoresponseManager } from '@cluster/managers';
 import { IMiddleware, NextMiddleware } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 
-export class AutoresponseMiddleware implements IMiddleware<Message, boolean> {
+export class AutoresponseMiddleware implements IMiddleware<KnownMessage, boolean> {
     public constructor(private readonly manager: AutoresponseManager) {
     }
 
-    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         const process = this.manager.execute(context, true);
         const handled = await next();
         if (!handled)

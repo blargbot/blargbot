@@ -2,7 +2,7 @@ import { CronService } from '@core/serviceTypes';
 import { randChoose } from '@core/utils';
 import { Master } from '@master';
 import { MasterOptions } from '@master/types';
-import { ActivityOptions } from 'discord.js';
+import { ActivityPartial, BotActivityType, Constants } from 'eris';
 import moment from 'moment';
 
 export class StatusInterval extends CronService {
@@ -22,17 +22,17 @@ export class StatusInterval extends CronService {
         const date = moment().format('MM-DD');
         const holiday = this.#holidays[date];
         if (holiday === undefined)
-            this.master.discord.user.setActivity(randChoose(games));
+            this.master.discord.editStatus(randChoose(games));
         else
-            this.master.discord.user.setActivity(holiday);
+            this.master.discord.editStatus({ type: Constants.ActivityTypes.GAME, name: holiday });
     }
 }
 
-const games: ActivityOptions[] = [
-    { type: 'PLAYING', name: 'with tiny bits of string!' },
-    { type: 'PLAYING', name: 'with a mouse!' },
-    { type: 'PLAYING', name: 'with a laser pointer!' },
-    { type: 'PLAYING', name: 'with a ball of yarn!' },
-    { type: 'PLAYING', name: 'in a box!' },
-    { type: 'LISTENING', name: 'to the pitter-patter of tiny feet.' }
+const games: Array<ActivityPartial<BotActivityType>> = [
+    { type: Constants.ActivityTypes.GAME, name: 'with tiny bits of string!' },
+    { type: Constants.ActivityTypes.GAME, name: 'with a mouse!' },
+    { type: Constants.ActivityTypes.GAME, name: 'with a laser pointer!' },
+    { type: Constants.ActivityTypes.GAME, name: 'with a ball of yarn!' },
+    { type: Constants.ActivityTypes.GAME, name: 'in a box!' },
+    { type: Constants.ActivityTypes.LISTENING, name: 'to the pitter-patter of tiny feet.' }
 ];

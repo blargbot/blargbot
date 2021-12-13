@@ -3,7 +3,6 @@ import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundE
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { GuildChannels } from 'discord.js';
 
 import { Statement } from '../../types';
 
@@ -65,7 +64,7 @@ export class WaitMessageSubtags extends Subtag {
             let flattenedChannels;
             flattenedChannels = bbtagUtil.tagArray.flattenArray([channelStr]).map(i => parse.string(i));
             flattenedChannels = await Promise.all(flattenedChannels.map(async input => await context.queryChannel(input, { noLookup: true })));
-            channels = flattenedChannels.filter((channel): channel is GuildChannels => channel !== undefined);
+            channels = flattenedChannels.filter(guard.hasValue);
             if (flattenedChannels.length !== channels.length)
                 throw new ChannelNotFoundError(channelStr);
             channels = channels.map(channel => channel.id);

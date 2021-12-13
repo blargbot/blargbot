@@ -1,9 +1,8 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType } from '@cluster/utils';
-import { ChatlogSearchOptions, ChatlogType } from '@core/types';
+import { ChatlogSearchOptions, ChatlogType, SendContent } from '@core/types';
 import { guard, sleep } from '@core/utils';
-import { MessageOptions } from 'discord.js';
 
 export class LogsCommand extends BaseGuildCommand {
     public constructor() {
@@ -42,7 +41,7 @@ export class LogsCommand extends BaseGuildCommand {
             ]
         });
     }
-    public async generateLogs(context: GuildCommandContext, options: LogsGenerateOptions): Promise<string | MessageOptions> {
+    public async generateLogs(context: GuildCommandContext, options: LogsGenerateOptions): Promise<string | SendContent> {
         if (await context.database.guilds.getSetting(context.channel.guild.id, 'makelogs') !== true)
             return this.error(`This guild has not opted into chatlogs. Please do \`${context.prefix}!settings set makelogs true\` to allow me to start creating chatlogs.`);
 
@@ -59,8 +58,8 @@ export class LogsCommand extends BaseGuildCommand {
         if (!guard.isGuildChannel(channel.value) || channel.value.guild.id !== context.channel.guild.id)
             return this.error('The channel must be on this guild!');
 
-        const perms = context.message.member.permissionsIn(channel.value);
-        if (!perms.has('READ_MESSAGE_HISTORY'))
+        const perms = channel.value.permissionsOf(context.message.member);
+        if (!perms.has('readMessageHistory'))
             return this.error('You do not have permissions to look at that channels message history!');
 
         const users = [];
@@ -90,7 +89,7 @@ export class LogsCommand extends BaseGuildCommand {
                 await info.edit('Generating your logs...\nThis seems to be taking longer than usual. I\'ll ping you when I\'m finished.');
             } catch { /* NOOP */ }
             logs = await generatePromise;
-            ping = `Sorry that took so long, ${context.author.toString()}.\n`;
+            ping = `Sorry that took so long, ${context.author.mention}.\n`;
         }
 
         if (!Array.isArray(logs)) {
@@ -105,7 +104,7 @@ export class LogsCommand extends BaseGuildCommand {
             allowedMentions: { users: [context.author.id] },
             files: [
                 {
-                    attachment: JSON.stringify(logs.map(l => ({ ...l, id: undefined })), null, 2),
+                    file: JSON.stringify(logs.map(l => ({ ...l, id: undefined })), null, 2),
                     name: `${channel.value.id}-logs.json`
                 }
             ]

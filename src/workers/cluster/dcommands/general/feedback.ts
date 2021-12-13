@@ -92,7 +92,7 @@ export class FeedbackCommand extends BaseGlobalCommand {
             Type: subTypes,
             Title: title,
             Description: description,
-            Message: context.message.id,
+            KnownMessage: context.message.id,
             Channel: context.channel.id,
             Edits: (suggestion.Edits ?? 0) + 1,
             'Last Edited': moment().valueOf()
@@ -157,7 +157,7 @@ export class FeedbackCommand extends BaseGlobalCommand {
             Type: subTypes,
             Author: [suggestor],
             Channel: context.channel.id,
-            Message: context.message.id
+            KnownMessage: context.message.id
             /* eslint-enable @typescript-eslint/naming-convention */
         });
         if (record === undefined)
@@ -206,10 +206,10 @@ export class FeedbackCommand extends BaseGlobalCommand {
             placeholder: 'Select your suggestion type',
             minCount: 1,
             choices: [
-                { label: 'Command', value: 'Command', emoji: '🛠️' },
-                { label: 'BBTag', value: 'BBTag', emoji: '💻' },
-                { label: 'Documentation', value: 'Documentation', emoji: '📖' },
-                { label: 'Other Functionality', value: 'Other Functionality', emoji: '❓' }
+                { label: 'Command', value: 'Command', emoji: { name: '🛠️' } },
+                { label: 'BBTag', value: 'BBTag', emoji: { name: '💻' } },
+                { label: 'Documentation', value: 'Documentation', emoji: { name: '📖' } },
+                { label: 'Other Functionality', value: 'Other Functionality', emoji: { name: '❓' } }
             ]
         });
 

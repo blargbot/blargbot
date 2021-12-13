@@ -1,10 +1,10 @@
 import { MessageFilter } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 
 import { testRegexSafe } from '../createRegExp';
 import { decancer } from '../humanize';
 
-export function testMessageFilter(filter: MessageFilter, message: Message): boolean {
+export function testMessageFilter(filter: MessageFilter, message: KnownMessage): boolean {
     let content = message.content;
     if (filter.decancer === true)
         content = decancer(content);

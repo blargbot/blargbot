@@ -39,7 +39,7 @@ export class DMSubtag extends Subtag {
         const content = messageAsEmbeds === undefined ? messageStr : undefined;
 
         try {
-            const dmChannel = member.user.dmChannel ?? await member.createDM();
+            const dmChannel = await member.user.getDMChannel();
             let cache = dmCache[member.id];
             if (cache === undefined ||
                 cache.count > 5 ||

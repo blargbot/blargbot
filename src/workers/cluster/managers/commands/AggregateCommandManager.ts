@@ -4,7 +4,7 @@ import { CommandGetResult, CommandManagers, ICommand, ICommandManager } from '@c
 import { MessageIdQueue } from '@core/MessageIdQueue';
 import { CommandPermissions, NamedGuildCommandTag } from '@core/types';
 import { guard, humanize } from '@core/utils';
-import { Guild, Message, PartialMessage, TextBasedChannels, User } from 'discord.js';
+import { Guild, KnownTextableChannel, PossiblyUncachedMessage, User } from 'eris';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
     public readonly messages: MessageIdQueue;
@@ -29,7 +29,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         await Promise.all(this.managersArr.map(m => m.load(commands)));
     }
 
-    public async get(name: string, location?: Guild | TextBasedChannels, user?: User): Promise<CommandGetResult> {
+    public async get(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetResult> {
         let result: CommandGetResult;
         for (const manager of this.managersArr) {
             result = await manager.get(name, location, user);
@@ -39,7 +39,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         return { state: 'NOT_FOUND' };
     }
 
-    public async *list(location?: Guild | TextBasedChannels, user?: User): AsyncGenerator<ICommand> {
+    public async *list(location?: Guild | KnownTextableChannel, user?: User): AsyncGenerator<ICommand> {
         const commandNames = new Set<string>();
         for (const manager of this.managersArr) {
             for await (const command of manager.list(location, user)) {
@@ -64,7 +64,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         return result;
     }
 
-    public async messageDeleted(message: Message | PartialMessage): Promise<void> {
+    public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
         if (!guard.isGuildMessage(message))
             return;
         if (!this.messages.has(message.channel.guild.id, message.id)
@@ -73,7 +73,7 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         }
 
         let author: string | undefined;
-        if (!message.partial)
+        if ('author' in message)
             author = humanize.fullName(message.author);
         else {
             const chatlog = await this.cluster.database.chatlogs.getByMessageId(message.id);

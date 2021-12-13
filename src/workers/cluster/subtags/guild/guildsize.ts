@@ -14,13 +14,13 @@ export class GuildSizeSubtag extends Subtag {
                     exampleCode: 'This guild has {guildsize} members.',
                     exampleOut: 'This guild has 123 members.',
                     returns: 'number',
-                    execute: (ctx) => this.getGuildMemberCount(ctx)
+                    execute: (ctx) => this.getMemberCount(ctx)
                 }
             ]
         });
     }
 
-    public getGuildMemberCount(context: BBTagContext): number {
+    public getMemberCount(context: BBTagContext): number {
         return context.guild.memberCount;
     }
 }

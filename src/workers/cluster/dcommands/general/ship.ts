@@ -1,6 +1,6 @@
 import { BaseGlobalCommand } from '@cluster/command';
 import { CommandType, randInt } from '@cluster/utils';
-import { User } from 'discord.js';
+import { User } from 'eris';
 
 export class ShipCommand extends BaseGlobalCommand {
     public constructor() {

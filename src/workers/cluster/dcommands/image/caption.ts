@@ -15,7 +15,7 @@ export class CaptionCommand extends BaseGlobalImageCommand {
                 {
                     parameters: '',
                     description: 'Puts captions on an attached image.',
-                    execute: (ctx, _, flags) => this.render(ctx, ctx.message.attachments.first()?.url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
+                    execute: (ctx, _, flags) => this.render(ctx, ctx.message.attachments[0]?.url, flags.t?.merge().value, flags.b?.merge().value, flags.f?.merge().value)
                 },
                 {
                     parameters: '{url+}',

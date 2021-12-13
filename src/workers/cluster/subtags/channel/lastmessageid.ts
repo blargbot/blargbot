@@ -44,6 +44,6 @@ export class LastMessageIdSubtag extends Subtag {
         if (!guard.isTextableChannel(channel))
             throw new BBTagRuntimeError('Channel must be a textable channel');
 
-        return channel.lastMessageId ?? '';
+        return channel.lastMessageID;
     }
 }

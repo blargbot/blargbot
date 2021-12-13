@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { CommandType, pluralise as p } from '@cluster/utils';
-import { MessageEmbedOptions, User } from 'discord.js';
+import { EmbedOptions, User } from 'eris';
 import moment from 'moment-timezone';
 
 export class NamesCommand extends BaseGlobalCommand {
@@ -27,12 +27,12 @@ export class NamesCommand extends BaseGlobalCommand {
         });
     }
 
-    public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<MessageEmbedOptions | string> {
+    public async listNames(context: CommandContext, user: User, all: boolean, detailed: boolean): Promise<EmbedOptions | string> {
         let usernames = await context.database.users.getUsernames(user.id);
         if (usernames === undefined || usernames.length === 0)
-            return this.info(`I havent seen any usernames for ${user.toString()} yet!`);
+            return this.info(`I havent seen any usernames for ${user.mention} yet!`);
 
-        const embed: MessageEmbedOptions = {
+        const embed: EmbedOptions = {
             author: context.util.embedifyAuthor(user),
             title: 'Historical usernames'
         };
@@ -43,7 +43,7 @@ export class NamesCommand extends BaseGlobalCommand {
             usernames = usernames.filter(u => moment(u.date).isAfter(cutoff));
 
             if (usernames.length === 0)
-                return this.info(`I havent seen ${user.toString()} change their username since <t:${cutoff.unix()}>!`);
+                return this.info(`I havent seen ${user.mention} change their username since <t:${cutoff.unix()}>!`);
         }
 
         embed.description = detailed

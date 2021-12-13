@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize } from '@cluster/utils';
 import { guard, pluralise as p } from '@core/utils';
-import { Constants, DiscordAPIError, KnownChannel } from 'discord.js';
+import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
 export class ModlogCommand extends BaseGuildCommand {
     public constructor() {
@@ -39,7 +39,7 @@ export class ModlogCommand extends BaseGuildCommand {
 
         if (channel === undefined)
             return this.success('The modlog is disabled');
-        return this.success(`Modlog entries will now be sent in ${channel.toString()}`);
+        return this.success(`Modlog entries will now be sent in ${channel.mention}`);
     }
 
     public async clearModlog(context: GuildCommandContext, ids: readonly number[]): Promise<string> {
@@ -75,14 +75,9 @@ export class ModlogCommand extends BaseGuildCommand {
             }
 
             try {
-                const result = await channel.bulkDelete(cases.map(c => c.msgid));
-                for (const entry of cases) {
-                    if (!result.has(entry.msgid))
-                        missingMessage.push(entry.caseid);
-
-                }
+                await channel.deleteMessages(cases.map(c => c.msgid));
             } catch (err: unknown) {
-                if (err instanceof DiscordAPIError && err.code === Constants.APIErrors.MISSING_PERMISSIONS) {
+                if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS) {
                     noperms.push(...cases.map(c => c.caseid));
                     continue;
                 }

@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, humanize, pluralise as p } from '@cluster/utils';
-import { GuildMember } from 'discord.js';
+import { Member } from 'eris';
 
 export class WarningsCommand extends BaseGuildCommand {
     public constructor() {
@@ -23,7 +23,7 @@ export class WarningsCommand extends BaseGuildCommand {
         });
     }
 
-    public async warnings(context: GuildCommandContext, member: GuildMember): Promise<string> {
+    public async warnings(context: GuildCommandContext, member: Member): Promise<string> {
         const { count, banAt, kickAt } = await context.cluster.moderation.warns.details(member);
         const result: string[] = [
             count > 0

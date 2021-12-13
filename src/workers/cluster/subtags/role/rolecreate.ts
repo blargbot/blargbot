@@ -1,7 +1,7 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
-import { CreateRoleOptions } from 'discord.js';
+import { RoleOptions } from 'eris';
 
 export class RoleCreateSubtag extends Subtag {
     public constructor() {
@@ -43,7 +43,7 @@ export class RoleCreateSubtag extends Subtag {
         mentionableStr: string,
         hoistedStr: string
     ): Promise<string> {
-        const permission = context.permissions.valueOf();
+        const permission = context.permissions.allow;
         const topRole = discordUtil.getRoleEditPosition(context);
 
         if (topRole === 0)
@@ -51,11 +51,10 @@ export class RoleCreateSubtag extends Subtag {
 
         const rolePerms = parse.bigInt(permStr);
         if (rolePerms === undefined)
-            throw new BBTagRuntimeError('Permissions not a number');
+            throw new BBTagRuntimeError('Permission not a number');
 
-        const options: CreateRoleOptions = {
+        const options: RoleOptions = {
             name,
-            reason: discordUtil.formatAuditReason(context.user, context.scopes.local.reason),
             color: parse.color(colorStr),
             permissions: rolePerms,
             mentionable: parse.boolean(mentionableStr, false),
@@ -66,9 +65,9 @@ export class RoleCreateSubtag extends Subtag {
             throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {
-            const role = await context.guild.roles.create(options);
-            if (context.guild.roles.cache.get(role.id) === undefined)
-                context.guild.roles.cache.set(role.id, role);
+            const role = await context.guild.createRole(options, discordUtil.formatAuditReason(context.user, context.scopes.local.reason));
+            if (context.guild.roles.get(role.id) === undefined)
+                context.guild.roles.set(role.id, role);
             return role.id;
         } catch (err: unknown) {
             context.logger.error(err);

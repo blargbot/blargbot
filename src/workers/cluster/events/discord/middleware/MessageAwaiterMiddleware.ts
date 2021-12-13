@@ -1,12 +1,12 @@
 import { AwaiterFactoryBase } from '@cluster/managers/awaiters/AwaiterFactoryBase';
 import { IMiddleware, NextMiddleware } from '@core/types';
-import { Message } from 'discord.js';
+import { KnownMessage } from 'eris';
 
-export class MessageAwaiterMiddleware implements IMiddleware<Message, boolean> {
-    public constructor(private readonly awaiter: AwaiterFactoryBase<Message>) {
+export class MessageAwaiterMiddleware implements IMiddleware<KnownMessage, boolean> {
+    public constructor(private readonly awaiter: AwaiterFactoryBase<KnownMessage>) {
     }
 
-    public async execute(context: Message, next: NextMiddleware<boolean>): Promise<boolean> {
+    public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {
         if (await this.awaiter.tryConsume(context))
             return true;
 
