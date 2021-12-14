@@ -4,14 +4,17 @@ import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
 import { BBTagContextOptions, SourceMarker, SubtagCall } from '@cluster/types';
 import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
+import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
+import { SubtagVariableType, TagVariablesTable } from '@core/types';
 import { expect } from 'chai';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
 import { BaseData, Client as Discord, Collection, Constants, Guild, KnownGuildTextableChannel, Message, Shard, ShardManager, User } from 'eris';
 import { describe, it } from 'mocha';
 import { anyOfClass, anyString, instance, mock, setStrict, when } from 'ts-mockito';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
+import { inspect } from 'util';
 
 export interface SubtagTestCase {
     readonly code: string;
@@ -65,8 +68,13 @@ export class SubtagTestContext {
     public readonly shard: Mock<Shard>;
     public readonly shards: Mock<ShardManager>;
     public readonly discord: Mock<Discord>;
-    public readonly options: Mutable<Partial<BBTagContextOptions>>;
     public readonly logger: Mock<Logger>;
+    public readonly database: Mock<Database>;
+    public readonly tagVariablesTable: Mock<TagVariablesTable>;
+
+    public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
+
+    public readonly options: Mutable<Partial<BBTagContextOptions>>;
     public readonly message: APIMessage = { ...SubtagTestContext.#messageDefaults() };
     public readonly guild: APIGuild = { ...SubtagTestContext.#guildDefaults() };
 
@@ -76,22 +84,29 @@ export class SubtagTestContext {
         this.cluster = new Mock(Cluster);
         this.shard = new Mock(Shard);
         this.shards = new Mock(ShardManager);
+        this.database = new Mock(Database);
+        this.tagVariablesTable = new Mock<TagVariablesTable>();
+        this.tagVariables = {};
         this.options = {};
 
-        this.cluster.setup(m => m.discord)
-            .thenReturn(this.discord.instance);
-        this.discord.setup(m => m.shards)
-            .thenReturn(this.shards.instance);
-        this.discord.setup(m => m.guildShardMap)
-            .thenReturn({});
-        this.discord.setup(m => m.channelGuildMap)
-            .thenReturn({});
-        this.discord.setup(m => m.options)
-            .thenReturn({ intents: [] });
-        this.shards.setup(m => m.get(0))
-            .thenReturn(this.shard.instance);
-        this.shard.setup(m => m.client)
-            .thenReturn(this.discord.instance);
+        this.logger.setup(m => m.error).thenReturn((...args: unknown[]) => {
+            throw new Error('Unexpected logger error: ' + inspect(args));
+        });
+
+        this.cluster.setup(m => m.discord).thenReturn(this.discord.instance);
+        this.cluster.setup(m => m.database).thenReturn(this.database.instance);
+        this.cluster.setup(m => m.logger).thenReturn(this.logger.instance);
+
+        this.database.setup(m => m.tagVariables).thenReturn(this.tagVariablesTable.instance);
+        this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString())).thenCall((name: string, type: SubtagVariableType, scope: string) => this.tagVariables[`${type}.${scope}.${name}`]);
+
+        this.discord.setup(m => m.shards).thenReturn(this.shards.instance);
+        this.discord.setup(m => m.guildShardMap).thenReturn({});
+        this.discord.setup(m => m.channelGuildMap).thenReturn({});
+        this.discord.setup(m => m.options).thenReturn({ intents: [] });
+
+        this.shards.setup(m => m.get(0)).thenReturn(this.shard.instance);
+        this.shard.setup(m => m.client).thenReturn(this.discord.instance);
 
         this.discord.setup(m => m.guilds).thenReturn(new Collection(Guild));
         this.discord.setup(m => m.users).thenReturn(new Collection(User));

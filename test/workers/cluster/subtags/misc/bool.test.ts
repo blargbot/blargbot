@@ -34,17 +34,17 @@ runSubtagTests({
                 { start: 0, end: 22, error: new NotEnoughArgumentsError(3, 2) }
             ]
         },
-        ...generateCompTestCases('123', isEqualTo, '123'),
-        ...generateCompTestCases('123', isGreaterThan, '122'),
-        ...generateCompTestCases('123', isLessThan, '124'),
-        ...generateCompTestCases('abc', isGreaterThan, '123'),
-        ...generateCompTestCases('test22abc', isLessThan, 'test100abc'),
-        ...generateCompTestCases('test100abc', isGreaterThan, 'test90abc'),
-        ...generateCompTestCases('test100abc', isEqualTo, 'test0100abc'),
-        ...generateCompTestCases(true, isEqualTo, true),
-        ...generateCompTestCases(true, isGreaterThan, false),
-        ...generateCompTestCases(false, isLessThan, true),
-        ...generateCompTestCases(false, isEqualTo, false),
+        ...generateTestCases('123', isEqualTo, '123'),
+        ...generateTestCases('123', isGreaterThan, '122'),
+        ...generateTestCases('123', isLessThan, '124'),
+        ...generateTestCases('abc', isGreaterThan, '123'),
+        ...generateTestCases('test22abc', isLessThan, 'test100abc'),
+        ...generateTestCases('test100abc', isGreaterThan, 'test90abc'),
+        ...generateTestCases('test100abc', isEqualTo, 'test0100abc'),
+        ...generateTestCases(true, isEqualTo, true),
+        ...generateTestCases(true, isGreaterThan, false),
+        ...generateTestCases(false, isLessThan, true),
+        ...generateTestCases(false, isEqualTo, false),
         {
             code: '{bool;{error};{error};{error}}',
             expected: '`Invalid operator`',
@@ -69,7 +69,7 @@ runSubtagTests({
     ]
 });
 
-function generateCompTestCases(left: boolean | string, tests: Record<string, boolean>, right: boolean | string): SubtagTestCase[] {
+function generateTestCases(left: boolean | string, tests: Record<string, boolean>, right: boolean | string): SubtagTestCase[] {
     const leftStrs = typeof left === 'boolean' ? left ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [left];
     const rightStrs = typeof right === 'boolean' ? right ? ['true', 't', 'yes', 'y'] : ['false', 'f', 'no', 'n'] : [right];
 

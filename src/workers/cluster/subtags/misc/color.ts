@@ -1,25 +1,10 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
 import Color from 'color';
 
-const getArray = bbtagUtil.tagArray.getArray;
+export type ColorFormat = keyof typeof colorConverters;
 
-type ColorFormat = typeof formats[number];
-
-const formats = ['hsl', 'rgb', 'hsv', 'hwb', 'cmyk', 'xyz', 'lab', 'lch', 'hex', 'keyword', 'ansi16', 'ansi256', 'hcg', 'apple', 'gray'] as const;
-
-function isColorFormat(value: string): value is ColorFormat | Uppercase<ColorFormat> {
-    return (<readonly string[]>formats).includes(value.toLowerCase());
-}
-
-//* Thanks @types/color
-interface RGBColor extends Color {
-    model: 'rgb';
-    color: string[] | number[] | undefined;
-}
-
-type ConvertedColor = RGBColor | { color: string; model: 'hex'; } | string;
 export class ColorSubtag extends Subtag {
     public constructor() {
         super({
@@ -56,69 +41,129 @@ export class ColorSubtag extends Subtag {
         if (colorStr === '')
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
-        const arr = await getArray(context, colorStr);
+        const arr = await bbtagUtil.tagArray.getArray(context, colorStr);
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
-        let parsedInput;
-        const match = /^\(?(\d{1,3}),(\d{1,3}),(\d{1,3})\)?$/.exec(input);
-        if (match !== null) {
-            const r = parseInt(match[1]);
-            const g = parseInt(match[2]);
-            const b = parseInt(match[3]);
-            parsedInput = [r, g, b];
-        } else if (inputStr?.toLowerCase() === 'hsl') {
-            parsedInput = input.split(',');
-        } else {
-            parsedInput = input;
-        }
 
-        let inputFormat: undefined | ColorFormat;
-        if (inputStr === undefined) {
-            // NOOP
-        } else if (isColorFormat(inputStr)) {
-            inputFormat = inputStr.toLowerCase();
-        } else {
+        const inputConverter = getConverter(inputStr ?? '');
+        if (inputConverter === undefined)
             throw new BBTagRuntimeError('Invalid input method', `${JSON.stringify(inputStr)} is not valid`);
-        }
 
-        let outputFormat: ColorFormat;
-        if (isColorFormat(outputStr)) {
-            outputFormat = outputStr.toLowerCase();
-        } else {
-            throw new BBTagRuntimeError('Invalid input method', `${JSON.stringify(outputStr)} is not valid`);
-        }
+        const outputConverter = getConverter(outputStr);
+        if (outputConverter === undefined)
+            throw new BBTagRuntimeError('Invalid output method', `${JSON.stringify(outputStr)} is not valid`);
 
-        let color: Color | undefined;
         try {
-            color = Color(parsedInput, inputFormat);
-        } catch (e: unknown) {
-            color = Color(`#${parsedInput.toString()}`, inputFormat);
-        }
-
-        if (typeof color === 'undefined')
-            throw new BBTagRuntimeError('Invalid color', colorStr);
-        if (!formats.includes(outputFormat))
-            throw new BBTagRuntimeError('Invalid output method', `${JSON.stringify(outputFormat)} is not a valid`);
-
-        let converted = color[outputFormat]() as ConvertedColor;
-        if (typeof converted === 'object') {
-            if (converted.model === 'rgb' && typeof converted.color !== 'undefined') {
-                for (let i = 0; i < converted.color.length; i++) {
-                    converted.color[i] = parseInt(converted.color[i].toString());
-                }
+            const color = inputConverter.toColor(input);
+            const result = outputConverter.toValue(color);
+            switch (typeof result) {
+                case 'string': return result;
+                case 'number': return result.toString();
+                default: return JSON.stringify(result.round(2).array());
             }
-
-            if (typeof converted.color === 'object') {
-                return JSON.stringify(converted.color);
-            }
-            if (converted.color?.indexOf('#') === 0)
-                converted.color = converted.color.replace('#', '');
-            return converted.color !== undefined ? converted.color : '';
-
+        } catch {
+            throw new BBTagRuntimeError('Invalid color', `${JSON.stringify(colorStr)} is not a valid color`);
         }
-
-        if (converted.startsWith('#'))
-            converted = converted.replace('#', '');
-        return converted;
-
     }
 }
+
+interface ColorConverter {
+    toColor(value: string): Color;
+    toValue(value: Color): string | Color | number;
+}
+
+function getConverter(name: string): ColorConverter | undefined {
+    name = name.toLowerCase();
+    if (guard.hasProperty(colorConverters, name))
+        return colorConverters[name];
+    if (name === '')
+        return defaultColorConverter;
+    return undefined;
+}
+
+function toChannels(value: string, channels: number): number[] {
+    const match = new RegExp(`^\\(?(-?\\d+(?:\\.\\d+)?(?:,-?\\d+(?:\\.\\d+)?){${channels - 1}})\\)?$`).exec(value);
+    if (match === null)
+        throw new Error('Invalid channels');
+
+    return match[0].split(',').map(parseFloat);
+}
+
+function ensurePrefix(value: string, prefix: string): string {
+    return value.startsWith(prefix) ? value : prefix + value;
+}
+
+const defaultColorConverter: ColorConverter = {
+    toColor(str) {
+        try {
+            return colorConverters.hex.toColor(str);
+        } catch {
+            return colorConverters.rgb.toColor(str);
+        }
+    },
+    toValue(color) {
+        return colorConverters.hex.toValue(color);
+    }
+};
+
+const colorConverters = {
+    hsl: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'hsl'); },
+        toValue(color: Color) { return color.hsl(); }
+    },
+    rgb: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'rgb'); },
+        toValue(color: Color) { return color.rgb(); }
+    },
+    hsv: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'hsv'); },
+        toValue(color: Color) { return color.hsv(); }
+    },
+    hwb: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'hwb'); },
+        toValue(color: Color) { return color.hwb(); }
+    },
+    cmyk: {
+        toColor(str: string) { return Color(toChannels(str, 4), 'cmyk'); },
+        toValue(color: Color) { return color.cmyk(); }
+    },
+    xyz: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'xyz'); },
+        toValue(color: Color) { return color.xyz(); }
+    },
+    lab: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'lab'); },
+        toValue(color: Color) { return color.lab(); }
+    },
+    lch: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'lch'); },
+        toValue(color: Color) { return color.lch(); }
+    },
+    hex: {
+        toColor(str: string) { return Color(ensurePrefix(str, '#'), 'hex'); },
+        toValue(color: Color) { return color.hex().slice(1); }
+    },
+    keyword: {
+        toColor(str: string) { return Color(str, 'keyword'); },
+        toValue(color: Color) { return color.keyword(); }
+    },
+    ansi16: {
+        toColor(str: string) { return Color(toChannels(str, 1), 'ansi16'); },
+        toValue(color: Color) { return color.ansi16(); }
+    },
+    ansi256: {
+        toColor(str: string) { return Color(toChannels(str, 1), 'ansi256'); },
+        toValue(color: Color) { return color.ansi256(); }
+    },
+    hcg: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'hcg'); },
+        toValue(color: Color) { return color.hcg(); }
+    },
+    apple: {
+        toColor(str: string) { return Color(toChannels(str, 3), 'apple'); },
+        toValue(color: Color) { return color.apple(); }
+    },
+    gray: {
+        toColor(str: string) { return Color(toChannels(str, 1), 'gray').rgb(); },
+        toValue(color: Color) { return color.rgb().gray(); }
+    }
+} as const;
