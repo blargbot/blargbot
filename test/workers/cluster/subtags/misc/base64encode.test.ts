@@ -1,7 +1,7 @@
-import { NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { Base64EncodeSubtag } from '@cluster/subtags/misc/base64encode';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests, TestError } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new Base64EncodeSubtag(),
@@ -18,12 +18,13 @@ runSubtagTests({
             expected: 'U3VjY2VzcyE='
         },
         {
-            code: '{base64encode;I dont like that it passes here;#This is ignored#}',
-            expected: 'SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ=='
-        },
-        {
-            code: '{base64encode;I dont like that it passes here;1;2;3;4;5;6;7;8}',
-            expected: 'SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ=='
+            code: '{base64encode;{error};{error}}',
+            expected: '`Too many arguments`',
+            errors: [
+                { start: 14, end: 21, error: new TestError(14) },
+                { start: 22, end: 29, error: new TestError(22) },
+                { start: 0, end: 30, error: new TooManyArgumentsError(1, 2) }
+            ]
         },
         {
             code: '{btoa}',
@@ -37,12 +38,13 @@ runSubtagTests({
             expected: 'U3VjY2VzcyE='
         },
         {
-            code: '{btoa;I dont like that it passes here;#This is ignored#}',
-            expected: 'SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ=='
-        },
-        {
-            code: '{btoa;I dont like that it passes here;1;2;3;4;5;6;7;8}',
-            expected: 'SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ=='
+            code: '{btoa;{error};{error}}',
+            expected: '`Too many arguments`',
+            errors: [
+                { start: 6, end: 13, error: new TestError(6) },
+                { start: 14, end: 21, error: new TestError(14) },
+                { start: 0, end: 22, error: new TooManyArgumentsError(1, 2) }
+            ]
         }
     ]
 });

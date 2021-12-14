@@ -9,7 +9,7 @@ export class Base64DecodeSubtag extends Subtag {
             category: SubtagType.MISC,
             definition: [
                 {
-                    parameters: ['text+'],
+                    parameters: ['text'],
                     description: 'Converts the provided base64 to a UTF-8 string.',
                     exampleCode: '{base64decode;RmFuY3kh}',
                     exampleOut: 'Fancy!',

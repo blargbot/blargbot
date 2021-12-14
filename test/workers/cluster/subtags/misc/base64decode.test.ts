@@ -1,7 +1,7 @@
-import { NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { Base64DecodeSubtag } from '@cluster/subtags/misc/base64decode';
 
-import { runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests, TestError } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new Base64DecodeSubtag(),
@@ -22,12 +22,13 @@ runSubtagTests({
             expected: 'Success!'
         },
         {
-            code: '{base64decode;SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ==;#This isnt valid base 64#}',
-            expected: 'I dont like that it passes here'
-        },
-        {
-            code: '{base64decode;SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ==;1;2;3;4;5;6;7;8}',
-            expected: 'I dont like that it passes here'
+            code: '{base64decode;{error};{error}}',
+            expected: '`Too many arguments`',
+            errors: [
+                { start: 14, end: 21, error: new TestError(14) },
+                { start: 22, end: 29, error: new TestError(22) },
+                { start: 0, end: 30, error: new TooManyArgumentsError(1, 2) }
+            ]
         },
         {
             code: '{atob}',
@@ -45,12 +46,13 @@ runSubtagTests({
             expected: 'Success!'
         },
         {
-            code: '{atob;SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ==;#This isnt valid base 64#}',
-            expected: 'I dont like that it passes here'
-        },
-        {
-            code: '{atob;SSBkb250IGxpa2UgdGhhdCBpdCBwYXNzZXMgaGVyZQ==;1;2;3;4;5;6;7;8}',
-            expected: 'I dont like that it passes here'
+            code: '{atob;{error};{error}}',
+            expected: '`Too many arguments`',
+            errors: [
+                { start: 6, end: 13, error: new TestError(6) },
+                { start: 14, end: 21, error: new TestError(14) },
+                { start: 0, end: 22, error: new TooManyArgumentsError(1, 2) }
+            ]
         }
     ]
 });
