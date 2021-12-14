@@ -11,7 +11,7 @@ import { SubtagVariableType, TagVariablesTable } from '@core/types';
 import { expect } from 'chai';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
 import { BaseData, Client as Discord, Collection, Constants, Guild, KnownGuildTextableChannel, Message, Shard, ShardManager, User } from 'eris';
-import { describe, it } from 'mocha';
+import { Context, describe, it } from 'mocha';
 import { anyOfClass, anyString, instance, mock, setStrict, when } from 'ts-mockito';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 import { inspect } from 'util';
@@ -25,6 +25,7 @@ export interface SubtagTestCase {
     readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
     readonly errors?: ReadonlyArray<{ start?: SourceMarker | number | string; end?: SourceMarker | number | string; error: BBTagRuntimeError; }>;
     readonly subtags?: readonly Subtag[];
+    readonly skip?: boolean | (() => Awaitable<boolean>);
 }
 
 type TestSuiteConfig = { [P in keyof Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'>]-?: Array<Required<SubtagTestCase>[P]> };
@@ -288,7 +289,7 @@ export class TestSubtag extends Subtag {
 }
 
 export class SubtagTestSuite {
-    readonly #global: TestSuiteConfig = { setup: [], assert: [], teardown: [] };
+    readonly #config: TestSuiteConfig = { setup: [], assert: [], teardown: [] };
     readonly #testCases: SubtagTestCase[] = [];
     readonly #subtag: Subtag;
 
@@ -297,18 +298,18 @@ export class SubtagTestSuite {
     }
 
     public setup(setup: Required<SubtagTestCase>['setup']): this {
-        this.#global.setup.push(setup);
+        this.#config.setup.push(setup);
         return this;
     }
 
     public assert(assert: Required<SubtagTestCase>['assert']): this {
-        this.#global.assert.push(assert);
+        this.#config.assert.push(assert);
         return this;
 
     }
 
     public teardown(teardown: Required<SubtagTestCase>['teardown']): this {
-        this.#global.teardown.push(teardown);
+        this.#config.teardown.push(teardown);
         return this;
 
     }
@@ -320,6 +321,8 @@ export class SubtagTestSuite {
 
     public run(): void {
         describe(`{${this.#subtag.name}}`, () => {
+            const subtag = this.#subtag;
+            const config = this.#config;
             for (const testCase of this.#testCases) {
                 let errorStr = '';
                 switch (testCase.errors?.length) {
@@ -335,13 +338,18 @@ export class SubtagTestSuite {
                 const title = testCase.expected === undefined
                     ? `should handle ${JSON.stringify(testCase.code)}${errorStr}`
                     : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)}${errorStr}`;
-                it(title, async () => runTestCase(this.#subtag, testCase, this.#global));
+                it(title, function () {
+                    return runTestCase(this, subtag, testCase, config);
+                });
             }
         });
     }
 }
 
-async function runTestCase(subtag: Subtag, testCase: SubtagTestCase, config: TestSuiteConfig): Promise<void> {
+async function runTestCase(context: Context, subtag: Subtag, testCase: SubtagTestCase, config: TestSuiteConfig): Promise<void> {
+    if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
+        context.skip();
+
     const test = new SubtagTestContext([subtag, new TestSubtag(), ...testCase.subtags ?? []]);
     try {
         // arrange
