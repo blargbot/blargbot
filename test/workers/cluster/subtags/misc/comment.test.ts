@@ -6,14 +6,14 @@ runSubtagTests({
     subtag: new CommentSubtag(),
     cases: [
         { code: '{comment}', expected: '' },
-        { code: '{comment;{error}}', expected: '' },
-        { code: '{comment;{error};{error}}', expected: '' },
-        { code: '{comment;{error};{error};{error}}', expected: '' },
-        { code: '{comment;{error};{error};{error};{error}}', expected: '' },
+        { code: '{comment;{fail}}', expected: '' },
+        { code: '{comment;{fail};{fail}}', expected: '' },
+        { code: '{comment;{fail};{fail};{fail}}', expected: '' },
+        { code: '{comment;{fail};{fail};{fail};{fail}}', expected: '' },
         { code: '{//}', expected: '' },
-        { code: '{//;{error}}', expected: '' },
-        { code: '{//;{error};{error}}', expected: '' },
-        { code: '{//;{error};{error};{error}}', expected: '' },
-        { code: '{//;{error};{error};{error};{error}}', expected: '' }
+        { code: '{//;{fail}}', expected: '' },
+        { code: '{//;{fail};{fail}}', expected: '' },
+        { code: '{//;{fail};{fail};{fail}}', expected: '' },
+        { code: '{//;{fail};{fail};{fail};{fail}}', expected: '' }
     ]
 });

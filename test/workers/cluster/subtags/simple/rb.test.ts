@@ -1,7 +1,7 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { RbSubtag } from '@cluster/subtags/simple/rb';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new RbSubtag(),
@@ -11,11 +11,11 @@ runSubtagTests({
             expected: '}'
         },
         {
-            code: '{rb;{error}}',
+            code: '{rb;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 4, end: 11, error: new TestError(4) },
-                { start: 0, end: 12, error: new TooManyArgumentsError(0, 1) }
+                { start: 4, end: 10, error: new MarkerError(4) },
+                { start: 0, end: 11, error: new TooManyArgumentsError(0, 1) }
             ]
         }
     ]

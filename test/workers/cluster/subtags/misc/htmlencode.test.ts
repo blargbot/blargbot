@@ -2,7 +2,7 @@ import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/e
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { HtmlEncodeSubtag } from '@cluster/subtags/misc/htmlencode';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new HtmlEncodeSubtag(),
@@ -25,12 +25,12 @@ runSubtagTests({
             subtags: [new EscapeBbtagSubtag()]
         },
         {
-            code: '{htmlencode;{error};{error}}',
+            code: '{htmlencode;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 12, end: 19, error: new TestError(12) },
-                { start: 20, end: 27, error: new TestError(20) },
-                { start: 0, end: 28, error: new TooManyArgumentsError(1, 2) }
+                { start: 12, end: 18, error: new MarkerError(12) },
+                { start: 19, end: 25, error: new MarkerError(19) },
+                { start: 0, end: 26, error: new TooManyArgumentsError(1, 2) }
             ]
         }
     ]

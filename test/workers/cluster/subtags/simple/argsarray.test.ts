@@ -1,7 +1,7 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { ArgsArraySubtag } from '@cluster/subtags/simple/argsarray';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ArgsArraySubtag(),
@@ -22,11 +22,11 @@ runSubtagTests({
             setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
         },
         {
-            code: '{argsarray;{error}}',
+            code: '{argsarray;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 11, end: 18, error: new TestError(11) },
-                { start: 0, end: 19, error: new TooManyArgumentsError(0, 1) }
+                { start: 11, end: 17, error: new MarkerError(11) },
+                { start: 0, end: 18, error: new TooManyArgumentsError(0, 1) }
             ]
         }
     ]

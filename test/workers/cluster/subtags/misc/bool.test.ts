@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { BoolSubtag } from '@cluster/subtags/misc/bool';
 
-import { runSubtagTests, SubtagTestCase, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
 const isEqualTo = { '!=': false, '<': false, '<=': true, '==': true, '>': false, '>=': true } as const;
 const isGreaterThan = { '!=': true, '<': false, '<=': false, '==': false, '>': true, '>=': true } as const;
@@ -18,20 +18,20 @@ runSubtagTests({
             ]
         },
         {
-            code: '{bool;{error}}',
+            code: '{bool;{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 6, end: 13, error: new TestError(6) },
-                { start: 0, end: 14, error: new NotEnoughArgumentsError(3, 1) }
+                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 0, end: 13, error: new NotEnoughArgumentsError(3, 1) }
             ]
         },
         {
-            code: '{bool;{error};{error}}',
+            code: '{bool;{eval};{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 6, end: 13, error: new TestError(6) },
-                { start: 14, end: 21, error: new TestError(14) },
-                { start: 0, end: 22, error: new NotEnoughArgumentsError(3, 2) }
+                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 13, end: 19, error: new MarkerError(13) },
+                { start: 0, end: 20, error: new NotEnoughArgumentsError(3, 2) }
             ]
         },
         ...generateTestCases('123', isEqualTo, '123'),
@@ -46,24 +46,24 @@ runSubtagTests({
         ...generateTestCases(false, isLessThan, true),
         ...generateTestCases(false, isEqualTo, false),
         {
-            code: '{bool;{error};{error};{error}}',
+            code: '{bool;{eval};{eval};{eval}}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 6, end: 13, error: new TestError(6) },
-                { start: 14, end: 21, error: new TestError(14) },
-                { start: 22, end: 29, error: new TestError(22) },
-                { start: 0, end: 30, error: new BBTagRuntimeError('Invalid operator') }
+                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 13, end: 19, error: new MarkerError(13) },
+                { start: 20, end: 26, error: new MarkerError(20) },
+                { start: 0, end: 27, error: new BBTagRuntimeError('Invalid operator') }
             ]
         },
         {
-            code: '{bool;{error};{error};{error};{error}}',
+            code: '{bool;{eval};{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 6, end: 13, error: new TestError(6) },
-                { start: 14, end: 21, error: new TestError(14) },
-                { start: 22, end: 29, error: new TestError(22) },
-                { start: 30, end: 37, error: new TestError(30) },
-                { start: 0, end: 38, error: new TooManyArgumentsError(3, 4) }
+                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 13, end: 19, error: new MarkerError(13) },
+                { start: 20, end: 26, error: new MarkerError(20) },
+                { start: 27, end: 33, error: new MarkerError(27) },
+                { start: 0, end: 34, error: new TooManyArgumentsError(3, 4) }
             ]
         }
     ]

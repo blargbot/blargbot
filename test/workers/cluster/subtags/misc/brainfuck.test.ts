@@ -1,7 +1,7 @@
 import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { BrainfuckSubtag } from '@cluster/subtags/misc/brainfuck';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new BrainfuckSubtag(),
@@ -22,13 +22,13 @@ runSubtagTests({
             expected: 'tset a si sihT\u0001'
         },
         {
-            code: '{brainfuck;{error};{error};{error}}',
+            code: '{brainfuck;{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 11, end: 18, error: new TestError(11) },
-                { start: 19, end: 26, error: new TestError(19) },
-                { start: 27, end: 34, error: new TestError(27) },
-                { start: 0, end: 35, error: new TooManyArgumentsError(2, 3) }
+                { start: 11, end: 17, error: new MarkerError(11) },
+                { start: 18, end: 24, error: new MarkerError(18) },
+                { start: 25, end: 31, error: new MarkerError(25) },
+                { start: 0, end: 32, error: new TooManyArgumentsError(2, 3) }
             ]
         }
     ]

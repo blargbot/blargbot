@@ -2,7 +2,7 @@ import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/e
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { IndexOfSubtag } from '@cluster/subtags/misc/indexof';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new IndexOfSubtag(),
@@ -15,11 +15,11 @@ runSubtagTests({
             ]
         },
         {
-            code: '{indexof;{error}}',
+            code: '{indexof;{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 9, end: 16, error: new TestError(9) },
-                { start: 0, end: 17, error: new NotEnoughArgumentsError(2, 1) }
+                { start: 9, end: 15, error: new MarkerError(9) },
+                { start: 0, end: 16, error: new NotEnoughArgumentsError(2, 1) }
             ]
         },
         { code: '{indexof;This is some text;s}', expected: '3' },
@@ -47,14 +47,14 @@ runSubtagTests({
         { code: '{indexof;{escapebbtag;{"n":"abc","v":["a"]}};a}', expected: '0', subtags: [new EscapeBbtagSubtag()] },
 
         {
-            code: '{indexof;{error};{error};{error};{error}}',
+            code: '{indexof;{eval};{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 9, end: 16, error: new TestError(9) },
-                { start: 17, end: 24, error: new TestError(17) },
-                { start: 25, end: 32, error: new TestError(25) },
-                { start: 33, end: 40, error: new TestError(33) },
-                { start: 0, end: 41, error: new TooManyArgumentsError(3, 4) }
+                { start: 9, end: 15, error: new MarkerError(9) },
+                { start: 16, end: 22, error: new MarkerError(16) },
+                { start: 23, end: 29, error: new MarkerError(23) },
+                { start: 30, end: 36, error: new MarkerError(30) },
+                { start: 0, end: 37, error: new TooManyArgumentsError(3, 4) }
             ]
         }
     ]

@@ -1,7 +1,7 @@
 import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { DecancerSubtag } from '@cluster/subtags/misc/decancer';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new DecancerSubtag(),
@@ -15,12 +15,12 @@ runSubtagTests({
         },
         { code: '{decancer;ḩ̸̪̓̍a̶̗̤̎́h̵͉͓͗̀ā̷̜̼̄ ̷̧̓í̴̯̎m̵͚̜̽ ̸̛̝ͅs̴͚̜̈o̴̦̗̊ ̷͎͋ȩ̵͐d̶͎̂̇g̴̲͓̀͝y̶̠̓̿}', expected: 'haha im so edgy' },
         {
-            code: '{decancer;{error};{error}}',
+            code: '{decancer;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 10, end: 17, error: new TestError(10) },
-                { start: 18, end: 25, error: new TestError(18) },
-                { start: 0, end: 26, error: new TooManyArgumentsError(1, 2) }
+                { start: 10, end: 16, error: new MarkerError(10) },
+                { start: 17, end: 23, error: new MarkerError(17) },
+                { start: 0, end: 24, error: new TooManyArgumentsError(1, 2) }
             ]
         }
     ]

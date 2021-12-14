@@ -30,9 +30,9 @@ export interface SubtagTestCase {
 
 type TestSuiteConfig = { [P in keyof Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'>]-?: Array<Required<SubtagTestCase>[P]> };
 
-export class TestError extends BBTagRuntimeError {
+export class MarkerError extends BBTagRuntimeError {
     public constructor(index: number) {
-        super(`{error} called at ${index}`);
+        super(`{eval} called at ${index}`);
         this.display = '';
     }
 }
@@ -273,10 +273,10 @@ export function sourceMarker(location: string | number | SourceMarker | undefine
     return { index: parseInt(index), line: parseInt(line), column: parseInt(column ?? index) };
 }
 
-export class TestSubtag extends Subtag {
+export class EvalSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'error',
+            name: 'eval',
             category: SubtagType.SIMPLE,
             definition: [],
             hidden: true
@@ -284,7 +284,22 @@ export class TestSubtag extends Subtag {
     }
 
     public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
-        throw new TestError(subtag.start.index);
+        throw new MarkerError(subtag.start.index);
+    }
+}
+
+export class FailTestSubtag extends Subtag {
+    public constructor() {
+        super({
+            name: 'fail',
+            category: SubtagType.SIMPLE,
+            definition: [],
+            hidden: true
+        });
+    }
+
+    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+        throw new RangeError(`Subtag ${subtag.source} was evaluated when it wasnt supposed to!`);
     }
 }
 
@@ -350,7 +365,7 @@ async function runTestCase(context: Context, subtag: Subtag, testCase: SubtagTes
     if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
         context.skip();
 
-    const test = new SubtagTestContext([subtag, new TestSubtag(), ...testCase.subtags ?? []]);
+    const test = new SubtagTestContext([subtag, new EvalSubtag(), ...testCase.subtags ?? []]);
     try {
         // arrange
         for (const setup of config.setup)

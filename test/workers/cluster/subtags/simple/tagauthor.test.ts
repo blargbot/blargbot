@@ -1,7 +1,7 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { TagAuthorSubtag } from '@cluster/subtags/simple/tagauthor';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new TagAuthorSubtag(),
@@ -17,19 +17,19 @@ runSubtagTests({
             setup(ctx) { ctx.options.author = 'abcdefg'; }
         },
         {
-            code: '{tagauthor;{error}}',
+            code: '{tagauthor;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 11, end: 18, error: new TestError(11) },
-                { start: 0, end: 19, error: new TooManyArgumentsError(0, 1) }
+                { start: 11, end: 17, error: new MarkerError(11) },
+                { start: 0, end: 18, error: new TooManyArgumentsError(0, 1) }
             ]
         },
         {
-            code: '{ccauthor;{error}}',
+            code: '{ccauthor;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 10, end: 17, error: new TestError(10) },
-                { start: 0, end: 18, error: new TooManyArgumentsError(0, 1) }
+                { start: 10, end: 16, error: new MarkerError(10) },
+                { start: 0, end: 17, error: new TooManyArgumentsError(0, 1) }
             ]
         }
     ]

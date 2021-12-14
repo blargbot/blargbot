@@ -1,7 +1,7 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { ZwsSubtag } from '@cluster/subtags/simple/zws';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ZwsSubtag(),
@@ -11,11 +11,11 @@ runSubtagTests({
             expected: '\u200b'
         },
         {
-            code: '{zws;{error}}',
+            code: '{zws;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 5, end: 12, error: new TestError(5) },
-                { start: 0, end: 13, error: new TooManyArgumentsError(0, 1) }
+                { start: 5, end: 11, error: new MarkerError(5) },
+                { start: 0, end: 12, error: new TooManyArgumentsError(0, 1) }
             ]
         }
     ]

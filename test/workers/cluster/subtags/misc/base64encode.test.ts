@@ -1,7 +1,7 @@
 import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { Base64EncodeSubtag } from '@cluster/subtags/misc/base64encode';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new Base64EncodeSubtag(),
@@ -18,12 +18,12 @@ runSubtagTests({
             expected: 'U3VjY2VzcyE='
         },
         {
-            code: '{base64encode;{error};{error}}',
+            code: '{base64encode;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 14, end: 21, error: new TestError(14) },
-                { start: 22, end: 29, error: new TestError(22) },
-                { start: 0, end: 30, error: new TooManyArgumentsError(1, 2) }
+                { start: 14, end: 20, error: new MarkerError(14) },
+                { start: 21, end: 27, error: new MarkerError(21) },
+                { start: 0, end: 28, error: new TooManyArgumentsError(1, 2) }
             ]
         },
         {
@@ -38,12 +38,12 @@ runSubtagTests({
             expected: 'U3VjY2VzcyE='
         },
         {
-            code: '{btoa;{error};{error}}',
+            code: '{btoa;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 6, end: 13, error: new TestError(6) },
-                { start: 14, end: 21, error: new TestError(14) },
-                { start: 0, end: 22, error: new TooManyArgumentsError(1, 2) }
+                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 13, end: 19, error: new MarkerError(13) },
+                { start: 0, end: 20, error: new TooManyArgumentsError(1, 2) }
             ]
         }
     ]

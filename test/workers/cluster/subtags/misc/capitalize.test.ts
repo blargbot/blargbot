@@ -1,7 +1,7 @@
 import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { CapitalizeSubtag } from '@cluster/subtags/misc/capitalize';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new CapitalizeSubtag(),
@@ -34,13 +34,13 @@ runSubtagTests({
             expected: 'Foo bar'
         },
         {
-            code: '{capitalize;{error};{error};{error}}',
+            code: '{capitalize;{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 12, end: 19, error: new TestError(12) },
-                { start: 20, end: 27, error: new TestError(20) },
-                { start: 28, end: 35, error: new TestError(28) },
-                { start: 0, end: 36, error: new TooManyArgumentsError(2, 3) }
+                { start: 12, end: 18, error: new MarkerError(12) },
+                { start: 19, end: 25, error: new MarkerError(19) },
+                { start: 26, end: 32, error: new MarkerError(26) },
+                { start: 0, end: 33, error: new TooManyArgumentsError(2, 3) }
             ]
         }
     ]

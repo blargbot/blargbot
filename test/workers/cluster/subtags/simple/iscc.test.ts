@@ -1,7 +1,7 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { IsCCSubtag } from '@cluster/subtags/simple/iscc';
 
-import { runSubtagTests, TestError } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new IsCCSubtag(),
@@ -17,11 +17,11 @@ runSubtagTests({
             setup(ctx) { ctx.options.isCC = false; }
         },
         {
-            code: '{iscc;{error}}',
+            code: '{iscc;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 6, end: 13, error: new TestError(6) },
-                { start: 0, end: 14, error: new TooManyArgumentsError(0, 1) }
+                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 0, end: 13, error: new TooManyArgumentsError(0, 1) }
             ]
         }
     ]
