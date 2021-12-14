@@ -10,6 +10,7 @@ const isLessThan = { '!=': true, '<': true, '<=': true, '==': false, '>': false,
 runSubtagTests({
     subtag: new IfSubtag(),
     cases: [
+        /* {if} */
         {
             code: '{if}',
             expected: '`Not enough arguments`',
@@ -17,6 +18,7 @@ runSubtagTests({
                 { start: 0, end: 4, error: new NotEnoughArgumentsError(2, 0) }
             ]
         },
+        /* {if;<bool>} */
         {
             code: '{if;{error}}',
             expected: '`Not enough arguments`',
@@ -25,6 +27,7 @@ runSubtagTests({
                 { start: 0, end: 12, error: new NotEnoughArgumentsError(2, 1) }
             ]
         },
+        /* {if;<bool>;<then>} */
         {
             code: '{if;aaaa;{error}}',
             expected: '`Not a boolean`',
@@ -34,12 +37,82 @@ runSubtagTests({
             ]
         },
         {
+            code: '{if;true;{error}Success!}',
+            expected: 'Success!',
+            errors: [
+                { start: 9, end: 16, error: new TestError(9) } // <then> is executed
+            ]
+        },
+        {
+            code: '{if;false;{error}Failed!}',
+            expected: ''
+            // <then> is not executed
+        },
+        /* {if;<bool>;<then>;[else]} */
+        {
             code: '{if;aaaa;{error};{error}}',
             expected: '`Not a boolean`',
             errors: [
                 // <then> is not executed
                 // [else] is not executed
                 { start: 0, end: 25, error: new NotABooleanError('aaaa') }
+            ]
+        },
+        {
+            code: '{if;true;{error}Success!;{error}Failed!}',
+            expected: 'Success!',
+            errors: [
+                { start: 9, end: 16, error: new TestError(9) } // <then> is executed
+                //                                                [else] is not executed
+            ]
+        },
+        {
+            code: '{if;false;{error}Failed!;{error}Success!}',
+            expected: 'Success!',
+            errors: [
+                //                                                  <then> is not executed
+                { start: 25, end: 32, error: new TestError(25) } // [else] is executed
+            ]
+        },
+        /* {if;<left>;<operator>;<right>;<then>} */
+        {
+            code: '{if;a;==;a;{error}Success!}',
+            expected: 'Success!',
+            errors: [
+                { start: 11, end: 18, error: new TestError(11) } // <then> is executed
+            ]
+        },
+        {
+            code: '{if;a;!=;a;{error}Failed!}',
+            expected: ''
+            // <then> is not executed
+        },
+        {
+            code: '{if;{error};{error};{error};{error}}',
+            expected: '`Invalid operator`',
+            errors: [
+                { start: 4, end: 11, error: new TestError(4) },   // <left> is executed
+                { start: 12, end: 19, error: new TestError(12) }, // <operator> is executed
+                { start: 20, end: 27, error: new TestError(20) }, // <right> is executed
+                //                                                   <then> is not executed
+                { start: 0, end: 36, error: new BBTagRuntimeError('Invalid operator') }
+            ]
+        },
+        /* {if;<left>;<operator>;<right>;<then>;[else]} */
+        {
+            code: '{if;a;==;a;{error}Success!;{error}Failed!}',
+            expected: 'Success!',
+            errors: [
+                { start: 11, end: 18, error: new TestError(11) }  // <then> is executed
+                //                                                   [else] is not executed
+            ]
+        },
+        {
+            code: '{if;a;!=;a;{error}Failed!;{error}Success!}',
+            expected: 'Success!',
+            errors: [
+                //                                                  <then> is not executed
+                { start: 26, end: 33, error: new TestError(26) } // [else] is executed
             ]
         },
         ...generateTestCases('123', isEqualTo, '123'),
@@ -54,17 +127,6 @@ runSubtagTests({
         ...generateTestCases(false, isLessThan, true),
         ...generateTestCases(false, isEqualTo, false),
         {
-            code: '{if;{error};{error};{error};{error}}',
-            expected: '`Invalid operator`',
-            errors: [
-                { start: 4, end: 11, error: new TestError(4) },   // <left> is executed
-                { start: 12, end: 19, error: new TestError(12) }, // <operator> is executed
-                { start: 20, end: 27, error: new TestError(20) }, // <right> is executed
-                //                                                   <then> is not executed
-                { start: 0, end: 36, error: new BBTagRuntimeError('Invalid operator') }
-            ]
-        },
-        {
             code: '{if;{error};{error};{error};{error};{error}}',
             expected: '`Invalid operator`',
             errors: [
@@ -76,6 +138,7 @@ runSubtagTests({
                 { start: 0, end: 44, error: new BBTagRuntimeError('Invalid operator') }
             ]
         },
+        /* {if;<left>;<operator>;<right>;<then>;[else];--EXCESS--} */
         {
             code: '{if;{error};{error};{error};{error};{error};{error}}',
             expected: '`Too many arguments`',
