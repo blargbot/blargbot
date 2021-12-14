@@ -2,7 +2,5 @@
     "require": [
         "ts-node/register",
         "test/_setup.js"
-    ],
-    "parallel": true,
-    "recursive": true
+    ]
 }

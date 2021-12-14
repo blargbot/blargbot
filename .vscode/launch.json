@@ -18,14 +18,15 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Mocha Tests",
+            "name": "Test all",
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
                 "--timeout",
                 "999999",
                 "--config",
-                "${workspaceFolder}/mocharc.json"
+                "${workspaceFolder}/mocharc.json",
+                "--recursive"
             ],
             "skipFiles": [
                 "<node_internals>/**"
@@ -35,7 +36,25 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Master",
+            "name": "Test current file",
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "args": [
+                "--timeout",
+                "999999",
+                "--config",
+                "${workspaceFolder}/mocharc.json",
+                "${file}"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "autoAttachChildProcesses": true
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Launch master",
             "skipFiles": [
                 "<node_internals>/**"
             ],
@@ -47,7 +66,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Cluster (no build)",
+            "name": "Launch cluster (no build)",
             "skipFiles": [
                 "<node_internals>/**"
             ],
@@ -67,7 +86,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Cluster",
+            "name": "Launch cluster",
             "skipFiles": [
                 "<node_internals>/**"
             ],

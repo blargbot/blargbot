@@ -3,8 +3,8 @@ import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { default as Brainfuck } from 'brainfuck-node';
 
-const bfClient = new Brainfuck();
-export class BrainFuckSubtag extends Subtag {
+export class BrainfuckSubtag extends Subtag {
+    private readonly bfClient: Brainfuck;
     public constructor() {
         super({
             name: 'brainfuck',
@@ -13,18 +13,19 @@ export class BrainFuckSubtag extends Subtag {
                 {
                     parameters: ['code', 'input?'],
                     description: 'Interprets `code` as brainfuck, using `input` as the text for `,`.',
-                    exampleCode: '{brainfuck;++++++++++[>+++++++>++++++++++>+++>+<<<<-]>++.>+.+++++++..+++.>++.<<+++++++++++++++.>.+++.------.--------.>+.>.}',
+                    exampleCode: '{brainfuck;-[------->+<]>-.-[->+++++<]>++.+++++++..+++.[--->+<]>-----.---[->+++<]>.-[--->+<]>---.+++.------.--------.-[--->+<]>.}',
                     exampleOut: 'Hello World!',
                     returns: 'string',
                     execute: (_, [code, input]) => this.runBrainfuck(code.value, input.value)
                 }
             ]
         });
+        this.bfClient = new Brainfuck();
     }
 
     public runBrainfuck(code: string, input: string): string {
         try {
-            return bfClient.execute(code, input).output;
+            return this.bfClient.execute(code, input).output;
         } catch (e: unknown) {
             if (e instanceof Error)
                 throw new BBTagRuntimeError(e.message);
