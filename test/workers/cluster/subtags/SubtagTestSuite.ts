@@ -99,7 +99,8 @@ export class SubtagTestContext {
         this.cluster.setup(m => m.logger).thenReturn(this.logger.instance);
 
         this.database.setup(m => m.tagVariables).thenReturn(this.tagVariablesTable.instance);
-        this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString())).thenCall((name: string, type: SubtagVariableType, scope: string) => this.tagVariables[`${type}.${scope}.${name}`]);
+        this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()))
+            .thenCall((name: string, type: SubtagVariableType, scope: string) => this.tagVariables[`${type}.${scope}.${name}`]);
 
         this.discord.setup(m => m.shards).thenReturn(this.shards.instance);
         this.discord.setup(m => m.guildShardMap).thenReturn({});
@@ -365,7 +366,7 @@ async function runTestCase(context: Context, subtag: Subtag, testCase: SubtagTes
     if (typeof testCase.skip === 'boolean' ? testCase.skip : await testCase.skip?.() ?? false)
         context.skip();
 
-    const test = new SubtagTestContext([subtag, new EvalSubtag(), ...testCase.subtags ?? []]);
+    const test = new SubtagTestContext([subtag, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []]);
     try {
         // arrange
         for (const setup of config.setup)
