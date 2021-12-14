@@ -1,5 +1,5 @@
 import { Subtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotABooleanError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
@@ -50,7 +50,7 @@ export class IfSubtag extends Subtag {
     ): Promise<string> {
         const actualBoolean = parse.boolean(bool);
         if (typeof actualBoolean !== 'boolean')
-            throw new BBTagRuntimeError('Not a boolean');
+            throw new NotABooleanError(bool);
 
         if (actualBoolean) {
             return await thenCode.wait();
