@@ -321,9 +321,20 @@ export class SubtagTestSuite {
     public run(): void {
         describe(`{${this.#subtag.name}}`, () => {
             for (const testCase of this.#testCases) {
+                let errorStr = '';
+                switch (testCase.errors?.length) {
+                    case undefined:
+                    case 0: break;
+                    case 1:
+                        errorStr = ' with 1 error';
+                        break;
+                    default:
+                        errorStr = ` with ${testCase.errors?.length ?? 0} errors`;
+                        break;
+                }
                 const title = testCase.expected === undefined
-                    ? `should handle ${JSON.stringify(testCase.code)} with ${testCase.errors?.length ?? 0} error(s)`
-                    : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)} with ${testCase.errors?.length ?? 0} error(s)`;
+                    ? `should handle ${JSON.stringify(testCase.code)}${errorStr}`
+                    : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)}${errorStr}`;
                 it(title, async () => runTestCase(this.#subtag, testCase, this.#global));
             }
         });

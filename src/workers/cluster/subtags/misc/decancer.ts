@@ -1,10 +1,10 @@
 import { Subtag } from '@cluster/bbtag';
 import { humanize, SubtagType } from '@cluster/utils';
 
-export class UpperSubtag extends Subtag {
+export class DecancerSubtag extends Subtag {
     public constructor() {
         super({
-            name: 'upper',
+            name: 'decancer',
             category: SubtagType.MISC,
             definition: [
                 {
