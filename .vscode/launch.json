@@ -27,6 +27,9 @@
                 "--config",
                 "${workspaceFolder}/mocharc.json"
             ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
             "autoAttachChildProcesses": true
         },
         {

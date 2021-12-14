@@ -34,11 +34,9 @@ export class BoolSubtag extends Subtag {
         if (bbtagUtil.operators.isCompareOperator(evaluator)) {
             operator = evaluator;
         } else if (bbtagUtil.operators.isCompareOperator(left)) {
-            operator = left;
-            [left, operator] = [operator, left];
+            [left, operator] = [evaluator, left];
         } else if (bbtagUtil.operators.isCompareOperator(right)) {
-            operator = right;
-            [operator, right] = [right, operator];
+            [operator, right] = [right, evaluator];
         } else {
             throw new BBTagRuntimeError('Invalid operator');
         }

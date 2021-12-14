@@ -16,7 +16,7 @@ import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 export interface SubtagTestCase {
     readonly code: string;
     readonly subtagName?: string;
-    readonly expected?: string;
+    readonly expected?: string | RegExp;
     readonly setup?: (context: SubtagTestContext) => Awaitable<void>;
     readonly assert?: (context: SubtagTestContext, result: string) => Awaitable<void>;
     readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
@@ -329,8 +329,14 @@ async function runTestCase(subtag: Subtag, testCase: SubtagTestCase, config: Tes
         const result = await context.eval(code);
 
         // assert
-        if (testCase.expected !== undefined)
-            expect(result).to.equal(testCase.expected);
+        switch (typeof testCase.expected) {
+            case 'string':
+                expect(result).to.equal(testCase.expected);
+                break;
+            case 'object':
+                expect(result).to.match(testCase.expected);
+                break;
+        }
 
         await testCase.assert?.(test, result);
         for (const assert of config.assert)
