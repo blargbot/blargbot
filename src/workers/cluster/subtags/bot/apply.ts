@@ -53,14 +53,29 @@ export class ApplySubtag extends Subtag {
                 flattenedArgs.push([arg]);
         }
 
-        return await context.eval([{
-            name: [subtagName.toLowerCase()],
-            args: flattenedArgs,
+        const source = `{${args.join(';')}}`;
+
+        return await context.eval({
+            values: [{
+                name: {
+                    start: subtag.start,
+                    end: subtag.start,
+                    values: [subtagName],
+                    source: subtagName
+                },
+                args: flattenedArgs.map(arg => ({
+                    start: subtag.start,
+                    end: subtag.start,
+                    values: arg,
+                    source: arg.join()
+                })),
+                start: subtag.start,
+                end: subtag.end,
+                source
+            }],
             start: subtag.start,
             end: subtag.end,
-            get source(): string {
-                return `{${args.join(';')}}`;
-            }
-        }]);
+            source
+        });
     }
 }

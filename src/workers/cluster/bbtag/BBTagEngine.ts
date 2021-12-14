@@ -126,7 +126,7 @@ export class BBTagEngine {
     // eslint-disable-next-line @typescript-eslint/require-await
     private async * evalStatement(bbtag: Statement, context: BBTagContext): AsyncIterable<string> {
         context.scopes.pushScope();
-        for (const elem of bbtag) {
+        for (const elem of bbtag.values) {
             if (typeof elem === 'string')
                 yield elem;
             else
@@ -142,7 +142,7 @@ export class BBTagEngine {
         if (context.state.return !== RuntimeReturnState.NONE)
             return '';
 
-        const results = Array.isArray(bbtag)
+        const results = 'values' in bbtag
             ? this.evalStatement(bbtag, context)
             : this.evalSubtag(bbtag, context);
 
@@ -192,12 +192,12 @@ export class BBTagEngine {
         const statement = bbtagUtil.parse(source);
 
         for (const call of getSubtagCalls(statement)) {
-            if (call.name.length === 0)
+            if (call.name.values.length === 0)
                 result.warnings.push({ location: call.start, message: 'Unnamed subtag' });
-            else if (call.name.some(p => typeof p !== 'string'))
+            else if (call.name.values.some(p => typeof p !== 'string'))
                 result.warnings.push({ location: call.start, message: 'Dynamic subtag' });
             else {
-                const subtag = this.subtags.get(call.name.join(''));
+                const subtag = this.subtags.get(call.name.values.join(''));
                 // TODO Detect unknown subtags
                 switch (typeof subtag?.deprecated) {
                     case 'boolean':
@@ -215,7 +215,7 @@ export class BBTagEngine {
 }
 
 function* getSubtagCalls(statement: Statement): IterableIterator<SubtagCall> {
-    for (const part of statement) {
+    for (const part of statement.values) {
         if (typeof part === 'string')
             continue;
 

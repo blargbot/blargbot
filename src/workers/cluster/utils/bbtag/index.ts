@@ -8,3 +8,4 @@ export { stringifyLocation } from './stringifyLocation';
 export { stringifyParameters } from './stringifyParameters';
 export { stringifyRange } from './stringifyRange';
 export * as tagArray from './tagArray';
+export * from './offsetMarker';

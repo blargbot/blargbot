@@ -1,54 +1,61 @@
 import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '@cluster/types';
 
-type MutableSubtag = { -readonly [P in keyof SubtagCall]: SubtagCall[P] extends readonly Statement[] ? MutableStatement[] : SubtagCall[P] extends Statement ? MutableStatement : SubtagCall[P] };
-type MutableStatement = Array<string | MutableSubtag>;
+type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
+    : T extends SubtagCall ? MutableSubtagCall
+    : T extends Statement ? MutableStatement
+    : T;
+
+type MutableSubtagCall = { -readonly [P in keyof SubtagCall]: ToMutable<SubtagCall[P]> }
+type MutableStatement = { -readonly [P in keyof Statement]: ToMutable<Statement[P]> };
 
 export function parse(source: string): Statement {
-    const result: MutableStatement = [];
-    const subtags: MutableSubtag[] = [];
-    let builder = result;
-    let subtag: MutableSubtag | undefined;
+    const result = createStatement(source);
+    const subtags: MutableSubtagCall[] = [];
+    let statement = result;
+    let subtag: MutableSubtagCall | undefined;
 
     for (const token of tokenize(source)) {
         switch (token.type) {
             case SourceTokenType.STARTSUBTAG:
                 if (subtag !== undefined)
                     subtags.push(subtag);
-                builder.push(subtag = {
-                    name: [],
-                    args: [],
-                    start: token.start,
-                    end: token.end,
-                    get source(): string { return source.slice(this.start.index, this.end.index); }
-                });
-                builder = subtag.name;
+                statement.values.push(subtag = createSubtagCall(source, token));
+                statement = subtag.name;
                 break;
             case SourceTokenType.ARGUMENTDELIMITER:
                 if (subtag === undefined)
-                    builder.push(token.content);
+                    statement.values.push(token.content);
                 else {
-                    trim(builder);
-                    subtag.args.push(builder = []);
+                    trim(statement);
+                    subtag.args.push(statement = createStatement(source, token));
                 }
                 break;
             case SourceTokenType.ENDSUBTAG:
-                if (subtag === undefined)
-                    return [`\`Unexpected '${token.content}'\``];
-                trim(builder);
+                if (subtag === undefined) {
+                    const result = createStatement(source);
+                    result.values.push(`\`Unexpected '${token.content}'\``);
+                    return result;
+                }
+                trim(statement);
                 subtag.end = token.end;
                 subtag = subtags.pop();
-                builder = subtag === undefined ? result : currentBuilder(subtag);
+                statement = subtag === undefined ? result : currentStatement(subtag);
+                statement.end = token.end;
                 break;
             case SourceTokenType.CONTENT:
+                statement.end = token.end;
                 if (token.content.length === 0)
                     break;
-                builder.push(token.content);
+                statement.values.push(token.content);
                 break;
         }
     }
 
-    if (subtag !== undefined)
-        return ['`Subtag is missing a \'}\'`'];
+    if (subtag !== undefined) {
+        const result = createStatement(source);
+        result.values.push('`Subtag is missing a \'}\'`');
+        return result;
+    }
 
     trim(result);
     return result;
@@ -100,19 +107,38 @@ function* tokenize(source: string): IterableIterator<SourceToken> {
     yield token(SourceTokenType.CONTENT, previous, marker);
 }
 
-function currentBuilder(subtag: MutableSubtag): MutableStatement {
+function createStatement(source: string, token?: SourceToken): MutableStatement {
+    return {
+        start: token?.end ?? { index: 0, line: 0, column: 0 },
+        end: token?.end ?? { index: 0, line: 0, column: 0 },
+        get source() { return source.slice(this.start.index, this.end.index); },
+        values: []
+    };
+}
+
+function createSubtagCall(source: string, token?: SourceToken): MutableSubtagCall {
+    return {
+        name: createStatement(source),
+        args: [],
+        start: token?.start ?? { index: 0, line: 0, column: 0 },
+        end: token?.end ?? { index: 0, line: 0, column: 0 },
+        get source() { return source.slice(this.start.index, this.end.index); }
+    };
+}
+
+function currentStatement(subtag: MutableSubtagCall): MutableStatement {
     if (subtag.args.length === 0)
         return subtag.name;
     return subtag.args[subtag.args.length - 1];
 }
 
 function trim(str: MutableStatement): void {
-    modify(str, 0, str => str.trimStart());
-    modify(str, str.length - 1, str => str.trimEnd());
+    modify(str.values, 0, str => str.trimStart());
+    modify(str.values, str.values.length - 1, str => str.trimEnd());
 }
 
-function modify(str: MutableStatement, index: number, mod: (str: string) => string): void {
-    if (str.length === 0)
+function modify(str: MutableStatement['values'], index: number, mod: (str: string) => string): void {
+    if (str.values.length === 0)
         return;
 
     let elem = str[index];

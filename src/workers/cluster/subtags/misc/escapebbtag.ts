@@ -15,7 +15,7 @@ export class EscapeBbtagSubtag extends Subtag {
                     exampleCode: '{escapebbtag;{set;~index;1}}',
                     exampleOut: '{set;~index;1}',
                     returns: 'string',
-                    execute: (_, inputs) => this.escape(inputs.map(arg => arg.raw).join(';')) // TODO: subtag.source ?
+                    execute: (_, items) => this.escape(items.map(i => i.code.source).join(';'))
                 }
             ]
         });
