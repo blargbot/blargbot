@@ -93,21 +93,35 @@ function createResolver(
     const parameterMap = [...getParameterMap(argCount, defaultArgs, beforeGreedy, greedy, afterGreedy)];
 
     return {
-        argRange: [argCount, argCount],
-        canResolve(subtag) {
+        minArgs: argCount,
+        maxArgs: argCount,
+        isExactMatch(subtag) {
             return subtag.args.length === argCount;
         },
         * resolve(context, subtagName, call) {
+            const args = new Set(call.args);
             for (const item of parameterMap) {
                 const arg = call.args[item.argIndex] as Statement | undefined;
                 if (arg === undefined)
                     yield item.default;
-                else
+                else {
+                    args.delete(arg);
                     yield new ExecutingSubtagArgumentValue(item.default.parameter, context, subtagName, call, arg);
+                }
             }
+            for (const arg of args)
+                yield new ExecutingSubtagArgumentValue(excessArg, context, subtagName, call, arg);
         }
     };
 }
+
+const excessArg: SubtagHandlerValueParameter = {
+    autoResolve: true,
+    defaultValue: '',
+    maxLength: 1000000,
+    name: 'EXCESS_ARG',
+    required: false
+};
 
 function createVariableResolver(
     parameters: readonly SubtagArgument[],
@@ -119,8 +133,9 @@ function createVariableResolver(
     const resolverCache = {} as Record<number, ArgumentResolver | undefined>;
 
     return {
-        argRange: [minCount, Infinity],
-        canResolve(subtag) {
+        minArgs: minCount,
+        maxArgs: Infinity,
+        isExactMatch(subtag) {
             const argCount = subtag.args.length;
             return argCount >= minCount && (argCount - minCount) % greedy.length === 0;
         },

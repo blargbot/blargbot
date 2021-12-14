@@ -1,23 +1,24 @@
-import { ArgumentResolver, CompositeSubtagHandler, ConditionalSubtagHandler, SubtagHandlerCallSignature } from '@cluster/types';
+import { ArgumentResolver, CompositeSubtagHandler, ConditionalSubtagHandler, SubtagCall, SubtagHandlerCallSignature } from '@cluster/types';
 
-import { NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';
+import { BBTagContext } from '../BBTagContext';
+import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';
 import { createArgumentResolvers } from './createResolvers';
 
 export function compileSignatures(signatures: readonly SubtagHandlerCallSignature[]): CompositeSubtagHandler {
     const handlers: ConditionalSubtagHandler[] = [];
-    let minArgs = Number.MAX_SAFE_INTEGER;
-    let maxArgs = 0;
+    let min = initialResolver;
+    let max = initialResolver;
 
     for (const signature of signatures) {
         for (const resolver of createArgumentResolvers(signature)) {
-            minArgs = Math.min(minArgs, resolver.argRange[0]);
-            maxArgs = Math.max(maxArgs, resolver.argRange[1]);
+            if (resolver.minArgs < min.minArgs)
+                min = resolver;
+            if (resolver.maxArgs > max.maxArgs)
+                max = resolver;
             const handler = createConditionalHandler(signature, resolver);
             handlers.push(handler);
         }
     }
-
-    const autoResolveOnFail = signatures.every(s => s.parameters.every(p => 'nested' in p ? p.nested.every(p => p.autoResolve) : p.autoResolve));
 
     return {
         handlers,
@@ -26,24 +27,12 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
 
             if (handler !== undefined)
                 return handler.execute(context, subtagName, call);
+            if (call.args.length < min.minArgs)
+                return resolveAndThrow(context, subtagName, call, min, new NotEnoughArgumentsError(min.minArgs, call.args.length));
+            if (call.args.length > max.maxArgs)
+                return resolveAndThrow(context, subtagName, call, max, new TooManyArgumentsError(max.maxArgs, call.args.length));
 
-            return {
-                async *[Symbol.asyncIterator]() {
-                    if (autoResolveOnFail) {
-                        for (const arg of call.args) {
-                            await context.eval(arg);
-                            yield undefined;
-                        }
-                    }
-
-                    if (call.args.length < minArgs)
-                        throw new NotEnoughArgumentsError(minArgs, call.args.length);
-                    else if (call.args.length > maxArgs)
-                        throw new TooManyArgumentsError(maxArgs, call.args.length);
-                    throw new Error(`Missing handler for ${call.args.length} arguments!`);
-                }
-            };
-
+            throw new Error(`Missing handler for ${call.args.length} arguments!`);
         }
     };
 }
@@ -51,7 +40,7 @@ export function compileSignatures(signatures: readonly SubtagHandlerCallSignatur
 function createConditionalHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): ConditionalSubtagHandler {
     return {
         canHandle(subtag) {
-            return resolver.canResolve(subtag);
+            return resolver.isExactMatch(subtag);
         },
         async * execute(context, subtagName, call) {
             const args = [];
@@ -63,4 +52,23 @@ function createConditionalHandler(signature: SubtagHandlerCallSignature, resolve
             yield* signature.implementation.execute(context, Object.assign(args, { subtagName }), call);
         }
     };
+}
+
+const initialResolver: ArgumentResolver = {
+    minArgs: Infinity,
+    maxArgs: -Infinity,
+    isExactMatch() { return false; },
+    resolve() {
+        throw new Error('Unable to determine how to resolve this call!');
+    }
+};
+
+async function* resolveAndThrow(context: BBTagContext, subtagName: string, call: SubtagCall, resolver: ArgumentResolver, error: BBTagRuntimeError): AsyncIterable<undefined> {
+    for (const arg of resolver.resolve(context, subtagName, call)) {
+        if (arg.parameter.autoResolve) {
+            await arg.execute();
+            yield undefined;
+        }
+    }
+    throw error;
 }

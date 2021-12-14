@@ -614,8 +614,9 @@ export interface SubtagArgumentArray extends ReadonlyArray<SubtagArgument> {
 }
 
 export interface ArgumentResolver {
-    readonly argRange: readonly [min: number, max: number];
-    canResolve(subtag: SubtagCall): boolean;
+    readonly minArgs: number;
+    readonly maxArgs: number;
+    isExactMatch(subtag: SubtagCall): boolean;
     resolve(context: BBTagContext, subtagName: string, subtag: SubtagCall): Iterable<SubtagArgument>;
 }
 
