@@ -322,8 +322,8 @@ export class SubtagTestSuite {
         describe(`{${this.#subtag.name}}`, () => {
             for (const testCase of this.#testCases) {
                 const title = testCase.expected === undefined
-                    ? `should handle ${JSON.stringify(testCase.code)}`
-                    : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)}`;
+                    ? `should handle ${JSON.stringify(testCase.code)} with ${testCase.errors?.length ?? 0} error(s)`
+                    : `should handle ${JSON.stringify(testCase.code)} and return ${JSON.stringify(testCase.expected)} with ${testCase.errors?.length ?? 0} error(s)`;
                 it(title, async () => runTestCase(this.#subtag, testCase, this.#global));
             }
         });
