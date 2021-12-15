@@ -1,4 +1,4 @@
-import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { NotANumberError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { IndexOfSubtag } from '@cluster/subtags/misc/indexof';
 
@@ -30,6 +30,27 @@ runSubtagTests({
         { code: '{indexof;This is some text;s;7}', expected: '8' },
         { code: '{indexof;This is some text;s;8}', expected: '8' },
         { code: '{indexof;This is some text;s;9}', expected: '-1' },
+
+        {
+            code: '{indexof;This is some text;s;a}',
+            expected: '6',
+            setup(ctx) { ctx.rootScope.fallback = '4'; }
+        },
+        {
+            code: '{indexof;This is some text;s;a}',
+            expected: '`Not a number`',
+            errors: [
+                { start: 0, end: 31, error: new NotANumberError('a') }
+            ]
+        },
+        {
+            code: '{indexof;This is some text;s;a}',
+            expected: 'b',
+            setup(ctx) { ctx.rootScope.fallback = 'b'; },
+            errors: [
+                { start: 0, end: 31, error: new NotANumberError('a') }
+            ]
+        },
 
         { code: '{indexof;[1,2,3,4,"5",5,6];5}', expected: '4' },
         { code: '{indexof;[1,2,3,4,5,"5",6];5}', expected: '5' },

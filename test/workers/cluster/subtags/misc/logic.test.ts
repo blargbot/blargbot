@@ -1,4 +1,4 @@
-import { NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotABooleanError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { LogicSubtag } from '@cluster/subtags/misc/logic';
 import { LogicOperator } from '@cluster/utils/bbtag/operators';
 
@@ -22,6 +22,15 @@ runSubtagTests({
                 { start: 0, end: 14, error: new NotEnoughArgumentsError(2, 1) }
             ]
         },
+        {
+            code: '{logic;{eval}aaaa;{eval}}',
+            expected: '`Invalid operator`',
+            errors: [
+                { start: 7, end: 13, error: new MarkerError(7) },
+                { start: 18, end: 24, error: new MarkerError(18) },
+                { start: 0, end: 25, error: new BBTagRuntimeError('Invalid operator') }
+            ]
+        },
         ...generateTestCases([true], { '!': false, '&&': true, '^': true, '||': true, xor: true }),
         ...generateTestCases([false], { '!': true, '&&': false, '^': false, '||': false, xor: false }),
         ...generateTestCases([true, true], { '!': false, '&&': true, '^': false, '||': true, xor: false }),
@@ -30,8 +39,30 @@ runSubtagTests({
         ...generateTestCases([false, false], { '!': true, '&&': false, '^': false, '||': false, xor: false }),
         ...generateTestCases([true, true, true], { '!': false, '&&': true, '^': false, '||': true, xor: false }),
         ...generateTestCases([true, false, true], { '!': false, '&&': false, '^': false, '||': true, xor: false }),
-        ...generateTestCases([false, true, false], { '!': true, '&&': false, '^': true, '||': true, xor: true })
-
+        ...generateTestCases([false, true, false], { '!': true, '&&': false, '^': true, '||': true, xor: true }),
+        {
+            code: '{logic;!;{eval}aaaa}',
+            expected: '`Not a boolean`',
+            errors: [
+                { start: 9, end: 15, error: new MarkerError(9) },
+                { start: 0, end: 20, error: new NotABooleanError('aaaa') }
+            ]
+        },
+        {
+            code: '{logic;!;true;{eval}aaaa}',
+            expected: 'false',
+            errors: [
+                { start: 14, end: 20, error: new MarkerError(14) }
+            ]
+        },
+        {
+            code: '{logic;||;{eval}aaaa}',
+            expected: '`Not a boolean`',
+            errors: [
+                { start: 10, end: 16, error: new MarkerError(10) },
+                { start: 0, end: 21, error: new NotABooleanError('aaaa') }
+            ]
+        }
     ]
 });
 
