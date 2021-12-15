@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
-import { BBTagContextOptions, SourceMarker, SubtagCall } from '@cluster/types';
+import { BBTagContextOptions, BBTagRuntimeScope, SourceMarker, SubtagCall } from '@cluster/types';
 import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
@@ -74,6 +74,7 @@ export class SubtagTestContext {
     public readonly tagVariablesTable: Mock<TagVariablesTable>;
 
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
+    public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false };
 
     public readonly options: Mutable<Partial<BBTagContextOptions>>;
     public readonly message: APIMessage = { ...SubtagTestContext.#messageDefaults() };
@@ -147,7 +148,7 @@ export class SubtagTestContext {
         const limit = new Mock(BaseRuntimeLimit);
         limit.setup(m => m.check(anyOfClass(BBTagContext), anyString())).thenResolve();
 
-        return new BBTagContext(engine, {
+        const context = new BBTagContext(engine, {
             author: sender.id,
             inputRaw: '',
             isCC: false,
@@ -155,6 +156,10 @@ export class SubtagTestContext {
             message: message,
             ...this.options
         });
+
+        Object.assign(context.scopes.root, this.rootScope);
+
+        return context;
     }
     static #messageDefaults(): APIMessage {
         return {
