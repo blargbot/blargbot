@@ -1,4 +1,4 @@
-import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { BrainfuckSubtag } from '@cluster/subtags/misc/brainfuck';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
@@ -20,6 +20,14 @@ runSubtagTests({
         {
             code: '{brainfuck;+[>,]+[<.-];This is a test}',
             expected: 'tset a si sihT\u0001'
+        },
+        {
+            code: '{brainfuck;{eval}}',
+            expected: '`No valid input given`',
+            errors: [
+                { start: 11, end: 17, error: new MarkerError(11) },
+                { start: 0, end: 18, error: new BBTagRuntimeError('No valid input given') }
+            ]
         },
         {
             code: '{brainfuck;{eval};{eval};{eval}}',

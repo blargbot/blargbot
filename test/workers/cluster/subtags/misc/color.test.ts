@@ -1,7 +1,7 @@
 import { BBTagRuntimeError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { ColorFormat, ColorSubtag } from '@cluster/subtags/misc/color';
 
-import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ColorSubtag(),
@@ -58,7 +58,28 @@ runSubtagTests({
         ...generateTestCases('100,0.01,296.81', 'lch', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65534.71]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[60,0,100]', hsl: '[60,100,100]', hsv: '[60,0,100]', hwb: '[60,100,0]', keyword: 'white', lab: '[100,0,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.05,100,100]' }),
         ...generateTestCases('255,255,255', '', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.05,100,100]' }),
         ...generateTestCases('255,255,255', 'rgb', { hex: 'FFFFFF', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65535,65535]', cmyk: '[0,0,0,0]', gray: '100', hcg: '[0,0,100]', hsl: '[0,0,100]', hsv: '[0,0,100]', hwb: '[0,100,0]', keyword: 'white', lab: '[100,0.01,-0.01]', lch: '[100,0.01,296.81]', rgb: '[255,255,255]', xyz: '[95.05,100,100]' }),
-        ...generateTestCases('95.05,100,100', 'xyz', { hex: 'FFFFF4', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65430.04,62747.13]', cmyk: '[0,0.16,4.25,0]', gray: '100', hcg: '[57.74000000000001,4.25,100]', hsl: '[57.74000000000001,100,97.87]', hsv: '[57.74000000000001,4.25,100]', hwb: '[57.74000000000001,95.75,0]', keyword: 'ivory', lab: '[100,0.01,5.59]', lch: '[100,5.59,89.95]', rgb: '[255,254.59,244.15]', xyz: '[95.05,100,100]' })
+        ...generateTestCases('95.05,100,100', 'xyz', { hex: 'FFFFF4', ansi16: '[97]', ansi256: '[231]', apple: '[65535,65430.04,62747.13]', cmyk: '[0,0.16,4.25,0]', gray: '100', hcg: '[57.74000000000001,4.25,100]', hsl: '[57.74000000000001,100,97.87]', hsv: '[57.74000000000001,4.25,100]', hwb: '[57.74000000000001,95.75,0]', keyword: 'ivory', lab: '[100,0.01,5.59]', lch: '[100,5.59,89.95]', rgb: '[255,254.59,244.15]', xyz: '[95.05,100,100]' }),
+        {
+            code: '{color;{eval}0;{eval};{eval}cba}',
+            expected: '`Invalid input method`',
+            errors: [
+                { start: 7, end: 13, error: new MarkerError(7) },
+                { start: 15, end: 21, error: new MarkerError(15) },
+                { start: 22, end: 28, error: new MarkerError(22) },
+                { start: 0, end: 32, error: new BBTagRuntimeError('Invalid input method', '"cba" is not valid') }
+            ]
+        },
+        {
+            code: '{color;{eval}0;{eval}abc;{eval}}',
+            expected: '`Invalid output method`',
+            errors: [
+                { start: 7, end: 13, error: new MarkerError(7) },
+                { start: 15, end: 21, error: new MarkerError(15) },
+                { start: 25, end: 31, error: new MarkerError(25) },
+                { start: 0, end: 32, error: new BBTagRuntimeError('Invalid output method', '"abc" is not valid') }
+            ]
+        },
+        { code: '{color;[0,0,0,0];;cmyk}', expected: 'FFFFFF' }
     ]
 });
 

@@ -13,7 +13,8 @@ runSubtagTests({
                 { start: 0, end: 7, error: new NotEnoughArgumentsError(1, 0) }
             ]
         },
-        { code: '{clean;Hello!  \n\n  Im     here    to help}', expected: 'Hello!\nIm here to help' },
+        { code: '{clean;Hello!  \n\n\t\t  Im     here    to help}', expected: 'Hello!\nIm here to help' },
+        { code: '{clean;Hello!  \n\n-\t\t  Im     here    to help}', expected: 'Hello!\n-\tIm here to help' },
         {
             code: '{clean;{eval};{eval}}',
             expected: '`Too many arguments`',
