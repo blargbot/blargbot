@@ -38,22 +38,7 @@ export class OperatorSubtag extends Subtag {
     }
 
     public applyOrdinalOperation(operator: bbtagUtil.OrdinalOperator, values: string[]): boolean {
-        const flattenedValues = bbtagUtil.tagArray.flattenArray(values).map((arg) => {
-            switch (typeof arg) {
-                case 'string':
-                case 'number':
-                case 'boolean': {
-                    const possibleBoolean = parse.boolean(arg, undefined, false);
-                    if (typeof possibleBoolean === 'boolean') arg = possibleBoolean;
-                    return arg.toString();
-                }
-                case 'object':
-                    return JSON.stringify(arg);
-                case 'undefined':
-                    return '';
-            }
-        });
-
+        const flattenedValues = bbtagUtil.tagArray.flattenArray(values).map(v => parse.string(v));
         return bbtagUtil.operate('&&', generatePairs(flattenedValues).map(args => bbtagUtil.operate(operator, ...args)));
     }
 
