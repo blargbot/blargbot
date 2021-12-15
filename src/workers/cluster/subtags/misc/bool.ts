@@ -1,8 +1,6 @@
 import { Subtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
-
-const operators = bbtagUtil.operators.compare;
 
 export class BoolSubtag extends Subtag {
     public constructor() {
@@ -14,7 +12,7 @@ export class BoolSubtag extends Subtag {
                     parameters: ['arg1', 'evaluator', 'arg2'],
                     description:
                         'Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
-                        'Valid evaluators are `' + Object.keys(operators).join('`, `') + '`\n' +
+                        'Valid evaluators are `' + Object.keys(bbtagUtil.comparisonOperators).join('`, `') + '`\n' +
                         'The positions of `evaluator` and `arg1` can be swapped.',
                     exampleCode: '{bool;5;<=;10}',
                     exampleOut: 'true',
@@ -31,15 +29,14 @@ export class BoolSubtag extends Subtag {
         right: string
     ): boolean {
         let operator;
-        if (bbtagUtil.operators.isCompareOperator(evaluator)) {
+        if (bbtagUtil.isComparisonOperator(evaluator)) {
             operator = evaluator;
-        } else if (bbtagUtil.operators.isCompareOperator(left)) {
+        } else if (bbtagUtil.isComparisonOperator(left)) {
             [left, operator] = [evaluator, left];
-        } else if (bbtagUtil.operators.isCompareOperator(right)) {
+        } else if (bbtagUtil.isComparisonOperator(right)) {
             [operator, right] = [right, evaluator];
-        } else {
-            throw new BBTagRuntimeError('Invalid operator');
-        }
+        } else
+            throw new InvalidOperatorError(evaluator);
 
         const leftBool = parse.boolean(left, undefined, false);
         if (leftBool !== undefined)
@@ -48,6 +45,6 @@ export class BoolSubtag extends Subtag {
         if (rightBool !== undefined)
             right = rightBool.toString();
 
-        return operators[operator](left, right);
+        return bbtagUtil.operate(operator, left, right);
     }
 }

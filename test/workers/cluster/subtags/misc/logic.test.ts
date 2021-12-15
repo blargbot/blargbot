@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotABooleanError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError, NotABooleanError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { LogicSubtag } from '@cluster/subtags/misc/logic';
 import { LogicOperator } from '@cluster/utils/bbtag/operators';
 
@@ -28,7 +28,7 @@ runSubtagTests({
             errors: [
                 { start: 7, end: 13, error: new MarkerError(7) },
                 { start: 18, end: 24, error: new MarkerError(18) },
-                { start: 0, end: 25, error: new BBTagRuntimeError('Invalid operator') }
+                { start: 0, end: 25, error: new InvalidOperatorError('aaaa') }
             ]
         },
         ...generateTestCases([true], { '!': false, '&&': true, '^': true, '||': true, xor: true }),
@@ -50,9 +50,10 @@ runSubtagTests({
         },
         {
             code: '{logic;!;true;{eval}aaaa}',
-            expected: 'false',
+            expected: '`Not a boolean`',
             errors: [
-                { start: 14, end: 20, error: new MarkerError(14) }
+                { start: 14, end: 20, error: new MarkerError(14) },
+                { start: 0, end: 25, error: new NotABooleanError('aaaa') }
             ]
         },
         {
@@ -66,7 +67,7 @@ runSubtagTests({
     ]
 });
 
-function generateTestCases(args: boolean[], results: Record<LogicOperator, boolean>): SubtagTestCase[] {
+function generateTestCases(args: boolean[], results: Record<LogicOperator | '^', boolean>): SubtagTestCase[] {
     return Object.entries(results).flatMap(([operator, expected]) => [
         { code: `{logic;${operator};${args.join(';')}}`, expected: expected.toString() },
         { code: `{logic;${args.join(';')};${operator}}`, expected: expected.toString() },

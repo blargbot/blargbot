@@ -1,9 +1,7 @@
 import { Subtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotABooleanError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
-
-const operators = bbtagUtil.operators.compare;
 
 export class IfSubtag extends Subtag {
     public constructor() {
@@ -14,7 +12,7 @@ export class IfSubtag extends Subtag {
                 'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
                 'If they are not provided, `value1` is read as `true` or `false`. ' +
                 'If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\n' +
-                'Valid evaluators are `' + Object.keys(operators).join('`, `') + '`.',
+                'Valid evaluators are `' + Object.keys(bbtagUtil.comparisonOperators).join('`, `') + '`.',
             definition: [
                 {
                     parameters: ['boolean', '~then'],
@@ -67,17 +65,17 @@ export class IfSubtag extends Subtag {
         elseCode?: SubtagArgument
     ): Promise<string> {
         let operator;
-        if (bbtagUtil.operators.isCompareOperator(evaluator)) {
+        if (bbtagUtil.isComparisonOperator(evaluator)) {
             operator = evaluator;
-        } else if (bbtagUtil.operators.isCompareOperator(value1)) {
+        } else if (bbtagUtil.isComparisonOperator(value1)) {
             operator = value1;
             [value1, evaluator] = [evaluator, value1];
-        } else if (bbtagUtil.operators.isCompareOperator(value2)) {
+        } else if (bbtagUtil.isComparisonOperator(value2)) {
             operator = value2;
             [evaluator, value2] = [value2, evaluator];
-        } else {
-            throw new BBTagRuntimeError('Invalid operator');
-        }
+        } else
+            throw new InvalidOperatorError(evaluator);
+
         const leftBool = parse.boolean(value1, undefined, false);
         if (leftBool !== undefined)
             value1 = leftBool.toString();
@@ -86,7 +84,7 @@ export class IfSubtag extends Subtag {
         if (rightBool !== undefined)
             value2 = rightBool.toString();
 
-        if (operators[operator](value1, value2))
+        if (bbtagUtil.operate(operator, value1, value2))
             return await thenCode.wait();
         return await elseCode?.wait() ?? '';
     }

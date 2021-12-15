@@ -20,7 +20,7 @@ export class WhileSubtag extends Subtag {
                     parameters: ['~value1', '~evaluator', '~value2', '~code'],
                     description: 'This will continuously execute `code` for as long as the condition returns `true`. The condition is as follows:\n' +
                         'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
-                        'Valid evaluators are `' + Object.keys(bbtagUtil.operators.compare).join('`, `') + '`.',
+                        'Valid evaluators are `' + Object.keys(bbtagUtil.comparisonOperators).join('`, `') + '`.',
                     exampleCode: '{set;~x;0}\n{while;{get;~x};<=;10;{increment;~x},}.',
                     exampleOut: '1,2,3,4,5,6,7,8,9,10,11,',
                     returns: 'loop',
@@ -44,20 +44,20 @@ export class WhileSubtag extends Subtag {
             let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
             let left = typeof val2Raw === 'string' ? val2Raw : await val2Raw.execute();
 
-            if (bbtagUtil.operators.isCompareOperator(operator)) {
+            if (bbtagUtil.isComparisonOperator(operator)) {
                 //operator = operator;
-            } else if (bbtagUtil.operators.isCompareOperator(left)) {
+            } else if (bbtagUtil.isComparisonOperator(left)) {
                 //operator = left;
                 [left, operator] = [operator, left];
-            } else if (bbtagUtil.operators.isCompareOperator(right)) {
+            } else if (bbtagUtil.isComparisonOperator(right)) {
                 //operator = right;
                 [operator, right] = [right, operator];
             }
 
-            if (!bbtagUtil.operators.isCompareOperator(operator))
+            if (!bbtagUtil.isComparisonOperator(operator))
                 //TODO invalid operator stuff here
                 yield await codeRaw.execute();
-            else if (!bbtagUtil.operators.compare[operator](right, left))
+            else if (!bbtagUtil.operate(operator, right, left))
                 break;
             else
                 yield await codeRaw.execute();

@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotABooleanError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError, NotABooleanError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { IfSubtag } from '@cluster/subtags/misc/if';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
@@ -87,14 +87,14 @@ runSubtagTests({
             // <then> is not executed
         },
         {
-            code: '{if;{eval};{eval};{eval};{fail}}',
+            code: '{if;{eval};{eval}op;{eval};{fail}}',
             expected: '`Invalid operator`',
             errors: [
                 { start: 4, end: 10, error: new MarkerError(4) },   // <left> is executed
                 { start: 11, end: 17, error: new MarkerError(11) }, // <operator> is executed
-                { start: 18, end: 24, error: new MarkerError(18) }, // <right> is executed
+                { start: 20, end: 26, error: new MarkerError(20) }, // <right> is executed
                 //                                                   <then> is not executed
-                { start: 0, end: 32, error: new BBTagRuntimeError('Invalid operator') }
+                { start: 0, end: 34, error: new InvalidOperatorError('op') }
             ]
         },
         /* {if;<left>;<operator>;<right>;<then>;[else]} */
@@ -126,15 +126,15 @@ runSubtagTests({
         ...generateTestCases(false, isLessThan, true),
         ...generateTestCases(false, isEqualTo, false),
         {
-            code: '{if;{eval};{eval};{eval};{fail};{fail}}',
+            code: '{if;{eval};{eval}op;{eval};{fail};{fail}}',
             expected: '`Invalid operator`',
             errors: [
                 { start: 4, end: 10, error: new MarkerError(4) },   // <left> is executed
                 { start: 11, end: 17, error: new MarkerError(11) }, // <operator> is executed
-                { start: 18, end: 24, error: new MarkerError(18) }, // <right> is executed
+                { start: 20, end: 26, error: new MarkerError(20) }, // <right> is executed
                 //                                                   <then> is not executed
                 //                                                   [else] is not executed
-                { start: 0, end: 39, error: new BBTagRuntimeError('Invalid operator') }
+                { start: 0, end: 41, error: new InvalidOperatorError('op') }
             ]
         },
         /* {if;<left>;<operator>;<right>;<then>;[else];--EXCESS--} */

@@ -1,8 +1,8 @@
 import { BBTagContext, Subtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
+import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
-import { CompareOperator } from '@cluster/utils/bbtag/operators';
+import { OrdinalOperator } from '@cluster/utils/bbtag/operators';
 
 export class ForSubtag extends Subtag {
     public constructor() {
@@ -38,14 +38,15 @@ export class ForSubtag extends Subtag {
         const limit = parse.float(limitStr);
         const increment = parse.float(incrementStr);
 
-        if (isNaN(initial)) errors.push('Initial must be a number');
-        if (!bbtagUtil.operators.isCompareOperator(operator)) errors.push('Invalid operator');
-        if (isNaN(limit)) errors.push('Limit must be a number');
-        if (isNaN(increment)) errors.push('Increment must be a number');
-        if (errors.length > 0) throw new BBTagRuntimeError(errors.join(', '));
+        if (isNaN(initial)) errors.push(new BBTagRuntimeError('Initial must be a number'));
+        if (!bbtagUtil.isComparisonOperator(operator)) errors.push(new InvalidOperatorError(operator));
+        if (isNaN(limit)) errors.push(new BBTagRuntimeError('Limit must be a number'));
+        if (isNaN(increment)) errors.push(new BBTagRuntimeError('Increment must be a number'));
+        if (errors.length > 0)
+            throw new AggregateBBTagError(errors);
 
         try {
-            for (let i = initial; bbtagUtil.operators.compare[operator as CompareOperator](i.toString(), limit.toString()); i += increment) {
+            for (let i = initial; bbtagUtil.operate(operator as OrdinalOperator, i.toString(), limit.toString()); i += increment) {
                 await context.limit.check(context, 'for:loops');
                 await context.variables.set(varName, i);
                 yield await code.execute();
