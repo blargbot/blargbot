@@ -43,3 +43,4 @@ kek
 !.vscode/**/*.json
 /coverage/**/*
 test.ts
+test.bbtag

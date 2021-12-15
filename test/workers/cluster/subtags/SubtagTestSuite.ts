@@ -11,7 +11,10 @@ import { SubtagVariableType, TagVariablesTable } from '@core/types';
 import { expect } from 'chai';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
 import { BaseData, Client as Discord, Collection, Constants, Guild, KnownGuildTextableChannel, Message, Shard, ShardManager, User } from 'eris';
+import * as fs from 'fs';
+import * as inspector from 'inspector';
 import { Context, describe, it } from 'mocha';
+import path from 'path';
 import { anyOfClass, anyString, instance, mock, setStrict, when } from 'ts-mockito';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 import { inspect } from 'util';
@@ -264,6 +267,21 @@ export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): 
     for (const testCase of data.cases)
         suite.addTestCase(testCase);
     suite.run(() => data.runOtherTests?.(data.subtag));
+
+    // Output a bbtag file that can be run on the live blargbot instance to find any errors
+    if (inspector.url() !== undefined) {
+        const blargTestSuite = `Errors:{clean;${data.cases.map(c => `{if;==;|${c.code};|${c.expected?.toString() ?? ''};;
+> {escapebbtag;${c.code}} failed -
+Expected:
+${c.expected?.toString() ?? ''}
+
+Actual:
+${c.code}}`).join('\n')}}
+---------------
+Finished!`;
+        const root = require.resolve('@config');
+        fs.writeFileSync(path.dirname(root) + '/test.bbtag', blargTestSuite);
+    }
 }
 
 export function sourceMarker(location: string | number | SourceMarker): SourceMarker
