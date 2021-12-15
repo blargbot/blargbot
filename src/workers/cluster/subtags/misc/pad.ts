@@ -22,10 +22,18 @@ export class PadSubtag extends Subtag {
     }
 
     public pad(direction: string, backing: string, overlay: string): string {
-        if (direction.toLowerCase() === 'left')
-            return backing.substr(0, backing.length - overlay.length) + overlay;
-        if (direction.toLowerCase() === 'right')
-            return overlay + backing.substr(overlay.length);
+        switch (direction.toLowerCase()) {
+            case 'left': {
+                if (overlay.length > backing.length)
+                    return overlay;
+                return backing.slice(0, backing.length - overlay.length) + overlay;
+            }
+            case 'right': {
+                if (overlay.length > backing.length)
+                    return overlay;
+                return overlay + backing.slice(overlay.length);
+            }
+        }
         throw new BBTagRuntimeError('Invalid direction');
     }
 }
