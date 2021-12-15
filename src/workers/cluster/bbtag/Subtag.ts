@@ -1,16 +1,12 @@
 import { SubtagCall, SubtagOptions, SubtagResult, SubtagSignatureDetails } from '@cluster/types';
-import { SubtagType } from '@cluster/utils';
+import { abstract, SubtagType } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { Timer } from '@core/Timer';
 import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from './BBTagContext';
 
-const sealed: MethodDecorator = (_target, _key, descriptor) => {
-    descriptor.configurable = false;
-    descriptor.writable = false;
-};
-
+@abstract
 export abstract class Subtag implements SubtagOptions {
     public readonly name: string;
     public readonly aliases: readonly string[];
@@ -32,12 +28,9 @@ export abstract class Subtag implements SubtagOptions {
         this.staff = options.staff ?? false;
         this.hidden = options.hidden ?? false;
         this.signatures = options.signatures;
-
-        if (this.execute !== Subtag.prototype.execute)
-            throw new Error('Overriding the execute method of a subtag is not supported!');
     }
 
-    @sealed
+    @abstract.sealed
     public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
         const timer = new Timer().start();
         try {

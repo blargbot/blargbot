@@ -1,3 +1,4 @@
+export * from './abstract';
 export * from './between';
 export * from './codeBlock';
 export * from './compare';
