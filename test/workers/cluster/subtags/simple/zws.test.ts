@@ -14,7 +14,7 @@ runSubtagTests({
             code: '{zws;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 5, end: 11, error: new MarkerError(5) },
+                { start: 5, end: 11, error: new MarkerError('eval', 5) },
                 { start: 0, end: 12, error: new TooManyArgumentsError(0, 1) }
             ]
         }

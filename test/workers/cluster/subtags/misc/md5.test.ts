@@ -20,8 +20,8 @@ runSubtagTests({
             code: '{md5;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 5, end: 11, error: new MarkerError(5) },
-                { start: 12, end: 18, error: new MarkerError(12) },
+                { start: 5, end: 11, error: new MarkerError('eval', 5) },
+                { start: 12, end: 18, error: new MarkerError('eval', 12) },
                 { start: 0, end: 19, error: new TooManyArgumentsError(1, 2) }
             ]
         }

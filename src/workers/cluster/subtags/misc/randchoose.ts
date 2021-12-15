@@ -29,7 +29,7 @@ export class RandChooseSubtag extends DefinedSubtag {
     }
 
     public async randChooseArg(choices: readonly SubtagArgument[]): Promise<string> {
-        return randChoose(choices).wait();
+        return await randChoose(choices).wait();
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {

@@ -31,7 +31,7 @@ runSubtagTests({
             code: '{hash;invalid;{eval}}',
             expected: '`Unsupported hash`',
             errors: [
-                { start: 14, end: 20, error: new MarkerError(14) },
+                { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 0, end: 21, error: new BBTagRuntimeError('Unsupported hash', 'invalid is not a supported hash algorithm') }
             ]
         },
@@ -39,9 +39,9 @@ runSubtagTests({
             code: '{hash;{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 6, end: 12, error: new MarkerError(6) },
-                { start: 13, end: 19, error: new MarkerError(13) },
-                { start: 20, end: 26, error: new MarkerError(20) },
+                { start: 6, end: 12, error: new MarkerError('eval', 6) },
+                { start: 13, end: 19, error: new MarkerError('eval', 13) },
+                { start: 20, end: 26, error: new MarkerError('eval', 20) },
                 { start: 0, end: 27, error: new TooManyArgumentsError(2, 3) }
             ]
         }

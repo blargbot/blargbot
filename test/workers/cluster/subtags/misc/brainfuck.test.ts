@@ -25,7 +25,7 @@ runSubtagTests({
             code: '{brainfuck;{eval}}',
             expected: '`No valid input given`',
             errors: [
-                { start: 11, end: 17, error: new MarkerError(11) },
+                { start: 11, end: 17, error: new MarkerError('eval', 11) },
                 { start: 0, end: 18, error: new BBTagRuntimeError('No valid input given') }
             ]
         },
@@ -33,9 +33,9 @@ runSubtagTests({
             code: '{brainfuck;{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 11, end: 17, error: new MarkerError(11) },
-                { start: 18, end: 24, error: new MarkerError(18) },
-                { start: 25, end: 31, error: new MarkerError(25) },
+                { start: 11, end: 17, error: new MarkerError('eval', 11) },
+                { start: 18, end: 24, error: new MarkerError('eval', 18) },
+                { start: 25, end: 31, error: new MarkerError('eval', 25) },
                 { start: 0, end: 32, error: new TooManyArgumentsError(2, 3) }
             ]
         }

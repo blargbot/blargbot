@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{logic;{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 7, end: 13, error: new MarkerError(7) },
+                { start: 7, end: 13, error: new MarkerError('eval', 7) },
                 { start: 0, end: 14, error: new NotEnoughArgumentsError(2, 1) }
             ]
         },
@@ -26,8 +26,8 @@ runSubtagTests({
             code: '{logic;{eval}aaaa;{eval}}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 7, end: 13, error: new MarkerError(7) },
-                { start: 18, end: 24, error: new MarkerError(18) },
+                { start: 7, end: 13, error: new MarkerError('eval', 7) },
+                { start: 18, end: 24, error: new MarkerError('eval', 18) },
                 { start: 0, end: 25, error: new InvalidOperatorError('aaaa') }
             ]
         },
@@ -44,7 +44,7 @@ runSubtagTests({
             code: '{logic;!;{eval}aaaa}',
             expected: '`Not a boolean`',
             errors: [
-                { start: 9, end: 15, error: new MarkerError(9) },
+                { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 0, end: 20, error: new NotABooleanError('aaaa') }
             ]
         },
@@ -52,7 +52,7 @@ runSubtagTests({
             code: '{logic;!;true;{eval}aaaa}',
             expected: '`Not a boolean`',
             errors: [
-                { start: 14, end: 20, error: new MarkerError(14) },
+                { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 0, end: 25, error: new NotABooleanError('aaaa') }
             ]
         },
@@ -60,7 +60,7 @@ runSubtagTests({
             code: '{logic;||;{eval}aaaa}',
             expected: '`Not a boolean`',
             errors: [
-                { start: 10, end: 16, error: new MarkerError(10) },
+                { start: 10, end: 16, error: new MarkerError('eval', 10) },
                 { start: 0, end: 21, error: new NotABooleanError('aaaa') }
             ]
         }

@@ -27,8 +27,8 @@ runSubtagTests({
             code: '{newline;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 9, end: 15, error: new MarkerError(9) },
-                { start: 16, end: 22, error: new MarkerError(16) },
+                { start: 9, end: 15, error: new MarkerError('eval', 9) },
+                { start: 16, end: 22, error: new MarkerError('eval', 16) },
                 { start: 0, end: 23, error: new TooManyArgumentsError(1, 2) }
             ]
         }

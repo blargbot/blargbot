@@ -26,7 +26,7 @@ runSubtagTests({
             code: '{bool;{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 6, end: 12, error: new MarkerError('eval', 6) },
                 { start: 0, end: 13, error: new NotEnoughArgumentsError(3, 1) }
             ]
         },
@@ -34,8 +34,8 @@ runSubtagTests({
             code: '{bool;{eval};{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 6, end: 12, error: new MarkerError(6) },
-                { start: 13, end: 19, error: new MarkerError(13) },
+                { start: 6, end: 12, error: new MarkerError('eval', 6) },
+                { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { start: 0, end: 20, error: new NotEnoughArgumentsError(3, 2) }
             ]
         },
@@ -64,9 +64,9 @@ runSubtagTests({
             code: '{bool;{eval};{eval}op;{eval}}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 6, end: 12, error: new MarkerError(6) },
-                { start: 13, end: 19, error: new MarkerError(13) },
-                { start: 22, end: 28, error: new MarkerError(22) },
+                { start: 6, end: 12, error: new MarkerError('eval', 6) },
+                { start: 13, end: 19, error: new MarkerError('eval', 13) },
+                { start: 22, end: 28, error: new MarkerError('eval', 22) },
                 { start: 0, end: 29, error: new InvalidOperatorError('op') }
             ]
         },
@@ -74,10 +74,10 @@ runSubtagTests({
             code: '{bool;{eval};{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 6, end: 12, error: new MarkerError(6) },
-                { start: 13, end: 19, error: new MarkerError(13) },
-                { start: 20, end: 26, error: new MarkerError(20) },
-                { start: 27, end: 33, error: new MarkerError(27) },
+                { start: 6, end: 12, error: new MarkerError('eval', 6) },
+                { start: 13, end: 19, error: new MarkerError('eval', 13) },
+                { start: 20, end: 26, error: new MarkerError('eval', 20) },
+                { start: 27, end: 33, error: new MarkerError('eval', 27) },
                 { start: 0, end: 34, error: new TooManyArgumentsError(3, 4) }
             ]
         }

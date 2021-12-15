@@ -18,8 +18,8 @@ runSubtagTests({
             code: '{decancer;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 10, end: 16, error: new MarkerError(10) },
-                { start: 17, end: 23, error: new MarkerError(17) },
+                { start: 10, end: 16, error: new MarkerError('eval', 10) },
+                { start: 17, end: 23, error: new MarkerError('eval', 17) },
                 { start: 0, end: 24, error: new TooManyArgumentsError(1, 2) }
             ]
         }

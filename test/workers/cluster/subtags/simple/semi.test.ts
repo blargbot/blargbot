@@ -14,7 +14,7 @@ runSubtagTests({
             code: '{semi;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 6, end: 12, error: new MarkerError(6) },
+                { start: 6, end: 12, error: new MarkerError('eval', 6) },
                 { start: 0, end: 13, error: new TooManyArgumentsError(0, 1) }
             ]
         }

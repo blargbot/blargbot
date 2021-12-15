@@ -17,7 +17,7 @@ runSubtagTests({
             code: '{choose;{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 8, end: 14, error: new MarkerError(8) },
+                { start: 8, end: 14, error: new MarkerError('eval', 8) },
                 { start: 0, end: 15, error: new NotEnoughArgumentsError(2, 1) }
             ]
         },
@@ -45,7 +45,7 @@ runSubtagTests({
         { code: '{choose;0;abc}', expected: 'abc' },
         { code: '{choose;0;abc;{fail}}', expected: 'abc' },
         { code: '{choose;1;{fail};abc}', expected: 'abc' },
-        { code: '{choose;1;{fail};{eval}aaaa}', expected: 'aaaa', errors: [{ start: 17, end: 23, error: new MarkerError(17) }] },
+        { code: '{choose;1;{fail};{eval}aaaa}', expected: 'aaaa', errors: [{ start: 17, end: 23, error: new MarkerError('eval', 17) }] },
         { code: '{choose;7;a;b;c;d;e;f;g;h;i;j;k;l;m;n;o;p;q;r;s;t;u;v;w;x;y;z}', expected: 'h' }
     ]
 });

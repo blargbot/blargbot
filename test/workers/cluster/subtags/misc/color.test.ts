@@ -63,9 +63,9 @@ runSubtagTests({
             code: '{color;{eval}0;{eval};{eval}cba}',
             expected: '`Invalid input method`',
             errors: [
-                { start: 7, end: 13, error: new MarkerError(7) },
-                { start: 15, end: 21, error: new MarkerError(15) },
-                { start: 22, end: 28, error: new MarkerError(22) },
+                { start: 7, end: 13, error: new MarkerError('eval', 7) },
+                { start: 15, end: 21, error: new MarkerError('eval', 15) },
+                { start: 22, end: 28, error: new MarkerError('eval', 22) },
                 { start: 0, end: 32, error: new BBTagRuntimeError('Invalid input method', '"cba" is not valid') }
             ]
         },
@@ -73,9 +73,9 @@ runSubtagTests({
             code: '{color;{eval}0;{eval}abc;{eval}}',
             expected: '`Invalid output method`',
             errors: [
-                { start: 7, end: 13, error: new MarkerError(7) },
-                { start: 15, end: 21, error: new MarkerError(15) },
-                { start: 25, end: 31, error: new MarkerError(25) },
+                { start: 7, end: 13, error: new MarkerError('eval', 7) },
+                { start: 15, end: 21, error: new MarkerError('eval', 15) },
+                { start: 25, end: 31, error: new MarkerError('eval', 25) },
                 { start: 0, end: 32, error: new BBTagRuntimeError('Invalid output method', '"abc" is not valid') }
             ]
         },

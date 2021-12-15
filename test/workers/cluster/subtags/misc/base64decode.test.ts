@@ -25,8 +25,8 @@ runSubtagTests({
             code: '{base64decode;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 14, end: 20, error: new MarkerError(14) },
-                { start: 21, end: 27, error: new MarkerError(21) },
+                { start: 14, end: 20, error: new MarkerError('eval', 14) },
+                { start: 21, end: 27, error: new MarkerError('eval', 21) },
                 { start: 0, end: 28, error: new TooManyArgumentsError(1, 2) }
             ]
         },
@@ -49,8 +49,8 @@ runSubtagTests({
             code: '{atob;{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 6, end: 12, error: new MarkerError(6) },
-                { start: 13, end: 19, error: new MarkerError(13) },
+                { start: 6, end: 12, error: new MarkerError('eval', 6) },
+                { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { start: 0, end: 20, error: new TooManyArgumentsError(1, 2) }
             ]
         }

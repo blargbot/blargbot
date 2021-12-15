@@ -23,7 +23,7 @@ runSubtagTests({
             code: '{if;{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 4, end: 10, error: new MarkerError(4) },
+                { start: 4, end: 10, error: new MarkerError('eval', 4) },
                 { start: 0, end: 11, error: new NotEnoughArgumentsError(2, 1) }
             ]
         },
@@ -40,7 +40,7 @@ runSubtagTests({
             code: '{if;true;{eval}Success!}',
             expected: 'Success!',
             errors: [
-                { start: 9, end: 15, error: new MarkerError(9) } // <then> is executed
+                { start: 9, end: 15, error: new MarkerError('eval', 9) } // <then> is executed
             ]
         },
         {
@@ -62,7 +62,7 @@ runSubtagTests({
             code: '{if;true;{eval}Success!;{fail}}',
             expected: 'Success!',
             errors: [
-                { start: 9, end: 15, error: new MarkerError(9) } // <then> is executed
+                { start: 9, end: 15, error: new MarkerError('eval', 9) } // <then> is executed
                 //                                                [else] is not executed
             ]
         },
@@ -70,7 +70,7 @@ runSubtagTests({
             code: '{if;false;{fail};{eval}Success!}',
             expected: 'Success!',
             errors: [
-                { start: 17, end: 23, error: new MarkerError(17) } // [else] is executed
+                { start: 17, end: 23, error: new MarkerError('eval', 17) } // [else] is executed
             ]
         },
         /* {if;<left>;<operator>;<right>;<then>} */
@@ -78,7 +78,7 @@ runSubtagTests({
             code: '{if;a;==;a;{eval}Success!}',
             expected: 'Success!',
             errors: [
-                { start: 11, end: 17, error: new MarkerError(11) } // <then> is executed
+                { start: 11, end: 17, error: new MarkerError('eval', 11) } // <then> is executed
             ]
         },
         {
@@ -90,9 +90,9 @@ runSubtagTests({
             code: '{if;{eval};{eval}op;{eval};{fail}}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 4, end: 10, error: new MarkerError(4) },   // <left> is executed
-                { start: 11, end: 17, error: new MarkerError(11) }, // <operator> is executed
-                { start: 20, end: 26, error: new MarkerError(20) }, // <right> is executed
+                { start: 4, end: 10, error: new MarkerError('eval', 4) },   // <left> is executed
+                { start: 11, end: 17, error: new MarkerError('eval', 11) }, // <operator> is executed
+                { start: 20, end: 26, error: new MarkerError('eval', 20) }, // <right> is executed
                 //                                                   <then> is not executed
                 { start: 0, end: 34, error: new InvalidOperatorError('op') }
             ]
@@ -102,7 +102,7 @@ runSubtagTests({
             code: '{if;a;==;a;{eval}Success!;{fail}}',
             expected: 'Success!',
             errors: [
-                { start: 11, end: 17, error: new MarkerError(11) }  // <then> is executed
+                { start: 11, end: 17, error: new MarkerError('eval', 11) }  // <then> is executed
                 //                                                   [else] is not executed
             ]
         },
@@ -111,7 +111,7 @@ runSubtagTests({
             expected: 'Success!',
             errors: [
                 //                                                  <then> is not executed
-                { start: 18, end: 24, error: new MarkerError(18) } // [else] is executed
+                { start: 18, end: 24, error: new MarkerError('eval', 18) } // [else] is executed
             ]
         },
         ...generateTestCases('123', isEqualTo, '123'),
@@ -129,9 +129,9 @@ runSubtagTests({
             code: '{if;{eval};{eval}op;{eval};{fail};{fail}}',
             expected: '`Invalid operator`',
             errors: [
-                { start: 4, end: 10, error: new MarkerError(4) },   // <left> is executed
-                { start: 11, end: 17, error: new MarkerError(11) }, // <operator> is executed
-                { start: 20, end: 26, error: new MarkerError(20) }, // <right> is executed
+                { start: 4, end: 10, error: new MarkerError('eval', 4) },   // <left> is executed
+                { start: 11, end: 17, error: new MarkerError('eval', 11) }, // <operator> is executed
+                { start: 20, end: 26, error: new MarkerError('eval', 20) }, // <right> is executed
                 //                                                   <then> is not executed
                 //                                                   [else] is not executed
                 { start: 0, end: 41, error: new InvalidOperatorError('op') }
@@ -142,12 +142,12 @@ runSubtagTests({
             code: '{if;{eval};{eval};{eval};{fail};{fail};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 4, end: 10, error: new MarkerError(4) },   // <left> is executed
-                { start: 11, end: 17, error: new MarkerError(11) }, // <operator> is executed
-                { start: 18, end: 24, error: new MarkerError(18) }, // <right> is executed
+                { start: 4, end: 10, error: new MarkerError('eval', 4) },   // <left> is executed
+                { start: 11, end: 17, error: new MarkerError('eval', 11) }, // <operator> is executed
+                { start: 18, end: 24, error: new MarkerError('eval', 18) }, // <right> is executed
                 //                                                   <then> is not executed
                 //                                                   [else] is not executed
-                { start: 39, end: 45, error: new MarkerError(39) }, // excess argument is executed
+                { start: 39, end: 45, error: new MarkerError('eval', 39) }, // excess argument is executed
                 { start: 0, end: 46, error: new TooManyArgumentsError(5, 6) }
             ]
         }

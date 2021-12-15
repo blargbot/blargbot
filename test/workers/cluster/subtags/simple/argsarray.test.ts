@@ -25,7 +25,7 @@ runSubtagTests({
             code: '{argsarray;{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 11, end: 17, error: new MarkerError(11) },
+                { start: 11, end: 17, error: new MarkerError('eval', 11) },
                 { start: 0, end: 18, error: new TooManyArgumentsError(0, 1) }
             ]
         }

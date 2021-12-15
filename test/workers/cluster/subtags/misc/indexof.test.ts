@@ -18,7 +18,7 @@ runSubtagTests({
             code: '{indexof;{eval}}',
             expected: '`Not enough arguments`',
             errors: [
-                { start: 9, end: 15, error: new MarkerError(9) },
+                { start: 9, end: 15, error: new MarkerError('eval', 9) },
                 { start: 0, end: 16, error: new NotEnoughArgumentsError(2, 1) }
             ]
         },
@@ -71,10 +71,10 @@ runSubtagTests({
             code: '{indexof;{eval};{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
-                { start: 9, end: 15, error: new MarkerError(9) },
-                { start: 16, end: 22, error: new MarkerError(16) },
-                { start: 23, end: 29, error: new MarkerError(23) },
-                { start: 30, end: 36, error: new MarkerError(30) },
+                { start: 9, end: 15, error: new MarkerError('eval', 9) },
+                { start: 16, end: 22, error: new MarkerError('eval', 16) },
+                { start: 23, end: 29, error: new MarkerError('eval', 23) },
+                { start: 30, end: 36, error: new MarkerError('eval', 30) },
                 { start: 0, end: 37, error: new TooManyArgumentsError(3, 4) }
             ]
         }
