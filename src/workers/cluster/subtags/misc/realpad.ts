@@ -35,17 +35,17 @@ export class RealPadSubtag extends DefinedSubtag {
         directionStr: string
     ): string {
         const length = parse.int(lengthStr, false);
-        if (filler === '')
-            filler = ' ';
-        if (directionStr !== 'right' && directionStr !== 'left')
-            throw new BBTagRuntimeError('Invalid direction', directionStr + 'is invalid');
-        const direction: 'right' | 'left' = directionStr;
-
         if (length === undefined)
             throw new NotANumberError(lengthStr);
 
+        if (filler === '')
+            filler = ' ';
         if (filler.length !== 1)
             throw new BBTagRuntimeError('Filler must be 1 character');
+
+        if (directionStr !== 'right' && directionStr !== 'left')
+            throw new BBTagRuntimeError('Invalid direction', directionStr + ' is invalid');
+        const direction: 'right' | 'left' = directionStr;
 
         const padAmount = Math.max(0, length - text.length);
 

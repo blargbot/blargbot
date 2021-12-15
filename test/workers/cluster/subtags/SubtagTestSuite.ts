@@ -273,13 +273,12 @@ export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): 
 
     // Output a bbtag file that can be run on the live blargbot instance to find any errors
     if (inspector.url() !== undefined) {
-        const blargTestSuite = `Errors:{clean;${data.cases.map(c => `{if;==;|${c.code};|${c.expected?.toString() ?? ''};;
+        const blargTestSuite = `Errors:{clean;${data.cases.map(c => `{if;==;|${c.code}|;|${c.expected?.toString() ?? ''}|;;
 > {escapebbtag;${c.code}} failed -
 Expected:
-${c.expected?.toString() ?? ''}
-
+|${c.expected?.toString() ?? ''}|
 Actual:
-${c.code}}`).join('\n')}}
+|${c.code}|}`).join('\n')}}
 ---------------
 Finished!`;
         const root = require.resolve('@config');
@@ -417,7 +416,7 @@ function getTestName(testCase: SubtagTestCase): string {
     }
 
     if (typeof testCase.errors === 'object') {
-        const [errorCount, markerCount] = testCase.errors.reduce((p, c) => c instanceof MarkerError ? [p[0], p[1] + 1] : [p[0] + 1, p[0]], [0, 0]);
+        const [errorCount, markerCount] = testCase.errors.reduce((p, c) => c.error instanceof MarkerError ? [p[0], p[1] + 1] : [p[0] + 1, p[1]], [0, 0]);
         if (errorCount > 0 || markerCount > 0) {
             const errorStr = errorCount === 0 ? undefined : `${errorCount} ${p(errorCount, 'error')}`;
             const markerStr = markerCount === 0 ? undefined : `${markerCount} ${p(markerCount, 'marker')}`;
