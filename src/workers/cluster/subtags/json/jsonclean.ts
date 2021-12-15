@@ -1,7 +1,7 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class JsonCleanSubtag extends Subtag {
+export class JsonCleanSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'jsonclean',

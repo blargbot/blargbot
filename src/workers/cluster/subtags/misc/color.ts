@@ -1,11 +1,11 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
 import Color from 'color';
 
 export type ColorFormat = keyof typeof colorConverters;
 
-export class ColorSubtag extends Subtag {
+export class ColorSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'color',

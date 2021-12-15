@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class CapitalizeSubtag extends Subtag {
+export class CapitalizeSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'capitalize',

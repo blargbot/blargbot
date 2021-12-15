@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { RuntimeReturnState, SubtagArgument } from '@cluster/types';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class WhileSubtag extends Subtag {
+export class WhileSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'while',

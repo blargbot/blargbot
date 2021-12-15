@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class MinSubtag extends Subtag {
+export class MinSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'min',

@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
-export class EmojisSubtag extends Subtag {
+export class EmojisSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'emojis',

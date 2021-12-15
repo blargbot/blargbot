@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class EscapeBbtagSubtag extends Subtag {
+export class EscapeBbtagSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'escapebbtag',

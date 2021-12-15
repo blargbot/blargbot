@@ -1,7 +1,7 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class HereMentionSubtag extends Subtag {
+export class HereMentionSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'heremention',

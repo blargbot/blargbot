@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class NumFormatSubtag extends Subtag {
+export class NumFormatSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'numformat',

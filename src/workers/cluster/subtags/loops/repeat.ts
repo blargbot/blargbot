@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class RepeatSubtag extends Subtag {
+export class RepeatSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'repeat',

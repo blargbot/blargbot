@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Embed, KnownMessage } from 'eris';
 
-export class MessageEmbedsSubtag extends Subtag {
+export class MessageEmbedsSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'messageembeds',

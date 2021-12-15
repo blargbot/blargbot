@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ChannelSetPosSubtag extends Subtag {
+export class ChannelSetPosSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'channelsetpos',

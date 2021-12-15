@@ -303,12 +303,12 @@ export class EvalSubtag extends Subtag {
         super({
             name: 'eval',
             category: SubtagType.SIMPLE,
-            definition: [],
-            hidden: true
+            hidden: true,
+            signatures: []
         });
     }
 
-    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    protected executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new MarkerError(subtag.start.index);
     }
 }
@@ -318,12 +318,12 @@ export class FailTestSubtag extends Subtag {
         super({
             name: 'fail',
             category: SubtagType.SIMPLE,
-            definition: [],
+            signatures: [],
             hidden: true
         });
     }
 
-    public execute(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
+    public executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new RangeError(`Subtag ${subtag.source} was evaluated when it wasnt supposed to!`);
     }
 }

@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { guard, SubtagType } from '@cluster/utils';
 
-export class DeleteSubtag extends Subtag {
+export class DeleteSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'delete',

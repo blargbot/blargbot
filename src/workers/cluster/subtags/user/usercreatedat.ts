@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment-timezone';
 
-export class UserCreateDatSubtag extends Subtag {
+export class UserCreateDatSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'usercreatedat',

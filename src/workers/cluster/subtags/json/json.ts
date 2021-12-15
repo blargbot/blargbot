@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class JsonSubtag extends Subtag {
+export class JsonSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'json',

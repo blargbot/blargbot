@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { guard, SubtagType } from '@cluster/utils';
 
-export class DeleteThreadSubtag extends Subtag {
+export class DeleteThreadSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'deletethread',

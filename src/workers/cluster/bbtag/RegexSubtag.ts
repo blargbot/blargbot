@@ -1,9 +1,9 @@
 import { createSafeRegExp } from '@cluster/utils';
 
+import { DefinedSubtag } from './DefinedSubtag';
 import { BBTagRuntimeError } from './errors';
-import { Subtag } from './Subtag';
 
-export abstract class RegexSubtag extends Subtag {
+export abstract class RegexSubtag extends DefinedSubtag {
 
     protected createRegex(regexStr: string): RegExp {
         try {

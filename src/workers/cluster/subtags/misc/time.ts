@@ -1,9 +1,9 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import moment, { Moment } from 'moment';
 
-export class TimeSubtag extends Subtag {
+export class TimeSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'time',

@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment';
 
-export class UserJoinedAtSubtag extends Subtag {
+export class UserJoinedAtSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'userjoinedat',

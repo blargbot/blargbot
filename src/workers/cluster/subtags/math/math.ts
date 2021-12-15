@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class MathSubtag extends Subtag {
+export class MathSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'math',

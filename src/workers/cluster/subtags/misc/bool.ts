@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class BoolSubtag extends Subtag {
+export class BoolSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'bool',

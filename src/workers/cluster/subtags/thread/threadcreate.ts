@@ -1,4 +1,4 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
 import { Constants, KnownMessage } from 'eris';
@@ -17,7 +17,7 @@ const threadOptions = mapping.object({
     )
 });
 
-export class ThreadCreateSubtag extends Subtag {
+export class ThreadCreateSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'threadcreate',

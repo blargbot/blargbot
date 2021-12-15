@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError, EmbedField, EmbedOptions } from 'eris';
 
-export class ReactRemoveSubtag extends Subtag {
+export class ReactRemoveSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'reactremove',

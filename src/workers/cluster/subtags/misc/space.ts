@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class SpaceSubtag extends Subtag {
+export class SpaceSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'space',

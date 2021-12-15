@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { bbtagUtil, SubtagType } from '@cluster/utils';
 
-export class LengthSubtag extends Subtag {
+export class LengthSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'length',

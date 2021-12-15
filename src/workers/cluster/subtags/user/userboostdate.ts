@@ -1,10 +1,10 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
 
-export class UserBoostDataSubtag extends Subtag {
+export class UserBoostDataSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'userboostdate',

@@ -678,13 +678,14 @@ export interface MassBanDetails {
 }
 
 export interface SubtagOptions {
-    name: string;
-    aliases?: readonly string[];
-    category: SubtagType;
-    desc?: string;
-    deprecated?: string | boolean;
-    staff?: boolean;
-    hidden?: boolean;
+    readonly name: string;
+    readonly aliases?: readonly string[];
+    readonly category: SubtagType;
+    readonly desc?: string;
+    readonly deprecated?: string | boolean;
+    readonly staff?: boolean;
+    readonly hidden?: boolean;
+    readonly signatures: readonly SubtagSignatureDetails[];
 }
 
 export interface RuntimeLimitRule {

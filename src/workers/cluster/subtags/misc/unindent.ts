@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class UnindentSubtag extends Subtag {
+export class UnindentSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'unindent',

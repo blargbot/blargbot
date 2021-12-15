@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class ExecSubtag extends Subtag {
+export class ExecSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'exec',

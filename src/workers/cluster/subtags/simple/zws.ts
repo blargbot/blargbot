@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class ZwsSubtag extends Subtag {
+export class ZwsSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'zws',

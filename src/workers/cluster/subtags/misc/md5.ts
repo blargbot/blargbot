@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import md5 from 'md5';
 
-export class Md5Subtag extends Subtag {
+export class Md5Subtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'md5',

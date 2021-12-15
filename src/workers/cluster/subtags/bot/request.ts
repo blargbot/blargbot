@@ -1,4 +1,4 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
@@ -26,7 +26,7 @@ interface ResponseObject {
     url: string;
 }
 
-export class RequestSubtag extends Subtag {
+export class RequestSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'request',

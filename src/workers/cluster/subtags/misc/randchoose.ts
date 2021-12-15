@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, randChoose, SubtagType } from '@cluster/utils';
 
-export class RandChooseSubtag extends Subtag {
+export class RandChooseSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'randchoose',

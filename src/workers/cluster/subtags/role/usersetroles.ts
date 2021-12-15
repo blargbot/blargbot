@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, parse, SubtagType } from '@cluster/utils';
 
-export class UserSetRolesSubtag extends Subtag {
+export class UserSetRolesSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'usersetroles',

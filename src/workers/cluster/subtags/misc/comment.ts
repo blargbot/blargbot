@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class CommentSubtag extends Subtag {
+export class CommentSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'comment',

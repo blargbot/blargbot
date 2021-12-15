@@ -1,9 +1,9 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class IfSubtag extends Subtag {
+export class IfSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'if',

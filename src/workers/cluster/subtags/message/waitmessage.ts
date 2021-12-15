@@ -1,4 +1,4 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
@@ -6,7 +6,7 @@ import { guard } from '@core/utils';
 
 import { Statement } from '../../types';
 
-export class WaitMessageSubtags extends Subtag {
+export class WaitMessageSubtags extends DefinedSubtag {
     public constructor() {
         super({
             name: 'waitmessage',

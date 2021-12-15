@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { EmbedOptions, KnownMessage } from 'eris';
 
-export class ReactAddSubtag extends Subtag {
+export class ReactAddSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'reactadd',

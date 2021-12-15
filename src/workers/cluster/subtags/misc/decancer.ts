@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { humanize, SubtagType } from '@cluster/utils';
 
-export class DecancerSubtag extends Subtag {
+export class DecancerSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'decancer',

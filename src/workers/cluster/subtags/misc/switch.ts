@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class SwitchSubtag extends Subtag {
+export class SwitchSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'switch',

@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { humanize, parse, SubtagType } from '@cluster/utils';
 
-export class SlowmodeSubtag extends Subtag {
+export class SlowmodeSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'slowmode',

@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
-export class EmojiDeleteSubtag extends Subtag {
+export class EmojiDeleteSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'emojidelete',

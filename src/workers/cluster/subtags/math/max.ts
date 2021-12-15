@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class MaxSubtag extends Subtag {
+export class MaxSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'max',

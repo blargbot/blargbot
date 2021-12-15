@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class InjectSubtag extends Subtag {
+export class InjectSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'inject',

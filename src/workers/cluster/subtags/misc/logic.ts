@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class LogicSubtag extends Subtag {
+export class LogicSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'logic',

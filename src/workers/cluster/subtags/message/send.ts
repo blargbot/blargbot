@@ -1,10 +1,10 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { MalformedEmbed } from '@core/types';
 import { EmbedOptions, FileContent } from 'eris';
 
-export class SendSubtag extends Subtag {
+export class SendSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'send',

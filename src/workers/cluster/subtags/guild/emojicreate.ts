@@ -1,4 +1,4 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { bbtagUtil, discordUtil, SubtagType } from '@cluster/utils';
 import fetch from 'node-fetch';
@@ -9,7 +9,7 @@ interface EmojiCreateOptions {
     roles: string[];
 }
 
-export class EmojiCreateSubtag extends Subtag {
+export class EmojiCreateSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'emojicreate',

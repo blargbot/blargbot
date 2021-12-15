@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 import { RoleOptions } from 'eris';
 
-export class RoleCreateSubtag extends Subtag {
+export class RoleCreateSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'rolecreate',

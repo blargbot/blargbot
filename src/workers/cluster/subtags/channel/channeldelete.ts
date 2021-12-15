@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
-export class ChannelDeleteSubtag extends Subtag {
+export class ChannelDeleteSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'channeldelete',

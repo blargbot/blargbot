@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class RealPadSubtag extends Subtag {
+export class RealPadSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'realpad',

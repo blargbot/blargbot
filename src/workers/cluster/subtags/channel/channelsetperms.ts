@@ -1,10 +1,10 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 import { Constants } from 'eris';
 
-export class ChannelSetPermsSubtag extends Subtag {
+export class ChannelSetPermsSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'channelsetperms',

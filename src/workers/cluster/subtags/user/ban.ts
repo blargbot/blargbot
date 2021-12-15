@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { Duration } from 'moment';
@@ -13,7 +13,7 @@ const errorMap = {
     //'alreadyBanned': 'User has already been banned' //TODO JS blarg returns true for this
 };
 
-export class BanSubtag extends Subtag {
+export class BanSubtag extends DefinedSubtag {
     public constructor(
         public readonly cluster: Cluster
     ) {

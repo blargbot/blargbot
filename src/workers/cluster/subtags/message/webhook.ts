@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 import { EmbedOptions, FileContent } from 'eris';
 
-export class WebhookSubtag extends Subtag {
+export class WebhookSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'webhook',

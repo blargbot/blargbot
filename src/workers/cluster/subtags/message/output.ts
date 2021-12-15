@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class OutputSubtag extends Subtag {
+export class OutputSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'output',

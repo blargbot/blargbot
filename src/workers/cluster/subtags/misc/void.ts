@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class VoidSubtag extends Subtag {
+export class VoidSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'void',

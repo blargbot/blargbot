@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagStackOverflowError, UnknownSubtagError } from '@cluster/bbtag/errors';
 import { RuntimeReturnState } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
-export class FunctionInvokeSubtag extends Subtag {
+export class FunctionInvokeSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'func.',

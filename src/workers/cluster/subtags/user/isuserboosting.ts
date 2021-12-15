@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Member } from 'eris';
 
-export class IsUserBoostingSubtag extends Subtag {
+export class IsUserBoostingSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'isuserboosting',

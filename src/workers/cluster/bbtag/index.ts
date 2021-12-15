@@ -2,6 +2,7 @@ import { get as getLock } from './lock';
 
 export * from './arguments';
 export * from './Subtag';
+export * from './DefinedSubtag';
 export * from './RegexSubtag';
 export * from './BBTagContext';
 export * from './Caching';

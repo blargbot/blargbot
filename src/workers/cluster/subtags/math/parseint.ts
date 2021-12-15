@@ -1,7 +1,7 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ParseIntSubtag extends Subtag {
+export class ParseIntSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'parseint',

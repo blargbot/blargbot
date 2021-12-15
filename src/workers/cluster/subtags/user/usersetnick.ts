@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
-export class UserSetNickSubtag extends Subtag {
+export class UserSetNickSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'usersetnick',

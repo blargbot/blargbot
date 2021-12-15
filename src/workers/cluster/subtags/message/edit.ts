@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
-export class EditSubtag extends Subtag {
+export class EditSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'edit',

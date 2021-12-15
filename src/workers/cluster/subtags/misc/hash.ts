@@ -1,4 +1,4 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { createHash, getHashes } from 'crypto';
@@ -13,7 +13,7 @@ const allowedHashes = new Set([
 
 export const supportedHashes = getHashes().filter(h => allowedHashes.has(h));
 
-export class HashSubtag extends Subtag {
+export class HashSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'hash',

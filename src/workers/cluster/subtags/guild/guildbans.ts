@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildBansSubtag extends Subtag {
+export class GuildBansSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'guildbans',

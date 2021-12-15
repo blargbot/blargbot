@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
-export class IndexOfSubtag extends Subtag {
+export class IndexOfSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'indexof',

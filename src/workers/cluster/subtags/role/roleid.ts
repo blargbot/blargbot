@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { RoleNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class RoleIdSubtag extends Subtag {
+export class RoleIdSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'roleid',

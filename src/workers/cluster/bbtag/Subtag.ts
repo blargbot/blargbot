@@ -1,11 +1,15 @@
-import { AnySubtagHandlerDefinition, CompositeSubtagHandler, SubtagCall, SubtagHandlerCallSignature, SubtagOptions, SubtagResult } from '@cluster/types';
+import { SubtagCall, SubtagOptions, SubtagResult, SubtagSignatureDetails } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 import { metrics } from '@core/Metrics';
 import { Timer } from '@core/Timer';
 import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from './BBTagContext';
-import { compileSignatures, parseDefinitions } from './compilation';
+
+const sealed: MethodDecorator = (_target, _key, descriptor) => {
+    descriptor.configurable = false;
+    descriptor.writable = false;
+};
 
 export abstract class Subtag implements SubtagOptions {
     public readonly name: string;
@@ -15,11 +19,10 @@ export abstract class Subtag implements SubtagOptions {
     public readonly desc: string | undefined;
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
-    public readonly signatures: readonly SubtagHandlerCallSignature[];
-    public readonly handler: CompositeSubtagHandler;
+    public readonly signatures: readonly SubtagSignatureDetails[];
     public readonly hidden: boolean;
 
-    protected constructor(options: SubtagOptions & { definition: readonly AnySubtagHandlerDefinition[]; }) {
+    protected constructor(options: SubtagOptions) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
@@ -28,15 +31,17 @@ export abstract class Subtag implements SubtagOptions {
         this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
         this.hidden = options.hidden ?? false;
-        this.signatures = parseDefinitions(options.definition);
-        this.handler = compileSignatures(this.signatures);
+        this.signatures = options.signatures;
+
+        if (this.execute !== Subtag.prototype.execute)
+            throw new Error('Overriding the execute method of a subtag is not supported!');
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
+    @sealed
     public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
         const timer = new Timer().start();
         try {
-            yield* this.handler.execute(context, subtagName, subtag);
+            yield* this.executeCore(context, subtagName, subtag);
         } finally {
             timer.end();
             metrics.subtagLatency.labels(this.name).observe(timer.elapsed);
@@ -44,6 +49,8 @@ export abstract class Subtag implements SubtagOptions {
             debugPerf.push(timer.elapsed);
         }
     }
+
+    protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult;
 
     public enrichDocs(docs: EmbedOptions): EmbedOptions {
         return docs;

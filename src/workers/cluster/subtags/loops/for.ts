@@ -1,10 +1,10 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { OrdinalOperator } from '@cluster/utils/bbtag/operators';
 
-export class ForSubtag extends Subtag {
+export class ForSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'for',

@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { Cluster } from '@cluster/Cluster';
 import { SubtagType } from '@cluster/utils';
 
-export class SubtagExistsSubtag extends Subtag {
+export class SubtagExistsSubtag extends DefinedSubtag {
     public constructor(
         public readonly cluster: Cluster
     ) {

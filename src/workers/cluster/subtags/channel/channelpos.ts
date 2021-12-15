@@ -1,10 +1,10 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 import { GuildChannel } from 'eris';
 
-export class ChannelPosSubtag extends Subtag {
+export class ChannelPosSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'channelpos',

@@ -1,7 +1,7 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class TagAuthorizerSubtag extends Subtag {
+export class TagAuthorizerSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'tagauthorizer',

@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 import fetch from 'node-fetch';
 
-export class GuildSetIconSubtag extends Subtag {
+export class GuildSetIconSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'guildseticon',

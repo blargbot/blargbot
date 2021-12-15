@@ -1,11 +1,11 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, sleep, SubtagType } from '@cluster/utils';
 import moment from 'moment';
 
 const maxSleep = moment.duration(5, 'minutes');
 
-export class SleepTag extends Subtag {
+export class SleepTag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'sleep',

@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-export class LastMessageIdSubtag extends Subtag {
+export class LastMessageIdSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'lastmessageid',

@@ -1,9 +1,9 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { default as Brainfuck } from 'brainfuck-node';
 
-export class BrainfuckSubtag extends Subtag {
+export class BrainfuckSubtag extends DefinedSubtag {
     private readonly bfClient: Brainfuck;
     public constructor() {
         super({

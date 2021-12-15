@@ -1,10 +1,10 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Statement, SubtagArgument } from '@cluster/types';
 import { bbtagUtil, discordUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-export class WaitReactionSubtag extends Subtag {
+export class WaitReactionSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'waitreaction',

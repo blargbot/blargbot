@@ -1,9 +1,9 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ChooseSubtag extends Subtag {
+export class ChooseSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'choose',

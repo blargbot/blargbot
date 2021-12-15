@@ -1,10 +1,10 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgumentArray } from '@cluster/types';
 import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 import { EmbedOptions } from 'eris';
 
-export class OperatorSubtag extends Subtag {
+export class OperatorSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'operator',

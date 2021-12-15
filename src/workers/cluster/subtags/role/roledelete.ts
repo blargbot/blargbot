@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
 
-export class RoleDeleteSubtag extends Subtag {
+export class RoleDeleteSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'roledelete',

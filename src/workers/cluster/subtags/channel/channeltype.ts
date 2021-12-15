@@ -1,9 +1,9 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { Constants } from 'eris';
 
-export class ChannelTypeSubtag extends Subtag {
+export class ChannelTypeSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'channeltype',

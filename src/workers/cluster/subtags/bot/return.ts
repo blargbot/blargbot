@@ -1,8 +1,8 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { RuntimeReturnState } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ReturnSubtag extends Subtag {
+export class ReturnSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'return',

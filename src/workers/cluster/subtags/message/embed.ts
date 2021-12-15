@@ -1,7 +1,7 @@
-import { BBTagContext, Subtag } from '@cluster/bbtag';
+import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class EmbedSubtag extends Subtag {
+export class EmbedSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'embed',

@@ -1,8 +1,8 @@
-import { Subtag } from '@cluster/bbtag';
+import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class PadSubtag extends Subtag {
+export class PadSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'pad',
