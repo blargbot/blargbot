@@ -8,6 +8,7 @@ export class Md5Subtag extends Subtag {
             name: 'md5',
             aliases: ['md5encode'],
             category: SubtagType.MISC,
+            deprecated: 'hash',
             definition: [
                 {
                     parameters: ['text'],

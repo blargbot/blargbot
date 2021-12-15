@@ -37,9 +37,10 @@ export class MarkerError extends BBTagRuntimeError {
     }
 }
 
-export interface SubtagTestSuiteData extends Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'> {
+export interface SubtagTestSuiteData<T extends Subtag = Subtag> extends Pick<SubtagTestCase, 'setup' | 'assert' | 'teardown'> {
     readonly cases: SubtagTestCase[];
-    readonly subtag: Subtag;
+    readonly subtag: T;
+    readonly runOtherTests?: (subtag: T) => void;
 }
 
 export class Mock<T> {
@@ -252,7 +253,7 @@ export class SubtagTestContext {
 }
 /* eslint-enable @typescript-eslint/naming-convention */
 
-export function runSubtagTests(data: SubtagTestSuiteData): void {
+export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): void {
     const suite = new SubtagTestSuite(data.subtag);
     if (data.setup !== undefined)
         suite.setup(data.setup);
@@ -262,7 +263,7 @@ export function runSubtagTests(data: SubtagTestSuiteData): void {
         suite.teardown(data.teardown);
     for (const testCase of data.cases)
         suite.addTestCase(testCase);
-    suite.run();
+    suite.run(() => data.runOtherTests?.(data.subtag));
 }
 
 export function sourceMarker(location: string | number | SourceMarker): SourceMarker
@@ -340,7 +341,7 @@ export class SubtagTestSuite {
         return this;
     }
 
-    public run(): void {
+    public run(otherTests?: () => void): void {
         describe(`{${this.#subtag.name}}`, () => {
             const subtag = this.#subtag;
             const config = this.#config;
@@ -363,6 +364,8 @@ export class SubtagTestSuite {
                     return runTestCase(this, subtag, testCase, config);
                 });
             }
+
+            otherTests?.();
         });
     }
 }
