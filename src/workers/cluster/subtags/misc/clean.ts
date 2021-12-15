@@ -23,7 +23,7 @@ export class CleanSubtag extends Subtag {
         return text.replace(/\s+/g, (match) => {
             if (match.includes('\n')) return '\n';
             if (match.includes('\t')) return '\t';
-            return match.substr(0, 1);
+            return match[0];
         });
     }
 }
