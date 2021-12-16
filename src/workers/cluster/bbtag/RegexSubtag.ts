@@ -15,8 +15,6 @@ export abstract class RegexSubtag extends DefinedSubtag {
                 case 'unsafe': throw new BBTagRuntimeError('Unsafe Regex');
             }
         } catch (err: unknown) {
-            if (err instanceof BBTagRuntimeError)
-                throw err;
             if (err instanceof Error)
                 throw new BBTagRuntimeError(err.message);
             throw err;

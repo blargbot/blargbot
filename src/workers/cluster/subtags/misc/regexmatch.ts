@@ -23,7 +23,7 @@ export class RegexMatchSubtag extends RegexSubtag {
 
     public regexMatch(text: string, regexStr: string): RegExpMatchArray {
         const regex = this.createRegex(regexStr);
-        const matches = regex.exec(text);
+        const matches = text.match(regex);
         if (matches === null)
             return [];
         return matches;

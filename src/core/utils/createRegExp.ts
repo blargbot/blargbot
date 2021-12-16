@@ -4,19 +4,11 @@ export function createSafeRegExp(term: string): { state: 'success'; regex: RegEx
     if (term.length > 2000)
         return { state: 'tooLong' };
 
-    let body: string;
-    let flags: string | undefined;
+    const match = /^\/?(?<body>.+?)\/(?<flags>[igmsuy]*)$/.exec(term);
+    if (match === null)
+        return { state: 'invalid' };
 
-    if (term.startsWith('/')) {
-        const flagStart = term.lastIndexOf('/');
-        if (flagStart === -1)
-            return { state: 'invalid' };
-        body = term.slice(1, flagStart);
-        flags = term.slice(flagStart + 1);
-    } else {
-        body = term;
-    }
-
+    const { body, flags } = match.groups ?? {};
     const result = new RegExp(body, flags);
 
     if (!isSafeRegex(result))
