@@ -14,6 +14,11 @@ runSubtagTests({
         { code: '{time;;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
         { code: '{time;;;;;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
 
+        { code: '{time;;now}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+        { code: '{time;;today}', expected: () => moment.tz('Etc/UTC').startOf('day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+        { code: '{time;;tomorrow}', expected: () => moment.tz('Etc/UTC').startOf('day').add(1, 'day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+        { code: '{time;;yesterday}', expected: () => moment.tz('Etc/UTC').startOf('day').add(-1, 'day').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
+
         { code: '{time;X}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
         { code: '{time;X;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
         { code: '{time;X;;}', expected: () => moment.tz('Etc/UTC').format('X'), retries: 5 },
@@ -113,8 +118,8 @@ runSubtagTests({
                 { start: 20, end: 26, error: new MarkerError('eval', 20) },
                 { start: 27, end: 33, error: new MarkerError('eval', 27) },
                 { start: 34, end: 40, error: new MarkerError('eval', 34) },
-                { start: 46, end: 52, error: new MarkerError('eval', 46) },
-                { start: 0, end: 53, error: new TooManyArgumentsError(5, 6) }
+                { start: 41, end: 47, error: new MarkerError('eval', 41) },
+                { start: 0, end: 48, error: new TooManyArgumentsError(5, 6) }
             ]
         }
 
