@@ -1,4 +1,3 @@
-import { Cluster } from '@cluster';
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
@@ -14,9 +13,7 @@ const errorMap = {
 };
 
 export class BanSubtag extends DefinedSubtag {
-    public constructor(
-        public readonly cluster: Cluster
-    ) {
+    public constructor() {
         super({
             name: 'ban',
             category: SubtagType.USER,
@@ -76,7 +73,7 @@ export class BanSubtag extends DefinedSubtag {
         if (timeToUnbanStr !== '')
             duration = parse.duration(timeToUnbanStr);
 
-        const response = await this.cluster.moderation.bans.ban(context.guild, user, context.discord.user, noPerms, daysToDelete, reason, duration);
+        const response = await context.engine.cluster.moderation.bans.ban(context.guild, user, context.discord.user, noPerms, daysToDelete, reason, duration);
 
         if (response === 'success' || response === 'alreadyBanned')
             return duration !== undefined ? duration.asMilliseconds() : true;

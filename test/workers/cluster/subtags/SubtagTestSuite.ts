@@ -1,25 +1,33 @@
-import { Cluster } from '@cluster';
+import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
 import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall } from '@cluster/types';
-import { bbtagUtil, guard, pluralise as p, SubtagType } from '@cluster/utils';
+import { bbtagUtil, guard, pluralise as p, snowflake, SubtagType } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
-import { SubtagVariableType, TagVariablesTable } from '@core/types';
+import { GuildTable, SubtagVariableType, TagVariablesTable } from '@core/types';
 import { expect } from 'chai';
-import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
-import { BaseData, Client as Discord, Collection, Constants, Guild, KnownGuildTextableChannel, Message, Shard, ShardManager, User } from 'eris';
+import * as chai from 'chai';
+import chaiExclude from 'chai-exclude';
+import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
+import { BaseData, Channel, Client as Discord, Collection, Constants, ExtendedUser, Guild, KnownChannel, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
 import * as fs from 'fs';
 import * as inspector from 'inspector';
 import { Context, describe, it } from 'mocha';
 import path from 'path';
-import { anyOfClass, anyString, instance, mock, setStrict, when } from 'ts-mockito';
-import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
+import { anyOfClass, anyString } from 'ts-mockito';
 import { inspect } from 'util';
 
+import { Mock } from '../../../mock';
+
+chai.use(chaiExclude);
+
 type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
+type RequiredProps<T, Props extends keyof T> = Required<Pick<T, Props>> & Omit<T, Props>;
+type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
+type RequireIds<T, OtherProps extends keyof T = never> = RequiredProps<Partial<T>, IdPropertiesOf<T> | OtherProps>;
 
 export interface SubtagTestCase {
     readonly code: string;
@@ -49,27 +57,6 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag> extends Pick<Sub
     readonly runOtherTests?: (subtag: T) => void;
 }
 
-export class Mock<T> {
-    #mock: T;
-
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    public constructor(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true) {
-        this.#mock = mock(clazz);
-        if (!strict)
-            setStrict(this.#mock, false);
-    }
-
-    public setup<R>(action: (instance: T) => Promise<R>): MethodStubSetter<Promise<R>, R, Error>
-    public setup<R>(action: (instance: T) => R): MethodStubSetter<R>
-    public setup(action: (instance: T) => unknown): MethodStubSetter<unknown, unknown, unknown> {
-        return when(action(this.#mock));
-    }
-
-    public get instance(): T {
-        return instance(this.#mock);
-    }
-}
-
 /* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {
     public readonly cluster: Mock<Cluster>;
@@ -79,13 +66,35 @@ export class SubtagTestContext {
     public readonly logger: Mock<Logger>;
     public readonly database: Mock<Database>;
     public readonly tagVariablesTable: Mock<TagVariablesTable>;
+    public readonly guildTable: Mock<GuildTable>;
 
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false };
 
     public readonly options: Mutable<Partial<BBTagContextOptions>>;
-    public readonly message: APIMessage = { ...SubtagTestContext.#messageDefaults() };
-    public readonly guild: APIGuild = { ...SubtagTestContext.#guildDefaults() };
+    public readonly bot = SubtagTestContext.createApiUser({
+        id: '134133271750639616',
+        username: 'blargbot',
+        discriminator: '0128'
+    });
+    public readonly botMember = SubtagTestContext.createApiGuildMember({}, this.bot);
+    public readonly textChannel = SubtagTestContext.createApiChannel({ id: snowflake.create().toString() });
+    public readonly guildMember = SubtagTestContext.createApiGuildMember({}, SubtagTestContext.createApiUser({ id: snowflake.create().toString() }));
+    public readonly guildOwner = SubtagTestContext.createApiGuildMember({}, SubtagTestContext.createApiUser({ id: snowflake.create().toString() }));
+    public readonly guild = SubtagTestContext.createApiGuild(
+        {
+            id: snowflake.create().toString(),
+            owner_id: this.guildOwner.user.id
+        },
+        [this.textChannel],
+        [this.guildOwner, this.guildMember, this.botMember]
+    );
+    public readonly message: APIMessage = SubtagTestContext.createApiMessage({
+        id: snowflake.create().toString(),
+        member: this.guildMember,
+        channel_id: this.textChannel.id,
+        guild_id: this.guild.id
+    }, this.guildMember.user);
 
     public constructor(subtags: Iterable<Subtag>) {
         this.logger = new Mock<Logger>(undefined, false);
@@ -95,6 +104,7 @@ export class SubtagTestContext {
         this.shards = new Mock(ShardManager);
         this.database = new Mock(Database);
         this.tagVariablesTable = new Mock<TagVariablesTable>();
+        this.guildTable = new Mock<GuildTable>();
         this.tagVariables = {};
         this.options = {};
 
@@ -105,8 +115,10 @@ export class SubtagTestContext {
         this.cluster.setup(m => m.discord).thenReturn(this.discord.instance);
         this.cluster.setup(m => m.database).thenReturn(this.database.instance);
         this.cluster.setup(m => m.logger).thenReturn(this.logger.instance);
+        this.cluster.setup(m => m.util).thenReturn(new ClusterUtilities(this.cluster.instance));
 
         this.database.setup(m => m.tagVariables).thenReturn(this.tagVariablesTable.instance);
+        this.database.setup(m => m.guilds).thenReturn(this.guildTable.instance);
         this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()))
             .thenCall((name: string, type: SubtagVariableType, scope: string) => this.tagVariables[`${type}.${scope}.${name}`]);
 
@@ -131,9 +143,10 @@ export class SubtagTestContext {
     public createContext(): BBTagContext {
         const engine = new BBTagEngine(this.cluster.instance);
 
-        const guild = new Guild(<BaseData><unknown><APIGuild>{
-            ...this.guild
-        }, this.discord.instance);
+        const bot = new ExtendedUser(<BaseData><unknown>this.bot, this.discord.instance);
+        this.discord.setup(m => m.user).thenReturn(bot);
+
+        const guild = this.createGuild(this.guild);
         this.discord.instance.guilds.add(guild);
 
         for (const channel of guild.channels.values())
@@ -143,20 +156,13 @@ export class SubtagTestContext {
         if (channel === undefined)
             throw new Error('No text channels were added');
 
-        const sender = [...guild.members.values()][0];
-
-        const message = new Message<KnownGuildTextableChannel>(<BaseData><unknown><APIMessage>{
-            ...this.message,
-            channel_id: channel.id,
-            guild_id: guild.id,
-            author: sender.user
-        }, this.discord.instance);
+        const message = this.createMessage<KnownGuildTextableChannel>(this.message);
 
         const limit = new Mock(BaseRuntimeLimit);
         limit.setup(m => m.check(anyOfClass(BBTagContext), anyString())).thenResolve();
 
         const context = new BBTagContext(engine, {
-            author: sender.id,
+            author: message.author.id,
             inputRaw: '',
             isCC: false,
             limit: limit.instance,
@@ -168,13 +174,17 @@ export class SubtagTestContext {
 
         return context;
     }
-    static #messageDefaults(): APIMessage {
+
+    public createMessage<TChannel extends KnownTextableChannel>(settings: APIMessage): Message<TChannel>
+    public createMessage<TChannel extends KnownTextableChannel>(settings: RequireIds<APIMessage, 'guild_id'>, author: APIUser): Message<TChannel>
+    public createMessage<TChannel extends KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage, 'guild_id'>, APIUser]): Message<TChannel> {
+        const data = args.length === 1 ? args[0] : SubtagTestContext.createApiMessage(...args);
+        return new Message<TChannel>(<BaseData><unknown>data, this.discord.instance);
+    }
+
+    public static createApiMessage(settings: RequireIds<APIMessage, 'guild_id'>, author: APIUser): APIMessage {
         return {
-            id: '0',
-            channel_id: '0',
-            guild_id: '0',
-            author: this.#userDefaults(),
-            member: this.#memberDefaults(),
+            author: author,
             attachments: [],
             content: '',
             edited_timestamp: '1970-01-01T00:00:00Z',
@@ -185,29 +195,68 @@ export class SubtagTestContext {
             pinned: false,
             timestamp: '1970-01-01T00:00:00Z',
             tts: false,
-            type: Constants.MessageTypes.DEFAULT
+            type: Constants.MessageTypes.DEFAULT,
+            ...settings
         };
     }
-    static #userDefaults(): APIUser {
+
+    public createUser(settings: RequireIds<APIUser>): User {
+        const data = SubtagTestContext.createApiUser(settings);
+        return new User(<BaseData><unknown>data, this.discord.instance);
+    }
+
+    public static createApiUser(settings: RequireIds<APIUser>): APIUser {
         return {
             avatar: null,
             discriminator: '0000',
-            id: '0',
-            username: 'Test User'
+            username: 'Test User',
+            ...settings
         };
     }
-    static #memberDefaults(): APIGuildMember {
+
+    public createGuildMember(guild: Guild | undefined, settings: RequireIds<APIGuildMember>, user: APIUser): Member {
+        const data = SubtagTestContext.createApiGuildMember(settings, user);
+        return new Member(<BaseData><unknown>data, guild, this.discord.instance);
+    }
+
+    public static createApiGuildMember(settings: RequireIds<APIGuildMember>, user: APIUser): RequiredProps<APIGuildMember, 'user'> {
         return {
             deaf: false,
             joined_at: '1970-01-01T00:00:00Z',
             mute: false,
-            roles: [],
-            user: this.#userDefaults()
+            roles: ['0'],
+            user: user,
+            ...settings
         };
     }
-    static #guildDefaults(): APIGuild {
+
+    public createRole(guild: Guild, settings: RequireIds<APIRole>): Role {
+        const data = SubtagTestContext.createApiRole(settings);
+        return new Role(<BaseData><unknown>data, guild);
+    }
+
+    public static createApiRole(settings: RequireIds<APIRole>): APIRole {
         return {
-            id: '0',
+            color: 0,
+            hoist: false,
+            managed: false,
+            mentionable: false,
+            name: '@everyone',
+            permissions: '0',
+            position: 0,
+            ...settings
+        };
+    }
+
+    public createGuild(settings: APIGuild): Guild
+    public createGuild(settings: RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): Guild
+    public createGuild(...args: [APIGuild] | [RequireIds<APIGuild>, APIChannel[], APIGuildMember[]]): Guild {
+        const data = args.length === 1 ? args[0] : SubtagTestContext.createApiGuild(...args);
+        return new Guild(<BaseData><unknown>data, this.discord.instance);
+    }
+
+    public static createApiGuild(settings: RequireIds<APIGuild>, channels: APIChannel[], members: APIGuildMember[]): APIGuild {
+        return {
             afk_channel_id: null,
             afk_timeout: 0,
             application_id: null,
@@ -222,11 +271,12 @@ export class SubtagTestContext {
             mfa_level: GuildMFALevel.None,
             name: 'Test Guild',
             nsfw_level: GuildNSFWLevel.Default,
-            owner_id: '0',
             preferred_locale: 'en-US',
             premium_progress_bar_enabled: false,
             premium_tier: GuildPremiumTier.None,
-            roles: [],
+            roles: [
+                this.createApiRole({ id: settings.id })
+            ],
             public_updates_channel_id: null,
             rules_channel_id: null,
             splash: null,
@@ -236,24 +286,26 @@ export class SubtagTestContext {
             vanity_url_code: null,
             verification_level: GuildVerificationLevel.None,
             region: '',
-            channels: [
-                this.#channelDefaults()
-            ],
-            members: [
-                this.#memberDefaults()
-            ]
+            channels: channels,
+            members: members,
+            ...settings
         };
     }
-    static #channelDefaults(): APIChannel {
+
+    public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
+        const data = SubtagTestContext.createApiChannel(settings);
+        return Channel.from(<BaseData><unknown>data, this.discord.instance);
+    }
+
+    public static createApiChannel(settings: RequireIds<APIChannel>): APIChannel {
         return {
-            id: '0',
-            guild_id: '0',
             name: 'Test Channel',
             type: ChannelType.GuildText,
             position: 0,
             permission_overwrites: [],
             nsfw: false,
-            topic: 'Test channel!'
+            topic: 'Test channel!',
+            ...settings
         };
     }
 }
