@@ -28,7 +28,7 @@ export class SubstringSubtag extends DefinedSubtag {
         if (start === undefined)
             throw new NotANumberError(startStr);
 
-        const end = parse.int(endStr !== '' ? endStr : text, false) ?? fallback.value;
+        const end = endStr === '' ? text.length : parse.int(endStr, false) ?? fallback.value;
         if (end === undefined)
             throw new NotANumberError(endStr);
 
