@@ -34,13 +34,14 @@ interface ArgumentResolverPermutations {
     readonly permutations: Array<{
         readonly beforeGreedy: number[];
         readonly afterGreedy: number[];
+        readonly emitOptional: boolean;
     }>;
 }
 
 function createResolverOrder(parameters: readonly SubtagHandlerParameter[], flatParameters: readonly SubtagHandlerValueParameter[]): ArgumentResolverPermutations {
     const result: ArgumentResolverPermutations = {
         greedy: [],
-        permutations: [{ beforeGreedy: [], afterGreedy: [] }]
+        permutations: [{ beforeGreedy: [], afterGreedy: [], emitOptional: true }]
     };
 
     for (const parameter of parameters) {
@@ -65,22 +66,21 @@ function addParameter(result: ArgumentResolverPermutations, parameter: SubtagHan
         return;
     }
 
-    const preserve = parameter.required ? [] : result.permutations.map(x => ({
-        beforeGreedy: [...x.beforeGreedy],
-        afterGreedy: [...x.afterGreedy]
+    const emittable = result.permutations.filter(p => parameter.required || p.emitOptional);
+    const cloned = parameter.required ? [] : emittable.map(p => ({
+        beforeGreedy: [...p.beforeGreedy],
+        afterGreedy: [...p.afterGreedy],
+        emitOptional: false
     }));
 
-    if (result.greedy.length > 0) {
-        for (const { afterGreedy: afterParams } of result.permutations) {
-            afterParams.push(flatParameters.indexOf(parameter));
-        }
-    } else {
-        for (const { beforeGreedy: beforeParams } of result.permutations) {
-            beforeParams.push(flatParameters.indexOf(parameter));
-        }
-    }
+    const addTo = result.greedy.length > 0
+        ? emittable.map(p => p.afterGreedy)
+        : emittable.map(p => p.beforeGreedy);
 
-    result.permutations.push(...preserve);
+    for (const arr of addTo)
+        arr.push(flatParameters.indexOf(parameter));
+
+    result.permutations.unshift(...cloned);
 }
 
 function createResolver(

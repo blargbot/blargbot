@@ -24,7 +24,7 @@ type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${num
 export interface SubtagTestCase {
     readonly code: string;
     readonly subtagName?: string;
-    readonly expected?: string | RegExp;
+    readonly expected?: string | RegExp | (() => string | RegExp);
     readonly setup?: (context: SubtagTestContext) => Awaitable<void>;
     readonly assert?: (context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
     readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
@@ -273,7 +273,10 @@ export function runSubtagTests<T extends Subtag>(data: SubtagTestSuiteData<T>): 
 
     // Output a bbtag file that can be run on the live blargbot instance to find any errors
     if (inspector.url() !== undefined) {
-        const blargTestSuite = `Errors:{clean;${data.cases.map(c => `{if;==;|${c.code}|;|${c.expected?.toString() ?? ''}|;;
+        const blargTestSuite = `Errors:{clean;${data.cases.map(c => ({
+            code: c.code,
+            expected: getExpectation(c)
+        })).map(c => `{if;==;|${c.code}|;|${c.expected?.toString() ?? ''}|;;
 > {escapebbtag;${c.code}} failed -
 Expected:
 |${c.expected?.toString() ?? ''}|
@@ -405,13 +408,14 @@ export class SubtagTestSuite {
 
 function getTestName(testCase: SubtagTestCase): string {
     let result = `should handle ${JSON.stringify(testCase.code)}`;
-    switch (typeof testCase.expected) {
+    const expected = getExpectation(testCase);
+    switch (typeof expected) {
         case 'undefined': break;
         case 'string':
-            result += ` and return ${JSON.stringify(testCase.expected)}`;
+            result += ` and return ${JSON.stringify(expected)}`;
             break;
         case 'object':
-            result += ` and return ${testCase.expected.toString()}`;
+            result += ` and return ${expected.toString()}`;
             break;
     }
 
@@ -440,17 +444,18 @@ async function runTestCase(context: Context, subtag: Subtag, testCase: SubtagTes
         await testCase.setup?.(test);
         const code = bbtagUtil.parse(testCase.code);
         const context = test.createContext();
+        const expected = getExpectation(testCase);
 
         // act
         const result = await context.eval(code);
 
         // assert
-        switch (typeof testCase.expected) {
+        switch (typeof expected) {
             case 'string':
-                expect(result).to.equal(testCase.expected);
+                expect(result).to.equal(expected);
                 break;
             case 'object':
-                expect(result).to.match(testCase.expected);
+                expect(result).to.match(expected);
                 break;
         }
 
@@ -471,4 +476,11 @@ async function runTestCase(context: Context, subtag: Subtag, testCase: SubtagTes
         for (const teardown of config.teardown)
             await teardown(test);
     }
+}
+
+// eslint-disable-next-line @typescript-eslint/ban-types
+function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expected'], Function> {
+    if (typeof testCase.expected === 'function')
+        return testCase.expected();
+    return testCase.expected;
 }
