@@ -1,4 +1,5 @@
 import { DefinedSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class UriDecodeSubtag extends DefinedSubtag {
@@ -20,6 +21,12 @@ export class UriDecodeSubtag extends DefinedSubtag {
     }
 
     public decodeUri(text: string): string {
-        return decodeURIComponent(text);
+        try {
+            return decodeURIComponent(text);
+        } catch (err: unknown) {
+            if (err instanceof Error)
+                throw new BBTagRuntimeError(err.message);
+            throw err;
+        }
     }
 }
