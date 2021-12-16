@@ -26,7 +26,7 @@ export interface SubtagTestCase {
     readonly subtagName?: string;
     readonly expected?: string | RegExp;
     readonly setup?: (context: SubtagTestContext) => Awaitable<void>;
-    readonly assert?: (context: SubtagTestContext, result: string) => Awaitable<void>;
+    readonly assert?: (context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
     readonly teardown?: (context: SubtagTestContext) => Awaitable<void>;
     readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
     readonly subtags?: readonly Subtag[];
@@ -454,9 +454,9 @@ async function runTestCase(context: Context, subtag: Subtag, testCase: SubtagTes
                 break;
         }
 
-        await testCase.assert?.(test, result);
+        await testCase.assert?.(context, result, test);
         for (const assert of config.assert)
-            await assert(test, result);
+            await assert(context, result, test);
 
         if (typeof testCase.errors === 'function') {
             testCase.errors(context.errors);

@@ -30,6 +30,13 @@ runSubtagTests({
                 { start: 12, end: 18, error: new MarkerError('eval', 12) },
                 { start: 0, end: 28, error: new BBTagRuntimeError('Invalid Regex') }
             ]
+        }, {
+            code: '{regexmatch;{eval};{fail}}',
+            expected: '`Invalid Regex`',
+            errors: [
+                { start: 12, end: 18, error: new MarkerError('eval', 12) },
+                { start: 0, end: 26, error: new BBTagRuntimeError('Invalid Regex') }
+            ]
         },
         {
             code: '{regexmatch;{eval};/^(a+)+$/}',
@@ -55,11 +62,11 @@ runSubtagTests({
             ]
         },
         {
-            code: '{regexmatch;{eval};/???/}',
-            expected: '`Invalid regular expression: /???/: Nothing to repeat`',
+            code: '{regexmatch;{eval};?{fail}/}',
+            expected: '`Invalid regular expression: /?{fail}/: Nothing to repeat`',
             errors: [
                 { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: 0, end: 25, error: new BBTagRuntimeError('Invalid regular expression: /???/: Nothing to repeat') }
+                { start: 0, end: 28, error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
             ]
         },
         {
