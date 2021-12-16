@@ -20,6 +20,6 @@ export class UriEncodeSubtag extends DefinedSubtag {
     }
 
     public encodeUri(text: string): string {
-        return decodeURIComponent(text);
+        return encodeURIComponent(text);
     }
 }
