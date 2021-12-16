@@ -36,6 +36,9 @@ runSubtagTests({
                 ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
                 ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, '123456', 1, '[blargbot#0128] Tag Ban')).thenResolve();
                 ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
+            },
+            assert(_, __, ctx) {
+                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, '123456', 1, '[blargbot#0128] Tag Ban')).once();
             }
         }
     ]
