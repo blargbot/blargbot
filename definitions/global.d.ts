@@ -53,6 +53,7 @@ declare global {
         values<T>(value: Exclude<T, undefined | null>): T extends Array<infer R> ? R[] : T extends number | boolean | bigint ? [] : T extends string ? SplitString<T, ''> : Array<T[keyof T]>;
         entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]: TValue; }): Array<[TKey & string, TValue]>;
         entries<TKey extends PropertyKey, TValue>(value: { [P in TKey]?: TValue; }): Array<[TKey & string, TValue | undefined]>;
+        entries(value: object): Array<[string, unknown]>;
         // eslint-disable-next-line @typescript-eslint/ban-types
         create<T, U>(o: T, properties: { [P in keyof U]: StrongPropertyDescriptor<U[P]> }): T & U;
         create<T extends object>(value: T): T;

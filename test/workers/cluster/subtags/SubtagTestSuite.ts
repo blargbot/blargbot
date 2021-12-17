@@ -13,7 +13,7 @@ import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiExclude from 'chai-exclude';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
-import { BaseData, Channel, Client as Discord, Collection, Constants, DiscordRESTError, ExtendedUser, Guild, HTTPResponse, KnownChannel, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
+import { BaseData, Channel, Client as Discord, Collection, Constants, DiscordRESTError, ExtendedUser, Guild, HTTPResponse, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
 import * as fs from 'fs';
 import { ClientRequest, IncomingMessage } from 'http';
 import * as inspector from 'inspector';
@@ -226,13 +226,13 @@ export class SubtagTestContext {
     }
 
     public createMessage<TChannel extends KnownTextableChannel>(settings: APIMessage): Message<TChannel>
-    public createMessage<TChannel extends KnownTextableChannel>(settings: RequireIds<APIMessage, 'guild_id'>, author: APIUser): Message<TChannel>
-    public createMessage<TChannel extends KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage, 'guild_id'>, APIUser]): Message<TChannel> {
+    public createMessage<TChannel extends KnownTextableChannel>(settings: RequireIds<APIMessage>, author: APIUser): Message<TChannel>
+    public createMessage<TChannel extends KnownTextableChannel>(...args: [APIMessage] | [RequireIds<APIMessage>, APIUser]): Message<TChannel> {
         const data = args.length === 1 ? args[0] : SubtagTestContext.createApiMessage(...args);
         return new Message<TChannel>(<BaseData><unknown>data, this.discord.instance);
     }
 
-    public static createApiMessage(settings: RequireIds<APIMessage, 'guild_id'>, author: APIUser): APIMessage {
+    public static createApiMessage(settings: RequireIds<APIMessage>, author: APIUser): APIMessage {
         return {
             author: author,
             attachments: [],
@@ -342,6 +342,8 @@ export class SubtagTestContext {
         };
     }
 
+    public createChannel<T extends ChannelType>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
+    public createChannel(settings: RequireIds<APIChannel>): KnownChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
         const data = SubtagTestContext.createApiChannel(settings);
         return Channel.from(<BaseData><unknown>data, this.discord.instance);

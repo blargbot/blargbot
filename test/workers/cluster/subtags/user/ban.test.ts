@@ -661,16 +661,16 @@ runSubtagTests<BanSubtag, BanTestCase>({
 });
 
 function generateTestData(): { targetUserRole: APIRole; targetUser: RequiredProps<APIGuildMember, 'user'>; } {
-    const userRole = SubtagTestContext.createApiRole({
+    const targetUserRole = SubtagTestContext.createApiRole({
         id: snowflake.create().toString(),
         name: 'user'
     });
 
-    const banUser = SubtagTestContext.createApiGuildMember({}, SubtagTestContext.createApiUser({
+    const targetUser = SubtagTestContext.createApiGuildMember({}, SubtagTestContext.createApiUser({
         id: '123456789123456789',
         username: 'bannable user',
         discriminator: '0001'
     }));
 
-    return { targetUserRole: userRole, targetUser: banUser };
+    return { targetUserRole, targetUser };
 }

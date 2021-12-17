@@ -99,6 +99,9 @@ export class BaseUtilities {
         else if (isEmbed(payload))
             payload = { embeds: [payload] };
 
+        let files = payload.files;
+        delete payload.files;
+
         const replyToExecuting = payload.replyToExecuting !== undefined ? delete payload.replyToExecuting : true;
         if (payload.messageReference === undefined && replyToExecuting && context instanceof Message)
             payload.messageReference = { failIfNotExists: false, messageID: context.id };
@@ -126,14 +129,14 @@ export class BaseUtilities {
         if (payload.content?.length === 0)
             payload.content = undefined;
 
-        if (payload.nsfw !== undefined && guard.isGuildChannel(channel) && channel.nsfw) {
+        if (payload.nsfw !== undefined && guard.isGuildChannel(channel) && !channel.nsfw) {
             payload.content = payload.nsfw;
-            payload.embeds = payload.files = undefined;
+            payload.embeds = files = undefined;
         }
 
         if (payload.content === undefined
             && (payload.embeds?.length ?? 0) === 0
-            && (payload.files?.length ?? 0) === 0
+            && (files?.length ?? 0) === 0
             && (payload.components?.length ?? 0) === 0) {
             this.logger.error('Tried to send an empty message!');
             throw new Error('No content');
@@ -148,20 +151,20 @@ export class BaseUtilities {
             if (payload.embeds !== undefined)
                 delete payload.embeds;
         } else if (payload.content !== undefined && !guard.checkMessageSize(payload.content)) {
-            payload.files ??= [];
-            payload.files.unshift({
+            files ??= [];
+            files.unshift({
                 file: payload.content,
                 name: 'message.txt'
             });
             payload.content = undefined;
         }
-        for (const file of payload.files ?? [])
+        for (const file of files ?? [])
             if (typeof file === 'object' && 'attachment' in file && typeof file.file === 'string')
                 file.file = Buffer.from(file.file);
 
         this.logger.debug('Sending content: ', JSON.stringify(payload));
         try {
-            return await channel.createMessage(payload, payload.files);
+            return await channel.createMessage(payload, files);
         } catch (error: unknown) {
             if (!(error instanceof DiscordRESTError))
                 throw error;

@@ -1,4 +1,4 @@
-import { deepEqual, instance, verify, when } from 'ts-mockito';
+import { instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 import { MethodStubVerificator } from 'ts-mockito/lib/MethodStubVerificator';
@@ -76,8 +76,8 @@ export const argument = {
     matches<T extends string = string>(pattern: RegExp): MockArgumentFilter<T> {
         return this.is((x): x is T => typeof x === 'string' && pattern.test(x));
     },
-    isDeepEqual<T>(value: T): T {
-        return deepEqual(value);
+    isDeepEqual<T>(value: T, ignoreExcessUndefined = true): T {
+        return new DeepEqualMatcher<T>(value, !ignoreExcessUndefined) as unknown as T;
     }
 };
 
@@ -147,11 +147,82 @@ class SatisfiesMatcher<T> extends Matcher {
         super();
     }
 
-    public match<T>(value: unknown): value is T {
+    public match(value: unknown): value is T {
         return this.test(value);
     }
 
     public toString(): string {
         return `satisfies(${this.test.toString()})`;
+    }
+}
+
+class DeepEqualMatcher<T> extends Matcher {
+    public constructor(private readonly expected: T, private readonly strict = false) {
+        super();
+    }
+
+    public match(value: unknown): value is T {
+        return this.deepEqual(value, this.expected);
+    }
+
+    private deepEqual(left: unknown, right: unknown): boolean {
+        if (left === right)
+            return true;
+
+        if (right instanceof Matcher) {
+            if (left instanceof Matcher)
+                return false;
+            return right.match(left);
+        }
+        if (left instanceof Matcher)
+            return left.match(right);
+
+        if (typeof left !== typeof right)
+            return false;
+
+        if (typeof left !== 'object' || typeof right !== 'object')
+            return false;
+
+        if (left === null && right === null)
+            return true;
+
+        if (left === null || right === null)
+            return false;
+
+        if (Array.isArray(left)) {
+            if (!Array.isArray(right))
+                return false;
+            if (left.length !== right.length)
+                return false;
+            return left.every((v, i) => this.deepEqual(v, right[i]));
+        }
+        if (Array.isArray(right))
+            return false;
+
+        const leftLookup = new Map(Object.entries(left as Record<string, unknown>));
+        for (const [key, rightVal] of Object.entries(right as Record<string, unknown>)) {
+            if (this.strict && !leftLookup.has(key))
+                return false;
+            const leftVal = leftLookup.get(key);
+            leftLookup.delete(key);
+            if (!this.deepEqual(leftVal, rightVal))
+                return false;
+        }
+        if (this.strict && leftLookup.size > 0)
+            return false;
+        for (const [, value] of leftLookup)
+            if (value !== undefined)
+                return false;
+        return true;
+    }
+
+    public toString(): string {
+        if (this.expected instanceof Array) {
+            return `deepEqual([${this.expected.toString()}])`;
+        }
+
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
+        return `deepEqual(${this.expected})`;
+
     }
 }
