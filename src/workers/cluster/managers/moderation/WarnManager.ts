@@ -1,6 +1,7 @@
 import { PardonResult, WarnDetails, WarnResult } from '@cluster/types';
 import { ModerationType } from '@cluster/utils';
 import { Member, User } from 'eris';
+import moment from 'moment-timezone';
 
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
@@ -34,7 +35,7 @@ export class WarnManager extends ModerationManagerBase {
         if (banAt > 0 && newCount >= banAt) {
             result = {
                 type: ModerationType.BAN,
-                state: await this.manager.bans.ban(member.guild, member.user, moderator, true, undefined, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`),
+                state: await this.manager.bans.ban(member.guild, member.user, moderator, true, 1, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`, moment.duration(Infinity)),
                 warnings: newCount
             };
             if (result.state === 'success')

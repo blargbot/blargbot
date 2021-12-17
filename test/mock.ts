@@ -1,4 +1,4 @@
-import { instance, verify, when } from 'ts-mockito';
+import { deepEqual, instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 import { MethodStubVerificator } from 'ts-mockito/lib/MethodStubVerificator';
@@ -41,18 +41,31 @@ export class Mock<T> {
 }
 
 function createMockArgumentFilter<T>(assertion: (value: unknown) => value is T): MockArgumentFilter<T> {
-    return Object.defineProperty<() => T, 'and', MockArgumentFilter<T>['and']>(function createMockArgument() {
+    return Object.defineProperties(function createMockArgument() {
         return new SatisfiesMatcher<T>(assertion) as unknown as T;
-    }, 'and', {
-        value: function and<R extends T>(next: (value: T) => value is R) {
-            return createMockArgumentFilter((value): value is R => assertion(value) && next(value));
+    }, {
+        and: {
+            value: function and<R extends T>(next: (value: T) => value is R) {
+                return createMockArgumentFilter((value): value is R => assertion(value) && next(value));
+            }
+        },
+        array: {
+            value: function spread() {
+                return createMockArgumentFilter((value): value is T[] => Array.isArray(value) && value.every(assertion))();
+            }
         }
     });
 }
 
 export const argument = {
+    any(): MockArgumentFilter<unknown> {
+        return this.is((_x): _x is unknown => true);
+    },
     is<T>(assertion: (value: unknown) => value is T): MockArgumentFilter<T> {
         return createMockArgumentFilter(assertion);
+    },
+    isNumber(): MockArgumentFilter<number> {
+        return this.isTypeof('number');
     },
     isInstanceof<T>(type: new (...args: never) => T): MockArgumentFilter<T> {
         return this.is((x): x is T => x instanceof type);
@@ -62,6 +75,9 @@ export const argument = {
     },
     matches<T extends string = string>(pattern: RegExp): MockArgumentFilter<T> {
         return this.is((x): x is T => typeof x === 'string' && pattern.test(x));
+    },
+    isDeepEqual<T>(value: T): T {
+        return deepEqual(value);
     }
 };
 
@@ -69,6 +85,7 @@ export interface MockArgumentFilter<T> {
     (): T;
     and<R extends T>(assertion: (value: T) => value is R): MockArgumentFilter<R>;
     and(assertion: (value: T) => boolean): MockArgumentFilter<T>;
+    array(): T[];
 }
 
 type TypeofMap = {

@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { defaultStaff, discordUtil } from '@cluster/utils';
+import { defaultStaff, discordUtil, parse } from '@cluster/utils';
 import { StoredGuildSettings } from '@core/types';
 import { Constants, Guild } from 'eris';
 
@@ -59,9 +59,15 @@ export abstract class ModerationManagerBase {
             return defaultStaff;
 
         const settingValue = await this.cluster.database.guilds.getSetting(guild.id, overrideKey);
-        if (typeof settingValue === 'number' && settingValue !== 0)
-            return BigInt(Math.floor(settingValue));
-
+        switch (typeof settingValue) {
+            case 'string':
+            case 'number':
+            case 'bigint': {
+                const value = parse.bigInt(settingValue) ?? 0n;
+                if (value !== 0n)
+                    return value;
+            }
+        }
         return defaultStaff;
     }
 }

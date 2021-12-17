@@ -49,6 +49,9 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
+            "env": {
+                "TS_NODE_FILES": "true"
+            },
             "autoAttachChildProcesses": true
         },
         {

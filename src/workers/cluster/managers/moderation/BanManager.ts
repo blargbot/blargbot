@@ -19,7 +19,7 @@ export class BanManager extends ModerationManagerBase {
         this.ignoreLeaves = new Set();
     }
 
-    public async ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string, duration?: Duration): Promise<BanResult> {
+    public async ban(guild: Guild, user: User, moderator: User, checkModerator: boolean, deleteDays: number, reason: string, duration: Duration): Promise<BanResult> {
         const result = await this.tryBanUser(guild, user.id, moderator, checkModerator, undefined, deleteDays, reason);
         if (result !== 'success') {
             if (typeof result === 'string')
@@ -27,23 +27,24 @@ export class BanManager extends ModerationManagerBase {
             throw result.error;
         }
 
-        if (duration === undefined) {
+        if (duration.asMilliseconds() === Infinity) {
             await this.modLog.logBan(guild, user, moderator, reason);
         } else {
             await this.modLog.logSoftban(guild, user, duration, moderator, reason);
-            await this.cluster.timeouts.insert('unban', {
+            const data = {
                 source: guild.id,
                 guild: guild.id,
                 user: user.id,
                 duration: JSON.stringify(duration),
                 endtime: moment().add(duration).valueOf()
-            });
+            };
+            await this.cluster.timeouts.insert('unban', data);
         }
 
         return 'success';
     }
 
-    public async massBan(guild: Guild, userIds: readonly string[], moderator: User, checkModerator: boolean, deleteDays = 1, reason?: string): Promise<MassBanResult> {
+    public async massBan(guild: Guild, userIds: readonly string[], moderator: User, checkModerator: boolean, deleteDays: number, reason: string): Promise<MassBanResult> {
         if (userIds.length === 0)
             return 'noUsers';
 
@@ -58,7 +59,10 @@ export class BanManager extends ModerationManagerBase {
         }
 
         const guildBans = new Set((await guild.getBans()).map(b => b.user.id));
-        const banResults = await Promise.all(userIds.map(async userId => ({ userId, result: await this.tryBanUser(guild, userId, moderator, checkModerator, guildBans, deleteDays, reason) })));
+        const banResults = await Promise.all(userIds.map(async userId => ({
+            userId,
+            result: await this.tryBanUser(guild, userId, moderator, checkModerator, guildBans, deleteDays, reason)
+        })));
 
         const bannedIds = new Set(banResults.filter(r => r.result === 'success').map(r => r.userId));
         if (bannedIds.size === 0) {
@@ -76,7 +80,7 @@ export class BanManager extends ModerationManagerBase {
         return banned;
     }
 
-    private async tryBanUser(guild: Guild, userId: string, moderator: User, checkModerator: boolean, alreadyBanned?: Set<string>, deleteDays = 1, reason?: string): Promise<BanResult | { error: unknown; }> {
+    private async tryBanUser(guild: Guild, userId: string, moderator: User, checkModerator: boolean, alreadyBanned: Set<string> | undefined, deleteDays: number, reason: string): Promise<BanResult | { error: unknown; }> {
         const self = guild.members.get(this.cluster.discord.user.id);
         if (self?.permissions.has('banMembers') !== true)
             return 'noPerms';
@@ -97,7 +101,7 @@ export class BanManager extends ModerationManagerBase {
 
         this.ignoreBans.add(`${guild.id}:${userId}`);
         try {
-            await guild.banMember(userId, deleteDays, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
+            await guild.banMember(userId, deleteDays, `[${humanize.fullName(moderator)}] ${reason}`);
         } catch (err: unknown) {
             this.ignoreBans.delete(`${guild.id}:${userId}`);
             return { error: err };

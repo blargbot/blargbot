@@ -498,7 +498,7 @@ export class BaseUtilities {
             return undefined;
 
         try {
-            return guild.members.get(userId) ?? guild.getRESTMember(userId);
+            return guild.members.get(userId) ?? await guild.getRESTMember(userId);
         } catch (error: unknown) {
             if (error instanceof DiscordRESTError) {
                 switch (error.code) {

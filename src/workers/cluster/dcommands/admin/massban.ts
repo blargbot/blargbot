@@ -26,7 +26,7 @@ export class MassBanCommand extends BaseGuildCommand {
     public async massBan(context: GuildCommandContext, userIds: readonly string[], deleteDays: number, flags: FlagResult): Promise<string> {
         userIds = userIds.flatMap(u => parse.entityId(u)).filter(guard.hasValue);
 
-        const reason = flags.r?.merge().value;
+        const reason = flags.r?.merge().value ?? '';
 
         const result = await context.cluster.moderation.bans.massBan(context.channel.guild, userIds, context.author, true, deleteDays, reason);
         if (Array.isArray(result))

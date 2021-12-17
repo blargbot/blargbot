@@ -1,6 +1,7 @@
 import { bbtagUtil, guard, ModerationType } from '@cluster/utils';
 import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@core/types';
 import { KnownGuildTextableChannel, Message } from 'eris';
+import moment from 'moment-timezone';
 
 import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
@@ -87,7 +88,7 @@ export class CensorManager extends ModerationManagerBase {
         if (parsedAntiMention === 0 || isNaN(parsedAntiMention) || message.mentions.length + message.roleMentions.length < parsedAntiMention)
             return false;
 
-        switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, false, 1, 'Mention spam')) {
+        switch (await this.manager.bans.ban(message.channel.guild, message.author, this.cluster.discord.user, false, 1, 'Mention spam', moment.duration(Infinity))) {
             case 'success':
             case 'memberTooHigh':
             case 'alreadyBanned':

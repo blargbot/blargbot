@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
-import { Duration } from 'moment';
+import moment from 'moment-timezone';
 
 // 'success' | 'alreadyBanned' | 'noPerms' | 'memberTooHigh' | 'moderatorNoPerms' | 'moderatorTooLow'
 const errorMap = {
@@ -25,7 +25,7 @@ export class BanSubtag extends DefinedSubtag {
                     exampleCode: '{ban;Stupid cat;4}',
                     exampleOut: 'true',
                     returns: 'boolean|number',
-                    execute: (ctx, [user, deleteDays]) => this.banMember(ctx, user.value, deleteDays.value, 'Tag Ban', '', '')
+                    execute: (ctx, [user, deleteDays]) => this.banMember(ctx, user.value, deleteDays.value, '', '', '')
                 },
                 {
                     parameters: ['user', 'daysToDelete:1', 'reason', 'timeToUnban?'],
@@ -64,19 +64,22 @@ export class BanSubtag extends DefinedSubtag {
             throw new UserNotFoundError(userStr);
         const daysToDelete = parse.int(daysToDeleteStr, false);
         if (daysToDelete === undefined) {
-            throw new NotANumberError(daysToDelete)
+            throw new NotANumberError(daysToDeleteStr)
                 .withDisplay('false');
         }
         const noPerms = nopermsStr !== '' ? true : false;
-        let duration: Duration | undefined;
+        let duration = moment.duration(Infinity);
 
         if (timeToUnbanStr !== '')
-            duration = parse.duration(timeToUnbanStr);
+            duration = parse.duration(timeToUnbanStr) ?? duration;
 
-        const response = await context.engine.cluster.moderation.bans.ban(context.guild, user, context.discord.user, noPerms, daysToDelete, reason, duration);
+        if (reason === '')
+            reason = 'Tag Ban';
+
+        const response = await context.engine.cluster.moderation.bans.ban(context.guild, user, context.user, !noPerms, daysToDelete, reason, duration);
 
         if (response === 'success' || response === 'alreadyBanned')
-            return duration !== undefined ? duration.asMilliseconds() : true;
+            return duration.asMilliseconds() < Infinity ? duration.asMilliseconds() : true;
         throw new BBTagRuntimeError(errorMap[response]);
     }
 }

@@ -29,9 +29,8 @@ export class BanCommand extends BaseGuildCommand {
     }
 
     public async ban(context: GuildCommandContext, member: Member, days: number, flags: FlagResult): Promise<string> {
-        const reason = flags.r?.merge().value;
-        const rawDuration = flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined;
-        const duration = rawDuration === undefined || rawDuration.asMilliseconds() <= 0 ? undefined : rawDuration;
+        const reason = flags.r?.merge().value ?? '';
+        const duration = (flags.t !== undefined ? parse.duration(flags.t.merge().value) : undefined) ?? moment.duration(Infinity);
 
         switch (await context.cluster.moderation.bans.ban(context.channel.guild, member.user, context.author, true, days, reason, duration)) {
             case 'alreadyBanned': return this.error(`**${humanize.fullName(member.user)}** is already banned!`);
@@ -42,7 +41,7 @@ export class BanCommand extends BaseGuildCommand {
             case 'success':
                 if (flags.t === undefined)
                     return this.success(`**${humanize.fullName(member.user)}** has been banned.`);
-                if (duration === undefined)
+                if (duration.asMilliseconds() === Infinity)
                     return this.warning(`**${humanize.fullName(member.user)}** has been banned, but the duration was either 0 seconds or improperly formatted so they won't automatically be unbanned.`);
                 return this.success(`**${humanize.fullName(member.user)}** has been banned and will be unbanned in **<t:${moment().add(duration).unix()}:R>**`);
         }
