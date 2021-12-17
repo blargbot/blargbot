@@ -23,10 +23,10 @@ export class EditSubtag extends DefinedSubtag {
                         const channel = await ctx.queryChannel(chanOrMessage.value, { noLookup: true });
                         if (channel === undefined)
                             //{edit;msg;text;embed}
-                            return this.edit(ctx, ctx.channel.id, chanOrMessage.value, messageOrText.value, content.value);
+                            return await this.edit(ctx, ctx.channel.id, chanOrMessage.value, messageOrText.value, content.value);
 
                         //{edit;channel;msg;text|embed}
-                        return this.edit(ctx, channel.id, messageOrText.value, content.value);
+                        return await this.edit(ctx, channel.id, messageOrText.value, content.value);
 
                     }
                 },

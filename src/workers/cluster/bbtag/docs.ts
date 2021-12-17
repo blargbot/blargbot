@@ -40,7 +40,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
             ]
         };
         case 'subtags':
-            return subtagsEmbed(context, words[1]);
+            return await subtagsEmbed(context, words[1]);
         case 'variables':
         case 'variable':
         case 'vars':
@@ -280,11 +280,11 @@ async function subtagsEmbed(context: CommandContext, input?: string): Promise<Em
         .filter((p): p is SubtagType => typeof p !== 'string')
         .filter(p => tagTypeDetails[p].hidden !== true);
     if (input === undefined) {
-        return categoriesEmbed(context, categories);
+        return await categoriesEmbed(context, categories);
     }
     const matchedCategories = categories.filter(c => tagTypeDetails[c].name.toLowerCase().includes(input.toLowerCase().toString()));
     if (matchedCategories.length === 0) {
-        return categoriesEmbed(context, categories);
+        return await categoriesEmbed(context, categories);
     }
 
     if (matchedCategories.length === 1) {

@@ -37,8 +37,8 @@ export class MessageTimeSubtag extends DefinedSubtag {
                     execute: async (context, [channelOrMessage, messageOrFormat]) => {
                         const channel = await context.queryChannel(channelOrMessage.value, { noErrors: true });
                         if (channel === undefined)
-                            return this.getMessageTime(context, context.channel.id, channelOrMessage.value, messageOrFormat.value);
-                        return this.getMessageTime(context, channelOrMessage.value, messageOrFormat.value, 'x');
+                            return await this.getMessageTime(context, context.channel.id, channelOrMessage.value, messageOrFormat.value);
+                        return await this.getMessageTime(context, channelOrMessage.value, messageOrFormat.value, 'x');
                     }
                 },
                 {

@@ -15,7 +15,7 @@ export class MessageTypeSubtag extends DefinedSubtag {
                     exampleCode: '{messagetype}',
                     exampleOut: '0',
                     returns: 'number',
-                    execute: async (ctx) => this.getCurrentMessageType(ctx)
+                    execute: (ctx) => this.getCurrentMessageType(ctx)
                 },
                 {
                     parameters: ['channel?', 'messageID'],
@@ -23,7 +23,7 @@ export class MessageTypeSubtag extends DefinedSubtag {
                     exampleCode: '{messagetype;12345678912345;123465145791}\n{messagetype;1234567891234}',
                     exampleOut: '19\n0',
                     returns: 'number',
-                    execute: async (ctx, [channel, messageId]) => this.getMessageType(ctx, channel.value, messageId.value)
+                    execute: (ctx, [channel, messageId]) => this.getMessageType(ctx, channel.value, messageId.value)
                 }
             ]
         });

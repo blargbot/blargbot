@@ -226,6 +226,10 @@
                     "error",
                     "fields"
                 ],
+                "@typescript-eslint/return-await": [
+                    "error",
+                    "always"
+                ],
                 "@typescript-eslint/explicit-function-return-type": [
                     "error",
                     {

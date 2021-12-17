@@ -23,7 +23,7 @@ export class ExecccSubtag extends DefinedSubtag {
 
     public async execCustomCommand(context: BBTagContext, name: string, args: string[]): Promise<string> {
         const tagName = name.toLowerCase();
-        const ccommand = await context.getCached('cc', tagName, async (key) => context.database.guilds.getCommand(context.guild.id, key));
+        const ccommand = await context.getCached('cc', tagName, (key) => context.database.guilds.getCommand(context.guild.id, key));
 
         if (ccommand === null)
             throw new BBTagRuntimeError('CCommand not found: ' + tagName);

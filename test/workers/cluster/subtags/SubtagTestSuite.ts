@@ -20,7 +20,7 @@ import * as inspector from 'inspector';
 import { Context, describe, it } from 'mocha';
 import moment, { Moment } from 'moment-timezone';
 import path from 'path';
-import { anyOfClass, anyString } from 'ts-mockito';
+import { anyString } from 'ts-mockito';
 import { inspect } from 'util';
 
 import { argument, Mock } from '../../../mock';
@@ -79,6 +79,7 @@ export class SubtagTestContext {
     public readonly tagVariablesTable: Mock<TagVariablesTable>;
     public readonly guildTable: Mock<GuildTable>;
     public readonly timeouts: Mock<TimeoutManager>;
+    public readonly limit: Mock<BaseRuntimeLimit>;
 
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false };
@@ -138,6 +139,7 @@ export class SubtagTestContext {
         this.timeouts = new Mock(TimeoutManager);
         this.tagVariablesTable = new Mock<TagVariablesTable>();
         this.guildTable = new Mock<GuildTable>();
+        this.limit = new Mock<BaseRuntimeLimit>();
         this.tagVariables = {};
         this.options = {};
 
@@ -195,17 +197,16 @@ export class SubtagTestContext {
 
         const message = this.createMessage<KnownGuildTextableChannel>(this.message);
 
-        const limit = new Mock(BaseRuntimeLimit);
-        limit.setup(m => m.check(anyOfClass(BBTagContext), anyString())).thenResolve();
-
         const context = new BBTagContext(engine, {
             author: message.author.id,
             inputRaw: '',
             isCC: false,
-            limit: limit.instance,
+            limit: this.limit.instance,
             message: message,
             ...this.options
         });
+
+        this.limit.setup(m => m.check(context, anyString())).thenResolve();
 
         Object.assign(context.scopes.root, this.rootScope);
 
