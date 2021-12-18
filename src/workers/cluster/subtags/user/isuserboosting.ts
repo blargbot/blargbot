@@ -43,6 +43,6 @@ export class IsUserBoostingSubtag extends DefinedSubtag {
     }
 
     public isUserBoosting(member: Member): boolean {
-        return member.premiumSince !== 0;
+        return typeof member.premiumSince === 'string';
     }
 }
