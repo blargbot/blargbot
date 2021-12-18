@@ -52,6 +52,9 @@ declare module 'eris' {
 
     export interface Client {
         getChannel(channelID: string): AnyChannel | undefined;
+
+        _formatImage(arg: never): never;
+        _formatAllowedMentions(arg: never): never;
     }
 
     export interface Guild {

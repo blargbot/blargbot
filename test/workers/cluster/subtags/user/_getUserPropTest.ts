@@ -3,7 +3,7 @@ import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { APIGuildMember } from 'discord-api-types';
 
 import { argument } from '../../../../mock';
-import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
 export function runGetUserPropTests(subtag: Subtag, testCases: GetUserPropTestCase[], ifQuietAndNotFound = ''): void {
     runSubtagTests({
@@ -13,28 +13,28 @@ export function runGetUserPropTests(subtag: Subtag, testCases: GetUserPropTestCa
                 code: `{${subtag.name}}`,
                 expected: c.expected,
                 setup(ctx) {
-                    c.setup(ctx.members.command);
+                    c.setup(ctx.members.command, ctx);
                 }
             })),
             ...testCases.map<SubtagTestCase>(c => ({
                 code: `{${subtag.name};other user}`,
                 expected: c.expected,
                 setup(ctx) {
-                    c.setup(ctx.members.other);
+                    c.setup(ctx.members.other, ctx);
                 }
             })),
             ...testCases.map<SubtagTestCase>(c => ({
                 code: `{${subtag.name};other user;}`,
                 expected: c.expected,
                 setup(ctx) {
-                    c.setup(ctx.members.other);
+                    c.setup(ctx.members.other, ctx);
                 }
             })),
             ...testCases.map<SubtagTestCase>(c => ({
                 code: `{${subtag.name};other user;q}`,
                 expected: c.expected,
                 setup(ctx) {
-                    c.setup(ctx.members.other);
+                    c.setup(ctx.members.other, ctx);
                 }
             })),
             {
@@ -46,6 +46,9 @@ export function runGetUserPropTests(subtag: Subtag, testCases: GetUserPropTestCa
                 setup(ctx) {
                     ctx.options.rootTagName = 'myCoolTag';
                     ctx.discord.setup(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).thenResolve();
+                },
+                assert(_, __, ctx) {
+                    ctx.discord.verify(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).once();
                 }
             },
             {
@@ -57,6 +60,9 @@ export function runGetUserPropTests(subtag: Subtag, testCases: GetUserPropTestCa
                 setup(ctx) {
                     ctx.options.rootTagName = 'myCoolTag';
                     ctx.discord.setup(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).thenResolve();
+                },
+                assert(_, __, ctx) {
+                    ctx.discord.verify(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).once();
                 }
             },
             {
@@ -72,5 +78,5 @@ export function runGetUserPropTests(subtag: Subtag, testCases: GetUserPropTestCa
 
 interface GetUserPropTestCase {
     expected: string;
-    setup(user: RequiredProps<APIGuildMember, 'user'>): void;
+    setup(user: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext): void;
 }

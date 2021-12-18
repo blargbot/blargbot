@@ -13,14 +13,14 @@ import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiExclude from 'chai-exclude';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
-import { BaseData, Channel, Client as Discord, Collection, Constants, DiscordRESTError, ExtendedUser, Guild, HTTPResponse, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
+import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordRESTError, ExtendedUser, Guild, HTTPResponse, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
 import * as fs from 'fs';
 import { ClientRequest, IncomingMessage } from 'http';
 import * as inspector from 'inspector';
 import { Context, describe, it } from 'mocha';
 import moment, { Moment } from 'moment-timezone';
 import path from 'path';
-import { anyString } from 'ts-mockito';
+import { anyString, anything } from 'ts-mockito';
 import { inspect } from 'util';
 
 import { argument, Mock } from '../../../mock';
@@ -80,6 +80,7 @@ export class SubtagTestContext {
     public readonly guildTable: Mock<GuildTable>;
     public readonly timeouts: Mock<TimeoutManager>;
     public readonly limit: Mock<BaseRuntimeLimit>;
+    public readonly discordOptions: DiscordOptions;
 
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false };
@@ -134,6 +135,7 @@ export class SubtagTestContext {
 
     public constructor(subtags: Iterable<Subtag>) {
         this.logger = new Mock<Logger>(undefined, false);
+        this.discordOptions = { intents: [] };
         this.discord = new Mock(Discord);
         this.cluster = new Mock(Cluster);
         this.shard = new Mock(Shard);
@@ -167,7 +169,9 @@ export class SubtagTestContext {
         this.discord.setup(m => m.shards).thenReturn(this.shards.instance);
         this.discord.setup(m => m.guildShardMap).thenReturn({});
         this.discord.setup(m => m.channelGuildMap).thenReturn({});
-        this.discord.setup(m => m.options).thenReturn({ intents: [] });
+        this.discord.setup(m => m.options).thenReturn(this.discordOptions);
+        this.discord.setup(m => m._formatImage(anything() as never)).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
+        this.discord.setup(m => m._formatAllowedMentions(anything() as never)).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
 
         this.shards.setup(m => m.get(0)).thenReturn(this.shard.instance);
         this.shard.setup(m => m.client).thenReturn(this.discord.instance);
