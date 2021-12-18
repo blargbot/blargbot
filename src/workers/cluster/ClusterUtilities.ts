@@ -1,7 +1,7 @@
 import { codeBlock, defaultStaff, discordUtil, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
-import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Permission, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
+import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
 import fetch from 'node-fetch';
 
 import { Cluster } from './Cluster';
@@ -609,8 +609,8 @@ export class ClusterUtilities extends BaseUtilities {
         if (allow === 0n)
             return true;
 
-        const checkPerms = new Permission(allow);
-        return Object.keys(Constants.Permissions).some(p => checkPerms.has(p) && member.permissions.has(p));
+        allow |= Constants.Permissions.administrator;
+        return (allow & member.permissions.allow) !== 0n;
     }
 
     public isBotStaff(id: string): boolean {

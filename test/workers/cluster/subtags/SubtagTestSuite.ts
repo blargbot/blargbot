@@ -89,12 +89,14 @@ export class SubtagTestContext {
     public readonly roles = {
         everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
         command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), name: 'Command User' }),
+        other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), name: 'Other User' }),
         bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), name: 'Bot' })
     };
 
     public readonly users = {
         owner: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Guild owner' }),
         command: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Command User' }),
+        other: SubtagTestContext.createApiUser({ id: snowflake.create().toString(), username: 'Other user' }),
         bot: SubtagTestContext.createApiUser({
             id: '134133271750639616',
             username: 'blargbot',
@@ -105,6 +107,7 @@ export class SubtagTestContext {
     public readonly members = {
         owner: SubtagTestContext.createApiGuildMember({ roles: [] }, this.users.owner),
         command: SubtagTestContext.createApiGuildMember({ roles: [this.roles.command.id] }, this.users.command),
+        other: SubtagTestContext.createApiGuildMember({ roles: [this.roles.other.id] }, this.users.other),
         bot: SubtagTestContext.createApiGuildMember({ roles: [this.roles.bot.id] }, this.users.bot)
     };
 
