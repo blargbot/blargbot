@@ -46,7 +46,7 @@ export class UserBoostDataSubtag extends DefinedSubtag {
     }
 
     public getUserBoostDate(user: Member, format: string): string {
-        if (user.premiumSince === 0)
+        if (typeof user.premiumSince !== 'string')
             throw new BBTagRuntimeError('User not boosting');
 
         return moment(user.premiumSince).format(format);
