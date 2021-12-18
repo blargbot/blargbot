@@ -3,7 +3,7 @@ import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment-timezone';
 
-export class UserCreateDatSubtag extends DefinedSubtag {
+export class UserCreatedAtSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'usercreatedat',

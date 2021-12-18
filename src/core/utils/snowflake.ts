@@ -12,7 +12,7 @@ const catflake = new Catflake({
 });
 
 export const snowflake = {
-    create(date?: Date): Snowflake {
+    create(date?: number | string | bigint): Snowflake {
         return catflake._generate(date);
     },
     deconstruct(snowflake: Snowflake): BigInt {

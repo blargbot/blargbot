@@ -22,7 +22,7 @@ declare module 'catflake' {
         public constructor(options: CatflakeOptions);
 
         public generate(): Snowflake | Promise<Snowflake>;
-        public _generate(date?: Date, increment?: number): Snowflake;
+        public _generate(date?: number | string | bigint, increment?: number): Snowflake;
         public deconstruct(snowflake: Snowflake): DeconstructedSnowflake;
     }
 }
