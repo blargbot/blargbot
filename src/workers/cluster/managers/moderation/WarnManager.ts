@@ -32,10 +32,10 @@ export class WarnManager extends ModerationManagerBase {
 
         await this.modLog.logWarn(member.guild, member.user, count, newCount, moderator, reason);
 
-        if (banAt > 0 && newCount >= banAt) {
+        if (banAt > 0 && (!actOnLimitsOnly || oldCount < banAt) && newCount >= banAt) {
             result = {
                 type: ModerationType.BAN,
-                state: await this.manager.bans.ban(member.guild, member.user, moderator, true, 1, `[ Auto-Ban ] Exceeded Warning Limit (${count}/${banAt})`, moment.duration(Infinity)),
+                state: await this.manager.bans.ban(member.guild, member.user, moderator, true, 1, `[ Auto-Ban ] Exceeded ban limit (${newCount}/${banAt})`, moment.duration(Infinity)),
                 warnings: newCount
             };
             if (result.state === 'success')
@@ -43,7 +43,7 @@ export class WarnManager extends ModerationManagerBase {
         } else if (kickAt > 0 && (!actOnLimitsOnly || oldCount < kickAt) && newCount >= kickAt) {
             result = {
                 type: ModerationType.KICK,
-                state: await this.manager.bans.kick(member, moderator, true, `[ Auto-Kick ] Exceeded warning limit (${count}/${kickAt})`),
+                state: await this.manager.bans.kick(member, moderator, true, `[ Auto-Kick ] Exceeded warning limit (${newCount}/${kickAt})`),
                 warnings: newCount
             };
         }

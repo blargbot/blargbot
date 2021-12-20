@@ -1,12 +1,9 @@
-import { Cluster } from '@cluster';
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class WarnSubtag extends DefinedSubtag {
-    public constructor(
-        public readonly cluster: Cluster
-    ) {
+    public constructor() {
         super({
             name: 'warn',
             category: SubtagType.USER,
@@ -40,9 +37,7 @@ export class WarnSubtag extends DefinedSubtag {
     ): Promise<number> {
         const count = parse.int(countStr);
 
-        const member = userStr === ''
-            ? context.member
-            : await context.queryMember(userStr);
+        const member = await context.queryMember(userStr);
 
         if (member === undefined)
             throw new UserNotFoundError(userStr);
@@ -50,7 +45,7 @@ export class WarnSubtag extends DefinedSubtag {
         if (isNaN(count))
             throw new NotANumberError(countStr);
 
-        const result = await this.cluster.moderation.warns.warn(member, this.cluster.discord.user, count, reason !== '' ? reason : 'Tag Warning');
+        const result = await context.engine.cluster.moderation.warns.warn(member, context.user, count, reason !== '' ? reason : 'Tag Warning');
         return result.warnings;
     }
 }

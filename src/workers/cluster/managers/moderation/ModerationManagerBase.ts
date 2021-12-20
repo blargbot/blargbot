@@ -37,6 +37,9 @@ export abstract class ModerationManagerBase {
     }
 
     protected async isModeratorHigher(guild: Guild, targetId: string, moderatorId: string): Promise<boolean> {
+        if (targetId === moderatorId)
+            return true;
+
         if (guild.ownerID === moderatorId)
             return true;
 
