@@ -2,34 +2,35 @@ import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-export class UserGameSubtag extends DefinedSubtag {
+export class UserActivitySubtag extends DefinedSubtag {
     public constructor() {
         super({
-            name: 'usergame',
+            name: 'useractivity',
+            aliases: ['usergame'],
             category: SubtagType.USER,
             desc: 'If no game is being played, this will return \'nothing\'',
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns the game the executing user is playing. ',
-                    exampleCode: 'You are playing {usergame}',
-                    exampleOut: 'You are playing with bbtag',
+                    description: 'Returns the name of the activity the executing user is currently doing. ',
+                    exampleCode: 'You are listening to {useractivity}',
+                    exampleOut: 'You are listening to bad music',
                     returns: 'string',
-                    execute: (ctx) => this.getUserGame(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserActivity(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns the game `user` is playing. If `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat is playing {usergame;Stupid cat}',
+                    description: 'Returns the name of the activity `user` is currently doing. If `user` can\'t be found it will simply return nothing.',
+                    exampleCode: 'Stupid cat is playing {useractivity;Stupid cat}',
                     exampleOut: 'Stupid cat is playing nothing',
                     returns: 'string',
-                    execute: (ctx, [userId, quiet]) => this.getUserGame(ctx, userId.value, quiet.value !== '')
+                    execute: (ctx, [userId, quiet]) => this.getUserActivity(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
     }
 
-    public async getUserGame(
+    public async getUserActivity(
         context: BBTagContext,
         userId: string,
         quiet: boolean

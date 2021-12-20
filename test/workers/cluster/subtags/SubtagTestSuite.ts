@@ -41,6 +41,7 @@ export interface SubtagTestCase {
     readonly subtagName?: string;
     readonly expected?: string | RegExp | (() => string | RegExp);
     readonly setup?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
+    readonly postSetup?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>;
     readonly assert?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
     readonly teardown?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
     readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
@@ -53,6 +54,7 @@ interface TestSuiteConfig<T extends SubtagTestCase> {
     readonly setup: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
     readonly assert: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>>;
     readonly teardown: Array<(this: RuntimeSubtagTestCase<T>, context: SubtagTestContext) => Awaitable<void>>;
+    readonly postSetup: Array<(this: RuntimeSubtagTestCase<T>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>>;
 }
 
 export class MarkerError extends BBTagRuntimeError {
@@ -62,7 +64,7 @@ export class MarkerError extends BBTagRuntimeError {
     }
 }
 
-export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'assert' | 'teardown'> {
+export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends SubtagTestCase = SubtagTestCase> extends Pick<TestCase, 'setup' | 'postSetup' | 'assert' | 'teardown'> {
     readonly cases: TestCase[];
     readonly subtag: T;
     readonly runOtherTests?: (subtag: T) => void;
@@ -376,6 +378,8 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
     const suite = new SubtagTestSuite(data.subtag);
     if (data.setup !== undefined)
         suite.setup(data.setup);
+    if (data.postSetup !== undefined)
+        suite.postSetup(data.postSetup);
     if (data.assert !== undefined)
         suite.assert(data.assert);
     if (data.teardown !== undefined)
@@ -474,7 +478,7 @@ export class LimitedTestSubtag extends Subtag {
 }
 
 export class SubtagTestSuite<TestCase extends SubtagTestCase> {
-    readonly #config: TestSuiteConfig<TestCase> = { setup: [], assert: [], teardown: [] };
+    readonly #config: TestSuiteConfig<TestCase> = { setup: [], assert: [], teardown: [], postSetup: [] };
     readonly #testCases: TestCase[] = [];
     readonly #subtag: Subtag;
 
@@ -487,6 +491,11 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
         return this;
     }
 
+    public postSetup(setup: TestSuiteConfig<TestCase>['postSetup'][number]): this {
+        this.#config.postSetup.push(setup);
+        return this;
+    }
+
     public assert(assert: TestSuiteConfig<TestCase>['assert'][number]): this {
         this.#config.assert.push(assert);
         return this;
@@ -496,7 +505,6 @@ export class SubtagTestSuite<TestCase extends SubtagTestCase> {
     public teardown(teardown: TestSuiteConfig<TestCase>['teardown'][number]): this {
         this.#config.teardown.push(teardown);
         return this;
-
     }
 
     public addTestCase(...testCases: TestCase[]): this {
@@ -567,6 +575,10 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         await actualTestCase.setup?.(test);
         const code = bbtagUtil.parse(testCase.code);
         const context = test.createContext();
+        for (const postSetup of config.postSetup)
+            await postSetup.call(actualTestCase, context, test);
+        await actualTestCase.postSetup?.(context, test);
+
         const expected = getExpectation(testCase);
 
         // act

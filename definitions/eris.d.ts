@@ -61,6 +61,10 @@ declare module 'eris' {
         createChannel<T extends Exclude<KnownGuildChannel, KnownThreadChannel>['type']>(name: string, type: T, options?: CreateChannelOptions): Promise<KnownChannelMap[T]>;
     }
 
+    export interface Member {
+        update(data: Presence): void;
+    }
+
     export interface Collection<T> {
         filter<R extends T>(func: (i: T) => i is R): R[];
         find<R extends T>(func: (i: T) => i is R): R | undefined;

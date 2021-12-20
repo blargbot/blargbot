@@ -1,5 +1,7 @@
+import { BBTagContext } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { APIGuildMember } from 'discord-api-types';
+import { Member } from 'eris';
 
 import { argument } from '../../../../mock';
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
@@ -14,7 +16,13 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: (c.generateCode?.() ?? options.generateCode()).length, error: c.error }
             ],
             setup(ctx) {
-                c.setup(ctx.members.command, ctx);
+                c.setup?.(ctx.members.command, ctx);
+            },
+            postSetup(bbctx, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.command.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.postSetup?.(member, bbctx, ctx);
             }
         })),
         ...options.cases.map<SubtagTestCase>(c => ({
@@ -24,7 +32,13 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: (c.generateCode?.('other user') ?? options.generateCode('other user')).length, error: c.error }
             ],
             setup(ctx) {
-                c.setup(ctx.members.other, ctx);
+                c.setup?.(ctx.members.other, ctx);
+            },
+            postSetup(bbctx, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.other.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.postSetup?.(member, bbctx, ctx);
             }
         })),
         ...options.cases.map<SubtagTestCase>(c => ({
@@ -34,7 +48,13 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: (c.generateCode?.('other user', '') ?? options.generateCode('other user', '')).length, error: c.error }
             ],
             setup(ctx) {
-                c.setup(ctx.members.other, ctx);
+                c.setup?.(ctx.members.other, ctx);
+            },
+            postSetup(bbctx, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.other.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.postSetup?.(member, bbctx, ctx);
             }
         })),
         ...options.cases.map<SubtagTestCase>(c => ({
@@ -44,7 +64,13 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: (c.generateCode?.('other user', 'q') ?? options.generateCode('other user', 'q')).length, error: c.error }
             ],
             setup(ctx) {
-                c.setup(ctx.members.other, ctx);
+                c.setup?.(ctx.members.other, ctx);
+            },
+            postSetup(bbctx, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.other.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.postSetup?.(member, bbctx, ctx);
             }
         })),
         {
@@ -95,5 +121,6 @@ interface GetUserPropTestCase {
     expected: string;
     error?: BBTagRuntimeError;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
-    setup(member: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext): void;
+    setup?: (member: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext) => void;
+    postSetup?: (member: Member, context: BBTagContext, test: SubtagTestContext) => void;
 }
