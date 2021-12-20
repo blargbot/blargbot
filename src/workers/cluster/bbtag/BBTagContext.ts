@@ -158,11 +158,15 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     }
 
     public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {
+        if (query === '')
+            return this.user;
         const member = await this.queryMember(query, options);
         return member?.user;
     }
 
     public async queryMember(query: string, options: FindEntityOptions = {}): Promise<Member | undefined> {
+        if (query === '')
+            return this.member;
         return await this.queryEntity(
             query, 'user', 'User',
             async id => await this.util.getMember(this.guild, id),
@@ -183,6 +187,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     }
 
     public async queryChannel(query: string, options: FindEntityOptions = {}): Promise<KnownGuildChannel | undefined> {
+        if (query === '')
+            return this.channel;
         return await this.queryEntity(
             query, 'channel', 'Channel',
             async id => await this.util.getChannel(this.guild, id),

@@ -9,94 +9,13 @@ import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {
     const ifQuietAndNotFound = options.ifQuietAndNotFound ?? '';
     return [
-        ...options.cases.map<SubtagTestCase>(c => ({
-            code: c.generateCode?.() ?? options.generateCode(),
-            expected: c.expected,
-            errors: c.error === undefined ? [] : [
-                { start: 0, end: (c.generateCode?.() ?? options.generateCode()).length, error: c.error }
-            ],
-            setup(ctx) {
-                c.setup?.(ctx.members.command, ctx);
-            },
-            postSetup(bbctx, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.command.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.postSetup?.(member, bbctx, ctx);
-            },
-            assert(bbctx, result, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.command.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.assert?.(result, member, bbctx, ctx);
-            }
-        })),
-        ...options.cases.map<SubtagTestCase>(c => ({
-            code: c.generateCode?.('other user') ?? options.generateCode('other user'),
-            expected: c.expected,
-            errors: c.error === undefined ? [] : [
-                { start: 0, end: (c.generateCode?.('other user') ?? options.generateCode('other user')).length, error: c.error }
-            ],
-            setup(ctx) {
-                c.setup?.(ctx.members.other, ctx);
-            },
-            postSetup(bbctx, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.other.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.postSetup?.(member, bbctx, ctx);
-            },
-            assert(bbctx, result, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.command.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.assert?.(result, member, bbctx, ctx);
-            }
-        })),
-        ...options.cases.map<SubtagTestCase>(c => ({
-            code: c.generateCode?.('other user', '') ?? options.generateCode('other user', ''),
-            expected: c.expected,
-            errors: c.error === undefined ? [] : [
-                { start: 0, end: (c.generateCode?.('other user', '') ?? options.generateCode('other user', '')).length, error: c.error }
-            ],
-            setup(ctx) {
-                c.setup?.(ctx.members.other, ctx);
-            },
-            postSetup(bbctx, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.other.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.postSetup?.(member, bbctx, ctx);
-            },
-            assert(bbctx, result, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.command.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.assert?.(result, member, bbctx, ctx);
-            }
-        })),
-        ...options.cases.map<SubtagTestCase>(c => ({
-            code: c.generateCode?.('other user', 'q') ?? options.generateCode('other user', 'q'),
-            expected: c.expected,
-            errors: c.error === undefined ? [] : [
-                { start: 0, end: (c.generateCode?.('other user', 'q') ?? options.generateCode('other user', 'q')).length, error: c.error }
-            ],
-            setup(ctx) {
-                c.setup?.(ctx.members.other, ctx);
-            },
-            postSetup(bbctx, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.other.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.postSetup?.(member, bbctx, ctx);
-            },
-            assert(bbctx, result, ctx) {
-                const member = bbctx.guild.members.get(ctx.members.command.user.id);
-                if (member === undefined)
-                    throw new Error('Cannot find the member under test');
-                c.assert?.(result, member, bbctx, ctx);
-            }
-        })),
+        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [])),
+        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [''])),
+        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', ''])),
+        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', 'q'])),
+        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user'])),
+        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', ''])),
+        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', 'q'])),
         {
             code: options.generateCode('unknown user'),
             expected: '`No user found`',
@@ -144,8 +63,37 @@ interface GetUserPropTestData {
 interface GetUserPropTestCase {
     expected: string;
     error?: BBTagRuntimeError;
+    queryString?: string;
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
     setup?: (member: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext) => void;
     postSetup?: (member: Member, context: BBTagContext, test: SubtagTestContext) => void;
     assert?: (result: string, member: Member, context: BBTagContext, test: SubtagTestContext) => void;
+}
+
+function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase, memberKey: keyof SubtagTestContext['members'], args: Parameters<GetUserPropTestData['generateCode']>): SubtagTestCase {
+    const code = testCase.generateCode?.(...args) ?? data.generateCode(...args);
+    return {
+        code,
+        expected: testCase.expected,
+        errors: testCase.error === undefined ? [] : [{ start: 0, end: code.length, error: testCase.error }],
+        setup(ctx) {
+            testCase.setup?.(ctx.members[memberKey], ctx);
+        },
+        postSetup(bbctx, ctx) {
+            if (testCase.postSetup === undefined)
+                return;
+            const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
+            if (member === undefined)
+                throw new Error('Cannot find the member under test');
+            testCase.postSetup(member, bbctx, ctx);
+        },
+        assert(bbctx, result, ctx) {
+            if (testCase.assert === undefined)
+                return;
+            const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
+            if (member === undefined)
+                throw new Error('Cannot find the member under test');
+            testCase.assert(result, member, bbctx, ctx);
+        }
+    };
 }

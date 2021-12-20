@@ -41,6 +41,6 @@ export class UserNameSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return user.username.replace(/@/g, '@\u200b');
+        return user.username;
     }
 }

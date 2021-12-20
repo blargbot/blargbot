@@ -38,7 +38,7 @@ export class UserHasRolesSubtag extends DefinedSubtag {
         quiet: boolean
     ): Promise<boolean> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const member = userStr === '' ? context.member : await context.queryMember(userStr, { noLookup: quiet });
+        const member = await context.queryMember(userStr, { noLookup: quiet });
         if (member === undefined)
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
