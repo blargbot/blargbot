@@ -15,7 +15,7 @@ export class KickSubtag extends DefinedSubtag {
                     exampleCode: '{kick;stupid cat} @stupid cat was kicked!',
                     exampleOut: 'Succes @stupid cat was kicked',
                     returns: 'string',
-                    execute: (ctx, [user]) => this.kickMember(ctx, user.value, '', true)
+                    execute: (ctx, [user]) => this.kickMember(ctx, user.value, '', false)
                 },
                 {
                     parameters: ['user', 'reason', 'noPerms?'],
@@ -37,27 +37,27 @@ export class KickSubtag extends DefinedSubtag {
         reason: string,
         noperms: boolean
     ): Promise<string> {
-        const member = await context.queryMember(userStr, {
-            noErrors: context.scopes.local.noLookupErrors,
-            noLookup: true //TODO why?
-        });
+        const member = await context.queryMember(userStr, { noLookup: true /* TODO why? */ });
 
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 
-        const response = await context.util.cluster.moderation.bans.kick(member, context.user, noperms, reason);
+        if (reason === '')
+            reason = 'Tag Kick';
+
+        const response = await context.util.cluster.moderation.bans.kick(member, context.user, !noperms, reason);
 
         switch (response) {
             case 'success': //Successful
                 return 'Success'; //TODO true/false response
             case 'noPerms': //Bot doesnt have perms
-                throw new BBTagRuntimeError('I don\'t have permission to kick users!');
+                throw new BBTagRuntimeError('Bot has no permissions', 'I don\'t have permission to kick users!');
             case 'memberTooHigh': //Bot cannot kick target
-                throw new BBTagRuntimeError(`I don't have permission to kick ${member.user.username}!`);
+                throw new BBTagRuntimeError('Bot has no permissions', `I don't have permission to kick ${member.user.username}!`);
             case 'moderatorNoPerms': //User doesnt have perms
-                throw new BBTagRuntimeError('You don\'t have permission to kick users!');
+                throw new BBTagRuntimeError('User has no permissions', 'You don\'t have permission to kick users!');
             case 'moderatorTooLow': //User cannot kick target
-                throw new BBTagRuntimeError(`You don't have permission to kick ${member.user.username}!`);
+                throw new BBTagRuntimeError('User has no permissions', `You don't have permission to kick ${member.user.username}!`);
         }
     }
 }
