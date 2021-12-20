@@ -41,7 +41,6 @@ export class UserNickSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const displayName = member.nick ?? member.username;
-        return displayName.replace(/@/g, '@\u200b');
+        return member.nick ?? member.username;
     }
 }
