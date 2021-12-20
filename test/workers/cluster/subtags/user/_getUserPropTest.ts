@@ -23,6 +23,12 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 if (member === undefined)
                     throw new Error('Cannot find the member under test');
                 c.postSetup?.(member, bbctx, ctx);
+            },
+            assert(bbctx, result, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.command.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.assert?.(result, member, bbctx, ctx);
             }
         })),
         ...options.cases.map<SubtagTestCase>(c => ({
@@ -39,6 +45,12 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 if (member === undefined)
                     throw new Error('Cannot find the member under test');
                 c.postSetup?.(member, bbctx, ctx);
+            },
+            assert(bbctx, result, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.command.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.assert?.(result, member, bbctx, ctx);
             }
         })),
         ...options.cases.map<SubtagTestCase>(c => ({
@@ -55,6 +67,12 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 if (member === undefined)
                     throw new Error('Cannot find the member under test');
                 c.postSetup?.(member, bbctx, ctx);
+            },
+            assert(bbctx, result, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.command.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.assert?.(result, member, bbctx, ctx);
             }
         })),
         ...options.cases.map<SubtagTestCase>(c => ({
@@ -71,6 +89,12 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 if (member === undefined)
                     throw new Error('Cannot find the member under test');
                 c.postSetup?.(member, bbctx, ctx);
+            },
+            assert(bbctx, result, ctx) {
+                const member = bbctx.guild.members.get(ctx.members.command.user.id);
+                if (member === undefined)
+                    throw new Error('Cannot find the member under test');
+                c.assert?.(result, member, bbctx, ctx);
             }
         })),
         {
@@ -123,4 +147,5 @@ interface GetUserPropTestCase {
     generateCode?: (...args: [userStr?: string, quietStr?: string]) => string;
     setup?: (member: RequiredProps<APIGuildMember, 'user'>, context: SubtagTestContext) => void;
     postSetup?: (member: Member, context: BBTagContext, test: SubtagTestContext) => void;
+    assert?: (result: string, member: Member, context: BBTagContext, test: SubtagTestContext) => void;
 }
