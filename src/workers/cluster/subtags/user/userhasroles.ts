@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class UserHasRolesSubtag extends DefinedSubtag {
     public constructor() {
@@ -37,17 +37,21 @@ export class UserHasRolesSubtag extends DefinedSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
-
-        if (result.member === undefined) {
+        quiet ||= context.scopes.local.quiet ?? false;
+        const member = userStr === '' ? context.member : await context.queryMember(userStr, { noLookup: quiet });
+        if (member === undefined)
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
-        }
-        if (result.roles.length === 0) {
-            throw new RoleNotFoundError(userStr)
-                .withDisplay(quiet ? 'false' : undefined);
+
+        const arr = bbtagUtil.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
+        const roleArr = arr.v.map(x => parse.string(x));
+        for (const role of roleArr) {
+            if (member.guild.roles.get(role) === undefined) {
+                throw new RoleNotFoundError(role)
+                    .withDisplay(quiet ? 'false' : undefined);
+            }
         }
 
-        return result.hasRole.every(b => b);
+        return roleArr.every(r => member.roles.includes(r));
     }
 }
