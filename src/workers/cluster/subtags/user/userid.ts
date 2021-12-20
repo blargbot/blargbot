@@ -30,14 +30,14 @@ export class UserIdSubtag extends DefinedSubtag {
 
     public async getUserId(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const user = await context.queryUser(userStr, { noLookup: quiet });
 
         if (user === undefined) {
-            throw new UserNotFoundError(userId)
+            throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
