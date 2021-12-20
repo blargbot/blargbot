@@ -2,7 +2,7 @@ import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
-const gameTypes = {
+const activityTypeMap = {
     default: '',
     0: 'playing',
     1: 'streaming',
@@ -12,38 +12,39 @@ const gameTypes = {
     5: 'competing'
 } as const;
 
-export class UserGameTypeSubtag extends DefinedSubtag {
+export class UserActivityTypeSubtag extends DefinedSubtag {
     public constructor() {
         super({
-            name: 'usergametype',
+            name: 'useractivitytype',
+            aliases: ['usergametype'],
             category: SubtagType.USER,
-            desc: 'Game types can be any of `' + Object.values(gameTypes).filter(type => type).join(', ') + '`',
+            desc: 'Activity types can be any of `' + Object.values(activityTypeMap).filter(type => type).join(', ') + '`',
             definition: [
                 {
                     parameters: [],
-                    description: 'Returns how the executing user is playing a game (playing, streaming).',
-                    exampleCode: 'You are {usergametype} right now!',
+                    description: 'Returns the type of activity the executing user is currently doing (playing, streaming).',
+                    exampleCode: 'You are {useractivitytype} right now!',
                     exampleOut: 'You are streaming right now!',
                     returns: 'string',
-                    execute: (ctx) => this.getUserGameType(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserActivityType(ctx, ctx.user.id, true)
                 },
                 {
                     parameters: ['user', 'quiet?'],
-                    description: 'Returns how `user` is playing a game. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
-                    exampleCode: 'Stupid cat is {usergametype;Stupid cat} cats',
+                    description: 'Returns the activity type `user` is currently doing. If `quiet` is specified, if `user` can\'t be found it will simply return nothing.',
+                    exampleCode: 'Stupid cat is {useractivitytype;Stupid cat} cats',
                     exampleOut: 'Stupid cat is streaming cats',
                     returns: 'string',
-                    execute: (ctx, [userId, quiet]) => this.getUserGameType(ctx, userId.value, quiet.value !== '')
+                    execute: (ctx, [userId, quiet]) => this.getUserActivityType(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
     }
 
-    public async getUserGameType(
+    public async getUserActivityType(
         context: BBTagContext,
         userId: string,
         quiet: boolean
-    ): Promise<typeof gameTypes[keyof typeof gameTypes]> {
+    ): Promise<typeof activityTypeMap[keyof typeof activityTypeMap]> {
         quiet ||= context.scopes.local.quiet ?? false;
         const member = await context.queryMember(userId, { noLookup: quiet });
 
@@ -53,6 +54,6 @@ export class UserGameTypeSubtag extends DefinedSubtag {
         }
 
         const activityId = member.activities?.[0]?.type ?? 'default';
-        return gameTypes[activityId].toLowerCase();
+        return activityTypeMap[activityId].toLowerCase();
     }
 }
