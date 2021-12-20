@@ -42,8 +42,7 @@ export class UserTimezoneSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        const userTimezone = await context.database.users.getSetting(user.id, 'timezone');
-        return userTimezone ?? 'UTC';
+        return await this.getUserTimezone(context, user.id);
     }
 
     public async getUserTimezone(context: BBTagContext, userId: string): Promise<string> {

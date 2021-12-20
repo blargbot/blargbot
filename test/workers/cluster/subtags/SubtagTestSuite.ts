@@ -8,7 +8,7 @@ import { bbtagUtil, guard, pluralise as p, snowflake, SubtagType } from '@cluste
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
-import { GuildTable, SubtagVariableType, TagVariablesTable } from '@core/types';
+import { GuildTable, SubtagVariableType, TagVariablesTable, UserTable } from '@core/types';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiExclude from 'chai-exclude';
@@ -80,6 +80,7 @@ export class SubtagTestContext {
     public readonly database: Mock<Database>;
     public readonly tagVariablesTable: Mock<TagVariablesTable>;
     public readonly guildTable: Mock<GuildTable>;
+    public readonly userTable: Mock<UserTable>;
     public readonly timeouts: Mock<TimeoutManager>;
     public readonly limit: Mock<BaseRuntimeLimit>;
     public readonly discordOptions: DiscordOptions;
@@ -146,6 +147,7 @@ export class SubtagTestContext {
         this.timeouts = new Mock(TimeoutManager);
         this.tagVariablesTable = new Mock<TagVariablesTable>();
         this.guildTable = new Mock<GuildTable>();
+        this.userTable = new Mock<UserTable>();
         this.limit = new Mock<BaseRuntimeLimit>();
         this.tagVariables = {};
         this.options = {};
@@ -165,6 +167,7 @@ export class SubtagTestContext {
 
         this.database.setup(m => m.tagVariables).thenReturn(this.tagVariablesTable.instance);
         this.database.setup(m => m.guilds).thenReturn(this.guildTable.instance);
+        this.database.setup(m => m.users).thenReturn(this.userTable.instance);
         this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()))
             .thenCall((name: string, type: SubtagVariableType, scope: string) => this.tagVariables[`${type}.${scope}.${name}`]);
 
