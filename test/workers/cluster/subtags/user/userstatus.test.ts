@@ -8,6 +8,7 @@ runSubtagTests({
     subtag: new UserStatusSubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['userstatus', ...args].join(';')}}`;
             },

@@ -7,7 +7,6 @@ import { argument } from '../../../../mock';
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {
-    const ifQuietAndNotFound = options.ifQuietAndNotFound ?? '';
     return [
         ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [])),
         ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [''])),
@@ -44,19 +43,27 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 ctx.discord.verify(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).once();
             }
         },
-        {
-            code: options.generateCode('unknown user', 'q'),
-            expected: ifQuietAndNotFound,
-            errors: [
-                { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(ifQuietAndNotFound) }
-            ]
-        }
+        options.ifQuietAndNotFound === undefined
+            ? {
+                code: options.generateCode('unknown user', 'q'),
+                expected: '`No user found`',
+                errors: [
+                    { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user') }
+                ]
+            }
+            : {
+                code: options.generateCode('unknown user', 'q'),
+                expected: options.ifQuietAndNotFound,
+                errors: [
+                    { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.ifQuietAndNotFound) }
+                ]
+            }
     ];
 }
 
 interface GetUserPropTestData {
     cases: GetUserPropTestCase[];
-    ifQuietAndNotFound?: string;
+    ifQuietAndNotFound: string | undefined;
     generateCode: (...args: [userStr?: string, quietStr?: string]) => string;
 }
 

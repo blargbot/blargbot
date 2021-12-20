@@ -8,6 +8,7 @@ runSubtagTests({
     subtag: new UserDiscrimSubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['userdiscrim', ...args].join(';')}}`;
             },

@@ -8,6 +8,7 @@ runSubtagTests({
     subtag: new UserIsBotSubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['userisbot', ...args].join(';')}}`;
             },

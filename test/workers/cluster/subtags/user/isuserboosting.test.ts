@@ -8,6 +8,7 @@ runSubtagTests({
     subtag: new IsUserBoostingSubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['isuserboosting', ...args].join(';')}}`;
             },

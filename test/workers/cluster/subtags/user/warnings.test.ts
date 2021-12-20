@@ -1,38 +1,40 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
-import { UserNameSubtag } from '@cluster/subtags/user/username';
+import { WarningsSubtag } from '@cluster/subtags/user/warnings';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
-    subtag: new UserNameSubtag(),
+    subtag: new WarningsSubtag(),
     cases: [
         ...createGetUserPropTestCases({
-            ifQuietAndNotFound: '',
+            ifQuietAndNotFound: undefined,
             generateCode(...args) {
-                return `{${['username', ...args].join(';')}}`;
+                return `{${['warnings', ...args].join(';')}}`;
             },
             cases: [
                 {
-                    queryString: '09876509876543211234',
-                    expected: 'abcdef',
-                    setup(member) {
-                        member.user.id = '09876509876543211234';
-                        member.user.username = 'abcdef';
+                    expected: '0',
+                    setup(member, ctx) {
+                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.user.id)).thenResolve(undefined);
                     }
                 },
                 {
-                    queryString: '09876509876543211234',
-                    expected: 'oooh nice username',
-                    setup(member) {
-                        member.user.id = '09876509876543211234';
-                        member.user.username = 'oooh nice username';
+                    expected: '0',
+                    setup(member, ctx) {
+                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.user.id)).thenResolve(0);
+                    }
+                },
+                {
+                    expected: '1234',
+                    setup(member, ctx) {
+                        ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, member.user.id)).thenResolve(1234);
                     }
                 }
             ]
         }),
         {
-            code: '{username;{eval};{eval};{eval}}',
+            code: '{warnings;{eval};{eval};{eval}}',
             expected: '`Too many arguments`',
             errors: [
                 { start: 10, end: 16, error: new MarkerError('eval', 10) },

@@ -22,6 +22,7 @@ runSubtagTests({
             }
         },
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['usercreatedat', '', ...args].join(';')}}`;
             },
@@ -41,6 +42,7 @@ runSubtagTests({
             ]
         }),
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['usercreatedat', 'DD/MM/YYYY', ...args].join(';')}}`;
             },

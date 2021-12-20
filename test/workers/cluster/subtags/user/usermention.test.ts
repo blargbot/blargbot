@@ -9,6 +9,7 @@ runSubtagTests({
     subtag: new UserMentionSubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['usermention', ...args].join(';')}}`;
             },

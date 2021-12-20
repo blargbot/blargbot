@@ -8,6 +8,7 @@ runSubtagTests({
     subtag: new UserAvatarSubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['useravatar', ...args].join(';')}}`;
             },

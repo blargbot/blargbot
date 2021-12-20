@@ -8,6 +8,7 @@ runSubtagTests({
     subtag: new UserTimezoneSubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['usertimezone', ...args].join(';')}}`;
             },

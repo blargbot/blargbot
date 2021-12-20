@@ -10,6 +10,7 @@ runSubtagTests({
     subtag: new UserActivitySubtag(),
     cases: [
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['usergame', ...args].join(';')}}`;
             },
@@ -44,6 +45,7 @@ runSubtagTests({
             ]
         }),
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['useractivity', ...args].join(';')}}`;
             },

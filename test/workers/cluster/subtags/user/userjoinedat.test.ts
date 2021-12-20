@@ -15,6 +15,7 @@ runSubtagTests({
             }
         },
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['userjoinedat', '', ...args].join(';')}}`;
             },
@@ -34,6 +35,7 @@ runSubtagTests({
             ]
         }),
         ...createGetUserPropTestCases({
+            ifQuietAndNotFound: '',
             generateCode(...args) {
                 return `{${['userjoinedat', 'DD/MM/YYYY', ...args].join(';')}}`;
             },
