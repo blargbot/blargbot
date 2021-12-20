@@ -22,9 +22,7 @@ export class UserSetNickSubtag extends DefinedSubtag {
     }
 
     public async setUserNick(context: BBTagContext, nick: string, userStr: string): Promise<void> {
-        const member = userStr === ''
-            ? context.member
-            : await context.queryMember(userStr);
+        const member = await context.queryMember(userStr);
 
         if (member === undefined)
             throw new UserNotFoundError(userStr);
@@ -37,6 +35,7 @@ export class UserSetNickSubtag extends DefinedSubtag {
                 await member.edit({ nick }, fullReason);
             }
         } catch (err: unknown) {
+            context.logger.error(err);
             if (err instanceof Error)
                 throw new BBTagRuntimeError('Could not change nickname');
             throw err;
