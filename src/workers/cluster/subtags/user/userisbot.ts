@@ -15,7 +15,7 @@ export class UserIsBotSubtag extends DefinedSubtag {
                     exampleCode: 'Are you a bot? {userisbot}',
                     exampleOut: 'Are you a bot? false',
                     returns: 'boolean',
-                    execute: (ctx) => this.getUserIsBot(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserIsBot(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

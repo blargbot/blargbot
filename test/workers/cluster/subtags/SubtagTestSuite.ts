@@ -2,7 +2,8 @@ import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
-import { TimeoutManager } from '@cluster/managers';
+import { ModerationManager, TimeoutManager } from '@cluster/managers';
+import { BanManager, WarnManager } from '@cluster/managers/moderation';
 import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall } from '@cluster/types';
 import { bbtagUtil, guard, pluralise as p, snowflake, SubtagType } from '@cluster/utils';
 import { Database } from '@core/database';
@@ -72,18 +73,26 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {
-    public readonly cluster: Mock<Cluster>;
-    public readonly shard: Mock<Shard>;
-    public readonly shards: Mock<ShardManager>;
-    public readonly discord: Mock<Discord>;
-    public readonly logger: Mock<Logger>;
-    public readonly database: Mock<Database>;
-    public readonly tagVariablesTable: Mock<TagVariablesTable>;
-    public readonly guildTable: Mock<GuildTable>;
-    public readonly userTable: Mock<UserTable>;
-    public readonly timeouts: Mock<TimeoutManager>;
-    public readonly limit: Mock<BaseRuntimeLimit>;
+    readonly #allMocks: Array<Mock<unknown>> = [];
+    public readonly cluster = this.createMock(Cluster);
+    public readonly util = this.createMock(ClusterUtilities);
+    public readonly shard = this.createMock(Shard);
+    public readonly shards = this.createMock(ShardManager);
+    public readonly discord = this.createMock(Discord);
+    public readonly logger = this.createMock<Logger>(undefined, false);
+    public readonly database = this.createMock(Database);
+    public readonly tagVariablesTable = this.createMock<TagVariablesTable>();
+    public readonly guildTable = this.createMock<GuildTable>();
+    public readonly userTable = this.createMock<UserTable>();
+    public readonly timeouts = this.createMock(TimeoutManager);
+    public readonly limit = this.createMock(BaseRuntimeLimit);
     public readonly discordOptions: DiscordOptions;
+    public readonly managers = {
+        timeouts: this.createMock(TimeoutManager),
+        moderation: this.createMock(ModerationManager),
+        bans: this.createMock(BanManager),
+        warns: this.createMock(WarnManager)
+    };
 
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false };
@@ -137,71 +146,78 @@ export class SubtagTestContext {
     }, this.users.command);
 
     public constructor(subtags: Iterable<Subtag>) {
-        this.logger = new Mock<Logger>(undefined, false);
         this.discordOptions = { intents: [] };
-        this.discord = new Mock(Discord);
-        this.cluster = new Mock(Cluster);
-        this.shard = new Mock(Shard);
-        this.shards = new Mock(ShardManager);
-        this.database = new Mock(Database);
-        this.timeouts = new Mock(TimeoutManager);
-        this.tagVariablesTable = new Mock<TagVariablesTable>();
-        this.guildTable = new Mock<GuildTable>();
-        this.userTable = new Mock<UserTable>();
-        this.limit = new Mock<BaseRuntimeLimit>();
         this.tagVariables = {};
         this.options = {};
 
         const args = new Array(100).fill(argument.any()()) as unknown[];
         for (let i = 0; i < args.length; i++) {
-            this.logger.setup(m => m.error(...args.slice(0, i))).thenCall((...args: unknown[]) => {
-                throw new Error('Unexpected logger error: ' + inspect(args));
+            this.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
+                throw args.find(x => x instanceof Error) ?? new Error('Unexpected logger error: ' + inspect(args));
             });
         }
 
-        this.cluster.setup(m => m.discord).thenReturn(this.discord.instance);
-        this.cluster.setup(m => m.database).thenReturn(this.database.instance);
-        this.cluster.setup(m => m.logger).thenReturn(this.logger.instance);
-        this.cluster.setup(m => m.timeouts).thenReturn(this.timeouts.instance);
-        this.cluster.setup(m => m.util).thenReturn(new ClusterUtilities(this.cluster.instance));
+        this.cluster.setup(m => m.discord, false).thenReturn(this.discord.instance);
+        this.cluster.setup(m => m.database, false).thenReturn(this.database.instance);
+        this.cluster.setup(m => m.logger, false).thenReturn(this.logger.instance);
+        this.cluster.setup(m => m.timeouts, false).thenReturn(this.timeouts.instance);
+        this.cluster.setup(m => m.util, false).thenReturn(this.util.instance);
+        this.cluster.setup(m => m.moderation, false).thenReturn(this.managers.moderation.instance);
 
-        this.database.setup(m => m.tagVariables).thenReturn(this.tagVariablesTable.instance);
-        this.database.setup(m => m.guilds).thenReturn(this.guildTable.instance);
-        this.database.setup(m => m.users).thenReturn(this.userTable.instance);
-        this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()))
+        this.util.setup(m => m.cluster, false).thenReturn(this.cluster.instance);
+
+        this.managers.moderation.setup(m => m.bans, false).thenReturn(this.managers.bans.instance);
+        this.managers.moderation.setup(m => m.warns, false).thenReturn(this.managers.warns.instance);
+
+        this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
+        this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
+        this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
+        this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()), false)
             .thenCall((name: string, type: SubtagVariableType, scope: string) => this.tagVariables[`${type}.${scope}.${name}`]);
 
-        this.discord.setup(m => m.shards).thenReturn(this.shards.instance);
-        this.discord.setup(m => m.guildShardMap).thenReturn({});
-        this.discord.setup(m => m.channelGuildMap).thenReturn({});
-        this.discord.setup(m => m.options).thenReturn(this.discordOptions);
-        this.discord.setup(m => m._formatImage(anything() as never)).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
-        this.discord.setup(m => m._formatAllowedMentions(anything() as never)).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
+        this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
+        this.discord.setup(m => m.guildShardMap, false).thenReturn({});
+        this.discord.setup(m => m.channelGuildMap, false).thenReturn({});
+        this.discord.setup(m => m.options, false).thenReturn(this.discordOptions);
+        this.discord.setup(m => m._formatImage(anything() as never), false).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
+        this.discord.setup(m => m._formatAllowedMentions(anything() as never), false).thenCall((str: never) => Discord.prototype._formatImage.call(this.discord.instance, str));
 
-        this.shards.setup(m => m.get(0)).thenReturn(this.shard.instance);
-        this.shard.setup(m => m.client).thenReturn(this.discord.instance);
+        this.shards.setup(m => m.get(0), false).thenReturn(this.shard.instance);
+        this.shard.setup(m => m.client, false).thenReturn(this.discord.instance);
 
-        this.discord.setup(m => m.guilds).thenReturn(new Collection(Guild));
-        this.discord.setup(m => m.users).thenReturn(new Collection(User));
+        this.discord.setup(m => m.guilds, false).thenReturn(new Collection(Guild));
+        this.discord.setup(m => m.users, false).thenReturn(new Collection(User));
 
-        const subtagLoader = new Mock<ModuleLoader<Subtag>>(ModuleLoader);
+        const subtagLoader = this.createMock<ModuleLoader<Subtag>>(ModuleLoader);
         const subtagMap = new Map([...subtags].flatMap(s => [s.name, ...s.aliases].map(n => [n, s])));
-        subtagLoader.setup(m => m.get(anyString())).thenCall((name: string) => subtagMap.get(name));
+        subtagLoader.setup(m => m.get(anyString()), false).thenCall((name: string) => subtagMap.get(name));
 
-        this.cluster.setup(c => c.subtags).thenReturn(subtagLoader.instance);
+        this.cluster.setup(c => c.subtags, false).thenReturn(subtagLoader.instance);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/ban-types
+    public createMock<T>(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true): Mock<T> {
+        const mock = new Mock<T>(clazz, strict);
+        this.#allMocks.push(mock);
+        return mock;
+    }
+
+    public verifyAll(): void {
+        for (const mock of this.#allMocks)
+            mock.verifyAll();
     }
 
     public createContext(): BBTagContext {
         const engine = new BBTagEngine(this.cluster.instance);
 
         const bot = new ExtendedUser(<BaseData><unknown>this.users.bot, this.discord.instance);
-        this.discord.setup(m => m.user).thenReturn(bot);
+        this.discord.setup(m => m.user, false).thenReturn(bot);
 
         const guild = this.createGuild(this.guild);
         this.discord.instance.guilds.add(guild);
 
         for (const channel of guild.channels.values())
-            this.discord.setup(m => m.getChannel(channel.id)).thenReturn(channel);
+            this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);
 
         const channel = guild.channels.find(guard.isTextableChannel);
         if (channel === undefined)
@@ -226,11 +242,11 @@ export class SubtagTestContext {
     }
 
     public createRESTError(code: number): DiscordRESTError {
-        const request = new Mock(ClientRequest);
-        const message = new Mock(IncomingMessage);
-        const response = new Mock<HTTPResponse>();
+        const request = this.createMock(ClientRequest);
+        const message = this.createMock(IncomingMessage);
+        const response = this.createMock<HTTPResponse>();
 
-        response.setup(m => m.code).thenReturn(code);
+        response.setup(m => m.code, false).thenReturn(code);
 
         const x = { stack: '' };
         Error.captureStackTrace(x);
@@ -609,6 +625,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
                 .to.deep.equal(testCase.errors?.map(err => ({ error: err.error, start: sourceMarker(err.start), end: sourceMarker(err.end) })) ?? [],
                     'Error details didnt match the expectation');
         }
+        test.verifyAll();
 
     } finally {
         for (const teardown of config.teardown)

@@ -1,7 +1,7 @@
 import { BBTagContext } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { APIGuildMember } from 'discord-api-types';
-import { Member } from 'eris';
+import { Guild, Member } from 'eris';
 
 import { argument } from '../../../../mock';
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
@@ -22,11 +22,9 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.options.rootTagName = 'myCoolTag';
-                ctx.discord.setup(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).once();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                    .verifiable(1)
+                    .thenResolve([]);
             }
         },
         {
@@ -36,11 +34,9 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.options.rootTagName = 'myCoolTag';
-                ctx.discord.setup(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `myCoolTag`.' }), undefined)).once();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                    .verifiable(1)
+                    .thenResolve([]);
             }
         },
         options.ifQuietAndNotFound === undefined
@@ -49,14 +45,24 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 expected: '`No user found`',
                 errors: [
                     { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user') }
-                ]
+                ],
+                setup(ctx) {
+                    ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                        .verifiable(1)
+                        .thenResolve([]);
+                }
             }
             : {
                 code: options.generateCode('unknown user', 'q'),
                 expected: options.ifQuietAndNotFound,
                 errors: [
                     { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.ifQuietAndNotFound) }
-                ]
+                ],
+                setup(ctx) {
+                    ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                        .verifiable(1)
+                        .thenResolve([]);
+                }
             }
     ];
 }
@@ -87,12 +93,15 @@ function createTestCase(data: GetUserPropTestData, testCase: GetUserPropTestCase
             testCase.setup?.(ctx.members[memberKey], ctx);
         },
         postSetup(bbctx, ctx) {
-            if (testCase.postSetup === undefined)
-                return;
             const member = bbctx.guild.members.get(ctx.members[memberKey].user.id);
             if (member === undefined)
                 throw new Error('Cannot find the member under test');
-            testCase.postSetup(member, bbctx, ctx);
+            if (args[0] !== undefined && args[0] !== '') {
+                ctx.util.setup(m => m.findMembers(member.guild, args[0]))
+                    .thenResolve([member]);
+            }
+
+            testCase.postSetup?.(member, bbctx, ctx);
         },
         assert(bbctx, result, ctx) {
             if (testCase.assert === undefined)

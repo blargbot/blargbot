@@ -1,118 +1,89 @@
 import { NotANumberError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { ModerationManager } from '@cluster/managers';
 import { PardonSubtag } from '@cluster/subtags/user/pardon';
+import { Guild, Member } from 'eris';
 
 import { argument } from '../../../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new PardonSubtag(),
-    setup(ctx) {
-        ctx.cluster.setup(m => m.moderation).thenReturn(new ModerationManager(ctx.cluster.instance));
-    },
     cases: [
         {
             code: '{pardon}',
             expected: '0',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.command.id)).thenResolve(undefined);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, undefined)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, undefined)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
+            postSetup(bbctx, ctx) {
+                ctx.managers.warns.setup(m => m.pardon(bbctx.member, bbctx.user, 1, 'Tag Pardon'))
+                    .verifiable(1)
+                    .thenResolve({ state: 'success', warnings: 0 });
             }
         },
         {
             code: '{pardon}',
             expected: '5',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.command.id)).thenResolve(6);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, 5)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, 5)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
+            postSetup(bbctx, ctx) {
+                ctx.managers.warns.setup(m => m.pardon(bbctx.member, bbctx.user, 1, 'Tag Pardon'))
+                    .verifiable(1)
+                    .thenResolve({ state: 'countNaN', warnings: 5 });
             }
         },
         {
             code: '{pardon;}',
             expected: '3',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.command.id)).thenResolve(4);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, 3)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, 3)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
+            postSetup(bbctx, ctx) {
+                ctx.managers.warns.setup(m => m.pardon(bbctx.member, bbctx.user, 1, 'Tag Pardon'))
+                    .verifiable(1)
+                    .thenResolve({ state: 'countNegative', warnings: 3 });
             }
         },
         {
             code: '{pardon;other user}',
             expected: '7',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.other.id)).thenResolve(8);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.other.id, 7)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.other.id, 7)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.warns.setup(m => m.pardon(member.instance, bbctx.user, 1, 'Tag Pardon'))
+                    .verifiable(1)
+                    .thenResolve({ state: 'countZero', warnings: 7 });
             }
         },
         {
             code: '{pardon;;6}',
             expected: '26',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.command.id)).thenResolve(32);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, 26)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, 26)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
+            postSetup(bbctx, ctx) {
+                ctx.managers.warns.setup(m => m.pardon(bbctx.member, bbctx.user, 6, 'Tag Pardon'))
+                    .verifiable(1)
+                    .thenResolve({ state: 'success', warnings: 26 });
             }
         },
         {
-            code: '{pardon;;9}',
+            code: '{pardon;other user;9}',
             expected: '0',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.command.id)).thenResolve(5);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, undefined)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.command.id, undefined)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
-            }
-        },
-        {
-            code: '{pardon;other user;5}',
-            expected: '15',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.other.id)).thenResolve(20);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.other.id, 15)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.other.id, 15)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.warns.setup(m => m.pardon(member.instance, bbctx.user, 9, 'Tag Pardon'))
+                    .verifiable(1)
+                    .thenResolve({ state: 'success', warnings: 0 });
             }
         },
         {
             code: '{pardon;other user;8;Because I felt like it}',
             expected: '6',
-            setup(ctx) {
-                ctx.guildTable.setup(m => m.getWarnings(ctx.guild.id, ctx.users.other.id)).thenResolve(14);
-                ctx.guildTable.setup(m => m.setWarnings(ctx.guild.id, ctx.users.other.id, 6)).thenResolve(true);
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.guildTable.verify(m => m.setWarnings(ctx.guild.id, ctx.users.other.id, 6)).once();
-                ctx.guildTable.verify(m => m.getSetting(ctx.guild.id, 'modlog')).once();
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.warns.setup(m => m.pardon(member.instance, bbctx.user, 8, 'Because I felt like it'))
+                    .verifiable(1)
+                    .thenResolve({ state: 'success', warnings: 6 });
             }
         },
         {
@@ -122,12 +93,9 @@ runSubtagTests({
                 { start: 0, end: 21, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.options.rootTagName = 'abcdef';
-                ctx.discord.setup(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `abcdef`.' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.options.rootTagName = 'abcdef';
-                ctx.discord.verify(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `abcdef`.' }), undefined)).once();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                    .verifiable(1)
+                    .thenResolve([]);
             }
         },
         {
@@ -135,7 +103,13 @@ runSubtagTests({
             expected: '`Not a number`',
             errors: [
                 { start: 0, end: 23, error: new NotANumberError('abc') }
-            ]
+            ],
+            setup(ctx) {
+                const member = ctx.createMock(Member);
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+            }
         },
         {
             code: '{pardon;{eval};{eval};{eval};{eval}}',

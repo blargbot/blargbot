@@ -1,6 +1,7 @@
 import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { UserMentionSubtag } from '@cluster/subtags/user/usermention';
 import { expect } from 'chai';
+import { Member, User } from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
@@ -49,6 +50,15 @@ runSubtagTests({
             setup(ctx) {
                 ctx.users.command.id = '12345678900987236';
             },
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                user.setup(m => m.id).thenReturn('12345678900987236');
+                user.setup(m => m.mention).thenReturn('<@12345678900987236>');
+
+                ctx.util.setup(m => m.findMembers(bbctx.guild, '12345678900987236')).verifiable(2).thenResolve([member.instance]);
+            },
             assert(ctx) {
                 expect(ctx.state.allowedMentions.users).to.deep.equal(['12345678900987236']);
             }
@@ -59,6 +69,21 @@ runSubtagTests({
             setup(ctx) {
                 ctx.users.command.id = '12345678900987236';
                 ctx.users.other.id = '098765434512212678';
+            },
+            postSetup(bbctx, ctx) {
+                const member1 = ctx.createMock(Member);
+                const member2 = ctx.createMock(Member);
+                const user1 = ctx.createMock(User);
+                const user2 = ctx.createMock(User);
+                member1.setup(m => m.user).thenReturn(user1.instance);
+                member2.setup(m => m.user).thenReturn(user2.instance);
+                user1.setup(m => m.id).thenReturn('12345678900987236');
+                user2.setup(m => m.id).thenReturn('098765434512212678');
+                user1.setup(m => m.mention).thenReturn('<@12345678900987236>');
+                user2.setup(m => m.mention).thenReturn('<@098765434512212678>');
+
+                ctx.util.setup(m => m.findMembers(bbctx.guild, '12345678900987236')).verifiable(1).thenResolve([member1.instance]);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, '098765434512212678')).verifiable(1).thenResolve([member2.instance]);
             },
             assert(ctx) {
                 expect(ctx.state.allowedMentions.users).to.deep.equal(['12345678900987236', '098765434512212678']);

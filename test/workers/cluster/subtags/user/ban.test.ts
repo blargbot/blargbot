@@ -1,17 +1,18 @@
 import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { ModerationManager } from '@cluster/managers';
 import { BanSubtag } from '@cluster/subtags/user/ban';
-import { snowflake } from '@cluster/utils';
-import { ApiError, Constants } from 'eris';
+import { Member, User } from 'eris';
+import moment, { Duration } from 'moment-timezone';
 
 import { argument } from '../../../../mock';
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+
+function isDuration(ms: number): Duration {
+    return argument.is(moment.isDuration).and(x =>
+        x.asMilliseconds() === ms)();
+}
 
 runSubtagTests({
     subtag: new BanSubtag(),
-    setup(ctx) {
-        ctx.cluster.setup(m => m.moderation).thenReturn(new ModerationManager(ctx.cluster.instance));
-    },
     cases: [
         {
             code: '{ban}',
@@ -25,256 +26,151 @@ runSubtagTests({
             expected: '`No user found`',
             errors: [
                 { start: 0, end: 9, error: new UserNotFoundError('abc') }
-            ]
+            ],
+            postSetup(bbctx, ctx) {
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'abc'))
+                    .verifiable(1)
+                    .thenResolve([]);
+            }
         },
         {
             code: '{ban;other user}',
             expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
 
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
             }
         },
         {
-            title: 'Bot is below command user',
             code: '{ban;other user}',
             expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 9;
-                ctx.roles.command.position = 10;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
 
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('alreadyBanned');
             }
         },
         {
-            title: 'Bot is an admin',
-            code: '{ban;other user}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.administrator.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'User is an admin',
-            code: '{ban;other user}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.administrator.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'User is owner',
-            code: '{ban;other user}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.message.author = ctx.users.owner;
-                ctx.message.member = ctx.members.owner;
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Guild owner#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Guild owner#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'Target is already banned',
-            code: '{ban;other user}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([{
-                    user: ctx.createUser(ctx.users.other)
-                }]);
-            }
-        },
-        {
-            title: 'User has banoverride permission',
-            code: '{ban;other user}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.sendMessages.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'banoverride')).thenResolve(Constants.Permissions.sendMessages.toString());
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'Bot is not above target',
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
                 { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 8;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('memberTooHigh');
             }
         },
         {
-            title: 'Bot doesnt have BAN_MEMBERS permission',
+            code: '{ban;other user}',
+            expected: '`User has no permissions`',
+            errors: [
+                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
+            ],
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('moderatorNoPerms');
+            }
+        },
+        {
+            code: '{ban;other user}',
+            expected: '`User has no permissions`',
+            errors: [
+                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
+            ],
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('moderatorTooLow');
+            }
+        },
+        {
             code: '{ban;other user}',
             expected: '`Bot has no permissions`',
             errors: [
                 { start: 0, end: 16, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = '0';
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-            }
-        },
-        {
-            title: 'User isnt on the guild?',
-            code: '{ban;other user}',
-            expected: '`User has no permissions`',
-            errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
-            ],
-            setup(ctx) {
-                ctx.message.author = SubtagTestContext.createApiUser({ id: snowflake.create().toString() });
-                ctx.message.member = undefined;
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
 
-                const error = ctx.createRESTError(ApiError.UNKNOWN_USER);
-                ctx.logger.setup(m => m.error(error)).thenReturn();
-                ctx.discord.setup(m => m.getRESTGuildMember(ctx.guild.id, ctx.message.author.id))
-                    .thenReject(error);
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('noPerms');
             }
         },
         {
-            title: 'User is not above target',
-            code: '{ban;other user}',
-            expected: '`User has no permissions`',
-            errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
-            ],
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 8;
-                ctx.roles.other.position = 8;
-
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'banoverride')).thenResolve('8');
-            }
-        },
-        {
-            title: 'User doesnt have BAN_MEMBERS permission',
-            code: '{ban;other user}',
-            expected: '`User has no permissions`',
-            errors: [
-                { start: 0, end: 16, error: new BBTagRuntimeError('User has no permissions') }
-            ],
-            setup(ctx) {
-                ctx.roles.command.permissions = '0';
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'banoverride')).thenResolve('8');
-            }
-        },
-        {
-            code: '{ban;other user;0}',
+            code: '{ban;other user;5}',
             expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
 
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 0, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 0, '[Command User#0000] Tag Ban')).once();
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 5, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
             }
         },
         {
-            code: '{ban;other user;17}',
+            code: '{ban;other user;-1}',
             expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
 
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 17, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 17, '[Command User#0000] Tag Ban')).once();
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, -1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
             }
         },
         {
@@ -282,324 +178,143 @@ runSubtagTests({
             expected: 'false',
             errors: [
                 { start: 0, end: 20, error: new NotANumberError('abc').withDisplay('false') }
-            ]
-        },
-        {
-            code: '{ban;other user;;My reason here}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] My reason here')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] My reason here')).once();
-            }
-        },
-        {
-            code: '{ban;other user;17;My reason here}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 17, '[Command User#0000] My reason here')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 17, '[Command User#0000] My reason here')).once();
-            }
-        },
-        {
-            code: '{ban;other user;;;10 days}',
-            expected: '864000000',
-            retries: 3,
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-                ctx.timeouts.setup(m => m.insert('unban', argument.isDeepEqual({
-                    source: ctx.guild.id,
-                    guild: ctx.guild.id,
-                    user: ctx.users.other.id,
-                    duration: '"P10D"',
-                    endtime: argument.isTypeof('number').and(v => v - this.timestamp.add(10, 'days').valueOf() < 20)()
-                }))).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-                ctx.timeouts.setup(m => m.insert('unban', argument.isDeepEqual({
-                    source: ctx.guild.id,
-                    guild: ctx.guild.id,
-                    user: ctx.users.other.id,
-                    duration: '"P10D"',
-                    endtime: argument.isTypeof('number').and(v => v - this.timestamp.add(10, 'days').valueOf() < 20)()
-                }))).thenResolve();
-            }
-        },
-        {
-            code: '{ban;other user;14;This is the reason!;10 days}',
-            expected: '864000000',
-            retries: 3,
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 14, '[Command User#0000] This is the reason!')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-                ctx.timeouts.setup(m => m.insert('unban', argument.isDeepEqual({
-                    source: ctx.guild.id,
-                    guild: ctx.guild.id,
-                    user: ctx.users.other.id,
-                    duration: '"P10D"',
-                    endtime: argument.isTypeof('number').and(v => v - this.timestamp.add(10, 'days').valueOf() < 20)()
-                }))).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 14, '[Command User#0000] This is the reason!')).once();
-                ctx.timeouts.setup(m => m.insert('unban', argument.isDeepEqual({
-                    source: ctx.guild.id,
-                    guild: ctx.guild.id,
-                    user: ctx.users.other.id,
-                    duration: '"P10D"',
-                    endtime: argument.isTypeof('number').and(v => v - this.timestamp.add(10, 'days').valueOf() < 20)()
-                }))).thenResolve();
-            }
-        },
-        {
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'Bot is below command user',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 9;
-                ctx.roles.command.position = 10;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'Bot is an admin',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.administrator.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'User is an admin',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.administrator.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'User is owner',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.message.author = ctx.users.owner;
-                ctx.message.member = ctx.members.owner;
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Guild owner#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Guild owner#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'Target is already banned',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([{
-                    user: ctx.createUser(ctx.users.other)
-                }]);
-            }
-        },
-        {
-            title: 'User doesnt have permission',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.sendMessages.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'Bot is not above target',
-            code: '{ban;other user;;;;true}',
-            expected: '`Bot has no permissions`',
-            errors: [
-                { start: 0, end: 24, error: new BBTagRuntimeError('Bot has no permissions') }
             ],
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 8;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
             }
         },
         {
-            title: 'Bot doesnt have BAN_MEMBERS permission',
-            code: '{ban;other user;;;;true}',
-            expected: '`Bot has no permissions`',
-            errors: [
-                { start: 0, end: 24, error: new BBTagRuntimeError('Bot has no permissions') }
-            ],
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = '0';
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
+            code: '{ban;other user;;My custom reason}',
+            expected: 'true',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'My custom reason', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
             }
         },
         {
-            title: 'User isnt on the guild?',
+            code: '{ban;other user;7;My custom reason}',
+            expected: 'true',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 7, 'My custom reason', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
+            }
+        },
+        {
+            code: '{ban;other user;;;5 days}',
+            expected: '432000000',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 1, 'Tag Ban', isDuration(432000000)))
+                    .verifiable(1)
+                    .thenResolve('success');
+            }
+        },
+        {
+            code: '{ban;other user;7;My custom reason;2 hours}',
+            expected: '7200000',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, true, 7, 'My custom reason', isDuration(7200000)))
+                    .verifiable(1)
+                    .thenResolve('success');
+            }
+        },
+        {
+            code: '{ban;other user;;;;x}',
+            expected: 'true',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, false, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
+            }
+        },
+        {
+            code: '{ban;other user;;;;false}',
+            expected: 'true',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, false, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
+            }
+        },
+        {
             code: '{ban;other user;;;;true}',
             expected: 'true',
-            setup(ctx) {
-                ctx.message.author = SubtagTestContext.createApiUser({ id: snowflake.create().toString() });
-                ctx.message.member = undefined;
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.other.position = 8;
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
 
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Test User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Test User#0000] Tag Ban')).once();
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, false, 1, 'Tag Ban', isDuration(Infinity)))
+                    .verifiable(1)
+                    .thenResolve('success');
             }
         },
         {
-            title: 'User is not above target',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 8;
-                ctx.roles.other.position = 8;
+            code: '{ban;other user;4;My custom reason;2 hours 30s;abc}',
+            expected: '7230000',
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                const user = ctx.createMock(User);
+                member.setup(m => m.user).thenReturn(user.instance);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
 
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
-            }
-        },
-        {
-            title: 'User doesnt have BAN_MEMBERS permission',
-            code: '{ban;other user;;;;true}',
-            expected: 'true',
-            setup(ctx) {
-                ctx.roles.command.permissions = '0';
-                ctx.roles.bot.permissions = Constants.Permissions.banMembers.toString();
-                ctx.roles.bot.position = 10;
-                ctx.roles.command.position = 9;
-                ctx.roles.other.position = 8;
-
-                ctx.discord.setup(m => m.getGuildBans(ctx.guild.id)).thenResolve([]);
-                ctx.discord.setup(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).thenResolve();
-                ctx.guildTable.setup(m => m.getSetting(ctx.guild.id, 'modlog')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.banGuildMember(ctx.guild.id, ctx.users.other.id, 1, '[Command User#0000] Tag Ban')).once();
+                ctx.managers.bans.setup(m => m.ban(bbctx.guild, user.instance, bbctx.user, false, 4, 'My custom reason', isDuration(7230000)))
+                    .verifiable(1)
+                    .thenResolve('success');
             }
         },
         {

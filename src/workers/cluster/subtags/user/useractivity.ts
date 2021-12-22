@@ -16,7 +16,7 @@ export class UserActivitySubtag extends DefinedSubtag {
                     exampleCode: 'You are listening to {useractivity}',
                     exampleOut: 'You are listening to bad music',
                     returns: 'string',
-                    execute: (ctx) => this.getUserActivity(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserActivity(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

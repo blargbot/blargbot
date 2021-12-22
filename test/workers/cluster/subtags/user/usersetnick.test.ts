@@ -1,5 +1,6 @@
 import { NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { UserSetNickSubtag } from '@cluster/subtags/user/usersetnick';
+import { Member } from 'eris';
 
 import { argument } from '../../../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
@@ -18,30 +19,35 @@ runSubtagTests({
             code: '{usersetnick;abc}',
             expected: '',
             setup(ctx) {
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000')).once();
+                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.command.id, argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
+                    .verifiable(1)
+                    .thenResolve();
             }
         },
         {
             code: '{usersetnick;abc;other user}',
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.other.id, argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000')).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.editGuildMember(ctx.guild.id, ctx.users.other.id, argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000')).once();
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+                member.setup(m => m.edit(argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
+                    .verifiable(1)
+                    .thenResolve();
             }
         },
         {
             code: '{usersetnick;abc;blargbot}',
             expected: '',
-            setup(ctx) {
-                ctx.discord.setup(m => m.editGuildMember(ctx.guild.id, ctx.users.bot.id, argument.isDeepEqual({ nick: 'abc' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.editGuildMember(ctx.guild.id, ctx.users.bot.id, argument.isDeepEqual({ nick: 'abc' }), undefined)).once();
+            postSetup(bbctx, ctx) {
+                const member = ctx.createMock(Member);
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'blargbot'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+                member.setup(m => m.edit(argument.isDeepEqual({ nick: 'abc' }), 'Command User#0000'))
+                    .verifiable(1)
+                    .thenResolve();
             }
         },
         {
@@ -51,13 +57,10 @@ runSubtagTests({
                 { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { start: 0, end: 33, error: new UserNotFoundError('unknown user') }
             ],
-            setup(ctx) {
-                ctx.options.rootTagName = 'abcdef';
-                ctx.discord.setup(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `abcdef`.' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.options.rootTagName = 'abcdef';
-                ctx.discord.verify(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `unknown user` found in tag `abcdef`.' }), undefined)).once();
+            postSetup(bbctx, ctx) {
+                ctx.util.setup(m => m.findMembers(bbctx.guild, 'unknown user'))
+                    .verifiable(1)
+                    .thenResolve([]);
             }
         },
         {

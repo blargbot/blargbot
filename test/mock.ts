@@ -9,6 +9,7 @@ import { isProxy } from 'util/types';
 
 export class Mock<T> {
     readonly #expressionProvider: T;
+    readonly #assertions: Array<() => void>;
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     public constructor(clazz?: (new (...args: never[]) => T) | (Function & { prototype: T; }), strict = true) {
@@ -23,16 +24,40 @@ export class Mock<T> {
 
         const mock = new StrictMocker(clazz, strict);
         this.#expressionProvider = mock.getMock() as T;
+        this.#assertions = [];
     }
 
-    public setup<R>(action: (instance: T) => Promise<R>): MethodStubSetter<Promise<R>, R, Error>
-    public setup<R>(action: (instance: T) => R): MethodStubSetter<R>
-    public setup(action: (instance: T) => unknown): MethodStubSetter<unknown, unknown, unknown> {
-        return when(action(this.#expressionProvider));
+    public setup<R>(action: (instance: T) => Promise<R>, requireCall?: boolean): VerifiableMethodStubSetter<Promise<R>, R, Error>
+    public setup<R>(action: (instance: T) => R, requireCall?: boolean): VerifiableMethodStubSetter<R>
+    public setup(action: (instance: T) => unknown, requireCall = true): VerifiableMethodStubSetter<unknown, unknown, unknown> {
+        const call = action(this.#expressionProvider);
+        const setter = when(call);
+        if (requireCall)
+            this.#assertions.push(() => verify(call).atLeast(1));
+        return Object.defineProperties(
+            setter,
+            {
+                'verifiable':
+                {
+                    value: (verifier: number | ((verifier: MethodStubVerificator<T>) => void)) => {
+                        switch (typeof verifier) {
+                            case 'function':
+                                this.#assertions.push(() => verifier(verify(call)));
+                                break;
+                            case 'number':
+                                this.#assertions.push(() => verify(call).times(verifier));
+                                break;
+                        }
+                        return setter;
+                    }
+                }
+            }
+        );
     }
 
-    public verify<R>(action: (instance: T) => R): MethodStubVerificator<R> {
-        return verify(action(this.#expressionProvider));
+    public verifyAll(): void {
+        for (const assertions of this.#assertions)
+            assertions();
     }
 
     public get instance(): T {
@@ -80,6 +105,11 @@ export const argument = {
         return new DeepEqualMatcher<T>(value, !ignoreExcessUndefined) as unknown as T;
     }
 };
+
+export interface VerifiableMethodStubSetter<T, Resolve = void, Reject = Error> extends MethodStubSetter<T, Resolve, Reject> {
+    verifiable(count: number): MethodStubSetter<T, Resolve, Reject>;
+    verifiable(verify: (verifier: MethodStubVerificator<T>) => void): MethodStubSetter<T, Resolve, Reject>;
+}
 
 export interface MockArgumentFilter<T> {
     (): T;

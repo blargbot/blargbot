@@ -14,7 +14,7 @@ export class UserIdSubtag extends DefinedSubtag {
                     exampleCode: 'Your id is {userid}',
                     exampleOut: 'Your id is 123456789123456',
                     returns: 'id',
-                    execute: (ctx) => this.getUserId(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserId(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

@@ -1,9 +1,9 @@
 import { NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { DMSubtag } from '@cluster/subtags/user/dm';
-import { ChannelType } from 'discord-api-types';
+import { Guild, Member } from 'eris';
 
-import { argument } from '../../../../mock';
+import { argument, Mock } from '../../../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
@@ -33,27 +33,27 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.rootTagName = 'mySuperCoolTestingTag';
-                ctx.discord.setup(m => m.createMessage(ctx.channels.command.id, argument.isDeepEqual({ content: 'No user matching `aaaa` found in tag `mySuperCoolTestingTag`.' }), undefined)).thenResolve();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'aaaa'))
+                    .verifiable(1)
+                    .thenResolve([]);
             }
         },
         {
             code: '{dm;other user;Hello!}',
             expected: '',
             setup(ctx) {
-                const dmChannel = ctx.createChannel({
-                    id: ctx.users.other.id,
-                    type: ChannelType.DM,
-                    recipients: [ctx.users.bot]
-                });
+                const member = ctx.createMock(Member);
+                member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.discord.setup(m => m.getDMChannel(ctx.users.other.id)).thenResolve(dmChannel);
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).thenResolve();
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: 'Hello!' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.getDMChannel(ctx.users.other.id)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: 'Hello!' }), undefined)).once();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
+                    .verifiable(1)
+                    .thenResolve();
+                ctx.util.setup(m => m.sendDM(member.instance, argument.isDeepEqual({ content: 'Hello!' })))
+                    .verifiable(1)
+                    .thenResolve();
             }
         },
         {
@@ -61,20 +61,18 @@ runSubtagTests({
             subtags: [new EscapeBbtagSubtag()],
             expected: '',
             setup(ctx) {
-                const dmChannel = ctx.createChannel({
-                    id: ctx.users.other.id,
-                    type: ChannelType.DM,
-                    recipients: [ctx.users.bot]
-                });
+                const member = ctx.createMock(Member);
+                member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.discord.setup(m => m.getDMChannel(ctx.users.other.id)).thenResolve(dmChannel);
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).thenResolve();
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.getDMChannel(ctx.users.other.id)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] }), undefined)).once();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
+                    .verifiable(1)
+                    .thenResolve();
+                ctx.util.setup(m => m.sendDM(member.instance, argument.isDeepEqual({ embeds: [{ title: 'Hi!' }] })))
+                    .verifiable(1)
+                    .thenResolve();
             }
         },
         {
@@ -82,20 +80,18 @@ runSubtagTests({
             subtags: [new EscapeBbtagSubtag()],
             expected: '',
             setup(ctx) {
-                const dmChannel = ctx.createChannel({
-                    id: ctx.users.other.id,
-                    type: ChannelType.DM,
-                    recipients: [ctx.users.bot]
-                });
+                const member = ctx.createMock(Member);
+                member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.discord.setup(m => m.getDMChannel(ctx.users.other.id)).thenResolve(dmChannel);
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).thenResolve();
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.getDMChannel(ctx.users.other.id)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] }), undefined)).once();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
+                    .verifiable(1)
+                    .thenResolve();
+                ctx.util.setup(m => m.sendDM(member.instance, argument.isDeepEqual({ content: 'Hello there!', embeds: [{ title: 'General Kenobi!' }] })))
+                    .verifiable(1)
+                    .thenResolve();
             }
         },
         {
@@ -103,60 +99,54 @@ runSubtagTests({
             subtags: [new EscapeBbtagSubtag()],
             expected: '',
             setup(ctx) {
-                const dmChannel = ctx.createChannel({
-                    id: ctx.users.other.id,
-                    type: ChannelType.DM,
-                    recipients: [ctx.users.bot]
-                });
+                const member = ctx.createMock(Member);
+                member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.discord.setup(m => m.getDMChannel(ctx.users.other.id)).thenResolve(dmChannel);
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).thenResolve();
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.getDMChannel(ctx.users.other.id)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] }), undefined)).once();
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                    .verifiable(1)
+                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
+                    .verifiable(1)
+                    .thenResolve();
+                ctx.util.setup(m => m.sendDM(member.instance, argument.isDeepEqual({ content: '{ "title": "this isnt actually an embed" }', embeds: [{ title: 'General Kenobi!' }] })))
+                    .verifiable(1)
+                    .thenResolve();
             }
         },
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const dmChannel = ctx.createChannel({
-                    id: ctx.users.other.id,
-                    type: ChannelType.DM,
-                    recipients: [ctx.users.bot]
-                });
+                const member = ctx.createMock(Member);
+                member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.discord.setup(m => m.getDMChannel(ctx.users.other.id)).thenResolve(dmChannel);
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).thenResolve();
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: 'Hi!' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.getDMChannel(ctx.users.other.id)).times(5);
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).once();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: 'Hi!' }), undefined)).times(5);
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                    .verifiable(x => x.times(5))
+                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
+                    .verifiable(x => x.times(1))
+                    .thenResolve();
+                ctx.util.setup(m => m.sendDM(member.instance, argument.isDeepEqual({ content: 'Hi!' })))
+                    .verifiable(x => x.times(5))
+                    .thenResolve();
             }
         },
         {
             code: '{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}{dm;other user;Hi!}',
             expected: '',
             setup(ctx) {
-                const dmChannel = ctx.createChannel({
-                    id: ctx.users.other.id,
-                    type: ChannelType.DM,
-                    recipients: [ctx.users.bot]
-                });
+                const member = new Mock(Member);
+                member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.discord.setup(m => m.getDMChannel(ctx.users.other.id)).thenResolve(dmChannel);
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).thenResolve();
-                ctx.discord.setup(m => m.createMessage(dmChannel.id, argument.isDeepEqual({ content: 'Hi!' }), undefined)).thenResolve();
-            },
-            assert(_, __, ctx) {
-                ctx.discord.verify(m => m.getDMChannel(ctx.users.other.id)).times(6);
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):` }), undefined)).twice();
-                ctx.discord.verify(m => m.createMessage(ctx.users.other.id, argument.isDeepEqual({ content: 'Hi!' }), undefined)).times(6);
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                    .verifiable(x => x.times(6))
+                    .thenResolve([member.instance]);
+                ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
+                    .verifiable(x => x.times(2))
+                    .thenResolve();
+                ctx.util.setup(m => m.sendDM(member.instance, argument.isDeepEqual({ content: 'Hi!' })))
+                    .verifiable(x => x.times(6))
+                    .thenResolve();
             }
         },
         {

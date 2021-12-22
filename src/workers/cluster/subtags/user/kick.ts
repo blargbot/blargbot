@@ -38,7 +38,6 @@ export class KickSubtag extends DefinedSubtag {
         noperms: boolean
     ): Promise<string> {
         const member = await context.queryMember(userStr, { noLookup: true /* TODO why? */ });
-
         if (member === undefined)
             throw new UserNotFoundError(userStr);
 

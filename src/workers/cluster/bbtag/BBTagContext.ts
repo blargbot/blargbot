@@ -213,9 +213,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
         const noLookup = options.noLookup === true || this.scopes.local.quiet === true;
         const entities = await find(queryString);
-        if (this.state.query.count >= 5 || noLookup) {
+        if (entities.length <= 1 || this.state.query.count >= 5 || noLookup)
             return entities.length === 1 ? entities[0] : undefined;
-        }
 
         const result = await query({ context: this.channel, actors: this.author, choices: entities, filter: queryString });
         const noErrors = options.noErrors === true || this.scopes.local.noLookupErrors === true;

@@ -15,7 +15,7 @@ export class UserCreatedAtSubtag extends DefinedSubtag {
                     exampleCode: 'Your account was created on {usercreatedat}',
                     exampleOut: 'Your account was created on 2017-02-06T18:58:10+00:00',
                     returns: 'string',
-                    execute: (ctx, [format]) => this.getUserCreatedAt(ctx, format.value, ctx.user.id, true)
+                    execute: (ctx, [format]) => this.getUserCreatedAt(ctx, format.value, '', true)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],

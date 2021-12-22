@@ -22,8 +22,7 @@
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
-                "--timeout",
-                "999999",
+                "--no-timeouts",
                 "--config",
                 "${workspaceFolder}/mocharc.json",
                 "--recursive"
@@ -40,8 +39,7 @@
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
             "args": [
-                "--timeout",
-                "999999",
+                "--no-timeouts",
                 "--config",
                 "${workspaceFolder}/mocharc.json",
                 "${file}"

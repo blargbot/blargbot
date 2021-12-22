@@ -14,7 +14,7 @@ export class UserMentionSubtag extends DefinedSubtag {
                     exampleCode: 'Hello, {usermention}!',
                     exampleOut: 'Hello, @user!',
                     returns: 'string',
-                    execute: (ctx) => this.userMention(ctx, ctx.user.id, false)
+                    execute: (ctx) => this.userMention(ctx, '', false)
                 },
                 {
                     parameters: ['user', 'quiet?'],

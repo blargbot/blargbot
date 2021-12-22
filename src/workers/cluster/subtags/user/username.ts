@@ -14,7 +14,7 @@ export class UserNameSubtag extends DefinedSubtag {
                     exampleCode: 'Your username is {username}!',
                     exampleOut: 'Your username is Cool Dude 1337!',
                     returns: 'string',
-                    execute: (ctx) => this.getUserName(ctx, ctx.user.id, true)
+                    execute: (ctx) => this.getUserName(ctx, '', true)
                 },
                 {
                     parameters: ['user', 'quiet?'],

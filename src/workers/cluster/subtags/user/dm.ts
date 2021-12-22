@@ -49,7 +49,6 @@ export class DMSubtag extends DefinedSubtag {
         const content = messageAsEmbeds === undefined ? messageStr : undefined;
 
         try {
-            const dmChannel = await member.user.getDMChannel();
             let cache = this.#dmCache[member.id];
             if (cache === undefined ||
                 cache.count > 5 ||
@@ -57,14 +56,14 @@ export class DMSubtag extends DefinedSubtag {
                 cache.guild !== context.guild.id) {
                 // Ew we're gonna send a message first? It was voted...
                 // TODO: Maybe change to a footer embed on every DM? I dont think its possible to disable embeds in DMs
-                await context.util.send(dmChannel, 'The following message was sent from ' +
+                await context.util.sendDM(member, 'The following message was sent from ' +
                     `**__${context.guild.name}__** (${context.guild.id}), ` +
                     'and was sent by ' +
                     `**__${context.user.username}#${context.user.discriminator}__** (${context.user.id}):`
                 );
                 cache = this.#dmCache[member.id] = { user: context.user.id, guild: context.guild.id, count: 1 };
             }
-            await context.util.send(dmChannel, {
+            await context.util.sendDM(member, {
                 content,
                 embeds,
                 nsfw: context.state.nsfw

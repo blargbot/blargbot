@@ -43,7 +43,7 @@ export class PardonSubtag extends DefinedSubtag {
         if (count === undefined)
             throw new NotANumberError(countStr);
 
-        const result = await context.engine.cluster.moderation.warns.pardon(member, context.discord.user, count, reason === '' ? 'Tag Pardon' : reason);
+        const result = await context.engine.cluster.moderation.warns.pardon(member, context.user, count, reason === '' ? 'Tag Pardon' : reason);
         return result.warnings;
     }
 }

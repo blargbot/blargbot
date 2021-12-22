@@ -16,7 +16,7 @@ export class UserJoinedAtSubtag extends DefinedSubtag {
                     exampleCode: 'Your account joined this guild on {usercreatedat;YYYY/MM/DD HH:mm:ss}',
                     exampleOut: 'Your account joined this guild on 2016/01/01 01:00:00.',
                     returns: 'string',
-                    execute: (ctx, [format]) => this.getUserJoinDate(ctx, format.value, ctx.user.id, false)
+                    execute: (ctx, [format]) => this.getUserJoinDate(ctx, format.value, '', false)
                 },
                 {
                     parameters: ['format:YYYY-MM-DDTHH:mm:ssZ', 'user', 'quiet?'],

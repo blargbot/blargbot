@@ -14,7 +14,7 @@ export class UserTimezoneSubtag extends DefinedSubtag {
                     exampleCode: '{usertimezone}',
                     exampleOut: 'UTC',
                     returns: 'string',
-                    execute: ctx => this.getUserTimezone(ctx, ctx.user.id)
+                    execute: ctx => this.getUserTimezone(ctx, '', false)
                 },
                 {
                     parameters: ['user', 'quiet?'],
@@ -23,30 +23,26 @@ export class UserTimezoneSubtag extends DefinedSubtag {
                     exampleCode: 'Discord official\'s timezone is {usertimezone;Discord official}',
                     exampleOut: 'Discord official\'s timezone is Europe/Berlin',
                     returns: 'string',
-                    execute: (ctx, [userId, quiet]) => this.findUserTimezone(ctx, userId.value, quiet.value !== '')
+                    execute: (ctx, [userId, quiet]) => this.getUserTimezone(ctx, userId.value, quiet.value !== '')
                 }
             ]
         });
     }
 
-    public async findUserTimezone(
+    public async getUserTimezone(
         context: BBTagContext,
-        userId: string,
+        userStr: string,
         quiet: boolean
     ): Promise<string> {
         quiet ||= context.scopes.local.quiet ?? false;
-        const user = await context.queryUser(userId, { noLookup: quiet });
+        const user = await context.queryUser(userStr, { noLookup: quiet });
 
         if (user === undefined) {
-            throw new UserNotFoundError(userId)
+            throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        return await this.getUserTimezone(context, user.id);
-    }
-
-    public async getUserTimezone(context: BBTagContext, userId: string): Promise<string> {
-        const userTimezone = await context.database.users.getSetting(userId, 'timezone');
+        const userTimezone = await context.database.users.getSetting(user.id, 'timezone');
         return userTimezone ?? 'UTC';
     }
 }

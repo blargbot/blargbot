@@ -28,12 +28,8 @@ export class UserSetNickSubtag extends DefinedSubtag {
             throw new UserNotFoundError(userStr);
 
         try {
-            if (member.id === context.discord.user.id)
-                await member.edit({ nick });
-            else {
-                const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-                await member.edit({ nick }, fullReason);
-            }
+            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
+            await member.edit({ nick }, fullReason);
         } catch (err: unknown) {
             context.logger.error(err);
             if (err instanceof Error)
