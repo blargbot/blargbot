@@ -3,7 +3,7 @@ import { ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-export class ChannelIsVoice extends DefinedSubtag {
+export class ChannelIsVoiceSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'channelisvoice',

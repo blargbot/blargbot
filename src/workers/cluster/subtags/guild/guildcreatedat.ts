@@ -2,7 +2,7 @@ import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 import moment from 'moment';
 
-export class GuildCreateDat extends DefinedSubtag {
+export class GuildCreatedAtSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'guildcreatedat',

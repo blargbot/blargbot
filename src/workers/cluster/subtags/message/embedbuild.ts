@@ -59,7 +59,7 @@ type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
 // custom message for fields missing values/names
 type EmbedBuildOptions = Overwrite<EmbedOptions, { fields?: Array<Partial<EmbedField>>; }>
 
-export class EmbedBuildSubag extends DefinedSubtag {
+export class EmbedBuildSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'embedbuild',

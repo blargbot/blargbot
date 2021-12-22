@@ -5,7 +5,7 @@ import moment from 'moment';
 
 const maxSleep = moment.duration(5, 'minutes');
 
-export class SleepTag extends DefinedSubtag {
+export class SleepSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'sleep',

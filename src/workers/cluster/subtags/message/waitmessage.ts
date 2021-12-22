@@ -6,7 +6,7 @@ import { guard } from '@core/utils';
 
 import { Statement } from '../../types';
 
-export class WaitMessageSubtags extends DefinedSubtag {
+export class WaitMessageSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'waitmessage',

@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagType } from '@cluster/utils';
 
-export class GuildIcon extends DefinedSubtag {
+export class GuildIconSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'guildicon',
