@@ -42,7 +42,10 @@ export class UnbanSubtag extends DefinedSubtag {
         if (user === undefined)
             throw new UserNotFoundError(userStr);
 
-        const result = await context.util.cluster.moderation.bans.unban(context.guild, user, context.user, noPerms, reason);
+        if (reason === '')
+            reason = 'Tag Unban';
+
+        const result = await context.util.cluster.moderation.bans.unban(context.guild, user, context.user, !noPerms, reason);
 
         switch (result) {
             case 'success': return true;
