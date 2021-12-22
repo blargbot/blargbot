@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { SubtagType } from '@cluster/utils';
+import { randChoose, SubtagType } from '@cluster/utils';
 
 export class RandUserSubtag extends DefinedSubtag {
     public constructor() {
@@ -20,7 +20,6 @@ export class RandUserSubtag extends DefinedSubtag {
     }
 
     public randomUser(context: BBTagContext): string {
-        const members = context.guild.members.map(m => m.id);
-        return members[Math.floor(Math.random() * members.length)];
+        return randChoose(context.guild.members.values()).id;
     }
 }
