@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class AbsSubtag extends DefinedSubtag {
     public constructor() {
@@ -14,8 +14,8 @@ export class AbsSubtag extends DefinedSubtag {
                     description: 'Gets the absolute value of `number`',
                     exampleCode: '{abs;-535}',
                     exampleOut: '535',
-                    returns: 'number',
-                    execute: (_, [value]) => this.abs(value.value)
+                    returns: 'number|number[]',
+                    execute: (_, [value]) => this.absSingle(value.value)
                 },
                 {
                     parameters: ['numbers+2'],
@@ -23,27 +23,37 @@ export class AbsSubtag extends DefinedSubtag {
                     exampleCode: '{abs;-535;123;-42}',
                     exampleOut: '[535, 123, 42]',
                     returns: 'number[]',
-                    execute: (_, values) => this.absAll(values.map(arg => arg.value))
+                    execute: (_, values) => this.absMultiple(values.map(arg => arg.value))
                 }
             ]
         });
     }
 
-    public absAll(values: string[]): number[] {
-        const result = [];
-        for (const value of values) {
-            const parsed = parse.float(value, false);
-            if (parsed === undefined)
-                throw new NotANumberError(value);
-            result.push(Math.abs(parsed));
-        }
+    public absSingle(value: string): number | number[] {
+        const result = this.absMultiple([value]);
+        if (result.length === 1)
+            return result[0];
         return result;
     }
 
-    public abs(value: string): number {
-        const val = parse.float(value, false);
-        if (val === undefined)
-            throw new NotANumberError(value);
-        return Math.abs(val);
+    public absMultiple(values: string[]): number[] {
+        return bbtagUtil.tagArray.flattenArray(values)
+            .map(s => {
+                switch (typeof s) {
+                    case 'string': {
+                        const result = parse.float(s, false);
+                        if (result === undefined)
+                            throw new NotANumberError(s);
+                        return result;
+                    }
+                    case 'number':
+                    case 'bigint':
+                        return s;
+                    default:
+                        throw new NotANumberError(s);
+                }
+            })
+            .map(Math.abs);
     }
+
 }

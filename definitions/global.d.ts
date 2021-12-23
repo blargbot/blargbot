@@ -43,7 +43,18 @@ declare global {
         : Splitter extends '' ? Result
         : [...Result, T];
 
-    type x = SplitString<'aaa', 'a'>
+    type ToString<T> = T extends string | number | boolean | undefined | bigint | null ? `${T}`
+        : T extends { toString(): infer S; } ? S extends string ? S : string : string;
+
+    type ArrayJoin<Self extends unknown[], Sep extends string> =
+        Self['length'] extends 0 ? ''
+        : Self['length'] extends 1 ? ToString<Self[0]>
+        : Self extends [infer First, ...infer Rest] ? _ArrayJoinHelper<Rest, Sep, ToString<First>>
+        : string;
+    type _ArrayJoinHelper<Items extends unknown[], Sep extends string, Result extends string> =
+        Items extends [infer Next, ...infer Rest] ? _ArrayJoinHelper<Rest, Sep, `${Result}${Sep}${ToString<Next>}`>
+        : Items extends [infer Last] ? `${Result}${Sep}${ToString<Last>}`
+        : Result;
 
     interface ObjectConstructor {
         keys<TKey extends string>(value: { [P in TKey]: unknown }): TKey[];
@@ -86,6 +97,7 @@ declare global {
 
     interface Array<T> {
         includes<R>(this: T extends R ? R extends T ? never : this : never, value: R): value is T & R;
+        join<Self extends unknown[], Sep extends string>(this: Self, separator: Sep): ArrayJoin<Self, Sep>;
     }
 
     interface Set<T> {

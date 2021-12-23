@@ -342,31 +342,44 @@ interface SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap>
     readonly returns: Type;
 }
 
-type Iterated<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
+type AwaitableIterable<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
 
-export type SubtagReturnTypeMap = {
-    'unknown': SubtagResult;
+type SubtagReturnTypeValueMap = {
     'hex': number;
     'number': number | bigint;
-    'number[]': Iterated<number>;
     'boolean': boolean;
-    'boolean|number': boolean | number | bigint;
-    'boolean[]': Iterated<boolean>;
     'string': string;
-    'string|nothing': string | undefined;
-    'string[]': Iterated<string>;
-    '(string|error)[]': Iterated<string>;
     'id': string;
-    'id[]': Iterated<string>;
     'json': JToken;
-    'json|nothing': JToken | undefined;
-    'json[]': Iterated<JToken>;
-    'json[]|nothing': Iterated<JToken> | undefined;
     'embed': Embed;
-    'embed[]': Embed[];
-    'nothing': void;
-    'error': never;
-    'loop': Iterated<string>;
+    'nothing': undefined;
+}
+
+type SubtagReturnTypeAtomicMap = SubtagReturnTypeValueMap & {
+    [P in keyof SubtagReturnTypeValueMap as `${P}[]`]: AwaitableIterable<SubtagReturnTypeValueMap[P]>;
+}
+
+type SubtagReturnTypeUnion<T extends Array<keyof SubtagReturnTypeAtomicMap>, Other = never> = {
+    [P in ArrayJoin<T, '|'>]: SubtagReturnTypeAtomicMap[T[number]] | Other;
+}
+
+type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
+    & SubtagReturnTypeUnion<['number', 'number[]']>
+    & SubtagReturnTypeUnion<['boolean', 'number']>
+    & SubtagReturnTypeUnion<['string', 'nothing']>
+    // & SubtagReturnTypeUnion<['json', 'nothing']>
+    & SubtagReturnTypeUnion<['json[]', 'nothing']>
+    & SubtagReturnTypeUnion<['json', 'nothing']>
+    & {
+        'unknown': SubtagResult;
+        'nothing': void;
+        '(string|error)[]': AwaitableIterable<string>;
+        'error': never;
+        'loop': AwaitableIterable<string>;
+    }
+
+export type SubtagReturnTypeMap = {
+    [P in keyof SubtagReturnTypeMapHelper]: SubtagReturnTypeMapHelper[P]
 }
 
 export type AnySubtagHandlerDefinition = { [P in keyof SubtagReturnTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagReturnTypeMap];

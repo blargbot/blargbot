@@ -20,4 +20,17 @@ export abstract class SubtagLogicWrapper implements SubtagLogic<SubtagResult> {
     protected async *toAsyncIterable<T>(source: AsyncIterable<T> | Iterable<T>): AsyncGenerator<T, void, undefined> {
         yield* source;
     }
+
+    protected isIterable(value: unknown): value is Iterable<unknown> | AsyncIterable<unknown> {
+        switch (typeof value) {
+            case 'object':
+                if (value === null)
+                    return false;
+                return Symbol.iterator in value || Symbol.asyncIterator in value;
+            case 'string':
+                return true;
+            default:
+                return false;
+        }
+    }
 }

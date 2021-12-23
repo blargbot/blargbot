@@ -1,3 +1,4 @@
+export * from './ArrayOrValueSubtagLogicWrapper';
 export * from './ArraySubtagLogic';
 export * from './ArrayWithErrorsSubtagLogic';
 export * from './DeferredSubtagLogic';
