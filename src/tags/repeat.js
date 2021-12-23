@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const { FlowState } = require('../structures/bbtag/FlowControl');
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
@@ -32,6 +33,7 @@ module.exports =
 
             let remaining = context.state.limits.repeat || { loops: NaN };
 
+            loop:
             for (let i = 0; i < amount; i++) {
                 remaining.loops--;
                 if (!(remaining.loops >= 0)) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN
@@ -39,8 +41,19 @@ module.exports =
                     break;
                 }
                 result += await this.executeArg(subtag, args[0], context);
-                if (context.state.return != 0)
-                    break;
+
+                switch (context.state.flowState) {
+                    case FlowState.NORMAL:
+                        break;
+                    case FlowState.CONTINUE_LOOP:
+                        context.state.flowState = FlowState.NORMAL;
+                        continue loop;
+                    case FlowState.BREAK_LOOP:
+                        context.state.flowState = FlowState.NORMAL;
+                    //Fallthrough
+                    default:
+                        break loop;
+                }
             }
             return result;
         }).whenDefault(Builder.errors.tooManyArguments)

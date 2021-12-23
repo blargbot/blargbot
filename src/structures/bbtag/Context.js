@@ -4,6 +4,9 @@ const ScopeCollection = require('./Scope');
 const Timer = require('../Timer');
 const { VariableCache, CacheEntry } = require('./Caching');
 const ReadWriteLock = require('rwlock');
+const { SubTag } = require('./Tag');
+const { FlowState } = require('./FlowControl');
+const { BBTagError } = require('./BBTagError');
 
 // stores cooldown values per-guild-per-tag-per-user
 const cooldowns = {};
@@ -30,6 +33,7 @@ class Context {
      * @param {Context} parent The parent scope to initialize this one from
      */
     constructor(options) {
+        this.stackDepth = 0;
         this.subtagCount = 0;
         this.message = this.msg = options.msg;
         if (Array.isArray(options.input)) {
@@ -87,7 +91,9 @@ class Context {
             },
             outputMessage: null,
             ownedMsgs: [],
-            return: 0,
+            /** @type {FlowState} */
+            flowState: FlowState.NORMAL,
+            tagResults: [null],
             stackSize: 0,
             embed: null,
             file: null,
@@ -98,6 +104,7 @@ class Context {
             break: 0,
             continue: 0,
             subtags: {},
+            /** @type {{[key: string]: SubtagImpl}} */
             overrides: {},
             cache: {},
             safeLoops: 0,
@@ -117,6 +124,11 @@ class Context {
      * @param {runArgs} options The option overrides to give to the new context
      */
     makeChild(options = {}) {
+        if (this.stackDepth >= 200) {
+            this.state.flowState = FlowState.KILL_ALL;
+            throw new BBTagError('Terminated recursive tag after ' + this.stackDepth + ' execs.');
+        }
+
         if (options.msg === undefined) options.msg = this.msg;
         if (options.input === undefined) options.input = this.input;
         if (options.isCC === undefined) options.isCC = this.isCC;
@@ -131,6 +143,7 @@ class Context {
         context.scopes = this.scopes;
         context.variables = this.variables;
         context.subtagCount = this.subtagCount;
+        context.stackDepth = this.stackDepth + 1;
 
         return context;
     }
@@ -215,18 +228,41 @@ class Context {
         return result;
     }
 
-    override(subtag, callback) {
-        let overrides = this.state.overrides;
-        let exists = overrides.hasOwnProperty(subtag);
-        let previous = overrides[subtag];
-        overrides[subtag] = callback;
+    /**
+     * @typedef {object} SubtagOverride
+     * @property {ReadonlyMap<string, SubtagImpl>} [previous]
+     * @property {() => void} revert
+     */
+
+    /**
+     * @typedef {(subtag: SubTag, context: Context) => Promise<string>} SubtagImpl
+     */
+
+    /**
+     * @param {string|string[]} subtags
+     * @param {SubtagImpl} callback
+     * @returns {SubtagOverride}
+     */
+    override(subtags, callback) {
+        if (!Array.isArray(subtags))
+            subtags = [subtags];
+        const overrides = this.state.overrides;
+        /** @type {Map<string, SubtagImpl | undefined>} */
+        const previous = new Map();
+        for (const subtag of subtags) {
+            let exists = overrides.hasOwnProperty(subtag);
+            previous.set(subtag, exists ? overrides[subtag] : undefined);
+            overrides[subtag] = callback;
+        }
         return {
             previous,
             revert() {
-                if (!exists)
-                    delete overrides[subtag];
-                else
-                    overrides[subtag] = previous;
+                for (const [subtag, callback] of previous) {
+                    if (callback === undefined)
+                        delete overrides[subtag];
+                    else
+                        overrides[subtag] = callback;
+                }
             }
         };
     }

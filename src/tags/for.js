@@ -7,6 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const { FlowState } = require('../structures/bbtag/FlowControl');
+
 const Builder = require('../structures/TagBuilder'),
     operators = {
         '==': (a, b) => a === b,
@@ -58,6 +60,7 @@ module.exports =
 
             let remaining = context.state.limits.for || { loops: NaN };
 
+            loop:
             for (let i = initial; operator(i, limit); i += increment) {
                 remaining.loops--;
                 if (!(remaining.loops >= 0)) { // (remaining.loops < 0) would not work due to the comparison behaviours of NaN
@@ -72,8 +75,18 @@ module.exports =
                     break;
                 }
 
-                if (context.state.return != 0)
-                    break;
+                switch (context.state.flowState) {
+                    case FlowState.NORMAL:
+                        break;
+                    case FlowState.CONTINUE_LOOP:
+                        context.state.flowState = FlowState.NORMAL;
+                        continue loop;
+                    case FlowState.BREAK_LOOP:
+                        context.state.flowState = FlowState.NORMAL;
+                    //Fallthrough
+                    default:
+                        break loop;
+                }
             }
             await context.variables.reset(varName);
             return result;

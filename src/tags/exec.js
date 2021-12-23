@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const { FlowState } = require('../structures/bbtag/FlowControl');
 const Builder = require('../structures/TagBuilder'),
     bbEngine = require('../structures/bbtag/Engine');
 
@@ -15,8 +16,8 @@ module.exports =
         .withArgs(a => [a.require('tag'), a.optional('args')])
         .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(
-        'Let me do a tag for you. {exec;f}',
-        'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
+            'Let me do a tag for you. {exec;f}',
+            'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
@@ -51,12 +52,7 @@ module.exports =
                     return await this.execTag(subtag, context, tag.content, '"' + a.join('" "') + '"', tag.flags);
             }
         })
-        .withProp('execTag', async function (subtag, context, tagContent, input, flags) {
-            if (context.state.stackSize >= 200) {
-                context.state.return = -1;
-                return Builder.util.error(subtag, context, 'Terminated recursive tag after ' + context.state.stackSize + ' execs.');
-            }
-
+        .withProp('execTag', async function (subtag, /** @type {import('../structures/bbtag/Context')} */context, tagContent, input, flags) {
             let result;
             if (typeof tagContent == "string" || tagContent == null) {
                 let parsed = bbEngine.parse(tagContent || '');
@@ -65,17 +61,25 @@ module.exports =
                 tagContent = parsed.bbtag;
             }
 
-            context.state.stackSize += 1;
             let childContext = context.makeChild({ input, flags });
+            childContext.state.tagResults.push(null);
             if (tagContent != null)
                 result = await this.executeArg(subtag, tagContent, childContext);
-            context.state.stackSize -= 1;
 
             context.errors.push({
                 tag: subtag,
                 error: childContext.errors
             });
-            if (context.state.return > 0) context.state.return--;
+
+            switch (context.state.flowState) {
+                case FlowState.KILL_TAG:
+                case FlowState.CONTINUE_LOOP:
+                case FlowState.BREAK_LOOP:
+                    context.state.flowState = FlowState.NORMAL;
+            }
+            const tagRes = childContext.state.tagResults.pop();
+            if (typeof tagRes === 'string')
+                result = tagRes;
 
             return result;
         }).build();

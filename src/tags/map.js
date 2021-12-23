@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const { FlowState } = require('../structures/bbtag/FlowControl');
 const Builder = require('../structures/TagBuilder');
 
 module.exports =
@@ -33,7 +34,9 @@ module.exports =
                 array = Array.from(arr.v),
                 newArray = [];
 
-            let remaining = context.state.limits.map || {loops : NaN};
+            let remaining = context.state.limits.map || { loops: NaN };
+
+            loop:
             for (const item of array) {
                 remaining.loops--;
                 if (!(remaining.loops >= 0)) {
@@ -43,8 +46,18 @@ module.exports =
                 await context.variables.set(varName, item);
                 newArray.push(await this.executeArg(subtag, args[2], context));
 
-                if (context.state.return)
-                    break;
+                switch (context.state.flowState) {
+                    case FlowState.NORMAL:
+                        break;
+                    case FlowState.CONTINUE_LOOP:
+                        context.state.flowState = FlowState.NORMAL;
+                        continue loop;
+                    case FlowState.BREAK_LOOP:
+                        context.state.flowState = FlowState.NORMAL;
+                    //Fallthrough
+                    default:
+                        break loop;
+                }
             };
 
             context.variables.reset(varName);

@@ -3,6 +3,8 @@
 const Context = require('./Context');
 const { BBTag, SubTag } = require('./Tag');
 const Timer = require('../Timer');
+const { FlowState } = require('./FlowControl');
+const { BBTagError } = require('./BBTagError');
 
 /**
  * Parses the given text as BBTag
@@ -24,7 +26,7 @@ function parse(content) {
  * and then return the string to replace the BBTag element with
  * @param {BBTag} bbtag The BBTag node to begin execution at
  * @param {Context} context The context to be used for execution
- * @returns {string}
+ * @returns {Promise<string>}
  */
 async function execute(bbtag, context) {
     if (!context.guild) return;
@@ -37,7 +39,7 @@ async function execute(bbtag, context) {
         content = bbtag.source;
 
     context.scopes.beginScope();
-    if (context.state.return == 0) { // only iterate if return state is 0
+    if (context.state.flowState == FlowState.NORMAL) {
         for (const subtag of bbtag.children) {
             result.push(content.slice(prevIndex, subtag.start));
             prevIndex = subtag.end;
@@ -79,35 +81,39 @@ async function execute(bbtag, context) {
                 result.push(await runSubtag(subtag, context));
             } catch (err) {
                 if (err instanceof RangeError) {
-                    if (context.state.return == 0)
+                    if (context.state.flowState === FlowState.NORMAL)
                         await bu.send(context.msg.channel.id, 'The tag execution has been halted: ' + err.message);
-                    context.state.return = -1;
+                    context.state.flowState = FlowState.KILL_ALL;
                     throw err;
                 }
-                result.push(addError(subtag, context, 'An internal server error has occurred'));
-                bu.send('250859956989853696', {
-                    content: 'A tag error occurred.',
-                    embed: {
-                        title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),
-                        description: err.stack || 'No error stack!',
-                        color: bu.parseColor('red'),
-                        fields: [
-                            { name: 'SubTag', value: definition.name, inline: true },
-                            { name: 'Arguments', value: JSON.stringify(subtag.children.map(c => c.content.length < 100 ? c.content : c.content.substr(0, 97) + '...')) },
-                            { name: 'Tag Name', value: context.tagName, inline: true },
-                            { name: 'Location', value: `${subtag.range.toString()}`, inline: true },
-                            { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
-                            { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
-                        ]
-                    }
-                });
-                console.error(err);
+                if (err instanceof BBTagError) {
+                    result.push(addError(subtag, context, err.message));
+                } else {
+                    result.push(addError(subtag, context, 'An internal server error has occurred'));
+                    bu.send('250859956989853696', {
+                        content: 'A tag error occurred.',
+                        embed: {
+                            title: err.message || (typeof err == 'string' ? err : JSON.stringify(err)),
+                            description: err.stack || 'No error stack!',
+                            color: bu.parseColor('red'),
+                            fields: [
+                                { name: 'SubTag', value: definition.name, inline: true },
+                                { name: 'Arguments', value: JSON.stringify(subtag.children.map(c => c.content.length < 100 ? c.content : c.content.substr(0, 97) + '...')) },
+                                { name: 'Tag Name', value: context.tagName, inline: true },
+                                { name: 'Location', value: `${subtag.range.toString()}`, inline: true },
+                                { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },
+                                { name: 'CCommand', value: context.isCC ? 'Yes' : 'No', inline: true }
+                            ]
+                        }
+                    });
+                    console.error(err);
+                }
             }
-            if (context.state.return != 0)
+            if (context.state.flowState != FlowState.NORMAL)
                 break;
         }
     }
-    if (context.state.return == 0)
+    if (context.state.flowState === FlowState.NORMAL)
         result.push(content.slice(prevIndex, Math.max(prevIndex, bbtag.end - endOffset)));
     context.scopes.finishScope();
     return result.join('');
@@ -152,7 +158,7 @@ async function checkLimits(context, subtag, definition) {
  * Parses a string as BBTag and executes it
  * @param {string} string The string content of BBTag to execute
  * @param {Context} context The context to perform execution in
- * @returns {string} The string result from executing the string
+ * @returns {Promise<string>} The string result from executing the string
  */
 async function execString(string, context) {
     let parsed = parse(string);
@@ -242,6 +248,8 @@ async function runTag(content, context) {
 
     context.execTimer.start();
     let result = (await execString((content || '').trim(), context) || '').trim();
+    if (typeof context.state.tagResults[0] === 'string')
+        result = context.state.tagResults[0].trim();
     context.execTimer.end();
 
     console.bbtag('Tag run complete in', timer.poll(true), 'ms');
@@ -249,9 +257,6 @@ async function runTag(content, context) {
     await context.variables.persist();
 
     console.bbtag('Saved variables in', timer.poll(true), 'ms');
-
-    if (typeof result == 'object')
-        result = await result;
 
     if (result != null && context.state.replace != null)
         result = result.replace(context.state.replace.regex, context.state.replace.with);

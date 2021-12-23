@@ -7,6 +7,7 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
+const { FlowState } = require('../structures/bbtag/FlowControl');
 const Builder = require('../structures/TagBuilder'),
     waitMessage = require('./waitmessage'),
     bbengine = require('../structures/bbtag/Engine');
@@ -38,6 +39,7 @@ module.exports =
             let processed = {};
             let i = 0;
 
+            loop:
             for (const item of array) {
                 let stringifiedItem = typeof item === 'object' ? JSON.stringify(item) : null;
                 if (processed[stringifiedItem || item]) continue;
@@ -48,8 +50,18 @@ module.exports =
                 await context.variables.set(varName, item);
                 try {
                     let res = await checkFunc(context.msg, item);
-                    if (context.state.return)
-                        break;
+                    switch (context.state.flowState) {
+                        case FlowState.NORMAL:
+                            break;
+                        case FlowState.CONTINUE_LOOP:
+                            context.state.flowState = FlowState.NORMAL;
+                            continue loop;
+                        case FlowState.BREAK_LOOP:
+                            context.state.flowState = FlowState.NORMAL;
+                        //Fallthrough
+                        default:
+                            break loop;
+                    }
                     if (res) {
                         processed[stringifiedItem || item] = true;
                         //If item 'e' is an object, it stringifies it for comparison. Otherwise it will always return false

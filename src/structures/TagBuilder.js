@@ -3,7 +3,8 @@ const ArgFactory = require('./ArgumentFactory'),
     Timer = require('./Timer'),
     { Permission } = require('eris'),
     Context = require('./bbtag/Context'),
-    { SubTag, BBTag } = require('./bbtag/Tag');
+    { SubTag, BBTag } = require('./bbtag/Tag'),
+    { FlowState } = require('./bbtag/FlowControl');
 
 (Context, SubTag, BBTag);
 
@@ -327,6 +328,13 @@ function buildLengthEmbed(definition, subtag, context) {
     };
 }
 
+/**
+ * @param {*} limit
+ * @param {*} subtag
+ * @param {*} arg
+ * @param {Context} context
+ * @returns
+ */
 async function executeArg(limit, subtag, arg, context) {
     let result = await bbEngine.execute(arg, context);
     if (typeof limit === 'number' && limit > 0) {
@@ -338,7 +346,7 @@ async function executeArg(limit, subtag, arg, context) {
                     ...buildLengthEmbed(this, subtag, context)
                 }
             });
-            context.state.return = -1;
+            context.state.flowState = FlowState.KILL_ALL;
             return TagBuilder.util.error(arg, context, 'Argument length exceeded limit');
         } else if (result.length > (limit / 2)) {
             bu.send('250859956989853696', {

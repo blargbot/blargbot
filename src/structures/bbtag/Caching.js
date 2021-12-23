@@ -22,7 +22,9 @@ class VariableCache {
         this.cache = {};
     }
 
-    /** @param {string} variable The name of the variable to retrieve @returns {string}*/
+    /**
+     * @param {string} variable The name of the variable to retrieve
+     * @returns {Promise<string>}*/
     async get(variable) {
         let forced = variable.startsWith('!');
         if (forced) variable = variable.substr(1);
