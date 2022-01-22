@@ -173,7 +173,12 @@ export class SubtagTestContext {
         this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
         this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
         this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()), false)
-            .thenCall((name: string, type: SubtagVariableType, scope: string) => this.tagVariables[`${type}.${scope}.${name}`]);
+            .thenCall((...args: Parameters<TagVariablesTable['get']>) => this.tagVariables[`${args[1]}.${args[2]}.${args[0]}`]);
+        this.tagVariablesTable.setup(m => m.upsert(anything() as never, anyString(), anyString()), false)
+            .thenCall((...args: Parameters<TagVariablesTable['upsert']>) => {
+                for (const [name, value] of Object.entries(args[0]))
+                    this.tagVariables[`${args[1]}.${args[2]}.${name}`] = value;
+            });
 
         this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
         this.discord.setup(m => m.guildShardMap, false).thenReturn({});
@@ -602,6 +607,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
 
         // act
         const result = await context.eval(code);
+        await context.variables.persist();
 
         // assert
         switch (typeof expected) {

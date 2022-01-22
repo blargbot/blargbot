@@ -30,10 +30,11 @@ export class MathSubtag extends DefinedSubtag {
             throw new InvalidOperatorError(operator);
 
         return bbtagUtil.tagArray.flattenArray(args).map((arg) => {
+            const argRaw = arg;
             if (typeof arg === 'string')
                 arg = parse.float(arg);
             if (typeof arg !== 'number' || isNaN(arg))
-                throw new NotANumberError(arg);
+                throw new NotANumberError(argRaw);
             return arg;
         }).reduce(bbtagUtil.numericOperators[operator]);
     }

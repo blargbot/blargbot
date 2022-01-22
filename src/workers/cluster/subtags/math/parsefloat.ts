@@ -1,7 +1,7 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { parse, SubtagType } from '@cluster/utils';
 
-export class ParseFloattSubtag extends DefinedSubtag {
+export class ParseFloatSubtag extends DefinedSubtag {
     public constructor() {
         super({
             name: 'parsefloat',

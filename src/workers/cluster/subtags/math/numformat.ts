@@ -11,7 +11,7 @@ export class NumFormatSubtag extends DefinedSubtag {
                 {
                     parameters: ['number', 'roundTo'],
                     description: 'Rounds `number` to `roundTo` digits. `roundTo` can be left empty.',
-                    exampleCode: '{numformat;123456.789;2}\n{numformat;123456.789;-3}\n{numformat;100.10000}',
+                    exampleCode: '{numformat;123456.789;2}\n{numformat;123456.789;-3}\n{numformat;100.10000;}',
                     exampleOut: '123456.79\n123000\n100.1',
                     returns: 'string',
                     execute: (_, [numberStr, roundToStr]) => this.numFormat(numberStr.value, roundToStr.value, '.', '')
@@ -36,7 +36,7 @@ export class NumFormatSubtag extends DefinedSubtag {
         const number = parse.float(numberStr);
         if (isNaN(number)) return 'NaN';
         let roundto = parse.int(roundToStr);
-        const options: LocaleNumOptions = {}; // create formatter options
+        const options: Intl.NumberFormatOptions = {}; // create formatter options
         if (!isNaN(roundto)) {
             roundto = Math.min(20, Math.max(-21, roundto));
             const trunclen = Math.trunc(number).toString().length;
@@ -52,10 +52,4 @@ export class NumFormatSubtag extends DefinedSubtag {
         num = num.join(decimal);
         return num;
     }
-}
-
-interface LocaleNumOptions {
-    minimumFractionDigits?: number;
-    maximumFractionDigits?: number;
-    maximumSignificantDigits?: number;
 }

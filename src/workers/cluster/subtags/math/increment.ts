@@ -39,7 +39,7 @@ export class IncrementSubtag extends DefinedSubtag {
             throw new NotABooleanError(floorStr);
 
         const valueRaw = await context.variables.get(varName);
-        let value;
+        let value = NaN;
         switch (typeof valueRaw) {
             case 'string':
                 value = parse.float(valueRaw);
@@ -47,11 +47,9 @@ export class IncrementSubtag extends DefinedSubtag {
             case 'number':
                 value = valueRaw;
                 break;
-            default:
-                value = NaN;
         }
         if (isNaN(value))
-            throw new NotANumberError(value);
+            throw new NotANumberError(valueRaw);
 
         if (floor) {
             value = Math.floor(value);

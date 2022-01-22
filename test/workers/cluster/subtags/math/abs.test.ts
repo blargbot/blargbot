@@ -28,6 +28,20 @@ runSubtagTests({
             ]
         },
         {
+            code: '{abs;[1,5,"test"]}',
+            expected: '`Not a number`',
+            errors: [
+                { start: 0, end: 18, error: new NotANumberError('test') }
+            ]
+        },
+        {
+            code: '{abs;[1,5,null]}',
+            expected: '`Not a number`',
+            errors: [
+                { start: 0, end: 16, error: new NotANumberError(null) }
+            ]
+        },
+        {
             code: '{abs;[1,2,"def"]}',
             expected: '`Not a number`',
             errors: [
