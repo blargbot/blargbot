@@ -1698,6 +1698,11 @@ catflake@^1.0.0:
   dependencies:
     big-integer "^1.6.36"
 
+chai-bytes@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/chai-bytes/-/chai-bytes-0.1.2.tgz#c297e81d47eb3106af0676ded5bb5e0c9f981db3"
+  integrity sha512-0ol6oJS0y1ozj6AZK8n1pyv1/G+l44nqUJygAkK1UrYl+IOGie5vcrEdrAlwmLYGIA9NVvtHWosPYwWWIXf/XA==
+
 chai-exclude@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/chai-exclude/-/chai-exclude-2.1.0.tgz#653d1218144eafb49b563684ad90b76d12bbc3f9"

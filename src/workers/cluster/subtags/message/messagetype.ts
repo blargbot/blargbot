@@ -34,7 +34,7 @@ export class MessageTypeSubtag extends DefinedSubtag {
     ): Promise<number> {
         const msg = await context.util.getMessage(context.channel, context.message.id);
         if (msg === undefined)
-            throw new MessageNotFoundError(context.channel, context.message.id);
+            throw new MessageNotFoundError(context.channel.id, context.message.id);
         return msg.type;
     }
 
@@ -46,15 +46,10 @@ export class MessageTypeSubtag extends DefinedSubtag {
         const channel = await context.queryChannel(channelStr);
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
-        let message;
-        try {
-            message = await context.util.getMessage(channel, messageId);
-            if (message === undefined)
-                throw new MessageNotFoundError(channel, messageId);
-        } catch (e: unknown) {
-            context.logger.error(e);
-            throw new MessageNotFoundError(channel, messageId);
-        }
+
+        const message = await context.util.getMessage(channel, messageId);
+        if (message === undefined)
+            throw new MessageNotFoundError(channel.id, messageId);
 
         return message.type;
     }

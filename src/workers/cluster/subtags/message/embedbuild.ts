@@ -1,63 +1,7 @@
 import { DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { InvalidEmbedError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, parse, SubtagType } from '@cluster/utils';
-import { EmbedField, EmbedOptions } from 'eris';
-
-const fields = [
-    {
-        key: 'title'
-    },
-    {
-        key: 'description'
-    },
-    {
-        key: 'url'
-    },
-    {
-        key: 'color',
-        desc: 'can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number.'
-    },
-    {
-        key: 'timestamp'
-    },
-    {
-        key: 'footer.icon_url'
-    },
-    {
-        key: 'footer.text'
-    },
-    {
-        key: 'thumbnail.url'
-    },
-    {
-        key: 'image.url'
-    },
-    {
-        key: 'author.name'
-    },
-    {
-        key: 'author.url'
-    },
-    {
-        key: 'author.icon_url'
-    },
-    {
-        key: 'fields.name',
-        desc: 'Must have `fields.value` after. Cannot be empty.'
-    },
-    {
-        key: 'fields.value',
-        desc: 'Must come after a `fields.name`. Cannot be empty'
-    },
-    {
-        key: 'fields.inline',
-        desc: 'Must come after a `fields.name`'
-    }
-];
-
-type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
-// custom message for fields missing values/names
-type EmbedBuildOptions = Overwrite<EmbedOptions, { fields?: Array<Partial<EmbedField>>; }>
+import { EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions } from 'eris';
 
 export class EmbedBuildSubtag extends DefinedSubtag {
     public constructor() {
@@ -67,7 +11,7 @@ export class EmbedBuildSubtag extends DefinedSubtag {
             aliases: ['buildembed'],
             desc: 'This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
                 'This tag uses a key/value system, with each entry in `values` looking like `key:value`.\n\n' +
-                'Valid keys are:\n' + fields.map(k => '`' + k.key + '`' + (k.desc === undefined ? '' : ' - ' + k.desc)).join('\n') + '\n\n' +
+                'Valid keys are:\n' + Object.entries(fields).map(([key, { description }]) => '`' + key + '`' + (description === undefined ? '' : ' - ' + description)).join('\n') + '\n\n' +
                 'You can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) ' +
                 'and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds ' +
                 '[here](https://leovoel.github.io/embed-visualizer/)',
@@ -94,7 +38,7 @@ export class EmbedBuildSubtag extends DefinedSubtag {
                 continue;
             const splitAt = entry.indexOf(':');
             if (splitAt === -1)
-                throw new BBTagRuntimeError('Missing \':\'', entry);
+                throw new InvalidEmbedError('Missing \':\'', entry);
 
             const key = entry.substring(0, splitAt);
             const value = entry.substring(splitAt + 1);
@@ -106,116 +50,170 @@ export class EmbedBuildSubtag extends DefinedSubtag {
             for (let i = 0; i < embed.fields.length; i++) {
                 const field = embed.fields[i];
                 if ((field.value?.trim() ?? '') === '')
-                    throw new BBTagRuntimeError('Fields missing value', `Field at index ${i}`);
+                    throw new InvalidEmbedError('Field missing value', `Field at index ${i}`);
                 if ((field.name?.trim() ?? '') === '')
-                    throw new BBTagRuntimeError('Field missing name', `Field at index ${i}`);
+                    throw new InvalidEmbedError('Field missing name', `Field at index ${i}`);
             }
         }
         if (!guard.checkEmbedSize([<EmbedOptions>embed]))
-            throw new BBTagRuntimeError('Embed too long', JSON.stringify(embed));
+            throw new InvalidEmbedError('Embed too long', JSON.stringify(embed));
         return embed as JObject;
     }
 
-    private setField(
-        embed: EmbedBuildOptions,
-        key: string,
-        value: string
-    ): void {
-        switch (key.toLowerCase()) {
-            case 'title':
-                if (value.length > discordUtil.getLimit('embed.title'))
-                    throw new BBTagRuntimeError('Title too long', value);
-                embed.title = value;
-                break;
-            case 'description':
-                if (value.length > discordUtil.getLimit('embed.description'))
-                    throw new BBTagRuntimeError('Description too long', value);
-                embed.description = value;
-                break;
-            case 'url':
-                if (!guard.isUrl(value))
-                    throw new BBTagRuntimeError('Invalid url', value);
-                embed.url = value;
-                break;
-            case 'color': {
-                const colour = parse.color(value);
-                if (colour === undefined)
-                    throw new BBTagRuntimeError('Invalid color', value);
-                embed.color = colour;
-                break;
-            }
-            case 'timestamp': {
-                const time = parse.time(value);
-                if (!time.isValid())
-                    throw new BBTagRuntimeError('Invalid timestamp', value);
-                embed.timestamp = time.toDate();
-                break;
-            }
-            case 'footer.icon_url':
-                if (!guard.isUrl(value))
-                    throw new BBTagRuntimeError('Invalid footer.icon_url', value);
-                embed.footer = { text: '', ...embed.footer, icon_url: value };
-                break;
-            case 'footer.text':
-                if (value.length > discordUtil.getLimit('embed.footer.text'))
-                    throw new BBTagRuntimeError('Footer text too long', value);
-                embed.footer = { ...embed.footer, text: value };
-                break;
-            case 'thumbnail.url':
-                if (!guard.isUrl(value))
-                    throw new BBTagRuntimeError('Invalid thumbnail.url', value);
-                embed.thumbnail = { ...embed.thumbnail, url: value };
-                break;
-            case 'image.url':
-                if (!guard.isUrl(value))
-                    throw new BBTagRuntimeError('Invalid image.url', value);
-                embed.image = { ...embed.image, url: value };
-                break;
-            case 'author.name':
-                if (value.length > discordUtil.getLimit('embed.author.name'))
-                    throw new BBTagRuntimeError('Author name too long', value);
-                embed.author = { ...embed.author, name: value };
-                break;
-            case 'author.url':
-                if (!guard.isUrl(value))
-                    throw new BBTagRuntimeError('Invalid author.url', value);
-                embed.author = { name: '', ...embed.author, url: value };
-                break;
-            case 'author.icon_url':
-                if (!guard.isUrl(value))
-                    throw new BBTagRuntimeError('Invalid author.icon_url', value);
-                embed.author = { name: '', ...embed.author, icon_url: value };
-                break;
-            case 'fields.name':
-                if (embed.fields !== undefined && embed.fields.length >= discordUtil.getLimit('embed.fields'))
-                    throw new BBTagRuntimeError('Too many fields', value);
-                if (value.length > discordUtil.getLimit('embed.field.name'))
-                    throw new BBTagRuntimeError('Field name too long', value);
-                if (embed.fields === undefined)
-                    embed.fields = [];
-                embed.fields.push({
-                    name: value
-                });
-                break;
-            case 'fields.value':
-                if (embed.fields === undefined || embed.fields.length === 0)
-                    throw new BBTagRuntimeError('Field name not specified');
-                if (value.length > discordUtil.getLimit('embed.field.value'))
-                    throw new BBTagRuntimeError('Field value too long', value);
-                embed.fields[embed.fields.length - 1].value = value;
-                break;
-            case 'fields.inline': {
-                if (embed.fields === undefined || embed.fields.length === 0)
-                    throw new BBTagRuntimeError('Field name not specified');
-                const parsedValue = parse.boolean(value);
-                if (typeof parsedValue !== 'boolean')
-                    throw new BBTagRuntimeError('Inline must be a boolean', value);
-                embed.fields[embed.fields.length - 1].inline = parsedValue;
-                break;
-            }
-            default:
-                throw new BBTagRuntimeError('Unknown key \'' + value + '\'');
-        }
-
+    private setField(embed: EmbedBuildOptions, key: string, value: string): void {
+        const id = key.toLowerCase();
+        if (!guard.hasProperty(fields, id))
+            throw new InvalidEmbedError(`Unknown key '${key}'`);
+        fields[id].set(embed, value.trim());
     }
 }
+
+type Overwrite<T, U> = Pick<T, Exclude<keyof T, keyof U>> & U;
+// custom message for fields missing values/names
+type EmbedBuildOptions = Overwrite<EmbedOptions, {
+    fields?: Array<Partial<EmbedField>>;
+    author?: Partial<EmbedAuthor>;
+    footer?: Partial<EmbedFooter>;
+}>
+interface EmbedFieldDetails {
+    readonly description?: string;
+    (embed: EmbedBuildOptions, value: string): void;
+}
+
+function validateLength(value: { length: number; } | undefined, limitKey: discordUtil.MessageComponent, errorText: string): void {
+    if (value !== undefined && value.length > discordUtil.getLimit(limitKey))
+        throw new InvalidEmbedError(errorText, typeof value === 'string' ? value : undefined);
+}
+
+function validateUrl(value: string, errorText: string): void {
+    if (!guard.isUrl(value))
+        throw new InvalidEmbedError(errorText, value);
+}
+
+function parseOrError<T>(value: string, parse: (value: string) => T | undefined, errorText: string, isValid: (value: T) => boolean = () => true): T {
+    const result = parse(value);
+    if (result === undefined || !isValid(result))
+        throw new InvalidEmbedError(errorText, value);
+    return result;
+}
+
+function getCurrentField(embed: EmbedBuildOptions, errorText: string): Partial<EmbedField> {
+    if (embed.fields === undefined || embed.fields.length === 0)
+        throw new InvalidEmbedError(errorText);
+    return embed.fields[embed.fields.length - 1];
+}
+
+const fieldKeys = [
+    'title',
+    'description',
+    'url',
+    'color',
+    'timestamp',
+    'footer.icon_url',
+    'footer.text',
+    'thumbnail.url',
+    'image.url',
+    'author.name',
+    'author.url',
+    'author.icon_url',
+    'fields.name',
+    'fields.value',
+    'fields.inline'
+] as const;
+
+const fieldSetters: Record<typeof fieldKeys[number], EmbedFieldDetails> = {
+    'title'(embed, value) {
+        validateLength(value, 'embed.title', 'Title too long');
+        embed.title = value;
+    },
+    'description'(embed, value) {
+        validateLength(value, 'embed.description', 'Description too long');
+        embed.description = value;
+    },
+    'footer.text'(embed, value) {
+        validateLength(value, 'embed.footer.text', 'Footer text too long');
+        embed.footer ??= {};
+        embed.footer.text = value;
+    },
+    'author.name'(embed, value) {
+        validateLength(value, 'embed.author.name', 'Author name too long');
+        embed.author ??= {};
+        embed.author.name = value;
+    },
+    'fields.name'(embed, value) {
+        validateLength(value, 'embed.field.name', 'Field name too long');
+        embed.fields ??= [];
+        embed.fields.push({ name: value });
+        validateLength(embed.fields, 'embed.fields', 'Too many fields');
+    },
+    'fields.value'(embed, value) {
+        const field = getCurrentField(embed, 'Field name not specified');
+        validateLength(value, 'embed.field.value', 'Field value too long');
+        field.value = value;
+    },
+    'url'(embed, value) {
+        validateUrl(value, 'Invalid url');
+        embed.url = value;
+    },
+    'footer.icon_url'(embed, value) {
+        validateUrl(value, 'Invalid footer.icon_url');
+        embed.footer ??= { text: '\u200b' };
+        embed.footer.icon_url = value;
+    },
+    'thumbnail.url'(embed, value) {
+        validateUrl(value, 'Invalid thumbnail.url');
+        embed.thumbnail ??= {};
+        embed.thumbnail.url = value;
+    },
+    'image.url'(embed, value) {
+        validateUrl(value, 'Invalid image.url');
+        embed.image ??= {};
+        embed.image.url = value;
+    },
+    'author.url'(embed, value) {
+        validateUrl(value, 'Invalid author.url');
+        embed.author ??= { name: '\u200b' };
+        embed.author.url = value;
+    },
+    'author.icon_url'(embed, value) {
+        validateUrl(value, 'Invalid author.icon_url');
+        embed.author ??= { name: '\u200b' };
+        embed.author.icon_url = value;
+    },
+    'color'(embed, value) {
+        const color = parseOrError(value, parse.color, 'Invalid color');
+        embed.color = color;
+    },
+    'timestamp'(embed, value) {
+        const date = parseOrError(value, parse.time, 'Invalid timestamp', t => t.isValid());
+        embed.timestamp = date.toDate();
+    },
+    'fields.inline'(embed, value) {
+        const field = getCurrentField(embed, 'Field name not specified');
+        const inline = parseOrError(value, parse.boolean, 'Inline must be a boolean');
+        field.inline = inline;
+    }
+};
+
+const fieldDescriptions: Record<typeof fieldKeys[number], string | undefined> = {
+    'author.icon_url': undefined,
+    'author.name': undefined,
+    'author.url': undefined,
+    'fields.inline': undefined,
+    'fields.name': undefined,
+    'fields.value': undefined,
+    'footer.icon_url': undefined,
+    'footer.text': undefined,
+    'image.url': undefined,
+    'thumbnail.url': undefined,
+    'color': undefined,
+    'description': undefined,
+    'timestamp': undefined,
+    'title': undefined,
+    'url': undefined
+};
+
+const fields = Object.fromEntries(fieldKeys.map(k => [k, {
+    description: fieldDescriptions[k],
+    set: fieldSetters[k]
+}]));

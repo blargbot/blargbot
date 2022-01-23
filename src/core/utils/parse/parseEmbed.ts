@@ -76,11 +76,14 @@ const mapMalformedEmbed: TypeMappingImpl<MalformedEmbed> = value => mapping.succ
     malformed: true
 });
 
-const mapEmbeds = mapping.json(mapping.choice(
-    mapping.array(mapping.choice(
+const mapEmbeds = mapping.choice(
+    mapping.json(mapping.choice(
+        mapping.array(mapping.choice(
+            mapEmbedCore,
+            mapMalformedEmbed
+        )),
         mapEmbedCore,
         mapMalformedEmbed
     )),
-    mapEmbedCore,
     mapMalformedEmbed
-));
+);

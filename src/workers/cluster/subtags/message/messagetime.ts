@@ -34,11 +34,10 @@ export class MessageTimeSubtag extends DefinedSubtag {
                     parameters: ['channel|messageid', 'messageid|format'],
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
                     returns: 'string',
-                    execute: async (context, [channelOrMessage, messageOrFormat]) => {
-                        const channel = await context.queryChannel(channelOrMessage.value, { noErrors: true });
-                        if (channel === undefined)
-                            return await this.getMessageTime(context, context.channel.id, channelOrMessage.value, messageOrFormat.value);
-                        return await this.getMessageTime(context, channelOrMessage.value, messageOrFormat.value, 'x');
+                    execute: (context, [channelOrMessage, messageOrFormat]) => {
+                        if (/^\d{17,23}/.test(messageOrFormat.value))
+                            return this.getMessageTime(context, channelOrMessage.value, messageOrFormat.value, 'x');
+                        return this.getMessageTime(context, context.channel.id, channelOrMessage.value, messageOrFormat.value);
                     }
                 },
                 {
@@ -61,14 +60,10 @@ export class MessageTimeSubtag extends DefinedSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        try {
-            const message = await context.util.getMessage(channel.id, messageStr);
-            if (message === undefined)
-                throw new MessageNotFoundError(channel, messageStr);
-            return moment(message.timestamp).format(format);
-        } catch (e: unknown) {
-            throw new MessageNotFoundError(channel, messageStr);
-        }
+        const message = await context.util.getMessage(channel, messageStr);
+        if (message === undefined)
+            throw new MessageNotFoundError(channel.id, messageStr);
+        return moment(message.timestamp).format(format);
     }
 
     public enrichDocs(embed: EmbedOptions): EmbedOptions {

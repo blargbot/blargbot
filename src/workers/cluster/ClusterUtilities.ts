@@ -572,11 +572,11 @@ export class ClusterUtilities extends BaseUtilities {
     }
 
     public async isUserStaff(member: Member): Promise<boolean>;
-    public async isUserStaff(userId: string, guildId: string): Promise<boolean>;
+    public async isUserStaff(userId: string, guildId: string | Guild): Promise<boolean>;
     public async isUserStaff(guildId: string | Guild): Promise<(member: Member) => boolean>;
     public async isUserStaff(
         ...args:
-            | [userId: string, guildId: string]
+            | [userId: string, guildId: string | Guild]
             | [member: Member]
             | [guildId: string | Guild]
     ): Promise<boolean | ((member: Member) => boolean)> {

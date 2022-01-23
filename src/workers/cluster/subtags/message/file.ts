@@ -20,8 +20,9 @@ export class FileSubtag extends DefinedSubtag {
     }
 
     public attachFile(context: BBTagContext, fileName: string, fileContent: string): void {
-        context.state.file = { file: fileContent, name: fileName };
-        if (fileContent.startsWith('buffer:'))
-            context.state.file.file = Buffer.from(fileContent.substring(7), 'base64');
+        const data = fileContent.startsWith('buffer:')
+            ? Buffer.from(fileContent.substring(7), 'base64')
+            : fileContent;
+        context.state.file = { file: data, name: fileName };
     }
 }

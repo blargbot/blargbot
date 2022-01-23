@@ -5,6 +5,7 @@ export * from './BBTagTypeError';
 export * from './ChannelNotFoundError';
 export * from './InternalServerError';
 export * from './InvalidChannelError';
+export * from './InvalidEmbedError';
 export * from './InvalidOperatorError';
 export * from './MessageNotFoundError';
 export * from './NotABooleanError';

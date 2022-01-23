@@ -50,16 +50,17 @@ export class DeleteSubtag extends DefinedSubtag {
             throw new ChannelNotFoundError(channelStr);
 
         if (messageId.length === 0 || !guard.isTextableChannel(channel))
-            throw new MessageNotFoundError(channel, messageId);
+            throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
 
-        const msg = await context.util.getMessage(channel.id, messageId);
+        const msg = await context.util.getMessage(channel, messageId);
         if (msg === undefined)
-            throw new MessageNotFoundError(channel, messageId);
+            throw new MessageNotFoundError(channel.id, messageId).withDisplay('');
 
         context.engine.cluster.commands.messages.remove(context.guild.id, msg.id);
         try {
             await msg.delete();
         } catch (e: unknown) {
+            context.logger.warn('Failed to delete message', e);
             // NOOP
         }
         //TODO return something like true/false

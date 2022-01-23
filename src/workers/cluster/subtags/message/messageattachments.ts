@@ -50,14 +50,12 @@ export class MessageAttachmentsSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '[]' : undefined);
         }
 
-        try {
-            const message = await context.util.getMessage(channel, messageStr);
-            if (message === undefined)
-                throw new MessageNotFoundError(channel, messageStr);
-            return message.attachments.map(a => a.id);
-        } catch (e: unknown) {
-            throw new MessageNotFoundError(channel, messageStr);
+        const message = await context.util.getMessage(channel, messageStr);
+        if (message === undefined) {
+            throw new MessageNotFoundError(channel.id, messageStr)
+                .withDisplay(quiet ? '[]' : undefined);
         }
 
+        return message.attachments.map(a => a.id);
     }
 }

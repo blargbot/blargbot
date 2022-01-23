@@ -190,7 +190,7 @@ export interface BBTagContextState {
         role: Record<string, string | undefined>;
         channel: Record<string, string | undefined>;
     };
-    outputMessage: Promise<string | undefined> | undefined;
+    outputMessage: string | undefined;
     ownedMsgs: string[];
     return: RuntimeReturnState;
     stackSize: number;

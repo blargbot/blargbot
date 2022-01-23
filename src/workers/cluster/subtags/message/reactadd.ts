@@ -47,12 +47,12 @@ export class ReactAddSubtag extends DefinedSubtag {
         // Check that the current first "emote" is a message id
         if (/^\d{17,23}$/.test(args[0])) {
             try {
-                message = await context.util.getMessage(channel.id, args[0]);
+                message = await context.util.getMessage(channel, args[0]);
             } catch (e: unknown) {
                 // NOOP
             }
             if (message === undefined)
-                throw new MessageNotFoundError(channel, args[0]);
+                throw new MessageNotFoundError(channel.id, args[0]);
             args.shift();
         }
         const permissions = channel.permissionsOf(context.discord.user.id);
@@ -63,7 +63,7 @@ export class ReactAddSubtag extends DefinedSubtag {
 
         if (parsed.length === 0 && args.length > 0)
             throw new BBTagRuntimeError('Invalid Emojis');
-        const outputMessage = await context.state.outputMessage;
+        const outputMessage = context.state.outputMessage;
         const reactToMessage = message !== undefined ? message :
             outputMessage !== undefined ? await context.util.getMessage(context.channel, outputMessage) : undefined;
 

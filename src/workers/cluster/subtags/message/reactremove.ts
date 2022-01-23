@@ -47,7 +47,7 @@ export class ReactRemoveSubtag extends DefinedSubtag {
         }
         args.shift();
         if (message === undefined)
-            throw new MessageNotFoundError(channel, args[0]);
+            throw new MessageNotFoundError(channel.id, args[0]);
 
         if (!(await context.isStaff || context.ownsMessage(message.id)))
             throw new BBTagRuntimeError('Author must be staff to modify unrelated messages');

@@ -50,14 +50,13 @@ export class MessageTextSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        try {
-            const message = await context.util.getMessage(channel, messageStr);
-            if (message === undefined)
-                throw new MessageNotFoundError(channel, messageStr);
-            return message.content;
-        } catch (e: unknown) {
-            throw new MessageNotFoundError(channel, messageStr);
+        const message = await context.util.getMessage(channel, messageStr);
+        if (message === undefined) {
+            throw new MessageNotFoundError(channel.id, messageStr)
+                .withDisplay(quiet ? '' : undefined);
         }
+
+        return message.content;
 
     }
 }

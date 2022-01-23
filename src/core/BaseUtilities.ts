@@ -460,6 +460,8 @@ export class BaseUtilities {
         }
     }
 
+    public async getMessage(channel: string, messageId: string, force?: boolean): Promise<KnownMessage | undefined>;
+    public async getMessage(channel: KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined>;
     public async getMessage(channel: string | KnownChannel, messageId: string, force?: boolean): Promise<KnownMessage | undefined> {
         messageId = parse.entityId(messageId) ?? '';
         if (messageId === '')

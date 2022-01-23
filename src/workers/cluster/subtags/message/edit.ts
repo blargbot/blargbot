@@ -57,38 +57,35 @@ export class EditSubtag extends DefinedSubtag {
             content = contentStr;
         } else {
             const parsedEmbed = parse.embed(contentStr);
-            if (parsedEmbed === undefined || guard.hasProperty(parsedEmbed, 'malformed')) {
+            if (parsedEmbed === undefined || parsedEmbed.some(e => guard.hasProperty(e, 'malformed'))) {
                 content = contentStr;
             } else {
                 embeds = parsedEmbed;
             }
         }
 
+        const message = await context.util.getMessage(channel, messageStr);
+        if (message === undefined)
+            throw new MessageNotFoundError(channel.id, messageStr);
+        if (message.author.id !== context.discord.user.id)
+            throw new BBTagRuntimeError('I must be the message author');
+
+        content = content ?? message.content;
+        embeds = embeds ?? message.embeds;
+
+        if (contentStr === '_delete') content = '';
+        if (embedStr === '_delete') embeds = [];
+
+        if (content.trim() === '' && embeds.length === 0)
+            throw new BBTagRuntimeError('Message cannot be empty');
+
         try {
-            const message = await context.util.getMessage(channel.id, messageStr);
-
-            if (message === undefined)
-                throw new MessageNotFoundError(channel, messageStr);
-            if (message.author.id !== context.discord.user.id)
-                throw new BBTagRuntimeError('I must be the message author');
-            content = content ?? message.content;
-            embeds = embeds ?? message.embeds;
-
-            if (contentStr === '_delete') content = '';
-            if (embedStr === '_delete') embeds = [];
-
-            if (content.trim() === '' && embeds.length === 0)
-                throw new BBTagRuntimeError('KnownMessage cannot be empty');
-            try {
-                await message.edit({
-                    content,
-                    embeds
-                });
-            } catch (err: unknown) {
-                // NOOP
-            }
+            await message.edit({
+                content,
+                embeds
+            });
         } catch (err: unknown) {
-            throw new BBTagRuntimeError('Unable to get message');
+            context.logger.error('Failed to edit message', err);
         }
     }
 

@@ -12,6 +12,7 @@
         "cassandra-driver": "^4.6.3",
         "cat-loggr": "^1.1.0",
         "catflake": "^1.0.0",
+        "chai-bytes": "^0.1.2",
         "chalk": "^4.1.2",
         "color": "^4.1.0",
         "color-thief-jimp": "^2.0.2",

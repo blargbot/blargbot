@@ -14,7 +14,7 @@ export class ReactListSubtag extends DefinedSubtag {
                     parameters: [],
                     description: 'This just returns `No message found` ***always*** for the sake of backwards compatibility.',
                     returns: 'error',
-                    execute: (ctx) => { throw new MessageNotFoundError(ctx.channel, ''); }
+                    execute: (ctx) => { throw new MessageNotFoundError(ctx.channel.id, ''); }
                 },
                 {
                     parameters: ['messageid'],
@@ -54,12 +54,12 @@ export class ReactListSubtag extends DefinedSubtag {
 
         // Check that the current first "emote" is a message id
         try {
-            message = await context.util.getMessage(channel.id, args[0]);
+            message = await context.util.getMessage(channel, args[0]);
         } catch (e: unknown) {
             // NOOP
         }
         if (message === undefined)
-            throw new MessageNotFoundError(channel, args[0]);
+            throw new MessageNotFoundError(channel.id, args[0]);
         args.shift();
 
         // Find all actual emotes in remaining emotes
@@ -97,7 +97,7 @@ export class ReactListSubtag extends DefinedSubtag {
     public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {
         const msg = await context.util.getMessage(context.channel, messageId, true);
         if (msg === undefined)
-            throw new MessageNotFoundError(context.channel, messageId);
+            throw new MessageNotFoundError(context.channel.id, messageId);
         return Object.keys(msg.reactions);
     }
 

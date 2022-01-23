@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
-import { Embed, KnownMessage } from 'eris';
+import { Embed } from 'eris';
 
 export class MessageEmbedsSubtag extends DefinedSubtag {
     public constructor() {
@@ -50,15 +50,13 @@ export class MessageEmbedsSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '[]' : undefined);
         }
 
-        let message: KnownMessage | undefined;
-        try {
-            message = await context.util.getMessage(channel, messageStr);
-            if (message === undefined)
-                throw new MessageNotFoundError(channel, messageStr);
-            return message.embeds;
-        } catch (e: unknown) {
-            throw new MessageNotFoundError(channel, messageStr);
+        const message = await context.util.getMessage(channel, messageStr);
+        if (message === undefined) {
+            throw new MessageNotFoundError(channel.id, messageStr)
+                .withDisplay(quiet ? '[]' : undefined);
         }
+
+        return message.embeds;
 
     }
 }

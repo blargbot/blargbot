@@ -35,10 +35,9 @@ export class MessageEditTimeSubtag extends DefinedSubtag {
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
                     returns: 'string',
                     execute: async (context, [channelOrMessageId, messageIdOrFormat]) => {
-                        const channel = await context.queryChannel(channelOrMessageId.value, { noErrors: true });
-                        if (channel === undefined)
-                            return await this.getMessageEditTime(context, context.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
-                        return await this.getMessageEditTime(context, channelOrMessageId.value, messageIdOrFormat.value, 'x');
+                        if (/^\d{17,23}/.test(messageIdOrFormat.value))
+                            return await this.getMessageEditTime(context, channelOrMessageId.value, messageIdOrFormat.value, 'x');
+                        return await this.getMessageEditTime(context, context.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
                     }
                 },
                 {
@@ -61,15 +60,13 @@ export class MessageEditTimeSubtag extends DefinedSubtag {
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
 
-        try {
-            const message = await context.util.getMessage(channel.id, messageStr);
-            if (message === undefined)
-                throw new MessageNotFoundError(channel, messageStr);
+        const message = await context.util.getMessage(channel, messageStr);
+        if (message === undefined)
+            throw new MessageNotFoundError(channel.id, messageStr);
 
-            return message.editedTimestamp === undefined ? moment().format('x') : moment(message.editedTimestamp).format(format);
-        } catch (e: unknown) {
-            throw new MessageNotFoundError(channel, messageStr);
-        }
+        return message.editedTimestamp === undefined
+            ? moment().format(format)
+            : moment(message.editedTimestamp).format(format);
     }
 
     public enrichDocs(embed: EmbedOptions): EmbedOptions {

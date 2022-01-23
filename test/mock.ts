@@ -1,5 +1,6 @@
 import { instance, verify, when } from 'ts-mockito';
 import { Matcher } from 'ts-mockito/lib/matcher/type/Matcher';
+import { StrictEqualMatcher } from 'ts-mockito/lib/matcher/type/StrictEqualMatcher';
 import { MethodStubSetter } from 'ts-mockito/lib/MethodStubSetter';
 import { MethodStubVerificator } from 'ts-mockito/lib/MethodStubVerificator';
 import { Mocker } from 'ts-mockito/lib/Mock';
@@ -103,6 +104,9 @@ export const argument = {
     },
     isDeepEqual<T>(value: T, ignoreExcessUndefined = true): T {
         return new DeepEqualMatcher<T>(value, !ignoreExcessUndefined) as unknown as T;
+    },
+    exact<T>(value: T): T {
+        return new StrictEqualMatcher(value) as unknown as T;
     }
 };
 

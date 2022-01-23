@@ -45,16 +45,12 @@ export class ThreadCreateSubtag extends DefinedSubtag {
 
         let message: KnownMessage | undefined;
         if (messageStr !== '') {
-            try {
-                const maybeMessage = await context.util.getMessage(channel, messageStr);
-                if (maybeMessage === undefined)
-                    throw new MessageNotFoundError(channel, messageStr);
-                if (!guard.isGuildMessage(maybeMessage))
-                    throw new BBTagRuntimeError('KnownMessage not in guild');
-                message = maybeMessage;
-            } catch (e: unknown) {
-                throw new MessageNotFoundError(channel, messageStr);
-            }
+            const maybeMessage = await context.util.getMessage(channel, messageStr);
+            if (maybeMessage === undefined)
+                throw new MessageNotFoundError(channel.id, messageStr);
+            if (!guard.isGuildMessage(maybeMessage))
+                throw new BBTagRuntimeError('Message not in guild');
+            message = maybeMessage;
         }
 
         const mappingOptions = threadOptions((await bbtagUtil.json.parse(context, optionsStr)).object);

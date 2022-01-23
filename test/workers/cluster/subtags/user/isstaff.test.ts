@@ -14,9 +14,7 @@ runSubtagTests({
             setup(ctx) {
                 const id = snowflake.create().toString();
                 ctx.options.authorizer = id;
-                ctx.util.setup(m => m.isUserStaff(id, ctx.guild.id))
-                    .verifiable(1)
-                    .thenResolve(true);
+                ctx.isStaff = true;
             }
         },
         {
@@ -25,9 +23,7 @@ runSubtagTests({
             setup(ctx) {
                 const id = snowflake.create().toString();
                 ctx.options.authorizer = id;
-                ctx.util.setup(m => m.isUserStaff(id, ctx.guild.id))
-                    .verifiable(1)
-                    .thenResolve(false);
+                ctx.isStaff = false;
             }
         },
         {

@@ -4,7 +4,7 @@ import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
 import { ModerationManager, TimeoutManager } from '@cluster/managers';
 import { BanManager, WarnManager } from '@cluster/managers/moderation';
-import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall } from '@cluster/types';
+import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@cluster/types';
 import { bbtagUtil, guard, pluralise as p, snowflake, SubtagType } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
@@ -12,6 +12,7 @@ import { ModuleLoader } from '@core/modules';
 import { GuildTable, SubtagVariableType, TagVariablesTable, UserTable } from '@core/types';
 import { expect } from 'chai';
 import * as chai from 'chai';
+import chaiBytes from 'chai-bytes';
 import chaiExclude from 'chai-exclude';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
 import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordRESTError, ExtendedUser, Guild, HTTPResponse, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
@@ -27,6 +28,7 @@ import { inspect } from 'util';
 import { argument, Mock } from '../../../mock';
 
 chai.use(chaiExclude);
+chai.use(chaiBytes);
 
 type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
 type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
@@ -74,6 +76,7 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends
 /* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {
     readonly #allMocks: Array<Mock<unknown>> = [];
+    #isCreated = false;
     public readonly cluster = this.createMock(Cluster);
     public readonly util = this.createMock(ClusterUtilities);
     public readonly shard = this.createMock(Shard);
@@ -87,6 +90,8 @@ export class SubtagTestContext {
     public readonly timeouts = this.createMock(TimeoutManager);
     public readonly limit = this.createMock(BaseRuntimeLimit);
     public readonly discordOptions: DiscordOptions;
+    public isStaff = false;
+    public readonly ownedMessages: string[] = [];
     public readonly managers = {
         timeouts: this.createMock(TimeoutManager),
         moderation: this.createMock(ModerationManager),
@@ -125,7 +130,8 @@ export class SubtagTestContext {
     };
 
     public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString() })
+        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }),
+        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' })
     };
 
     public readonly guild = SubtagTestContext.createApiGuild(
@@ -213,6 +219,10 @@ export class SubtagTestContext {
     }
 
     public createContext(): BBTagContext {
+        if (this.#isCreated)
+            throw new Error('Cannot create multiple contexts from 1 mock');
+        this.#isCreated = true;
+
         const engine = new BBTagEngine(this.cluster.instance);
 
         const bot = new ExtendedUser(<BaseData><unknown>this.users.bot, this.discord.instance);
@@ -220,6 +230,8 @@ export class SubtagTestContext {
 
         const guild = this.createGuild(this.guild);
         this.discord.instance.guilds.add(guild);
+
+        this.util.setup(m => m.isUserStaff(this.options.authorizer ?? this.users.command.id, guild), false).thenResolve(this.isStaff);
 
         for (const channel of guild.channels.values())
             this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);
@@ -229,6 +241,7 @@ export class SubtagTestContext {
             throw new Error('No text channels were added');
 
         const message = this.createMessage<KnownGuildTextableChannel>(this.message);
+        this.util.setup(m => m.getMessage(channel, message.id), false).thenResolve(message);
 
         const context = new BBTagContext(engine, {
             author: message.author.id,
@@ -238,6 +251,8 @@ export class SubtagTestContext {
             message: message,
             ...this.options
         });
+
+        context.state.ownedMsgs.push(...this.ownedMessages);
 
         this.limit.setup(m => m.check(context, anyString())).thenResolve();
 
@@ -447,7 +462,38 @@ export function sourceMarker(location: SourceMarkerResolvable | undefined): Sour
 
     return { index: parseInt(index), line: parseInt(line), column: parseInt(column) };
 }
+export class TestDataSubtag extends Subtag {
+    public constructor(public readonly values: Record<string, string | undefined>) {
+        super({
+            name: 'testdata',
+            category: SubtagType.SIMPLE,
+            signatures: []
+        });
+    }
 
+    protected executeCore(_: unknown, __: unknown, subtag: SubtagCall): SubtagResult {
+        if (subtag.args.length !== 1)
+            throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
+        const key = subtag.args[0].source;
+        const value = this.values[key];
+        if (value === undefined)
+            throw new RangeError(`Subtag ${this.name} doesnt have test data set up for ${JSON.stringify(value)}`);
+
+        return {
+            [Symbol.asyncIterator]: () => {
+                let done = false;
+                return {
+                    next: () => {
+                        if (done)
+                            return Promise.resolve({ done: true, value: undefined });
+                        done = true;
+                        return Promise.resolve({ done: false, value: value });
+                    }
+                };
+            }
+        };
+    }
+}
 export class EvalSubtag extends Subtag {
     public constructor() {
         super({

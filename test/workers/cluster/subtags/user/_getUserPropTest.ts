@@ -39,31 +39,18 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                     .thenResolve([]);
             }
         },
-        options.ifQuietAndNotFound === undefined
-            ? {
-                code: options.generateCode('unknown user', 'q'),
-                expected: '`No user found`',
-                errors: [
-                    { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user') }
-                ],
-                setup(ctx) {
-                    ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
-                        .verifiable(1)
-                        .thenResolve([]);
-                }
+        {
+            code: options.generateCode('unknown user', 'q'),
+            expected: options.ifQuietAndNotFound ?? '`No user found`',
+            errors: [
+                { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.ifQuietAndNotFound) }
+            ],
+            setup(ctx) {
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                    .verifiable(1)
+                    .thenResolve([]);
             }
-            : {
-                code: options.generateCode('unknown user', 'q'),
-                expected: options.ifQuietAndNotFound,
-                errors: [
-                    { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.ifQuietAndNotFound) }
-                ],
-                setup(ctx) {
-                    ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
-                        .verifiable(1)
-                        .thenResolve([]);
-                }
-            }
+        }
     ];
 }
 

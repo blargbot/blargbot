@@ -58,7 +58,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get member(): Member { return this.message.member; }
     public get guild(): Guild { return this.message.channel.guild; }
     public get user(): User { return this.message.author; }
-    public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild.id); }
+    public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild); }
     public get database(): Database { return this.engine.database; }
     public get logger(): Logger { return this.engine.logger; }
     public get permissions(): Permission { return this.guild.members.get(this.authorizer)?.permissions ?? new Permission(0n); }
@@ -157,15 +157,15 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return error.display ?? this.scopes.local.fallback ?? `\`${error.message}\``;
     }
 
-    public async queryUser(query: string, options: FindEntityOptions = {}): Promise<User | undefined> {
-        if (query === '')
+    public async queryUser(query: string | undefined, options: FindEntityOptions = {}): Promise<User | undefined> {
+        if (query === '' || query === undefined || query === this.user.id)
             return this.user;
         const member = await this.queryMember(query, options);
         return member?.user;
     }
 
-    public async queryMember(query: string, options: FindEntityOptions = {}): Promise<Member | undefined> {
-        if (query === '')
+    public async queryMember(query: string | undefined, options: FindEntityOptions = {}): Promise<Member | undefined> {
+        if (query === '' || query === undefined || query === this.member.id)
             return this.member;
         return await this.queryEntity(
             query, 'user', 'User',
@@ -186,8 +186,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         );
     }
 
-    public async queryChannel(query: string, options: FindEntityOptions = {}): Promise<KnownGuildChannel | undefined> {
-        if (query === '')
+    public async queryChannel(query: string | undefined, options: FindEntityOptions = {}): Promise<KnownGuildChannel | undefined> {
+        if (query === '' || query === undefined || query === this.channel.id)
             return this.channel;
         return await this.queryEntity(
             query, 'channel', 'Channel',
@@ -244,7 +244,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         return this.locks[key] ??= new ReadWriteLock();
     }
 
-    private async _sendOutput(text: string): Promise<string | undefined> {
+    async #sendOutput(text: string): Promise<string | undefined> {
         let disableEveryone = true;
         if (this.isCC) {
             disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, 'disableeveryone') ?? false;
@@ -261,6 +261,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                     nsfw: this.state.nsfw,
                     allowedMentions: {
                         everyone: !disableEveryone,
+                        repliedUser: true,
                         roles: this.isCC ? this.state.allowedMentions.roles : undefined,
                         users: this.isCC ? this.state.allowedMentions.users : undefined
                     },
@@ -287,8 +288,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
 
     public async sendOutput(text: string): Promise<string | undefined> {
         if (this.silent)
-            return await this.state.outputMessage;
-        return await (this.state.outputMessage ??= this._sendOutput(text));
+            return this.state.outputMessage;
+        return this.state.outputMessage ??= await this.#sendOutput(text);
     }
 
     public async getCached(type: 'tag', key: string, getIfNotSet: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
