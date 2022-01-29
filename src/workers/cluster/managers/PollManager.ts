@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
 import { PollResponse } from '@cluster/types';
-import { parse } from '@cluster/utils';
+import { Emote } from '@core/Emote';
 import { PollEventOptions } from '@core/types';
 import { pluralise as p } from '@core/utils';
 import { KnownGuildTextableChannel, User } from 'eris';
@@ -15,7 +15,7 @@ export class PollManager {
     public async createPoll(
         channel: KnownGuildTextableChannel,
         author: User,
-        emojis: string[],
+        emojis: Emote[],
         title: string,
         description: string | undefined,
         colour: number,
@@ -27,18 +27,6 @@ export class PollManager {
 
         if (emojis.length === 0)
             return { state: 'OPTIONS_EMPTY' };
-
-        const emoji = [];
-        const unknownOptions = [];
-        for (const e of emojis) {
-            const parsed = parse.emoji(e, true);
-            if (parsed.length === 0)
-                unknownOptions.push(e);
-            emoji.push(...parsed);
-        }
-
-        if (unknownOptions.length > 0)
-            return { state: 'OPTIONS_INVALID', failedReactions: unknownOptions };
 
         const endTime = moment().add(duration);
 
@@ -63,7 +51,7 @@ export class PollManager {
         if (poll === undefined)
             return { state: 'FAILED_SEND' };
 
-        const reactions = await this.cluster.util.addReactions(poll, emoji);
+        const reactions = await this.cluster.util.addReactions(poll, emojis);
 
         await this.cluster.timeouts.insert('poll', {
             endtime: endTime.valueOf(),
@@ -74,10 +62,10 @@ export class PollManager {
             msg: poll.id,
             content: title,
             color: colour,
-            strict: emoji
+            strict: emojis.map(m => m.toString())
         });
 
-        return { state: 'SUCCESS', message: poll, failedReactions: reactions.failed };
+        return { state: 'SUCCESS', message: poll, failedReactions: reactions.failed.map(m => m.toString()) };
     }
 
     public async pollExpired(options: PollEventOptions): Promise<void> {

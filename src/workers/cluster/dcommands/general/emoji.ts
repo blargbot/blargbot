@@ -1,5 +1,6 @@
 import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType, parse } from '@cluster/utils';
+import { CommandType } from '@cluster/utils';
+import { Emote } from '@core/Emote';
 import { SendPayload } from '@core/types';
 import { FileContent } from 'eris';
 import fs from 'fs';
@@ -29,21 +30,18 @@ export class EmojiCommand extends BaseGlobalCommand {
     }
 
     public async emoji(emoji: string, size: number, svg: boolean): Promise<FileContent | SendPayload> {
-        const parsedEmojis = parse.emoji(emoji);
+        const parsedEmojis = Emote.findAll(emoji);
         if (parsedEmojis.length === 0)
             return 'No emoji found!';
 
         const parsedEmoji = parsedEmojis[0];
-        if (parsedEmoji.startsWith('a:') || parsedEmoji.startsWith(':')) {
-            const id = parse.entityId(parsedEmoji, 'a?:\\w+:', true);
-            if (id !== undefined) {
-                const url = `https://cdn.discordapp.com/emojis/${id}.${parsedEmoji.startsWith('a') ? 'gif' : 'png'}`;
-                return { embeds: [{ image: { url } }] };
-            }
+        if (parsedEmoji.id !== undefined) {
+            const url = `https://cdn.discordapp.com/emojis/${parsedEmoji.id}.${parsedEmoji.animated ? 'gif' : 'png'}`;
+            return { embeds: [{ image: { url } }] };
         }
 
         try {
-            const codePoint = twemoji.convert.toCodePoint(parsedEmoji);
+            const codePoint = twemoji.convert.toCodePoint(parsedEmoji.name);
             const file = require.resolve(`twemoji/2/svg/${codePoint}.svg`);
             const body = fs.readFileSync(file);
             if (svg)

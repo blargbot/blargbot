@@ -1,7 +1,8 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
-import { EmbedOptions, KnownMessage } from 'eris';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
+import { snowflake, SubtagType } from '@cluster/utils';
+import { Emote } from '@core/Emote';
+import { EmbedOptions } from 'eris';
 
 export class ReactAddSubtag extends DefinedSubtag {
     public constructor() {
@@ -13,19 +14,9 @@ export class ReactAddSubtag extends DefinedSubtag {
                 'If I am not, then I will return an error if you are trying to apply the reaction to another message.',
             definition: [//! Overwritten
                 {
-                    parameters: ['reaction'],
+                    parameters: ['arguments+'],
                     returns: 'nothing',
-                    execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
-                },
-                {
-                    parameters: ['messageid', 'reaction'],
-                    returns: 'nothing',
-                    execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
-                },
-                {
-                    parameters: ['channel', 'messageid', 'reactions+'],
-                    returns: 'nothing',
-                    execute: (ctx, args) => this.addReactions(ctx, args.map(arg => arg.value))
+                    execute: (ctx, args) => this.addReactions(ctx, ...this.bindArguments(ctx, args.map(a => a.value)))
                 }
             ]
         });
@@ -33,49 +24,48 @@ export class ReactAddSubtag extends DefinedSubtag {
 
     public async addReactions(
         context: BBTagContext,
-        args: string[]
+        channelStr: string,
+        messageId: string | undefined,
+        reactions: Emote[]
     ): Promise<void> {
-        let message: KnownMessage | undefined;
-
-        // Check if the first "emote" is actually a valid channel
-        let channel = await context.queryChannel(args[0], { noErrors: true, noLookup: true });
+        const channel = await context.queryChannel(channelStr, { noErrors: true, noLookup: true });
         if (channel === undefined)
-            channel = context.channel;
-        else
-            args.shift();
+            throw new ChannelNotFoundError(channelStr);
 
-        // Check that the current first "emote" is a message id
-        if (/^\d{17,23}$/.test(args[0])) {
-            try {
-                message = await context.util.getMessage(channel, args[0]);
-            } catch (e: unknown) {
-                // NOOP
-            }
-            if (message === undefined)
-                throw new MessageNotFoundError(channel.id, args[0]);
-            args.shift();
-        }
+        const message = messageId === undefined ? undefined : await context.util.getMessage(channel, messageId);
+        if (message === undefined && messageId !== undefined)
+            throw new MessageNotFoundError(channel.id, messageId);
+
         const permissions = channel.permissionsOf(context.discord.user.id);
         if (!permissions.has('addReactions'))
             throw new BBTagRuntimeError('I dont have permission to Add Reactions');
-        // Find all actual emotes in remaining emotes
-        const parsed = parse.emoji(args.join('|'), true);
 
-        if (parsed.length === 0 && args.length > 0)
+        if (reactions.length === 0)
             throw new BBTagRuntimeError('Invalid Emojis');
-        const outputMessage = context.state.outputMessage;
-        const reactToMessage = message !== undefined ? message :
-            outputMessage !== undefined ? await context.util.getMessage(context.channel, outputMessage) : undefined;
 
-        if (reactToMessage !== undefined) {
+        if (message !== undefined) {
             // Perform add of each reaction
-            const errors = await context.util.addReactions(reactToMessage, parsed);
+            const errors = await context.util.addReactions(message, reactions);
             if (errors.failed.length > 0)
                 throw new BBTagRuntimeError(`I cannot add '${errors.failed.toString()}' as reactions`);
+
         } else {
             // Defer reactions to output message
-            context.state.reactions.push(...parsed);
+            context.state.reactions.push(...reactions.map(m => m.toString()));
         }
+    }
+
+    private bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string | undefined, reactions: Emote[]] {
+        let channel = context.channel.id;
+        let message = context.state.outputMessage;
+
+        if (args.length >= 2 && snowflake.test(args[1]))
+            channel = args.splice(0, 1)[0];
+
+        if (args.length >= 1 && snowflake.test(args[0]))
+            message = args.splice(0, 1)[0];
+
+        return [channel, message, args.flatMap(x => Emote.findAll(x))];
     }
 
     public enrichDocs(embed: EmbedOptions): EmbedOptions {

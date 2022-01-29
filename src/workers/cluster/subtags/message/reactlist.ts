@@ -1,7 +1,8 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
-import { EmbedOptions, KnownMessage } from 'eris';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
+import { snowflake, SubtagType } from '@cluster/utils';
+import { Emote } from '@core/Emote';
+import { ApiError, DiscordRESTError, EmbedOptions } from 'eris';
 
 export class ReactListSubtag extends DefinedSubtag {
     public constructor() {
@@ -18,21 +19,13 @@ export class ReactListSubtag extends DefinedSubtag {
                 },
                 {
                     parameters: ['messageid'],
-                    description: 'Returns an array of reactions on `messageid`.',
                     returns: 'string[]',
                     execute: (ctx, [messageid]) => this.getReactions(ctx, messageid.value)
                 },
                 {
-                    parameters: ['channelid|messageid', 'messageid|reactions'],
-                    description: 'Either returns an array of users who reacted with `reactions` on `messageid`, or returns an array of reactions on `messageid` in `channelid`',
+                    parameters: ['arguments+2'],
                     returns: 'string[]',
-                    execute: (ctx, args) => this.getReactionsOrReactors(ctx, args.map(arg => arg.value))
-                },
-                {
-                    parameters: ['channelid|message', 'messageid|reactions', 'reactions+'],
-                    description: 'Either returns an array of users who reacted with `reactions` on `messageid` in `channelid`, or returns an array of users who reacted `reactions` on `messageid`.',
-                    returns: 'string[]',
-                    execute: (ctx, args) => this.getReactionsOrReactors(ctx, args.map(arg => arg.value))
+                    execute: (ctx, args) => this.getReactionsOrReactors(ctx, ...this.bindArguments(ctx, args.map(arg => arg.value)))
                 }
             ]
         });
@@ -40,58 +33,56 @@ export class ReactListSubtag extends DefinedSubtag {
 
     public async getReactionsOrReactors(
         context: BBTagContext,
-        args: string[]
+        channelStr: string,
+        messageId: string,
+        reactions: Emote[] | undefined
     ): Promise<Iterable<string>> {
-        let channel;
-        let message: KnownMessage | undefined;
-
-        // Check if the first "emote" is actually a valid channel
-        channel = await context.queryChannel(args[0], { noLookup: true });
+        const channel = await context.queryChannel(channelStr, { noErrors: true, noLookup: true });
         if (channel === undefined)
-            channel = context.channel;
-        else
-            args.shift();
+            throw new ChannelNotFoundError(channelStr);
 
-        // Check that the current first "emote" is a message id
-        try {
-            message = await context.util.getMessage(channel, args[0]);
-        } catch (e: unknown) {
-            // NOOP
-        }
+        const message = await context.util.getMessage(channel, messageId, true);
         if (message === undefined)
-            throw new MessageNotFoundError(channel.id, args[0]);
-        args.shift();
+            throw new MessageNotFoundError(channel.id, messageId);
 
-        // Find all actual emotes in remaining emotes
-        const parsedEmojis = parse.emoji(args.join('|'), true);
-
-        if (parsedEmojis.length === 0 && args.length > 0)
-            throw new BBTagRuntimeError('Invalid Emojis');
-
-        // Default to listing what emotes there are
-        if (parsedEmojis.length === 0)
+        if (reactions === undefined)
             return Object.keys(message.reactions);
+
+        if (reactions.length === 0)
+            throw new BBTagRuntimeError('Invalid Emojis');
 
         // List all users per reaction
         const users: string[] = [];
         const errors = [];
-        for (let emote of parsedEmojis) {
-            emote = emote.replace(/^a?:/gi, '');
+        for (const emote of reactions) {
             try {
-                const reactionUsers = await message.getReaction(emote);
+                const reactionUsers = await message.getReaction(emote.toApi());
                 users.push(...reactionUsers.map(u => u.id));
             } catch (err: unknown) {
-                if (err instanceof Error)
-                    if (err.message === 'Unknown Emoji')
-                        errors.push(emote);
-                    else
-                        throw err;
+                if (!(err instanceof DiscordRESTError) || err.code !== ApiError.UNKNOWN_EMOJI)
+                    throw err;
+                errors.push(emote);
             }
         }
 
         if (errors.length > 0)
             throw new BBTagRuntimeError('Unknown Emoji: ' + errors.join(', '));
         return [...new Set(users)];
+    }
+
+    private bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string, reactions: Emote[] | undefined] {
+        let channel = context.channel.id;
+        let message = '';
+
+        if (args.length >= 2 && snowflake.test(args[1]))
+            channel = args.splice(0, 1)[0];
+
+        message = args.splice(0, 1)[0];
+
+        if (args.length === 0)
+            return [channel, message, undefined];
+
+        return [channel, message, args.flatMap(x => Emote.findAll(x))];
     }
 
     public async getReactions(context: BBTagContext, messageId: string): Promise<string[]> {

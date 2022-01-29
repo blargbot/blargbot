@@ -2,7 +2,7 @@ import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { guard, parse, SubtagType } from '@cluster/utils';
 import { MalformedEmbed } from '@core/types';
-import { EmbedOptions, FileContent } from 'eris';
+import { DiscordRESTError, EmbedOptions, FileContent } from 'eris';
 
 export class SendSubtag extends DefinedSubtag {
     public constructor() {
@@ -63,12 +63,14 @@ export class SendSubtag extends DefinedSubtag {
             });
 
             if (sent === undefined)
-                throw new Error('Send unsuccessful');
+                throw new BBTagRuntimeError('Send unsuccessful');
 
             context.state.ownedMsgs.push(sent.id);
             return sent.id;
         } catch (err: unknown) {
-            if (err instanceof Error)
+            if (err instanceof BBTagRuntimeError)
+                throw err;
+            if (err instanceof DiscordRESTError)
                 throw new BBTagRuntimeError(`Failed to send: ${err.message}`);
             context.logger.error('Failed to send!', err);
             throw new BBTagRuntimeError('Failed to send: UNKNOWN');

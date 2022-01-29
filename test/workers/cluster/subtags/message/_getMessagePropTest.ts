@@ -41,7 +41,8 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
             ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
         },
         postSetup(bbctx, ctx) {
-            ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432')).thenResolve(undefined);
+            ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432'), false).thenResolve(undefined);
+            ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', true), false).thenResolve(undefined);
         }
     };
     yield {
@@ -67,7 +68,8 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
                 ctx.message.channel_id = ctx.channels.command.id = '0987654321123456789';
             },
             postSetup(bbctx, ctx) {
-                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432')).thenResolve(undefined);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432'), false).thenResolve(undefined);
+                ctx.util.setup(m => m.getMessage(bbctx.channel, '12345678998765432', true), false).thenResolve(undefined);
             }
         };
         yield {
@@ -137,8 +139,10 @@ function createTestCase(data: GetMessagePropTestData, testCase: GetMessagePropTe
 
             const message = apiMessage === ctx.message ? bbctx.message as Message<GuildTextableChannel> : ctx.createMessage(apiMessage);
             const messageQuery = args[1];
-            if (messageQuery !== undefined && messageQuery !== '')
-                ctx.util.setup(m => m.getMessage(channel, messageQuery)).thenResolve(message);
+            if (messageQuery !== undefined && messageQuery !== '') {
+                ctx.util.setup(m => m.getMessage(channel, messageQuery), false).thenResolve(message);
+                ctx.util.setup(m => m.getMessage(channel, messageQuery, true), false).thenResolve(message);
+            }
 
             messageMap.set(ctx, message);
             testCase.postSetup?.(channel, message, bbctx, ctx);

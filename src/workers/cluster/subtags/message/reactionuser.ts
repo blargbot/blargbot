@@ -5,7 +5,8 @@ import { SubtagType } from '@cluster/utils';
 export class ReactionUserSubtag extends DefinedSubtag {
     public constructor() {
         super({
-            name: 'reactuser',
+            name: 'reactionuser',
+            aliases: ['reactuser'],
             category: SubtagType.MESSAGE,
             definition: [
                 {

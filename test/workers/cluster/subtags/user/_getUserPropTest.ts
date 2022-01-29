@@ -22,7 +22,7 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -34,7 +34,7 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: options.generateCode('unknown user', '').length, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -46,7 +46,7 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                 { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.ifQuietAndNotFound) }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }

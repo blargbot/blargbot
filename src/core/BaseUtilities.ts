@@ -6,6 +6,7 @@ import moment from 'moment';
 import { BaseClient } from './BaseClient';
 import { Configuration } from './Configuration';
 import { Database } from './database';
+import { Emote } from './Emote';
 import { Logger } from './Logger';
 import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
@@ -221,12 +222,13 @@ export class BaseUtilities {
         return await this.send(await user.getDMChannel(), payload);
     }
 
-    public async addReactions(context: KnownMessage, reactions: Iterable<string>): Promise<{ success: string[]; failed: string[]; }> {
-        const results = { success: [] as string[], failed: [] as string[] };
+    public async addReactions(context: KnownMessage, reactions: Iterable<Emote>): Promise<{ success: Emote[]; failed: Emote[]; }> {
+        const results = { success: [] as Emote[], failed: [] as Emote[] };
         const reacted = new Set<string>();
         let done = false;
         for (const reaction of reactions) {
-            if (reacted.size === reacted.add(reaction).size)
+            const api = reaction.toApi();
+            if (reacted.size === reacted.add(api).size)
                 continue;
 
             if (done) {
@@ -235,7 +237,7 @@ export class BaseUtilities {
             }
 
             try {
-                await context.addReaction(reaction);
+                await context.addReaction(api);
                 results.success.push(reaction);
             } catch (e: unknown) {
                 if (e instanceof DiscordRESTError) {

@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
-import { EmbedOptions, FileContent } from 'eris';
+import { DiscordHTTPError, DiscordRESTError } from 'eris';
 
 export class WebhookSubtag extends DefinedSubtag {
     public constructor() {
@@ -49,36 +49,26 @@ export class WebhookSubtag extends DefinedSubtag {
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string): Promise<never>;
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void>;
     public async executeWebhook(context: BBTagContext, webhookID: string, webhookToken: string, content?: string, embedStr?: string, username?: string, avatar?: string, fileStr?: string, fileName?: string): Promise<void> {
-        let embeds: EmbedOptions[] | undefined;
-        let file: FileContent | undefined;
-
-        if (embedStr !== undefined) {
-            embeds = parse.embed(embedStr);
-        }
-        if (fileStr !== undefined) {
-            if (fileName === undefined) fileName = 'file.txt';
-
-            if (fileStr.startsWith('buffer:')) {
-                file = { file: Buffer.from(fileStr.substring(7), 'base64'), name: fileName };
-            } else {
-                file = { file: Buffer.from(fileStr), name: fileName };
-            }
-        } else {
-            file = undefined;
-        }
-
         try { //TODO Return the webhook message ID on success
             await context.discord.executeWebhook(webhookID, webhookToken, {
-                username: username,
-                avatarURL: avatar,
+                username: username ||= undefined,
+                avatarURL: avatar ||= undefined,
                 content: content,
-                embeds,
-                file: file !== undefined ? [file] : undefined
+                embeds: parse.embed(embedStr),
+                file: fileStr === undefined ? undefined : [
+                    {
+                        name: fileName ?? 'file.txt',
+                        file: fileStr.startsWith('buffer')
+                            ? Buffer.from(fileStr.slice(7), 'base64')
+                            : Buffer.from(fileStr)
+                    }
+                ]
             });
         } catch (err: unknown) {
-            if (err instanceof Error)
+            if (err instanceof DiscordHTTPError || err instanceof DiscordRESTError)
                 throw new BBTagRuntimeError('Error executing webhook: ' + err.message);
-            throw err;
+            context.logger.error('Error executing webhook', err);
+            throw new BBTagRuntimeError('Error executing webhook: UNKNOWN');
         }
     }
 }

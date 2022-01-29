@@ -93,7 +93,7 @@ runSubtagTests({
                 { start: 0, end: 21, error: new UserNotFoundError('unknown user') }
             ],
             setup(ctx) {
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'unknown user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -106,7 +106,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 const member = ctx.createMock(Member);
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
             }

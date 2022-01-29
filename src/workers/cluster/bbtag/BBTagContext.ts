@@ -2,6 +2,7 @@ import { ClusterUtilities } from '@cluster';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, FindEntityOptions, FlagDefinition, FlagResult, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
 import { guard, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
+import { Emote } from '@core/Emote';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
@@ -261,7 +262,6 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                     nsfw: this.state.nsfw,
                     allowedMentions: {
                         everyone: !disableEveryone,
-                        repliedUser: true,
                         roles: this.isCC ? this.state.allowedMentions.roles : undefined,
                         users: this.isCC ? this.state.allowedMentions.users : undefined
                     },
@@ -269,7 +269,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
                 });
 
             if (response !== undefined) {
-                await this.util.addReactions(response, [...new Set(this.state.reactions)]);
+                await this.util.addReactions(response, [...new Set(this.state.reactions)].map(Emote.parse));
                 this.state.ownedMsgs.push(response.id);
                 return response.id;
             }

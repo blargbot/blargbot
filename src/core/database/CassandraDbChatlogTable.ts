@@ -135,7 +135,7 @@ const mapChatlog = mapping.object<Chatlog>({
     content: mapping.string,
     embeds: mapping.json(mapping.array(v => mapping.fake<Embed>(v))),
     guildid: mapping.string,
-    id: mapping.string,
+    id: mapping.guard(snowflake.test),
     msgid: mapping.string,
     msgtime: mapping.instanceof(Date),
     type: mapping.in(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),

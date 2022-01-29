@@ -1,6 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, parse, randInt } from '@cluster/utils';
+import { Emote } from '@core/Emote';
 import { Duration, duration } from 'moment-timezone';
 
 interface PollOptions {
@@ -42,7 +43,7 @@ export class PollCommand extends BaseGuildCommand {
     }
 
     public async createPoll(context: GuildCommandContext, options: PollOptions): Promise<string | undefined> {
-        const emojis = options.emojis === undefined ? ['👍', '👎'] : parse.emoji(options.emojis);
+        const emojis = options.emojis === undefined ? defaultEmotes : Emote.findAll(options.emojis);
         const time = typeof options.time === 'string'
             ? parse.duration(options.time) ?? options.time
             : options.time ?? duration(1, 'minute');
@@ -81,3 +82,8 @@ export class PollCommand extends BaseGuildCommand {
         }
     }
 }
+
+const defaultEmotes = [
+    Emote.parse('👍'),
+    Emote.parse('👎')
+];

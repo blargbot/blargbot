@@ -33,7 +33,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.rootTagName = 'mySuperCoolTestingTag';
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'aaaa'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'aaaa'))
                     .verifiable(1)
                     .thenResolve([]);
             }
@@ -45,7 +45,7 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
@@ -64,7 +64,7 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
@@ -83,7 +83,7 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
@@ -102,7 +102,7 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(1)
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
@@ -120,7 +120,7 @@ runSubtagTests({
                 const member = ctx.createMock(Member);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(x => x.times(5))
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))
@@ -138,7 +138,7 @@ runSubtagTests({
                 const member = new Mock(Member);
                 member.setup(x => x.id).thenReturn(ctx.users.other.id);
 
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id)(), 'other user'))
+                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'other user'))
                     .verifiable(x => x.times(6))
                     .thenResolve([member.instance]);
                 ctx.util.setup(m => m.sendDM(member.instance, `The following message was sent from **__Test Guild__** (${ctx.guild.id}), and was sent by **__Command User#0000__** (${ctx.users.command.id}):`))

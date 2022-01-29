@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { snowflake, SubtagType } from '@cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
@@ -25,7 +25,7 @@ export class MessageEditTimeSubtag extends DefinedSubtag {
                         'Else this will return the edit time of the executing message in `format`.',
                     returns: 'string',
                     execute: (context, [formatOrMessageId]) => {
-                        if (/^\d{17,23}/.test(formatOrMessageId.value))
+                        if (snowflake.test(formatOrMessageId.value))
                             return this.getMessageEditTime(context, context.channel.id, formatOrMessageId.value, 'x');
                         return this.getMessageEditTime(context, context.channel.id, context.message.id, formatOrMessageId.value);
                     }
@@ -35,7 +35,7 @@ export class MessageEditTimeSubtag extends DefinedSubtag {
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
                     returns: 'string',
                     execute: async (context, [channelOrMessageId, messageIdOrFormat]) => {
-                        if (/^\d{17,23}/.test(messageIdOrFormat.value))
+                        if (snowflake.test(messageIdOrFormat.value))
                             return await this.getMessageEditTime(context, channelOrMessageId.value, messageIdOrFormat.value, 'x');
                         return await this.getMessageEditTime(context, context.channel.id, channelOrMessageId.value, messageIdOrFormat.value);
                     }

@@ -10,13 +10,13 @@ declare module 'catflake' {
     }
 
     export interface DeconstructedSnowflake {
-        readonly timestamp: BigInt;
-        readonly workerId: BigInt;
-        readonly processId: BigInt;
-        readonly increment: BigInt;
+        readonly timestamp: bigint;
+        readonly workerId: bigint;
+        readonly processId: bigint;
+        readonly increment: bigint;
     }
 
-    export type Snowflake = string | BigInt;
+    export type Snowflake = `${bigint}` | bigint;
 
     export default class Catflake {
         public constructor(options: CatflakeOptions);

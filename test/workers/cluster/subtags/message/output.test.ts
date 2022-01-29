@@ -1,9 +1,12 @@
 import { BBTagRuntimeError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { OutputSubtag } from '@cluster/subtags/message/output';
+import { Emote } from '@core/Emote';
 import { expect } from 'chai';
 
 import { argument } from '../../../../mock';
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+
+const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];
 
 runSubtagTests({
     subtag: new OutputSubtag(),
@@ -21,7 +24,6 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const reactions = ['23906723407', '239864789246', '2349724894'];
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
@@ -32,10 +34,10 @@ runSubtagTests({
                 bbctx.state.allowedMentions.everybody = true;
                 bbctx.state.allowedMentions.roles = roleMentions;
                 bbctx.state.allowedMentions.users = userMentions;
-                bbctx.state.reactions = reactions;
+                bbctx.state.reactions = emotes.map(m => m.toString());
                 bbctx.state.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(reactions))).thenResolve({ success: reactions, failed: [] });
+                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: '',
                     replyToExecuting: true,
@@ -44,7 +46,6 @@ runSubtagTests({
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
                         everyone: true,
-                        repliedUser: true,
                         roles: roleMentions,
                         users: userMentions
                     }
@@ -66,7 +67,6 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const reactions = ['23906723407', '239864789246', '2349724894'];
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
@@ -77,10 +77,10 @@ runSubtagTests({
                 bbctx.state.allowedMentions.everybody = true;
                 bbctx.state.allowedMentions.roles = roleMentions;
                 bbctx.state.allowedMentions.users = userMentions;
-                bbctx.state.reactions = reactions;
+                bbctx.state.reactions = emotes.map(m => m.toString());
                 bbctx.state.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(reactions))).thenResolve({ success: reactions, failed: [] });
+                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: '',
                     replyToExecuting: true,
@@ -88,8 +88,7 @@ runSubtagTests({
                     files: files,
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
-                        everyone: false,
-                        repliedUser: true
+                        everyone: false
                     }
                 }))).thenResolve(message);
             },
@@ -110,7 +109,6 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const reactions = ['23906723407', '239864789246', '2349724894'];
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
@@ -121,10 +119,10 @@ runSubtagTests({
                 bbctx.state.allowedMentions.everybody = true;
                 bbctx.state.allowedMentions.roles = roleMentions;
                 bbctx.state.allowedMentions.users = userMentions;
-                bbctx.state.reactions = reactions;
+                bbctx.state.reactions = emotes.map(m => m.toString());
                 bbctx.state.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(reactions))).thenResolve({ success: reactions, failed: [] });
+                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: 'This is my message content',
                     replyToExecuting: true,
@@ -133,7 +131,6 @@ runSubtagTests({
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
                         everyone: true,
-                        repliedUser: true,
                         roles: roleMentions,
                         users: userMentions
                     }
@@ -155,7 +152,6 @@ runSubtagTests({
                 const files = [{ file: 'test content', name: 'test.txt' }];
                 const roleMentions = ['56789043764325674', '345678238285862342'];
                 const userMentions = ['23946265743358573', '234926342423437987'];
-                const reactions = ['23906723407', '239864789246', '2349724894'];
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '0987654331234567',
                     channel_id: bbctx.channel.id
@@ -166,10 +162,10 @@ runSubtagTests({
                 bbctx.state.allowedMentions.everybody = true;
                 bbctx.state.allowedMentions.roles = roleMentions;
                 bbctx.state.allowedMentions.users = userMentions;
-                bbctx.state.reactions = reactions;
+                bbctx.state.reactions = emotes.map(m => m.toString());
                 bbctx.state.nsfw = 'This is the nsfw message';
 
-                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(reactions))).thenResolve({ success: reactions, failed: [] });
+                ctx.util.setup(m => m.addReactions(message, argument.isDeepEqual(emotes))).thenResolve({ success: emotes, failed: [] });
                 ctx.util.setup(m => m.send(bbctx.message, argument.isDeepEqual({
                     content: 'This is my message content',
                     replyToExecuting: true,
@@ -177,8 +173,7 @@ runSubtagTests({
                     files: files,
                     nsfw: 'This is the nsfw message',
                     allowedMentions: {
-                        everyone: false,
-                        repliedUser: true
+                        everyone: false
                     }
                 }))).thenResolve(message);
             },
@@ -215,8 +210,7 @@ runSubtagTests({
                     files: undefined,
                     nsfw: undefined,
                     allowedMentions: {
-                        everyone: false,
-                        repliedUser: true
+                        everyone: false
                     }
                 }))).thenResolve(message);
             },

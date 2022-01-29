@@ -1,10 +1,10 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagArgument } from '@cluster/types';
+import { Statement } from '@cluster/types';
 import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-import { Statement } from '../../types';
+const defaultCondition = bbtagUtil.parse('true');
 
 export class WaitMessageSubtag extends DefinedSubtag {
     public constructor() {
@@ -45,7 +45,7 @@ export class WaitMessageSubtag extends DefinedSubtag {
                     exampleCode: '{waitmessage;111111111111111;{userid;stupid cat};{bool;{username};startswith;stupid};50}',
                     exampleOut: '["111111111111111", "103347843934212096"]',
                     returns: 'id[]',
-                    execute: (ctx, [channelIDs, userIDs, condition, timeout]) => this.awaitMessage(ctx, channelIDs.value, userIDs.value, condition, timeout.value)
+                    execute: (ctx, [channelIDs, userIDs, condition, timeout]) => this.awaitMessage(ctx, channelIDs.value, userIDs.value, condition.code, timeout.value)
                 }
             ]
         });
@@ -55,7 +55,7 @@ export class WaitMessageSubtag extends DefinedSubtag {
         context: BBTagContext,
         channelStr: string,
         userStr: string,
-        code?: SubtagArgument,
+        condition: Statement = defaultCondition,
         timeoutStr?: string
     ): Promise<[channelId: string, messageId: string]> {
         // parse channels
@@ -83,14 +83,6 @@ export class WaitMessageSubtag extends DefinedSubtag {
             }));
         } else {
             users = [context.user.id];
-        }
-
-        // parse check code
-        let condition: Statement;
-        if (code !== undefined) {
-            condition = bbtagUtil.parse(code.raw);
-        } else {
-            condition = bbtagUtil.parse('true');
         }
 
         // parse timeout

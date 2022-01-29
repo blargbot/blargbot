@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { snowflake, SubtagType } from '@cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
@@ -25,7 +25,7 @@ export class MessageTimeSubtag extends DefinedSubtag {
                         'Else this will return the send time of the executing message in `format`.',
                     returns: 'string',
                     execute: (context, [formatOrMessage]) => {
-                        if (/^\d{17,23}/.test(formatOrMessage.value))
+                        if (snowflake.test(formatOrMessage.value))
                             return this.getMessageTime(context, context.channel.id, formatOrMessage.value, 'x');
                         return this.getMessageTime(context, context.channel.id, context.message.id, formatOrMessage.value);
                     }
@@ -35,7 +35,7 @@ export class MessageTimeSubtag extends DefinedSubtag {
                     description: '{messagetime;<channel>;<messageid>} or {messagetime;<messagetime;<format>}',
                     returns: 'string',
                     execute: (context, [channelOrMessage, messageOrFormat]) => {
-                        if (/^\d{17,23}/.test(messageOrFormat.value))
+                        if (snowflake.test(messageOrFormat.value))
                             return this.getMessageTime(context, channelOrMessage.value, messageOrFormat.value, 'x');
                         return this.getMessageTime(context, context.channel.id, channelOrMessage.value, messageOrFormat.value);
                     }

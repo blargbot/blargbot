@@ -23,7 +23,7 @@ export class ReactionSubtag extends DefinedSubtag {
     public getReaction(context: BBTagContext): string {
         const val = context.scopes.local.reaction;
         if (val === undefined)
-            throw new BBTagRuntimeError('{reactuser} can only be used inside {waitreaction}');
+            throw new BBTagRuntimeError('{reaction} can only be used inside {waitreaction}');
         return val;
     }
 }

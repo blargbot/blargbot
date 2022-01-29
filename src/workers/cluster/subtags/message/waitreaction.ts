@@ -2,6 +2,7 @@ import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Statement, SubtagArgument } from '@cluster/types';
 import { bbtagUtil, discordUtil, overrides, parse, SubtagType } from '@cluster/utils';
+import { Emote } from '@core/Emote';
 import { guard } from '@core/utils';
 
 export class WaitReactionSubtag extends DefinedSubtag {
@@ -82,10 +83,10 @@ export class WaitReactionSubtag extends DefinedSubtag {
         }
 
         // parse reactions
-        let parsedReactions;
+        let parsedReactions: Emote[] | undefined;
         if (reactions !== '') {
-            parsedReactions = bbtagUtil.tagArray.flattenArray([reactions]).map(i => parse.string(i));
-            parsedReactions = [...new Set(parsedReactions.flatMap(i => parse.emoji(i)))];
+            parsedReactions = bbtagUtil.tagArray.flattenArray([reactions]).map(i => parse.string(i)).flatMap(i => Emote.findAll(i));
+            parsedReactions = [...new Set(parsedReactions)];
             if (parsedReactions.length === 0)
                 throw new BBTagRuntimeError('Invalid Emojis');
         } else {
@@ -115,16 +116,16 @@ export class WaitReactionSubtag extends DefinedSubtag {
         }
 
         const userSet = new Set(users);
-        const reactionSet = new Set(parsedReactions);
-        const checkReaction = reactionSet.size === 0 ? () => true : (emoji: string) => reactionSet.has(emoji);
+        const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
+        const checkReaction = reactionSet.size === 0 ? () => true : (emoji: Emote) => reactionSet.has(emoji.toString());
         const result = await context.util.cluster.awaiter.reactions.wait(messages, async ({ user, reaction, message }) => {
-            const emoji = discordUtil.emojiString(reaction);
+            const emoji = Emote.create(reaction);
 
             if (!userSet.has(user.id) || !checkReaction(emoji) || !guard.isGuildMessage(message))
                 return false;
 
             context.scopes.pushScope();
-            context.scopes.local.reaction = emoji;
+            context.scopes.local.reaction = emoji.toString();
             context.scopes.local.reactUser = user.id;
             const childContext = context.makeChild({ message });
             const result = parse.boolean(await childContext.eval(condition));

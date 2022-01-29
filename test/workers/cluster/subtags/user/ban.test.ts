@@ -8,7 +8,7 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 function isDuration(ms: number): Duration {
     return argument.is(moment.isDuration).and(x =>
-        x.asMilliseconds() === ms)();
+        x.asMilliseconds() === ms).value;
 }
 
 runSubtagTests({

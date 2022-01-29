@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
 import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware, SendTypingMiddleware } from '@cluster/command';
-import { guard, humanize, runMiddleware } from '@cluster/utils';
+import { guard, humanize, runMiddleware, snowflake } from '@cluster/utils';
 import { DiscordEventService } from '@core/serviceTypes';
 import { IMiddleware } from '@core/types';
 import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
@@ -47,7 +47,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
             return;
 
         const options = Object.seal({
-            id: message.id,
+            id: snowflake.parse(message.id),
             logger: this.logger,
             start: performance.now()
         });

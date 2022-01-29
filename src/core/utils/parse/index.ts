@@ -3,7 +3,6 @@ import { parseBoolean } from './parseBoolean';
 import { parseColor } from './parseColor';
 import { parseDuration } from './parseDuration';
 import { parseEmbed } from './parseEmbed';
-import { parseEmoji } from './parseEmoji';
 import { parseEntityId } from './parseEntityId';
 import { parseFloat } from './parseFloat';
 import { parseInt } from './parseInt';
@@ -14,7 +13,6 @@ export const parse = {
     color: parseColor,
     duration: parseDuration,
     embed: parseEmbed,
-    emoji: parseEmoji,
     entityId: parseEntityId,
     float: parseFloat,
     int: parseInt,

@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { ClusterStats, ShardStats } from '@cluster/types';
-import { CommandType, discordUtil, guard, humanize } from '@cluster/utils';
+import { CommandType, discordUtil, guard, humanize, snowflake } from '@cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
@@ -33,7 +33,7 @@ export class ShardCommand extends BaseGlobalCommand {
     }
 
     public async showGuildShard(context: CommandContext, guildID: string): Promise<string | EmbedOptions> {
-        if (!/\d{17,23}/.test(guildID))
+        if (!snowflake.test(guildID))
             return this.error('`' + guildID + '` is not a valid guildID');
         const clusterData = await discordUtil.cluster.getGuildClusterStats(context.cluster, guildID);
 

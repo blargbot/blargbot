@@ -67,20 +67,17 @@ export class Mock<T> {
 }
 
 function createMockArgumentFilter<T>(assertion: (value: unknown) => value is T): MockArgumentFilter<T> {
-    return Object.defineProperties(function createMockArgument() {
-        return new SatisfiesMatcher<T>(assertion) as unknown as T;
-    }, {
-        and: {
-            value: function and<R extends T>(next: (value: T) => value is R) {
-                return createMockArgumentFilter((value): value is R => assertion(value) && next(value));
-            }
+    return {
+        get value() {
+            return new SatisfiesMatcher<T>(assertion) as unknown as T;
         },
-        array: {
-            value: function spread() {
-                return createMockArgumentFilter((value): value is T[] => Array.isArray(value) && value.every(assertion))();
-            }
+        and<R extends T>(next: (value: T) => value is R) {
+            return createMockArgumentFilter((value): value is R => assertion(value) && next(value));
+        },
+        array() {
+            return createMockArgumentFilter((value): value is T[] => Array.isArray(value) && value.every(assertion)).value;
         }
-    });
+    };
 }
 
 export const argument = {
@@ -89,6 +86,12 @@ export const argument = {
     },
     is<T>(assertion: (value: unknown) => value is T): MockArgumentFilter<T> {
         return createMockArgumentFilter(assertion);
+    },
+    assert<T>(assertion: (value: unknown) => void): MockArgumentFilter<T> {
+        return this.is((value): value is T => {
+            assertion(value);
+            return true;
+        });
     },
     isNumber(): MockArgumentFilter<number> {
         return this.isTypeof('number');
@@ -116,7 +119,7 @@ export interface VerifiableMethodStubSetter<T, Resolve = void, Reject = Error> e
 }
 
 export interface MockArgumentFilter<T> {
-    (): T;
+    get value(): T;
     and<R extends T>(assertion: (value: T) => value is R): MockArgumentFilter<R>;
     and(assertion: (value: T) => boolean): MockArgumentFilter<T>;
     array(): T[];

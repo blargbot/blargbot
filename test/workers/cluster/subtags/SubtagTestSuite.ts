@@ -2,7 +2,9 @@ import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
-import { ModerationManager, TimeoutManager } from '@cluster/managers';
+import { AwaiterManager, ModerationManager, TimeoutManager } from '@cluster/managers';
+import { MessageAwaiterFactory } from '@cluster/managers/awaiters/MessageAwaiterFactory';
+import { ReactionAwaiterFactory } from '@cluster/managers/awaiters/ReactionAwaiterFactory';
 import { BanManager, WarnManager } from '@cluster/managers/moderation';
 import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@cluster/types';
 import { bbtagUtil, guard, pluralise as p, snowflake, SubtagType } from '@cluster/utils';
@@ -15,7 +17,7 @@ import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiExclude from 'chai-exclude';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
-import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordRESTError, ExtendedUser, Guild, HTTPResponse, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
+import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
 import * as fs from 'fs';
 import { ClientRequest, IncomingMessage } from 'http';
 import * as inspector from 'inspector';
@@ -96,7 +98,9 @@ export class SubtagTestContext {
         timeouts: this.createMock(TimeoutManager),
         moderation: this.createMock(ModerationManager),
         bans: this.createMock(BanManager),
-        warns: this.createMock(WarnManager)
+        warns: this.createMock(WarnManager),
+        messageAwaiter: this.createMock(MessageAwaiterFactory),
+        reactionAwaiter: this.createMock(ReactionAwaiterFactory)
     };
 
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
@@ -152,11 +156,12 @@ export class SubtagTestContext {
     }, this.users.command);
 
     public constructor(subtags: Iterable<Subtag>) {
+        const awaiter = this.createMock(AwaiterManager);
         this.discordOptions = { intents: [] };
         this.tagVariables = {};
         this.options = {};
 
-        const args = new Array(100).fill(argument.any()()) as unknown[];
+        const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
             this.logger.setup(m => m.error(...args.slice(0, i)), false).thenCall((...args: unknown[]) => {
                 throw args.find(x => x instanceof Error) ?? new Error('Unexpected logger error: ' + inspect(args));
@@ -169,6 +174,9 @@ export class SubtagTestContext {
         this.cluster.setup(m => m.timeouts, false).thenReturn(this.timeouts.instance);
         this.cluster.setup(m => m.util, false).thenReturn(this.util.instance);
         this.cluster.setup(m => m.moderation, false).thenReturn(this.managers.moderation.instance);
+        this.cluster.setup(m => m.awaiter, false).thenReturn(awaiter.instance);
+        awaiter.setup(m => m.messages, false).thenReturn(this.managers.messageAwaiter.instance);
+        awaiter.setup(m => m.reactions, false).thenReturn(this.managers.reactionAwaiter.instance);
 
         this.util.setup(m => m.cluster, false).thenReturn(this.cluster.instance);
 
@@ -261,16 +269,27 @@ export class SubtagTestContext {
         return context;
     }
 
-    public createRESTError(code: number): DiscordRESTError {
+    public createRESTError(code: number, message = 'Test REST error'): DiscordRESTError {
         const request = this.createMock(ClientRequest);
-        const message = this.createMock(IncomingMessage);
-        const response = this.createMock<HTTPResponse>();
-
-        response.setup(m => m.code, false).thenReturn(code);
+        const apiMessage = this.createMock(IncomingMessage);
 
         const x = { stack: '' };
         Error.captureStackTrace(x);
-        return new DiscordRESTError(request.instance, message.instance, response.instance, x.stack);
+        return new DiscordRESTError(request.instance, apiMessage.instance, { code, message }, x.stack);
+    }
+
+    public createHTTPError(code: number, message: string, method: string, path: string): DiscordHTTPError {
+        const request = this.createMock(ClientRequest);
+        const apiMessage = this.createMock(IncomingMessage);
+
+        apiMessage.setup(m => m.statusCode).thenReturn(code);
+        apiMessage.setup(m => m.statusMessage).thenReturn(message);
+        request.setup(m => m.method).thenReturn(method);
+        request.setup(m => m.path).thenReturn(path);
+
+        const x = { stack: '' };
+        Error.captureStackTrace(x);
+        return new DiscordHTTPError(request.instance, apiMessage.instance, { code, message }, x.stack);
     }
 
     public createMessage<TChannel extends KnownTextableChannel>(settings: APIMessage): Message<TChannel>
