@@ -43,7 +43,7 @@ jobs:
 
     - name: Test
       id: test
-      run: yarn coverage
+      run: yarn coverage --reporter spec
 
     - name: Upload coverage
       if: always() && steps.test.outcome != 'skipped' && hashFiles('coverage/index.html') != ''
