@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ReactionSubtag(),
+    argCountBounds: { min: 0, max: 0 },
     cases: [
         {
             code: '{reaction}',

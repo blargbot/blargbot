@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { RoleAddSubtag } from '@cluster/subtags/role/roleadd';
 import { Constants } from 'eris';
 
@@ -7,17 +7,11 @@ import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new RoleAddSubtag(),
+    argCountBounds: { min: 1, max: 3 },
     setup(ctx) {
         ctx.roles.command.permissions = Constants.Permissions.manageRoles.toString();
     },
     cases: [
-        {
-            code: '{roleadd}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 9, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{roleadd;3298746326924}',
             expected: 'true',

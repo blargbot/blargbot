@@ -1,4 +1,3 @@
-import { NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { EmbedSubtag } from '@cluster/subtags/message/embed';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
@@ -7,14 +6,8 @@ import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new EmbedSubtag(),
+    argCountBounds: { min: 1, max: Infinity },
     cases: [
-        {
-            code: '{embed}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 7, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{embed;{escapebbtag;{"title":"Hello!"}}}',
             subtags: [new EscapeBbtagSubtag()],

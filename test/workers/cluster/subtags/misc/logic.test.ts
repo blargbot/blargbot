@@ -1,4 +1,4 @@
-import { InvalidOperatorError, NotABooleanError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
 import { LogicSubtag } from '@cluster/subtags/misc/logic';
 import { LogicOperator } from '@cluster/utils/bbtag/operators';
 
@@ -6,22 +6,8 @@ import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite'
 
 runSubtagTests({
     subtag: new LogicSubtag(),
+    argCountBounds: { min: 2, max: Infinity },
     cases: [
-        {
-            code: '{logic}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 7, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{logic;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 7, end: 13, error: new MarkerError('eval', 7) },
-                { start: 0, end: 14, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             code: '{logic;{eval}aaaa;{eval}}',
             expected: '`Invalid operator`',

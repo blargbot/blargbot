@@ -1,12 +1,12 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { WarnSubtag } from '@cluster/subtags/user/warn';
 import { ModerationType } from '@cluster/utils';
 import { Member } from 'eris';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new WarnSubtag(),
+    argCountBounds: { min: 0, max: 3 },
     cases: [
         {
             code: '{warn}',
@@ -94,17 +94,6 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve({ state: 'memberTooHigh', type: ModerationType.KICK, warnings: 22 });
             }
-        },
-        {
-            code: '{warn;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 0, end: 34, error: new TooManyArgumentsError(3, 4) }
-            ]
         }
     ]
 });

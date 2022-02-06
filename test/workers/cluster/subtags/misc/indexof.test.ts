@@ -1,27 +1,13 @@
-import { NotANumberError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { IndexOfSubtag } from '@cluster/subtags/misc/indexof';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new IndexOfSubtag(),
+    argCountBounds: { min: 2, max: 3 },
     cases: [
-        {
-            code: '{indexof}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 9, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{indexof;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 0, end: 16, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         { code: '{indexof;This is some text;s}', expected: '3' },
         { code: '{indexof;This is some text;s;3}', expected: '3' },
         { code: '{indexof;This is some text;s;4}', expected: '6' },
@@ -65,18 +51,6 @@ runSubtagTests({
         { code: '{indexof;This is some text;z}', expected: '-1' },
         { code: '{indexof;;z}', expected: '-1' },
         { code: '{indexof;[];a}', expected: '-1' },
-        { code: '{indexof;{escapebbtag;{"n":"abc","v":["a"]}};a}', expected: '0', subtags: [new EscapeBbtagSubtag()] },
-
-        {
-            code: '{indexof;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 23, end: 29, error: new MarkerError('eval', 23) },
-                { start: 30, end: 36, error: new MarkerError('eval', 30) },
-                { start: 0, end: 37, error: new TooManyArgumentsError(3, 4) }
-            ]
-        }
+        { code: '{indexof;{escapebbtag;{"n":"abc","v":["a"]}};a}', expected: '0', subtags: [new EscapeBbtagSubtag()] }
     ]
 });

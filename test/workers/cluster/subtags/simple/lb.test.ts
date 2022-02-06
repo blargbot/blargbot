@@ -1,22 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { LbSubtag } from '@cluster/subtags/simple/lb';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new LbSubtag(),
+    argCountBounds: { min: 0, max: 0 },
     cases: [
-        {
-            code: '{lb}',
-            expected: '{'
-        },
-        {
-            code: '{lb;{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 4, end: 10, error: new MarkerError('eval', 4) },
-                { start: 0, end: 11, error: new TooManyArgumentsError(0, 1) }
-            ]
-        }
+        { code: '{lb}', expected: '{' }
     ]
 });

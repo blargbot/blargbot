@@ -1,26 +1,12 @@
-import { NotANumberError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { SubstringSubtag } from '@cluster/subtags/misc/substring';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new SubstringSubtag(),
+    argCountBounds: { min: 2, max: 3 },
     cases: [
-        {
-            code: '{substring}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{substring;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 0, end: 18, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         { code: '{substring;This is some text;5}', expected: 'is some text' },
         { code: '{substring;This is some text;0}', expected: 'This is some text' },
         {
@@ -84,17 +70,6 @@ runSubtagTests({
                 { start: 29, end: 35, error: new MarkerError('eval', 29) },
                 { start: 39, end: 45, error: new MarkerError('eval', 39) },
                 { start: 0, end: 49, error: new NotANumberError('aaa') }
-            ]
-        },
-        {
-            code: '{substring;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 18, end: 24, error: new MarkerError('eval', 18) },
-                { start: 25, end: 31, error: new MarkerError('eval', 25) },
-                { start: 32, end: 38, error: new MarkerError('eval', 32) },
-                { start: 0, end: 39, error: new TooManyArgumentsError(3, 4) }
             ]
         }
     ]

@@ -1,9 +1,8 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { MessageTypeSubtag } from '@cluster/subtags/message/messagetype';
 import { snowflake } from '@cluster/utils';
 import { MessageType } from 'discord-api-types';
 
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
 
 const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageType[P] } = {
@@ -34,6 +33,7 @@ const messageTypes: { [P in string & keyof typeof MessageType]: typeof MessageTy
 
 runSubtagTests({
     subtag: new MessageTypeSubtag(),
+    argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
@@ -50,16 +50,6 @@ runSubtagTests({
                     Object.defineProperty(message, 'call', { value: {} });
                 }
             }))
-        }),
-        {
-            code: '{messagetype;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 0, end: 34, error: new TooManyArgumentsError(2, 3) }
-            ]
-        }
+        })
     ]
 });

@@ -1,10 +1,11 @@
-import { NotANumberError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { NewlineSubtag } from '@cluster/subtags/misc/newline';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new NewlineSubtag(),
+    argCountBounds: { min: 0, max: 1 },
     cases: [
         { code: '{newline}', expected: '\n' },
         { code: '{newline;}', expected: '\n' },
@@ -21,15 +22,6 @@ runSubtagTests({
             expected: '`Not a number`',
             errors: [
                 { start: 0, end: 11, error: new NotANumberError('a') }
-            ]
-        },
-        {
-            code: '{newline;{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 0, end: 23, error: new TooManyArgumentsError(1, 2) }
             ]
         }
     ]

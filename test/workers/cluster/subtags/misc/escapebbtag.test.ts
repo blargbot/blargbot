@@ -4,6 +4,7 @@ import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new EscapeBbtagSubtag(),
+    argCountBounds: { min: 0, max: Infinity },
     cases: [
         { code: '{escapebbtag}', expected: '' },
         { code: '{escapebbtag;{eval}}', expected: '{eval}' },

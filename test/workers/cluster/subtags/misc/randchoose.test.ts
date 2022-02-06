@@ -1,6 +1,5 @@
 import 'chai-exclude';
 
-import { NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { RandChooseSubtag } from '@cluster/subtags/misc/randchoose';
 import { expect } from 'chai';
 
@@ -8,14 +7,8 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new RandChooseSubtag(),
+    argCountBounds: { min: 1, max: Infinity },
     cases: [
-        {
-            code: '{randchoose}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 12, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{randchoose;{eval}5}',
             expected: '5',

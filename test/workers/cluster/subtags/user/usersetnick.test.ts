@@ -1,4 +1,4 @@
-import { NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { UserSetNickSubtag } from '@cluster/subtags/user/usersetnick';
 import { Member } from 'eris';
 
@@ -7,14 +7,8 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new UserSetNickSubtag(),
+    argCountBounds: { min: 1, max: 2 },
     cases: [
-        {
-            code: '{usersetnick}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{usersetnick;abc}',
             expected: '',
@@ -62,16 +56,6 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([]);
             }
-        },
-        {
-            code: '{usersetnick;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 0, end: 34, error: new TooManyArgumentsError(2, 3) }
-            ]
         }
     ]
 });

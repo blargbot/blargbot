@@ -1,10 +1,10 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { ArgsLengthSubtag } from '@cluster/subtags/simple/argslength';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ArgsLengthSubtag(),
+    argCountBounds: { min: 0, max: 0 },
     cases: [
         {
             code: '{argslength}',
@@ -20,14 +20,6 @@ runSubtagTests({
             code: '{argslength}',
             expected: '3',
             setup(ctx) { ctx.options.inputRaw = 'this "is a" test'; }
-        },
-        {
-            code: '{argslength;{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: 0, end: 19, error: new TooManyArgumentsError(0, 1) }
-            ]
         }
     ]
 });

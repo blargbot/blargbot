@@ -1,4 +1,4 @@
-import { InvalidOperatorError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError } from '@cluster/bbtag/errors';
 import { OperatorSubtag } from '@cluster/subtags/misc/operator';
 import { bbtagUtil } from '@cluster/utils';
 
@@ -16,14 +16,8 @@ const isFalse = { '!=': false, '<': false, '<=': false, '==': false, '>': false,
 
 runSubtagTests({
     subtag: new OperatorSubtag(),
+    argCountBounds: { min: 1, max: Infinity },
     cases: [
-        {
-            code: '{operator}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{operator;{eval}}',
             expected: '`Invalid operator`',

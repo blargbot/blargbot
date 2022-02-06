@@ -1,19 +1,13 @@
-import { NotABooleanError, NotANumberError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
 import { IncrementSubtag } from '@cluster/subtags/math/increment';
 import { expect } from 'chai';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new IncrementSubtag(),
+    argCountBounds: { min: 1, max: 3 },
     cases: [
-        {
-            code: '{increment}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{increment;_myVariable}',
             expected: '19',
@@ -175,17 +169,6 @@ runSubtagTests({
             },
             errors: [
                 { start: 0, end: 28, error: new NotABooleanError('abc') }
-            ]
-        },
-        {
-            code: '{increment;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 18, end: 24, error: new MarkerError('eval', 18) },
-                { start: 25, end: 31, error: new MarkerError('eval', 25) },
-                { start: 32, end: 38, error: new MarkerError('eval', 32) },
-                { start: 0, end: 39, error: new TooManyArgumentsError(3, 4) }
             ]
         }
     ]

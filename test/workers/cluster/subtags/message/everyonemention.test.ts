@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new EveryoneMentionSubtag(),
+    argCountBounds: { min: 0, max: 1 },
     cases: [
         {
             code: '{everyonemention}',

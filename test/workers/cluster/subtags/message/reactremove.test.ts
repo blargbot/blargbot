@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, NotEnoughArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { ReactRemoveSubtag } from '@cluster/subtags/message/reactremove';
 import { ApiError, Constants } from 'eris';
 
@@ -6,18 +6,12 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ReactRemoveSubtag(),
+    argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {
         ctx.roles.bot.permissions = Constants.Permissions.manageMessages.toString();
         ctx.isStaff = true;
     },
     cases: [
-        {
-            code: '{reactremove}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{reactremove;2938453289453240}',
             expected: '',

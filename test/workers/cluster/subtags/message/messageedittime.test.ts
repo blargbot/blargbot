@@ -1,12 +1,12 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { MessageEditTimeSubtag } from '@cluster/subtags/message/messageedittime';
 import moment from 'moment-timezone';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
 
 runSubtagTests({
     subtag: new MessageEditTimeSubtag(),
+    argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
@@ -55,17 +55,6 @@ runSubtagTests({
                     }
                 }
             ]
-        }),
-        {
-            code: '{messageedittime;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 17, end: 23, error: new MarkerError('eval', 17) },
-                { start: 24, end: 30, error: new MarkerError('eval', 24) },
-                { start: 31, end: 37, error: new MarkerError('eval', 31) },
-                { start: 38, end: 44, error: new MarkerError('eval', 38) },
-                { start: 0, end: 45, error: new TooManyArgumentsError(3, 4) }
-            ]
-        }
+        })
     ]
 });

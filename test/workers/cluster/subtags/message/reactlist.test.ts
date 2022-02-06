@@ -7,6 +7,7 @@ import { createGetMessagePropTestCases } from './_getMessagePropTest';
 
 runSubtagTests({
     subtag: new ReactListSubtag(),
+    argCountBounds: { min: 0, max: Infinity },
     cases: [
         {
             code: '{reactlist}',

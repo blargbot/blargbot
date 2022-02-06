@@ -1,11 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { MessageTimeSubtag } from '@cluster/subtags/message/messagetime';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
 
 runSubtagTests({
     subtag: new MessageTimeSubtag(),
+    argCountBounds: { min: 0, max: 3 },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
@@ -36,17 +36,6 @@ runSubtagTests({
                     }
                 }
             ]
-        }),
-        {
-            code: '{messagetime;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 34, end: 40, error: new MarkerError('eval', 34) },
-                { start: 0, end: 41, error: new TooManyArgumentsError(3, 4) }
-            ]
-        }
+        })
     ]
 });

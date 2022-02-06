@@ -1,4 +1,4 @@
-import { InvalidOperatorError, NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
 import { MathSubtag } from '@cluster/subtags/math/math';
 import { bbtagUtil } from '@cluster/utils';
 
@@ -8,21 +8,8 @@ const exp = Math.pow;
 
 runSubtagTests({
     subtag: new MathSubtag(),
+    argCountBounds: { min: 2, max: Infinity },
     cases: [
-        {
-            code: '{math}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 6, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{math;*}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 8, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         ...createTestCases([0], { '%': 0, '*': 0, '+': 0, '-': 0, '/': 0, '^': 0 }),
         ...createTestCases([1], { '%': 1, '*': 1, '+': 1, '-': 1, '/': 1, '^': 1 }),
         ...createTestCases([7, 13, 8], { '%': 7 % 13 % 8, '*': 7 * 13 * 8, '+': 7 + 13 + 8, '-': 7 - 13 - 8, '/': 7 / 13 / 8, '^': exp(exp(7, 13), 8) }),

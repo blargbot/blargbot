@@ -1,10 +1,10 @@
-import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { BanSubtag } from '@cluster/subtags/user/ban';
 import { Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
 import { argument } from '../../../../mock';
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 function isDuration(ms: number): Duration {
     return argument.is(moment.isDuration).and(x =>
@@ -13,14 +13,8 @@ function isDuration(ms: number): Duration {
 
 runSubtagTests({
     subtag: new BanSubtag(),
+    argCountBounds: { min: 1, max: 5 },
     cases: [
-        {
-            code: '{ban}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 5, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{ban;abc}',
             expected: '`No user found`',
@@ -316,19 +310,6 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve('success');
             }
-        },
-        {
-            code: '{ban;{eval};{eval};{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 5, end: 11, error: new MarkerError('eval', 5) },
-                { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: 19, end: 25, error: new MarkerError('eval', 19) },
-                { start: 26, end: 32, error: new MarkerError('eval', 26) },
-                { start: 33, end: 39, error: new MarkerError('eval', 33) },
-                { start: 40, end: 46, error: new MarkerError('eval', 40) },
-                { start: 0, end: 47, error: new TooManyArgumentsError(5, 6) }
-            ]
         }
     ]
 });

@@ -1,4 +1,4 @@
-import { InvalidEmbedError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidEmbedError } from '@cluster/bbtag/errors';
 import { EmbedBuildSubtag } from '@cluster/subtags/message/embedbuild';
 import { repeat } from '@cluster/utils';
 import moment from 'moment-timezone';
@@ -18,14 +18,8 @@ const testData = {
 
 runSubtagTests({
     subtag: new EmbedBuildSubtag(),
+    argCountBounds: { min: 1, max: Infinity },
     cases: [
-        {
-            code: '{buildembed}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 12, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{buildembed;title}',
             expected: '`Invalid embed: Missing \':\'`',

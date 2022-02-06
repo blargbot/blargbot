@@ -1,11 +1,12 @@
-import { TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { IsStaffSubtag } from '@cluster/subtags/user/isstaff';
 import { Member } from 'eris';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new IsStaffSubtag(),
+    argCountBounds: { min: 0, max: 2 },
     cases: [
         {
             code: '{isstaff}',
@@ -84,15 +85,6 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([]);
             }
-        },
-        {
-            code: '{isstaff;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 23, end: 29, error: new MarkerError('eval', 23) },
-                { start: 0, end: 30, error: new TooManyArgumentsError(2, 3) }]
         }
     ]
 });

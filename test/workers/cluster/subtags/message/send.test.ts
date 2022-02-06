@@ -1,30 +1,16 @@
-import { BBTagRuntimeError, ChannelNotFoundError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
 import { SendSubtag } from '@cluster/subtags/message/send';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 import { KnownGuildTextableChannel, Message } from 'eris';
 
 import { argument } from '../../../../mock';
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new SendSubtag(),
+    argCountBounds: { min: 2, max: 5 },
     cases: [
-        {
-            code: '{send}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 6, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{send;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             code: '{send;1923681361978632931;abc}',
             expected: '`No channel found`',
@@ -748,19 +734,6 @@ runSubtagTests({
             assert(bbctx) {
                 expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
             }
-        },
-        {
-            code: '{send;{eval};{eval};{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 34, end: 40, error: new MarkerError('eval', 34) },
-                { start: 41, end: 47, error: new MarkerError('eval', 41) },
-                { start: 0, end: 48, error: new TooManyArgumentsError(5, 6) }
-            ]
         }
     ]
 });

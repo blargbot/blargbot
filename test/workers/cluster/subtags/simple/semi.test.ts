@@ -1,22 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { SemiSubtag } from '@cluster/subtags/simple/semi';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new SemiSubtag(),
+    argCountBounds: { min: 0, max: 0 },
     cases: [
-        {
-            code: '{semi}',
-            expected: ';'
-        },
-        {
-            code: '{semi;{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 0, end: 13, error: new TooManyArgumentsError(0, 1) }
-            ]
-        }
+        { code: '{semi}', expected: ';' }
     ]
 });

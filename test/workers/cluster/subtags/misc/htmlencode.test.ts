@@ -1,19 +1,12 @@
-import { NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { HtmlEncodeSubtag } from '@cluster/subtags/misc/htmlencode';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new HtmlEncodeSubtag(),
+    argCountBounds: { min: 1, max: 1 },
     cases: [
-        {
-            code: '{htmlencode}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 12, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{htmlencode;<p>Hello & welcome! Im your host, Blargbot!</p>}',
             expected: '&lt;p&gt;Hello &amp; welcome! Im your host, Blargbot!&lt;/p&gt;',
@@ -23,15 +16,6 @@ runSubtagTests({
             code: '{htmlencode;{escapebbtag;<p>Hello & welcome! Im your host;\u00a0 Blargbot!</p>}}',
             expected: '&lt;p&gt;Hello &amp; welcome! Im your host;\u00a0 Blargbot!&lt;/p&gt;',
             subtags: [new EscapeBbtagSubtag()]
-        },
-        {
-            code: '{htmlencode;{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: 19, end: 25, error: new MarkerError('eval', 19) },
-                { start: 0, end: 26, error: new TooManyArgumentsError(1, 2) }
-            ]
         }
     ]
 });

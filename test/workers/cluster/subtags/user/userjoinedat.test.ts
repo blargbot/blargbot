@@ -1,11 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { UserJoinedAtSubtag } from '@cluster/subtags/user/userjoinedat';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
     subtag: new UserJoinedAtSubtag(),
+    argCountBounds: { min: 0, max: 3 },
     cases: [
         {
             code: '{userjoinedat}',
@@ -53,17 +53,6 @@ runSubtagTests({
                     }
                 }
             ]
-        }),
-        {
-            code: '{userjoinedat;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 14, end: 20, error: new MarkerError('eval', 14) },
-                { start: 21, end: 27, error: new MarkerError('eval', 21) },
-                { start: 28, end: 34, error: new MarkerError('eval', 28) },
-                { start: 35, end: 41, error: new MarkerError('eval', 35) },
-                { start: 0, end: 42, error: new TooManyArgumentsError(3, 4) }
-            ]
-        }
+        })
     ]
 });

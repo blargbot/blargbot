@@ -1,26 +1,12 @@
-import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { RealPadSubtag } from '@cluster/subtags/misc/realpad';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new RealPadSubtag(),
+    argCountBounds: { min: 2, max: 4 },
     cases: [
-        {
-            code: '{realpad}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 9, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{realpad;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 0, end: 16, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         { code: '{realpad;;5}', expected: '     ' },
         { code: '{realpad;A;5}', expected: 'A    ' },
         { code: '{realpad;AB;5}', expected: 'AB   ' },
@@ -103,18 +89,6 @@ runSubtagTests({
                 { start: 24, end: 30, error: new MarkerError('eval', 24) },
                 { start: 32, end: 38, error: new MarkerError('eval', 32) },
                 { start: 0, end: 41, error: new BBTagRuntimeError('Invalid direction', 'up is invalid') }
-            ]
-        },
-        {
-            code: '{realpad;{eval};{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 23, end: 29, error: new MarkerError('eval', 23) },
-                { start: 30, end: 36, error: new MarkerError('eval', 30) },
-                { start: 37, end: 43, error: new MarkerError('eval', 37) },
-                { start: 0, end: 44, error: new TooManyArgumentsError(4, 5) }
             ]
         }
     ]

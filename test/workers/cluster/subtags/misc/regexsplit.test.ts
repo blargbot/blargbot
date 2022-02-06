@@ -1,26 +1,12 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { RegexSplitSubtag } from '@cluster/subtags/misc/regexsplit';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new RegexSplitSubtag(),
+    argCountBounds: { min: 2, max: { count: 2, noEval: [1] } },
     cases: [
-        {
-            code: '{regexsplit}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 12, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{regexsplit;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: 0, end: 19, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         { code: '{regexsplit;a1b2c3d4e5c6;/[bc]\\d/g}', expected: '["a1","","d4e5",""]' },
         { code: '{regexsplit;ffff;/[a-z]\\d/g}', expected: '["ffff"]' },
         {
@@ -67,15 +53,6 @@ runSubtagTests({
             errors: [
                 { start: 12, end: 18, error: new MarkerError('eval', 12) },
                 { start: 0, end: 28, error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
-            ]
-        },
-        {
-            code: '{regexsplit;{eval};{fail};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: 26, end: 32, error: new MarkerError('eval', 26) },
-                { start: 0, end: 33, error: new TooManyArgumentsError(2, 3) }
             ]
         }
     ]

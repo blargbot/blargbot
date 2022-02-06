@@ -1,12 +1,13 @@
-import { NotANumberError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { PardonSubtag } from '@cluster/subtags/user/pardon';
 import { Guild, Member } from 'eris';
 
 import { argument } from '../../../../mock';
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new PardonSubtag(),
+    argCountBounds: { min: 0, max: 3 },
     cases: [
         {
             code: '{pardon}',
@@ -110,17 +111,6 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve([member.instance]);
             }
-        },
-        {
-            code: '{pardon;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 8, end: 14, error: new MarkerError('eval', 8) },
-                { start: 15, end: 21, error: new MarkerError('eval', 15) },
-                { start: 22, end: 28, error: new MarkerError('eval', 22) },
-                { start: 29, end: 35, error: new MarkerError('eval', 29) },
-                { start: 0, end: 36, error: new TooManyArgumentsError(3, 4) }
-            ]
         }
     ]
 });

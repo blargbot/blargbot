@@ -1,19 +1,13 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { UnbanSubtag } from '@cluster/subtags/user/unban';
 import { Member, User } from 'eris';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new UnbanSubtag(),
+    argCountBounds: { min: 1, max: 3 },
     cases: [
-        {
-            code: '{unban}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 7, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{unban;abc}',
             expected: '`No user found`',
@@ -143,17 +137,6 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve('success');
             }
-        },
-        {
-            code: '{unban;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 7, end: 13, error: new MarkerError('eval', 7) },
-                { start: 14, end: 20, error: new MarkerError('eval', 14) },
-                { start: 21, end: 27, error: new MarkerError('eval', 21) },
-                { start: 28, end: 34, error: new MarkerError('eval', 28) },
-                { start: 0, end: 35, error: new TooManyArgumentsError(3, 4) }
-            ]
         }
     ]
 });

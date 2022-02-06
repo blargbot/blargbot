@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { HashSubtag, supportedHashes } from '@cluster/subtags/misc/hash';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
@@ -9,14 +9,8 @@ function hashMissing(algorithm: string): boolean {
 
 runSubtagTests({
     subtag: new HashSubtag(),
+    argCountBounds: { min: 1, max: 2 },
     cases: [
-        {
-            code: '{hash}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 6, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         { code: '{hash;brown}', expected: '94011702' },
         { code: '{hash;}', expected: '0' },
         { code: '{hash;md5;text:some cool text here}', expected: 'dc15a13d3e070e8151301f4430d214e7', skip: hashMissing('md5') },
@@ -33,16 +27,6 @@ runSubtagTests({
             errors: [
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 0, end: 21, error: new BBTagRuntimeError('Unsupported hash', 'invalid is not a supported hash algorithm') }
-            ]
-        },
-        {
-            code: '{hash;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 0, end: 27, error: new TooManyArgumentsError(2, 3) }
             ]
         }
     ]

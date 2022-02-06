@@ -1,19 +1,13 @@
-import { NotEnoughArgumentsError, RoleNotFoundError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { RoleNotFoundError } from '@cluster/bbtag/errors';
 import { UserHasRolesSubtag } from '@cluster/subtags/user/userhasroles';
 
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
     subtag: new UserHasRolesSubtag(),
+    argCountBounds: { min: 1, max: 3 },
     cases: [
-        {
-            code: '{userhasroles}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 14, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{userhasroles;}',
             expected: '`No role found`',
@@ -128,17 +122,6 @@ runSubtagTests({
             expected: 'false',
             errors: [
                 { start: 0, end: 24, error: new RoleNotFoundError('aaaaaa').withDisplay('false') }
-            ]
-        },
-        {
-            code: '{userhasroles;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 14, end: 20, error: new MarkerError('eval', 14) },
-                { start: 21, end: 27, error: new MarkerError('eval', 21) },
-                { start: 28, end: 34, error: new MarkerError('eval', 28) },
-                { start: 35, end: 41, error: new MarkerError('eval', 35) },
-                { start: 0, end: 42, error: new TooManyArgumentsError(3, 4) }
             ]
         }
     ]

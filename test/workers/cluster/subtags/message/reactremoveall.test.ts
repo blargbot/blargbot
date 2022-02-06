@@ -1,12 +1,13 @@
-import { BBTagRuntimeError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { ReactRemoveAllSubtag } from '@cluster/subtags/message/reactremoveall';
 import { Constants } from 'eris';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
 
 runSubtagTests({
     subtag: new ReactRemoveAllSubtag(),
+    argCountBounds: { min: 1, max: 2 },
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
@@ -54,16 +55,6 @@ runSubtagTests({
                     }
                 }
             ]
-        }),
-        {
-            code: '{reactremoveall;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 16, end: 22, error: new MarkerError('eval', 16) },
-                { start: 23, end: 29, error: new MarkerError('eval', 23) },
-                { start: 30, end: 36, error: new MarkerError('eval', 30) },
-                { start: 0, end: 37, error: new TooManyArgumentsError(2, 3) }
-            ]
-        }
+        })
     ]
 });

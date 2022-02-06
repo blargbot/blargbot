@@ -9,6 +9,7 @@ import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new DeleteSubtag(),
+    argCountBounds: { min: 0, max: 2 },
     cases: [
         {
             code: '{delete}',

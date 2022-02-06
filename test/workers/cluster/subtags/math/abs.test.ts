@@ -1,18 +1,12 @@
-import { NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { NotANumberError } from '@cluster/bbtag/errors';
 import { AbsSubtag } from '@cluster/subtags/math/abs';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new AbsSubtag(),
+    argCountBounds: { min: 1, max: Infinity },
     cases: [
-        {
-            code: '{abs}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 5, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         { code: '{abs;12345}', expected: '12345' },
         { code: '{abs;-9876}', expected: '9876' },
         { code: '{abs;012345}', expected: '12345' },

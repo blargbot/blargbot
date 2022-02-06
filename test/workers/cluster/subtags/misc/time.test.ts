@@ -1,11 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { TimeSubtag } from '@cluster/subtags/misc/time';
 import moment from 'moment-timezone';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new TimeSubtag(),
+    argCountBounds: { min: 0, max: 5 },
     cases: [
         { code: '{time}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
         { code: '{time;}', expected: () => moment.tz('Etc/UTC').format('YYYY-MM-DDTHH:mm:ssZ'), retries: 5 },
@@ -107,21 +107,6 @@ runSubtagTests({
         { code: '{time;DD/MM/YYYY HH:mm;01/01/2022;DD/MM/YYYY;Europe/Berlin;America/New_York}', expected: '31/12/2021 18:00' },
         { code: '{time;;01/01/2022;DD/MM/YYYY;America/New_York;America/New_York}', expected: '2022-01-01T00:00:00-05:00' },
         { code: '{time;X;01/01/2022;DD/MM/YYYY;America/New_York;America/New_York}', expected: '1641013200' },
-        { code: '{time;DD/MM/YYYY HH:mm;01/01/2022;DD/MM/YYYY;America/New_York;America/New_York}', expected: '01/01/2022 00:00' },
-
-        {
-            code: '{time;{eval};{eval};{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 34, end: 40, error: new MarkerError('eval', 34) },
-                { start: 41, end: 47, error: new MarkerError('eval', 41) },
-                { start: 0, end: 48, error: new TooManyArgumentsError(5, 6) }
-            ]
-        }
-
+        { code: '{time;DD/MM/YYYY HH:mm;01/01/2022;DD/MM/YYYY;America/New_York;America/New_York}', expected: '01/01/2022 00:00' }
     ]
 });

@@ -1,26 +1,12 @@
-import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
 import { ChooseSubtag } from '@cluster/subtags/misc/choose';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ChooseSubtag(),
+    argCountBounds: { min: 2, max: Infinity },
     cases: [
-        {
-            code: '{choose}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 8, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{choose;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 8, end: 14, error: new MarkerError('eval', 8) },
-                { start: 0, end: 15, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             code: '{choose;abc;{fail}}',
             expected: '`Not a number`',

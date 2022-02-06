@@ -1,27 +1,12 @@
-import { NotEnoughArgumentsError } from '@cluster/bbtag/errors';
 import { FileSubtag } from '@cluster/subtags/message/file';
 import { expect } from 'chai';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new FileSubtag(),
+    argCountBounds: { min: 2, max: 2 },
     cases: [
-        {
-            code: '{file}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 6, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{file;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             code: '{file;abcdef;def}',
             expected: '',

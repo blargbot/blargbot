@@ -1,18 +1,12 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { ColorFormat, ColorSubtag } from '@cluster/subtags/misc/color';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new ColorSubtag(),
+    argCountBounds: { min: 1, max: 3 },
     cases: [
-        {
-            code: '{color}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 7, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{color;}',
             expected: '`Invalid color`',

@@ -1,30 +1,16 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
 import { EditSubtag } from '@cluster/subtags/message/edit';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 import { KnownGuildTextableChannel } from 'eris';
 
 import { argument } from '../../../../mock';
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new EditSubtag(),
+    argCountBounds: { min: 2, max: 4 },
     cases: [
-        {
-            code: '{edit}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 6, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{edit;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             title: 'When the message cannot be found',
             code: '{edit;12345678901234567;New message text}',

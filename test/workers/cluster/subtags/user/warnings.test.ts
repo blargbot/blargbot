@@ -1,11 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { WarningsSubtag } from '@cluster/subtags/user/warnings';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
     subtag: new WarningsSubtag(),
+    argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
             ifQuietAndNotFound: undefined,
@@ -32,16 +32,6 @@ runSubtagTests({
                     }
                 }
             ]
-        }),
-        {
-            code: '{warnings;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 10, end: 16, error: new MarkerError('eval', 10) },
-                { start: 17, end: 23, error: new MarkerError('eval', 17) },
-                { start: 24, end: 30, error: new MarkerError('eval', 24) },
-                { start: 0, end: 31, error: new TooManyArgumentsError(2, 3) }
-            ]
-        }
+        })
     ]
 });

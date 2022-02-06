@@ -1,19 +1,13 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { KickSubtag } from '@cluster/subtags/user/kick';
 import { Member, User } from 'eris';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new KickSubtag(),
+    argCountBounds: { min: 1, max: 3 },
     cases: [
-        {
-            code: '{kick}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 6, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{kick;abc}',
             expected: '`No user found`',
@@ -155,17 +149,6 @@ runSubtagTests({
                     .verifiable(1)
                     .thenResolve('success');
             }
-        },
-        {
-            code: '{kick;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 0, end: 34, error: new TooManyArgumentsError(3, 4) }
-            ]
         }
     ]
 });

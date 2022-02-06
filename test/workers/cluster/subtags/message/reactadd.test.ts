@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { ReactAddSubtag } from '@cluster/subtags/message/reactadd';
 import { Emote } from '@core/Emote';
 import { expect } from 'chai';
@@ -13,17 +13,11 @@ const guildEmote = Emote.parse('<:notlikecat:280110565161041921>');
 
 runSubtagTests({
     subtag: new ReactAddSubtag(),
+    argCountBounds: { min: 1, max: Infinity },
     setup(ctx) {
         ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
     },
     cases: [
-        {
-            code: '{reactadd}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 10, error: new NotEnoughArgumentsError(1, 0) }
-            ]
-        },
         {
             code: '{reactadd;🤔}',
             expected: '',

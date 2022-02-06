@@ -1,15 +1,16 @@
-import { BBTagRuntimeError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { OutputSubtag } from '@cluster/subtags/message/output';
 import { Emote } from '@core/Emote';
 import { expect } from 'chai';
 
 import { argument } from '../../../../mock';
-import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
+import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];
 
 runSubtagTests({
     subtag: new OutputSubtag(),
+    argCountBounds: { min: 0, max: 1 },
     cases: [
         {
             title: 'Custom command',
@@ -246,15 +247,6 @@ runSubtagTests({
             assert(bbctx) {
                 expect(bbctx.state.outputMessage).to.equal('0987654331234567');
             }
-        },
-        {
-            code: '{output;{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 8, end: 14, error: new MarkerError('eval', 8) },
-                { start: 15, end: 21, error: new MarkerError('eval', 15) },
-                { start: 0, end: 22, error: new TooManyArgumentsError(1, 2) }
-            ]
         }
     ]
 });

@@ -1,11 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { UserAvatarSubtag } from '@cluster/subtags/user/useravatar';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
     subtag: new UserAvatarSubtag(),
+    argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
             ifQuietAndNotFound: '',
@@ -64,16 +64,6 @@ runSubtagTests({
                     }
                 }
             ]
-        }),
-        {
-            code: '{useravatar;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 12, end: 18, error: new MarkerError('eval', 12) },
-                { start: 19, end: 25, error: new MarkerError('eval', 19) },
-                { start: 26, end: 32, error: new MarkerError('eval', 26) },
-                { start: 0, end: 33, error: new TooManyArgumentsError(2, 3) }
-            ]
-        }
+        })
     ]
 });

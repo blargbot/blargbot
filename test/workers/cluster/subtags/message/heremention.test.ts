@@ -5,6 +5,7 @@ import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new HereMentionSubtag(),
+    argCountBounds: { min: 0, max: 1 },
     cases: [
         {
             code: '{heremention}',

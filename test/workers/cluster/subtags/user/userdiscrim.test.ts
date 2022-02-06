@@ -1,11 +1,11 @@
-import { TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { UserDiscrimSubtag } from '@cluster/subtags/user/userdiscrim';
 
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';
 
 runSubtagTests({
     subtag: new UserDiscrimSubtag(),
+    argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
             ifQuietAndNotFound: '',
@@ -32,16 +32,6 @@ runSubtagTests({
                     }
                 }
             ]
-        }),
-        {
-            code: '{userdiscrim;{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 0, end: 34, error: new TooManyArgumentsError(2, 3) }
-            ]
-        }
+        })
     ]
 });

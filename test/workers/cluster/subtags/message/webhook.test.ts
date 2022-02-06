@@ -1,29 +1,15 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { WebhookSubtag } from '@cluster/subtags/message/webhook';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 
 import { argument } from '../../../../mock';
-import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
+import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new WebhookSubtag(),
+    argCountBounds: { min: 2, max: 8 },
     cases: [
-        {
-            code: '{webhook}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 9, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{webhook;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 9, end: 15, error: new MarkerError('eval', 9) },
-                { start: 0, end: 16, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             code: '{webhook;abc;def}',
             subtags: [new EscapeBbtagSubtag()],

@@ -1,4 +1,4 @@
-import { NotEnoughArgumentsError, TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { UserNotFoundError } from '@cluster/bbtag/errors';
 import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
 import { DMSubtag } from '@cluster/subtags/user/dm';
 import { Guild, Member } from 'eris';
@@ -8,22 +8,8 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new DMSubtag(),
+    argCountBounds: { min: 2, max: 3 },
     cases: [
-        {
-            code: '{dm}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 4, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{dm;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 4, end: 10, error: new MarkerError('eval', 4) },
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             code: '{dm;aaaa;{eval}}',
             expected: '`No user found`',
@@ -148,17 +134,6 @@ runSubtagTests({
                     .verifiable(x => x.times(6))
                     .thenResolve();
             }
-        },
-        {
-            code: '{dm;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 4, end: 10, error: new MarkerError('eval', 4) },
-                { start: 11, end: 17, error: new MarkerError('eval', 11) },
-                { start: 18, end: 24, error: new MarkerError('eval', 18) },
-                { start: 25, end: 31, error: new MarkerError('eval', 25) },
-                { start: 0, end: 32, error: new TooManyArgumentsError(3, 4) }
-            ]
         }
     ]
 });

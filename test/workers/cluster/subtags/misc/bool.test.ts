@@ -1,4 +1,4 @@
-import { InvalidOperatorError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError } from '@cluster/bbtag/errors';
 import { BoolSubtag } from '@cluster/subtags/misc/bool';
 import { bbtagUtil } from '@cluster/utils';
 
@@ -14,31 +14,8 @@ const doesntContain = { 'startswith': false, 'endswith': false, 'includes': fals
 
 runSubtagTests({
     subtag: new BoolSubtag(),
+    argCountBounds: { min: 3, max: 3 },
     cases: [
-        {
-            code: '{bool}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 6, error: new NotEnoughArgumentsError(3, 0) }
-            ]
-        },
-        {
-            code: '{bool;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 0, end: 13, error: new NotEnoughArgumentsError(3, 1) }
-            ]
-        },
-        {
-            code: '{bool;{eval};{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 0, end: 20, error: new NotEnoughArgumentsError(3, 2) }
-            ]
-        },
         ...generateOrdinalTestCases('123', isEqualTo, '123'),
         ...generateOrdinalTestCases('123', isGreaterThan, '122'),
         ...generateOrdinalTestCases('123', isLessThan, '124'),
@@ -68,17 +45,6 @@ runSubtagTests({
                 { start: 13, end: 19, error: new MarkerError('eval', 13) },
                 { start: 22, end: 28, error: new MarkerError('eval', 22) },
                 { start: 0, end: 29, error: new InvalidOperatorError('op') }
-            ]
-        },
-        {
-            code: '{bool;{eval};{eval};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 6, end: 12, error: new MarkerError('eval', 6) },
-                { start: 13, end: 19, error: new MarkerError('eval', 13) },
-                { start: 20, end: 26, error: new MarkerError('eval', 20) },
-                { start: 27, end: 33, error: new MarkerError('eval', 27) },
-                { start: 0, end: 34, error: new TooManyArgumentsError(3, 4) }
             ]
         }
     ]

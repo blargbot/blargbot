@@ -1,4 +1,4 @@
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { RegexReplaceSubtag } from '@cluster/subtags/misc/regexreplace';
 import { expect } from 'chai';
 
@@ -6,21 +6,8 @@ import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({
     subtag: new RegexReplaceSubtag(),
+    argCountBounds: { min: { count: 2, noEval: [0] }, max: { count: 3, noEval: [1] } },
     cases: [
-        {
-            code: '{regexreplace}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 14, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        {
-            code: '{regexreplace;{fail}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 21, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         {
             code: '{regexreplace;/[a-z]\\d/g;oooh}',
             expected: '',
@@ -130,16 +117,6 @@ runSubtagTests({
                 { start: 14, end: 20, error: new MarkerError('eval', 14) },
                 { start: 30, end: 36, error: new MarkerError('eval', 30) },
                 { start: 0, end: 37, error: new BBTagRuntimeError('Invalid regular expression: /?{fail}/: Nothing to repeat') }
-            ]
-        },
-        {
-            code: '{regexreplace;{eval};{fail};{eval};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 14, end: 20, error: new MarkerError('eval', 14) },
-                { start: 28, end: 34, error: new MarkerError('eval', 28) },
-                { start: 35, end: 41, error: new MarkerError('eval', 35) },
-                { start: 0, end: 42, error: new TooManyArgumentsError(3, 4) }
             ]
         }
     ]

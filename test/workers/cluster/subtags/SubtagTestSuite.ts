@@ -1,13 +1,13 @@
 import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
 import { AwaiterManager, ModerationManager, TimeoutManager } from '@cluster/managers';
 import { MessageAwaiterFactory } from '@cluster/managers/awaiters/MessageAwaiterFactory';
 import { ReactionAwaiterFactory } from '@cluster/managers/awaiters/ReactionAwaiterFactory';
 import { BanManager, WarnManager } from '@cluster/managers/moderation';
 import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@cluster/types';
-import { bbtagUtil, guard, pluralise as p, snowflake, SubtagType } from '@cluster/utils';
+import { bbtagUtil, guard, pluralise as p, repeat, snowflake, SubtagType } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
@@ -49,6 +49,10 @@ export interface SubtagTestCase {
     readonly postSetup?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, mocks: SubtagTestContext) => Awaitable<void>;
     readonly assert?: (this: RuntimeSubtagTestCase<this>, context: BBTagContext, result: string, test: SubtagTestContext) => Awaitable<void>;
     readonly teardown?: (this: RuntimeSubtagTestCase<this>, context: SubtagTestContext) => Awaitable<void>;
+    readonly expectError?: {
+        required?: boolean;
+        handle: (error: unknown) => Awaitable<void>;
+    };
     readonly errors?: ReadonlyArray<{ start?: SourceMarkerResolvable; end?: SourceMarkerResolvable; error: BBTagRuntimeError; }> | ((errors: LocatedRuntimeError[]) => void);
     readonly subtags?: readonly Subtag[];
     readonly skip?: boolean | (() => Awaitable<boolean>);
@@ -73,7 +77,10 @@ export interface SubtagTestSuiteData<T extends Subtag = Subtag, TestCase extends
     readonly cases: TestCase[];
     readonly subtag: T;
     readonly runOtherTests?: (subtag: T) => void;
+    readonly argCountBounds: { min: ArgCountBound; max: ArgCountBound; };
 }
+
+type ArgCountBound = number | { count: number; noEval: number[]; };
 
 /* eslint-disable @typescript-eslint/naming-convention */
 export class SubtagTestContext {
@@ -444,8 +451,15 @@ export function runSubtagTests<T extends Subtag, TestCase extends SubtagTestCase
         suite.assert(data.assert);
     if (data.teardown !== undefined)
         suite.teardown(data.teardown);
-    for (const testCase of data.cases)
-        suite.addTestCase(testCase);
+
+    const min = typeof data.argCountBounds.min === 'number' ? { count: data.argCountBounds.min, noEval: [] } : data.argCountBounds.min;
+    const max = typeof data.argCountBounds.max === 'number' ? { count: data.argCountBounds.max, noEval: [] } : data.argCountBounds.max;
+
+    suite.addTestCases(notEnoughArgumentsTestCases(data.subtag.name, min.count, min.noEval));
+    suite.addTestCases(data.cases);
+    if (max.count < Infinity)
+        suite.addTestCases(tooManyArgumentsTestCases(data.subtag.name, max.count, max.noEval));
+
     suite.run(() => data.runOtherTests?.(data.subtag));
 
     // Output a bbtag file that can be run on the live blargbot instance to find any errors
@@ -632,7 +646,7 @@ function getTestName(testCase: SubtagTestCase): string {
             result += ` and return ${JSON.stringify(expected)}`;
             break;
         case 'object':
-            result += ` and return ${expected.toString()}`;
+            result += ` and return something matching ${expected.toString()}`;
             break;
     }
 
@@ -673,22 +687,31 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         const expected = getExpectation(testCase);
 
         // act
-        const result = await context.eval(code);
+        const result = await runSafe(() => context.eval(code));
+        if (!result.success) {
+            if (actualTestCase.expectError === undefined)
+                throw result.error;
+            await actualTestCase.expectError.handle(result.error);
+            return;
+        } else if (actualTestCase.expectError?.required === true) {
+            throw new Error('Expected an error to be thrown!');
+        }
+
         await context.variables.persist();
 
         // assert
         switch (typeof expected) {
             case 'string':
-                expect(result).to.equal(expected);
+                expect(result.value).to.equal(expected);
                 break;
             case 'object':
-                expect(result).to.match(expected);
+                expect(result.value).to.match(expected);
                 break;
         }
 
-        await actualTestCase.assert?.(context, result, test);
+        await actualTestCase.assert?.(context, result.value, test);
         for (const assert of config.assert)
-            await assert.call(actualTestCase, context, result, test);
+            await assert.call(actualTestCase, context, result.value, test);
 
         if (typeof testCase.errors === 'function') {
             testCase.errors(context.errors);
@@ -699,10 +722,17 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
                     'Error details didnt match the expectation');
         }
         test.verifyAll();
-
     } finally {
         for (const teardown of config.teardown)
             await teardown.call(actualTestCase, test);
+    }
+}
+
+async function runSafe<T>(action: () => Awaitable<T>): Promise<{ success: true; value: T; } | { success: false; error: unknown; }> {
+    try {
+        return { success: true, value: await action() };
+    } catch (err: unknown) {
+        return { success: false, error: err };
     }
 }
 
@@ -711,4 +741,60 @@ function getExpectation(testCase: SubtagTestCase): Exclude<SubtagTestCase['expec
     if (typeof testCase.expected === 'function')
         return testCase.expected();
     return testCase.expected;
+}
+
+export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
+    const noEvalLookup = new Set(noEval);
+    for (let i = 0; i < minArgCount; i++) {
+        const codeParts = repeat(i, j => {
+            const start = 2 + subtagName.length + 7 * j;
+            return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
+        });
+        yield {
+            code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
+            expected: '`Not enough arguments`',
+            errors: [
+                ...codeParts.filter(p => !p[0]).map(p => p[1]),
+                { start: 0, end: 2 + subtagName.length + 7 * i, error: new NotEnoughArgumentsError(minArgCount, i) }
+            ]
+        };
+    }
+    yield {
+        title: 'Min arg count',
+        code: `{${[subtagName, ...repeat(minArgCount, '')].join(';')}}`,
+        expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gim,
+        errors(err) {
+            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+        },
+        expectError: {
+            handle() { /* NOOP */ }
+        }
+    };
+}
+
+export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: number, noEval: number[]): Generator<SubtagTestCase> {
+    const noEvalLookup = new Set(noEval);
+    const codeParts = repeat(maxArgCount + 1, j => {
+        const start = 2 + subtagName.length + 7 * j;
+        return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
+    });
+    yield {
+        title: 'Max arg count',
+        code: `{${[subtagName, ...repeat(maxArgCount, '')].join(';')}}`,
+        expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gim,
+        errors(err) {
+            expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
+        },
+        expectError: {
+            handle() { /* NOOP */ }
+        }
+    };
+    yield {
+        code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
+        expected: '`Too many arguments`',
+        errors: [
+            ...codeParts.filter(p => !p[0]).map(p => p[1]),
+            { start: 0, end: 9 + subtagName.length + 7 * maxArgCount, error: new TooManyArgumentsError(maxArgCount, maxArgCount + 1) }
+        ]
+    };
 }

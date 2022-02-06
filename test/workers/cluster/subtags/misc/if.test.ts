@@ -1,4 +1,4 @@
-import { InvalidOperatorError, NotABooleanError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
+import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
 import { IfSubtag } from '@cluster/subtags/misc/if';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
@@ -9,24 +9,8 @@ const isLessThan = { '!=': true, '<': true, '<=': true, '==': false, '>': false,
 
 runSubtagTests({
     subtag: new IfSubtag(),
+    argCountBounds: { min: 2, max: { count: 5, noEval: [3, 4] } },
     cases: [
-        /* {if} */
-        {
-            code: '{if}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 0, end: 4, error: new NotEnoughArgumentsError(2, 0) }
-            ]
-        },
-        /* {if;<bool>} */
-        {
-            code: '{if;{eval}}',
-            expected: '`Not enough arguments`',
-            errors: [
-                { start: 4, end: 10, error: new MarkerError('eval', 4) },
-                { start: 0, end: 11, error: new NotEnoughArgumentsError(2, 1) }
-            ]
-        },
         /* {if;<bool>;<then>} */
         {
             code: '{if;aaaa;{fail}}',
@@ -135,20 +119,6 @@ runSubtagTests({
                 //                                                   <then> is not executed
                 //                                                   [else] is not executed
                 { start: 0, end: 41, error: new InvalidOperatorError('op') }
-            ]
-        },
-        /* {if;<left>;<operator>;<right>;<then>;[else];--EXCESS--} */
-        {
-            code: '{if;{eval};{eval};{eval};{fail};{fail};{eval}}',
-            expected: '`Too many arguments`',
-            errors: [
-                { start: 4, end: 10, error: new MarkerError('eval', 4) },   // <left> is executed
-                { start: 11, end: 17, error: new MarkerError('eval', 11) }, // <operator> is executed
-                { start: 18, end: 24, error: new MarkerError('eval', 18) }, // <right> is executed
-                //                                                   <then> is not executed
-                //                                                   [else] is not executed
-                { start: 39, end: 45, error: new MarkerError('eval', 39) }, // excess argument is executed
-                { start: 0, end: 46, error: new TooManyArgumentsError(5, 6) }
             ]
         }
     ]
