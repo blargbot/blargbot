@@ -38,7 +38,7 @@ export class RoleAddSubtag extends DefinedSubtag {
         quiet: boolean
     ): Promise<boolean> {
         const topRole = discordUtil.getRoleEditPosition(context.authorizer);
-        if (topRole === 0)
+        if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot add roles');
 
         quiet ||= context.scopes.local.quiet ?? false;

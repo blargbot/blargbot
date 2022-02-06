@@ -46,7 +46,7 @@ export class RoleCreateSubtag extends DefinedSubtag {
         const permission = context.authorizer?.permissions.allow ?? 0n;
         const topRole = discordUtil.getRoleEditPosition(context.authorizer);
 
-        if (topRole === 0)
+        if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot create roles');
 
         const rolePerms = parse.bigInt(permStr);

@@ -37,7 +37,7 @@ export class RoleSetMentionableSubtag extends DefinedSubtag {
         quiet: boolean
     ): Promise<void> {
         const topRole = discordUtil.getRoleEditPosition(context.authorizer);
-        if (topRole === 0)
+        if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
         quiet ||= context.scopes.local.quiet ?? false;

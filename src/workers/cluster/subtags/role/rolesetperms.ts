@@ -39,7 +39,7 @@ export class RoleSetPermsSubtag extends DefinedSubtag {
         quietStr: string
     ): Promise<void> {
         const topRole = discordUtil.getRoleEditPosition(context.authorizer);
-        if (topRole === 0)
+        if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
         const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
