@@ -762,7 +762,7 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
     yield {
         title: 'Min arg count',
         code: `{${[subtagName, ...repeat(minArgCount, '')].join(';')}}`,
-        expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gim,
+        expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
             expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
         },
@@ -781,7 +781,7 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
     yield {
         title: 'Max arg count',
         code: `{${[subtagName, ...repeat(maxArgCount, '')].join(';')}}`,
-        expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gim,
+        expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
             expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
         },
