@@ -26,11 +26,11 @@ export class RoleSizeSubtag extends DefinedSubtag {
         /* const role = await context.queryRole(roleStr, {
             quiet
         }) */
-        const role = await context.util.getRole(context.guild.id, roleStr);
-
+        const role = await context.queryRole(roleStr, { noLookup: true, noErrors: true });
         if (role === undefined)
             throw new RoleNotFoundError(roleStr);
 
-        return context.guild.members.filter(m => m.roles.includes(role.id)).length;
+        const members = await context.guild.fetchMembers();
+        return members.filter(m => m.roles.includes(role.id)).length;
     }
 }

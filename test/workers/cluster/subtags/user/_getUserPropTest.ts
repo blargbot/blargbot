@@ -7,27 +7,37 @@ import { argument } from '../../../../mock';
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {
-    return [
-        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [])),
-        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [''])),
-        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', ''])),
-        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', 'q'])),
-        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user'])),
-        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', ''])),
-        ...options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', 'q'])),
-        {
-            code: options.generateCode('unknown user'),
-            expected: '`No user found`',
-            errors: [
-                { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
-            ],
-            setup(ctx) {
-                ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
-                    .verifiable(1)
-                    .thenResolve([]);
-            }
-        },
-        {
+    return [...createGetUserPropTestCasesIter(options)];
+}
+
+export function* createGetUserPropTestCasesIter(options: GetUserPropTestData): Generator<SubtagTestCase, void, undefined> {
+    if (options.includeNoArgs !== false)
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
+
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['']));
+    if (options.quiet !== false) {
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', ['', 'q']));
+    }
+    yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user']));
+    if (options.quiet !== false) {
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', '']));
+        yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'other', [c.queryString ?? 'other user', 'q']));
+    }
+    yield {
+        code: options.generateCode('unknown user'),
+        expected: '`No user found`',
+        errors: [
+            { start: 0, end: options.generateCode('unknown user').length, error: new UserNotFoundError('unknown user') }
+        ],
+        setup(ctx) {
+            ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
+                .verifiable(1)
+                .thenResolve([]);
+        }
+    };
+    if (options.quiet !== false) {
+        yield {
             code: options.generateCode('unknown user', ''),
             expected: '`No user found`',
             errors: [
@@ -38,25 +48,26 @@ export function createGetUserPropTestCases(options: GetUserPropTestData): Subtag
                     .verifiable(1)
                     .thenResolve([]);
             }
-        },
-        {
+        };
+        yield {
             code: options.generateCode('unknown user', 'q'),
-            expected: options.ifQuietAndNotFound ?? '`No user found`',
+            expected: options.quiet ?? '`No user found`',
             errors: [
-                { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.ifQuietAndNotFound) }
+                { start: 0, end: options.generateCode('unknown user', 'q').length, error: new UserNotFoundError('unknown user').withDisplay(options.quiet) }
             ],
             setup(ctx) {
                 ctx.util.setup(m => m.findMembers(argument.isInstanceof(Guild).and(g => g.id === ctx.guild.id).value, 'unknown user'))
                     .verifiable(1)
                     .thenResolve([]);
             }
-        }
-    ];
+        };
+    }
 }
 
 interface GetUserPropTestData {
     cases: GetUserPropTestCase[];
-    ifQuietAndNotFound: string | undefined;
+    quiet?: string | false;
+    includeNoArgs?: boolean;
     generateCode: (...args: [userStr?: string, quietStr?: string]) => string;
 }
 

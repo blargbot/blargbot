@@ -11,7 +11,7 @@ runSubtagTests({
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
-            includeNoMessageId: false,
+            includeNoArgs: false,
             generateCode(...args) {
                 return `{${['reactremoveall', ...args].filter(a => a !== undefined).join(';')}}`;
             },

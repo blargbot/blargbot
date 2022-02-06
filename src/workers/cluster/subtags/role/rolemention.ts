@@ -33,6 +33,8 @@ export class RoleMentionSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
+        if (!context.state.allowedMentions.roles.includes(role.id))
+            context.state.allowedMentions.roles.push(role.id);
         return role.mention;
     }
 }

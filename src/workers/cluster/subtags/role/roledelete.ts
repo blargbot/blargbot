@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleDeleteSubtag extends DefinedSubtag {
     public constructor() {
@@ -43,8 +44,13 @@ export class RoleDeleteSubtag extends DefinedSubtag {
             const reason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             await role.delete(reason);
         } catch (err: unknown) {
-            context.logger.error(err);
-            throw new BBTagRuntimeError('Failed to delete role: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            if (quiet)
+                return;
+
+            throw new BBTagRuntimeError(`Failed to delete role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }

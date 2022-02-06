@@ -171,7 +171,7 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
     public execute(args: unknown[]): never {
         if (args.length === 0)
             throw new MethodNotConfiguredError(`The '${this.name}' method/property hasnt been configured to accept 0 arguments`);
-        throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: ${JSON.stringify(args.map(arg => isProxy(arg) ? '__PROXY' : arg))}`);
+        throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: ${JSON.stringify(args, (_, value) => isProxy(value) ? '__PROXY' : typeof value === 'bigint' ? value.toString() : value as unknown)}`);
     }
 
     public getValue(): never {

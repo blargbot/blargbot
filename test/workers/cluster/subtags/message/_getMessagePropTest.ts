@@ -11,7 +11,7 @@ export function createGetMessagePropTestCases(options: GetMessagePropTestData): 
 }
 
 function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Generator<SubtagTestCase, void, undefined> {
-    if (options.includeNoMessageId === true)
+    if (options.includeNoArgs === true)
         yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', []));
 
     yield* options.cases.map<SubtagTestCase>(c => createTestCase(options, c, 'command', [undefined, '123456789123456789']));
@@ -88,7 +88,7 @@ function* createGetMessagePropTestCasesIter(options: GetMessagePropTestData): Ge
 
 interface GetMessagePropTestData {
     cases: GetMessagePropTestCase[];
-    includeNoMessageId?: boolean;
+    includeNoArgs?: boolean;
     quiet?: string | false;
     generateCode: (...args: [channelStr?: string, messageId?: string, quietStr?: string]) => string;
 }

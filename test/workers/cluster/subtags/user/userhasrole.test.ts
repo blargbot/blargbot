@@ -19,7 +19,7 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['userhasrole', '12345678901234567', ...args].join(';')}}`;
             },
-            ifQuietAndNotFound: 'false',
+            quiet: 'false',
             cases: [
                 {
                     expected: 'true',
@@ -35,7 +35,7 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['userhasrole', '09876544321098765', ...args].join(';')}}`;
             },
-            ifQuietAndNotFound: 'false',
+            quiet: 'false',
             cases: [
                 {
                     expected: 'false',
@@ -50,7 +50,7 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['userhasrole', '["12345678901234567"]', ...args].join(';')}}`;
             },
-            ifQuietAndNotFound: 'false',
+            quiet: 'false',
             cases: [
                 {
                     expected: 'true',
@@ -66,7 +66,7 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['userhasrole', '["09876544321098765"]', ...args].join(';')}}`;
             },
-            ifQuietAndNotFound: 'false',
+            quiet: 'false',
             cases: [
                 {
                     expected: 'false',
@@ -81,7 +81,7 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['userhasrole', '["123456788909876543","12345678901234567"]', ...args].join(';')}}`;
             },
-            ifQuietAndNotFound: 'false',
+            quiet: 'false',
             cases: [
                 {
                     expected: 'true',
@@ -98,7 +98,7 @@ runSubtagTests({
             generateCode(...args) {
                 return `{${['userhasrole', '["09876544321098765", "123456788909876543"]', ...args].join(';')}}`;
             },
-            ifQuietAndNotFound: 'false',
+            quiet: 'false',
             cases: [
                 {
                     expected: 'false',

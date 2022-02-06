@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetPosSubtag extends DefinedSubtag {
     public constructor() {
@@ -43,9 +44,13 @@ export class RoleSetPosSubtag extends DefinedSubtag {
             await role.editPosition(pos);
             return true;
         } catch (err: unknown) {
-            if (!quiet)
-                throw new BBTagRuntimeError('Failed to edit role: no perms');
-            throw new RoleNotFoundError(roleStr);
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            if (quiet)
+                return false;
+
+            throw new BBTagRuntimeError(`Failed to edit role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }

@@ -10,7 +10,7 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            ifQuietAndNotFound: '',
+            quiet: '',
             generateCode(...args) {
                 return `{${['useractivitytype', ...args].join(';')}}`;
             },
@@ -93,7 +93,7 @@ runSubtagTests({
             ]
         }),
         ...createGetUserPropTestCases({
-            ifQuietAndNotFound: '',
+            quiet: '',
             generateCode(...args) {
                 return `{${['usergametype', ...args].join(';')}}`;
             },

@@ -29,10 +29,9 @@ export class RolesSubtag extends DefinedSubtag {
     }
 
     public getGuildRoles(context: BBTagContext): string[] {
-        return context.member.roles
-            .map(r => ({ r, p: context.guild.roles.get(r)?.position ?? -Infinity }))
-            .sort((a, b) => b.p - a.p)
-            .map(r => r.r);
+        return [...context.guild.roles.values()]
+            .sort((a, b) => b.position - a.position)
+            .map(r => r.id);
     }
 
     public async getUserRoles(

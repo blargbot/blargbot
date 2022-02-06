@@ -10,7 +10,7 @@ runSubtagTests({
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
-            includeNoMessageId: true,
+            includeNoArgs: true,
             generateCode(...args) {
                 return `{${['messageedittime', ...args].filter(a => a !== undefined).join(';')}}`;
             },
@@ -34,7 +34,7 @@ runSubtagTests({
         }),
         ...createGetMessagePropTestCases({
             quiet: false,
-            includeNoMessageId: true,
+            includeNoArgs: true,
             generateCode(...args) {
                 return `{${['messageedittime', ...args, 'DD/MM/YYYY'].filter(a => a !== undefined).join(';')}}`;
             },

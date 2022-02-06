@@ -8,7 +8,7 @@ runSubtagTests({
     argCountBounds: { min: 0, max: 2 },
     cases: [
         ...createGetUserPropTestCases({
-            ifQuietAndNotFound: '',
+            quiet: '',
             generateCode(...args) {
                 return `{${['username', ...args].join(';')}}`;
             },

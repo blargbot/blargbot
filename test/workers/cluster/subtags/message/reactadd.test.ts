@@ -26,7 +26,7 @@ runSubtagTests({
             }
         },
         ...createGetMessagePropTestCases({
-            includeNoMessageId: false,
+            includeNoArgs: false,
             quiet: false,
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔'].filter(a => a !== undefined).join(';')}}`;
@@ -58,7 +58,7 @@ runSubtagTests({
             }
         },
         ...createGetMessagePropTestCases({
-            includeNoMessageId: false,
+            includeNoArgs: false,
             quiet: false,
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
@@ -83,7 +83,7 @@ runSubtagTests({
             }
         },
         ...createGetMessagePropTestCases({
-            includeNoMessageId: false,
+            includeNoArgs: false,
             quiet: false,
             generateCode(...args) {
                 return `{${['reactadd', ...args, '🤔', '<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;

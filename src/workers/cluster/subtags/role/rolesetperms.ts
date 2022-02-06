@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { discordUtil, hasFlag, parse, SubtagType } from '@cluster/utils';
+import { ApiError, Constants, DiscordRESTError } from 'eris';
 
 export class RoleSetPermsSubtag extends DefinedSubtag {
     public constructor() {
@@ -44,10 +45,12 @@ export class RoleSetPermsSubtag extends DefinedSubtag {
 
         const quiet = typeof context.scopes.local.quiet === 'boolean' ? context.scopes.local.quiet : quietStr !== '';
         const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scopes.local.noLookupErrors });
-        const perms = parse.int(permsStr);
+        const perms = parse.bigInt(permsStr) ?? 0n;
 
-        const allowedPerms = context.authorizer?.permissions.allow ?? 0n;
-        const mappedPerms = BigInt(perms) & allowedPerms;
+        let allowedPerms = context.authorizer?.permissions.allow ?? 0n;
+        if (hasFlag(allowedPerms, Constants.Permissions.administrator))
+            allowedPerms = Constants.Permissions.all;
+        const mappedPerms = perms & allowedPerms;
 
         if (role === undefined)
             throw new BBTagRuntimeError('Role not found');
@@ -59,9 +62,13 @@ export class RoleSetPermsSubtag extends DefinedSubtag {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             await role.edit({ permissions: mappedPerms }, fullReason);
         } catch (err: unknown) {
-            if (!quiet)
-                throw new BBTagRuntimeError('Failed to edit role: no perms');
-            throw new BBTagRuntimeError('Role not found');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            if (quiet)
+                return;
+
+            throw new BBTagRuntimeError(`Failed to edit role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }

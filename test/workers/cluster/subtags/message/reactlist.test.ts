@@ -20,7 +20,7 @@ runSubtagTests({
             ]
         },
         ...createGetMessagePropTestCases({
-            includeNoMessageId: false,
+            includeNoArgs: false,
             quiet: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args].filter(a => a !== undefined).join(';')}}`;
@@ -54,7 +54,7 @@ runSubtagTests({
             ]
         }),
         ...createGetMessagePropTestCases({
-            includeNoMessageId: false,
+            includeNoArgs: false,
             quiet: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔'].filter(a => a !== undefined).join(';')}}`;
@@ -82,7 +82,7 @@ runSubtagTests({
             ]
         }),
         ...createGetMessagePropTestCases({
-            includeNoMessageId: false,
+            includeNoArgs: false,
             quiet: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;
@@ -112,7 +112,7 @@ runSubtagTests({
             ]
         }),
         ...createGetMessagePropTestCases({
-            includeNoMessageId: false,
+            includeNoArgs: false,
             quiet: false,
             generateCode(...args) {
                 return `{${['reactlist', ...args, '🤔', '<:notlikecat:280110565161041921>'].filter(a => a !== undefined).join(';')}}`;

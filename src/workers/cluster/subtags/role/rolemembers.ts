@@ -34,7 +34,7 @@ export class RoleMembersSubtag extends DefinedSubtag {
         }
 
         const members = await context.guild.fetchMembers();
-        const membersInRole = members.filter(m => m.roles.includes(roleId));
+        const membersInRole = members.filter(m => m.roles.includes(role.id));
         return membersInRole.map(m => m.user.id);
     }
 }

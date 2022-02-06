@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetNameSubtag extends DefinedSubtag {
     public constructor() {
@@ -8,14 +9,6 @@ export class RoleSetNameSubtag extends DefinedSubtag {
             name: 'rolesetname',
             category: SubtagType.ROLE,
             definition: [
-                {
-                    parameters: ['role'],
-                    description: 'Remove the name of `role`',
-                    exampleCode: '{rolesetname;admin}',
-                    exampleOut: '',
-                    returns: 'nothing', //TODO output like true/false
-                    execute: (ctx, [role]) => this.setRolename(ctx, role.value, '', false)
-                },
                 {
                     parameters: ['role', 'name', 'quiet?'],
                     description: 'Sets the name of `role`.' +
@@ -52,9 +45,13 @@ export class RoleSetNameSubtag extends DefinedSubtag {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             await role.edit({ name }, fullReason);
         } catch (err: unknown) {
-            if (!quiet)
-                throw new BBTagRuntimeError('Failed to edit role: no perms');
-            throw new RoleNotFoundError(roleStr);
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            if (quiet)
+                return;
+
+            throw new BBTagRuntimeError(`Failed to edit role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }

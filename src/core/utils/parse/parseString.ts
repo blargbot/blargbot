@@ -1,4 +1,4 @@
-export function parseString(value: JToken | undefined, includeNull = false): string {
+export function parseString(this: void, value: JToken | undefined, includeNull = false): string {
     if (typeof value === 'object') {
         if (value !== null)
             return JSON.stringify(value);

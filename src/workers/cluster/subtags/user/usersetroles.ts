@@ -7,7 +7,7 @@ export class UserSetRolesSubtag extends DefinedSubtag {
         super({
             name: 'usersetroles',
             aliases: ['setroles'],
-            category: SubtagType.ROLE,
+            category: SubtagType.USER,
             desc: '`roleArray` must be an array formatted like `["role1", "role2"]`',
             definition: [
                 {
@@ -45,7 +45,6 @@ export class UserSetRolesSubtag extends DefinedSubtag {
          * I feel like that is how it *should* work
         */
         quiet ||= context.scopes.local.quiet ?? false;
-        context.logger.log(quiet);
         const member = await context.queryMember(userStr, {
             noLookup: quiet,
             noErrors: context.scopes.local.noLookupErrors
@@ -63,13 +62,13 @@ export class UserSetRolesSubtag extends DefinedSubtag {
 
         const parsedRoles: string[] = [];
 
-        for (const roleElement of roleArr.v) {
-            const role = await context.queryRole(parse.string(roleElement), {
+        for (const roleStr of roleArr.v.map(v => parse.string(v))) {
+            const role = await context.queryRole(roleStr, {
                 noLookup: quiet,
                 noErrors: context.scopes.local.noLookupErrors
             });
             if (role === undefined) {
-                throw new RoleNotFoundError(userStr)
+                throw new RoleNotFoundError(roleStr)
                     .withDisplay(quiet ? 'false' : undefined);
             }
             parsedRoles.push(role.id);

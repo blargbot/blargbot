@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetMentionableSubtag extends DefinedSubtag {
     public constructor() {
@@ -54,8 +55,13 @@ export class RoleSetMentionableSubtag extends DefinedSubtag {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             await role.edit({ mentionable }, fullReason);
         } catch (err: unknown) {
-            if (!quiet)
-                throw new BBTagRuntimeError('Failed to edit role: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            if (quiet)
+                return;
+
+            throw new BBTagRuntimeError(`Failed to edit role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }

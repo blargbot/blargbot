@@ -37,7 +37,7 @@ runSubtagTests({
     cases: [
         ...createGetMessagePropTestCases({
             quiet: false,
-            includeNoMessageId: true,
+            includeNoArgs: true,
             generateCode(...args) {
                 return `{${['messagetype', ...args].filter(a => a !== undefined).join(';')}}`;
             },
