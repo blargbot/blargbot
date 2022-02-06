@@ -45,8 +45,7 @@ export class ChannelCreateSubtag extends DefinedSubtag {
         typeKey: string,
         optionsJson: string
     ): Promise<string> {
-        const permissions = context.permissions;
-        if (permissions.has('manageChannels') !== true)
+        if (!discordUtil.hasPermission(context.authorizer, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot create channels');
 
         let options: CreateChannelOptions;

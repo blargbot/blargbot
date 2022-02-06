@@ -21,9 +21,7 @@ export class EmojiDeleteSubtag extends DefinedSubtag {
     }
 
     public async deleteEmoji(context: BBTagContext, emojiId: string): Promise<void> {
-        const permission = context.permissions;
-
-        if (!permission.has('manageEmojisAndStickers')) {
+        if (!discordUtil.hasPermission(context.authorizer, 'manageEmojisAndStickers')) {
             throw new BBTagRuntimeError('Author cannot delete emojis');
         }
 

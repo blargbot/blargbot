@@ -7,7 +7,7 @@ import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { ChoiceQueryResult, EntityPickQueryOptions, NamedGuildCommandTag, StoredTag } from '@core/types';
-import { Base, Client as Discord, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Permission, Role, User } from 'eris';
+import { Base, Client as Discord, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -24,8 +24,7 @@ function serializeEntity(entity: { id: string; }): { id: string; serialized: str
     return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
-export class BBTagContext implements Required<BBTagContextOptions> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
+export class BBTagContext {
     #isStaffPromise?: Promise<boolean>;
 
     public readonly message: BBTagContextMessage;
@@ -35,7 +34,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
     public readonly author: string;
-    public readonly authorizer: string;
+    public readonly authorizer: Member | undefined;
+    public readonly authorizerId: string;
     public readonly rootTagName: string;
     public readonly tagName: string;
     public readonly cooldown: number;
@@ -59,14 +59,25 @@ export class BBTagContext implements Required<BBTagContextOptions> {
     public get member(): Member { return this.message.member; }
     public get guild(): Guild { return this.message.channel.guild; }
     public get user(): User { return this.message.author; }
-    public get isStaff(): Promise<boolean> { return this.#isStaffPromise ??= this.engine.util.isUserStaff(this.authorizer, this.guild); }
     public get database(): Database { return this.engine.database; }
     public get logger(): Logger { return this.engine.logger; }
-    public get permissions(): Permission { return this.guild.members.get(this.authorizer)?.permissions ?? new Permission(0n); }
     public get util(): ClusterUtilities { return this.engine.util; }
     public get discord(): Discord { return this.engine.discord; }
     public get subtags(): ModuleLoader<Subtag> { return this.engine.subtags; }
     public get cooldownEnd(): Moment { return this.cooldowns.get(this); }
+
+    public get bot(): Member {
+        const member = this.guild.members.get(this.discord.user.id);
+        if (member === undefined)
+            throw new Error('Bot is not a member of the current guild');
+        return member;
+    }
+
+    public get isStaff(): Promise<boolean> {
+        return this.#isStaffPromise ??= this.authorizer === undefined
+            ? Promise.resolve(false)
+            : this.engine.util.isUserStaff(this.authorizer);
+    }
 
     public constructor(
         public readonly engine: BBTagEngine,
@@ -79,7 +90,8 @@ export class BBTagContext implements Required<BBTagContextOptions> {
         this.isCC = options.isCC;
         this.tagVars = options.tagVars ?? !this.isCC;
         this.author = options.author;
-        this.authorizer = options.authorizer ?? this.author;
+        this.authorizerId = options.authorizer ?? this.author;
+        this.authorizer = this.guild.members.get(this.authorizerId);
         this.rootTagName = options.rootTagName ?? 'unknown';
         this.tagName = options.tagName ?? this.rootTagName;
         this.cooldown = options.cooldown ?? 0;
@@ -379,7 +391,7 @@ export class BBTagContext implements Required<BBTagContextOptions> {
             tagName: this.tagName,
             tagVars: this.tagVars,
             author: this.author,
-            authorizer: this.authorizer,
+            authorizer: this.authorizerId,
             limit: this.limit.serialize(),
             tempVars: this.variables.list
                 .filter(v => v.key.startsWith('~'))

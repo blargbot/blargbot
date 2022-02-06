@@ -170,13 +170,16 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
 
     public execute(args: unknown[]): never {
         if (args.length === 0)
-            throw new Error(`The '${this.name}' method/property hasnt been configured to accept 0 arguments`);
-        throw new Error(`The '${this.name}' method hasnt been configured to accept the arguments: ${JSON.stringify(args.map(arg => isProxy(arg) ? '__PROXY' : arg))}`);
+            throw new MethodNotConfiguredError(`The '${this.name}' method/property hasnt been configured to accept 0 arguments`);
+        throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: ${JSON.stringify(args.map(arg => isProxy(arg) ? '__PROXY' : arg))}`);
     }
 
     public getValue(): never {
-        throw new Error(`The '${this.name}' property hasnt been mocked`);
+        throw new MethodNotConfiguredError(`The '${this.name}' property hasnt been mocked`);
     }
+}
+
+class MethodNotConfiguredError extends Error {
 }
 
 class SatisfiesMatcher<T> extends Matcher {
@@ -185,7 +188,13 @@ class SatisfiesMatcher<T> extends Matcher {
     }
 
     public match(value: unknown): value is T {
-        return this.test(value);
+        try {
+            return this.test(value);
+        } catch (err: unknown) {
+            if (err instanceof MethodNotConfiguredError)
+                return false;
+            throw err;
+        }
     }
 
     public toString(): string {

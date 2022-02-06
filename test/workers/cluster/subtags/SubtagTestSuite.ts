@@ -110,9 +110,9 @@ export class SubtagTestContext {
 
     public readonly roles = {
         everyone: SubtagTestContext.createApiRole({ id: snowflake.create().toString() }),
-        command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), name: 'Command User' }),
-        other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), name: 'Other User' }),
-        bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), name: 'Bot' })
+        command: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 3, name: 'Command User' }),
+        other: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 2, name: 'Other User' }),
+        bot: SubtagTestContext.createApiRole({ id: snowflake.create().toString(), position: 1, name: 'Bot' })
     };
 
     public readonly users = {
@@ -239,7 +239,8 @@ export class SubtagTestContext {
         const guild = this.createGuild(this.guild);
         this.discord.instance.guilds.add(guild);
 
-        this.util.setup(m => m.isUserStaff(this.options.authorizer ?? this.users.command.id, guild), false).thenResolve(this.isStaff);
+        const authorizerId = this.options.authorizer ?? this.options.author ?? this.users.command.id;
+        this.util.setup(m => m.isUserStaff(argument.isInstanceof(Member).and(m => m.id === authorizerId && m.guild === guild).value), false).thenResolve(this.isStaff);
 
         for (const channel of guild.channels.values())
             this.discord.setup(m => m.getChannel(channel.id), false).thenReturn(channel);

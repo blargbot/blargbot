@@ -1,6 +1,7 @@
 import { Cluster } from '@cluster';
 import { BBTagContext, rules } from '@cluster/bbtag';
 import { TimeoutEventService } from '@cluster/serviceTypes';
+import { bbtagUtil } from '@cluster/utils';
 import { StoredEvent, TagStoredEventOptions, TagV4StoredEventOptions } from '@core/types';
 
 export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
@@ -15,7 +16,9 @@ export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
         const context = await BBTagContext.deserialize(this.cluster.bbtag, migratedEvent.context);
         context.limit.addRules(['timer', 'output'], rules.disabledRule);
         context.state.stackSize--;
-        await this.cluster.bbtag.execute(migratedEvent.content, context);
+
+        const ast = bbtagUtil.parse(migratedEvent.content);
+        await context.engine.eval(ast, context);
     }
 
     private migrateEvent<T extends TagStoredEventOptions>(event: T): TagV4StoredEventOptions | undefined {

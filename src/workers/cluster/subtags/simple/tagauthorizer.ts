@@ -21,6 +21,6 @@ export class TagAuthorizerSubtag extends DefinedSubtag {
     }
 
     public getAuthorizer(context: BBTagContext): string {
-        return context.authorizer;
+        return context.authorizerId;
     }
 }

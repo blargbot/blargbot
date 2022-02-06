@@ -1,6 +1,5 @@
 import { TooManyArgumentsError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { IsStaffSubtag } from '@cluster/subtags/user/isstaff';
-import { snowflake } from '@cluster/utils';
 import { Member } from 'eris';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
@@ -12,8 +11,6 @@ runSubtagTests({
             code: '{isstaff}',
             expected: 'true',
             setup(ctx) {
-                const id = snowflake.create().toString();
-                ctx.options.authorizer = id;
                 ctx.isStaff = true;
             }
         },
@@ -21,8 +18,6 @@ runSubtagTests({
             code: '{isstaff}',
             expected: 'false',
             setup(ctx) {
-                const id = snowflake.create().toString();
-                ctx.options.authorizer = id;
                 ctx.isStaff = false;
             }
         },

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
+import { discordUtil, parse, SubtagType } from '@cluster/utils';
 
 export class ChannelSetPosSubtag extends DefinedSubtag {
     public constructor() {
@@ -27,9 +27,7 @@ export class ChannelSetPosSubtag extends DefinedSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO No channel found error
 
-        const permission = channel.permissionsOf(context.authorizer);
-
-        if (permission.has('manageChannels') !== true)
+        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
         const pos = parse.int(posStr);//TODO not a number error

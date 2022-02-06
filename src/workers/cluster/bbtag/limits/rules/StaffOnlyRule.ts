@@ -6,7 +6,7 @@ import { BBTagContext } from '../../BBTagContext';
 export const staffOnlyRule: RuntimeLimitRule = Object.seal({
     async check(context: BBTagContext) {
         if (!await context.isStaff)
-            throw new StaffOnlyError(context.authorizer);
+            throw new StaffOnlyError(context.authorizerId);
     },
     displayText() {
         return 'Authorizer must be staff';

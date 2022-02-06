@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { bbtagUtil, SubtagType } from '@cluster/utils';
 
 export class ExecccSubtag extends DefinedSubtag {
     public constructor() {
@@ -38,8 +38,8 @@ export class ExecccSubtag extends DefinedSubtag {
 
         context.scopes.pushScope(true);
         try {
-            const result = await context.engine.execute(ccommand.content, childContext);
-            return result.content;
+            const ast = bbtagUtil.parse(ccommand.content);
+            return await context.engine.eval(ast, childContext);
         } finally {
             context.errors.push(...childContext.errors);
             context.scopes.popScope();

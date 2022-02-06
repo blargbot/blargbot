@@ -45,9 +45,7 @@ export class EmojiCreateSubtag extends DefinedSubtag {
         imageStr: string,
         rolesStr: string
     ): Promise<string> {
-        const permission = context.permissions;
-
-        if (!permission.has('manageEmojisAndStickers')) {
+        if (!discordUtil.hasPermission(context.authorizer, 'manageEmojisAndStickers')) {
             throw new BBTagRuntimeError('Author cannot create emojis');
         }
 

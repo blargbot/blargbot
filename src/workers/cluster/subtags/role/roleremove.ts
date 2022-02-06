@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, discordUtil, SubtagType } from '@cluster/utils';
+import { Role } from 'eris';
 
 export class RoleRemoveSubtag extends DefinedSubtag {
     public constructor() {
@@ -36,34 +37,35 @@ export class RoleRemoveSubtag extends DefinedSubtag {
         userStr: string,
         quiet: boolean
     ): Promise<boolean> {
-        const topRole = discordUtil.getRoleEditPosition(context);
+        const topRole = discordUtil.getRoleEditPosition(context.authorizer);
         if (topRole === 0)
             throw new BBTagRuntimeError('Author cannot remove roles');
 
         quiet ||= context.scopes.local.quiet ?? false;
-        const result = await discordUtil.checkRoles(context, roleStr, userStr, quiet);
+        const member = await context.queryMember(userStr, { noLookup: quiet });
 
-        if (result.member === undefined) {
+        if (member === undefined) {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        if (result.roles.length === 0)
-            throw new RoleNotFoundError(roleStr);
-
-        if (result.roles.find(role => role.position >= topRole) !== undefined)
-            throw new BBTagRuntimeError('Role above author');
-
-        const roles = result.roles.filter((_, i) => result.hasRole[i]).map(role => role.id);
+        const roleStrs = bbtagUtil.tagArray.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
+        const roles = roleStrs.map(role => context.guild.roles.get(role)).filter((r): r is Role => r !== undefined);
 
         if (roles.length === 0)
+            throw new RoleNotFoundError(roleStr);
+
+        if (roles.find(role => role.position >= topRole) !== undefined)
+            throw new BBTagRuntimeError('Role above author');
+
+        if (roles.every(r => !member.roles.includes(r.id)))
             return false;
 
         try {
+            const roleIds = new Set(roles.map(r => r.id));
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            const existingRoles = result.member.roles;
-            await result.member.edit({
-                roles: existingRoles.filter(roleID => !roles.includes(roleID))
+            await member.edit({
+                roles: member.roles.filter(roleID => !roleIds.has(roleID))
             }, fullReason);
             return true;
         } catch (err: unknown) {

@@ -43,9 +43,7 @@ export class ChannelEditSubtag extends DefinedSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
 
-        const permission = channel.permissionsOf(context.authorizer);
-
-        if (permission.has('manageChannels') !== true)
+        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;

@@ -20,3 +20,4 @@ export * from './shuffle';
 export * from './pluralise';
 export * from './repeat';
 export * from './runMiddleware';
+export * from './hasFlag';

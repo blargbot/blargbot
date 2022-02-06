@@ -29,9 +29,8 @@ export class ChannelDeleteSubtag extends DefinedSubtag {
          */
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');
-        const permission = channel.permissionsOf(context.authorizer);
 
-        if (permission.has('manageChannels') !== true)
+        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         try {

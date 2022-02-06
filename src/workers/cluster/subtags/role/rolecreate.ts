@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { discordUtil, hasFlag, parse, SubtagType } from '@cluster/utils';
 import { RoleOptions } from 'eris';
 
 export class RoleCreateSubtag extends DefinedSubtag {
@@ -43,8 +43,8 @@ export class RoleCreateSubtag extends DefinedSubtag {
         mentionableStr: string,
         hoistedStr: string
     ): Promise<string> {
-        const permission = context.permissions.allow;
-        const topRole = discordUtil.getRoleEditPosition(context);
+        const permission = context.authorizer?.permissions.allow ?? 0n;
+        const topRole = discordUtil.getRoleEditPosition(context.authorizer);
 
         if (topRole === 0)
             throw new BBTagRuntimeError('Author cannot create roles');
@@ -61,7 +61,7 @@ export class RoleCreateSubtag extends DefinedSubtag {
             hoist: parse.boolean(hoistedStr, false)
         };
 
-        if ((rolePerms & permission) !== rolePerms)
+        if (!hasFlag(permission, rolePerms))
             throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {

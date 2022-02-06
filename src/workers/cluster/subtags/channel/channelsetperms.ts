@@ -48,8 +48,7 @@ export class ChannelSetPermsSubtag extends DefinedSubtag {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        const permission = channel.permissionsOf(context.authorizer);
-        if (permission.has('manageChannels') !== true)
+        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         const type = this.getOverwriteType(typeStr);
@@ -81,8 +80,7 @@ export class ChannelSetPermsSubtag extends DefinedSubtag {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        const permission = channel.permissionsOf(context.authorizer);
-        if (permission.has('manageChannels') !== true)
+        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         const type = this.getOverwriteType(typeStr);
