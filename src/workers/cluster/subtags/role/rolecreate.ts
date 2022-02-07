@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, hasFlag, parse, SubtagType } from '@cluster/utils';
-import { RoleOptions } from 'eris';
+import { ApiError, DiscordRESTError, RoleOptions } from 'eris';
 
 export class RoleCreateSubtag extends DefinedSubtag {
     public constructor() {
@@ -14,20 +14,7 @@ export class RoleCreateSubtag extends DefinedSubtag {
                 'Returns the new role\'s ID.',
             definition: [
                 {
-                    parameters: ['name'],
-                    description: 'Creates a role called `name`',
-                    exampleCode: '{rolecreate;Super cool role!}',
-                    exampleOut: '11111111111111111',
-                    returns: 'id',
-                    execute: (ctx, [name]) => this.createRole(ctx, name.value, '#000000', '0', 'false', 'false')
-                },
-                {
-                    parameters: ['name', 'color:000000', 'permissions?:0'],
-                    returns: 'id',
-                    execute: (ctx, [name, color, permissions]) => this.createRole(ctx, name.value, color.value, permissions.value, 'false', 'false')
-                },
-                {
-                    parameters: ['name', 'color:000000', 'permissions:0', 'mentionable:false', 'hoisted?:false'],
+                    parameters: ['name', 'color?:000000', 'permissions?:0', 'mentionable?:false', 'hoisted?:false'],
                     returns: 'id',
                     execute: (ctx, [name, color, permissions, mentionable, hoisted]) => this.createRole(ctx, name.value, color.value, permissions.value, mentionable.value, hoisted.value)
                 }
@@ -43,15 +30,13 @@ export class RoleCreateSubtag extends DefinedSubtag {
         mentionableStr: string,
         hoistedStr: string
     ): Promise<string> {
-        const permission = context.authorizer?.permissions.allow ?? 0n;
         const topRole = discordUtil.getRoleEditPosition(context.authorizer);
-
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot create roles');
 
         const rolePerms = parse.bigInt(permStr);
         if (rolePerms === undefined)
-            throw new BBTagRuntimeError('Permission not a number');
+            throw new BBTagRuntimeError('Permission not a number', `${JSON.stringify(permStr)} is not a number`);
 
         const options: RoleOptions = {
             name,
@@ -61,6 +46,7 @@ export class RoleCreateSubtag extends DefinedSubtag {
             hoist: parse.boolean(hoistedStr, false)
         };
 
+        const permission = context.authorizer?.permissions.allow ?? 0n;
         if (!hasFlag(permission, rolePerms))
             throw new BBTagRuntimeError('Author missing requested permissions');
 
@@ -70,8 +56,10 @@ export class RoleCreateSubtag extends DefinedSubtag {
                 context.guild.roles.set(role.id, role);
             return role.id;
         } catch (err: unknown) {
-            context.logger.error(err);
-            throw new BBTagRuntimeError('Failed to create role: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            throw new BBTagRuntimeError(`Failed to create role: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }
