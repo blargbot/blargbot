@@ -22,7 +22,7 @@ export class RoleDeleteSubtag extends DefinedSubtag {
     }
 
     public async deleteRole(context: BBTagContext, roleStr: string, quiet: boolean): Promise<void> {
-        const topRole = discordUtil.getRoleEditPosition(context.authorizer);
+        const topRole = context.roleEditPosition();
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot delete roles');
 

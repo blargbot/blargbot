@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetPosSubtag extends DefinedSubtag {
@@ -23,7 +23,7 @@ export class RoleSetPosSubtag extends DefinedSubtag {
     }
 
     public async setRolePosition(context: BBTagContext, roleStr: string, positionStr: string, quiet: boolean): Promise<boolean> {
-        const topRole = discordUtil.getRoleEditPosition(context.authorizer);
+        const topRole = context.roleEditPosition();
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 

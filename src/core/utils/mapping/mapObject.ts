@@ -1,6 +1,5 @@
 import { TypeMapping, TypeMappingImpl, TypeMappings } from '@core/types';
 
-import * as guard from '../guard';
 import { createMapping } from './createMapping';
 import { result } from './result';
 
@@ -14,11 +13,8 @@ export function mapObject<T>(mappings: TypeMappings<T>, initial?: () => Partial<
         const remainingKeys = new Set<PropertyKey>(Object.keys(objValue));
 
         function checkKey<K extends keyof T>(resultKey: K, sourceKey: PropertyKey | undefined, mapping: TypeMappingImpl<T[K]>): boolean {
-            if (sourceKey !== undefined) {
-                if (!guard.hasProperty(objValue, sourceKey))
-                    return mapping(undefined).valid;
+            if (sourceKey !== undefined)
                 remainingKeys.delete(sourceKey);
-            }
             const val = sourceKey === undefined ? undefined : objValue[sourceKey];
             const mappedProp = mapping(val);
             if (!mappedProp.valid)

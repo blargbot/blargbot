@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
+import { parse, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class ChannelSetPosSubtag extends DefinedSubtag {
     public constructor() {
@@ -27,16 +28,22 @@ export class ChannelSetPosSubtag extends DefinedSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO No channel found error
 
-        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
+        if (!context.hasPermission(channel, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot move this channel');
 
-        const pos = parse.int(posStr);//TODO not a number error
-        //TODO maybe also check if the position doesn't exceed any bounds? Like amount of channels / greater than -1?
+        const pos = parse.int(posStr, false);
+        if (pos === undefined)
+            throw new NotANumberError(posStr);
+
+        //TODO maybe check if the position doesn't exceed any bounds? Like amount of channels / greater than -1?
+
         try {
             await channel.editPosition(pos);
         } catch (err: unknown) {
-            context.logger.error(err);
-            throw new BBTagRuntimeError('Failed to move channel: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            throw new BBTagRuntimeError(`Failed to move channel: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }

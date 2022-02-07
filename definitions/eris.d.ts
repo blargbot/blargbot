@@ -52,9 +52,27 @@ declare module 'eris' {
 
     export interface Client {
         getChannel(channelID: string): AnyChannel | undefined;
+        /** @deprecated */
+        createChannel<T extends keyof ChannelTypeMap>(
+            guildID: string,
+            name: string,
+            type: T,
+            options?: CreateChannelOptions,
+            nothing?: undefined
+        ): Promise<ChannelTypeMap[T]>;
 
         _formatImage(arg: never): never;
         _formatAllowedMentions(arg: never): never;
+    }
+
+    type ChannelTypeMap = {
+        [Constants.ChannelTypes.GUILD_TEXT]: TextChannel;
+        [Constants.ChannelTypes.GUILD_VOICE]: VoiceChannel;
+        [Constants.ChannelTypes.GUILD_CATEGORY]: CategoryChannel;
+        [Constants.ChannelTypes.GUILD_NEWS]: NewsChannel;
+        [Constants.ChannelTypes.GUILD_STORE]: StoreChannel;
+        [Constants.ChannelTypes.GUILD_STAGE]: StageChannel;
+        [key: number]: Channel;
     }
 
     export interface Guild {

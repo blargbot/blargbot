@@ -24,9 +24,8 @@ export class GuildSetIconSubtag extends DefinedSubtag {
     }
 
     public async setGuildIcon(context: BBTagContext, image: string): Promise<void> {
-        if (!discordUtil.hasPermission(context.authorizer, 'manageGuild')) {
+        if (!context.hasPermission('manageGuild'))
             throw new BBTagRuntimeError('Author cannot modify the guild');
-        }
 
         if (/^https?:\/\//i.test(image)) {
             const res = await fetch(image);

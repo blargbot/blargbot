@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, hasFlag, parse, SubtagType } from '@cluster/utils';
-import { ApiError, Constants, DiscordRESTError } from 'eris';
+import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetPermsSubtag extends DefinedSubtag {
     public constructor() {
@@ -39,7 +39,7 @@ export class RoleSetPermsSubtag extends DefinedSubtag {
         permsStr: string,
         quietStr: string
     ): Promise<void> {
-        const topRole = discordUtil.getRoleEditPosition(context.authorizer);
+        const topRole = context.roleEditPosition();
         if (topRole <= 0)
             throw new BBTagRuntimeError('Author cannot edit roles');
 
@@ -47,10 +47,7 @@ export class RoleSetPermsSubtag extends DefinedSubtag {
         const role = await context.queryRole(roleStr, { noLookup: quiet, noErrors: context.scopes.local.noLookupErrors });
         const perms = parse.bigInt(permsStr) ?? 0n;
 
-        let allowedPerms = context.authorizer?.permissions.allow ?? 0n;
-        if (hasFlag(allowedPerms, Constants.Permissions.administrator))
-            allowedPerms = Constants.Permissions.all;
-        const mappedPerms = perms & allowedPerms;
+        const mappedPerms = perms & context.permission.allow;
 
         if (role === undefined)
             throw new BBTagRuntimeError('Role not found');

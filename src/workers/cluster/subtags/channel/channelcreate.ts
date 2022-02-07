@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
-import { Constants, CreateChannelOptions, Overwrite } from 'eris';
+import { ApiError, Constants, CreateChannelOptions, DiscordRESTError } from 'eris';
 
 export class ChannelCreateSubtag extends DefinedSubtag {
     public constructor() {
@@ -11,15 +11,7 @@ export class ChannelCreateSubtag extends DefinedSubtag {
             desc: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
             definition: [
                 {
-                    parameters: ['name', 'type?:text'],
-                    description: 'Creates a channel of type `type`',
-                    exampleCode: '{channelcreate;super-voice-channel;voice}',
-                    exampleOut: '11111111111111111',
-                    returns: 'id',
-                    execute: (ctx, [name, type]) => this.channelCreate(ctx, name.value, type.value, '{}')
-                },
-                {
-                    parameters: ['name', 'type:text', 'options:{}'],
+                    parameters: ['name', 'type?:text', 'options?:{}'],
                     description: 'Creates a channel with the specified `options` of type `type`' +
                         '`options` is a JSON object, containing any or all of the following properties:\n' +
                         '- `topic`\n' +
@@ -45,30 +37,29 @@ export class ChannelCreateSubtag extends DefinedSubtag {
         typeKey: string,
         optionsJson: string
     ): Promise<string> {
-        if (!discordUtil.hasPermission(context.authorizer, 'manageChannels'))
+        if (!context.hasPermission('manageChannels'))
             throw new BBTagRuntimeError('Author cannot create channels');
 
-        let options: CreateChannelOptions;
-        try {
-            const mapped = mapOptions(optionsJson);
-            if (!mapped.valid)
-                throw new BBTagRuntimeError('Invalid JSON');
-            options = mapped.value;
-        } catch (e: unknown) {
+        const mapped = mapOptions(optionsJson);
+        if (!mapped.valid)
             throw new BBTagRuntimeError('Invalid JSON');
-        }
+        const options = mapped.value;
 
         const type = guard.hasProperty(channelTypes, typeKey) ? channelTypes[typeKey] : Constants.ChannelTypes.GUILD_TEXT;
 
+        for (const permission of options.permissionOverwrites ?? [])
+            if (!context.hasPermission((permission.allow as bigint) | (permission.deny as bigint)))
+                throw new BBTagRuntimeError('Author missing requested permissions');
+
         try {
-            options.reason = context.scopes.local.reason !== undefined
-                ? discordUtil.formatAuditReason(context.user, context.scopes.local.reason)
-                : options.reason;
+            options.reason ||= discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             const channel = await context.guild.createChannel(name, type, options);
             return channel.id;
         } catch (err: unknown) {
-            context.logger.error(err);
-            throw new BBTagRuntimeError('Failed to create channel: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            throw new BBTagRuntimeError(`Failed to create channel: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }
@@ -90,7 +81,7 @@ const mapOptions = mapping.json(
         topic: mapping.string.optional,
         userLimit: mapping.number.optional,
         permissionOverwrites: mapping.array(
-            mapping.object<Overwrite>({
+            mapping.object({
                 allow: mapping.bigInt.optional.map(v => v ?? 0n),
                 deny: mapping.bigInt.optional.map(v => v ?? 0n),
                 id: mapping.string,

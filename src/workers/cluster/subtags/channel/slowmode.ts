@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { humanize, parse, SubtagType } from '@cluster/utils';
+import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class SlowmodeSubtag extends DefinedSubtag {
     public constructor() {
@@ -51,16 +52,23 @@ export class SlowmodeSubtag extends DefinedSubtag {
             time = parse.int(channelStr);
         }
 
-        if (isNaN(time)) time = 0;
+        if (isNaN(time))
+            time = 0;
 
         time = Math.min(time, 21600);
 
         try {
             await channel.edit({
                 rateLimitPerUser: time
-            }, context.scopes.local.reason ?? 'Initiated from BBTag by ' + humanize.fullName(context.user));
+            }, discordUtil.formatAuditReason(context.user, context.scopes.local.reason));
         } catch (err: unknown) {
-            throw new BBTagRuntimeError('Missing required permissions');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            if (err.code === ApiError.MISSING_PERMISSIONS)
+                throw new BBTagRuntimeError('Missing required permissions');
+
+            throw new BBTagRuntimeError(`Failed to edit channel: ${err.message}`);
         }
     }
 }

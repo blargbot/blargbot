@@ -16,6 +16,8 @@ runSubtagTests({
                 ctx.roles.other.id = '340987563405745430';
                 ctx.roles.bot.id = '394850730479533405';
                 ctx.roles.everyone.id = '923874043782332894732';
+                ctx.guild.id = '923874043782332894732';
+                ctx.message.guild_id = '923874043782332894732';
             }
         },
         ...createGetUserPropTestCases({

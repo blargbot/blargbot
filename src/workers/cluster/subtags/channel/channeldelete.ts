@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class ChannelDeleteSubtag extends DefinedSubtag {
     public constructor() {
@@ -30,7 +31,7 @@ export class ChannelDeleteSubtag extends DefinedSubtag {
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');
 
-        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
+        if (!context.hasPermission(channel, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         try {
@@ -40,8 +41,10 @@ export class ChannelDeleteSubtag extends DefinedSubtag {
             );
             await channel.delete(fullReason);
         } catch (err: unknown) {
-            context.logger.error(err);
-            throw new BBTagRuntimeError('Failed to edit channel: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            throw new BBTagRuntimeError(`Failed to edit channel: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }

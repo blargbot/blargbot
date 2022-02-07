@@ -1,13 +1,14 @@
 import { ClusterUtilities } from '@cluster';
 import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, FindEntityOptions, FlagDefinition, FlagResult, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
-import { guard, humanize, parse } from '@cluster/utils';
+import { guard, hasFlag, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Emote } from '@core/Emote';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { ChoiceQueryResult, EntityPickQueryOptions, NamedGuildCommandTag, StoredTag } from '@core/types';
-import { Base, Client as Discord, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Role, User } from 'eris';
+import { getMemberPosition } from '@core/utils/discord';
+import { Base, Client as Discord, Constants, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -53,6 +54,7 @@ export class BBTagContext {
     public dbObjectsCommitted: number;
     public readonly state: BBTagContextState;
     public readonly callStack: SubtagCallStack;
+    public readonly permission: Permission;
 
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
     public get channel(): KnownGuildTextableChannel { return this.message.channel; }
@@ -92,6 +94,9 @@ export class BBTagContext {
         this.author = options.author;
         this.authorizerId = options.authorizer ?? this.author;
         this.authorizer = this.guild.members.get(this.authorizerId);
+        this.permission = this.authorizer === undefined ? new Permission(0n)
+            : this.authorizer.permissions.has('administrator') ? new Permission(Constants.Permissions.all)
+                : this.authorizer.permissions;
         this.rootTagName = options.rootTagName ?? 'unknown';
         this.tagName = options.tagName ?? this.rootTagName;
         this.cooldown = options.cooldown ?? 0;
@@ -136,6 +141,37 @@ export class BBTagContext {
             },
             ...options.state ?? {}
         };
+    }
+
+    public permissionIn(channel: KnownGuildChannel): Permission {
+        if (this.authorizer === undefined)
+            return new Permission(0n);
+        const permissions = channel.permissionsOf(this.authorizer);
+        if (permissions.has('administrator'))
+            return new Permission(Constants.Permissions.all);
+        return permissions;
+    }
+
+    public hasPermission(permission: bigint | keyof Constants['Permissions']): boolean;
+    public hasPermission(channel: KnownGuildChannel, permission: bigint | keyof Constants['Permissions']): boolean;
+    public hasPermission(...args: [permission: bigint | keyof Constants['Permissions']] | [channel: KnownGuildChannel, permission: bigint | keyof Constants['Permissions']]): boolean {
+        const [permissions, permission] = args.length === 1
+            ? [this.permission, args[0]]
+            : [this.permissionIn(args[0]), args[1]];
+
+        const flags = typeof permission === 'bigint' ? permission : Constants.Permissions[permission];
+        return hasFlag(permissions.allow, flags);
+    }
+
+    public roleEditPosition(channel?: KnownGuildChannel): number {
+        if (this.guild.ownerID === this.authorizer?.id)
+            return Infinity;
+
+        const permission = channel === undefined ? this.permission : this.permissionIn(channel);
+        if (!permission.has('manageRoles'))
+            return -Infinity;
+
+        return getMemberPosition(this.authorizer);
     }
 
     public eval(bbtag: SubtagCall | Statement): Awaitable<string> {

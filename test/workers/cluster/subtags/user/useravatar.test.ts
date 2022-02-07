@@ -34,6 +34,8 @@ runSubtagTests({
                     expected: 'https://cdn.discordapp.com/guilds/87654321987654321/users/12345678912345678/avatars/a1b2c3.png?size=512',
                     setup(member, ctx) {
                         ctx.guild.id = '87654321987654321';
+                        ctx.roles.everyone.id = ctx.guild.id;
+                        ctx.message.guild_id = ctx.guild.id;
                         member.user.id = '12345678912345678';
                         member.avatar = 'a1b2c3';
                         ctx.discordOptions.defaultImageFormat = 'png';
@@ -44,6 +46,8 @@ runSubtagTests({
                     expected: 'https://cdn.discordapp.com/guilds/87654321987654321/users/12345678912345678/avatars/a_a1b2c3.gif?size=512',
                     setup(member, ctx) {
                         ctx.guild.id = '87654321987654321';
+                        ctx.roles.everyone.id = ctx.guild.id;
+                        ctx.message.guild_id = ctx.guild.id;
                         member.user.id = '12345678912345678';
                         member.avatar = 'a_a1b2c3';
                         ctx.discordOptions.defaultImageSize = 512;

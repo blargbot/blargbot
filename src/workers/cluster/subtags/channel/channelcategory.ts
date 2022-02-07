@@ -40,7 +40,7 @@ export class ChannelCategorySubtag extends DefinedSubtag {
             throw new ChannelNotFoundError(channelStr)
                 .withDisplay(quiet ? '' : undefined);
 
-        if (channel.parentID === null)
+        if (typeof channel.parentID !== 'string')
             throw new BBTagRuntimeError('Channel has no parent')
                 .withDisplay('');
 

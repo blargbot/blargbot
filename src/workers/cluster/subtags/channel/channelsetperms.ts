@@ -2,7 +2,7 @@ import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
-import { Constants } from 'eris';
+import { ApiError, Constants, DiscordRESTError } from 'eris';
 
 export class ChannelSetPermsSubtag extends DefinedSubtag {
     public constructor() {
@@ -17,7 +17,7 @@ export class ChannelSetPermsSubtag extends DefinedSubtag {
                     exampleCode: '{channelsetperms;11111111111111111;member;222222222222222222}',
                     exampleOut: '11111111111111111',
                     returns: 'id',
-                    execute: (ctx, [channel, type, item]) => this.channelDeleteOverwrite(ctx, channel.value, type.value.toLowerCase(), item.value)
+                    execute: (ctx, [channel, type, item]) => this.channelSetPerms(ctx, channel.value, type.value, item.value, undefined, undefined)
                 },
                 {
                     parameters: ['channel', 'type', 'memberid|roleid', 'allow', 'deny?'],
@@ -34,43 +34,13 @@ export class ChannelSetPermsSubtag extends DefinedSubtag {
         });
     }
 
-    public async channelDeleteOverwrite(
-        context: BBTagContext,
-        channelStr: string,
-        typeStr: string,
-        item: string
-    ): Promise<string> {
-        const channel = await context.queryChannel(channelStr);
-
-        if (channel === undefined)
-            throw new BBTagRuntimeError('Channel does not exist'); //TODO No channel found error
-
-        if (guard.isThreadChannel(channel))
-            throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
-
-        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
-            throw new BBTagRuntimeError('Author cannot edit this channel');
-
-        const type = this.getOverwriteType(typeStr);
-
-        //TODO lookup for items, argumentsshould be allowed to be usernames / channelnames
-        try {
-            const override = channel.permissionOverwrites.get(item);
-            if (override !== undefined && override.type === type)
-                await channel.deletePermission(override.id);
-            return channel.id;
-        } catch (e: unknown) {
-            throw new BBTagRuntimeError('Failed to edit channel: no perms');
-        }
-    }
-
     public async channelSetPerms(
         context: BBTagContext,
         channelStr: string,
         typeStr: string,
         entityId: string,
-        allow: bigint | undefined,
-        deny: bigint | undefined
+        allow = 0n,
+        deny = 0n
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr);
 
@@ -80,8 +50,11 @@ export class ChannelSetPermsSubtag extends DefinedSubtag {
         if (guard.isThreadChannel(channel))
             throw new BBTagRuntimeError('Cannot set permissions for a thread channel');
 
-        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
+        if (!context.hasPermission(channel, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
+
+        if (!context.hasPermission(channel, allow | deny))
+            throw new BBTagRuntimeError('Author missing requested permissions');
 
         const type = this.getOverwriteType(typeStr);
         try {
@@ -89,18 +62,17 @@ export class ChannelSetPermsSubtag extends DefinedSubtag {
                 context.user,
                 context.scopes.local.reason ?? ''
             );
-            const overwrite = channel.permissionOverwrites.get(entityId);
-            if (overwrite !== undefined && overwrite.type === type) {
-                if (allow === undefined && deny === undefined) {
-                    // NOOP
-                } else {
-                    await channel.editPermission(overwrite.id, allow ?? 0n, deny ?? 0n, type, fullReason);
-                }
-            }
+            if (allow !== 0n || deny !== 0n)
+                await channel.editPermission(entityId, allow, deny, type, fullReason);
+            else
+                await channel.deletePermission(entityId, fullReason);
+
             return channel.id;
         } catch (err: unknown) {
-            context.logger.error(err);
-            throw new BBTagRuntimeError('Failed to edit channel: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            throw new BBTagRuntimeError(`Failed to edit channel: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 

@@ -1,9 +1,8 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, mapping, SubtagType } from '@cluster/utils';
-import { TypeMapping } from '@core/types';
 import { guard } from '@core/utils';
-import { EditChannelOptions, KnownGuildChannel } from 'eris';
+import { ApiError, DiscordRESTError, EditChannelOptions } from 'eris';
 
 export class ChannelEditSubtag extends DefinedSubtag {
     public constructor() {
@@ -36,31 +35,22 @@ export class ChannelEditSubtag extends DefinedSubtag {
     public async channelEdit(
         context: BBTagContext,
         channelStr: string,
-        options: string
+        editJson: string
     ): Promise<string> {
         const channel = await context.queryChannel(channelStr);
 
         if (channel === undefined)
             throw new BBTagRuntimeError('Channel does not exist');//TODO no channel found error
 
-        if (!discordUtil.hasPermission(channel, context.authorizer, 'manageChannels'))
+        if (!context.hasPermission(channel, 'manageChannels'))
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         const mapping = guard.isThreadChannel(channel) ? mapThreadOptions : mapChannelOptions;
-        return await this.channelEditCore(context, channel, options, mapping);
-    }
-
-    private async channelEditCore(
-        context: BBTagContext,
-        channel: KnownGuildChannel,
-        editJson: string,
-        mapping: TypeMapping<EditChannelOptions>
-    ): Promise<string> {
         const mapped = mapping(editJson);
         if (!mapped.valid)
             throw new BBTagRuntimeError('Invalid JSON');
-        const options = mapped.value;
 
+        const options = mapped.value;
         try {
             const fullReason = discordUtil.formatAuditReason(
                 context.user,
@@ -69,8 +59,10 @@ export class ChannelEditSubtag extends DefinedSubtag {
             await channel.edit(options, fullReason);
             return channel.id;
         } catch (err: unknown) {
-            context.logger.error(err);
-            throw new BBTagRuntimeError('Failed to edit channel: no perms');
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            throw new BBTagRuntimeError(`Failed to edit channel: ${err.code === ApiError.MISSING_PERMISSIONS ? 'no perms' : err.message}`);
         }
     }
 }
@@ -102,7 +94,7 @@ const mapThreadOptions = mapping.json(
         autoArchiveDuration: mapping.in(60, 1440, 4320, 10080, undefined),
         locked: mapping.boolean.optional,
         name: mapping.string.optional,
-        rateLimitPerUser: mapping.number,
+        rateLimitPerUser: mapping.number.optional,
         invitable: mapping.boolean.optional,
         bitrate: [undefined],
         defaultAutoArchiveDuration: [undefined],
