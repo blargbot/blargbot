@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
+import { ApiError, DiscordRESTError } from 'eris';
 
 export class GuildBansSubtag extends DefinedSubtag {
     public constructor() {
@@ -20,13 +21,14 @@ export class GuildBansSubtag extends DefinedSubtag {
         });
     }
 
-    public async getGuildBans(
-        context: BBTagContext
-    ): Promise<string[]> {
+    public async getGuildBans(context: BBTagContext): Promise<string[]> {
         try {
             return (await context.guild.getBans()).map(u => u.user.id);
         } catch (err: unknown) {
-            throw new BBTagRuntimeError('Missing required permissions');
+            if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
+                throw new BBTagRuntimeError('Missing required permissions');
+
+            throw err;
         }
     }
 }

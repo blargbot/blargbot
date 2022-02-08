@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { discordUtil, guard, SubtagType } from '@cluster/utils';
+import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
 export class GuildSetIconSubtag extends DefinedSubtag {
@@ -27,12 +28,12 @@ export class GuildSetIconSubtag extends DefinedSubtag {
         if (!context.hasPermission('manageGuild'))
             throw new BBTagRuntimeError('Author cannot modify the guild');
 
-        if (/^https?:\/\//i.test(image)) {
+        if (guard.isUrl(image)) {
             const res = await fetch(image);
             const contentType = res.headers.get('content-type');
             image = `data:${contentType !== null ? contentType : ''};base64,${(await res.buffer()).toString('base64')}`;
         } else if (!image.startsWith('data:')) {
-            throw new BBTagRuntimeError('Imaeg was not a buffer or a URL');
+            throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
 
         try {
@@ -41,11 +42,11 @@ export class GuildSetIconSubtag extends DefinedSubtag {
                 icon: image
             }, fullReason);
         } catch (err: unknown) {
-            context.logger.error(err);
-            if (err instanceof Error) {
-                const parts = err.message.split('\n').map(m => m.trim());
-                throw new BBTagRuntimeError('Failed to set icon: ' + (parts.length > 1 ? parts[1] : parts[0]));
-            }
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            const parts = err.message.split('\n').map(m => m.trim());
+            throw new BBTagRuntimeError(`Failed to set icon: ${parts[1] ?? parts[0]}`);
         }
     }
 }

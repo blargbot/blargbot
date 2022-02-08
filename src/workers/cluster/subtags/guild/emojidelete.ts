@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { discordUtil, SubtagType } from '@cluster/utils';
+import { DiscordRESTError } from 'eris';
 
 export class EmojiDeleteSubtag extends DefinedSubtag {
     public constructor() {
@@ -28,11 +29,11 @@ export class EmojiDeleteSubtag extends DefinedSubtag {
             const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
             await context.guild.deleteEmoji(emojiId, fullReason);
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                const parts = err.message.split('\n').map(m => m.trim());
-                throw new BBTagRuntimeError('Failed to delete emoji: ' + (parts.length > 1 ? parts[1] : parts[0]));
-            }
-            throw err;
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            const parts = err.message.split('\n').map(m => m.trim());
+            throw new BBTagRuntimeError('Failed to delete emoji: ' + (parts.length > 1 ? parts[1] : parts[0]));
         }
     }
 }

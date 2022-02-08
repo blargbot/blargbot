@@ -4,10 +4,14 @@ import { BBTagContext } from './BBTagContext';
 import { compileSignatures, parseDefinitions } from './compilation';
 import { Subtag } from './Subtag';
 
+export interface DefinedSubtagOptions extends Omit<SubtagOptions, 'signatures'> {
+    readonly definition: readonly AnySubtagHandlerDefinition[];
+}
+
 export abstract class DefinedSubtag extends Subtag {
     readonly #handler: CompositeSubtagHandler;
 
-    public constructor(options: Omit<SubtagOptions, 'signatures'> & { definition: readonly AnySubtagHandlerDefinition[]; }) {
+    public constructor(options: DefinedSubtagOptions) {
         const signatures = parseDefinitions(options.definition);
         super({ ...options, signatures });
 

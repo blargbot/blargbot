@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, discordUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, discordUtil, guard, SubtagType } from '@cluster/utils';
+import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
 interface EmojiCreateOptions {
@@ -54,12 +55,13 @@ export class EmojiCreateSubtag extends DefinedSubtag {
             roles: []
         };
 
-        if (options.name === '') throw new BBTagRuntimeError('Name was not provided');
+        if (options.name === '')
+            throw new BBTagRuntimeError('Name was not provided');
 
-        if (/^https?:\/\//i.test(options.image)) {
+        if (guard.isUrl(options.image)) {
             const res = await fetch(options.image);
             const contentType = res.headers.get('content-type');
-            options.image = `data:${contentType !== null ? contentType : ''};base64,${(await res.buffer()).toString('base64')}`;
+            options.image = `data:${contentType ?? ''};base64,${(await res.buffer()).toString('base64')}`;
         } else if (!options.image.startsWith('data:')) {
             throw new BBTagRuntimeError('Image was not a buffer or a URL');
         }
@@ -68,7 +70,7 @@ export class EmojiCreateSubtag extends DefinedSubtag {
         const roleArray = await bbtagUtil.tagArray.getArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
-                const role = await context.queryRole(roleQuery?.toString() !== undefined ? roleQuery.toString() : '', { noLookup: true });
+                const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });
                 if (role !== undefined) {
                     options.roles.push(role.id);
                 }
@@ -80,11 +82,11 @@ export class EmojiCreateSubtag extends DefinedSubtag {
             const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, fullReason);
             return emoji.id;
         } catch (err: unknown) {
-            if (err instanceof Error) {
-                const parts = err.message.split('\n').map(m => m.trim());
-                throw new BBTagRuntimeError('Failed to create emoji: ' + (parts.length > 1 ? parts[1] : parts[0]));
-            }
-            throw err;
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            const parts = err.message.split('\n').map(m => m.trim());
+            throw new BBTagRuntimeError(`Failed to create emoji: ${parts[1] ?? parts[0]}`);
         }
     }
 }

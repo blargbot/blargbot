@@ -23,7 +23,7 @@ export class EmojisSubtag extends DefinedSubtag {
                     exampleCode: 'Cool gang has {length;{emojis;Cool gang}} emojis.',
                     exampleOut: 'Cool gang has 6 emojis.',
                     returns: 'string[]',
-                    execute: (ctx/*, [role]*/) => this.getEmojisForRole(ctx/*, role.value*/)
+                    execute: (ctx, [role]) => this.getEmojisForRole(ctx, role.value)
                 }
             ]
         });
@@ -33,23 +33,16 @@ export class EmojisSubtag extends DefinedSubtag {
         return context.guild.emojis.map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
     }
 
-    //! Doesn't work, but compatibility™
-    //* The code commented below is the working code, however to keep compatibility the old code is still used
-    public /*async*/ getEmojisForRole(context: BBTagContext/*, roleStr*/): /*Promise<*/string[]/*>*/ {
-        const emojis = context.guild.emojis.filter(e => e.roles.length > 0)
+    public async getEmojisForRole(context: BBTagContext, roleStr: string): Promise<string[]> {
+        const role = await context.queryRole(roleStr, { noErrors: true, noLookup: true });
+
+        // if (role === undefined)
+        //     throw new RoleNotFoundError(roleStr) //TODO add this to other role subtags too, but when versioning is a thing to avoid incompatibilities
+
+        const roleId = role?.id ?? roleStr;
+
+        const emojis = context.guild.emojis.filter(e => (e.roles as string[] | undefined)?.includes(roleId) === true)
             .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
         return emojis;
-
-        // const role = await context.getRole(roleStr, {
-        //     quiet: true, suppress: true,
-        //     label: `${context.isCC ? 'custom command' : 'tag'} \`${context.rootTagName}\``
-        // });
-
-        // if (role === undefined) {
-        //     throw new RoleNotFoundError(roleStr) //TODO add this to other role subtags too, but when versioning is a thing to avoid incompatibilities
-        // }
-        // const emojis = context.guild.emojis.filter(e => e.roles.cache.has(role.id))
-        //     .map(e => `<${e.animated ? 'a' : ''}:${e.name}:${e.id}>`);
-        // return emojis;
     }
 }
