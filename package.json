@@ -73,7 +73,7 @@
     "devDependencies": {
         "eslint": "^5.6.1",
         "eslint-loader": "^2.1.1",
-        "node-sass": "^6.0.1",
+        "node-sass": "^7.0.0",
         "sass-lint": "^1.12.1",
         "sass-loader": "^7.1.0"
     },
