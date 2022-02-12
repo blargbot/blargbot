@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetPermsSubtag extends DefinedSubtag {
@@ -56,8 +56,7 @@ export class RoleSetPermsSubtag extends DefinedSubtag {
             throw new BBTagRuntimeError('Role above author');
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await role.edit({ permissions: mappedPerms }, fullReason);
+            await role.edit({ permissions: mappedPerms }, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
                 throw err;

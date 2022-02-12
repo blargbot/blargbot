@@ -7,12 +7,12 @@
     ".mts"
   ],
   "include": [
-    "**/*.js",
-    "**/*.ts",
-    "**/*.mjs",
-    "**/*.mts",
-    "**/*.cjs",
-    "**/*.cts"
+    "src/workers/cluster/subtags/**/*.js",
+    "src/workers/cluster/subtags/**/*.ts",
+    "src/workers/cluster/subtags/**/*.mjs",
+    "src/workers/cluster/subtags/**/*.mts",
+    "src/workers/cluster/subtags/**/*.cjs",
+    "src/workers/cluster/subtags/**/*.cts"
   ],
   "exclude": [
     "coverage/**",

@@ -82,14 +82,20 @@ const props: { [P in keyof TypeMapping<unknown>]: PropertyDescriptor } = {
     },
     map: {
         configurable: true,
-        value: function <T, R, TArgs extends unknown[]>(this: TypeMappingImpl<T, TArgs>, mapping: (value: T, ...args: TArgs) => R): TypeMapping<T | R, TArgs> {
+        value: function <T, R, TArgs extends unknown[]>(this: TypeMapping<T, TArgs>, mapping: (value: T, ...args: TArgs) => R): TypeMapping<T | R, TArgs> {
+            return this.chain((v, ...args) => result.success(mapping(v, ...args)));
+        }
+    },
+    chain: {
+        configurable: true,
+        value: function <T, R, TArgs extends unknown[]>(this: TypeMapping<T, TArgs>, mapping: (value: T, ...args: TArgs) => TypeMappingResult<R>): TypeMapping<T | R, TArgs> {
             return createMapping((value, ...args) => {
                 const mapped = this(value, ...args);
                 if (!mapped.valid)
                     return mapped;
 
                 try {
-                    return result.success(mapping(mapped.value, ...args));
+                    return mapping(mapped.value, ...args);
                 } catch {
                     return result.failed;
                 }

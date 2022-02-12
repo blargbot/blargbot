@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleDeleteSubtag extends DefinedSubtag {
@@ -41,8 +41,7 @@ export class RoleDeleteSubtag extends DefinedSubtag {
             throw new BBTagRuntimeError('Role above author');
 
         try {
-            const reason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await role.delete(reason);
+            await role.delete(context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
                 throw err;

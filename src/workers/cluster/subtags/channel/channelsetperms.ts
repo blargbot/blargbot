@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 import { ApiError, Constants, DiscordRESTError } from 'eris';
 
@@ -58,14 +58,10 @@ export class ChannelSetPermsSubtag extends DefinedSubtag {
 
         const type = this.getOverwriteType(typeStr);
         try {
-            const fullReason = discordUtil.formatAuditReason(
-                context.user,
-                context.scopes.local.reason ?? ''
-            );
             if (allow !== 0n || deny !== 0n)
-                await channel.editPermission(entityId, allow, deny, type, fullReason);
+                await channel.editPermission(entityId, allow, deny, type, context.auditReason());
             else
-                await channel.deletePermission(entityId, fullReason);
+                await channel.deletePermission(entityId, context.auditReason());
 
             return channel.id;
         } catch (err: unknown) {

@@ -26,7 +26,7 @@ export class ArchivedThreadsSubtag extends DefinedSubtag {
             throw new ChannelNotFoundError(channelStr);
 
         if (!guard.isThreadableChannel(channel))
-            throw new InvalidChannelError(channel);
+            throw new InvalidChannelError(channel.type, channel.id);
 
         return (await channel.getArchivedThreads('public')).threads.map(t => t.id);
     }

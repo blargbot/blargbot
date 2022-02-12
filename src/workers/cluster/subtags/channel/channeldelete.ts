@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 export class ChannelDeleteSubtag extends DefinedSubtag {
@@ -35,11 +35,7 @@ export class ChannelDeleteSubtag extends DefinedSubtag {
             throw new BBTagRuntimeError('Author cannot edit this channel');
 
         try {
-            const fullReason = discordUtil.formatAuditReason(
-                context.user,
-                context.scopes.local.reason ?? ''
-            );
-            await channel.delete(fullReason);
+            await channel.delete(context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
                 throw err;

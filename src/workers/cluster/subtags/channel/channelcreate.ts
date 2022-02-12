@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, guard, mapping, SubtagType } from '@cluster/utils';
+import { guard, mapping, SubtagType } from '@cluster/utils';
 import { ApiError, Constants, CreateChannelOptions, DiscordRESTError } from 'eris';
 
 export class ChannelCreateSubtag extends DefinedSubtag {
@@ -52,7 +52,7 @@ export class ChannelCreateSubtag extends DefinedSubtag {
                 throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {
-            options.reason ||= discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
+            options.reason ||= context.auditReason();
             const channel = await context.guild.createChannel(name, type, options);
             return channel.id;
         } catch (err: unknown) {

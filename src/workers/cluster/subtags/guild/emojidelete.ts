@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { SubtagType } from '@cluster/utils';
 import { DiscordRESTError } from 'eris';
 
 export class EmojiDeleteSubtag extends DefinedSubtag {
@@ -26,8 +26,7 @@ export class EmojiDeleteSubtag extends DefinedSubtag {
             throw new BBTagRuntimeError('Author cannot delete emojis');
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await context.guild.deleteEmoji(emojiId, fullReason);
+            await context.guild.deleteEmoji(emojiId, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
                 throw err;

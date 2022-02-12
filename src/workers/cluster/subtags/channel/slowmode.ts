@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 export class SlowmodeSubtag extends DefinedSubtag {
@@ -58,9 +58,7 @@ export class SlowmodeSubtag extends DefinedSubtag {
         time = Math.min(time, 21600);
 
         try {
-            await channel.edit({
-                rateLimitPerUser: time
-            }, discordUtil.formatAuditReason(context.user, context.scopes.local.reason));
+            await channel.edit({ rateLimitPerUser: time }, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
                 throw err;

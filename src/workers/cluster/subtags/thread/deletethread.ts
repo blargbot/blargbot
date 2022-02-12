@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { guard, SubtagType } from '@cluster/utils';
+import { DiscordRESTError } from 'eris';
 
 export class DeleteThreadSubtag extends DefinedSubtag {
     public constructor() {
@@ -25,18 +26,14 @@ export class DeleteThreadSubtag extends DefinedSubtag {
         if (!guard.isThreadChannel(context.channel))
             throw new BBTagRuntimeError('Not a thread channel');
 
-        if (!context.hasPermission('manageThreads'))
-            throw new BBTagRuntimeError('I need to be able to manage threads to delete one');
-
         try {
-            await context.channel.delete();
+            await context.channel.delete(context.auditReason());
             return true;
-        } catch (e: unknown) {
-            context.logger.error(e);
-            if (e instanceof Error) {
-                throw new BBTagRuntimeError(e.message);
-            }
-            throw new BBTagRuntimeError('Could not delete thread');
+        } catch (err: unknown) {
+            if (!(err instanceof DiscordRESTError))
+                throw err;
+
+            throw new BBTagRuntimeError(`Failed to delete thread: ${err.message}`);
         }
     }
 }

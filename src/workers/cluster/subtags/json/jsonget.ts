@@ -34,7 +34,7 @@ export class JsonGetSubtag extends DefinedSubtag {
         if (arr !== undefined) {
             obj = arr.v;
         } else {
-            obj = (await json.parse(context, input)).object;
+            obj = (await json.resolve(context, input)).object;
         }
 
         try {

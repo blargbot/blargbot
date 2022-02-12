@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, mapping, SubtagType } from '@cluster/utils';
+import { mapping, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 import { ApiError, DiscordRESTError, EditChannelOptions } from 'eris';
 
@@ -52,11 +52,7 @@ export class ChannelEditSubtag extends DefinedSubtag {
 
         const options = mapped.value;
         try {
-            const fullReason = discordUtil.formatAuditReason(
-                context.user,
-                context.scopes.local.reason ?? ''
-            );
-            await channel.edit(options, fullReason);
+            await channel.edit(options, context.auditReason());
             return channel.id;
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))

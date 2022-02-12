@@ -1,34 +1,33 @@
-import { humanize } from '@cluster/utils';
-import { Constants, KnownChannel } from 'eris';
+import { ChannelType } from 'discord-api-types';
 
 import { BBTagRuntimeError } from './BBTagRuntimeError';
 
 export class InvalidChannelError extends BBTagRuntimeError {
-    public constructor(public readonly channel: KnownChannel) {
-        super(InvalidChannelError.getMessage(channel), `The channel ${humanize.channelName(channel)} (${channel.id}) is not a valid type`);
+    public constructor(public readonly channelType: ChannelType, channelId: string) {
+        super(InvalidChannelError.getMessage(channelType), `The channel ${channelId} is not a valid type`);
     }
 
-    private static getMessage(channel: KnownChannel): string {
-        switch (channel.type) {
-            case Constants.ChannelTypes.GUILD_VOICE:
+    private static getMessage(channelType: ChannelType): string {
+        switch (channelType) {
+            case ChannelType.GuildVoice:
                 return 'Channel cannot be a voice channel';
-            case Constants.ChannelTypes.GUILD_STAGE_VOICE:
+            case ChannelType.GuildStageVoice:
                 return 'Channel cannot be a stage channel';
-            case Constants.ChannelTypes.GUILD_CATEGORY:
+            case ChannelType.GuildCategory:
                 return 'Channel cannot be a category';
-            case Constants.ChannelTypes.GUILD_STORE:
+            case ChannelType.GuildStore:
                 return 'Channel cannot be a store channel';
-            case Constants.ChannelTypes.GUILD_PRIVATE_THREAD:
-            case Constants.ChannelTypes.GUILD_PUBLIC_THREAD:
-            case Constants.ChannelTypes.GUILD_NEWS_THREAD:
+            case ChannelType.GuildPrivateThread:
+            case ChannelType.GuildPublicThread:
+            case ChannelType.GuildNewsThread:
                 return 'Channel cannot be a thread channel';
-            case Constants.ChannelTypes.GUILD_NEWS:
+            case ChannelType.GuildNews:
                 return 'Channel cannot be a news channel';
-            case Constants.ChannelTypes.GUILD_TEXT:
+            case ChannelType.GuildText:
                 return 'Channel cannot be a text channel';
-            case Constants.ChannelTypes.DM:
+            case ChannelType.DM:
                 return 'Channel cannot be a dm channel';
-            case Constants.ChannelTypes.GROUP_DM:
+            case ChannelType.GroupDM:
                 return 'Channel cannot be a group dm channel';
         }
     }

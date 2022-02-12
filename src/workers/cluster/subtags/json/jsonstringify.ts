@@ -28,7 +28,7 @@ export class JsonStringifySubtag extends DefinedSubtag {
             throw new NotANumberError(indentStr);
 
         const arr = await bbtagUtil.tagArray.getArray(context, input);
-        const obj = arr?.v ?? (await json.parse(context, input)).object;
+        const obj = arr?.v ?? (await json.resolve(context, input)).object;
         return JSON.stringify(obj, null, indent);
     }
 }

@@ -30,7 +30,7 @@ export class ThreadChannelsSubtag extends DefinedSubtag {
             throw new ChannelNotFoundError(channelStr);
 
         if (!guard.isThreadableChannel(channel))
-            throw new InvalidChannelError(channel);
+            throw new InvalidChannelError(channel.type, channel.id);
 
         const activeThreads = await channel.guild.getActiveThreads();
         return activeThreads.threads.filter(t => t.parentID === channel.id).map(t => t.id);

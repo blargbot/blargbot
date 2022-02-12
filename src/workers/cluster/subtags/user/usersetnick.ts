@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { discordUtil, SubtagType } from '@cluster/utils';
+import { SubtagType } from '@cluster/utils';
 
 export class UserSetNickSubtag extends DefinedSubtag {
     public constructor() {
@@ -28,8 +28,7 @@ export class UserSetNickSubtag extends DefinedSubtag {
             throw new UserNotFoundError(userStr);
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await member.edit({ nick }, fullReason);
+            await member.edit({ nick }, context.auditReason());
         } catch (err: unknown) {
             context.logger.error(err);
             if (err instanceof Error)

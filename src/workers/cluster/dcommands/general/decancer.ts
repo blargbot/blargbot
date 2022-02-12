@@ -1,5 +1,5 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, discordUtil, guard, humanize } from '@cluster/utils';
+import { CommandType, guard, humanize } from '@cluster/utils';
 import { User } from 'eris';
 
 export class DecancerCommand extends BaseGlobalCommand {
@@ -35,7 +35,7 @@ export class DecancerCommand extends BaseGlobalCommand {
 
         const decancered = humanize.decancer(member.nick ?? member.username);
         try {
-            await member.edit({ nick: decancered }, discordUtil.formatAuditReason(context.author, 'Decancered nickname/username'));
+            await member.edit({ nick: decancered });
             return this.success(`Successfully decancered **${member.mention}**'s name to: \`${decancered}\``);
         } catch {
             return this.decancerText(member.nick ?? member.username, decancered);

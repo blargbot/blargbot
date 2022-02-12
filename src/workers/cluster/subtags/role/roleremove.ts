@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtagUtil, discordUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, SubtagType } from '@cluster/utils';
 import { Role } from 'eris';
 
 export class RoleRemoveSubtag extends DefinedSubtag {
@@ -63,10 +63,7 @@ export class RoleRemoveSubtag extends DefinedSubtag {
 
         try {
             const roleIds = new Set(roles.map(r => r.id));
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await member.edit({
-                roles: member.roles.filter(roleID => !roleIds.has(roleID))
-            }, fullReason);
+            await member.edit({ roles: member.roles.filter(roleID => !roleIds.has(roleID)) }, context.auditReason());
             return true;
         } catch (err: unknown) {
             context.logger.error(err);

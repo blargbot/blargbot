@@ -46,7 +46,7 @@ export class JsonSetSubtag extends DefinedSubtag {
             if (arr !== undefined)
                 obj = arr.v;
             else {
-                const parsedObject = await json.parse(context, input);
+                const parsedObject = await json.resolve(context, input);
                 if (parsedObject.variable !== undefined)
                     varname = parsedObject.variable;
                 obj = parsedObject.object;
@@ -81,7 +81,7 @@ export class JsonSetSubtag extends DefinedSubtag {
             if (arr !== undefined)
                 obj = arr.v;
             else {
-                const parsedObject = await json.parse(context, input);
+                const parsedObject = await json.resolve(context, input);
                 if (parsedObject.variable !== undefined)
                     varname = parsedObject.variable;
                 obj = parsedObject.object;

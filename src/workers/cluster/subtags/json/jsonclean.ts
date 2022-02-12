@@ -21,7 +21,7 @@ export class JsonCleanSubtag extends DefinedSubtag {
     }
 
     public async cleanJson(context: BBTagContext, input: string): Promise<JToken> {
-        const obj = await bbtagUtil.json.parse(context, input);
+        const obj = await bbtagUtil.json.resolve(context, input);
         return bbtagUtil.json.clean(obj.object);
     }
 }

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError, RoleOptions } from 'eris';
 
 export class RoleCreateSubtag extends DefinedSubtag {
@@ -50,7 +50,7 @@ export class RoleCreateSubtag extends DefinedSubtag {
             throw new BBTagRuntimeError('Author missing requested permissions');
 
         try {
-            const role = await context.guild.createRole(options, discordUtil.formatAuditReason(context.user, context.scopes.local.reason));
+            const role = await context.guild.createRole(options, context.auditReason());
             if (context.guild.roles.get(role.id) === undefined)
                 context.guild.roles.set(role.id, role);
             return role.id;

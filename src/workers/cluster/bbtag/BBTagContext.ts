@@ -174,6 +174,13 @@ export class BBTagContext {
         return getMemberPosition(this.authorizer);
     }
 
+    public auditReason(user: User = this.user): string {
+        const reason = this.scopes.local.reason ?? '';
+        return reason.length > 0
+            ? `${humanize.fullName(user)}: ${reason}`
+            : humanize.fullName(user);
+    }
+
     public eval(bbtag: SubtagCall | Statement): Awaitable<string> {
         return this.engine.eval(bbtag, this);
     }

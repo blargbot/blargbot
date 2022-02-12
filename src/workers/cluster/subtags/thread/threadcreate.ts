@@ -1,21 +1,8 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { bbtagUtil, guard, mapping, parse, SubtagType } from '@cluster/utils';
-import { Constants, KnownMessage } from 'eris';
-
-const threadOptions = mapping.object({
-    name: mapping.string,
-    autoArchiveDuration: mapping.choice(
-        mapping.in(undefined),
-        mapping.string,
-        mapping.number
-    ),
-    private: mapping.choice(
-        mapping.in(undefined),
-        mapping.string,
-        mapping.boolean
-    )
-});
+import { guard, mapping, parse, SubtagType } from '@cluster/utils';
+import { GuildFeature } from 'discord-api-types';
+import { Constants, CreateThreadOptions, DiscordRESTError, KnownMessage } from 'eris';
 
 export class ThreadCreateSubtag extends DefinedSubtag {
     public constructor() {
@@ -37,71 +24,74 @@ export class ThreadCreateSubtag extends DefinedSubtag {
     }
 
     public async createThread(context: BBTagContext, channelStr: string, messageStr: string, optionsStr: string): Promise<string> {
-        const channel = channelStr === '' ? context.channel : await context.queryChannel(channelStr);
+        const channel = await context.queryChannel(channelStr);
         if (channel === undefined)
             throw new ChannelNotFoundError(channelStr);
+
         if (!guard.isThreadableChannel(channel))
-            throw new InvalidChannelError(channel);
+            throw new InvalidChannelError(channel.type, channel.id);
 
         let message: KnownMessage | undefined;
         if (messageStr !== '') {
-            const maybeMessage = await context.util.getMessage(channel, messageStr);
-            if (maybeMessage === undefined)
+            message = await context.util.getMessage(channel, messageStr);
+            if (message === undefined)
                 throw new MessageNotFoundError(channel.id, messageStr);
-            if (!guard.isGuildMessage(maybeMessage))
-                throw new BBTagRuntimeError('Message not in guild');
-            message = maybeMessage;
         }
 
-        const mappingOptions = threadOptions((await bbtagUtil.json.parse(context, optionsStr)).object);
+        const mappingOptions = mapThreadOptions(optionsStr);
 
         if (!mappingOptions.valid)
             throw new BBTagRuntimeError('Invalid options object');
         const guildFeatures = context.guild.features;
 
         const input = mappingOptions.value;
-        if (input.autoArchiveDuration !== undefined)
-            input.autoArchiveDuration = parse.int(input.autoArchiveDuration);
-        else
-            input.autoArchiveDuration = 1440;
 
         switch (input.autoArchiveDuration) {
-            case 60: break;
-            case 1440: break;
             case 4320:
-                if (!guildFeatures.includes('THREE_DAY_THREAD_ARCHIVE'))
-                    throw new BBTagRuntimeError('Guild does not have 3 day threads', 'Missing boosts');
+                if (!guildFeatures.includes(GuildFeature.ThreeDayThreadArchive))
+                    throw new BBTagRuntimeError('Guild does not have 3 day threads');
                 break;
             case 10080:
-                if (!guildFeatures.includes('SEVEN_DAY_THREAD_ARCHIVE'))
-                    throw new BBTagRuntimeError('Guild does not have 7 day threads', 'Missing boosts');
+                if (!guildFeatures.includes(GuildFeature.SevenDayThreadArchive))
+                    throw new BBTagRuntimeError('Guild does not have 7 day threads');
                 break;
-            default:
-                throw new BBTagRuntimeError('Invalid autoArchiveDuration');
         }
 
-        if (parse.boolean(input.private) === true && !guildFeatures.includes('PRIVATE_THREADS'))
+        if (input.private && !guildFeatures.includes(GuildFeature.PrivateThreads))
             throw new BBTagRuntimeError('Guild cannot have private threads');
+
+        const type = input.private === true
+            ? Constants.ChannelTypes.GUILD_PRIVATE_THREAD
+            : Constants.ChannelTypes.GUILD_PUBLIC_THREAD;
+
+        const options: CreateThreadOptions = {
+            name: input.name,
+            autoArchiveDuration: input.autoArchiveDuration
+        };
 
         try {
             const threadChannel = message === undefined
-                ? await channel.createThreadWithoutMessage({
-                    name: input.name,
-                    autoArchiveDuration: input.autoArchiveDuration,
-                    invitable: true,
-                    type: Constants.ChannelTypes.GUILD_PUBLIC_THREAD
-                })
-                : await channel.createThreadWithMessage(message.id, {
-                    name: input.name,
-                    autoArchiveDuration: input.autoArchiveDuration
-                });
+                ? await channel.createThreadWithoutMessage({ ...options, invitable: true, type })
+                : await channel.createThreadWithMessage(message.id, options);
             return threadChannel.id;
         } catch (e: unknown) {
-            if (!(e instanceof Error))
+            if (!(e instanceof DiscordRESTError))
                 throw e;
 
-            context.logger.error(e);
-            throw new BBTagRuntimeError(e.message);
+            throw new BBTagRuntimeError(`Failed to create thread: ${e.message}`);
         }
     }
 }
+
+const mapAutoArchiveDuration = mapping.in(...[60, 1440, 4320, 10080] as const);
+const mapThreadOptions = mapping.json(mapping.object({
+    name: mapping.string,
+    autoArchiveDuration: mapping.choice(
+        mapping.string.map(v => parse.int(v)).chain(mapAutoArchiveDuration),
+        mapAutoArchiveDuration
+    ).optional.map(v => v ?? 1440),
+    private: mapping.choice(
+        mapping.string.map(v => parse.boolean(v)).chain(mapping.boolean),
+        mapping.boolean
+    ).optional.map(v => v ?? false)
+}));

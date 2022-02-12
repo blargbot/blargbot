@@ -8,7 +8,7 @@ export interface ReturnObject {
     object: JObject | JArray;
 }
 
-export async function parse(context: BBTagContext, input: string): Promise<ReturnObject> {
+export async function resolve(context: BBTagContext, input: string): Promise<ReturnObject> {
     let obj: BBTagArray | JToken | undefined;
     let variable: string | undefined;
     const arr = await getArray(context, input);

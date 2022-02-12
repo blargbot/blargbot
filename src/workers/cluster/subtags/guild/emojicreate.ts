@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, discordUtil, guard, SubtagType } from '@cluster/utils';
+import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
 import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
@@ -78,8 +78,7 @@ export class EmojiCreateSubtag extends DefinedSubtag {
         }
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason !== undefined ? context.scopes.local.reason : '');
-            const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, fullReason);
+            const emoji = await context.guild.createEmoji({ image: options.image, name: options.name, roles: options.roles }, context.auditReason());
             return emoji.id;
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))

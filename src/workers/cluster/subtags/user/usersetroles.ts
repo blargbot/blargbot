@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtagUtil, discordUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class UserSetRolesSubtag extends DefinedSubtag {
     public constructor() {
@@ -75,10 +75,7 @@ export class UserSetRolesSubtag extends DefinedSubtag {
         }
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await member.edit({
-                roles: parsedRoles
-            }, fullReason);
+            await member.edit({ roles: parsedRoles }, context.auditReason());
             return true;
         } catch (err: unknown) {
             context.logger.error(err);

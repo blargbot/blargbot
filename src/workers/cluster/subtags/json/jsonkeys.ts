@@ -29,7 +29,7 @@ export class JsonKeysSubtag extends DefinedSubtag {
     public async getJsonKeys(context: BBTagContext, objStr: string, path: string): Promise<string[]> {
         try {
             const arr = await bbtagUtil.tagArray.getArray(context, objStr);
-            const obj = arr?.v ?? (await json.parse(context, objStr)).object;
+            const obj = arr?.v ?? (await json.resolve(context, objStr)).object;
 
             if (path !== '') {
                 const objAtPath = json.get(obj, path);

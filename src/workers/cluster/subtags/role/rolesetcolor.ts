@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetColorSubtag extends DefinedSubtag {
@@ -51,8 +51,7 @@ export class RoleSetColorSubtag extends DefinedSubtag {
             throw new BBTagRuntimeError('Role above author');
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await role.edit({ color }, fullReason);
+            await role.edit({ color }, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
                 throw err;

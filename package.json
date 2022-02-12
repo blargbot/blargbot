@@ -78,6 +78,7 @@
         "@typescript-eslint/parser": "^5.5.0",
         "chai": "^4.3.4",
         "chai-exclude": "^2.1.0",
+        "cloc": "^2.9.0",
         "discord-api-types": "^0.25.2",
         "eslint": "^8.3.0",
         "eslint-plugin-import": "^2.25.3",
@@ -92,6 +93,7 @@
         "yarn": "^1.22.17"
     },
     "scripts": {
+        "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
         "postinstall": "sed -i \"/^declare \\(var\\|function\\)/d\" ./node_modules/@types/mocha/index.d.ts && echo dirty dirty mocha",
         "start": "node index.js",
         "test": "mocha --config mocharc.json --recursive --parallel --reporter dot",

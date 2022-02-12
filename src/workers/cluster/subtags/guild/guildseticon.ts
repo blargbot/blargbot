@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { discordUtil, guard, SubtagType } from '@cluster/utils';
+import { guard, SubtagType } from '@cluster/utils';
 import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
@@ -37,10 +37,7 @@ export class GuildSetIconSubtag extends DefinedSubtag {
         }
 
         try {
-            const fullReason = discordUtil.formatAuditReason(context.user, context.scopes.local.reason);
-            await context.guild.edit({
-                icon: image
-            }, fullReason);
+            await context.guild.edit({ icon: image }, context.auditReason());
         } catch (err: unknown) {
             if (!(err instanceof DiscordRESTError))
                 throw err;

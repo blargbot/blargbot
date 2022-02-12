@@ -966,7 +966,8 @@ export interface TypeMapping<T, TArgs extends unknown[] = []> extends TypeMappin
     readonly optional: NormalizedTypeMapping<T, undefined, TArgs>;
     readonly nullable: NormalizedTypeMapping<T, null, TArgs>;
     readonly nullish: NormalizedTypeMapping<T, null | undefined, TArgs>;
-    map<R>(mapping: (value: T) => R): TypeMapping<R, TArgs>;
+    map<R>(mapping: (value: T, ...args: TArgs) => R): TypeMapping<R, TArgs>;
+    chain<R>(mapping: (value: T, ...args: TArgs) => TypeMappingResult<R>): TypeMapping<R, TArgs>;
 }
 
 export type TypeMappings<T, TArgs extends unknown[] = []> = {
