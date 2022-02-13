@@ -14,8 +14,10 @@ export class InjectSubtag extends DefinedSubtag {
                     exampleOut: 'Random Number: 3',
                     returns: 'string',
                     execute: async (context, [code]) => {
-                        const ast = bbtagUtil.parse(code.value);
-                        return await context.engine.eval(ast, context);
+                        return await context.withStack(async () => {
+                            const ast = bbtagUtil.parse(code.value, true);
+                            return await context.engine.eval(ast, context);
+                        });
                     }
                 }
             ]

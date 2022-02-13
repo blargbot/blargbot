@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagArgument } from '@cluster/types';
+import { Statement } from '@cluster/types';
 import { SubtagType } from '@cluster/utils';
 
 export class FunctionSubtag extends DefinedSubtag {
@@ -19,7 +19,7 @@ export class FunctionSubtag extends DefinedSubtag {
                     exampleCode: '{function;test;{paramsarray}} {func.test;1;2;3;4}',
                     exampleOut: '["1","2","3","4"]',
                     returns: 'nothing',
-                    execute: (ctx, [name, code]) => this.createFunction(ctx, name.value, code)
+                    execute: (ctx, [name, code]) => this.createFunction(ctx, name.value, code.code)
                 }
             ]
         });
@@ -28,7 +28,7 @@ export class FunctionSubtag extends DefinedSubtag {
     public createFunction(
         context: BBTagContext,
         funcName: string,
-        code: SubtagArgument
+        code: Statement
     ): void {
         let name = funcName.toLowerCase();
         if (name.startsWith('func.'))
@@ -37,6 +37,6 @@ export class FunctionSubtag extends DefinedSubtag {
         if (name === '')
             throw new BBTagRuntimeError('Must provide a name');
 
-        context.scopes.root.functions[name] = code.code;
+        context.scopes.root.functions[name] = code;
     }
 }

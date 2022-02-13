@@ -1,5 +1,5 @@
 import { ClusterUtilities } from '@cluster';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, FindEntityOptions, FlagDefinition, FlagResult, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
 import { guard, hasFlag, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Emote } from '@core/Emote';
@@ -15,7 +15,7 @@ import ReadWriteLock from 'rwlock';
 import { ScopeManager } from '.';
 import { BBTagEngine } from './BBTagEngine';
 import { VariableCache } from './Caching';
-import { BBTagRuntimeError, UnknownSubtagError } from './errors';
+import { BBTagRuntimeError, SubtagStackOverflowError, UnknownSubtagError } from './errors';
 import { limits } from './limits';
 import { Subtag } from './Subtag';
 import { SubtagCallStack } from './SubtagCallStack';
@@ -27,6 +27,7 @@ function serializeEntity(entity: { id: string; }): { id: string; serialized: str
 
 export class BBTagContext {
     #isStaffPromise?: Promise<boolean>;
+    #parent?: BBTagContext;
 
     public readonly message: BBTagContextMessage;
     public readonly inputRaw: string;
@@ -56,6 +57,7 @@ export class BBTagContext {
     public readonly callStack: SubtagCallStack;
     public readonly permission: Permission;
 
+    public get parent(): BBTagContext | undefined { return this.#parent; }
     public get totalDuration(): Duration { return this.execTimer.duration.add(this.dbTimer.duration); }
     public get channel(): KnownGuildTextableChannel { return this.message.channel; }
     public get member(): Member { return this.message.member; }
@@ -97,7 +99,7 @@ export class BBTagContext {
         this.permission = this.authorizer === undefined ? new Permission(0n)
             : this.authorizer.permissions.has('administrator') ? new Permission(Constants.Permissions.all)
                 : this.authorizer.permissions;
-        this.rootTagName = options.rootTagName ?? 'unknown';
+        this.rootTagName = options.rootTagName ?? options.tagName ?? 'unknown';
         this.tagName = options.tagName ?? this.rootTagName;
         this.cooldown = options.cooldown ?? 0;
         this.cooldowns = options.cooldowns ?? new TagCooldownManager();
@@ -152,6 +154,66 @@ export class BBTagContext {
         return permissions;
     }
 
+    public withStack<T>(action: () => T, maxStack = 200): T {
+        if (this.state.stackSize >= maxStack) {
+            this.state.return = RuntimeReturnState.ALL;
+            throw new SubtagStackOverflowError(this.state.stackSize);
+        }
+
+        this.state.stackSize++;
+        let result;
+
+        try {
+            result = action();
+        } finally {
+            if (result instanceof Promise)
+                result.finally(() => this.state.stackSize--);
+            else
+                this.state.stackSize--;
+        }
+
+        return result;
+    }
+
+    public withScope<T>(action: (scope: BBTagRuntimeScope) => T): T
+    public withScope<T>(isTag: boolean, action: (scope: BBTagRuntimeScope) => T): T
+    public withScope<T>(...args: [isTag: boolean, action: (scope: BBTagRuntimeScope) => T] | [action: (scope: BBTagRuntimeScope) => T]): T {
+        const [isTag, action] = args.length === 2 ? args : [false, args[0]];
+        const scope = this.scopes.pushScope(isTag);
+        let result;
+
+        try {
+            result = action(scope);
+        } finally {
+            if (result instanceof Promise)
+                result.finally(() => this.scopes.popScope());
+            else
+                this.scopes.popScope();
+        }
+
+        return result;
+    }
+
+    public withChild<T>(options: Partial<BBTagContextOptions>, action: (context: BBTagContext) => T): T {
+        const context = new BBTagContext(this.engine, {
+            ...this,
+            ...options
+        });
+        context.#parent = this;
+
+        let result;
+        try {
+            result = action(context);
+        } finally {
+            if (result instanceof Promise)
+                result.finally(() => this.errors.push(...context.errors));
+            else
+                this.errors.push(...context.errors);
+        }
+
+        return result;
+    }
+
     public hasPermission(permission: bigint | keyof Constants['Permissions']): boolean;
     public hasPermission(channel: KnownGuildChannel, permission: bigint | keyof Constants['Permissions']): boolean;
     public hasPermission(...args: [permission: bigint | keyof Constants['Permissions']] | [channel: KnownGuildChannel, permission: bigint | keyof Constants['Permissions']]): boolean {
@@ -199,13 +261,6 @@ export class BBTagContext {
             return result;
 
         throw new UnknownSubtagError(name);
-    }
-
-    public makeChild(options: Partial<BBTagContextOptions>): BBTagContext {
-        return new BBTagContext(this.engine, {
-            ...this,
-            ...options
-        });
     }
 
     public addError(error: BBTagRuntimeError, subtag?: SubtagCall): string {
@@ -347,13 +402,13 @@ export class BBTagContext {
         return this.state.outputMessage ??= await this.#sendOutput(text);
     }
 
-    public async getCached(type: 'tag', key: string, getIfNotSet: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
-    public async getCached(type: 'cc', key: string, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
-    public async getCached(type: string, key: string, getIfNotSet: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
+    public async getTag(type: 'tag', key: string, resolver: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
+    public async getTag(type: 'cc', key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
+    public async getTag(type: string, key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
         const cacheKey = `${type}_${key}`;
         if (cacheKey in this.state.cache)
             return this.state.cache[cacheKey];
-        const fetchedValue = await getIfNotSet(key);
+        const fetchedValue = await resolver(key);
         if (fetchedValue !== undefined)
             return this.state.cache[cacheKey] = fetchedValue;
         return this.state.cache[cacheKey] = null;

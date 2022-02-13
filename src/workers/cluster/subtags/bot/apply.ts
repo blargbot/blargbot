@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UnknownSubtagError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
-import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class ApplySubtag extends DefinedSubtag {
     public constructor() {
@@ -32,28 +32,16 @@ export class ApplySubtag extends DefinedSubtag {
         try {
             context.getSubtag(subtagName.toLowerCase());
         } catch (error: unknown) {
-            if (!(error instanceof UnknownSubtagError))
-                throw error;
-            throw new BBTagRuntimeError('No subtag found');
+            if (error instanceof UnknownSubtagError)
+                throw new BBTagRuntimeError('No subtag found');
+            throw error;
         }
 
-        const flattenedArgs: Array<readonly string[]> = [];
+        const flatArgs = args
+            .flatMap(arg => bbtagUtil.tagArray.deserialize(arg)?.v ?? [arg])
+            .map(v => parse.string(v));
 
-        for (const arg of args) {
-            const arr = bbtagUtil.tagArray.deserialize(arg);
-            if (arr !== undefined) {
-                flattenedArgs.push(
-                    ...arr.v.map((i) =>
-                        typeof i === 'object' || !guard.hasValue(i)
-                            ? [JSON.stringify(i)]
-                            : [i.toString()]
-                    )
-                );
-            } else
-                flattenedArgs.push([arg]);
-        }
-
-        const source = `{${args.join(';')}}`;
+        const source = `{${[subtagName, ...flatArgs].join(';')}}`;
 
         return await context.eval({
             values: [{
@@ -63,11 +51,11 @@ export class ApplySubtag extends DefinedSubtag {
                     values: [subtagName],
                     source: subtagName
                 },
-                args: flattenedArgs.map(arg => ({
+                args: flatArgs.map(arg => ({
                     start: subtag.start,
                     end: subtag.start,
-                    values: arg,
-                    source: arg.join()
+                    values: [arg],
+                    source: arg
                 })),
                 start: subtag.start,
                 end: subtag.end,

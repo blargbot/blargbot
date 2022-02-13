@@ -1,6 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { SubtagStackOverflowError, UnknownSubtagError } from '@cluster/bbtag/errors';
-import { RuntimeReturnState } from '@cluster/types';
+import { UnknownSubtagError } from '@cluster/bbtag/errors';
 import { SubtagType } from '@cluster/utils';
 
 export class FunctionInvokeSubtag extends DefinedSubtag {
@@ -24,19 +23,9 @@ export class FunctionInvokeSubtag extends DefinedSubtag {
         if (func === undefined)
             throw new UnknownSubtagError(`func.${functionName}`);
 
-        if (context.state.stackSize > 200) {
-            context.state.return = RuntimeReturnState.ALL;
-            throw new SubtagStackOverflowError(context.state.stackSize);
-        }
-
-        const scope = context.scopes.pushScope();
-        context.state.stackSize++;
-        try {
+        return await context.withStack(() => context.withScope(async scope => {
             scope.paramsarray = args;
             return await context.eval(func);
-        } finally {
-            context.state.stackSize--;
-            context.scopes.popScope();
-        }
+        }));
     }
 }

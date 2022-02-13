@@ -127,8 +127,7 @@ export class WaitReactionSubtag extends DefinedSubtag {
             context.scopes.pushScope();
             context.scopes.local.reaction = emoji.toString();
             context.scopes.local.reactUser = user.id;
-            const childContext = context.makeChild({ message });
-            const result = parse.boolean(await childContext.eval(condition));
+            const result = parse.boolean(await context.withChild({ message }, async context => await context.eval(condition)));
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
         }, timeout * 1000);
 

@@ -9,7 +9,7 @@ export class DebugSubtag extends DefinedSubtag {
             category: SubtagType.BOT,
             definition: [
                 {
-                    parameters: ['text?+'],
+                    parameters: ['text*'],
                     description: 'Adds the specified text to the debug output. This output is only shown via ' +
                         '`tag debug`, `ccommand debug`, `tag test debug` and `ccommand test debug`.' +
                         'The line number is also included in the debug entry',

@@ -46,7 +46,6 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
             const match = /^(.*?)\+(\d)$/.exec(name);
             if (match !== null) {
                 greedy = parseInt(match[2]);
-                required = greedy > 0;
                 name = match[1];
             }
             name += '!';

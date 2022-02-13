@@ -11,7 +11,7 @@ import { bbtagUtil, guard, pluralise as p, repeat, snowflake, SubtagType } from 
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
-import { GuildTable, SubtagVariableType, TagVariablesTable, UserTable } from '@core/types';
+import { GuildCommandTag, GuildTable, StoredTag, SubtagVariableType, TagsTable, TagVariablesTable, UserTable } from '@core/types';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
@@ -57,6 +57,7 @@ export interface SubtagTestCase {
     readonly subtags?: readonly Subtag[];
     readonly skip?: boolean | (() => Awaitable<boolean>);
     readonly retries?: number;
+    readonly setupSaveVariables?: boolean;
 }
 
 interface TestSuiteConfig<T extends SubtagTestCase> {
@@ -94,6 +95,7 @@ export class SubtagTestContext {
     public readonly logger = this.createMock<Logger>(undefined, false);
     public readonly database = this.createMock(Database);
     public readonly tagVariablesTable = this.createMock<TagVariablesTable>();
+    public readonly tagsTable = this.createMock<TagsTable>();
     public readonly guildTable = this.createMock<GuildTable>();
     public readonly userTable = this.createMock<UserTable>();
     public readonly timeouts = this.createMock(TimeoutManager);
@@ -110,6 +112,8 @@ export class SubtagTestContext {
         reactionAwaiter: this.createMock(ReactionAwaiterFactory)
     };
 
+    public readonly ccommands: Record<string, GuildCommandTag>;
+    public readonly tags: Record<string, StoredTag>;
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
     public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false };
 
@@ -163,11 +167,13 @@ export class SubtagTestContext {
         guild_id: this.guild.id
     }, this.users.command);
 
-    public constructor(subtags: Iterable<Subtag>) {
+    public constructor(public readonly testCase: SubtagTestCase, subtags: Iterable<Subtag>) {
         const awaiter = this.createMock(AwaiterManager);
         this.discordOptions = { intents: [] };
         this.tagVariables = {};
-        this.options = {};
+        this.tags = {};
+        this.ccommands = {};
+        this.options = { tagName: 'unit test' };
 
         const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
@@ -194,13 +200,22 @@ export class SubtagTestContext {
         this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
         this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
         this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
+        this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
+
         this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()), false)
             .thenCall((...args: Parameters<TagVariablesTable['get']>) => this.tagVariables[`${args[1]}.${args[2]}.${args[0]}`]);
-        this.tagVariablesTable.setup(m => m.upsert(anything() as never, anyString(), anyString()), false)
-            .thenCall((...args: Parameters<TagVariablesTable['upsert']>) => {
-                for (const [name, value] of Object.entries(args[0]))
-                    this.tagVariables[`${args[1]}.${args[2]}.${name}`] = value;
-            });
+        if (this.testCase.setupSaveVariables !== false) {
+            this.tagVariablesTable.setup(m => m.upsert(anything() as never, anyString(), anyString()), false)
+                .thenCall((...args: Parameters<TagVariablesTable['upsert']>) => {
+                    for (const [name, value] of Object.entries(args[0]))
+                        this.tagVariables[`${args[1]}.${args[2]}.${name}`] = value;
+                });
+        }
+
+        this.tagsTable.setup(m => m.get(anyString()), false)
+            .thenCall((...args: Parameters<TagsTable['get']>) => this.tags[args[0]]);
+        this.guildTable.setup(m => m.getCommand(this.guild.id, anyString()), false)
+            .thenCall((...args: Parameters<GuildTable['getCommand']>) => this.ccommands[args[1]]);
 
         this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
         this.discord.setup(m => m.guildShardMap, false).thenReturn({});
@@ -271,7 +286,7 @@ export class SubtagTestContext {
 
         context.state.ownedMsgs.push(...this.ownedMessages);
 
-        this.limit.setup(m => m.check(context, anyString())).thenResolve();
+        this.limit.setup(m => m.check(argument.isInstanceof(BBTagContext).value, anyString())).thenResolve();
 
         Object.assign(context.scopes.root, this.rootScope);
 
@@ -506,7 +521,7 @@ export class TestDataSubtag extends Subtag {
         });
     }
 
-    protected executeCore(_: unknown, __: unknown, subtag: SubtagCall): SubtagResult {
+    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): SubtagResult {
         if (subtag.args.length !== 1)
             throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
         const key = subtag.args[0].source;
@@ -514,21 +529,11 @@ export class TestDataSubtag extends Subtag {
         if (value === undefined)
             throw new RangeError(`Subtag ${this.name} doesnt have test data set up for ${JSON.stringify(value)}`);
 
-        return {
-            [Symbol.asyncIterator]: () => {
-                let done = false;
-                return {
-                    next: () => {
-                        if (done)
-                            return Promise.resolve({ done: true, value: undefined });
-                        done = true;
-                        return Promise.resolve({ done: false, value: value });
-                    }
-                };
-            }
-        };
+        await Promise.resolve();
+        yield value;
     }
 }
+
 export class EvalSubtag extends Subtag {
     public constructor() {
         super({
@@ -541,6 +546,21 @@ export class EvalSubtag extends Subtag {
 
     protected executeCore(_context: BBTagContext, _subtagName: string, subtag: SubtagCall): never {
         throw new MarkerError('eval', subtag.start.index);
+    }
+}
+
+export class AssertSubtag extends Subtag {
+    public constructor(private readonly assertion: (...args: Parameters<Subtag['executeCore']>) => Awaitable<string>) {
+        super({
+            name: 'assert',
+            category: SubtagType.SIMPLE,
+            hidden: true,
+            signatures: []
+        });
+    }
+
+    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
+        yield await this.assertion(context, subtagName, subtag);
     }
 }
 
@@ -567,6 +587,7 @@ export class LimitedTestSubtag extends Subtag {
         super({
             name: 'limit',
             category: SubtagType.SIMPLE,
+            hidden: true,
             signatures: []
         });
         this.#limit = limit;
@@ -579,6 +600,28 @@ export class LimitedTestSubtag extends Subtag {
         if (count >= this.#limit)
             throw new Error(`Subtag {limit} cannot be called more than ${this.#limit} time(s)`);
         throw new MarkerError('limit', count + 1);
+    }
+}
+
+export class EchoArgsSubtag extends Subtag {
+    public constructor() {
+        super({
+            name: 'echoargs',
+            category: SubtagType.SIMPLE,
+            hidden: true,
+            signatures: []
+        });
+    }
+
+    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): SubtagResult {
+        await Promise.resolve();
+        yield '[';
+        yield JSON.stringify(subtag.name.source);
+        for (const arg of subtag.args) {
+            yield ',';
+            yield JSON.stringify(arg.source);
+        }
+        yield ']';
     }
 }
 
@@ -670,7 +713,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         context.skip();
 
     const subtags = [subtag, new EvalSubtag(), new FailTestSubtag(), ...testCase.subtags ?? []];
-    const test = new SubtagTestContext(subtags);
+    const test = new SubtagTestContext(testCase, subtags);
     const actualTestCase = Object.create(testCase, { 'timestamp': { value: moment() } });
 
     try {
@@ -697,7 +740,8 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
             throw new Error('Expected an error to be thrown!');
         }
 
-        await context.variables.persist();
+        if (actualTestCase.setupSaveVariables !== false)
+            await context.variables.persist();
 
         // assert
         switch (typeof expected) {

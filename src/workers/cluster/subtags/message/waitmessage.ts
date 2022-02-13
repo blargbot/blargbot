@@ -104,8 +104,7 @@ export class WaitMessageSubtag extends DefinedSubtag {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
                 return false;
 
-            const childContext = context.makeChild({ message });
-            const result = parse.boolean(await childContext.eval(condition));
+            const result = parse.boolean(await context.withChild({ message }, async context => await context.eval(condition)));
             return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
         }, timeout * 1000);
 

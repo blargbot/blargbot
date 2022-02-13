@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag, tagVariableScopes } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { parse, SubtagType } from '@cluster/utils';
 
 export class GetSubtag extends DefinedSubtag {
     public constructor() {
@@ -31,24 +31,24 @@ export class GetSubtag extends DefinedSubtag {
     }
 
     public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
-        const arr = await bbtagUtil.tagArray.getArray(context, variableName);
-        if (arr !== undefined)
-            return JSON.stringify(arr);
-        return await context.variables.get(variableName);
+        const result = await context.variables.get(variableName);
+        if (!Array.isArray(result))
+            return result;
+
+        return { v: result, n: variableName };
     }
 
-    public async getArray(context: BBTagContext, variableName: string, index: string | number): Promise<JToken | undefined> {
+    public async getArray(context: BBTagContext, variableName: string, indexStr: string): Promise<JToken | undefined> {
         const result = await context.variables.get(variableName);
-        if (!Array.isArray(result)) {
+        if (!Array.isArray(result))
             return result;
-        }
 
-        if (index === '')
-            return bbtagUtil.tagArray.serialize(result);
+        if (indexStr === '')
+            return { v: result, n: variableName };
 
-        index = parse.int(index);
-        if (isNaN(index))
-            throw new NotANumberError(index);
+        const index = parse.int(indexStr, false);
+        if (index === undefined)
+            throw new NotANumberError(indexStr);
 
         if (index < 0 || index >= result.length)
             throw new BBTagRuntimeError('Index out of range');

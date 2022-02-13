@@ -1,22 +1,24 @@
 {
     "files.exclude": {
         "node_modules": true,
-        "**/*.js.map": true,
-        "**/*.js": {
-            "when": "$(basename).ts"
-        },
-        "**/*.cjs.map": true,
-        "**/*.cjs": {
-            "when": "$(basename).cts"
-        },
-        "**/*.mjs.map": true,
-        "**/*.mjs": {
-            "when": "$(basename).mts"
-        }
     },
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": true
     },
     "npm.packageManager": "yarn",
-    "files.eol": "\n"
+    "files.eol": "\n",
+    "explorer.experimental.fileNesting.enabled": true,
+    "explorer.experimental.fileNesting.expand": false,
+    "explorer.experimental.fileNesting.patterns": {
+        "*.ts": "$(capture).js, $(capture).d.ts",
+        "*.mts": "$(capture).mjs, $(capture).d.mts, $(capture).js, $(capture).d.ts",
+        "*.cts": "$(capture).cjs, $(capture).d.cts, $(capture).js, $(capture).d.ts",
+        "*.js": "$(capture).js.map, $(capture).min.js, $(capture).d.ts",
+        "*.cjs": "$(capture).cjs.map, $(capture).min.cjs, $(capture).d.cts",
+        "*.mjs": "$(capture).mjs.map, $(capture).min.mjs, $(capture).d.mts",
+        "*.jsx": "$(capture).js",
+        "*.tsx": "$(capture).ts",
+        "tsconfig.json": "tsconfig.*.json",
+        "package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc",
+    }
 }

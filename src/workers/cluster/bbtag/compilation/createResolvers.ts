@@ -8,7 +8,7 @@ export function* createArgumentResolvers(signature: SubtagHandlerCallSignature):
     const bindingOrder = createResolverOrder(signature.parameters, flatParams);
 
     for (const { beforeGreedy, afterGreedy } of bindingOrder.permutations)
-        yield createResolver(beforeGreedy.length + afterGreedy.length, defaultArgs, beforeGreedy, [], afterGreedy);
+        yield createResolver(beforeGreedy.length + afterGreedy.length, defaultArgs, beforeGreedy, bindingOrder.greedy, afterGreedy);
 
     if (bindingOrder.greedy.length > 0) {
         const parameterLengths = bindingOrder.permutations.map(p => p.beforeGreedy.length + p.afterGreedy.length).sort();
@@ -162,7 +162,8 @@ function* getParameterMap(
     }
 
     for (param++; param < defaultArgs.length; param++)
-        yield { argIndex: -1, default: defaultArgs[param] };
+        if (!greedy.includes(param)) // Greedy params should be consumed by spread, so dont want to insert erroneous arguments to that array
+            yield { argIndex: -1, default: defaultArgs[param] };
 }
 
 function* getParameterOrder(

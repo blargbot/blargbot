@@ -37,7 +37,7 @@ export class BBTagEngine {
         this.logger.bbtag(`Parsed bbtag in ${timer.poll(true)}ms`);
         const context = options instanceof BBTagContext ? options : new BBTagContext(this, { cooldowns: this.cooldowns, ...options });
         this.logger.bbtag(`Created context in ${timer.poll(true)}ms`);
-        let content;
+        let content: string;
         if (context.cooldownEnd.isAfter(moment())) {
             const remaining = moment.duration(context.cooldownEnd.diff(moment()));
             if (context.state.stackSize === 0)
@@ -50,11 +50,12 @@ export class BBTagEngine {
         } else {
             context.cooldowns.set(context);
             context.execTimer.start();
-            context.state.stackSize++;
-            content = await joinResults(this.evalStatement(bbtag, context));
-            if (context.state.replace !== undefined)
-                content = content.replace(context.state.replace.regex, context.state.replace.with);
-            context.state.stackSize--;
+            content = await context.withStack(async () => {
+                const result = await joinResults(this.evalStatement(bbtag, context));
+                if (context.state.replace !== undefined)
+                    return result.replace(context.state.replace.regex, context.state.replace.with);
+                return result;
+            });
             context.execTimer.end();
             this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
             await context.variables.persist();

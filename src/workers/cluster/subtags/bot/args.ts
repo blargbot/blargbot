@@ -48,6 +48,9 @@ export class ArgsSubtag extends DefinedSubtag {
         if (isNaN(i))
             throw new NotANumberError(index);
 
+        if (context.input.length <= i || i < 0)
+            throw new NotEnoughArgumentsError(i, context.input.length);
+
         return context.input[i];
     }
 
@@ -68,8 +71,7 @@ export class ArgsSubtag extends DefinedSubtag {
             throw new NotANumberError(end);
 
         // TODO This behaviour should be documented
-        if (from > to)
-            from = [to, to = from][0];
+        [from, to] = [from, to].sort();
 
         if (context.input.length <= from || from < 0)
             throw new NotEnoughArgumentsError(from, context.input.length);

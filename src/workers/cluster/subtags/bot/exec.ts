@@ -23,24 +23,18 @@ export class ExecSubtag extends DefinedSubtag {
 
     public async execTag(context: BBTagContext, name: string, args: string[]): Promise<string> {
         const tagName = name.toLowerCase();
-        const tag = await context.getCached('tag', tagName, (key) => context.database.tags.get(key));
+        const tag = await context.getTag('tag', tagName, (key) => context.database.tags.get(key));
 
         if (tag === null)
             throw new BBTagRuntimeError('Tag not found: ' + tagName);
 
-        const childContext = context.makeChild({
+        return await context.withStack(() => context.withScope(true, () => context.withChild({
             tagName,
             cooldown: tag.cooldown ?? 0,
             inputRaw: args.map(a => `"${a}"`).join(' ')
-        });
-
-        context.scopes.pushScope(true);
-        try {
-            const ast = bbtagUtil.parse(tag.content);
-            return await context.engine.eval(ast, childContext);
-        } finally {
-            context.errors.push(...childContext.errors);
-            context.scopes.popScope();
-        }
+        }, async context => {
+            const ast = bbtagUtil.parse(tag.content, true);
+            return await context.engine.eval(ast, context);
+        })));
     }
 }

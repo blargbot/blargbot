@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class CommitSubtag extends DefinedSubtag {
     public constructor() {
@@ -38,9 +38,9 @@ export class CommitSubtag extends DefinedSubtag {
         args: string[]
     ): Promise<void> {
         const values = args.length === 0
-            ? context.variables.list.map(entry => entry.key)
+            ? undefined
             : bbtagUtil.tagArray.flattenArray(args)
-                .map(value => typeof value === 'object' ? JSON.stringify(value) : value.toString());
+                .map(value => parse.string(value));
         await context.variables.persist(values);
     }
 }

@@ -87,6 +87,11 @@ export const argument = {
     is<T>(assertion: (value: unknown) => value is T): MockArgumentFilter<T> {
         return createMockArgumentFilter(assertion);
     },
+    in<T>(...values: T[]): MockArgumentFilter<T> {
+        return this.is((value): value is T => {
+            return values.some(v => v instanceof Matcher ? v.match(value) : v === value);
+        });
+    },
     assert<T>(assertion: (value: unknown) => void): MockArgumentFilter<T> {
         return this.is((value): value is T => {
             assertion(value);

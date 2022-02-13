@@ -1,3 +1,4 @@
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '@cluster/types';
 
 type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
@@ -8,7 +9,7 @@ type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
 type MutableSubtagCall = { -readonly [P in keyof SubtagCall]: ToMutable<SubtagCall[P]> }
 type MutableStatement = { -readonly [P in keyof Statement]: ToMutable<Statement[P]> };
 
-export function parse(source: string): Statement {
+export function parse(source: string, throwOnError = false): Statement {
     const result = createStatement(source);
     const subtags: MutableSubtagCall[] = [];
     let statement = result;
@@ -21,6 +22,7 @@ export function parse(source: string): Statement {
                     subtags.push(subtag);
                 statement.values.push(subtag = createSubtagCall(source, token));
                 statement = subtag.name;
+                statement.start = token.end;
                 break;
             case SourceTokenType.ARGUMENTDELIMITER:
                 if (subtag === undefined)
@@ -33,7 +35,10 @@ export function parse(source: string): Statement {
             case SourceTokenType.ENDSUBTAG:
                 if (subtag === undefined) {
                     const result = createStatement(source);
-                    result.values.push(`\`Unexpected '${token.content}'\``);
+                    const error = `Unexpected '}' at ${token.start.index}`;
+                    if (throwOnError)
+                        throw new BBTagRuntimeError(error);
+                    result.values.push(`\`${error}\``);
                     return result;
                 }
                 trim(statement);
@@ -53,7 +58,10 @@ export function parse(source: string): Statement {
 
     if (subtag !== undefined) {
         const result = createStatement(source);
-        result.values.push('`Subtag is missing a \'}\'`');
+        const error = `Unmatched '{' at ${subtag.start.index}`;
+        if (throwOnError)
+            throw new BBTagRuntimeError(error);
+        result.values.push(`\`${error}\``);
         return result;
     }
 
@@ -138,7 +146,7 @@ function trim(str: MutableStatement): void {
 }
 
 function modify(str: MutableStatement['values'], index: number, mod: (str: string) => string): void {
-    if (str.values.length === 0)
+    if (str.length === 0)
         return;
 
     let elem = str[index];
