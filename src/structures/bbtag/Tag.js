@@ -5,6 +5,7 @@ const { Range } = require('../Position');
 
 /**
  * This represents a block of text within the BBTag language.
+ * @template TChild 
  */
 class BaseTag {
 
@@ -39,7 +40,7 @@ class BaseTag {
      * */
     get parent() { return this._protected.parent; }
     /** 
-     * @type {SubTag[]}
+     * @type {TChild[]}
      * All the tags contained withinin this tag
      * */
     get children() { return this._protected.children; }
@@ -66,6 +67,7 @@ class BaseTag {
 /**
  * This represents a recognized subtag structure. Subtags are strings starting and ending with {}
  * And contain sections of BBTag delimited by ;
+ * @extends BaseTag<BBTag>
  */
 class SubTag extends BaseTag {
     /**
@@ -92,7 +94,6 @@ class SubTag extends BaseTag {
     /** @param {string|SubTag} parent */
     constructor(parent) {
         super(parent);
-        /** @type {BaseTag|string} */
         this.name = this.children[0];
     }
 
@@ -123,6 +124,7 @@ class SubTag extends BaseTag {
 /**
  * This represents both the top level text, and the contents of each argument in a subtag.
  * A subtag is a block of text between and including a {} pair, with arguments delimited by ;
+ * @extends BaseTag<SubTag>
  */
 class BBTag extends BaseTag {
     /**

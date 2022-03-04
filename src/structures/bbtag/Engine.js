@@ -24,7 +24,7 @@ function parse(content) {
  * and then return the string to replace the BBTag element with
  * @param {BBTag} bbtag The BBTag node to begin execution at
  * @param {Context} context The context to be used for execution
- * @returns {string}
+ * @returns {Promise<string>}
  */
 async function execute(bbtag, context) {
     if (!context.guild) return;

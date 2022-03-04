@@ -7,7 +7,8 @@
  * This project uses the AGPLv3 license. Please read the license file before using/adapting any of the code.
  */
 
-const Builder = require('../structures/TagBuilder'),
+const bbtagEngine = require('../structures/bbtag/Engine'),
+    Builder = require('../structures/TagBuilder'),
     { SubTag, BBTag } = require('../structures/bbtag/Tag');
 
 module.exports =
@@ -17,8 +18,8 @@ module.exports =
             'If `args` is an array, it will get deconstructed to it\'s individual elements.\n' +
             '`function` must be of the format `func.<name>` eg: `{apply;func.hello;["world"]}`'
         ).withExample(
-        '{apply;randint;[1,4]}',
-        '3'
+            '{apply;randint;[1,4]}',
+            '3'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
@@ -33,22 +34,23 @@ module.exports =
             if (runSubtag == null)
                 return Builder.util.error(subtag, context, 'No subtag found');
 
+            let tagArgs = [args[0], ...Builder.util.flattenArgArrays(args.slice(1)).map(arg => typeof arg === 'object' ? JSON.stringify(arg) : arg.toString())];
 
-            let st = new SubTag(subtag);
+            let bbtag = new BBTag(subtag);
+            let st = new SubTag(bbtag);
+            bbtag._protected.children.push(st);
 
-            let tagArgs = Builder.util.flattenArgArrays(args.slice(1));
-            st._protected.children = [new BBTag(args[0])];
+            st._protected.source = bbtag._protected.source = `{${tagArgs.join(';')}}`;
+            st._protected.start = bbtag._protected.start = 0;
+            st._protected.end = bbtag._protected.end = bbtag._protected.source.length;
 
             for (let arg of tagArgs) {
-                arg = typeof arg === 'object' ? JSON.stringify(arg) : arg.toString();
                 let a = new BBTag(arg);
                 a._protected.start = 0;
                 a._protected.end = arg.length;
                 st._protected.children.push(a);
             }
 
-            let result = await runSubtag(st, context);
-
-            return result;
+            return await bbtagEngine.execute(bbtag, context);
         })
         .build();
