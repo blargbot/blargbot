@@ -30,10 +30,10 @@ export class PatchCommand extends BaseGlobalCommand {
             return this.error('I cant send out an empty patch note!');
 
         const role = await context.util.getRole(channel.guild, context.config.discord.roles.updates);
-        const { major = 0, minor = 0, patch = 0 } = await context.database.vars.get('version') ?? {};
+        const version = await context.cluster.version.getVersion();
         const fields: EmbedField[] = [];
         const embed: EmbedOptions = {
-            author: { name: `Version ${major}.${minor}.${patch}` },
+            author: { name: `Version ${version}` },
             fields: fields,
             color: 0x2df952
         };

@@ -34,23 +34,12 @@ export class UpdateCommand extends BaseGlobalCommand {
 
         try {
             await this.showCommand(context, 'yarn rebuild');
-            let { major = 1, minor = 0, patch = 0 } = await context.database.vars.get('version') ?? {};
-            switch (type.toLowerCase()) {
-                case 'major':
-                    major++;
-                    minor = patch = 0;
-                    break;
-                case 'minor':
-                    minor++;
-                    patch = 0;
-                    break;
-                default:
-                    patch++;
-                    break;
-            }
-            await context.database.vars.set('version', { major, minor, patch });
+
+            await context.cluster.version.updateVersion(type);
+
+            const version = await context.cluster.version.getVersion();
             const newCommit = await execCommandline('git rev-parse HEAD');
-            return this.success(`Updated to version ${major}.${minor}.${patch} commit \`${newCommit}\`!\nRun \`${context.prefix}restart\` to gracefully start all the clusters on this new version.`);
+            return this.success(`Updated to version ${version} commit \`${newCommit}\`!\nRun \`${context.prefix}restart\` to gracefully start all the clusters on this new version.`);
         } catch (err: unknown) {
             context.logger.error(err);
         }
