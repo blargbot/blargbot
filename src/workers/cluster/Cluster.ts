@@ -12,7 +12,7 @@ import { inspect } from 'util';
 
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
-import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager } from './managers';
+import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
 
 export class Cluster extends BaseClient {
     public readonly id: number;
@@ -38,6 +38,7 @@ export class Cluster extends BaseClient {
     public readonly rolemes: RolemeManager;
     public readonly help: HelpManager;
     public readonly awaiter: AwaiterManager;
+    public readonly version: VersionStateManager;
 
     public constructor(
         logger: Logger,
@@ -101,6 +102,7 @@ export class Cluster extends BaseClient {
         this.rolemes = new RolemeManager(this);
         this.help = new HelpManager(this.commands, this.util);
         this.awaiter = new AwaiterManager(this.logger);
+        this.version = new VersionStateManager(this.database.vars);
 
         this.services.on('add', module => void module.start());
         this.services.on('remove', module => void module.stop());
