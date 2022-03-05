@@ -61,21 +61,8 @@ export class SetSubtag extends DefinedSubtag {
     public async setArray(
         context: BBTagContext,
         variableName: string,
-        arrayElements: string[]
+        values: string[]
     ): Promise<void> {
-        const result = [];
-        for (const element of arrayElements) {
-            try {
-                const parsedElement = JSON.parse(element);
-                if (typeof parsedElement === 'number') {
-                    result.push(element); //Might be snowflake
-                    continue;             //TODO better logic for this
-                }
-                result.push(parsedElement);
-            } catch (e: unknown) {
-                result.push(element);
-            }
-        }
-        await context.variables.set(variableName, result);
+        await context.variables.set(variableName, values);
     }
 }

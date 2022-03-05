@@ -32,27 +32,27 @@ export class GetSubtag extends DefinedSubtag {
 
     public async get(context: BBTagContext, variableName: string): Promise<JToken | undefined> {
         const result = await context.variables.get(variableName);
-        if (!Array.isArray(result))
-            return result;
+        if (!Array.isArray(result.value))
+            return result.value;
 
-        return { v: result, n: variableName };
+        return { v: result.value, n: result.key };
     }
 
     public async getArray(context: BBTagContext, variableName: string, indexStr: string): Promise<JToken | undefined> {
         const result = await context.variables.get(variableName);
-        if (!Array.isArray(result))
-            return result;
+        if (!Array.isArray(result.value))
+            return result.value;
 
         if (indexStr === '')
-            return { v: result, n: variableName };
+            return { v: result.value, n: result.key };
 
         const index = parse.int(indexStr, false);
         if (index === undefined)
             throw new NotANumberError(indexStr);
 
-        if (index < 0 || index >= result.length)
+        if (index < 0 || index >= result.value.length)
             throw new BBTagRuntimeError('Index out of range');
 
-        return result[index];
+        return result.value[index];
     }
 }

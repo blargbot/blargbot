@@ -40,16 +40,16 @@ export class DecrementSubtag extends DefinedSubtag {
 
         const valueRaw = await context.variables.get(varName);
         let value = NaN;
-        switch (typeof valueRaw) {
+        switch (typeof valueRaw.value) {
             case 'string':
-                value = parse.float(valueRaw);
+                value = parse.float(valueRaw.value);
                 break;
             case 'number':
-                value = valueRaw;
+                value = valueRaw.value;
                 break;
         }
         if (isNaN(value))
-            throw new NotANumberError(valueRaw);
+            throw new NotANumberError(valueRaw.value);
 
         if (floor) {
             value = Math.floor(value);

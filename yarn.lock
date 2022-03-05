@@ -789,6 +789,18 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/chai-datetime@^0.0.37":
+  version "0.0.37"
+  resolved "https://registry.yarnpkg.com/@types/chai-datetime/-/chai-datetime-0.0.37.tgz#3b187faa6cf0acb55dcaef82f3924d26e5c96daa"
+  integrity sha512-teAlKuUV2mxuN0hRxfSXnk7v5lDZUtQWMZ72pIvm5OJ8SuMmgjQgNiebha+MYr7EiSVCQxDY8yH1j7TIXy3nEQ==
+  dependencies:
+    "@types/chai" "*"
+
+"@types/chai@*":
+  version "4.3.0"
+  resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.3.0.tgz#23509ebc1fa32f1b4d50d6a66c4032d5b8eaabdc"
+  integrity sha512-/ceqdqeRraGolFTcfoXNiqjyQhZzbINDngeoAq9GoHa8PPK1yNzTaxWjA6BFWp5Ua9JpXEMSS4s5i9tS0hOJtw==
+
 "@types/chai@^4.2.22":
   version "4.2.22"
   resolved "https://registry.yarnpkg.com/@types/chai/-/chai-4.2.22.tgz#47020d7e4cf19194d43b5202f35f75bd2ad35ce7"
@@ -1646,9 +1658,9 @@ camelcase@^6.0.0, camelcase@^6.2.0:
   integrity sha512-c7wVvbw3f37nuobQNtgsgG9POC9qMbNuMQmTCqZv23b6MIz0fcYpBiOlv9gEN/hdLdnZTDQhg6e9Dq5M1vKvfg==
 
 caniuse-lite@^1.0.30001254:
-  version "1.0.30001255"
-  resolved "https://registry.yarnpkg.com/caniuse-lite/-/caniuse-lite-1.0.30001255.tgz#f3b09b59ab52e39e751a569523618f47c4298ca0"
-  integrity sha512-F+A3N9jTZL882f/fg/WWVnKSu6IOo3ueLz4zwaOPbPYHNmM/ZaDUyzyJwS1mZhX7Ex5jqTyW599Gdelh5PDYLQ==
+  version "1.0.30001313"
+  resolved "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001313.tgz"
+  integrity sha512-rI1UN0koZUiKINjysQDuRi2VeSCce3bYJNmDcj3PIKREiAmjakugBul1QSkg/fPrlULYl6oWfGg3PbgOSY9X4Q==
 
 canvas@^2.2.0:
   version "2.6.1"
@@ -1703,12 +1715,32 @@ chai-bytes@^0.1.2:
   resolved "https://registry.yarnpkg.com/chai-bytes/-/chai-bytes-0.1.2.tgz#c297e81d47eb3106af0676ded5bb5e0c9f981db3"
   integrity sha512-0ol6oJS0y1ozj6AZK8n1pyv1/G+l44nqUJygAkK1UrYl+IOGie5vcrEdrAlwmLYGIA9NVvtHWosPYwWWIXf/XA==
 
+chai-datetime@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/chai-datetime/-/chai-datetime-1.8.0.tgz#95a1ff58130f60f16f6d882ec5c014e63aa6d75f"
+  integrity sha512-qBG84K8oQNz8LWacuzmCBfdoeG2UBFfbGKTSQj6lS+sjuzGUdBvjJxfZfGA4zDAMiCSqApKcuqSLO0lQQ25cHw==
+  dependencies:
+    chai ">1.9.0"
+
 chai-exclude@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/chai-exclude/-/chai-exclude-2.1.0.tgz#653d1218144eafb49b563684ad90b76d12bbc3f9"
   integrity sha512-IBnm50Mvl3O1YhPpTgbU8MK0Gw7NHcb18WT2TxGdPKOMtdtZVKLHmQwdvOF7mTlHVQStbXuZKFwkevFtbHjpVg==
   dependencies:
     fclone "^1.0.11"
+
+chai@>1.9.0:
+  version "4.3.6"
+  resolved "https://registry.yarnpkg.com/chai/-/chai-4.3.6.tgz#ffe4ba2d9fa9d6680cc0b370adae709ec9011e9c"
+  integrity sha512-bbcp3YfHCUzMOvKqsztczerVgBKSsEijCySNlHHbX3VG1nskvqjz5Rfso1gGwD6w6oOV3eI60pKuMOV5MV7p3Q==
+  dependencies:
+    assertion-error "^1.1.0"
+    check-error "^1.0.2"
+    deep-eql "^3.0.1"
+    get-func-name "^2.0.0"
+    loupe "^2.3.1"
+    pathval "^1.1.1"
+    type-detect "^4.0.5"
 
 chai@^4.3.4:
   version "4.3.4"
@@ -4221,7 +4253,7 @@ lodash@^4.0.0, lodash@^4.3.0, lodash@~4.17.10:
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.20.tgz#b44a9b6297bcb698f1c51a3545a2b3b368d59c52"
   integrity sha512-PlhdFcillOINfeV7Ni6oF1TAEayyZBoZ8bcshTHqOYJYlrqzRK5hagpagky5o4HfCzzd1TRkXPMFq6cKk9rGmA==
 
-lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.5:
+lodash@^4.17.20, lodash@^4.17.21, lodash@^4.17.4, lodash@^4.17.5:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
   integrity sha512-v2kDEe57lecTulaDIuNTPy3Ry4gLGJ6Z1O3vE1krgXZNrsQ+LFTGHVxVjcXPs17LhbZVGedAJv8XZ1tvj5FvSg==
@@ -4238,6 +4270,13 @@ long@^2.2.0:
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/long/-/long-2.4.0.tgz#9fa180bb1d9500cdc29c4156766a1995e1f4524f"
   integrity sha1-n6GAux2VAM3CnEFWdmoZleH0Uk8=
+
+loupe@^2.3.1:
+  version "2.3.4"
+  resolved "https://registry.yarnpkg.com/loupe/-/loupe-2.3.4.tgz#7e0b9bffc76f148f9be769cb1321d3dcf3cb25f3"
+  integrity sha512-OvKfgCC2Ndby6aSTREl5aCCPTNIzlDfQZvZxNUrBrihDhL3xcrYegTblhmEiCrg2kKQz4XsFIaemE5BF4ybSaQ==
+  dependencies:
+    get-func-name "^2.0.0"
 
 lru-cache@^4.0.1:
   version "4.1.5"
@@ -5221,6 +5260,11 @@ postgres-interval@^1.1.0:
   integrity sha512-9ZhXKM/rw350N1ovuWHbGxnGh/SNJ4cnxHiM0rxE4VN41wsg8P8zWn9hv/buK00RP4WvlOyr/RBDiptyxVbkZQ==
   dependencies:
     xtend "^4.0.0"
+
+postinstall-build@^5.0.1:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/postinstall-build/-/postinstall-build-5.0.3.tgz#238692f712a481d8f5bc8960e94786036241efc7"
+  integrity sha512-vPvPe8TKgp4FLgY3+DfxCE5PIfoXBK2lyLfNCxsRbDsV6vS4oU5RG/IWxrblMn6heagbnMED3MemUQllQ2bQUg==
 
 prelude-ls@^1.2.1:
   version "1.2.1"
@@ -6340,6 +6384,15 @@ typedarray@^0.0.6:
   version "0.0.6"
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
+
+typemoq@^2.1.0:
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/typemoq/-/typemoq-2.1.0.tgz#4452ce360d92cf2a1a180f0c29de2803f87af1e8"
+  integrity sha512-DtRNLb7x8yCTv/KHlwes+NI+aGb4Vl1iPC63Hhtcvk1DpxSAZzKWQv0RQFY0jX2Uqj0SDBNl8Na4e6MV6TNDgw==
+  dependencies:
+    circular-json "^0.3.1"
+    lodash "^4.17.4"
+    postinstall-build "^5.0.1"
 
 typescript@^4.5.2:
   version "4.5.2"

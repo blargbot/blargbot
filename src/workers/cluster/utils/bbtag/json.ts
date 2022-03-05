@@ -19,13 +19,14 @@ export async function resolve(context: BBTagContext, input: string): Promise<Ret
             obj = JSON.parse(input);
         } catch (err: unknown) {
             const v = await context.variables.get(input);
-            if (v !== undefined) {
+            if (v.value !== undefined) {
                 variable = input;
-                if (typeof v === 'object') obj = v;
+                if (typeof v.value === 'object')
+                    obj = v.value;
                 else {
                     try {
-                        if (typeof v === 'string')
-                            obj = JSON.parse(v);
+                        if (typeof v.value === 'string')
+                            obj = JSON.parse(v.value);
                     } catch (err2: unknown) {
                         obj = {};
                     }

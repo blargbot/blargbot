@@ -1,30 +1,9 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
-import { guard } from '@core/utils';
-import fetch, { RequestInit } from 'node-fetch';
+import { mapping, parse, SubtagType } from '@cluster/utils';
+import fetch, { BodyInit } from 'node-fetch';
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
-
-type HTTPMethod = 'GET' | 'PATCH' | 'POST' | 'DELETE' | 'PUT';
-
-interface Header {
-    [key: string]: string;
-}
-interface OptionsObject {
-    headers?: Header;
-    method: HTTPMethod;
-}
-
-interface ResponseObject {
-    body: Buffer;
-    text?: string;
-    status: number;
-    statusText: string;
-    contentType: string | null;
-    date: string | null;
-    url: string;
-}
 
 export class RequestSubtag extends DefinedSubtag {
     public constructor() {
@@ -38,15 +17,7 @@ export class RequestSubtag extends DefinedSubtag {
                 '  "url": "https://fancy.url/here" // the url that was requested\n}\n```',
             definition: [
                 {
-                    parameters: ['url'],
-                    description: 'Performs a GET request to `url`. ',
-                    exampleCode: '{jget;{request;https://blargbot.xyz/output/1111111111111111/raw};body}',
-                    exampleOut: 'Hello, world!',
-                    returns: 'json',
-                    execute: (ctx, [url]) => this.requestUrl(ctx, url.value, '', '')
-                },
-                {
-                    parameters: ['url', 'options', 'data?'],
+                    parameters: ['url', 'options?', 'data?'],
                     description: 'Performs a HTTP request to `url`, with provided `options` and `data`.' +
                         '`options` is a JSON object with the following structure. It is recommended to use {jsonset} to create it.\n' +
                         '```json\n{\n  "method": "GET|POST|PUT|PATCH|DELETE", // defaults to GET\n' +
@@ -67,117 +38,84 @@ export class RequestSubtag extends DefinedSubtag {
         optionsStr: string,
         dataStr: string
     ): Promise<JObject> {
-        let domain;
-        if (domainRegex.test(url)) {
-            const domainRegexMatches = domainRegex.exec(url);
-            domain = domainRegexMatches !== null ? domainRegexMatches[1] : '';
-            const whitelisted = context.util.cluster.domains.isWhitelisted(domain);
-            if (!whitelisted) {
-                throw new BBTagRuntimeError('Domain is not whitelisted: ' + domain);
-            }
-        } else {
-            throw new BBTagRuntimeError('A domain could not be extracted from url: ' + url);
-        }
+        const domainMatch = domainRegex.exec(url);
+        if (domainMatch === null)
+            throw new BBTagRuntimeError(`A domain could not be extracted from url: ${url}`);
 
-        const options: OptionsObject = {
-            method: 'GET'
+        const domain = domainMatch[1];
+        if (!context.util.cluster.domains.isWhitelisted(domain))
+            throw new BBTagRuntimeError(`Domain is not whitelisted: ${domain}`);
+
+        const request = {
+            method: 'GET',
+            headers: {} as Record<string, string>,
+            size: 8000000,
+            body: undefined as BodyInit | undefined
         };
 
         if (optionsStr !== '') {
-            try {
-                let parsedJson = JSON.parse(optionsStr);
-                if (typeof parsedJson !== 'object' || parsedJson === null || Array.isArray(parsedJson))
-                    parsedJson = {};
-                if (guard.hasValue(parsedJson.method)) {
-                    const method = parsedJson.method.toString().toUpperCase();
-                    if (!['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].includes(method))
-                        throw new BBTagRuntimeError('');
-                    options.method = method as HTTPMethod;
-                } else {
-                    options.method = 'GET';
-                }
+            const mappedOptions = mapOptions(optionsStr);
+            if (!mappedOptions.valid)
+                throw new BBTagRuntimeError('', `Invalid request options "${optionsStr}"`);
+            request.method = mappedOptions.value.method;
+            request.headers = mappedOptions.value.headers;
+        }
 
-                if (guard.hasValue(parsedJson.headers)) {
-                    if (typeof parsedJson.headers === 'string') {
-                        try {
-                            options.headers = <Header>JSON.parse(parsedJson.headers);
-                        } catch (err: unknown) {
-                            options.headers = {};
-                        }
-                    } else if (typeof parsedJson.headers === 'object' && !Array.isArray(parsedJson.headers)) {
-                        options.headers = <Header>parsedJson.headers;
-                    } else options.headers = {};
-                }
+        let data;
+        try {
+            data = JSON.parse(dataStr);
+        } catch { /* NOOP */ }
 
-            } catch (e: unknown) {
-                if (e instanceof Error)
-                    throw new BBTagRuntimeError(e.message);
+        let query;
+        if (request.method === 'GET') {
+            if (typeof data === 'object' && data !== null) {
+                query = new URLSearchParams(Object.fromEntries(Object.entries(data).map(([k, v]) => [k, parse.string(v as JToken)] as const))).toString();
+                data = undefined;
             }
-        }
-        let dataObject: JToken | undefined;
-        if (dataStr !== '') {
-            try {
-                dataObject = JSON.parse(dataStr);
-                if (guard.hasValue(options.headers))
-                    options.headers['Content-Type'] = 'application/json';
-                else // eslint-disable-next-line @typescript-eslint/naming-convention
-                    options.headers = { 'Content-Type': 'application/json' };
-            } catch (err: unknown) {
-                dataObject = dataStr;
-            }
-        }
-        let data: string | undefined;
-        let query: string | undefined;
-        if (typeof dataObject === 'object' && options.method === 'GET')
-            query = new URLSearchParams(dataObject !== null ? <Record<string, string>>dataObject : {}).toString();
-        else {
-            data = JSON.stringify(dataObject);
+        } else if (data !== undefined) {
+            if (!Object.keys(request.headers).map(h => h.toLowerCase()).includes('content-type'))
+                request.headers['Content-Type'] = 'application/json';
+            request.body = JSON.stringify(data);
+        } else {
+            request.body = dataStr;
         }
 
-        const requestOptions: RequestInit = {
-            headers: options.headers,
-            method: options.method,
-            size: 8000000,
-            body: data
+        const response = await fetch(url + (query !== undefined ? '?' + query : ''), request);
+        const result = {
+            status: response.status,
+            statusText: response.statusText,
+            contentType: response.headers.get('content-type'),
+            date: response.headers.get('date'),
+            url: response.url
         };
 
-        try {
-            const res = await fetch(url + (query !== undefined ? '?' + query : ''), requestOptions);
-            const contentType = res.headers.get('content-type');
-            const response: ResponseObject = {
-                body: await res.buffer(),
-                status: res.status,
-                statusText: res.statusText,
-                contentType,
-                date: res.headers.get('date'),
-                url: res.url
-            };
-            /*
+        /*
                 I personally absolutely hate how blarg decides to error if a status code is not consider 'ok'
                 A lot of APIs actually have meaningful errors, coupled with a 'not-ok' status and it's ass that blarg doesn't return it.
                 TODO change this to return always regardless of statusCode OR add a parameter like [rawResponse] for getting the response object always without breaking bbtag.
             */
-            if (!(res.status >= 200 && res.status < 400))
-                throw Error(`${res.status} ${res.statusText}`);
+        if (!(response.status >= 200 && response.status < 400))
+            throw new BBTagRuntimeError(`${response.status} ${response.statusText}`);
 
-            let bodyStr: string;
-            if (contentType === null || contentType.startsWith('text') === true)
-                bodyStr = response.body.toString('utf8');
-            else if (contentType.includes('application/json'))
-                bodyStr = response.body.toString('utf-8');
-            else
-                bodyStr = response.body.toString('base64');
-            try {
-                if (typeof response.body === 'string')
-                    return { ...response, body: JSON.parse(response.body) };
-            } catch (e: unknown) {
-                //NOOP
-            }
-            return { ...response, body: bodyStr };
-        } catch (e: unknown) {
-            if (e instanceof Error)
-                throw new BBTagRuntimeError(e.message);
-            throw e;
-        }
+        if (result.contentType?.startsWith('text') !== false)
+            return { body: await response.text(), ...result };
+
+        if (result.contentType.includes('application/json'))
+            return { body: await response.json() as JToken, ...result };
+
+        const body = await response.buffer();
+        return { body: body.toString('base64'), ...result };
     }
 }
+
+const mapOptions = mapping.json(mapping.object({
+    method: mapping.string
+        .map(s => s.toUpperCase())
+        .chain(mapping.in('GET', 'POST', 'PUT', 'PATCH', 'DELETE'))
+        .optional
+        .map(v => v ?? 'GET'),
+    headers: mapping.choice(
+        mapping.json(mapping.record(mapping.jToken.map(parse.string))),
+        mapping.record(mapping.jToken.map(parse.string))
+    ).optional.map(v => v ?? {})
+}));

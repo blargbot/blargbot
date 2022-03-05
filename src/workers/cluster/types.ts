@@ -143,6 +143,7 @@ export interface BBTagRuntimeScope {
 
     // Functions are intended to be stored globally so a mutable type is fine
     readonly functions: Record<string, Statement | undefined>;
+    readonly isTag: boolean;
 }
 export interface SerializedRuntimeLimit {
     type: keyof typeof limits;

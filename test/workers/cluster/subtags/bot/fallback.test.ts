@@ -25,7 +25,7 @@ runSubtagTests({
                 { start: 14, end: 19, error: new UnknownSubtagError('xyz') }
             ],
             assert(ctx) {
-                expect(ctx.scopes.local.fallback).to.be.undefined;
+                expect(ctx.scopes.local.fallback).to.equal('abc');
             }
         },
         {

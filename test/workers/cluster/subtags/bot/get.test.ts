@@ -101,5 +101,22 @@ function* generateTestCases(isCC: boolean, tagName: string, cases: Array<{ args:
                 await bbctx.variables.set(args[0], value);
             }
         };
+        yield {
+            title: `Ignoring cache and ${title}`,
+            code: `{${['get', `!${args[0]}`, ...args.slice(1)].join(';')}}`,
+            expected,
+            setup(ctx) {
+                ctx.guild.id = '23904768237436873424';
+                ctx.roles.everyone.id = ctx.guild.id;
+                ctx.users.command.id = '823764823946284623234';
+                ctx.options.isCC = isCC;
+                ctx.options.tagName = tagName;
+                if (key !== undefined)
+                    ctx.tagVariables[key] = value;
+            },
+            async postSetup(bbctx) {
+                await bbctx.variables.set(args[0], 'FAIL');
+            }
+        };
     }
 }

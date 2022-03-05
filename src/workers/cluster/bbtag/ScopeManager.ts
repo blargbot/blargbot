@@ -12,25 +12,36 @@ export class ScopeManager {
     public constructor() {
         this.scopes = [this.root = {
             functions: {},
-            inLock: false
+            inLock: false,
+            isTag: false
         }];
         this.tags = [0];
     }
 
-    public pushScope(isTag = false): BBTagRuntimeScope {
+    public withScope<T>(action: (scope: BBTagRuntimeScope) => T, isTag = false): T {
+        const scope = this.#pushScope(isTag);
+        const result = action(scope);
+        if (result instanceof Promise)
+            result.finally(() => this.#popScope());
+        else
+            this.#popScope();
+        return result;
+    }
+
+    #pushScope(isTag = false): BBTagRuntimeScope {
         if (isTag)
             this.tags.push(this.scopes.length);
-        this.scopes.push({ ...this.local });
+        this.scopes.push({ ...this.local, isTag });
         return this.local;
     }
 
-    public popScope(): BBTagRuntimeScope {
+    #popScope(): BBTagRuntimeScope {
         if (this.scopes.length === 1)
             throw new Error('Cannot pop the root scope');
-        if (this.tags[this.tags.length - 1] === this.scopes.length)
-            this.tags.pop();
         const popped = this.local;
         this.scopes.pop();
+        if (popped.isTag)
+            this.tags.pop();
         return popped;
     }
 }

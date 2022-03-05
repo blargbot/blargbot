@@ -51,17 +51,17 @@ export class ForSubtag extends DefinedSubtag {
                 await context.variables.set(varName, i);
                 yield await code.execute();
 
-                const varValue = await context.variables.get(varName);
-                i = parse.float(parse.string(varValue));
+                const varEntry = await context.variables.get(varName);
+                i = parse.float(parse.string(varEntry.value));
 
                 if (isNaN(i))
-                    throw new NotANumberError(varValue);
+                    throw new NotANumberError(varEntry.value);
 
                 if (context.state.return !== 0)
                     break;
             }
         } finally {
-            await context.variables.reset(varName);
+            context.variables.reset([varName]);
         }
     }
 }

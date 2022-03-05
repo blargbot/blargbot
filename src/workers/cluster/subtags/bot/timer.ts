@@ -1,7 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { parse, SubtagType } from '@cluster/utils';
-import { TagV4StoredEventOptions } from '@core/types';
 import moment from 'moment-timezone';
 
 export class TimerSubtag extends DefinedSubtag {
@@ -28,18 +27,13 @@ export class TimerSubtag extends DefinedSubtag {
 
         if (duration === undefined || duration.asMilliseconds() <= 0)
             throw new BBTagRuntimeError('Invalid duration');
-        try {
-            await context.util.cluster.timeouts.insert('tag', <TagV4StoredEventOptions>{
-                version: 4,
-                source: context.guild.id,
-                user: context.user.id,
-                channel: context.channel.id,
-                endtime: moment().add(duration).valueOf(),
-                context: context.serialize(),
-                content: code
-            });
-        } catch (e: unknown) {
-            context.logger.error(e);
-        }
+        await context.util.cluster.timeouts.insert('tag', {
+            version: 4,
+            source: context.guild.id,
+            channel: context.channel.id,
+            endtime: moment().add(duration).valueOf(),
+            context: context.serialize(),
+            content: code
+        });
     }
 }

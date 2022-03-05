@@ -52,6 +52,9 @@ export class ParamsSubtag extends DefinedSubtag {
         if (isNaN(i))
             throw new NotANumberError(index);
 
+        if (params.length <= i || i < 0)
+            throw new NotEnoughArgumentsError(i, params.length);
+
         return params[i];
     }
 

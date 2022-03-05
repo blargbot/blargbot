@@ -124,11 +124,12 @@ export class WaitReactionSubtag extends DefinedSubtag {
             if (!userSet.has(user.id) || !checkReaction(emoji) || !guard.isGuildMessage(message))
                 return false;
 
-            context.scopes.pushScope();
-            context.scopes.local.reaction = emoji.toString();
-            context.scopes.local.reactUser = user.id;
-            const result = parse.boolean(await context.withChild({ message }, async context => await context.eval(condition)));
-            return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
+            const result = await context.withScope(scope => {
+                scope.reaction = emoji.toString();
+                scope.reactUser = user.id;
+                return context.withChild({ message }, context => context.eval(condition));
+            });
+            return parse.boolean(result, false);
         }, timeout * 1000);
 
         if (result === undefined)

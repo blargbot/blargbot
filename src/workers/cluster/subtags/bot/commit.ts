@@ -39,8 +39,7 @@ export class CommitSubtag extends DefinedSubtag {
     ): Promise<void> {
         const values = args.length === 0
             ? undefined
-            : bbtagUtil.tagArray.flattenArray(args)
-                .map(value => parse.string(value));
+            : bbtagUtil.tagArray.flattenArray(args).map(value => parse.string(value));
         await context.variables.persist(values);
     }
 }

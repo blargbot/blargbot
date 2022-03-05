@@ -218,7 +218,7 @@ export class ModLogManager {
         if (caseId === undefined)
             return;
 
-        reason ??= `Responsible moderator, please do \`reason ${caseId}\` to set.`;
+        reason ||= `Responsible moderator, please do \`reason ${caseId}\` to set.`;
 
         const embed: EmbedOptions = {
             title: `Case ${caseId}`,

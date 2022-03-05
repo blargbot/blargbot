@@ -23,7 +23,7 @@ export class PrefixSubtag extends DefinedSubtag {
         const prefix = await context.database.guilds.getSetting(context.guild.id, 'prefix');
         switch (typeof prefix) {
             case 'string': return prefix;
-            case 'undefined': return context.engine.util.config.discord.defaultPrefix;
+            case 'undefined': return context.util.config.discord.defaultPrefix;
             default: return prefix[0];
         }
     }

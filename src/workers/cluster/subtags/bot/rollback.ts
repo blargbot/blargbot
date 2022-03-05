@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
 
 export class RollbackSubtag extends DefinedSubtag {
     public constructor() {
@@ -33,15 +33,10 @@ export class RollbackSubtag extends DefinedSubtag {
         });
     }
 
-    public async rollback(
-        context: BBTagContext,
-        args: string[]
-    ): Promise<void> {
-        const values = args.length === 0
-            ? context.variables.list.map(entry => entry.key)
-            : bbtagUtil.tagArray.flattenArray(args)
-                .map((value) => typeof value === 'object' ? JSON.stringify(value) : value.toString());
-        for (const variable of values)
-            await context.variables.reset(variable);
+    public rollback(context: BBTagContext, args: string[]): void {
+        const keys = args.length === 0
+            ? undefined
+            : bbtagUtil.tagArray.flattenArray(args).map(v => parse.string(v));
+        context.variables.reset(keys);
     }
 }

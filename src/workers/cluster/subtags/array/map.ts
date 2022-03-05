@@ -35,7 +35,7 @@ export class MapSubtag extends DefinedSubtag {
                     break;
             }
         } finally {
-            await context.variables.reset(varName);
+            context.variables.reset([varName]);
         }
     }
 }

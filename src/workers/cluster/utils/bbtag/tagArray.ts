@@ -64,8 +64,8 @@ export async function getArray(context: BBTagContext, arrName: string): Promise<
         return obj;
     try {
         const arr = await context.variables.get(arrName);
-        if (arr !== undefined && Array.isArray(arr))
-            return { v: arr, n: arrName };
+        if (arr.value !== undefined && Array.isArray(arr.value))
+            return { v: arr.value, n: arrName };
     } catch {
         // NOOP
     }

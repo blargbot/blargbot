@@ -57,8 +57,16 @@ export class Mock<T> {
     }
 
     public verifyAll(): void {
-        for (const assertions of this.#assertions)
-            assertions();
+        const errors = [];
+        for (const assertions of this.#assertions) {
+            try {
+                assertions();
+            } catch (err: unknown) {
+                errors.push(err);
+            }
+        }
+        if (errors.length > 0)
+            throw new AggregateError(errors, errors.join('\n'));
     }
 
     public get instance(): T {
@@ -176,7 +184,23 @@ class MethodNotConfiguredStub extends AbstractMethodStub implements MethodStub {
     public execute(args: unknown[]): never {
         if (args.length === 0)
             throw new MethodNotConfiguredError(`The '${this.name}' method/property hasnt been configured to accept 0 arguments`);
-        throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: ${JSON.stringify(args, (_, value) => isProxy(value) ? '__PROXY' : typeof value === 'bigint' ? value.toString() : value as unknown)}`);
+        const strArgs = args.map(a => {
+            if (a === undefined)
+                return 'undefined';
+            if (!isProxy(a)) {
+                try {
+                    return JSON.stringify(a, (_, value) => typeof value === 'bigint' ? value.toString() : value as unknown);
+                } catch (err: unknown) {
+                    if (!(err instanceof MethodNotConfiguredError))
+                        throw err;
+                }
+            }
+
+            const proto = Object.getPrototypeOf(a) as object;
+            return `<PROXY ${proto.constructor.name}>`;
+        });
+
+        throw new MethodNotConfiguredError(`The '${this.name}' method hasnt been configured to accept the arguments: [${strArgs.join(',')}]`);
     }
 
     public getValue(): never {

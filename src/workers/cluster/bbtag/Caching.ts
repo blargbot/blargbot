@@ -2,21 +2,42 @@ import { Timer } from '@core/Timer';
 import { guard } from '@core/utils';
 
 import { BBTagContext } from './BBTagContext';
-import { TagVariableScope, tagVariableScopes } from './tagVariables';
+import { TagVariableScope } from './tagVariables';
+
+export interface VariableReference {
+    readonly key: string;
+    get value(): undefined | JToken;
+}
+
+interface ValueSource {
+    isEqual(other: JToken | undefined): boolean;
+    get(): JToken | undefined;
+}
 
 export class VariableCache {
     // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cache: Record<string, CacheEntry | undefined>;
 
-    public get list(): CacheEntry[] { return Object.values(this.#cache).filter(guard.hasValue); }
+    public get list(): VariableReference[] {
+        return Object.values(this.#cache)
+            .filter(guard.hasValue)
+            .map(v => v.reference);
+    }
 
     public constructor(
-        public readonly context: BBTagContext
+        public readonly context: BBTagContext,
+        public readonly scopes: readonly TagVariableScope[]
     ) {
         this.#cache = {};
     }
 
-    async #get(variable: string): Promise<CacheEntry> {
+    #getCached(variables?: string[]): CacheEntry[] {
+        if (variables === undefined)
+            return Object.values(this.#cache).filter(guard.hasValue);
+        return variables.map(k => this.#cache[k]).filter(guard.hasValue);
+    }
+
+    async #getEntry(variable: string): Promise<CacheEntry> {
         const forced = variable.startsWith('!');
         if (forced)
             variable = variable.slice(1);
@@ -25,22 +46,22 @@ export class VariableCache {
         if (!forced && entry !== undefined)
             return entry;
 
-        const scope = tagVariableScopes.find(s => variable.startsWith(s.prefix));
+        const scope = this.scopes.find(s => variable.startsWith(s.prefix));
         if (scope === undefined)
             throw new Error('Missing default variable scope!');
 
         const varName = variable.substring(scope.prefix.length);
         try {
-            return this.#cache[variable] = new CacheEntry(this.context, scope, varName, await scope.getter(this.context, varName) ?? '');
+            return this.#cache[variable] = new CacheEntry(this.context, scope, varName, await scope.getter(this.context, varName));
         } catch (err: unknown) {
             this.context.logger.error(err, this.context.isCC, this.context.rootTagName);
             throw err;
         }
     }
 
-    public async get(variable: string): Promise<JToken | undefined> {
-        const entry = await this.#get(variable);
-        return entry.value;
+    public async get(variable: string): Promise<VariableReference> {
+        const result = await this.#getEntry(variable);
+        return result.reference;
     }
 
     public async set(variable: string, value: JToken | undefined): Promise<void> {
@@ -48,15 +69,15 @@ export class VariableCache {
         if (forced)
             variable = variable.slice(1);
 
-        const entry = await this.#get(variable);
+        const entry = await this.#getEntry(variable);
         entry.value = value;
         if (forced)
             await this.persist([variable]);
     }
 
-    public async reset(variable: string): Promise<void> {
-        const entry = await this.#get(variable);
-        entry.reset();
+    public reset(variables?: string[]): void {
+        for (const entry of this.#getCached(variables))
+            entry.reset();
     }
 
     public async persist(variables?: string[]): Promise<void> {
@@ -64,20 +85,17 @@ export class VariableCache {
         if (execRunning)
             this.context.execTimer.end();
         this.context.dbTimer.resume();
-        const vars = (variables?.map(key => this.#cache[key]) ?? Object.values(this.#cache))
-            .filter(guard.hasValue);
-
         const pools = new Map<TagVariableScope, Record<string, JToken | undefined>>();
-        for (const v of vars) {
-            if (!v.changed)
+        for (const entry of this.#getCached(variables)) {
+            if (!entry.changed)
                 continue;
 
-            let pool = pools.get(v.scope);
+            let pool = pools.get(entry.scope);
             if (pool === undefined)
-                pools.set(v.scope, pool = {});
+                pools.set(entry.scope, pool = {});
 
-            pool[v.key] = v.value === '' ? undefined : v.value;
-            v.persist();
+            pool[entry.key] = entry.value === '' ? undefined : entry.value;
+            entry.persist();
         }
 
         for (const [scope, pool] of pools) {
@@ -96,27 +114,49 @@ export class VariableCache {
 }
 
 class CacheEntry {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
-    #signature: string;
+    #initialValue: ValueSource;
     public value: JToken | undefined;
 
-    public get changed(): boolean { return this.#signature !== JSON.stringify(this.value); }
+    public reference: VariableReference;
+    public get changed(): boolean { return !this.#initialValue.isEqual(this.value); }
 
     public constructor(
         public readonly context: BBTagContext,
         public readonly scope: TagVariableScope,
         public readonly key: string,
-        value: JToken
+        value: JToken | undefined
     ) {
-        this.#signature = JSON.stringify(value);
+        this.#initialValue = CacheEntry.captureValue(value);
         this.value = value;
+
+        // eslint-disable-next-line @typescript-eslint/no-this-alias
+        const $self = this;
+        this.reference = {
+            key: $self.scope.prefix + $self.key,
+            get value() { return $self.value; }
+        };
     }
 
     public persist(): void {
-        this.#signature = JSON.stringify(this.value);
+        this.#initialValue = CacheEntry.captureValue(this.value);
     }
 
     public reset(): void {
-        this.value = JSON.parse(this.#signature);
+        this.value = this.#initialValue.get();
+    }
+
+    private static captureValue(value: undefined | JToken): ValueSource {
+        if (typeof value !== 'object' || value === null) {
+            return {
+                isEqual: current => current === value,
+                get: () => value
+            };
+        }
+
+        const jdata = JSON.stringify(value);
+        return {
+            isEqual: current => typeof current === 'object' && JSON.stringify(current) === jdata,
+            get: () => JSON.parse(jdata)
+        };
     }
 }

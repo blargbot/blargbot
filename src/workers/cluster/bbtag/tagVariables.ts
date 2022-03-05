@@ -38,8 +38,8 @@ export const tagVariableScopes: readonly TagVariableScope[] = [
         prefix: '~',
         description: 'Temporary variables are never stored to the database, meaning they are by far the fastest variable type.\n' +
             'If you are working with data which you only need to store for later use within the same tag call, then you should use temporary variables over any other type',
-        setter: (): Promise<void> => Promise.resolve(), //Temporary is never persisted to the database
-        getter: (): Promise<JToken> => Promise.resolve(''), //Temporary is never persisted to the database
+        setter: () => Promise.resolve(), //Temporary is never persisted to the database
+        getter: () => Promise.resolve(undefined), //Temporary is never persisted to the database
         getLock: (context, key): ReadWriteLock => context.getLock(key)
     },
     {

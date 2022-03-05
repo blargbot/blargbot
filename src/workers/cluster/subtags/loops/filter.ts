@@ -36,7 +36,7 @@ export class FilterSubtag extends DefinedSubtag {
 
             }
         } finally {
-            await context.variables.reset(varName);
+            context.variables.reset([varName]);
         }
     }
 }

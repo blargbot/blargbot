@@ -12,7 +12,7 @@ import { Base, Client as Discord, Constants, Guild, KnownGuildChannel, KnownGuil
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
-import { ScopeManager } from '.';
+import { ScopeManager, tagVariableScopes } from '.';
 import { BBTagEngine } from './BBTagEngine';
 import { VariableCache } from './Caching';
 import { BBTagRuntimeError, SubtagStackOverflowError, UnknownSubtagError } from './errors';
@@ -111,7 +111,7 @@ export class BBTagContext {
         this.debug = [];
         this.scopes = options.scopes ?? new ScopeManager();
         this.callStack = options.callStack ?? new SubtagCallStack();
-        this.variables = options.variables ?? new VariableCache(this);
+        this.variables = options.variables ?? new VariableCache(this, tagVariableScopes);
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
@@ -179,19 +179,7 @@ export class BBTagContext {
     public withScope<T>(isTag: boolean, action: (scope: BBTagRuntimeScope) => T): T
     public withScope<T>(...args: [isTag: boolean, action: (scope: BBTagRuntimeScope) => T] | [action: (scope: BBTagRuntimeScope) => T]): T {
         const [isTag, action] = args.length === 2 ? args : [false, args[0]];
-        const scope = this.scopes.pushScope(isTag);
-        let result;
-
-        try {
-            result = action(scope);
-        } finally {
-            if (result instanceof Promise)
-                result.finally(() => this.scopes.popScope());
-            else
-                this.scopes.popScope();
-        }
-
-        return result;
+        return this.scopes.withScope(action, isTag);
     }
 
     public withChild<T>(options: Partial<BBTagContextOptions>, action: (context: BBTagContext) => T): T {

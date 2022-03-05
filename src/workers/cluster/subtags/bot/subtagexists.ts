@@ -1,11 +1,8 @@
 import { DefinedSubtag } from '@cluster/bbtag';
-import { Cluster } from '@cluster/Cluster';
 import { SubtagType } from '@cluster/utils';
 
 export class SubtagExistsSubtag extends DefinedSubtag {
-    public constructor(
-        public readonly cluster: Cluster
-    ) {
+    public constructor() {
         super({
             name: 'subtagexists',
             category: SubtagType.BOT,
@@ -16,7 +13,7 @@ export class SubtagExistsSubtag extends DefinedSubtag {
                     exampleIn: '{subtagexists;ban} {subtagexists;AllenKey}',
                     exampleOut: 'true false',
                     returns: 'boolean',
-                    execute: (_, [subtag]) => this.cluster.subtags.get(subtag.value) !== undefined
+                    execute: (ctx, [subtag]) => ctx.subtags.get(subtag.value) !== undefined
                 }
             ]
         });

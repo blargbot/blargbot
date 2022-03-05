@@ -91,7 +91,7 @@ export class BBTagEngine {
     }
 
     private async * evalSubtag(bbtag: SubtagCall, context: BBTagContext): AsyncIterable<string> {
-        const name = (await joinResults(this.evalStatement(bbtag.name, context))).toLowerCase();
+        const name = (await context.withScope(() => joinResults(this.evalStatement(bbtag.name, context)))).toLowerCase();
 
         try {
             const subtag = context.getSubtag(name);
@@ -126,14 +126,15 @@ export class BBTagEngine {
 
     // eslint-disable-next-line @typescript-eslint/require-await
     private async * evalStatement(bbtag: Statement, context: BBTagContext): AsyncIterable<string> {
-        context.scopes.pushScope();
         for (const elem of bbtag.values) {
             if (typeof elem === 'string')
                 yield elem;
-            else
+            else {
                 yield* this.evalSubtag(elem, context);
+                if (context.state.return !== RuntimeReturnState.NONE)
+                    break;
+            }
         }
-        context.scopes.popScope();
     }
 
     public eval(bbtag: SubtagCall | Statement, context: BBTagContext): Awaitable<string> {
@@ -144,7 +145,7 @@ export class BBTagEngine {
             return '';
 
         const results = 'values' in bbtag
-            ? this.evalStatement(bbtag, context)
+            ? context.withScope(() => this.evalStatement(bbtag, context))
             : this.evalSubtag(bbtag, context);
 
         return joinResults(results);

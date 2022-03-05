@@ -12,8 +12,12 @@ runSubtagTests({
         {
             code: '{reverse;_myArray}',
             expected: '',
-            setup(ctx) { ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`] = ['abc', 'def', 'ghi']; },
-            async assert(ctx) { expect(await ctx.variables.get('_myArray')).to.deep.equal(['ghi', 'def', 'abc']); }
+            setup(ctx) {
+                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`] = ['abc', 'def', 'ghi'];
+            },
+            assert(_, __, ctx) {
+                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`]).to.deep.equal(['ghi', 'def', 'abc']);
+            }
         }
     ]
 });

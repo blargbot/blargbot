@@ -2,19 +2,21 @@ import { Cluster, ClusterUtilities } from '@cluster';
 import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
 import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
-import { AwaiterManager, ModerationManager, TimeoutManager } from '@cluster/managers';
+import { AwaiterManager, DomainManager, ModerationManager, TimeoutManager } from '@cluster/managers';
 import { MessageAwaiterFactory } from '@cluster/managers/awaiters/MessageAwaiterFactory';
 import { ReactionAwaiterFactory } from '@cluster/managers/awaiters/ReactionAwaiterFactory';
-import { BanManager, WarnManager } from '@cluster/managers/moderation';
+import { BanManager, ModLogManager, WarnManager } from '@cluster/managers/moderation';
 import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@cluster/types';
 import { bbtagUtil, guard, pluralise as p, repeat, snowflake, SubtagType } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
+import { Timer } from '@core/Timer';
 import { GuildCommandTag, GuildTable, StoredTag, SubtagVariableType, TagsTable, TagVariablesTable, UserTable } from '@core/types';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
+import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
 import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
 import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
@@ -31,6 +33,7 @@ import { argument, Mock } from '../../../mock';
 
 chai.use(chaiExclude);
 chai.use(chaiBytes);
+chai.use(chaiDateTime);
 
 type SourceMarkerResolvable = SourceMarker | number | `${number}:${number}:${number}` | `${number}:${number}` | `${number}`;
 type IdPropertiesOf<T> = { [P in keyof T]-?: [P, T[P]] extends [`${string}_id` | 'id', string] ? P : never }[keyof T];
@@ -87,6 +90,7 @@ type ArgCountBound = number | { count: number; noEval: number[]; };
 export class SubtagTestContext {
     readonly #allMocks: Array<Mock<unknown>> = [];
     #isCreated = false;
+    public readonly timer = new Timer();
     public readonly cluster = this.createMock(Cluster);
     public readonly util = this.createMock(ClusterUtilities);
     public readonly shard = this.createMock(Shard);
@@ -106,16 +110,18 @@ export class SubtagTestContext {
     public readonly managers = {
         timeouts: this.createMock(TimeoutManager),
         moderation: this.createMock(ModerationManager),
+        modlog: this.createMock(ModLogManager),
         bans: this.createMock(BanManager),
         warns: this.createMock(WarnManager),
         messageAwaiter: this.createMock(MessageAwaiterFactory),
-        reactionAwaiter: this.createMock(ReactionAwaiterFactory)
+        reactionAwaiter: this.createMock(ReactionAwaiterFactory),
+        domain: this.createMock(DomainManager)
     };
 
     public readonly ccommands: Record<string, GuildCommandTag>;
     public readonly tags: Record<string, StoredTag>;
     public readonly tagVariables: Record<`${SubtagVariableType}.${string}.${string}`, JToken | undefined>;
-    public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false };
+    public readonly rootScope: BBTagRuntimeScope = { functions: {}, inLock: false, isTag: true };
 
     public readonly options: Mutable<Partial<BBTagContextOptions>>;
 
@@ -189,6 +195,7 @@ export class SubtagTestContext {
         this.cluster.setup(m => m.util, false).thenReturn(this.util.instance);
         this.cluster.setup(m => m.moderation, false).thenReturn(this.managers.moderation.instance);
         this.cluster.setup(m => m.awaiter, false).thenReturn(awaiter.instance);
+        this.cluster.setup(m => m.domains, false).thenReturn(this.managers.domain.instance);
         awaiter.setup(m => m.messages, false).thenReturn(this.managers.messageAwaiter.instance);
         awaiter.setup(m => m.reactions, false).thenReturn(this.managers.reactionAwaiter.instance);
 
@@ -196,6 +203,7 @@ export class SubtagTestContext {
 
         this.managers.moderation.setup(m => m.bans, false).thenReturn(this.managers.bans.instance);
         this.managers.moderation.setup(m => m.warns, false).thenReturn(this.managers.warns.instance);
+        this.managers.moderation.setup(m => m.modLog, false).thenReturn(this.managers.modlog.instance);
 
         this.database.setup(m => m.tagVariables, false).thenReturn(this.tagVariablesTable.instance);
         this.database.setup(m => m.guilds, false).thenReturn(this.guildTable.instance);
@@ -245,8 +253,16 @@ export class SubtagTestContext {
     }
 
     public verifyAll(): void {
-        for (const mock of this.#allMocks)
-            mock.verifyAll();
+        const errors = [];
+        for (const mock of this.#allMocks) {
+            try {
+                mock.verifyAll();
+            } catch (err: unknown) {
+                errors.push(err);
+            }
+        }
+        if (errors.length > 0)
+            throw new AggregateError(errors, errors.join('\n'));
     }
 
     public createContext(): BBTagContext {
@@ -730,7 +746,9 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         const expected = getExpectation(testCase);
 
         // act
+        test.timer.start(true);
         const result = await runSafe(() => context.eval(code));
+        test.timer.end();
         if (!result.success) {
             if (actualTestCase.expectError === undefined)
                 throw result.error;
@@ -803,9 +821,13 @@ export function* notEnoughArgumentsTestCases(subtagName: string, minArgCount: nu
             ]
         };
     }
+    const codeParts = repeat(minArgCount, j => {
+        const start = 2 + subtagName.length + 7 * j;
+        return [noEvalLookup.has(j), { start, end: start + 6, error: new MarkerError('eval', start) }] as const;
+    });
     yield {
         title: 'Min arg count',
-        code: `{${[subtagName, ...repeat(minArgCount, '')].join(';')}}`,
+        code: `{${[subtagName, ...codeParts.map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
             expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
@@ -824,7 +846,7 @@ export function* tooManyArgumentsTestCases(subtagName: string, maxArgCount: numb
     });
     yield {
         title: 'Max arg count',
-        code: `{${[subtagName, ...repeat(maxArgCount, '')].join(';')}}`,
+        code: `{${[subtagName, ...codeParts.slice(0, maxArgCount).map(p => p[0] ? '{fail}' : '{eval}')].join(';')}}`,
         expected: /^(?!`Not enough arguments`|`Too many arguments`).*$/gis,
         errors(err) {
             expect(err.map(x => x.error.constructor)).to.not.have.members([NotEnoughArgumentsError, TooManyArgumentsError]);
