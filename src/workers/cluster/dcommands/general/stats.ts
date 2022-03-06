@@ -27,7 +27,7 @@ export class StatsCommand extends BaseGlobalCommand {
             mappedStats.channels += c?.channels ?? 0;
             mappedStats.rss += c?.rss ?? 0;
         });
-        const version = await context.database.vars.get('version');
+        const version = await context.cluster.version.getVersion();
         return {
             color: randChoose(avatarColours),
             timestamp: moment().toDate(),
@@ -68,7 +68,7 @@ export class StatsCommand extends BaseGlobalCommand {
             },
             {
                 name: 'Version',
-                value: `${version?.major ?? 0}.${version?.minor ?? 0}.${version?.patch ?? 0}`,
+                value: version,
                 inline: true
             },
             {
