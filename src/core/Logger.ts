@@ -1,7 +1,6 @@
 import { guard } from '@core/utils';
 import * as Sentry from '@sentry/node';
 import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts';
-import { black, blue, cyan, green, magenta, red, yellow } from 'chalk';
 import { ValidationError } from 'sequelize';
 
 import { Configuration } from './Configuration';
@@ -41,25 +40,25 @@ export function createLogger(config: Configuration, workerId: string): Logger {
 }
 
 const logLevels = [
-    { name: 'fatal', color: red.bgBlack, isError: true },
-    { name: 'error', color: black.bgRed, isError: true },
-    { name: 'warn', color: black.bgYellow, isError: true },
-    { name: 'website', color: black.bgCyan },
-    { name: 'ws', color: yellow.bgBlack },
-    { name: 'cluster', color: black.bgMagenta },
-    { name: 'worker', color: black.bgMagenta },
-    { name: 'command', color: black.bgBlue },
-    { name: 'shardi', color: blue.bgYellow },
-    { name: 'init', color: black.bgBlue },
-    { name: 'info', color: black.bgGreen },
-    { name: 'trace', color: green.bgBlack, isTrace: true },
-    { name: 'output', color: black.bgMagenta },
-    { name: 'bbtag', color: black.bgGreen },
-    { name: 'verbose', color: black.bgCyan },
-    { name: 'adebug', color: cyan.bgBlack },
-    { name: 'debug', color: magenta.bgBlack, aliases: ['log', 'dir'] as const },
-    { name: 'database', color: black.bgBlue },
-    { name: 'module', color: black.bgBlue }
+    { name: 'fatal', color: CatLoggr._chalk.red.bgBlack, isError: true },
+    { name: 'error', color: CatLoggr._chalk.black.bgRed, isError: true },
+    { name: 'warn', color: CatLoggr._chalk.black.bgYellow, isError: true },
+    { name: 'website', color: CatLoggr._chalk.black.bgCyan },
+    { name: 'ws', color: CatLoggr._chalk.yellow.bgBlack },
+    { name: 'cluster', color: CatLoggr._chalk.black.bgMagenta },
+    { name: 'worker', color: CatLoggr._chalk.black.bgMagenta },
+    { name: 'command', color: CatLoggr._chalk.black.bgBlue },
+    { name: 'shardi', color: CatLoggr._chalk.blue.bgYellow },
+    { name: 'init', color: CatLoggr._chalk.black.bgBlue },
+    { name: 'info', color: CatLoggr._chalk.black.bgGreen },
+    { name: 'trace', color: CatLoggr._chalk.green.bgBlack, isTrace: true },
+    { name: 'output', color: CatLoggr._chalk.black.bgMagenta },
+    { name: 'bbtag', color: CatLoggr._chalk.black.bgGreen },
+    { name: 'verbose', color: CatLoggr._chalk.black.bgCyan },
+    { name: 'adebug', color: CatLoggr._chalk.cyan.bgBlack },
+    { name: 'debug', color: CatLoggr._chalk.magenta.bgBlack, aliases: ['log', 'dir'] as const },
+    { name: 'database', color: CatLoggr._chalk.black.bgBlue },
+    { name: 'module', color: CatLoggr._chalk.black.bgBlue }
 ] as const;
 
 function sequelizeErrorArgHook(...[{ arg }]: Parameters<ArgHookCallback>): string | null {

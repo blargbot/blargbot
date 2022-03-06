@@ -14,7 +14,6 @@
         "cat-loggr": "^1.1.0",
         "catflake": "^1.0.0",
         "chai-bytes": "^0.1.2",
-        "chalk": "^4.1.2",
         "color": "^4.1.0",
         "color-thief-jimp": "^2.0.2",
         "cron": "^1.4.1",
@@ -92,7 +91,6 @@
         "sass-lint": "^1.12.1",
         "ts-mockito": "^2.6.1",
         "ts-node": "^10.4.0",
-        "typemoq": "^2.1.0",
         "typescript": "^4.5.2",
         "yarn": "^1.22.17"
     },
