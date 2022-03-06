@@ -127,7 +127,7 @@ class CacheEntry {
         value: JToken | undefined
     ) {
         this.#initialValue = CacheEntry.captureValue(value);
-        this.value = value;
+        this.value = this.#initialValue.get();
 
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const $self = this;

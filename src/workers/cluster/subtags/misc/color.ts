@@ -41,7 +41,7 @@ export class ColorSubtag extends DefinedSubtag {
         if (colorStr === '')
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
-        const arr = await bbtagUtil.tagArray.getArray(context, colorStr);
+        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, colorStr);
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
 
         const inputConverter = getConverter(inputStr ?? '');

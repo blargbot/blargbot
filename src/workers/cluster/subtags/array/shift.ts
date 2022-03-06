@@ -21,7 +21,7 @@ export class ShiftSubtag extends DefinedSubtag {
     }
 
     public async shift(context: BBTagContext, arrayStr: string): Promise<JToken | undefined> {
-        const { n: varName, v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
+        const { n: varName, v: array } = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
 

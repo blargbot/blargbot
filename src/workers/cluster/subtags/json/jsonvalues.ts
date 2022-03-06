@@ -28,7 +28,7 @@ export class JsonValuesSubtag extends DefinedSubtag {
 
     public async getJsonValue(context: BBTagContext, input: string, path: string): Promise<JToken> {
         try {
-            const arr = await bbtagUtil.tagArray.getArray(context, input);
+            const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, input);
             const obj = arr?.v ?? (await json.resolve(context, input)).object;
 
             if (path !== '')

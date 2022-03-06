@@ -20,7 +20,7 @@ export class ReverseSubtag extends DefinedSubtag {
     }
 
     public async reverse(context: BBTagContext, input: string): Promise<string> {
-        const arr = await bbtagUtil.tagArray.getArray(context, input);
+        const arr = bbtagUtil.tagArray.deserialize(input);
         if (arr === undefined)
             return input.split('').reverse().join('');
 

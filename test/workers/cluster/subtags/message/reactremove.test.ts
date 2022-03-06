@@ -16,6 +16,7 @@ runSubtagTests({
             code: '{reactremove;2938453289453240}',
             expected: '',
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
                 const message = ctx.createMessage(SubtagTestContext.createApiMessage({
                     id: '2938453289453240',
                     channel_id: bbctx.channel.id,
@@ -42,6 +43,7 @@ runSubtagTests({
             code: '{reactremove;general;2938453289453240}',
             expected: '',
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('General channel is missing');
@@ -74,6 +76,7 @@ runSubtagTests({
             code: '{reactremove;2938453289453240;other}',
             expected: '',
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
                 const otherUser = bbctx.guild.members.get(ctx.users.other.id);
                 if (otherUser === undefined)
                     throw new Error('Other user is missing');
@@ -107,6 +110,7 @@ runSubtagTests({
             code: '{reactremove;general;2938453289453240;other}',
             expected: '',
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(2).thenResolve(undefined);
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('General channel is missing');
@@ -144,6 +148,7 @@ runSubtagTests({
             code: '{reactremove;2938453289453240;other;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
                 const otherUser = bbctx.guild.members.get(ctx.users.other.id);
                 if (otherUser === undefined)
                     throw new Error('Other user is missing');
@@ -176,6 +181,7 @@ runSubtagTests({
             code: '{reactremove;general;2938453289453240;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('General channel is missing');
@@ -208,6 +214,7 @@ runSubtagTests({
             code: '{reactremove;general;2938453289453240;other;🤔}',
             expected: '',
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('General channel is missing');
@@ -392,6 +399,7 @@ runSubtagTests({
                 ctx.isStaff = false;
             },
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
                 bbctx.state.ownedMsgs.push('2938453289453240');
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
@@ -473,6 +481,7 @@ runSubtagTests({
                 { start: 0, end: 76, error: new BBTagRuntimeError('Unknown Emoji: <:fakeemote:192612896213677963>') }
             ],
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('General channel is missing');
@@ -514,6 +523,7 @@ runSubtagTests({
                 { start: 0, end: 47, error: new BBTagRuntimeError('I need to be able to Manage Messages to remove reactions') }
             ],
             postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('General channel is missing');

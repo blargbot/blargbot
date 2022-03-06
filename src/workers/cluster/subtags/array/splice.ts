@@ -38,12 +38,11 @@ export class SpliceSubtag extends DefinedSubtag {
         countStr: string,
         replaceItems: string[]
     ): Promise<JArray> {
-        const arr = await bbtagUtil.tagArray.getArray(context, arrStr);
+        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrStr);
         const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
 
-        const insert = bbtagUtil.tagArray.flattenArray(replaceItems);
         if (arr === undefined)
-            throw new NotAnArrayError(replaceItems);
+            throw new NotAnArrayError(arrStr);
 
         const start = parse.int(startStr, false) ?? fallback.value;
         if (start === undefined)
@@ -53,6 +52,7 @@ export class SpliceSubtag extends DefinedSubtag {
         if (delCount === undefined)
             throw new NotANumberError(countStr);
 
+        const insert = bbtagUtil.tagArray.flattenArray(replaceItems);
         const result = arr.v.splice(start, delCount, ...insert);
         if (arr.n !== undefined)
             await context.variables.set(arr.n, arr.v);

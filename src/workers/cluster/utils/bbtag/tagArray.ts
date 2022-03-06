@@ -58,16 +58,26 @@ export function flattenArray(array: JArray): JArray {
     return result;
 }
 
-export async function getArray(context: BBTagContext, arrName: string): Promise<BBTagArray | undefined> {
-    const obj = deserialize(arrName);
+export async function deserializeOrGetArray(context: BBTagContext, value: string): Promise<BBTagArray | undefined> {
+    const obj = deserialize(value);
     if (obj !== undefined)
         return obj;
-    try {
-        const arr = await context.variables.get(arrName);
-        if (arr.value !== undefined && Array.isArray(arr.value))
-            return { v: arr.value, n: arrName };
-    } catch {
-        // NOOP
-    }
+
+    const arr = await context.variables.get(value);
+    if (Array.isArray(arr.value))
+        return { v: arr.value, n: value };
+
+    return undefined;
+}
+
+export async function deserializeOrGetIterable(context: BBTagContext, value: string): Promise<Iterable<JToken> | undefined> {
+    const obj = deserialize(value);
+    if (obj !== undefined)
+        return obj.v;
+
+    const arr = await context.variables.get(value);
+    if (Array.isArray(arr.value) || typeof arr.value === 'string')
+        return arr.value;
+
     return undefined;
 }

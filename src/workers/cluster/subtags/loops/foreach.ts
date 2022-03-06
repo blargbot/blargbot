@@ -23,12 +23,12 @@ export class ForeachSubtag extends DefinedSubtag {
     public async * foreach(
         context: BBTagContext,
         varName: string,
-        array: string,
+        source: string,
         code: SubtagArgument
     ): AsyncIterable<string> {
-        const arr = await bbtagUtil.tagArray.getArray(context, array) ?? { v: array.split('') };
+        const array = await bbtagUtil.tagArray.deserializeOrGetIterable(context, source) ?? [];
         try {
-            for (const item of arr.v) {
+            for (const item of array) {
                 await context.limit.check(context, 'foreach:loops');
                 await context.variables.set(varName, item);
                 yield await code.execute();

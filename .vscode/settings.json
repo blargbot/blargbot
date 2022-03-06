@@ -20,5 +20,8 @@
         "*.tsx": "$(capture).ts",
         "tsconfig.json": "tsconfig.*.json",
         "package.json": "package-lock.json, .npmrc, yarn.lock, .yarnrc",
-    }
+    },
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "prettier.useTabs": false
 }

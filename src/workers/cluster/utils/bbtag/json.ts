@@ -1,7 +1,7 @@
 import { BBTagContext } from '@cluster/bbtag';
 import { BBTagArray } from '@cluster/types';
 
-import { getArray } from './tagArray';
+import { deserializeOrGetArray } from './tagArray';
 
 export interface ReturnObject {
     variable?: string;
@@ -11,7 +11,7 @@ export interface ReturnObject {
 export async function resolve(context: BBTagContext, input: string): Promise<ReturnObject> {
     let obj: BBTagArray | JToken | undefined;
     let variable: string | undefined;
-    const arr = await getArray(context, input);
+    const arr = await deserializeOrGetArray(context, input);
     if (arr !== undefined) {
         obj = arr.v;
     } else {

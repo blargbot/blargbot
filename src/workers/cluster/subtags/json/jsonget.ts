@@ -30,7 +30,7 @@ export class JsonGetSubtag extends DefinedSubtag {
             input = '{}';
 
         let obj: JObject | JArray;
-        const arr = await bbtagUtil.tagArray.getArray(context, input);
+        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, input);
         if (arr !== undefined) {
             obj = arr.v;
         } else {

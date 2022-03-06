@@ -23,7 +23,7 @@ export class SliceSubtag extends DefinedSubtag {
     }
 
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
-        const arr = await bbtagUtil.tagArray.getArray(context, array);
+        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, array);
         const fallback = new Lazy<number>(() => parse.int(context.scopes.local.fallback ?? ''));
 
         if (arr === undefined)

@@ -24,7 +24,7 @@ export class MapSubtag extends DefinedSubtag {
     }
 
     public async * map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<string> {
-        const { v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? { v: [] };
+        const array = await bbtagUtil.tagArray.deserializeOrGetIterable(context, arrayStr) ?? [];
         try {
             for (const item of array) {
                 await context.limit.check(context, 'map:loops');

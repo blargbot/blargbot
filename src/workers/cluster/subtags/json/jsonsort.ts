@@ -31,7 +31,7 @@ export class JsonSortSubtag extends DefinedSubtag {
 
     public async jsonSort(context: BBTagContext, arrStr: string, pathStr: string, descStr: string): Promise<JArray | undefined> {
         const descending = parse.boolean(descStr) ?? descStr !== '';
-        const arr = await bbtagUtil.tagArray.getArray(context, arrStr);
+        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrStr);
         if (arr === undefined)
             throw new NotAnArrayError(arrStr);
 

@@ -179,7 +179,7 @@ export class SubtagTestContext {
         this.tagVariables = {};
         this.tags = {};
         this.ccommands = {};
-        this.options = { tagName: 'unit test' };
+        this.options = { tagName: `testTag_${snowflake.create()}` };
 
         const args = new Array(100).fill(argument.any().value) as unknown[];
         for (let i = 0; i < args.length; i++) {
@@ -301,9 +301,6 @@ export class SubtagTestContext {
         });
 
         context.state.ownedMsgs.push(...this.ownedMessages);
-
-        this.limit.setup(m => m.check(argument.isInstanceof(BBTagContext).value, anyString())).thenResolve();
-
         Object.assign(context.scopes.root, this.rootScope);
 
         return context;
@@ -734,6 +731,8 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
 
     try {
         // arrange
+        for (const s of subtags)
+            test.limit.setup(m => m.check(argument.isInstanceof(BBTagContext).value, s.name), s === subtag).thenResolve(undefined);
         for (const setup of config.setup)
             await setup.call(actualTestCase, test);
         await actualTestCase.setup?.(test);

@@ -21,7 +21,7 @@ export class PushSubtag extends DefinedSubtag {
     }
 
     public async push(context: BBTagContext, arrayStr: string, values: string[]): Promise<JArray | undefined> {
-        const { n: varName, v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
+        const { n: varName, v: array } = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
 
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);

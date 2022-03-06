@@ -21,10 +21,10 @@ export class FilterSubtag extends DefinedSubtag {
         });
     }
 
-    public async * filter(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<JToken> {
-        const arr = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? { v: arrayStr.split('') };
+    public async * filter(context: BBTagContext, varName: string, source: string, code: SubtagArgument): AsyncIterable<JToken> {
+        const array = await bbtagUtil.tagArray.deserializeOrGetIterable(context, source) ?? [];
         try {
-            for (const item of arr.v) {
+            for (const item of array) {
                 await context.limit.check(context, 'filter:loops');
                 await context.variables.set(varName, item);
                 const res = await code.execute();

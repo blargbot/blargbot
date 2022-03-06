@@ -67,7 +67,7 @@ export class EmojiCreateSubtag extends DefinedSubtag {
         }
 
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
-        const roleArray = await bbtagUtil.tagArray.getArray(context, rolesStr);
+        const roleArray = await bbtagUtil.tagArray.deserializeOrGetArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
                 const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });

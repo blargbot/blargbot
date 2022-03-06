@@ -54,7 +54,7 @@ export class UserSetRolesSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleArr = await bbtagUtil.tagArray.getArray(context, rolesStr !== '' ? rolesStr : '[]');
+        const roleArr = await bbtagUtil.tagArray.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
             throw new NotAnArrayError(rolesStr)
                 .withDisplay(quiet ? 'false' : undefined);

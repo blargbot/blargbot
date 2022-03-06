@@ -33,7 +33,7 @@ export class RandChooseSubtag extends DefinedSubtag {
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
-        const choices = await bbtagUtil.tagArray.getArray(context, arrayStr);
+        const choices = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr);
         if (choices === undefined)
             return arrayStr;
 

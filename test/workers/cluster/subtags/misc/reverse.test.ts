@@ -1,3 +1,4 @@
+import { GetSubtag } from '@cluster/subtags/bot/get';
 import { ReverseSubtag } from '@cluster/subtags/misc/reverse';
 import { expect } from 'chai';
 
@@ -11,7 +12,18 @@ runSubtagTests({
         { code: '{reverse;[10,20,30,40,50,60]}', expected: '[60,50,40,30,20,10]' },
         {
             code: '{reverse;_myArray}',
+            expected: 'yarrAym_',
+            setup(ctx) {
+                ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`] = ['abc', 'def', 'ghi'];
+            },
+            assert(_, __, ctx) {
+                expect(ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`]).to.deep.equal(['abc', 'def', 'ghi']);
+            }
+        },
+        {
+            code: '{reverse;{get;_myArray}}',
             expected: '',
+            subtags: [new GetSubtag()],
             setup(ctx) {
                 ctx.tagVariables[`GUILD_TAG.${ctx.guild.id}.myArray`] = ['abc', 'def', 'ghi'];
             },

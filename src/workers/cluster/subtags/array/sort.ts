@@ -9,7 +9,7 @@ export class SortSubtag extends DefinedSubtag {
             category: SubtagType.ARRAY,
             definition: [
                 {
-                    parameters: ['array', 'descending?'],
+                    parameters: ['array', 'descending?:false'],
                     description: 'Sorts the `array` in ascending order. ' +
                         'If `descending` is provided, sorts in descending order. ' +
                         'If provided a variable, will modify the original `array`.',
@@ -23,11 +23,11 @@ export class SortSubtag extends DefinedSubtag {
     }
 
     public async sort(context: BBTagContext, arrayStr: string, descendingStr: string): Promise<JArray | undefined> {
-        const arr = await bbtagUtil.tagArray.getArray(context, arrayStr);
+        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr);
         if (arr === undefined)
             throw new NotAnArrayError(arrayStr);
 
-        const direction = parse.boolean(descendingStr) ?? descendingStr !== '' ? -1 : 1;
+        const direction = parse.boolean(descendingStr, descendingStr !== '') ? -1 : 1;
         arr.v = arr.v.sort((a, b) => direction * compare(parse.string(a), parse.string(b)));
 
         if (arr.n === undefined)

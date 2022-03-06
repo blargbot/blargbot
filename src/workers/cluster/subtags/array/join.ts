@@ -21,7 +21,7 @@ export class JoinSubtag extends DefinedSubtag {
     }
 
     public async join(context: BBTagContext, arrayStr: string, separator: string): Promise<string> {
-        const { v: array } = await bbtagUtil.tagArray.getArray(context, arrayStr) ?? {};
+        const { v: array } = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
 
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);
