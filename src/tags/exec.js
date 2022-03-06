@@ -15,8 +15,8 @@ module.exports =
         .withArgs(a => [a.require('tag'), a.optional('args')])
         .withDesc('Executes another `tag`, giving it `args` as the input. Useful for modules.')
         .withExample(
-        'Let me do a tag for you. {exec;f}',
-        'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
+            'Let me do a tag for you. {exec;f}',
+            'Let me do a tag for you. User#1111 has paid their respects. Total respects given: 5'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
         .whenDefault(async function (subtag, context, args) {
@@ -47,11 +47,11 @@ module.exports =
                 case 2:
                     return await this.execTag(subtag, context, tag.content, args[1], tag.flags);
                 default:
-                    let a = Builder.util.flattenArgArrays(args.slice(1));
-                    return await this.execTag(subtag, context, tag.content, '"' + a.join('" "') + '"', tag.flags);
+                    let inputArr = Builder.util.flattenArgArrays(args.slice(1));
+                    return await this.execTag(subtag, context, tag.content, inputArr, tag.flags);
             }
         })
-        .withProp('execTag', async function (subtag, context, tagContent, input, flags) {
+        .withProp('execTag', async function (subtag, context, tagContent, inputArr, flags) {
             if (context.state.stackSize >= 200) {
                 context.state.return = -1;
                 return Builder.util.error(subtag, context, 'Terminated recursive tag after ' + context.state.stackSize + ' execs.');
@@ -66,7 +66,7 @@ module.exports =
             }
 
             context.state.stackSize += 1;
-            let childContext = context.makeChild({ input, flags });
+            let childContext = context.makeChild({ input: inputArr.map(v => typeof v === 'object' ? JSON.stringify(v) : v.toString()), inputArr, flags });
             if (tagContent != null)
                 result = await this.executeArg(subtag, tagContent, childContext);
             context.state.stackSize -= 1;
