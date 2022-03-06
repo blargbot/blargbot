@@ -48,10 +48,8 @@ module.exports =
                 case 2:
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1], ccommand.flags);
                 default:
-                    let a = Builder.util.flattenArgArrays(args.slice(1));
-                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, '"' + a.join('" "') + '"', ccommand.flags);
+                    let inputArr = Builder.util.flattenArgArrays(args.slice(1));
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, inputArr, ccommand.flags);
             }
-            // ! This line can be removed as the 'default' case already returns
-            return TagManager.list['exec'].execTag(subtag, context, ccommand.content, args[1] || '');
         })
         .build();
