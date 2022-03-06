@@ -85,15 +85,15 @@ runSubtagTests({
             }
         },
         {
-            code: '{execcc;otherSubtag;abc;def;ghi}',
+            code: '{execcc;otherSubtag;abc;\\"def\\";ghi}',
             expected: 'Success!',
             subtags: [new AssertSubtag((ctx) => {
                 expect(ctx.parent).to.not.be.undefined;
                 expect(ctx.tagName).to.equal('othersubtag');
                 expect(ctx.rootTagName).to.equal('test tag');
                 expect(ctx.cooldown).to.equal(7);
-                expect(ctx.inputRaw).to.equal('"abc" "def" "ghi"');
-                expect(ctx.input).to.deep.equal(['abc', 'def', 'ghi']);
+                expect(ctx.inputRaw).to.equal('abc \\\\\\"def\\\\\\" ghi');
+                expect(ctx.input).to.deep.equal(['abc', '\\"def\\"', 'ghi']);
                 expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtagUtil, humanize, SubtagType } from '@cluster/utils';
 
 export class ExecccSubtag extends DefinedSubtag {
     public constructor() {
@@ -33,7 +33,7 @@ export class ExecccSubtag extends DefinedSubtag {
         return await context.withStack(() => context.withScope(true, () => context.withChild({
             tagName,
             cooldown: ccommand.cooldown ?? 0,
-            inputRaw: args.map(a => `"${a}"`).join(' ')
+            inputRaw: humanize.smartSplit.inverse(args)
         }, async context => {
             const ast = bbtagUtil.parse(ccommand.content, true);
             return await context.engine.eval(ast, context);

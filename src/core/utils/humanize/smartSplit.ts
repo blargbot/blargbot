@@ -1,6 +1,21 @@
-export function smartSplit(source: string, limit = 0): string[] {
+export const smartSplit = Object.assign(function smartSplit(source: string, limit = 0): string[] {
     return [...smartSplitIterLimit(source, limit)];
-}
+}, {
+    inverse(source: string[]) {
+        const results = [];
+        for (const item of source) {
+            const escaped = item.replace(/["\\]/g, m => `\\${m}`);
+            if (escaped.length === 0)
+                results.push('""');
+            else if (escaped.includes(' '))
+                results.push(`"${escaped}"`);
+            else
+                results.push(escaped.replace(/'/g, '\\\''));
+
+        }
+        return results.join(' ');
+    }
+});
 
 export function* smartSplitRanges(source: string): Generator<{ start: number; end: number; value: string; }> {
     for (const { start, end, content } of smartSplitIter(source)) {
