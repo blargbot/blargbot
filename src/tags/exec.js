@@ -44,6 +44,8 @@ module.exports =
             switch (args.length) {
                 case 1:
                     return await this.execTag(subtag, context, tag.content, []);
+                case 2:
+                    return await this.execTag(subtag, context, tag.content, bu.splitInput(args[1]));
                 default:
                     let inputArr = Builder.util.flattenArgArrays(args.slice(1));
                     return await this.execTag(subtag, context, tag.content, inputArr, tag.flags);

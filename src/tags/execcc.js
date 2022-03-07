@@ -45,6 +45,8 @@ module.exports =
             switch (args.length) {
                 case 1:
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, []);
+                case 2:
+                    return TagManager.list['exec'].execTag(subtag, context, ccommand.content, bu.splitInput(args[1]));
                 default:
                     let inputArr = Builder.util.flattenArgArrays(args.slice(1));
                     return TagManager.list['exec'].execTag(subtag, context, ccommand.content, inputArr, ccommand.flags);
