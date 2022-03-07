@@ -19,6 +19,6 @@ module.exports =
             'Random Number: 3'
         )
         .whenArgs(0, Builder.errors.notEnoughArguments)
-        .whenArgs(1, async (subtag, context, args) => await exec.execTag(subtag, context, args[0], undefined))
+        .whenArgs(1, async (subtag, context, args) => await exec.execTag(subtag, context, args[0], []))
         .whenDefault(Builder.errors.tooManyArguments)
         .build();
