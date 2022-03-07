@@ -40,16 +40,7 @@ module.exports =
                 }
             }
             cd[name] = Date.now();
-
-            switch (args.length) {
-                case 1:
-                    return await this.execTag(subtag, context, tag.content, []);
-                case 2:
-                    return await this.execTag(subtag, context, tag.content, bu.splitInput(args[1]));
-                default:
-                    let inputArr = Builder.util.flattenArgArrays(args.slice(1));
-                    return await this.execTag(subtag, context, tag.content, inputArr, tag.flags);
-            }
+            return await this.execTag(subtag, context, tag.content, args.slice(1), tag.flags);
         })
         .withProp('execTag', async function (subtag, context, tagContent, inputArr, flags) {
             if (context.state.stackSize >= 200) {
@@ -65,8 +56,24 @@ module.exports =
                 tagContent = parsed.bbtag;
             }
 
+            let input;
+            if (inputArr.length === 1) {
+                try {
+                    input = JSON.parse(inputArr[0]);
+                    if (!Array.isArray(input))
+                        input = [input];
+                } catch (_) { }
+                if (input === undefined)
+                    input = bu.splitInput(inputArr[0]);
+            } else {
+                input = Builder.util.flattenArgArrays(inputArr);
+            }
+
             context.state.stackSize += 1;
-            let childContext = context.makeChild({ input: inputArr.map(v => typeof v === 'object' ? JSON.stringify(v) : v.toString()), inputArr, flags });
+            let childContext = context.makeChild({
+                input: input.map(v => typeof v === 'object' ? JSON.stringify(v) : v.toString()),
+                flags
+            });
             if (tagContent != null)
                 result = await this.executeArg(subtag, tagContent, childContext);
             context.state.stackSize -= 1;
