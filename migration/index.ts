@@ -1,17 +1,13 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unsafe-argument */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import 'module-alias/register';
 
 import config from '@config';
 import { createLogger, Logger } from '@core/Logger';
-import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildRolemeEntry, GuildTriggerTag, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableStoredGuild, MutableStoredGuildSettings, StoredGuild } from '@core/types';
-import { guard, mapping } from '@core/utils';
+import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildRolemeEntry, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableStoredGuild, StoredGuild } from '@core/types';
+import { guard } from '@core/utils';
 import { Client as Discord, Constants } from 'eris';
 import * as r from 'rethinkdb';
+
+import { mapGuild, OldRethinkGuild } from './guild.mapping';
 
 void (async function () {
     // This is for migrating from the js blarg to the ts blarg
@@ -29,19 +25,20 @@ void (async function () {
         })
     ]);
 
-    const results = await Promise.allSettled([
-        migrateChangelog(discord, rethink, logger),
-        migrateGuilds(rethink, logger),
-        migrateIntervalIndex(rethink, logger)
-    ]);
-
-    for (const result of results) {
-        if (result.status === 'rejected')
-            logger.error(result.reason);
-    }
+    await logErrors(migrateChangelog(discord, rethink, logger), logger);
+    await logErrors(migrateGuilds(rethink, logger), logger);
+    await logErrors(migrateIntervalIndex(rethink, logger), logger);
 
     process.exit();
 })();
+
+async function logErrors(promise: Promise<void>, logger: Logger): Promise<void> {
+    try {
+        await promise;
+    } catch (err: unknown) {
+        logger.error(err);
+    }
+}
 
 /** TS blarg now uses the news channel feature for changelogs. This subscribes all channels that were using the old method to the new one and then clears the DB */
 async function migrateChangelog(discord: Discord, rethink: r.Connection, logger: Logger): Promise<void> {
@@ -86,17 +83,13 @@ async function migrateIntervalIndex(rethink: r.Connection, logger: Logger): Prom
 
 async function migrateGuilds(rethink: r.Connection, logger: Logger): Promise<void> {
     const cursor = await r.table('guild').run(rethink);
-    const promises: Array<[any, Promise<boolean | 'nochange'>]> = [];
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
-    while (true) {
-        try {
-            const guild = await cursor.next();
-            promises.push([guild, migrateGuild(guild, rethink, logger)]);
-        } catch (err: unknown) {
-            if (err instanceof Error && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
-                break;
-            throw err;
-        }
+    const promises: Array<[OldRethinkGuild, Promise<boolean | 'nochange'>]> = [];
+    for await (const next of iterCursor(cursor)) {
+        const guild = mapGuild(next);
+        if (guild.valid)
+            promises.push([guild.value, migrateGuild(guild.value, rethink, logger)]);
+        else
+            logger.warn('Failed to update, could not understand as a guild. This could be because it is already migrated', next);
     }
 
     const results = await Promise.all(promises.map(async p => [p[0], await p[1]] as const));
@@ -107,7 +100,7 @@ async function migrateGuilds(rethink: r.Connection, logger: Logger): Promise<voi
     logger.info('[migrateGuilds] Complete', succeeded.length, 'guilds updated.', noChange.length, 'guilds needed no changes.', failed.length, 'guilds failed:', failed);
 }
 
-async function migrateGuild(guild: any, rethink: r.Connection, logger: Logger): Promise<boolean | 'nochange'> {
+async function migrateGuild(guild: OldRethinkGuild, rethink: r.Connection, logger: Logger): Promise<boolean | 'nochange'> {
     const guildId = guild.guildid;
     if (typeof guildId !== 'string') {
         logger.error('Failed to update, cannot locate guild id', guild);
@@ -137,7 +130,7 @@ async function migrateGuild(guild: any, rethink: r.Connection, logger: Logger): 
 
     if (changed) {
         try {
-            await r.table('guild').get(guildId).update(context.update).run(rethink);
+            await r.table('guild').get(guildId).update(stripUndef(context.update)).run(rethink);
             logger.info('[migrateGuild]', guildId, 'succeeded');
             return true;
         } catch (err: unknown) {
@@ -150,83 +143,86 @@ async function migrateGuild(guild: any, rethink: r.Connection, logger: Logger): 
     }
 }
 
-function migrateInterval(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
-    const interval = guild.ccommands?.['_interval'];
+function migrateInterval(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
+    const interval = guild.ccommands._interval;
     if (interval === undefined)
         return false;
 
-    const mapped = mapGuildTriggerTag(interval);
-    if (!mapped.valid) {
-        logger.error('[migrateGuild]', guildId, 'migrating _interval failed: invalid ccommand');
+    if (interval.author === undefined) {
+        logger.error('[migrateGuild]', guildId, 'migrating _interval failed: missing author');
+        return false;
+    }
+    if (interval.content === undefined) {
+        logger.error('[migrateGuild]', guildId, 'migrating _interval failed: missing content');
         return false;
     }
 
     logger.debug('[migrateGuild]', guildId, 'migrating _interval');
-    context.update.interval = mapped.value;
+    context.update.interval = {
+        author: interval.author,
+        authorizer: interval.authorizer,
+        content: interval.content
+    };
     context.update.ccommands = context.ccommands;
     context.ccommands['_interval'] = nukedCC('b!interval set <bbtag>');
     return true;
 }
 
-function migrateGreeting(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext, key: 'greeting' | 'farewell'): boolean {
-    const greeting = guild.settings?.[key];
-    if (greeting === undefined)
+function migrateGreeting(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext, key: 'greeting' | 'farewell'): boolean {
+    if (guild.settings.greeting === undefined)
         return false;
-
-    const mapped = mapStringOrGuildTriggerTag(greeting);
-    if (!mapped.valid) {
-        logger.error('[migrateGuild]', guildId, 'migrating', key, 'failed: invalid ccommand');
-        return false;
-    }
 
     logger.debug('[migrateGuild]', guildId, 'migrating', key);
     context.update.settings = context.settings;
-    (<any>context.settings)[key] = r.literal();
-    context.update[key] = typeof mapped.value === 'string'
-        ? { content: mapped.value, author: '' }
-        : mapped.value;
+    (<Record<string, unknown>>context.settings)[key] = r.literal();
+    context.update[key] = typeof guild.settings.greeting === 'string'
+        ? { content: guild.settings.greeting, author: '' }
+        : guild.settings.greeting;
     return true;
 }
 
-function migrateEverythingAR(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
+function migrateEverythingAR(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     const everythingAr = guild.autoresponse?.everything?.executes;
-    if (typeof everythingAr !== 'string')
+    if (everythingAr === undefined)
         return false;
 
-    const ccommand = guild.ccommands?.[everythingAr];
+    const ccommand = guild.ccommands[everythingAr];
     if (ccommand === undefined) {
         context.update.autoresponse = context.autoresponse;
         context.autoresponse.everything = { executes: { content: '{//;This autoresponse hasnt been set yet!}', author: '' } };
         return true;
     }
 
-    const mapped = mapGuildTriggerTag(ccommand);
-    if (!mapped.valid) {
-        logger.error('[migrateGuild]', guildId, 'migrating everything autoresponse failed: invalid ccommand');
+    if (ccommand.author === undefined) {
+        logger.error('[migrateGuild]', guildId, 'migrating everything autoresponse failed: missing author');
+        return false;
+    }
+    if (ccommand.content === undefined) {
+        logger.error('[migrateGuild]', guildId, 'migrating everything autoresponse failed: missing content');
         return false;
     }
 
     logger.debug('[migrateGuild]', guildId, 'migrating everything autoresponse ', everythingAr);
     context.update.autoresponse = context.autoresponse;
-    context.autoresponse.everything = { executes: mapped.value };
+    context.autoresponse.everything = {
+        executes: {
+            author: ccommand.author,
+            authorizer: ccommand.authorizer,
+            content: ccommand.content
+        }
+    };
     context.update.ccommands = context.ccommands;
     context.ccommands[everythingAr] = nukedCC('b!ar set everything <bbtag>');
     return true;
 }
 
-function migrateFilteredARs(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
+function migrateFilteredARs(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     const arList = guild.autoresponse?.list;
     if (arList === undefined)
         return false;
 
     context.update.autoresponse = context.autoresponse;
-    (<any>context.autoresponse).list = r.literal();
-
-    if (!Array.isArray(arList)) {
-        logger.error('[migrateGuild]', guildId, 'migrating autoresponse list failed: Not an array');
-        return true;
-    } else if (arList.length === 0)
-        return true;
+    (<Record<string, unknown>>context.autoresponse).list = r.literal();
 
     const filtered = {} as r.UpdateData<Exclude<GuildAutoresponses['filtered'], undefined>>;
 
@@ -242,106 +238,108 @@ function migrateFilteredARs(guildId: string, guild: any, logger: Logger, context
     return true;
 }
 
-function migrateFilteredAR(guildId: string, guild: any, ar: any, index: number, logger: Logger, context: GuildMigrateContext): GuildFilteredAutoresponse | undefined {
-    const mappedAr = mapOldFilteredAr(ar);
-    if (!mappedAr.valid) {
-        logger.error('[migrateGuild]', guildId, 'migrating autoresponse', index, 'failed: invalid autoresponse');
+function migrateFilteredAR(guildId: string, guild: OldRethinkGuild, ar: { executes: string; regex: boolean; term: string; }, index: number, logger: Logger, context: GuildMigrateContext): GuildFilteredAutoresponse | undefined {
+    const ccommand = guild.ccommands[ar.executes];
+    if (ccommand === undefined) {
+        logger.debug('[migrateGuild]', guildId, 'migrating autoresponse', index);
+        return { ...ar, executes: { content: '{//;This autoresponse hasnt been set yet!}', author: '' } };
+    }
+
+    if (ccommand.author === undefined) {
+        logger.error('[migrateGuild]', guildId, 'migrating autoresponse', index, 'failed: missing author');
         return undefined;
     }
 
-    const ccommand = guild.ccommands?.[mappedAr.value.executes];
-    if (ccommand === undefined) {
-        logger.debug('[migrateGuild]', guildId, 'migrating autoresponse', index);
-        return { ...mappedAr.value, executes: { content: '{//;This autoresponse hasnt been set yet!}', author: '' } };
-    }
-
-    const mappedCommand = mapGuildTriggerTag(ccommand);
-    if (!mappedCommand.valid) {
-        logger.error('[migrateGuild]', guildId, 'migrating autoresponse', index, 'failed: invalid ccommand');
+    if (ccommand.content === undefined) {
+        logger.error('[migrateGuild]', guildId, 'migrating autoresponse', index, 'failed: missing content');
         return undefined;
     }
 
     logger.debug('[migrateGuild]', guildId, 'migrating autoresponse', index);
-    context.ccommands[mappedAr.value.executes] = nukedCC(`b!ar set ${index} <bbtag>`);
-    return { ...mappedAr.value, executes: mappedCommand.value };
+    context.ccommands[ar.executes] = nukedCC(`b!ar set ${index} <bbtag>`);
+    return {
+        ...ar,
+        executes: {
+            author: ccommand.author,
+            content: ccommand.content,
+            authorizer: ccommand.authorizer
+        }
+    };
 }
 
-function migrateCensors(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
-    if (guild.censor === undefined)
-        return false;
-
+function migrateCensors(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     let changed = false;
 
-    if (guild.censor.rule !== undefined) {
+    const rules = guild.censor?.rule;
+    if (rules !== undefined) {
         const rule = {} as r.UpdateData<MutableGuildCensorRule>;
         for (const key of ['deleteMessage', 'banMessage', 'kickMessage'] as const) {
-            if (guild.censor.rule[key] !== undefined) {
+            const content = rules[key];
+            if (typeof content === 'string') {
                 logger.debug('[migrateGuild]', guildId, 'migrating censor rule', key);
                 context.update.censor = context.censor;
                 context.censor.rule = rule;
-                rule[key] = { content: guild.censor.rule[key] };
+                rule[key] = { content: content };
                 changed = true;
             }
         }
     }
 
-    if (guild.censor.list !== undefined) {
-        if (!Array.isArray(guild.censor.list)) {
-            logger.error('[migrateGuild]', guildId, 'migrating censor list: not an array');
-        } else if (guild.censor.list.length > 0) {
-            const list = (<any[]>guild.censor.list).reduce<Record<string, MutableGuildCensor>>((record, censor, i) => {
-                const update = record[i] = { ...censor } as MutableGuildCensor;
+    const list = guild.censor?.list;
+    if (list !== undefined) {
+        const newList = Object.values(list)
+            .reduce<Record<string, MutableGuildCensor>>((record, censor, i) => {
+                record[i] = {
+                    ...censor,
+                    deleteMessage: undefined,
+                    banMessage: undefined,
+                    kickMessage: undefined
+                };
                 for (const key of ['deleteMessage', 'banMessage', 'kickMessage'] as const) {
-                    if (censor[key] !== undefined) {
+                    const content = censor[key];
+                    if (content !== undefined) {
                         logger.debug('[migrateGuild]', guildId, 'migrating censor list', i, key);
-                        update[key] = { content: censor[key], author: '' };
+                        record[i][key] = { content, author: '' };
                     }
                 }
                 return record;
             }, {});
 
-            try {
-                context.censor.list = r.literal(list);
-                context.update.censor = context.censor;
-                changed = true;
-            } catch (err: unknown) {
-                logger.error('[migrateGuild]', guildId, 'migrating censor list failed: r.literal(list) error', err);
-            }
+        try {
+            context.censor.list = r.literal(stripUndef(newList));
+            context.update.censor = context.censor;
+            changed = true;
+        } catch (err: unknown) {
+            logger.error('[migrateGuild]', guildId, 'migrating censor list failed: r.literal(list) error', err);
         }
     }
 
     return changed;
 }
 
-function migrateRolemes(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
-    const roleme = guild.roleme;
-    if (roleme === undefined)
-        return false;
-
-    if (!Array.isArray(roleme)) {
-        logger.error('[migrateGuild]', guildId, 'migrating rolemes: Not an array');
-        return false;
-    } else if (roleme.length === 0)
+function migrateRolemes(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
+    if (guild.roleme === undefined)
         return false;
 
     let changed = false as boolean;
-    const update = (<any[]>roleme).reduce<Record<string, GuildRolemeEntry>>((record, roleme: any, i) => {
-        const update = record[i] = { ...roleme } as Mutable<GuildRolemeEntry>;
+    const update = Object.values(guild.roleme)
+        .reduce<Record<string, GuildRolemeEntry>>((record, roleme, i) => {
+            const update = record[i] = { ...roleme } as Mutable<GuildRolemeEntry>;
 
-        if (typeof roleme.output === 'string') {
-            logger.debug('[migrateGuild]', guildId, 'migrating roleme', i);
-            changed = true;
-            update.output = { content: roleme.output, author: '' };
-        }
+            if (typeof roleme.output === 'string') {
+                logger.debug('[migrateGuild]', guildId, 'migrating roleme', i);
+                changed = true;
+                update.output = { content: roleme.output, author: '' };
+            }
 
-        return record;
-    }, {});
+            return record;
+        }, {});
 
     if (!changed)
         return false;
 
     try {
-        context.update.roleme = r.literal(update);
+        context.update.roleme = r.literal(stripUndef(update));
         return true;
     } catch (err: unknown) {
         logger.error('[migrateGuild]', guildId, 'migrating rolemes failed: r.literal(update) error', err);
@@ -349,15 +347,13 @@ function migrateRolemes(guildId: string, guild: any, logger: Logger, context: Gu
     }
 }
 
-function migrateCommandPerms(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
-    const commandPerms = guild.commandperms;
-    if (commandPerms === undefined)
-        return false;
-
+function migrateCommandPerms(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     let changed = false;
-
-    for (const [commandName, perms] of Object.entries<PropertyKey, any>(commandPerms)) {
+    for (const [commandName, perms] of Object.entries(guild.commandperms)) {
         const newPerm: r.UpdateData<MutableCommandPermissions> = {};
+        if (perms === undefined)
+            continue;
+
         switch (typeof perms.permission) {
             case 'object': // null
                 changed = true;
@@ -372,12 +368,12 @@ function migrateCommandPerms(guildId: string, guild: any, logger: Logger, contex
 
         if (perms.rolename === null) {
             changed = true;
-            (<any>newPerm).rolename = r.literal();
-        } else if (Array.isArray(perms.rolename)) {
+            (<Record<string, unknown>>newPerm).rolename = r.literal();
+        } else if (perms.rolename !== undefined) {
             changed = true;
             logger.debug('[migrateGuild]', guildId, 'migrating command', commandName, 'roles');
-            newPerm.roles = perms.rolename;
-            (<any>newPerm).rolename = r.literal();
+            newPerm.roles = Object.values(perms.rolename).filter((v): v is string => typeof v === 'string');
+            (<Record<string, unknown>>newPerm).rolename = r.literal();
         }
 
         if (Object.keys(newPerm).length > 0)
@@ -390,30 +386,25 @@ function migrateCommandPerms(guildId: string, guild: any, logger: Logger, contex
     return changed;
 }
 
-function migrateSettings(guildId: string, guild: any, logger: Logger, context: GuildMigrateContext): boolean {
-    const settings = guild.settings;
-    if (settings === undefined)
-        return false;
-
+function migrateSettings(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     let changed = false;
-    const newSettings: Partial<MutableStoredGuildSettings> = {};
 
-    if (typeof settings.staffperms === 'number') {
+    if (guild.settings.staffperms !== undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating setting staffperms');
         changed = true;
-        newSettings.staffperms = settings.staffperms.toString();
+        context.settings.staffperms = guild.settings.staffperms.toString();
     }
 
-    if (typeof settings.kickoverride === 'number') {
+    if (guild.settings.kickoverride !== undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating setting kickoverride');
         changed = true;
-        newSettings.kickoverride = settings.kickoverride.toString();
+        context.settings.kickoverride = guild.settings.kickoverride.toString();
     }
 
-    if (typeof settings.banoverride === 'number') {
+    if (guild.settings.banoverride !== undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating setting banoverride');
         changed = true;
-        newSettings.banoverride = settings.banoverride.toString();
+        context.settings.banoverride = guild.settings.banoverride.toString();
     }
 
     if (changed)
@@ -421,27 +412,6 @@ function migrateSettings(guildId: string, guild: any, logger: Logger, context: G
 
     return changed;
 }
-
-const mapGuildTriggerTag = mapping.object<GuildTriggerTag>({
-    author: mapping.string,
-    authorizer: mapping.string.optional,
-    content: mapping.string
-});
-
-const mapStringOrGuildTriggerTag = mapping.choice(
-    mapping.string,
-    mapping.object<GuildTriggerTag>({
-        author: mapping.string,
-        authorizer: mapping.string.optional,
-        content: mapping.string
-    })
-);
-
-const mapOldFilteredAr = mapping.object({
-    executes: mapping.string,
-    term: mapping.string,
-    regex: mapping.boolean
-});
 
 function nukedCC(newLocation: string): r.UpdateData<GuildCommandTag> {
     return {
@@ -454,6 +424,29 @@ function nukedCC(newLocation: string): r.UpdateData<GuildCommandTag> {
         hidden: true,
         roles: r.literal()
     };
+}
+
+async function* iterCursor<T>(cursor: r.Cursor<T>): AsyncIterable<T> {
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
+    while (true) {
+        try {
+            yield await cursor.next();
+        } catch (err: unknown) {
+            if (err instanceof Error && err.name === 'ReqlDriverError' && err.message === 'No more rows in the cursor.')
+                break;
+            throw err;
+        }
+    }
+}
+
+function stripUndef<T>(value: T): T {
+    for (const [key, val] of Object.entries(value)) {
+        if (val === undefined)
+            delete (<Record<string, unknown>>value)[key];
+        else if (typeof val === 'object' && val !== null)
+            stripUndef(val);
+    }
+    return value;
 }
 
 interface GuildMigrateContext {

@@ -9,7 +9,8 @@
             "request": "launch",
             "name": "Launch Master (no build)",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "**/node_modules/**"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -28,7 +29,8 @@
                 "--recursive"
             ],
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "**/node_modules/**"
             ],
             "autoAttachChildProcesses": true
         },
@@ -45,7 +47,8 @@
                 "${file}"
             ],
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "**/node_modules/**"
             ],
             "env": {
                 "TS_NODE_FILES": "true"
@@ -57,7 +60,8 @@
             "request": "launch",
             "name": "Launch master",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "**/node_modules/**"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -69,7 +73,8 @@
             "request": "launch",
             "name": "Launch cluster (no build)",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "**/node_modules/**"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -89,7 +94,8 @@
             "request": "launch",
             "name": "Launch cluster",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "**/node_modules/**"
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
@@ -112,7 +118,8 @@
             "program": "${file}",
             "request": "launch",
             "skipFiles": [
-                "<node_internals>/**"
+                "<node_internals>/**",
+                "${workspaceFolder}/node_modules/**"
             ],
             "autoAttachChildProcesses": true
         }
