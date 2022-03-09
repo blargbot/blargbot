@@ -45,5 +45,6 @@ export const mapping = Object.seal({
     regex: mapRegex,
     string: mapString,
     unknown: mapUnknown,
+    never: createMapping<never>(() => result.failed),
     ...result
 });

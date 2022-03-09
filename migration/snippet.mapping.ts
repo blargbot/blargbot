@@ -3,4 +3,4 @@
 import { mapping } from '@core/utils';
 
 export type OldRethinkSnippet = Extract<ReturnType<typeof mapSnippet>, { valid: true; }>['value'];
-export const mapSnippet = mapping.in();
+export const mapSnippet = mapping.never;

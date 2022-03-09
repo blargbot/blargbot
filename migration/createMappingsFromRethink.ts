@@ -137,13 +137,13 @@ class MappingBuilder {
                     break;
                 case 'boolean': this.#choices.boolean ??= new MappingRef('boolean');
                     break;
-                case 'function': this.#choices.function ??= new MappingRef('in()');
+                case 'function': this.#choices.function ??= new MappingRef('never');
                     break;
                 case 'number': this.#choices.number ??= new MappingRef('number');
                     break;
                 case 'string': this.#choices.string ??= new MappingRef('string');
                     break;
-                case 'symbol': this.#choices.symbol ??= new MappingRef('in()');
+                case 'symbol': this.#choices.symbol ??= new MappingRef('never');
                     break;
                 case 'undefined': this.#allowUndefined = true;
                     break;
@@ -170,7 +170,10 @@ class MappingBuilder {
             const allow = [];
             if (this.#allowNull) allow.push('null');
             if (this.#allowUndefined) allow.push('undefined');
-            yield `${mappingName}.in(${allow.join(',')})`;
+            if (allow.length === 0)
+                yield `${mappingName}.never`;
+            else
+                yield `${mappingName}.in(${allow.join(',')})`;
         } else if (choices.length === 1) {
             yield* yieldWithTransform(choices[0].getSource(mappingName), {
                 last: v => `${v}${modifier}`

@@ -1,7 +1,7 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
-import { GuildAutoresponse, GuildFilteredAutoresponse, GuildTriggerTag, SendContent, SendPayload } from '@core/types';
+import { GuildFilteredAutoresponse, GuildTriggerTag, SendContent, SendPayload } from '@core/types';
 import { codeBlock, guard } from '@core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
@@ -99,16 +99,15 @@ export class AutoResponseCommand extends BaseGuildCommand {
         if (match === undefined)
             return this.arNotFound(id);
 
-        const executes = {
-            ...match.ar.executes,
+        const update = {
             author: context.author.id,
             content: bbtag
         };
 
         if (match.id === 'everything')
-            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { executes });
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, ...update });
         else
-            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, executes });
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, ...update });
 
         return this.success(`Updated the code for ${id === 'everything' ? 'the everything autoresponse' : `autoresponse ${id}`}`);
     }
@@ -124,7 +123,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
 
         const responseBase = `The raw code for ${match.id === 'everything' ? 'the everything autoresponse' : `autoresponse ${match.id}`} is`;
 
-        const response = this.success(`${responseBase}:\n${codeBlock(match.ar.executes.content)}`);
+        const response = this.success(`${responseBase}:\n${codeBlock(match.ar.content)}`);
         return guard.checkMessageSize(response)
             ? response
             : {
@@ -132,7 +131,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
                 files: [
                     {
                         name: `autoresponse_${match.id}.bbtag`,
-                        file: match.ar.executes.content
+                        file: match.ar.content
                     }
                 ]
             };
@@ -147,12 +146,14 @@ export class AutoResponseCommand extends BaseGuildCommand {
         if (match === undefined)
             return this.arNotFound(id);
 
-        const executes = { ...match.ar.executes, authorizer: context.author.id };
+        const update = {
+            authorizer: context.author.id
+        };
 
         if (match.id === 'everything')
-            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { executes });
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, ...update });
         else
-            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, executes });
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, { ...match.ar, ...update });
 
         return this.success(`You are now the authorizer for ${id === 'everything' ? 'the everything autoresponse' : `autoresponse ${id}`}`);
     }
@@ -211,14 +212,14 @@ export class AutoResponseCommand extends BaseGuildCommand {
         if (match === undefined)
             return this.arNotFound(id);
 
-        const authorizer = match.ar.executes.authorizer ?? match.ar.executes.author;
+        const authorizer = match.ar.authorizer ?? match.ar.author;
 
         return {
             author: context.util.embedifyAuthor(context.channel.guild),
             title: match.id === 'everything' ? 'Everything autoresponse' : `Autoresponse #${match.id}`,
             fields: [
                 ...'term' in match.ar ? [{ name: `Trigger ${match.ar.regex ? 'regex' : 'text'}`, value: match.ar.term }] : [],
-                { name: 'Author', value: `<@${match.ar.executes.author}> (${match.ar.executes.author})`, inline: true },
+                { name: 'Author', value: `<@${match.ar.author}> (${match.ar.author})`, inline: true },
                 { name: 'Authorizer', value: `<@${authorizer}> (${authorizer})`, inline: true }
             ]
         };
@@ -230,17 +231,17 @@ export class AutoResponseCommand extends BaseGuildCommand {
             return accessError;
 
         const ars = await context.database.guilds.getAutoresponses(context.channel.guild.id);
-        const command: GuildTriggerTag = {
+        const tag: GuildTriggerTag = {
             content: '{//;No content set yet.}',
             author: context.author.id
         };
 
         if (isEverything) {
-            if (ars.everything?.executes !== undefined)
+            if (ars.everything !== undefined)
                 return this.error('An autoresponse that responds to everything already exists!');
             if (pattern !== undefined)
                 return this.error('Autoresponses that respond to everything cannot have a pattern');
-            await context.database.guilds.setAutoresponse(context.channel.guild.id, 'everything', { executes: command });
+            await context.database.guilds.setAutoresponse(context.channel.guild.id, 'everything', tag);
             return this.success(`Your autoresponse has been added! Use \`${context.prefix}autoresponse set everything <bbtag>\` to change the code that it runs`);
         }
 
@@ -258,7 +259,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
         }
 
         const id = Math.max(...ids, 0) + 1;
-        await context.database.guilds.setAutoresponse(context.channel.guild.id, id, { executes: command, regex: isRegex, term: pattern });
+        await context.database.guilds.setAutoresponse(context.channel.guild.id, id, { ...tag, regex: isRegex, term: pattern });
         return this.success(`Your autoresponse has been added! Use \`${context.prefix}autoresponse set ${id} <bbtag>\` to change the code that it runs`);
 
     }
@@ -300,7 +301,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
             return this.error('Cannot set the pattern for the everything autoresponse');
 
         await context.database.guilds.setAutoresponse(context.channel.guild.id, match.id, {
-            executes: match.ar.executes,
+            ...match.ar,
             regex: isRegex,
             term: pattern
         });
@@ -308,7 +309,7 @@ export class AutoResponseCommand extends BaseGuildCommand {
         return this.success(`The pattern for autoresponse ${id} has been set to ${isRegex ? '(regex)' : ''}\`${pattern}\`!`);
     }
 
-    private async getAutoresponse(context: GuildCommandContext, id: string): Promise<{ id: number; ar: GuildFilteredAutoresponse; } | { id: 'everything'; ar: GuildAutoresponse; } | undefined> {
+    private async getAutoresponse(context: GuildCommandContext, id: string): Promise<{ id: number; ar: GuildFilteredAutoresponse; } | { id: 'everything'; ar: GuildTriggerTag; } | undefined> {
         const _id = id === 'everything' ? id : parse.int(id);
         if (typeof _id === 'number' && isNaN(_id))
             return undefined;

@@ -486,19 +486,15 @@ export interface GuildAnnounceOptions {
 }
 
 export interface GuildAutoresponses {
-    readonly everything?: GuildAutoresponse | null;
+    readonly everything?: GuildTriggerTag;
     readonly filtered?: { readonly [key: string]: GuildFilteredAutoresponse | undefined; };
 }
 export interface MutableGuildAutoresponses extends GuildAutoresponses {
-    everything?: GuildAutoresponse;
+    everything?: GuildTriggerTag;
     filtered?: { [key: string]: GuildFilteredAutoresponse | undefined; };
 }
 
-export interface GuildAutoresponse {
-    readonly executes: GuildTriggerTag;
-}
-
-export interface GuildFilteredAutoresponse extends GuildAutoresponse, MessageFilter {
+export interface GuildFilteredAutoresponse extends GuildTriggerTag, MessageFilter {
 }
 
 export interface GuildRolemes {
@@ -821,11 +817,11 @@ export interface GuildTable {
     addVoteBan(guildId: string, target: string, signee: string, reason?: string): Promise<number | false>;
     removeVoteBan(guildId: string, target: string, signee: string): Promise<number | false>;
     getAutoresponse(guildId: string, index: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>;
-    getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>;
-    getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined>;
+    getAutoresponse(guildId: string, index: 'everything', skipCache?: boolean): Promise<GuildTriggerTag | undefined>;
+    getAutoresponse(guildId: string, index: number | 'everything', skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined>;
     getAutoresponses(guildId: string, skipCache?: boolean): Promise<GuildAutoresponses>;
     setAutoresponse(guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>;
-    setAutoresponse(guildId: string, index: 'everything', autoresponse: GuildAutoresponse | undefined): Promise<boolean>;
+    setAutoresponse(guildId: string, index: 'everything', autoresponse: GuildTriggerTag | undefined): Promise<boolean>;
     setAutoresponse(guildId: string, index: number | 'everything', autoresponse: undefined): Promise<boolean>;
     getChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, skipCache?: boolean): Promise<ChannelSettings[K] | undefined>;
     setChannelSetting<K extends keyof ChannelSettings>(guildId: string, channelId: string, key: K, value: ChannelSettings[K]): Promise<boolean>;

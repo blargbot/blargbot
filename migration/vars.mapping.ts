@@ -5,7 +5,7 @@ import { mapping } from '@core/utils';
 export type OldRethinkVars = Extract<ReturnType<typeof mapVars>, { valid: true; }>['value'];
 export const mapVars = mapping.object({
     ['guilds']: mapping.choice(
-        mapping.array(mapping.in()),
+        mapping.array(mapping.never),
         mapping.record(mapping.string.optional)
     ).optional,
     ['major']: mapping.number.optional,
@@ -18,7 +18,7 @@ export const mapVars = mapping.object({
         ['uses']: mapping.number
     }).optional).optional,
     ['timeoutDuration']: mapping.number.optional,
-    ['users']: mapping.array(mapping.in()).optional,
+    ['users']: mapping.array(mapping.never).optional,
     ['value']: mapping.choice(
         mapping.array(mapping.string),
         mapping.number

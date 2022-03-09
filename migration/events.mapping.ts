@@ -14,7 +14,7 @@ export const mapEvents = mapping.object({
         ['input']: mapping.array(mapping.string),
         ['isCC']: mapping.boolean,
         ['msg']: mapping.object({
-            ['attachments']: mapping.array(mapping.in()).optional,
+            ['attachments']: mapping.array(mapping.never).optional,
             ['channel']: mapping.object({
                 ['id']: mapping.string,
                 ['serialized']: mapping.string

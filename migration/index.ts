@@ -1,9 +1,9 @@
 import 'module-alias/register';
 
+import { guard } from '@cluster/utils';
 import config from '@config';
 import { createLogger, Logger } from '@core/Logger';
-import { GuildAutoresponses, GuildCommandTag, GuildFilteredAutoresponse, GuildRolemeEntry, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableStoredGuild, StoredGuild } from '@core/types';
-import { guard } from '@core/utils';
+import { GuildAutoresponses, GuildCommandTag, GuildRolemeEntry, GuildTriggerTag, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableStoredGuild, StoredGuild } from '@core/types';
 import { Client as Discord, Constants } from 'eris';
 import * as r from 'rethinkdb';
 
@@ -188,7 +188,7 @@ function migrateEverythingAR(guildId: string, guild: OldRethinkGuild, logger: Lo
     const ccommand = guild.ccommands[everythingAr];
     if (ccommand === undefined) {
         context.update.autoresponse = context.autoresponse;
-        context.autoresponse.everything = { executes: { content: '{//;This autoresponse hasnt been set yet!}', author: '' } };
+        context.autoresponse.everything = { content: '{//;This autoresponse hasnt been set yet!}', author: '' };
         return true;
     }
 
@@ -204,11 +204,9 @@ function migrateEverythingAR(guildId: string, guild: OldRethinkGuild, logger: Lo
     logger.debug('[migrateGuild]', guildId, 'migrating everything autoresponse ', everythingAr);
     context.update.autoresponse = context.autoresponse;
     context.autoresponse.everything = {
-        executes: {
-            author: ccommand.author,
-            authorizer: ccommand.authorizer,
-            content: ccommand.content
-        }
+        author: ccommand.author,
+        authorizer: ccommand.authorizer,
+        content: ccommand.content
     };
     context.update.ccommands = context.ccommands;
     context.ccommands[everythingAr] = nukedCC('b!ar set everything <bbtag>');
@@ -237,11 +235,11 @@ function migrateFilteredARs(guildId: string, guild: OldRethinkGuild, logger: Log
     return true;
 }
 
-function migrateFilteredAR(guildId: string, guild: OldRethinkGuild, ar: { executes: string; regex: boolean; term: string; }, index: number, logger: Logger, context: GuildMigrateContext): GuildFilteredAutoresponse | undefined {
+function migrateFilteredAR(guildId: string, guild: OldRethinkGuild, ar: { executes: string; regex: boolean; term: string; }, index: number, logger: Logger, context: GuildMigrateContext): GuildTriggerTag | undefined {
     const ccommand = guild.ccommands[ar.executes];
     if (ccommand === undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating autoresponse', index);
-        return { ...ar, executes: { content: '{//;This autoresponse hasnt been set yet!}', author: '' } };
+        return { ...ar, content: '{//;This autoresponse hasnt been set yet!}', author: '' };
     }
 
     if (ccommand.author === undefined) {
@@ -258,11 +256,9 @@ function migrateFilteredAR(guildId: string, guild: OldRethinkGuild, ar: { execut
     context.ccommands[ar.executes] = nukedCC(`b!ar set ${index} <bbtag>`);
     return {
         ...ar,
-        executes: {
-            author: ccommand.author,
-            content: ccommand.content,
-            authorizer: ccommand.authorizer
-        }
+        author: ccommand.author,
+        content: ccommand.content,
+        authorizer: ccommand.authorizer
     };
 }
 
@@ -271,14 +267,14 @@ function migrateCensors(guildId: string, guild: OldRethinkGuild, logger: Logger,
 
     const rules = guild.censor?.rule;
     if (rules !== undefined) {
-        const rule = {} as r.UpdateData<MutableGuildCensorRule>;
+        const rule = {} as MutableGuildCensorRule;
         for (const key of ['deleteMessage', 'banMessage', 'kickMessage'] as const) {
             const content = rules[key];
             if (typeof content === 'string') {
                 logger.debug('[migrateGuild]', guildId, 'migrating censor rule', key);
                 context.update.censor = context.censor;
                 context.censor.rule = rule;
-                rule[key] = { content: content };
+                rule[key] = { content: content, author: '' };
                 changed = true;
             }
         }
@@ -320,15 +316,21 @@ function migrateRolemes(guildId: string, guild: OldRethinkGuild, logger: Logger,
     if (guild.roleme === undefined)
         return false;
 
-    let changed = false as boolean;
+    let changed = Array.isArray(guild.roleme);
     const update = Object.values(guild.roleme)
-        .reduce<Record<string, GuildRolemeEntry>>((record, roleme, i) => {
-            const update = record[i] = { ...roleme } as Mutable<GuildRolemeEntry>;
+        .reduce<Record<string, Mutable<GuildRolemeEntry>>>((record, roleme, i) => {
+            record[i] = {
+                add: roleme.add,
+                casesensitive: roleme.casesensitive,
+                channels: roleme.channels,
+                message: roleme.message,
+                remove: roleme.remove
+            };
 
             if (typeof roleme.output === 'string') {
                 logger.debug('[migrateGuild]', guildId, 'migrating roleme', i);
                 changed = true;
-                update.output = { content: roleme.output, author: '' };
+                record[i].output = { content: roleme.output, author: '' };
             }
 
             return record;
@@ -412,17 +414,12 @@ function migrateSettings(guildId: string, guild: OldRethinkGuild, logger: Logger
     return changed;
 }
 
-function nukedCC(newLocation: string): r.UpdateData<GuildCommandTag> {
-    return {
+function nukedCC(newLocation: string): r.Expression<GuildCommandTag> {
+    return r.literal({
         content: `{//;This ccommand has been moved. To update it, use the \`${newLocation}\` command}`,
         author: '',
-        authorizer: r.literal(),
-        cooldown: r.literal(),
-        flags: r.literal(),
-        help: r.literal(),
-        hidden: true,
-        roles: r.literal()
-    };
+        hidden: true
+    });
 }
 
 async function* iterCursor<T>(cursor: r.Cursor<T>): AsyncIterable<T> {

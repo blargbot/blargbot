@@ -1,5 +1,5 @@
 import { Logger } from '@core/Logger';
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponse, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableGuildCensorExceptions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableGuildCensorExceptions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
 import { guard } from '@core/utils';
 import { Guild } from 'eris';
 import { UpdateData } from 'rethinkdb';
@@ -245,9 +245,9 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<MutableStoredGuild
     }
 
     public async getAutoresponse(guildId: string, id: number, skipCache?: boolean): Promise<GuildFilteredAutoresponse | undefined>
-    public async getAutoresponse(guildId: string, id: 'everything', skipCache?: boolean): Promise<GuildAutoresponse | undefined>
-    public async getAutoresponse(guildId: string, id: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined>
-    public async getAutoresponse(guildId: string, id: number | 'everything', skipCache?: boolean): Promise<GuildAutoresponse | GuildFilteredAutoresponse | undefined> {
+    public async getAutoresponse(guildId: string, id: 'everything', skipCache?: boolean): Promise<GuildTriggerTag | undefined>
+    public async getAutoresponse(guildId: string, id: number | 'everything', skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined>
+    public async getAutoresponse(guildId: string, id: number | 'everything', skipCache?: boolean): Promise<GuildTriggerTag | GuildFilteredAutoresponse | undefined> {
         const guild = await this.rget(guildId, skipCache);
         if (guild?.autoresponse === undefined)
             return undefined;
@@ -259,11 +259,11 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<MutableStoredGuild
     }
 
     public async setAutoresponse(guildId: string, id: number, autoresponse: GuildFilteredAutoresponse | undefined): Promise<boolean>
-    public async setAutoresponse(guildId: string, id: 'everything', autoresponse: GuildAutoresponse | undefined): Promise<boolean>
+    public async setAutoresponse(guildId: string, id: 'everything', autoresponse: GuildTriggerTag | undefined): Promise<boolean>
     public async setAutoresponse(guildId: string, id: number | 'everything', autoresponse: undefined): Promise<boolean>
     public async setAutoresponse(...args:
         | [guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined]
-        | [guildId: string, index: 'everything', autoresponse: GuildAutoresponse | undefined]
+        | [guildId: string, index: 'everything', autoresponse: GuildTriggerTag | undefined]
         | [guildId: string, index: number | 'everything', autoresponse: undefined]
     ): Promise<boolean> {
         const guildId = args[0];
