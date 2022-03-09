@@ -7,22 +7,22 @@ export const mapTag = mapping.object({
     ['author']: mapping.string,
     ['authorizer']: mapping.string.optional,
     ['content']: mapping.string,
+    ['cooldown']: mapping.number.optional,
     ['createdat']: mapping.number.optional,
-    ['lastmodified']: mapping.choice(
-        mapping.number,
-        mapping.date
-    ),
-    ['lastuse']: mapping.date.optional,
-    ['name']: mapping.string,
-    ['uses']: mapping.number,
+    ['favourites']: mapping.record(mapping.boolean.optional).optional,
     ['flags']: mapping.array(mapping.object({
         ['desc']: mapping.string,
         ['flag']: mapping.string,
         ['word']: mapping.string
     })).optional,
     ['lang']: mapping.string.optional,
-    ['favourites']: mapping.record(mapping.boolean.optional).optional,
-    ['cooldown']: mapping.number.optional,
+    ['lastmodified']: mapping.choice(
+        mapping.date,
+        mapping.number
+    ),
+    ['lastuse']: mapping.date.optional,
+    ['name']: mapping.string,
     ['reports']: mapping.number.optional,
-    ['systemOwned']: mapping.boolean.optional
+    ['systemOwned']: mapping.boolean.optional,
+    ['uses']: mapping.number
 });

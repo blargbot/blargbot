@@ -593,7 +593,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<MutableStoredGuild
     }
 
     public async getIntervals(): Promise<ReadonlyArray<{ readonly guildId: string; readonly interval: GuildTriggerTag; }>> {
-        const guilds = await this.rqueryAll(t => t.getAll(true, { index: 'interval' }).pluck('guildid', 'interval'));
+        const guilds = await this.rqueryAll(t => t.getAll(true, { index: 'interval' }).filter(g => g('active').eq(true)).pluck('guildid', 'interval'));
         return guilds.map(g => g.interval === undefined ? undefined : { guildId: g.guildid, interval: g.interval })
             .filter(guard.hasValue);
     }

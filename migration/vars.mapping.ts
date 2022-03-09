@@ -4,28 +4,28 @@ import { mapping } from '@core/utils';
 
 export type OldRethinkVars = Extract<ReturnType<typeof mapVars>, { valid: true; }>['value'];
 export const mapVars = mapping.object({
-    ['value']: mapping.choice(
-        mapping.number,
-        mapping.array(mapping.string)
+    ['guilds']: mapping.choice(
+        mapping.array(mapping.in()),
+        mapping.record(mapping.string.optional)
     ).optional,
-    ['varname']: mapping.string,
+    ['major']: mapping.number.optional,
+    ['maxExecutions']: mapping.number.optional,
+    ['maxTime']: mapping.number.optional,
+    ['minor']: mapping.number.optional,
+    ['patch']: mapping.number.optional,
+    ['penalty']: mapping.number.optional,
+    ['stats']: mapping.record(mapping.object({
+        ['uses']: mapping.number
+    }).optional).optional,
+    ['timeoutDuration']: mapping.number.optional,
+    ['users']: mapping.array(mapping.in()).optional,
+    ['value']: mapping.choice(
+        mapping.array(mapping.string),
+        mapping.number
+    ).optional,
     ['values']: mapping.choice(
         mapping.array(mapping.string),
         mapping.record(mapping.boolean.optional)
     ).optional,
-    ['stats']: mapping.record(mapping.object({
-        ['uses']: mapping.number
-    }).optional).optional,
-    ['guilds']: mapping.choice(
-        mapping.record(mapping.string.optional),
-        mapping.array(mapping.in())
-    ).optional,
-    ['users']: mapping.array(mapping.in()).optional,
-    ['maxExecutions']: mapping.number.optional,
-    ['maxTime']: mapping.number.optional,
-    ['penalty']: mapping.number.optional,
-    ['timeoutDuration']: mapping.number.optional,
-    ['major']: mapping.number.optional,
-    ['minor']: mapping.number.optional,
-    ['patch']: mapping.number.optional
+    ['varname']: mapping.string
 });

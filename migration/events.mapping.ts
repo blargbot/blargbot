@@ -5,12 +5,7 @@ import { mapping } from '@core/utils';
 export type OldRethinkEvents = Extract<ReturnType<typeof mapEvents>, { valid: true; }>['value'];
 export const mapEvents = mapping.object({
     ['channel']: mapping.string.optional,
-    ['endtime']: mapping.date,
-    ['id']: mapping.string,
-    ['source']: mapping.string,
-    ['starttime']: mapping.date,
-    ['type']: mapping.string,
-    ['user']: mapping.string,
+    ['color']: mapping.number.optional,
     ['content']: mapping.string.optional,
     ['context']: mapping.object({
         ['author']: mapping.string,
@@ -225,16 +220,21 @@ export const mapEvents = mapping.object({
         }),
         ['tagName']: mapping.string,
         ['tempVars']: mapping.record(mapping.choice(
-            mapping.string,
-            mapping.array(mapping.string)
+            mapping.array(mapping.string),
+            mapping.string
         ).optional)
     }).optional,
-    ['version']: mapping.number.optional,
     ['duration']: mapping.string.optional,
+    ['endtime']: mapping.date,
     ['guild']: mapping.string.optional,
-    ['role']: mapping.string.optional,
-    ['color']: mapping.number.optional,
     ['icon']: mapping.string.optional,
+    ['id']: mapping.string,
     ['msg']: mapping.string.optional,
-    ['strict']: mapping.array(mapping.string).optional
+    ['role']: mapping.string.optional,
+    ['source']: mapping.string,
+    ['starttime']: mapping.date,
+    ['strict']: mapping.array(mapping.string).optional,
+    ['type']: mapping.string,
+    ['user']: mapping.string,
+    ['version']: mapping.number.optional
 });

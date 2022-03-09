@@ -18,12 +18,10 @@ void (async function () {
         intents: []
     });
 
-    const [rethink] = await Promise.all([
-        r.connect({
-            ...config.rethink,
-            timeout: 10000
-        })
-    ]);
+    const rethink = await r.connect({
+        ...config.rethink,
+        timeout: 10000
+    });
 
     await logErrors(migrateChangelog(discord, rethink, logger), logger);
     await logErrors(migrateGuilds(rethink, logger), logger);
@@ -169,15 +167,16 @@ function migrateInterval(guildId: string, guild: OldRethinkGuild, logger: Logger
 }
 
 function migrateGreeting(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext, key: 'greeting' | 'farewell'): boolean {
-    if (guild.settings.greeting === undefined)
+    const value = guild.settings[key];
+    if (value === undefined)
         return false;
 
     logger.debug('[migrateGuild]', guildId, 'migrating', key);
     context.update.settings = context.settings;
     (<Record<string, unknown>>context.settings)[key] = r.literal();
-    context.update[key] = typeof guild.settings.greeting === 'string'
-        ? { content: guild.settings.greeting, author: '' }
-        : guild.settings.greeting;
+    context.update[key] = typeof value === 'string'
+        ? { content: value, author: '' }
+        : value;
     return true;
 }
 

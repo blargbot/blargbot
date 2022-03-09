@@ -486,7 +486,7 @@ export interface GuildAnnounceOptions {
 }
 
 export interface GuildAutoresponses {
-    readonly everything?: GuildAutoresponse;
+    readonly everything?: GuildAutoresponse | null;
     readonly filtered?: { readonly [key: string]: GuildFilteredAutoresponse | undefined; };
 }
 export interface MutableGuildAutoresponses extends GuildAutoresponses {

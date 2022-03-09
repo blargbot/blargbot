@@ -6,14 +6,32 @@ export type OldRethinkUser = Extract<ReturnType<typeof mapUser>, { valid: true; 
 export const mapUser = mapping.object({
     ['avatarURL']: mapping.string.optional,
     ['discriminator']: mapping.string,
+    ['dontdmerrors']: mapping.boolean.optional,
     ['isbot']: mapping.boolean,
     ['lastcommand']: mapping.in(null),
     ['lastcommanddate']: mapping.in(null),
     ['lastspoke']: mapping.date,
+    ['prefixes']: mapping.array(mapping.string).optional,
+    ['reports']: mapping.object({
+        ['amogus']: mapping.string.optional,
+        ['boobs']: mapping.string.optional,
+        ['digimoan']: mapping.string.optional,
+        ['e']: mapping.string.optional,
+        ['f']: mapping.string.optional,
+        ['funny']: mapping.string.optional,
+        ['hodor']: mapping.string.optional,
+        ['lamitron']: mapping.string.optional,
+        ['mastercell']: mapping.string.optional,
+        ['microsoft']: mapping.string.optional,
+        ['murder']: mapping.string.optional,
+        ['nsfw']: mapping.string.optional,
+        ['undertale']: mapping.string.optional
+    }).optional,
+    ['timezone']: mapping.string.optional,
     ['todo']: mapping.array(mapping.object({
         ['active']: mapping.choice(
-            mapping.number,
-            mapping.boolean
+            mapping.boolean,
+            mapping.number
         ),
         ['content']: mapping.string
     })),
@@ -22,9 +40,5 @@ export const mapUser = mapping.object({
     ['usernames']: mapping.array(mapping.object({
         ['date']: mapping.date,
         ['name']: mapping.string
-    })),
-    ['timezone']: mapping.string.optional,
-    ['prefixes']: mapping.array(mapping.string).optional,
-    ['dontdmerrors']: mapping.boolean.optional,
-    ['reports']: mapping.record(mapping.string.optional).optional
+    }))
 });

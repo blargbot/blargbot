@@ -361,6 +361,8 @@ declare module 'rethinkdb' {
         match(this: Expression<string>, re2: string): Expression<MatchResult | null>;
         spliceAt<R>(this: Expression<R[]>, index: number, replacement: R[]): Expression<T>;
         deleteAt<R>(this: Expression<R[]>, index: number): Expression<T>;
+
+        values(): Expression<Array<Exclude<T[keyof T], undefined>>>;
     }
 
     interface MatchResult {
