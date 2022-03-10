@@ -17,7 +17,9 @@ void (async function () {
         })
     ]);
 
-    const tables = await r.db(config.rethink.db).tableList().run(rethink);
+    const dbName = config.rethink.db as string | undefined;
+
+    const tables = await r.db(dbName ?? 'blargbot').tableList().run(rethink);
     logger.info('Found tables', tables);
     for (const table of tables) {
         logger.info('Getting data from table', table);
