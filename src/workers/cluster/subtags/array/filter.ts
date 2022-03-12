@@ -27,13 +27,11 @@ export class FilterSubtag extends DefinedSubtag {
             for (const item of array) {
                 await context.limit.check(context, 'filter:loops');
                 await context.variables.set(varName, item);
-                const res = await code.execute();
-                if (context.state.return !== 0)
-                    break;
-
-                if (parse.boolean(res) === true)
+                if (parse.boolean(await code.execute()) === true)
                     yield item;
 
+                if (context.state.return !== 0)
+                    break;
             }
         } finally {
             context.variables.reset([varName]);
