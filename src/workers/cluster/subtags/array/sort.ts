@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtagUtil, compare, parse, SubtagType } from '@cluster/utils';
+import { bbtag, compare, parse, SubtagType } from '@cluster/utils';
 
 export class SortSubtag extends DefinedSubtag {
     public constructor() {
@@ -23,7 +23,7 @@ export class SortSubtag extends DefinedSubtag {
     }
 
     public async sort(context: BBTagContext, arrayStr: string, descendingStr: string): Promise<JArray | undefined> {
-        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr);
+        const arr = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr);
         if (arr === undefined)
             throw new NotAnArrayError(arrayStr);
 

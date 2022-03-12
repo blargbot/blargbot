@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, LogicOperator, parse, SubtagType } from '@cluster/utils';
 
 export class LogicSubtag extends DefinedSubtag {
     public constructor() {
@@ -11,7 +11,7 @@ export class LogicSubtag extends DefinedSubtag {
                 {
                     parameters: ['operator', 'values+'],
                     description: 'Accepts 1 or more boolean `values` (`true` or `false`) and returns the result of `operator` on them. ' +
-                        'Valid logic operators are `' + [...Object.keys(bbtagUtil.logicOperators), '^'].join('`, `') + '`.' +
+                        'Valid logic operators are `' + [...Object.keys(bbtag.logicOperators), '^'].join('`, `') + '`.' +
                         'See `{operators}` for a shorter way of performing logic operations.',
                     exampleCode: '{logic;&&;true;false}',
                     exampleOut: 'false',
@@ -45,12 +45,12 @@ export class LogicSubtag extends DefinedSubtag {
             return parsed;
         });
 
-        return bbtagUtil.operate(operator, parsed);
+        return bbtag.operate(operator, parsed);
     }
 }
 
-function toLogicOperator(operator: string): bbtagUtil.LogicOperator | undefined {
-    if (bbtagUtil.isLogicOperator(operator))
+function toLogicOperator(operator: string): LogicOperator | undefined {
+    if (bbtag.isLogicOperator(operator))
         return operator;
     if (operator === '^')
         return 'xor';

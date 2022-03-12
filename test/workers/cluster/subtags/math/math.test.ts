@@ -1,6 +1,6 @@
 import { InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
 import { MathSubtag } from '@cluster/subtags/math/math';
-import { bbtagUtil } from '@cluster/utils';
+import { NumericOperator } from '@cluster/utils';
 
 import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
@@ -31,7 +31,7 @@ runSubtagTests({
     ]
 });
 
-function createTestCases(args: number[], results: Record<bbtagUtil.NumericOperator, number>): SubtagTestCase[] {
+function createTestCases(args: number[], results: Record<NumericOperator, number>): SubtagTestCase[] {
     return Object.entries(results).flatMap(([op, expected]) => [
         { code: `{math;${op};${args.join(';')}}`, expected: expected.toString() },
         { code: `{math;${op};${JSON.stringify(args)}}`, expected: expected.toString() }

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
+import { bbtag, guard, SubtagType } from '@cluster/utils';
 import Color from 'color';
 
 export type ColorFormat = keyof typeof colorConverters;
@@ -41,7 +41,7 @@ export class ColorSubtag extends DefinedSubtag {
         if (colorStr === '')
             throw new BBTagRuntimeError('Invalid color', 'value was empty');
 
-        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, colorStr);
+        const arr = await bbtag.tagArray.deserializeOrGetArray(context, colorStr);
         const input = arr?.v.map(elem => elem?.toString()).join(',') ?? colorStr;
 
         const inputConverter = getConverter(inputStr ?? '');

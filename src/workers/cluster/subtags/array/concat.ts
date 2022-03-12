@@ -1,5 +1,5 @@
 import { DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class ConcatSubtag extends DefinedSubtag {
     public constructor() {
@@ -21,6 +21,6 @@ export class ConcatSubtag extends DefinedSubtag {
     }
 
     public concatArrays(values: string[]): JArray {
-        return bbtagUtil.tagArray.flattenArray(values);
+        return bbtag.tagArray.flattenArray(values);
     }
 }

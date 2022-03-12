@@ -1,4 +1,12 @@
-export * from '@core/utils/guard';
-export * from './isGuildImportedCommandTag';
-export * from './isGuildCommandContext';
-export * from './isPrivateCommandContext';
+import { guard as coreGuard } from '@core/utils/guard';
+
+import * as isGuildCommandContext from './isGuildCommandContext';
+import * as isGuildImportedCommandTag from './isGuildImportedCommandTag';
+import * as isPrivateCommandContext from './isPrivateCommandContext';
+
+export const guard = {
+    ...coreGuard,
+    ...isGuildImportedCommandTag,
+    ...isGuildCommandContext,
+    ...isPrivateCommandContext
+};

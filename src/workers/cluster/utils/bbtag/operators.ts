@@ -1,7 +1,7 @@
 import { compare as compareFn, guard } from '@core/utils';
 import { parseString } from '@core/utils/parse/parseString';
 
-import { deserialize } from './tagArray';
+import { tagArray } from './tagArray';
 
 export type OrdinalOperator = '==' | '!=' | '>=' | '>' | '<=' | '<';
 export type StringOperator = 'startswith' | 'endswith' | 'includes' | 'contains';
@@ -95,7 +95,7 @@ export const operators = {
 //TODO bitwise
 
 function getStrArray(text: string): JArray | undefined {
-    const arr = deserialize(text);
+    const arr = tagArray.deserialize(text);
     if (arr !== undefined) {
         return arr.v.map(v => parseString(v));
     }

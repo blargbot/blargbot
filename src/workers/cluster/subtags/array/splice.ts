@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
 export class SpliceSubtag extends DefinedSubtag {
@@ -38,7 +38,7 @@ export class SpliceSubtag extends DefinedSubtag {
         countStr: string,
         replaceItems: string[]
     ): Promise<JArray> {
-        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrStr);
+        const arr = await bbtag.tagArray.deserializeOrGetArray(context, arrStr);
         const fallback = new Lazy(() => parse.int(context.scopes.local.fallback ?? '', false));
 
         if (arr === undefined)
@@ -52,7 +52,7 @@ export class SpliceSubtag extends DefinedSubtag {
         if (delCount === undefined)
             throw new NotANumberError(countStr);
 
-        const insert = bbtagUtil.tagArray.flattenArray(replaceItems);
+        const insert = bbtag.tagArray.flattenArray(replaceItems);
         const result = arr.v.splice(start, delCount, ...insert);
         if (arr.n !== undefined)
             await context.variables.set(arr.n, arr.v);

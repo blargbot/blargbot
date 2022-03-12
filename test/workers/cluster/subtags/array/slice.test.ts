@@ -1,4 +1,4 @@
-import { NotAnArrayError } from '@cluster/bbtag/errors';
+import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
 import { SliceSubtag } from '@cluster/subtags/array/slice';
 import { SubtagVariableType } from '@core/types';
 import { expect } from 'chai';
@@ -31,6 +31,20 @@ runSubtagTests({
         {
             code: '{slice;[1,2,3,4];1;3}',
             expected: '[2,3]'
+        },
+        {
+            code: '{slice;[1,2,3,4];abc;3}',
+            expected: '`Not a number`',
+            errors: [
+                { start: 0, end: 23, error: new NotANumberError('abc') }
+            ]
+        },
+        {
+            code: '{slice;[1,2,3,4];1;def}',
+            expected: '`Not a number`',
+            errors: [
+                { start: 0, end: 23, error: new NotANumberError('def') }
+            ]
         },
         {
             code: '{slice;arr1;1}',

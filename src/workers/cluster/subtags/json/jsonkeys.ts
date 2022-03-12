@@ -1,8 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
-
-const json = bbtagUtil.json;
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class JsonKeysSubtag extends DefinedSubtag {
     public constructor() {
@@ -27,19 +24,11 @@ export class JsonKeysSubtag extends DefinedSubtag {
     }
 
     public async getJsonKeys(context: BBTagContext, objStr: string, path: string): Promise<string[]> {
-        try {
-            const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, objStr);
-            const obj = arr?.v ?? (await json.resolve(context, objStr)).object;
+        const obj = (await bbtag.json.resolveObj(context, objStr)).object;
 
-            if (path !== '') {
-                const objAtPath = json.get(obj, path);
-                return Object.keys(objAtPath ?? {});
-            }
-            return Object.keys(obj);
-        } catch (e: unknown) {
-            if (e instanceof Error)
-                throw new BBTagRuntimeError(e.message);
-            throw e;
-        }
+        if (path !== '')
+            return Object.keys(bbtag.json.get(obj, path) ?? {});
+
+        return Object.keys(obj);
     }
 }

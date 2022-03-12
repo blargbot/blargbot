@@ -12,7 +12,19 @@
     "src/workers/cluster/subtags/**/*.mjs",
     "src/workers/cluster/subtags/**/*.mts",
     "src/workers/cluster/subtags/**/*.cjs",
-    "src/workers/cluster/subtags/**/*.cts"
+    "src/workers/cluster/subtags/**/*.cts",
+    "src/workers/cluster/bbtag/**/*.js",
+    "src/workers/cluster/bbtag/**/*.ts",
+    "src/workers/cluster/bbtag/**/*.mjs",
+    "src/workers/cluster/bbtag/**/*.mts",
+    "src/workers/cluster/bbtag/**/*.cjs",
+    "src/workers/cluster/bbtag/**/*.cts",
+    "src/workers/cluster/utils/bbtag/**/*.js",
+    "src/workers/cluster/utils/bbtag/**/*.ts",
+    "src/workers/cluster/utils/bbtag/**/*.mjs",
+    "src/workers/cluster/utils/bbtag/**/*.mts",
+    "src/workers/cluster/utils/bbtag/**/*.cjs",
+    "src/workers/cluster/utils/bbtag/**/*.cts"
   ],
   "exclude": [
     "coverage/**",

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class UserSetRolesSubtag extends DefinedSubtag {
     public constructor() {
@@ -54,7 +54,7 @@ export class UserSetRolesSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleArr = await bbtagUtil.tagArray.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
+        const roleArr = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr !== '' ? rolesStr : '[]');
         if (roleArr === undefined) {
             throw new NotAnArrayError(rolesStr)
                 .withDisplay(quiet ? 'false' : undefined);

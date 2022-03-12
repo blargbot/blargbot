@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class JoinSubtag extends DefinedSubtag {
     public constructor() {
@@ -21,7 +21,7 @@ export class JoinSubtag extends DefinedSubtag {
     }
 
     public async join(context: BBTagContext, arrayStr: string, separator: string): Promise<string> {
-        const { v: array } = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
+        const { v: array } = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
 
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);

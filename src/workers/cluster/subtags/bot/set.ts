@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag, tagVariableScopes } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class SetSubtag extends DefinedSubtag {
     public constructor() {
@@ -50,7 +50,7 @@ export class SetSubtag extends DefinedSubtag {
         variableName: string,
         value: string
     ): Promise<void> {
-        const deserializedArray = bbtagUtil.tagArray.deserialize(value);
+        const deserializedArray = bbtag.tagArray.deserialize(value);
         if (deserializedArray !== undefined) {
             await context.variables.set(variableName, deserializedArray.v);
         } else {

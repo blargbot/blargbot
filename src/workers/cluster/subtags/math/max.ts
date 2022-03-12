@@ -1,5 +1,5 @@
 import { DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class MaxSubtag extends DefinedSubtag {
     public constructor() {
@@ -20,7 +20,7 @@ export class MaxSubtag extends DefinedSubtag {
     }
 
     public max(values: string[]): number {
-        const flattenedArgs = bbtagUtil.tagArray.flattenArray(values);
+        const flattenedArgs = bbtag.tagArray.flattenArray(values);
         const parsedArgs = flattenedArgs.map(arg => parse.float(arg?.toString() ?? ''));
 
         if (parsedArgs.filter(isNaN).length > 0)

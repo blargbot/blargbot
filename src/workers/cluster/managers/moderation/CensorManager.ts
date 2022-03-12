@@ -1,4 +1,4 @@
-import { bbtagUtil, guard, ModerationType } from '@cluster/utils';
+import { bbtag, guard, ModerationType } from '@cluster/utils';
 import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@core/types';
 import { KnownGuildTextableChannel, Message } from 'eris';
 import moment from 'moment-timezone';
@@ -70,7 +70,7 @@ export class CensorManager extends ModerationManagerBase {
             if (debugCtx !== undefined) {
                 delete this.#debugOutput[key];
                 await this.cluster.util.send(debugCtx.channelId, {
-                    ...bbtagUtil.createDebugOutput(result),
+                    ...bbtag.createDebugOutput(result),
                     messageReference: { messageID: debugCtx.messageId }
                 });
             }

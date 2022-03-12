@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class BoolSubtag extends DefinedSubtag {
     public constructor() {
@@ -12,7 +12,7 @@ export class BoolSubtag extends DefinedSubtag {
                     parameters: ['arg1', 'evaluator', 'arg2'],
                     description:
                         'Evaluates `arg1` and `arg2` using the `evaluator` and returns `true` or `false`. ' +
-                        'Valid evaluators are `' + Object.keys(bbtagUtil.comparisonOperators).join('`, `') + '`\n' +
+                        'Valid evaluators are `' + Object.keys(bbtag.comparisonOperators).join('`, `') + '`\n' +
                         'The positions of `evaluator` and `arg1` can be swapped.',
                     exampleCode: '{bool;5;<=;10}',
                     exampleOut: 'true',
@@ -29,11 +29,11 @@ export class BoolSubtag extends DefinedSubtag {
         right: string
     ): boolean {
         let operator;
-        if (bbtagUtil.isComparisonOperator(evaluator)) {
+        if (bbtag.isComparisonOperator(evaluator)) {
             operator = evaluator;
-        } else if (bbtagUtil.isComparisonOperator(left)) {
+        } else if (bbtag.isComparisonOperator(left)) {
             [left, operator] = [evaluator, left];
-        } else if (bbtagUtil.isComparisonOperator(right)) {
+        } else if (bbtag.isComparisonOperator(right)) {
             [operator, right] = [right, evaluator];
         } else
             throw new InvalidOperatorError(evaluator);
@@ -45,6 +45,6 @@ export class BoolSubtag extends DefinedSubtag {
         if (rightBool !== undefined)
             right = rightBool.toString();
 
-        return bbtagUtil.operate(operator, left, right);
+        return bbtag.operate(operator, left, right);
     }
 }

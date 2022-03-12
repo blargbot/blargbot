@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class ReverseSubtag extends DefinedSubtag {
     public constructor() {
@@ -20,13 +20,13 @@ export class ReverseSubtag extends DefinedSubtag {
     }
 
     public async reverse(context: BBTagContext, input: string): Promise<string> {
-        const arr = bbtagUtil.tagArray.deserialize(input);
+        const arr = bbtag.tagArray.deserialize(input);
         if (arr === undefined)
             return input.split('').reverse().join('');
 
         arr.v = arr.v.reverse();
         if (arr.n === undefined)
-            return bbtagUtil.tagArray.serialize(arr.v);
+            return bbtag.tagArray.serialize(arr.v);
 
         await context.variables.set(arr.n, arr.v);
         return '';

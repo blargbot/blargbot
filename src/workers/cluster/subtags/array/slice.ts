@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 import { Lazy } from '@core/Lazy';
 
 export class SliceSubtag extends DefinedSubtag {
@@ -23,7 +23,7 @@ export class SliceSubtag extends DefinedSubtag {
     }
 
     public async slice(context: BBTagContext, array: string, startStr: string, endStr: string): Promise<JArray> {
-        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, array);
+        const arr = await bbtag.tagArray.deserializeOrGetArray(context, array);
         const fallback = new Lazy<number>(() => parse.int(context.scopes.local.fallback ?? ''));
 
         if (arr === undefined)

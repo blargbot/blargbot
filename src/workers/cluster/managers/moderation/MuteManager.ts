@@ -1,5 +1,5 @@
 import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@cluster/types';
-import { discordUtil, guard, humanize, mapping } from '@cluster/utils';
+import { discord, guard, humanize, mapping } from '@cluster/utils';
 import { UnmuteEventOptions } from '@core/types';
 import { Constants, Guild, KnownGuildChannel, Member, Role, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
@@ -24,7 +24,7 @@ export class MuteManager extends ModerationManagerBase {
         if (self?.permissions.has('manageRoles') !== true)
             return 'noPerms';
 
-        if (role.position >= discordUtil.getMemberPosition(self))
+        if (role.position >= discord.getMemberPosition(self))
             return 'roleTooHigh';
 
         await member.addRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);
@@ -52,7 +52,7 @@ export class MuteManager extends ModerationManagerBase {
         if (self?.permissions.has('manageRoles') !== true)
             return 'noPerms';
 
-        if (role.position >= discordUtil.getMemberPosition(self))
+        if (role.position >= discord.getMemberPosition(self))
             return 'roleTooHigh';
 
         await member.removeRole(role.id, `[${humanize.fullName(moderator)}] ${reason ?? ''}`);

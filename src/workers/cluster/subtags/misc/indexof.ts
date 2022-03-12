@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class IndexOfSubtag extends DefinedSubtag {
     public constructor() {
@@ -25,7 +25,7 @@ export class IndexOfSubtag extends DefinedSubtag {
         if (from === undefined)
             throw new NotANumberError(startStr);
 
-        const { v: input } = bbtagUtil.tagArray.deserialize(text) ?? { v: text };
+        const { v: input } = bbtag.tagArray.deserialize(text) ?? { v: text };
         return input.indexOf(query, from);
     }
 }

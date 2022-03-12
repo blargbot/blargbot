@@ -9,7 +9,7 @@ type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
 type MutableSubtagCall = { -readonly [P in keyof SubtagCall]: ToMutable<SubtagCall[P]> }
 type MutableStatement = { -readonly [P in keyof Statement]: ToMutable<Statement[P]> };
 
-export function parse(source: string, throwOnError = false): Statement {
+export function parseBBTag(source: string, throwOnError = false): Statement {
     const result = createStatement(source);
     const subtags: MutableSubtagCall[] = [];
     let statement = result;

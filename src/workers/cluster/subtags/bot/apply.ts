@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, UnknownSubtagError } from '@cluster/bbtag/errors';
 import { SubtagCall } from '@cluster/types';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class ApplySubtag extends DefinedSubtag {
     public constructor() {
@@ -38,7 +38,7 @@ export class ApplySubtag extends DefinedSubtag {
         }
 
         const flatArgs = args
-            .flatMap(arg => bbtagUtil.tagArray.deserialize(arg)?.v ?? [arg])
+            .flatMap(arg => bbtag.tagArray.deserialize(arg)?.v ?? [arg])
             .map(v => parse.string(v));
 
         const source = `{${[subtagName, ...flatArgs].join(';')}}`;

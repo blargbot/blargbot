@@ -1,6 +1,6 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { CommandType, discordUtil, pluralise as p } from '@cluster/utils';
+import { CommandType, discord, pluralise as p } from '@cluster/utils';
 import { EmbedOptions, Member } from 'eris';
 
 export class VoteBanCommand extends BaseGuildCommand {
@@ -57,7 +57,7 @@ export class VoteBanCommand extends BaseGuildCommand {
 
         return {
             author: context.util.embedifyAuthor(user),
-            color: discordUtil.getMemberColor(user),
+            color: discord.getMemberColor(user),
             title: this.info('Vote ban signatures'),
             description: votes.length === 0 ? `No one has voted to ban ${user.mention} yet.`
                 : votes.length > 20 ? `${votes.slice(0, 15).map(v => `<@${v}>`).join('\n')}\n... and ${votes.length - 15} more`

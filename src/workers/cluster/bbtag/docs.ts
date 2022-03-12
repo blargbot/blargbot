@@ -1,6 +1,6 @@
 import { CommandContext } from '@cluster/command';
 import { SubtagHandlerValueParameter, SubtagSignatureDetails } from '@cluster/types';
-import { bbtagUtil, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluster/utils';
+import { bbtag, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluster/utils';
 import { humanize } from '@core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
@@ -180,7 +180,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
 }
 
 function toField(subtag: Subtag, signature: SubtagSignatureDetails, index: number): EmbedField {
-    let description = codeBlock(bbtagUtil.stringifyParameters(subtag.name, signature.parameters));
+    let description = codeBlock(bbtag.stringifyParameters(subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .flatMap<SubtagHandlerValueParameter>(p => 'nested' in p ? p.nested : [p])
         .filter(param => param.defaultValue !== '')

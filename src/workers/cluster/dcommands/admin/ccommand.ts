@@ -2,7 +2,7 @@ import { Cluster } from '@cluster';
 import { getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand } from '@cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@cluster/types';
-import { bbtagUtil, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
+import { bbtag, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
 import { Configuration } from '@core/Configuration';
 import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@core/types';
 import { createHmac } from 'crypto';
@@ -168,7 +168,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
             author: context.author.id
         });
 
-        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
+        return debug ? bbtag.createDebugOutput(result) : undefined;
     }
 
     public async showDocs(context: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
@@ -208,7 +208,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
+        return debug ? bbtag.createDebugOutput(result) : undefined;
     }
 
     public async createCommand(context: GuildCommandContext, commandName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -597,7 +597,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
 
         const analysis = context.bbtag.check(content);
         if (analysis.errors.length > 0)
-            return this.error(`There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`);
+            return this.error(`There were errors with the bbtag you provided!\n${bbtag.stringifyAnalysis(analysis)}`);
 
         const command = {
             content: content,
@@ -612,7 +612,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
 
         await context.database.guilds.setCommand(context.channel.guild.id, commandName, command);
 
-        return this.success(`Custom command \`${commandName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`);
+        return this.success(`Custom command \`${commandName}\` ${operation}.\n${bbtag.stringifyAnalysis(analysis)}`);
     }
     private async requestCommandName(
         context: GuildCommandContext,

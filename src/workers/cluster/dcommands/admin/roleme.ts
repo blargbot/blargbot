@@ -1,6 +1,6 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
+import { bbtag, codeBlock, CommandType, guard } from '@cluster/utils';
 import { GuildRolemeEntry, SendContent } from '@core/types';
 import { Constants, EmbedOptions } from 'eris';
 
@@ -282,7 +282,7 @@ export class RolemeCommand extends BaseGuildCommand {
             return this.error(`Roleme ${id} doesnt have a custom message`);
 
         const result = await context.cluster.rolemes.invokeMessage(context.message, roleme);
-        return bbtagUtil.createDebugOutput(result);
+        return bbtag.createDebugOutput(result);
     }
 
     public async setAuthorizer(context: GuildCommandContext, id: number): Promise<string> {

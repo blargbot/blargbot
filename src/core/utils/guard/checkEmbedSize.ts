@@ -1,4 +1,4 @@
-import * as discordUtil from '@core/utils/discord';
+import { discord } from '@core/utils/discord';
 import { Embed, EmbedOptions } from 'eris';
 
 import { hasValue } from './hasValue';
@@ -24,17 +24,17 @@ function* getEmbedValueLimits(embeds: ReadonlyArray<EmbedOptions | Embed>): Iter
     // https://discord.com/developers/docs/resources/channel#embed-limits
 
     for (const embed of embeds) {
-        yield [append(embed.title), discordUtil.getLimit('embed.title')];
-        yield [append(embed.description), discordUtil.getLimit('embed.description')];
-        yield [embed.fields, discordUtil.getLimit('embed.fields')];
+        yield [append(embed.title), discord.getLimit('embed.title')];
+        yield [append(embed.description), discord.getLimit('embed.description')];
+        yield [embed.fields, discord.getLimit('embed.fields')];
         for (const field of embed.fields ?? []) {
-            yield [append(field.name), discordUtil.getLimit('embed.field.name')];
-            yield [append(field.value), discordUtil.getLimit('embed.field.value')];
+            yield [append(field.name), discord.getLimit('embed.field.name')];
+            yield [append(field.value), discord.getLimit('embed.field.value')];
         }
-        yield [append(embed.footer?.text), discordUtil.getLimit('embed.footer.text')];
-        yield [append(embed.author?.name), discordUtil.getLimit('embed.author.name')];
+        yield [append(embed.footer?.text), discord.getLimit('embed.footer.text')];
+        yield [append(embed.author?.name), discord.getLimit('embed.author.name')];
     }
 
-    yield [allValues.join(''), discordUtil.getLimit('embeds')];
+    yield [allValues.join(''), discord.getLimit('embeds')];
 
 }

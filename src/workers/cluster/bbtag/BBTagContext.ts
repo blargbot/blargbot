@@ -7,7 +7,7 @@ import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
 import { Timer } from '@core/Timer';
 import { ChoiceQueryResult, EntityPickQueryOptions, NamedGuildCommandTag, StoredTag } from '@core/types';
-import { getMemberPosition } from '@core/utils/discord';
+import { discord } from '@core/utils/discord';
 import { Base, Client as Discord, Constants, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
@@ -221,7 +221,7 @@ export class BBTagContext {
         if (!permission.has('manageRoles'))
             return -Infinity;
 
-        return getMemberPosition(this.authorizer);
+        return discord.getMemberPosition(this.authorizer);
     }
 
     public auditReason(user: User = this.user): string {

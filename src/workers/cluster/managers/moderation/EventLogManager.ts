@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { discordUtil, guard, humanize } from '@cluster/utils';
+import { discord, guard, humanize } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { StoredGuildEventLogType } from '@core/types';
 import { ApiError, AuditLogActionType, DiscordRESTError, EmbedAuthor, EmbedField, EmbedOptions, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
@@ -210,7 +210,7 @@ export class EventLogManager {
             case '':
                 return { name: name + ' (Empty)', value: 'This message has no content. It had either an attachment or an embed' };
             default:
-                return { name, value: discordUtil.overflowText('embed.field.value', content, '... (too long to display)', l => l / contentCount) };
+                return { name, value: discord.overflowText('embed.field.value', content, '... (too long to display)', l => l / contentCount) };
         }
     }
 

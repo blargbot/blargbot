@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class JsonSubtag extends DefinedSubtag {
     public constructor() {
@@ -20,10 +20,9 @@ export class JsonSubtag extends DefinedSubtag {
     }
 
     public getJson(input: string): JToken {
-        try {
-            return JSON.parse(input);
-        } catch (err: unknown) {
+        const result = bbtag.json.parse(input);
+        if (result === undefined)
             throw new BBTagRuntimeError('Invalid JSON provided');
-        }
+        return result;
     }
 }

@@ -1,7 +1,7 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class IfSubtag extends DefinedSubtag {
     public constructor() {
@@ -12,7 +12,7 @@ export class IfSubtag extends DefinedSubtag {
                 'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
                 'If they are not provided, `value1` is read as `true` or `false`. ' +
                 'If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\n' +
-                'Valid evaluators are `' + Object.keys(bbtagUtil.comparisonOperators).join('`, `') + '`.',
+                'Valid evaluators are `' + Object.keys(bbtag.comparisonOperators).join('`, `') + '`.',
             definition: [
                 {
                     parameters: ['boolean', '~then'],
@@ -65,12 +65,12 @@ export class IfSubtag extends DefinedSubtag {
         elseCode?: SubtagArgument
     ): Promise<string> {
         let operator;
-        if (bbtagUtil.isComparisonOperator(evaluator)) {
+        if (bbtag.isComparisonOperator(evaluator)) {
             operator = evaluator;
-        } else if (bbtagUtil.isComparisonOperator(value1)) {
+        } else if (bbtag.isComparisonOperator(value1)) {
             operator = value1;
             [value1, evaluator] = [evaluator, value1];
-        } else if (bbtagUtil.isComparisonOperator(value2)) {
+        } else if (bbtag.isComparisonOperator(value2)) {
             operator = value2;
             [evaluator, value2] = [value2, evaluator];
         } else
@@ -84,7 +84,7 @@ export class IfSubtag extends DefinedSubtag {
         if (rightBool !== undefined)
             value2 = rightBool.toString();
 
-        if (bbtagUtil.operate(operator, value1, value2))
+        if (bbtag.operate(operator, value1, value2))
             return await thenCode.wait();
         return await elseCode?.wait() ?? '';
     }

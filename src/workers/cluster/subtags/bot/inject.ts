@@ -1,5 +1,5 @@
 import { DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class InjectSubtag extends DefinedSubtag {
     public constructor() {
@@ -15,7 +15,7 @@ export class InjectSubtag extends DefinedSubtag {
                     returns: 'string',
                     execute: async (context, [code]) => {
                         return await context.withStack(async () => {
-                            const ast = bbtagUtil.parse(code.value, true);
+                            const ast = bbtag.parse(code.value, true);
                             return await context.engine.eval(ast, context);
                         });
                     }

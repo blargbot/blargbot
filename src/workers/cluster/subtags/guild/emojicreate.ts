@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, guard, SubtagType } from '@cluster/utils';
+import { bbtag, guard, SubtagType } from '@cluster/utils';
 import { DiscordRESTError } from 'eris';
 import fetch from 'node-fetch';
 
@@ -67,7 +67,7 @@ export class EmojiCreateSubtag extends DefinedSubtag {
         }
 
         //TODO would be nice to be able to provide one role without using an array like {emojicreate;name;image;role} and not {emojicreate;name;image;["role"]}
-        const roleArray = await bbtagUtil.tagArray.deserializeOrGetArray(context, rolesStr);
+        const roleArray = await bbtag.tagArray.deserializeOrGetArray(context, rolesStr);
         if (roleArray !== undefined) {
             for (const roleQuery of roleArray.v) {
                 const role = await context.queryRole(roleQuery?.toString() ?? '', { noLookup: true });

@@ -1,8 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
-
-const json = bbtagUtil.json;
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class JsonStringifySubtag extends DefinedSubtag {
     public constructor() {
@@ -27,8 +25,7 @@ export class JsonStringifySubtag extends DefinedSubtag {
         if (indent === undefined)
             throw new NotANumberError(indentStr);
 
-        const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, input);
-        const obj = arr?.v ?? (await json.resolve(context, input)).object;
+        const obj = (await bbtag.json.resolveObj(context, input)).object;
         return JSON.stringify(obj, null, indent);
     }
 }

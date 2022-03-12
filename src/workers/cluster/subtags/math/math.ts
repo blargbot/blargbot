@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class MathSubtag extends DefinedSubtag {
     public constructor() {
@@ -11,7 +11,7 @@ export class MathSubtag extends DefinedSubtag {
                 {
                     parameters: ['operator', 'numbers+'],
                     description: 'Accepts multiple `values` and returns the result of `operator` on them. ' +
-                        'Valid operators are `' + Object.keys(bbtagUtil.numericOperators).join('`, `') + '`\n' +
+                        'Valid operators are `' + Object.keys(bbtag.numericOperators).join('`, `') + '`\n' +
                         'See `{operators}` for a shorter way of performing numeric operations.',
                     exampleCode: '2 + 3 + 6 - 2 = {math;-;{math;+;2;3;6};2}',
                     exampleOut: '2 + 3 + 6 - 2 = 9',
@@ -26,16 +26,16 @@ export class MathSubtag extends DefinedSubtag {
         operator: string,
         args: string[]
     ): number {
-        if (!bbtagUtil.isNumericOperator(operator))
+        if (!bbtag.isNumericOperator(operator))
             throw new InvalidOperatorError(operator);
 
-        return bbtagUtil.tagArray.flattenArray(args).map((arg) => {
+        return bbtag.tagArray.flattenArray(args).map((arg) => {
             const argRaw = arg;
             if (typeof arg === 'string')
                 arg = parse.float(arg);
             if (typeof arg !== 'number' || isNaN(arg))
                 throw new NotANumberError(argRaw);
             return arg;
-        }).reduce(bbtagUtil.numericOperators[operator]);
+        }).reduce(bbtag.numericOperators[operator]);
     }
 }

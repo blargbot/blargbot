@@ -1,6 +1,6 @@
 import { Cluster, ClusterUtilities } from '@cluster';
 import { AnalysisResults, BBTagContextOptions, ExecutionResult, RuntimeReturnState, Statement, SubtagCall } from '@cluster/types';
-import { bbtagUtil, discordUtil, parse, sleep } from '@cluster/utils';
+import { bbtag as bbtagUtil, discord, parse, sleep } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
@@ -158,7 +158,7 @@ export class BBTagEngine {
         this.logger.error(error);
         // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         let description = `${error}`;
-        const descLimit = discordUtil.getLimit('embed.description');
+        const descLimit = discord.getLimit('embed.description');
         if (description.length > descLimit)
             description = `${description.substring(0, descLimit - 15)}... (truncated)`;
 
@@ -170,7 +170,7 @@ export class BBTagEngine {
                     color: parse.color('red'),
                     fields: [
                         { name: 'SubTag', value: subtagName, inline: true },
-                        { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.substr(0, 97)}...`)) },
+                        { name: 'Arguments', value: JSON.stringify(bbtag.args.map(bbtagUtil.stringify).map(c => c.length < 100 ? c : `${c.slice(0, 97)}...`)) },
                         { name: 'Tag Name', value: context.rootTagName, inline: true },
                         { name: 'Location', value: `${bbtagUtil.stringifyRange(bbtag)}`, inline: true },
                         { name: 'Channel | Guild', value: `${context.channel.id} | ${context.guild.id}`, inline: true },

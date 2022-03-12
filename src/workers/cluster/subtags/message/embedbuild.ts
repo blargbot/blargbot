@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { InvalidEmbedError } from '@cluster/bbtag/errors';
-import { discordUtil, guard, parse, SubtagType } from '@cluster/utils';
+import { discord, guard, MessageComponent, parse, SubtagType } from '@cluster/utils';
 import { EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions } from 'eris';
 
 export class EmbedBuildSubtag extends DefinedSubtag {
@@ -80,8 +80,8 @@ interface EmbedFieldDetails {
     (embed: EmbedBuildOptions, value: string): void;
 }
 
-function validateLength(value: { length: number; } | undefined, limitKey: discordUtil.MessageComponent, errorText: string): void {
-    if (value !== undefined && value.length > discordUtil.getLimit(limitKey))
+function validateLength(value: { length: number; } | undefined, limitKey: MessageComponent, errorText: string): void {
+    if (value !== undefined && value.length > discord.getLimit(limitKey))
         throw new InvalidEmbedError(errorText, typeof value === 'string' ? value : undefined);
 }
 

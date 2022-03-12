@@ -1,9 +1,12 @@
 export * from '@core/utils';
-export * as bbtagUtil from './bbtag';
+export * from './bbtag';
 export * from './constants';
-export * as guard from './guard';
-export * as humanize from './humanize';
+export * from './guard';
+export * from './humanize';
+export * from './discord';
 export * from './parse';
-export * as discordUtil from './discord';
 
+export { guard } from './guard';
+export { humanize } from './humanize';
+export { discord } from './discord';
 export { parse } from './parse';

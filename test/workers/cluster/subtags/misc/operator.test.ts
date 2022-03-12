@@ -1,6 +1,6 @@
 import { InvalidOperatorError } from '@cluster/bbtag/errors';
 import { OperatorSubtag } from '@cluster/subtags/misc/operator';
-import { bbtagUtil } from '@cluster/utils';
+import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator } from '@cluster/utils';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
@@ -97,26 +97,26 @@ runSubtagTests({
     ]
 });
 
-function createNumericTestCases(args: number[], results: Record<bbtagUtil.NumericOperator, number>): SubtagTestCase[] {
+function createNumericTestCases(args: number[], results: Record<NumericOperator, number>): SubtagTestCase[] {
     return Object.entries(results).flatMap(([op, expected]) => [
         { code: `{${op};${args.join(';')}}`, expected: expected.toString() }
     ]);
 }
 
-function createLogicTestCases(args: boolean[], results: Record<Exclude<bbtagUtil.LogicOperator, '^'>, boolean>): SubtagTestCase[] {
+function createLogicTestCases(args: boolean[], results: Record<Exclude<LogicOperator, '^'>, boolean>): SubtagTestCase[] {
     return Object.entries(results).flatMap(([op, expected]) => [
         { code: `{${op};${args.join(';')}}`, expected: expected.toString() }
     ]);
 }
 
-function createOrdinalTestCases(args: string[], results: Record<bbtagUtil.OrdinalOperator, boolean>): SubtagTestCase[] {
-    return Object.entries(results).filter(x => bbtagUtil.isOrdinalOperator(x[0])).flatMap(([op, expected]) => [
+function createOrdinalTestCases(args: string[], results: Record<OrdinalOperator, boolean>): SubtagTestCase[] {
+    return Object.entries(results).filter(x => bbtag.isOrdinalOperator(x[0])).flatMap(([op, expected]) => [
         { code: `{${op};${args.join(';')}}`, expected: expected.toString() }
     ]);
 }
 
-function createStringTestCases(args: string[], results: Record<bbtagUtil.StringOperator, boolean>): SubtagTestCase[] {
-    return Object.entries(results).filter(x => bbtagUtil.isStringOperator(x[0])).flatMap(([op, expected]) => [
+function createStringTestCases(args: string[], results: Record<StringOperator, boolean>): SubtagTestCase[] {
+    return Object.entries(results).filter(x => bbtag.isStringOperator(x[0])).flatMap(([op, expected]) => [
         { code: `{${op};${args.join(';')}}`, expected: expected.toString() }
     ]);
 }

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
-import { bbtagUtil, randChoose, SubtagType } from '@cluster/utils';
+import { bbtag, randChoose, SubtagType } from '@cluster/utils';
 
 export class RandChooseSubtag extends DefinedSubtag {
     public constructor() {
@@ -33,7 +33,7 @@ export class RandChooseSubtag extends DefinedSubtag {
     }
 
     public async randChoose(context: BBTagContext, arrayStr: string): Promise<JToken> {
-        const choices = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr);
+        const choices = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr);
         if (choices === undefined)
             return arrayStr;
 

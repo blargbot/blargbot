@@ -1,10 +1,10 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Statement } from '@cluster/types';
-import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
+import { bbtag, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
-const defaultCondition = bbtagUtil.parse('true');
+const defaultCondition = bbtag.parse('true');
 
 export class WaitMessageSubtag extends DefinedSubtag {
     public constructor() {
@@ -62,7 +62,7 @@ export class WaitMessageSubtag extends DefinedSubtag {
         let channels;
         if (channelStr !== '') {
             let flattenedChannels;
-            flattenedChannels = bbtagUtil.tagArray.flattenArray([channelStr]).map(i => parse.string(i));
+            flattenedChannels = bbtag.tagArray.flattenArray([channelStr]).map(i => parse.string(i));
             flattenedChannels = await Promise.all(flattenedChannels.map(async input => await context.queryChannel(input, { noLookup: true })));
             channels = flattenedChannels.filter(guard.hasValue);
             if (flattenedChannels.length !== channels.length)
@@ -74,7 +74,7 @@ export class WaitMessageSubtag extends DefinedSubtag {
         // parse users
         let users;
         if (userStr !== '') {
-            const flattenedUsers = bbtagUtil.tagArray.flattenArray([userStr]).map(i => parse.string(i));
+            const flattenedUsers = bbtag.tagArray.flattenArray([userStr]).map(i => parse.string(i));
             users = await Promise.all(flattenedUsers.map(async input => {
                 const user = await context.queryUser(input, { noLookup: true });
                 if (user === undefined)

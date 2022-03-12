@@ -1,8 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
-
-const json = bbtagUtil.json;
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class JsonValuesSubtag extends DefinedSubtag {
     public constructor() {
@@ -27,19 +24,11 @@ export class JsonValuesSubtag extends DefinedSubtag {
     }
 
     public async getJsonValue(context: BBTagContext, input: string, path: string): Promise<JToken> {
-        try {
-            const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, input);
-            const obj = arr?.v ?? (await json.resolve(context, input)).object;
+        const obj = (await bbtag.json.resolveObj(context, input)).object;
 
-            if (path !== '')
-                return Object.values(json.get(obj, path) ?? []);
+        if (path !== '')
+            return Object.values(bbtag.json.get(obj, path) ?? {});
 
-            return Object.values(obj);
-
-        } catch (e: unknown) {
-            if (e instanceof Error)
-                throw new BBTagRuntimeError(e.message);
-            throw e;
-        }
+        return Object.values(obj);
     }
 }

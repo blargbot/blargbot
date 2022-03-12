@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 import { Role } from 'eris';
 
 export class RoleRemoveSubtag extends DefinedSubtag {
@@ -49,7 +49,7 @@ export class RoleRemoveSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? 'false' : undefined);
         }
 
-        const roleStrs = bbtagUtil.tagArray.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
+        const roleStrs = bbtag.tagArray.deserialize(roleStr)?.v.map(v => v?.toString() ?? '~') ?? [roleStr];
         const roles = roleStrs.map(role => context.guild.roles.get(role)).filter((r): r is Role => r !== undefined);
 
         if (roles.length === 0)

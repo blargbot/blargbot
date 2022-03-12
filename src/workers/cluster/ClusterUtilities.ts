@@ -1,4 +1,4 @@
-import { codeBlock, defaultStaff, discordUtil, guard, humanize, parse, snowflake } from '@cluster/utils';
+import { codeBlock, defaultStaff, discord, guard, humanize, parse, snowflake } from '@cluster/utils';
 import { BaseUtilities } from '@core/BaseUtilities';
 import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
 import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
@@ -568,7 +568,7 @@ export class ClusterUtilities extends BaseUtilities {
         if (bot === undefined)
             return false;
 
-        return discordUtil.getMemberPosition(bot) > discordUtil.getMemberPosition(member);
+        return discord.getMemberPosition(bot) > discord.getMemberPosition(member);
     }
 
     public async isUserStaff(member: Member): Promise<boolean>;

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class MapSubtag extends DefinedSubtag {
     public constructor() {
@@ -24,7 +24,7 @@ export class MapSubtag extends DefinedSubtag {
     }
 
     public async * map(context: BBTagContext, varName: string, arrayStr: string, code: SubtagArgument): AsyncIterable<string> {
-        const array = await bbtagUtil.tagArray.deserializeOrGetIterable(context, arrayStr) ?? [];
+        const array = await bbtag.tagArray.deserializeOrGetIterable(context, arrayStr) ?? [];
         try {
             for (const item of array) {
                 await context.limit.check(context, 'map:loops');

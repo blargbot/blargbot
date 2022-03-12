@@ -2,7 +2,7 @@ import { Cluster, ClusterUtilities } from '@cluster';
 import { getDocsEmbed } from '@cluster/bbtag';
 import { BaseGuildCommand, CommandContext } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { bbtagUtil, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@cluster/utils';
+import { bbtag, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@cluster/utils';
 import { SendContent, SendPayload, StoredTag } from '@core/types';
 import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
 import moment from 'moment';
@@ -192,7 +192,7 @@ export class TagCommand extends BaseGuildCommand {
             cooldown: match.cooldown
         });
 
-        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
+        return debug ? bbtag.createDebugOutput(result) : undefined;
     }
 
     public async runRaw(
@@ -210,7 +210,7 @@ export class TagCommand extends BaseGuildCommand {
             author: context.author.id
         });
 
-        return debug ? bbtagUtil.createDebugOutput(result) : undefined;
+        return debug ? bbtag.createDebugOutput(result) : undefined;
     }
 
     public async createTag(context: GuildCommandContext, tagName: string | undefined, content: string | undefined): Promise<string | undefined> {
@@ -586,7 +586,7 @@ export class TagCommand extends BaseGuildCommand {
 
         const analysis = context.bbtag.check(content);
         if (analysis.errors.length > 0)
-            return this.error(`There were errors with the bbtag you provided!\n${bbtagUtil.stringifyAnalysis(analysis)}`);
+            return this.error(`There were errors with the bbtag you provided!\n${bbtag.stringifyAnalysis(analysis)}`);
 
         await context.database.tags.set({
             name: tagName,
@@ -604,7 +604,7 @@ export class TagCommand extends BaseGuildCommand {
             content
         });
 
-        return this.success(`Tag \`${tagName}\` ${operation}.\n${bbtagUtil.stringifyAnalysis(analysis)}`);
+        return this.success(`Tag \`${tagName}\` ${operation}.\n${bbtag.stringifyAnalysis(analysis)}`);
     }
 
     private async requestTagName(context: GuildCommandContext, name: string | undefined, query = 'Enter the name of the tag or type `c` to cancel:'): Promise<string | undefined> {

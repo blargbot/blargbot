@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class SwitchSubtag extends DefinedSubtag {
     public constructor() {
@@ -23,7 +23,7 @@ export class SwitchSubtag extends DefinedSubtag {
         defaultCase?: SubtagArgument
     ): Promise<string> {
         for (const [caseValue, then] of cases) {
-            const { v: options = [caseValue] } = bbtagUtil.tagArray.deserialize(caseValue) ?? {};
+            const { v: options = [caseValue] } = bbtag.tagArray.deserialize(caseValue) ?? {};
             for (const option of options)
                 if (parse.string(option) === value)
                     return await then.execute();

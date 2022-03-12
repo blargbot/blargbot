@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtagUtil, shuffle, SubtagType } from '@cluster/utils';
+import { bbtag, shuffle, SubtagType } from '@cluster/utils';
 
 export class ShuffleSubtag extends DefinedSubtag {
     public constructor() {
@@ -34,7 +34,7 @@ export class ShuffleSubtag extends DefinedSubtag {
     }
 
     public async shuffle(context: BBTagContext, array: string): Promise<JArray | undefined> {
-        const arr = bbtagUtil.tagArray.deserialize(array);
+        const arr = bbtag.tagArray.deserialize(array);
         if (arr === undefined)
             throw new NotAnArrayError(array);
 

@@ -1,5 +1,5 @@
 import { DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class IsArraySubtag extends DefinedSubtag {
     public constructor() {
@@ -20,7 +20,7 @@ export class IsArraySubtag extends DefinedSubtag {
     }
 
     public isArray(arrayStr: string): boolean {
-        const array = bbtagUtil.tagArray.deserialize(arrayStr);
+        const array = bbtag.tagArray.deserialize(arrayStr);
         return array !== undefined;
     }
 }

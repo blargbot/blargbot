@@ -27,8 +27,8 @@ const generalApiOverrides = [
     'sleep'
 ];
 
-export {
-    generalApiOverrides as filter,
-    generalApiOverrides as waitmessage,
-    generalApiOverrides as waitreaction
+export const overrides = {
+    filter: generalApiOverrides,
+    waitmessage: generalApiOverrides,
+    waitreaction: generalApiOverrides
 };

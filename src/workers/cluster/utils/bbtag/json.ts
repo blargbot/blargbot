@@ -1,193 +1,181 @@
 import { BBTagContext } from '@cluster/bbtag';
+import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { BBTagArray } from '@cluster/types';
+import { parse } from '@core/utils';
 
-import { deserializeOrGetArray } from './tagArray';
+import { tagArray } from './tagArray';
 
-export interface ReturnObject {
+export interface JsonResolveResult {
     variable?: string;
     object: JObject | JArray;
 }
 
-export async function resolve(context: BBTagContext, input: string): Promise<ReturnObject> {
-    let obj: BBTagArray | JToken | undefined;
-    let variable: string | undefined;
-    const arr = await deserializeOrGetArray(context, input);
-    if (arr !== undefined) {
-        obj = arr.v;
-    } else {
+export const json = Object.freeze({
+    async resolveObj(context: BBTagContext, input: string): Promise<JsonResolveResult> {
+        let obj: BBTagArray | JToken | undefined;
+        const arr = tagArray.deserialize(input);
+        if (arr !== undefined)
+            return { variable: arr.n, object: arr.v };
+
+        obj = this.parse(input);
+        if (typeof obj === 'object' && obj !== null)
+            return { variable: undefined, object: obj };
+
+        const variable = await context.variables.get(input);
+        if (typeof variable.value === 'object' && variable.value !== null)
+            return { variable: input, object: variable.value };
+
+        if (typeof variable.value !== 'string')
+            return { variable: undefined, object: {} };
+
+        obj = this.parse(variable.value);
+        if (typeof obj === 'object' && obj !== null)
+            return { variable: input, object: obj };
+
+        return { variable: undefined, object: {} };
+    },
+    parseObj(input: string): JObject | JArray {
+        let obj = this.parse(input) ?? {};
+        if (typeof obj !== 'object')
+            obj = {};
+
+        return obj;
+    },
+    get(input: JToken | undefined, path: string | readonly string[]): JToken | undefined {
+        return this.getPathKeys(path)
+            .reduce((obj, part) => {
+                if (typeof obj === 'string')
+                    obj = this.parse(obj) ?? obj;
+
+                return getProp(obj, part);
+            }, input);
+    },
+    set(input: JToken | undefined, path: string | readonly string[], value: JToken | undefined, forceCreate = false): void {
+        const pathKeys = this.getPathKeys(path);
+        const container = pathKeys
+            .slice(0, -1)
+            .reduce(!forceCreate ? getProp : (obj, prop) => {
+                let propVal = getProp(obj, prop);
+                if (typeof propVal === 'string')
+                    propVal = this.parse(propVal) ?? propVal;
+
+                if (typeof propVal !== 'object' || propVal === null)
+                    propVal = {};
+
+                setProp(obj, prop, propVal);
+                return propVal;
+            }, input);
+
+        const finalProp = pathKeys[pathKeys.length - 1];
+        setProp(container, finalProp, value);
+    },
+    clean(input: JToken): JToken {
+        if (typeof input === 'string') {
+            const json = this.parse(input);
+            if (json !== undefined && json !== input)
+                return this.clean(json);
+        } else if (Array.isArray(input)) {
+            for (let i = 0; i < input.length; i++) {
+                input[i] = this.clean(input[i]);
+            }
+        } else if (typeof input === 'object' && input !== null) {
+            if (tagArray.isTagArray(input))
+                return this.clean(input.v);
+
+            for (const [key, value] of Object.entries(input))
+                input[key] = this.clean(value);
+
+        }
+        return input;
+    },
+    getPathKeys(path: string | readonly string[]): readonly string[] {
+        if (typeof path !== 'string')
+            return path;
+        return path.split('.');
+    },
+    parse(value: string): JToken | undefined {
+        if (/^\d+/.test(value)) // Dont parse snowflakes
+            return value;
+
         try {
-            obj = JSON.parse(input);
-        } catch (err: unknown) {
-            const v = await context.variables.get(input);
-            if (v.value !== undefined) {
-                variable = input;
-                if (typeof v.value === 'object')
-                    obj = v.value;
-                else {
-                    try {
-                        if (typeof v.value === 'string')
-                            obj = JSON.parse(v.value);
-                    } catch (err2: unknown) {
-                        obj = {};
-                    }
-                }
-            } else {
-                obj = {};
-            }
+            return JSON.parse(value);
+        } catch {
+            return undefined;
         }
     }
-    if (typeof obj !== 'object' || obj === null)
-        obj = {};
-    return {
-        variable,
-        object: obj
-    };
-}
+});
 
-export function parseSync(input: string): JObject | JArray {
-    let obj: BBTagArray | JToken;
-    try {
-        obj = JSON.parse(input);
-    } catch (err: unknown) {
-        obj = {};
+function getProp(target: JToken | undefined, prop: string): JToken | undefined {
+    if (tagArray.isTagArray(target))
+        target = target.v;
+
+    switch (typeof target) {
+        case 'undefined':
+            throw new BBTagRuntimeError(`Cannot read property ${prop} of undefined`);
+        case 'string':
+            return getArrayProp(target, prop);
+        case 'object':
+            if (target === null)
+                throw new BBTagRuntimeError(`Cannot read property ${prop} of null`);
+            if (Array.isArray(target))
+                return getArrayProp(target, prop);
+            if (Object.prototype.hasOwnProperty.call(target, prop))
+                return target[prop];
+        //fallthrough
+        default:
+            return undefined;
     }
-
-    if (typeof obj !== 'object' || obj === null)
-        obj = {};
-    return obj;
 }
-export function get(input: JObject | JArray, path: string | string[]): JToken | undefined {
-    let obj: undefined | JToken = input;
-    if (typeof path === 'string')
-        path = path.split('.');
-    for (const part of path) {
-        if (typeof obj === 'string') {
-            try {
-                obj = JSON.parse(obj);
-            } catch (err: unknown) {
-                // NOOP
-            }
-        }
 
-        if (typeof obj === 'object' && !Array.isArray(obj) && obj !== null) {
-            const keys = Object.keys(obj);
-            if (keys.length === 2 && keys.includes('v') && keys.includes('n') && /^\d+$/.test(part)) {
-                obj = obj.v;
-            }
-        }
-        if (obj === undefined)
-            throw Error(`Cannot read property ${part} of undefined`);
-        else if (obj === null)
-            throw Error(`Cannot read property ${part} of null`);
-        else if (typeof obj === 'object' && Object.prototype.hasOwnProperty.call(obj, part)) {
-            if (Array.isArray(obj))
-                obj = obj[parseInt(part)];
+function setProp(target: JToken | undefined, prop: string, value: JToken | undefined): void {
+    if (tagArray.isTagArray(target))
+        target = target.v;
+
+    switch (typeof target) {
+        case 'undefined':
+            throw new BBTagRuntimeError(`Cannot set property ${prop} on undefined`);
+        case 'object':
+            if (target === null)
+                throw new BBTagRuntimeError(`Cannot set property ${prop} on null`);
+            if (Array.isArray(target))
+                return setArrayProp(target, prop, value);
+
+            if (value === undefined)
+                delete target[prop];
             else
-                obj = obj[part];
-        } else if (typeof obj === 'string')
-            obj = obj[parseInt(part)];
-        else
-            obj = undefined;
+                target[prop] = value;
+            break;
+        default:
+            throw new BBTagRuntimeError(`Cannot set property ${prop} on ${JSON.stringify(target)}`);
     }
-    return obj;
 }
 
-export function set<T extends JObject | JArray>(input: T, path: string | string[], value: JToken | undefined, forceCreate = false): T {
-    if (typeof path === 'string')
-        path = path.split('.');
-    const comps = path;
-    let obj: undefined | JToken = input;
-    if (forceCreate) {
-        for (let i = 0; i < comps.length - 1; i++) {
-            const p = comps[i];
-            if (Object.prototype.hasOwnProperty.call(obj, p)) {
-                let _c;
-                if (Array.isArray(obj))
-                    _c = obj[parseInt(p)];
-                else if (typeof obj === 'object' && obj !== null)
-                    _c = obj[p];
-                // first ensure that it's not json encoded
-                if (typeof _c === 'string') {
-                    try {
-                        _c = JSON.parse(_c);
-                    } catch (err: unknown) {
-                        // NOOP
-                    }
-                }
-                // set to an object if it's a primative
-                if (typeof _c !== 'object' || _c === null)
-                    _c = {};
-                if (Array.isArray(obj))
-                    obj[parseInt(p)] = _c;
-                else if (typeof obj === 'object' && obj !== null)
-                    obj[p] = _c;
-            } else if (Array.isArray(obj))
-                obj[parseInt(p)] = {};
-            else if (typeof obj === 'object' && obj !== null)
-                obj[p] = {};
-
-            if (Array.isArray(obj))
-                obj = obj[parseInt(p)];
-            else if (typeof obj === 'object' && obj !== null)
-                obj = obj[p];
-        }
-    }
-    obj = input;
-    try {
-        for (let i = 0; i < comps.length - 1; i++) {
-            const p = comps[i];
-            if (obj === null)
-                throw Error(`Cannot set property ${p} of null`);
-
-            if (Array.isArray(obj))
-                obj = obj[parseInt(p)];
-            else if (typeof obj === 'object')
-                obj = obj[p];
-        }
-        const finalPart = comps[comps.length - 1];
-        if (value === undefined) {
-            if (Array.isArray(obj))
-                obj.splice(parseInt(finalPart), 1);
-            else if (typeof obj === 'object' && obj !== null)
-                delete obj[finalPart];
-        } else if (Array.isArray(obj))
-            obj[parseInt(finalPart)] = value;
-        else if (typeof obj === 'object' && obj !== null)
-            obj[finalPart] = value;
-
-    } catch (err: unknown) {
-        if (err instanceof Error)
-            throw err;
-    }
-
-    return input;
+function getArrayProp<T>(arr: ArrayLike<T>, prop: string): T | number | undefined {
+    const key = toArrayKey(prop);
+    if (key === undefined)
+        return undefined;
+    return arr[key];
 }
 
-export function clean(input: JToken): JToken {
-    if (typeof input === 'string') {
-        try {
-            // don't parse ints, because it will break snowflakes
-            if (/^\d+$/.test(input)) {
-                return input;
-            }
-            const raw = JSON.parse(input);
-
-            return clean(raw);
-        } catch (err: unknown) {
-            return input;
-        }
-    } else if (Array.isArray(input)) {
-        for (let i = 0; i < input.length; i++) {
-            input[i] = clean(input[i]);
-        }
-    } else if (typeof input === 'object' && input !== null) {
-        if ('n' in input && 'v' in input) {
-            return clean(input.v);
-        }
-
-        for (const [key, value] of Object.entries(input))
-            input[key] = clean(value);
-
+function setArrayProp<T>(arr: T[], prop: string, value: T): void {
+    const key = toArrayKey(prop);
+    if (key === undefined) {
+        // NO-OP
+    } else if (key === 'length') {
+        if (value === undefined)
+            arr.length = 0;
+        if (typeof value !== 'number' || value < 0)
+            throw new BBTagRuntimeError('Invalid array length');
+        arr.length = value;
+    } else if (value === undefined) {
+        arr.splice(key, 1);
+    } else {
+        arr[key] = value;
     }
-    return input;
+}
+
+function toArrayKey(key: string): 'length' | number | undefined {
+    if (key === 'length')
+        return 'length';
+    return parse.int(key, false);
 }

@@ -1,5 +1,5 @@
-import * as discordUtil from '../discord';
+import { discord } from '../discord';
 
 export function checkMessageSize(message: string): boolean {
-    return message.length <= discordUtil.getLimit('content');
+    return message.length <= discord.getLimit('content');
 }

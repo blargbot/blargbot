@@ -1,6 +1,6 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
+import { bbtag, codeBlock, CommandType, guard } from '@cluster/utils';
 import { SendContent } from '@core/types';
 import { humanize } from '@core/utils';
 
@@ -107,7 +107,7 @@ export class IntervalCommand extends BaseGuildCommand {
             case 'MISSING_AUTHORIZER': return this.error('I couldnt find the user who authorizes the interval!');
             case 'MISSING_CHANNEL': return this.error('I wasnt able to figure out which channel to run the interval in!');
             case 'TOO_LONG': return this.error(`The interval took longer than the max allowed time (${humanize.duration(context.cluster.intervals.timeLimit)})`);
-            default: return bbtagUtil.createDebugOutput(result);
+            default: return bbtag.createDebugOutput(result);
         }
     }
 }

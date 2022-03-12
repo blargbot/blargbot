@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { SubtagArgument } from '@cluster/types';
-import { bbtagUtil, overrides, parse, SubtagType } from '@cluster/utils';
+import { bbtag, overrides, parse, SubtagType } from '@cluster/utils';
 
 export class FilterSubtag extends DefinedSubtag {
     public constructor() {
@@ -22,7 +22,7 @@ export class FilterSubtag extends DefinedSubtag {
     }
 
     public async * filter(context: BBTagContext, varName: string, source: string, code: SubtagArgument): AsyncIterable<JToken> {
-        const array = await bbtagUtil.tagArray.deserializeOrGetIterable(context, source) ?? [];
+        const array = await bbtag.tagArray.deserializeOrGetIterable(context, source) ?? [];
         try {
             for (const item of array) {
                 await context.limit.check(context, 'filter:loops');

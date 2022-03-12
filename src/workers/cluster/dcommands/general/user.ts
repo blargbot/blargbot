@@ -1,5 +1,5 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, discordUtil, guard, parse } from '@cluster/utils';
+import { CommandType, discord, guard, parse } from '@cluster/utils';
 import { Activity, Constants, EmbedOptions, Member, User } from 'eris';
 import moment from 'moment';
 
@@ -46,7 +46,7 @@ export class UserCommand extends BaseGlobalCommand {
                 ];
                 if (member.nick !== null)
                     result.author.name += ` (${member.nick})`;
-                result.color = discordUtil.getMemberColor(member);
+                result.color = discord.getMemberColor(member);
                 result.footer = {
                     icon_url: `https://cdn.discordapp.com/emojis/${getStatusEmoteId(context, member)}.png`,
                     text: getActivityString(member.activities?.[0])

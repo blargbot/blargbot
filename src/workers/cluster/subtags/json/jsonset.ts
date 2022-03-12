@@ -1,9 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
-import { ReturnObject } from '@cluster/utils/bbtag/json';
-
-const json = bbtagUtil.json;
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class JsonSetSubtag extends DefinedSubtag {
     public constructor() {
@@ -18,7 +14,7 @@ export class JsonSetSubtag extends DefinedSubtag {
                     exampleCode: '{set;~json;{json;{"key" : "value"}}}\n{jset;~json;key}\n{get;~json}',
                     exampleOut: '{}',
                     returns: 'json|nothing',
-                    execute: (ctx, [input, path]) => this.deleteValue(ctx, input.value, path.value)
+                    execute: (ctx, [input, path]) => this.setValue(ctx, input.value, path.value, undefined, 'false')
                 },
                 {
                     parameters: ['input:{}', 'path', 'value', 'create?'],
@@ -34,70 +30,23 @@ export class JsonSetSubtag extends DefinedSubtag {
         });
     }
 
-    public async deleteValue(
-        context: BBTagContext,
-        input: string,
-        path: string
-    ): Promise<JToken | undefined> {
-        let obj: JArray | JObject | ReturnObject;
-        try {
-            let varname: string | undefined;
-            const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, input);
-            if (arr !== undefined)
-                obj = arr.v;
-            else {
-                const parsedObject = await json.resolve(context, input);
-                if (parsedObject.variable !== undefined)
-                    varname = parsedObject.variable;
-                obj = parsedObject.object;
-            }
-            const modifiedObj = json.set(obj, path, undefined);
-            if (arr?.n !== undefined) {
-                await context.variables.set(arr.n, obj);
-            } else if (varname !== undefined) {
-                await context.variables.set(varname, JSON.stringify(modifiedObj));
-            } else
-                return modifiedObj;
-            return undefined;
-        } catch (e: unknown) {
-            if (e instanceof Error)
-                throw new BBTagRuntimeError(e.message);
-            throw e;
-        }
-    }
-
     public async setValue(
         context: BBTagContext,
         input: string,
         path: string,
-        value: string,
+        value: string | undefined,
         createStr: string
     ): Promise<JToken | undefined> {
         const create = createStr !== '' ? true : false;
-        let obj: JArray | JObject | ReturnObject;
-        try {
-            let varname: string | undefined;
-            const arr = await bbtagUtil.tagArray.deserializeOrGetArray(context, input);
-            if (arr !== undefined)
-                obj = arr.v;
-            else {
-                const parsedObject = await json.resolve(context, input);
-                if (parsedObject.variable !== undefined)
-                    varname = parsedObject.variable;
-                obj = parsedObject.object;
-            }
-            const modifiedObj = json.set(obj, path, value, create);
-            if (arr?.n !== undefined) {
-                await context.variables.set(arr.n, obj);
-            } else if (varname !== undefined) {
-                await context.variables.set(varname, JSON.stringify(modifiedObj));
-            } else
-                return modifiedObj;
+        const target = await bbtag.json.resolveObj(context, input);
+
+        bbtag.json.set(target.object, path, value, create);
+
+        if (target.variable !== undefined) {
+            await context.variables.set(target.variable, target.object);
             return undefined;
-        } catch (e: unknown) {
-            if (e instanceof Error)
-                throw new BBTagRuntimeError(e.message);
-            throw e;
         }
+
+        return target.object;
     }
 }

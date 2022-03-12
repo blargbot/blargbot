@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { defaultStaff, discordUtil, parse } from '@cluster/utils';
+import { defaultStaff, discord, parse } from '@cluster/utils';
 import { StoredGuildSettings } from '@core/types';
 import { Constants, Guild } from 'eris';
 
@@ -54,7 +54,7 @@ export abstract class ModerationManagerBase {
         if (targetMember === undefined)
             return true;
 
-        return discordUtil.getMemberPosition(targetMember) < discordUtil.getMemberPosition(moderatorMember);
+        return discord.getMemberPosition(targetMember) < discord.getMemberPosition(moderatorMember);
     }
 
     private async getStaffPerms(guild: Guild, overrideKey?: keyof StoredGuildSettings): Promise<bigint> {

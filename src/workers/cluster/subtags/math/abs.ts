@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@cluster/bbtag';
 import { NotANumberError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class AbsSubtag extends DefinedSubtag {
     public constructor() {
@@ -37,7 +37,7 @@ export class AbsSubtag extends DefinedSubtag {
     }
 
     public absMultiple(values: string[]): number[] {
-        return bbtagUtil.tagArray.flattenArray(values)
+        return bbtag.tagArray.flattenArray(values)
             .map(s => {
                 switch (typeof s) {
                     case 'string': {

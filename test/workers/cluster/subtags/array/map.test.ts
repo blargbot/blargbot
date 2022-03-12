@@ -1,6 +1,9 @@
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { MapSubtag } from '@cluster/subtags/array/map';
 import { GetSubtag } from '@cluster/subtags/bot/get';
+import { ReturnSubtag } from '@cluster/subtags/bot/return';
+import { IfSubtag } from '@cluster/subtags/misc/if';
+import { RuntimeReturnState } from '@cluster/types';
 import { SubtagVariableType } from '@core/types';
 import { expect } from 'chai';
 
@@ -63,6 +66,24 @@ runSubtagTests({
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('a')).value).to.equal('initial');
                 expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+            }
+        },
+        {
+            code: '{map;a;var1;<{get;a}>{if;{get;a};==;s;{return}}}',
+            expected: '["<t>","<h>","<i>","<s>"]',
+            subtags: [new GetSubtag(), new IfSubtag(), new ReturnSubtag()],
+            setup(ctx) {
+                ctx.options.tagName = 'testTag';
+                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.var1`] = 'this is var1';
+                ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`] = 'initial';
+            },
+            postSetup(bbctx, ctx) {
+                ctx.limit.setup(m => m.check(bbctx, 'map:loops')).verifiable(4).thenResolve(undefined);
+            },
+            async assert(bbctx, _, ctx) {
+                expect((await bbctx.variables.get('a')).value).to.equal('initial');
+                expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
+                expect(bbctx.state.return).to.equal(RuntimeReturnState.ALL);
             }
         },
         {

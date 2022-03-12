@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class UserHasRolesSubtag extends DefinedSubtag {
     public constructor() {
@@ -43,7 +43,7 @@ export class UserHasRolesSubtag extends DefinedSubtag {
             throw new UserNotFoundError(userStr)
                 .withDisplay(quiet ? 'false' : undefined);
 
-        const arr = bbtagUtil.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
+        const arr = bbtag.tagArray.deserialize(roleStr) ?? { v: [roleStr] };
         const roleArr = arr.v.map(x => parse.string(x));
         for (const role of roleArr) {
             if (member.guild.roles.get(role) === undefined) {

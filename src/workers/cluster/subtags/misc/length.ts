@@ -1,5 +1,5 @@
 import { DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class LengthSubtag extends DefinedSubtag {
     public constructor() {
@@ -21,7 +21,7 @@ export class LengthSubtag extends DefinedSubtag {
     }
 
     public getLength(value: string): number {
-        const deserializedArray = bbtagUtil.tagArray.deserialize(value);
+        const deserializedArray = bbtag.tagArray.deserialize(value);
         if (deserializedArray !== undefined)
             return deserializedArray.v.length;
         return value.length;

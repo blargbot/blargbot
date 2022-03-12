@@ -1,6 +1,6 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { CommandType, discordUtil } from '@cluster/utils';
+import { CommandType, discord } from '@cluster/utils';
 import { guard, humanize } from '@core/utils';
 import { AllowedMentions, Constants, EmbedOptions, KnownChannel, KnownGuildTextableChannel, Role } from 'eris';
 import moment from 'moment-timezone';
@@ -63,7 +63,7 @@ export class AnnounceCommand extends BaseGuildCommand {
                 return this.error('Oops, seems like your config changes didnt save! Please try again.');
         }
 
-        const color = discordUtil.getMemberColor(context.message.member);
+        const color = discord.getMemberColor(context.message.member);
         const mentions: AllowedMentions = config.role.id === config.role.guild.id
             ? { everyone: true }
             : { roles: [config.role.id] };

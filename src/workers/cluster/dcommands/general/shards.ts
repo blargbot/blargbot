@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { ClusterStats, ShardStats } from '@cluster/types';
-import { CommandType, discordUtil, guard, humanize, snowflake } from '@cluster/utils';
+import { CommandType, discord, guard, humanize, snowflake } from '@cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
@@ -60,7 +60,7 @@ export class ShardsCommand extends BaseGlobalCommand {
             fieldValue += `Ready since: <t:${Math.round(cluster.readyTime / 1000)}:R>\nRam: ${humanize.ram(cluster.rss)}`;
             fieldValue += '\n**Shards**:\n```\n';
             fieldValue += cluster.shards.map(shard => {
-                return `${shard.id} ${discordUtil.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`;
+                return `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`;
             }).join('\n') + '\n```';
             return {
                 name: 'Cluster ' + cluster.id.toString(),
@@ -81,7 +81,7 @@ export class ShardsCommand extends BaseGlobalCommand {
     public async showGuildShards(context: CommandContext, guildIDStr: string): Promise<string | EmbedOptions> {
         if (!snowflake.test(guildIDStr))
             return this.error(`\`${guildIDStr}\` is not a valid guildID`);
-        const guildData = await discordUtil.cluster.getGuildClusterStats(context.cluster, guildIDStr);
+        const guildData = await discord.cluster.getGuildClusterStats(context.cluster, guildIDStr);
         const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildIDStr : false;
         const descPrefix = isSameGuild ? 'This guild' : 'Guild `' + guildIDStr + '`';
         return this.shardEmbed(context, guildData.cluster, descPrefix + ` is on shard \`${guildData.shard.id}\` and cluster \`${guildData.cluster.id}\``, guildData.shard);
@@ -91,7 +91,7 @@ export class ShardsCommand extends BaseGlobalCommand {
         context: CommandContext,
         clusterID: number
     ): Promise<string | EmbedOptions> {
-        const clusterStats = await discordUtil.cluster.getClusterStats(context.cluster, clusterID);
+        const clusterStats = await discord.cluster.getClusterStats(context.cluster, clusterID);
         const isValidCluster = Math.ceil(context.config.discord.shards.max / context.config.discord.shards.perCluster) - 1 >= clusterID && clusterID >= 0;
         if (clusterStats === undefined)
             return this.error(`Cluster ${clusterID} ${isValidCluster ? 'is not online at the moment' : 'does not exist'}`);
@@ -115,14 +115,14 @@ export class ShardsCommand extends BaseGlobalCommand {
                 name: 'Shards',
                 value: '```\n' +
                     clusterData.shards.map(shard => {
-                        return `${shard.id} ${discordUtil.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`;
+                        return `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`;
                     }).join('\n') + '\n```'
             }
         ];
         if (shard !== undefined) {
             embed.fields.unshift({
                 name: 'Shard ' + shard.id.toString(),
-                value: '```\nStatus: ' + discordUtil.cluster.statusEmojiMap[shard.status] +
+                value: '```\nStatus: ' + discord.cluster.statusEmojiMap[shard.status] +
                     `\nLatency: ${shard.latency}ms` +
                     `\nGuilds: ${shard.guilds}` +
                     `\nCluster: ${shard.cluster}` +

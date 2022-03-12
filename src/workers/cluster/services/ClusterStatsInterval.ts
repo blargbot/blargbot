@@ -1,5 +1,5 @@
 import { Cluster } from '@cluster';
-import { discordUtil } from '@cluster/utils';
+import { discord } from '@cluster/utils';
 import { IntervalService } from '@core/serviceTypes';
 
 export class ClusterStatsInterval extends IntervalService {
@@ -11,6 +11,6 @@ export class ClusterStatsInterval extends IntervalService {
     }
 
     public execute(): void | Promise<void> {
-        this.cluster.worker.send('clusterStats', discordUtil.cluster.getStats(this.cluster));
+        this.cluster.worker.send('clusterStats', discord.cluster.getStats(this.cluster));
     }
 }

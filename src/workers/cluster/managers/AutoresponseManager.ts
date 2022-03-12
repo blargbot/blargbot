@@ -1,6 +1,6 @@
 import { Cluster } from '@cluster';
 import { WhitelistResponse } from '@cluster/types';
-import { bbtagUtil, codeBlock, guard, humanize, mapping } from '@cluster/utils';
+import { bbtag, codeBlock, guard, humanize, mapping } from '@cluster/utils';
 import { GuildTriggerTag } from '@core/types';
 import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
 
@@ -102,7 +102,7 @@ ${codeBlock(code, 'js')}`
 
         delete this.#debugOutput[key];
         await this.cluster.util.send(debugCtx.channelId, {
-            ...bbtagUtil.createDebugOutput(result),
+            ...bbtag.createDebugOutput(result),
             messageReference: { messageID: debugCtx.messageId }
         });
     }

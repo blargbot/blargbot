@@ -1,2 +1,8 @@
-export * from '@core/utils/discord';
-export * as cluster from './cluster';
+import { discord as coreDiscord } from '@core/utils/discord';
+
+import * as cluster from './cluster';
+
+export const discord = {
+    ...coreDiscord,
+    cluster
+};

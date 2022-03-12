@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@cluster/command';
 import { ClusterStats, ShardStats } from '@cluster/types';
-import { CommandType, discordUtil, guard, humanize, snowflake } from '@cluster/utils';
+import { CommandType, discord, guard, humanize, snowflake } from '@cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 
@@ -35,7 +35,7 @@ export class ShardCommand extends BaseGlobalCommand {
     public async showGuildShard(context: CommandContext, guildID: string): Promise<string | EmbedOptions> {
         if (!snowflake.test(guildID))
             return this.error('`' + guildID + '` is not a valid guildID');
-        const clusterData = await discordUtil.cluster.getGuildClusterStats(context.cluster, guildID);
+        const clusterData = await discord.cluster.getGuildClusterStats(context.cluster, guildID);
 
         const isSameGuild = guard.isGuildCommandContext(context) ? context.channel.guild.id === guildID : false;
         const descPrefix = isSameGuild ? 'This guild' : 'Guild `' + guildID + '`';
@@ -43,7 +43,7 @@ export class ShardCommand extends BaseGlobalCommand {
     }
 
     public showCurrentDMShard(context: CommandContext): EmbedOptions {
-        const clusterData = discordUtil.cluster.getStats(context.cluster);
+        const clusterData = discord.cluster.getStats(context.cluster);
         return this.shardEmbed(context, clusterData, clusterData.shards[0], 'Discord DMs are on shard `0` in cluster `' + context.cluster.id.toString() + '`'); // should be cluster 0 always but idk
     }
 
@@ -55,7 +55,7 @@ export class ShardCommand extends BaseGlobalCommand {
             fields: [
                 {
                     name: 'Shard ' + shard.id.toString(),
-                    value: '```\nStatus: ' + discordUtil.cluster.statusEmojiMap[shard.status] +
+                    value: '```\nStatus: ' + discord.cluster.statusEmojiMap[shard.status] +
                         `\nLatency: ${shard.latency}ms` +
                         `\nGuilds: ${shard.guilds}` +
                         `\nCluster: ${shard.cluster}` +
@@ -72,7 +72,7 @@ export class ShardCommand extends BaseGlobalCommand {
                     name: 'Shards',
                     value: '```\n' +
                         clusterData.shards.map(shard => {
-                            return `${shard.id} ${discordUtil.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`;
+                            return `${shard.id} ${discord.cluster.statusEmojiMap[shard.status]} ${shard.latency}ms`;
                         }).join('\n') + '\n```'
                 }
             ]

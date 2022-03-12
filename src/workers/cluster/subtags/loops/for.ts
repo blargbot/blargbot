@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
 import { SubtagArgument } from '@cluster/types';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 import { OrdinalOperator } from '@cluster/utils/bbtag/operators';
 
 export class ForSubtag extends DefinedSubtag {
@@ -39,14 +39,14 @@ export class ForSubtag extends DefinedSubtag {
         const increment = parse.float(incrementStr);
 
         if (isNaN(initial)) errors.push(new BBTagRuntimeError('Initial must be a number'));
-        if (!bbtagUtil.isComparisonOperator(operator)) errors.push(new InvalidOperatorError(operator));
+        if (!bbtag.isComparisonOperator(operator)) errors.push(new InvalidOperatorError(operator));
         if (isNaN(limit)) errors.push(new BBTagRuntimeError('Limit must be a number'));
         if (isNaN(increment)) errors.push(new BBTagRuntimeError('Increment must be a number'));
         if (errors.length > 0)
             throw new AggregateBBTagError(errors);
 
         try {
-            for (let i = initial; bbtagUtil.operate(operator as OrdinalOperator, i.toString(), limit.toString()); i += increment) {
+            for (let i = initial; bbtag.operate(operator as OrdinalOperator, i.toString(), limit.toString()); i += increment) {
                 await context.limit.check(context, 'for:loops');
                 await context.variables.set(varName, i);
                 yield await code.execute();

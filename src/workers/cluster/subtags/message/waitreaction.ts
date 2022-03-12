@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
 import { Statement, SubtagArgument } from '@cluster/types';
-import { bbtagUtil, discordUtil, overrides, parse, SubtagType } from '@cluster/utils';
+import { bbtag, discord, overrides, parse, SubtagType } from '@cluster/utils';
 import { Emote } from '@core/Emote';
 import { guard } from '@core/utils';
 
@@ -66,12 +66,12 @@ export class WaitReactionSubtag extends DefinedSubtag {
         timeoutStr: string
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
         // get messages
-        const messages = bbtagUtil.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
+        const messages = bbtag.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
 
         // parse users
         let users;
         if (userIDStr !== '') {
-            const flattenedUsers = bbtagUtil.tagArray.flattenArray([userIDStr]).map(i => parse.string(i));
+            const flattenedUsers = bbtag.tagArray.flattenArray([userIDStr]).map(i => parse.string(i));
             users = await Promise.all(flattenedUsers.map(async input => {
                 const user = await context.queryUser(input, { noErrors: true, noLookup: true });
                 if (user === undefined)
@@ -85,7 +85,7 @@ export class WaitReactionSubtag extends DefinedSubtag {
         // parse reactions
         let parsedReactions: Emote[] | undefined;
         if (reactions !== '') {
-            parsedReactions = bbtagUtil.tagArray.flattenArray([reactions]).map(i => parse.string(i)).flatMap(i => Emote.findAll(i));
+            parsedReactions = bbtag.tagArray.flattenArray([reactions]).map(i => parse.string(i)).flatMap(i => Emote.findAll(i));
             parsedReactions = [...new Set(parsedReactions)];
             if (parsedReactions.length === 0)
                 throw new BBTagRuntimeError('Invalid Emojis');
@@ -96,9 +96,9 @@ export class WaitReactionSubtag extends DefinedSubtag {
         // parse check code
         let condition: Statement;
         if (typeof code === 'string') {
-            condition = bbtagUtil.parse(code);
+            condition = bbtag.parse(code);
         } else {
-            condition = bbtagUtil.parse(code.raw);
+            condition = bbtag.parse(code.raw);
         }
 
         // parse timeout
@@ -134,6 +134,6 @@ export class WaitReactionSubtag extends DefinedSubtag {
 
         if (result === undefined)
             throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
-        return [result.message.channel.id, result.message.id, result.user.id, discordUtil.emojiString(result.reaction)];
+        return [result.message.channel.id, result.message.id, result.user.id, discord.emojiString(result.reaction)];
     }
 }

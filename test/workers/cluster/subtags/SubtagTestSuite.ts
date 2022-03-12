@@ -7,7 +7,7 @@ import { MessageAwaiterFactory } from '@cluster/managers/awaiters/MessageAwaiter
 import { ReactionAwaiterFactory } from '@cluster/managers/awaiters/ReactionAwaiterFactory';
 import { BanManager, ModLogManager, WarnManager } from '@cluster/managers/moderation';
 import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@cluster/types';
-import { bbtagUtil, guard, pluralise as p, repeat, snowflake, SubtagType } from '@cluster/utils';
+import { bbtag, guard, pluralise as p, repeat, snowflake, SubtagType } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
 import { ModuleLoader } from '@core/modules';
@@ -736,7 +736,7 @@ async function runTestCase<TestCase extends SubtagTestCase>(context: Context, su
         for (const setup of config.setup)
             await setup.call(actualTestCase, test);
         await actualTestCase.setup?.(test);
-        const code = bbtagUtil.parse(testCase.code);
+        const code = bbtag.parse(testCase.code);
         const context = test.createContext();
         for (const postSetup of config.postSetup)
             await postSetup.call(actualTestCase, context, test);

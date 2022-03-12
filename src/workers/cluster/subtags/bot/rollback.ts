@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { bbtagUtil, parse, SubtagType } from '@cluster/utils';
+import { bbtag, parse, SubtagType } from '@cluster/utils';
 
 export class RollbackSubtag extends DefinedSubtag {
     public constructor() {
@@ -36,7 +36,7 @@ export class RollbackSubtag extends DefinedSubtag {
     public rollback(context: BBTagContext, args: string[]): void {
         const keys = args.length === 0
             ? undefined
-            : bbtagUtil.tagArray.flattenArray(args).map(v => parse.string(v));
+            : bbtag.tagArray.flattenArray(args).map(v => parse.string(v));
         context.variables.reset(keys);
     }
 }

@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtagUtil, SubtagType } from '@cluster/utils';
+import { bbtag, SubtagType } from '@cluster/utils';
 
 export class PushSubtag extends DefinedSubtag {
     public constructor() {
@@ -21,7 +21,7 @@ export class PushSubtag extends DefinedSubtag {
     }
 
     public async push(context: BBTagContext, arrayStr: string, values: string[]): Promise<JArray | undefined> {
-        const { n: varName, v: array } = await bbtagUtil.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
+        const { n: varName, v: array } = await bbtag.tagArray.deserializeOrGetArray(context, arrayStr) ?? {};
 
         if (array === undefined)
             throw new NotAnArrayError(arrayStr);

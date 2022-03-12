@@ -1,6 +1,6 @@
 import { BaseGuildCommand } from '@cluster/command';
 import { GuildCommandContext } from '@cluster/types';
-import { bbtagUtil, codeBlock, CommandType, guard } from '@cluster/utils';
+import { bbtag, codeBlock, CommandType, guard } from '@cluster/utils';
 import { SendContent } from '@core/types';
 import { KnownChannel } from 'eris';
 
@@ -127,7 +127,7 @@ export class GreetingCommand extends BaseGuildCommand {
         switch (result) {
             case 'CHANNEL_MISSING': return this.error('I wasnt able to locate a channel to sent the message in!');
             case 'CODE_MISSING': return this.error('There isnt a greeting message set!');
-            default: return bbtagUtil.createDebugOutput(result);
+            default: return bbtag.createDebugOutput(result);
         }
     }
 }

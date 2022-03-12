@@ -1,7 +1,7 @@
 import { SubtagStackOverflowError, UnknownSubtagError } from '@cluster/bbtag/errors';
 import { FunctionInvokeSubtag } from '@cluster/subtags/bot/func.';
 import { RuntimeReturnState } from '@cluster/types';
-import { bbtagUtil } from '@cluster/utils';
+import { bbtag } from '@cluster/utils';
 import { expect } from 'chai';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite';
@@ -19,7 +19,7 @@ runSubtagTests({
                 return 'Success!';
             })],
             setup(ctx) {
-                ctx.rootScope.functions['test'] = bbtagUtil.parse('{assert}');
+                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
                 ctx.options.state = { stackSize: 122 };
             },
             assert(ctx) {
@@ -36,7 +36,7 @@ runSubtagTests({
                 return 'Success!';
             })],
             setup(ctx) {
-                ctx.rootScope.functions['test'] = bbtagUtil.parse('{assert}');
+                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
                 ctx.options.state = { stackSize: 122 };
             },
             assert(ctx) {
@@ -59,7 +59,7 @@ runSubtagTests({
             ],
             setup(ctx) {
                 ctx.options.state = { stackSize: 200 };
-                ctx.rootScope.functions['test'] = bbtagUtil.parse('{assert}');
+                ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
             },
             assert(ctx) {
                 expect(ctx.state.stackSize).to.equal(200);
