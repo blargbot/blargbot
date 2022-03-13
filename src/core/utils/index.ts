@@ -21,3 +21,4 @@ export * from './pluralise';
 export * from './repeat';
 export * from './runMiddleware';
 export * from './hasFlag';
+export * from './clamp';

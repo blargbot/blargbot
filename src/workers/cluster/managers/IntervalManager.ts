@@ -86,8 +86,8 @@ export class IntervalManager {
                 inputRaw: '',
                 isCC: true,
                 rootTagName: '_interval',
-                author: interval.author,
-                authorizer: interval.authorizer,
+                authorId: interval.author,
+                authorizerId: interval.authorizer,
                 silent: true
             });
             this.cluster.logger.log('Interval on guild', member.guild.id, 'executed in', result.duration.total);

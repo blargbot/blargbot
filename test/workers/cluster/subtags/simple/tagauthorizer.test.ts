@@ -9,12 +9,12 @@ runSubtagTests({
         {
             code: '{tagauthorizer}',
             expected: '1234567',
-            setup(ctx) { ctx.options.author = '1234567'; }
+            setup(ctx) { ctx.options.authorId = '1234567'; }
         },
         {
             code: '{ccauthorizer}',
             expected: 'abcdefg',
-            setup(ctx) { ctx.options.author = 'abcdefg'; }
+            setup(ctx) { ctx.options.authorId = 'abcdefg'; }
         }
     ]
 });

@@ -1,9 +1,10 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { Statement, SubtagArgument } from '@cluster/types';
-import { bbtag, discord, overrides, parse, SubtagType } from '@cluster/utils';
+import { bbtag, clamp, discord, overrides, parse, SubtagType } from '@cluster/utils';
 import { Emote } from '@core/Emote';
 import { guard } from '@core/utils';
+
+const defaultCondition = bbtag.parse('true');
 
 export class WaitReactionSubtag extends DefinedSubtag {
     public constructor() {
@@ -33,7 +34,7 @@ export class WaitReactionSubtag extends DefinedSubtag {
                     exampleIn: '(reaction is added)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","🤔"]',
                     returns: 'id[]',
-                    execute: (ctx, [messages, userIDs]) => this.awaitReaction(ctx, messages.value, userIDs.value, '', 'true', '60')
+                    execute: (ctx, [messages, userIDs]) => this.awaitReaction(ctx, messages.value, userIDs.value)
                 },
                 {
                     parameters: ['messages', 'userIDs', 'reactions', '~condition?:true'],
@@ -42,7 +43,7 @@ export class WaitReactionSubtag extends DefinedSubtag {
                     exampleIn: '(🤔 was reacted)\n(👀 was reacted)',
                     exampleOut: '["111111111111111","12345678912345","3333333333333","👀"]',
                     returns: 'string[]',
-                    execute: (ctx, [messages, userIDs, reactions, condition]) => this.awaitReaction(ctx, messages.value, userIDs.value, reactions.value, condition, '60')
+                    execute: (ctx, [messages, userIDs, reactions, condition]) => this.awaitReaction(ctx, messages.value, userIDs.value, reactions.value, condition.code, '60')
                 },
                 {
                     parameters: ['messages', 'userIDs', 'reactions', '~condition:true', 'timeout:60'],
@@ -51,7 +52,7 @@ export class WaitReactionSubtag extends DefinedSubtag {
                     exampleIn: '(some random user reacted with 🤔)\n(titansmasher reacted with 🤔)',
                     exampleOut: '["111111111111111","12345678912345","135556895086870528","🤔"]',
                     returns: 'string[]',
-                    execute: (ctx, [messages, userIDs, reactions, condition, timeout]) => this.awaitReaction(ctx, messages.value, userIDs.value, reactions.value, condition, timeout.value)
+                    execute: (ctx, [messages, userIDs, reactions, condition, timeout]) => this.awaitReaction(ctx, messages.value, userIDs.value, reactions.value, condition.code, timeout.value)
                 }
             ]
         });
@@ -61,26 +62,13 @@ export class WaitReactionSubtag extends DefinedSubtag {
         context: BBTagContext,
         messageStr: string,
         userIDStr: string,
-        reactions: string,
-        code: SubtagArgument | string,
-        timeoutStr: string
+        reactions = '',
+        condition = defaultCondition,
+        timeoutStr = '60'
     ): Promise<[channelId: string, messageId: string, userId: string, emoji: string]> {
-        // get messages
         const messages = bbtag.tagArray.flattenArray([messageStr]).map(i => parse.string(i));
-
-        // parse users
-        let users;
-        if (userIDStr !== '') {
-            const flattenedUsers = bbtag.tagArray.flattenArray([userIDStr]).map(i => parse.string(i));
-            users = await Promise.all(flattenedUsers.map(async input => {
-                const user = await context.queryUser(input, { noErrors: true, noLookup: true });
-                if (user === undefined)
-                    throw new UserNotFoundError(input);
-                return user.id;
-            }));
-        } else {
-            users = [context.user.id];
-        }
+        const users = await this.bulkLookup(userIDStr, i => context.queryUser(i, { noErrors: true, noLookup: true }), UserNotFoundError)
+            ?? [context.user];
 
         // parse reactions
         let parsedReactions: Emote[] | undefined;
@@ -93,47 +81,28 @@ export class WaitReactionSubtag extends DefinedSubtag {
             parsedReactions = undefined;
         }
 
-        // parse check code
-        let condition: Statement;
-        if (typeof code === 'string') {
-            condition = bbtag.parse(code);
-        } else {
-            condition = bbtag.parse(code.raw);
-        }
+        const timeout = clamp(parse.float(timeoutStr), 0, 300);
+        if (isNaN(timeout))
+            throw new NotANumberError(timeoutStr);
 
-        // parse timeout
-        let timeout;
-        if (timeoutStr !== '') {
-            timeout = parse.float(timeoutStr, false);
-            if (timeout === undefined)
-                throw new NotANumberError(timeoutStr);
-            if (timeout < 0)
-                timeout = 0;
-            if (timeout > 300)
-                timeout = 300;
-        } else {
-            timeout = 60;
-        }
-
-        const userSet = new Set(users);
+        const userSet = new Set(users.map(u => u.id));
         const reactionSet = new Set(parsedReactions?.map(r => r.toString()));
         const checkReaction = reactionSet.size === 0 ? () => true : (emoji: Emote) => reactionSet.has(emoji.toString());
-        const result = await context.util.cluster.awaiter.reactions.wait(messages, async ({ user, reaction, message }) => {
-            const emoji = Emote.create(reaction);
-
-            if (!userSet.has(user.id) || !checkReaction(emoji) || !guard.isGuildMessage(message))
+        const result = await context.util.cluster.awaiter.reactions.getAwaiter(messages, async ({ user, reaction, message }) => {
+            if (!userSet.has(user.id) || !checkReaction(reaction) || !guard.isGuildMessage(message))
                 return false;
 
             const result = await context.withScope(scope => {
-                scope.reaction = emoji.toString();
+                scope.reaction = reaction.toString();
                 scope.reactUser = user.id;
                 return context.withChild({ message }, context => context.eval(condition));
             });
             return parse.boolean(result, false);
-        }, timeout * 1000);
+        }, timeout * 1000).wait();
 
         if (result === undefined)
             throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
+
         return [result.message.channel.id, result.message.id, result.user.id, discord.emojiString(result.reaction)];
     }
 }

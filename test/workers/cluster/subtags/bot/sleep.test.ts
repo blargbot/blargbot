@@ -11,6 +11,7 @@ runSubtagTests({
         {
             code: '{sleep;100ms}',
             expected: '',
+            retries: 5,
             assert(_, __, ctx) {
                 expect(ctx.timer.elapsed).to.be.closeTo(100, 10);
             }

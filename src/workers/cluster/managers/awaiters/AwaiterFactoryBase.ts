@@ -40,7 +40,7 @@ export abstract class AwaiterFactoryBase<T> {
         }
     }
 
-    public wait(pools: Iterable<string>, check: (item: T) => Awaitable<boolean> = () => true, timeout = 300000): Awaiter<T> {
+    public getAwaiter(pools: Iterable<string>, check: (item: T) => Awaitable<boolean> = () => true, timeout = 300000): Awaiter<T> {
         const poolSet = new Set(pools);
 
         const awaiter = new Awaiter(poolSet, this.awaiters, check, timeout);

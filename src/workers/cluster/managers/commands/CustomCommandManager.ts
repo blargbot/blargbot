@@ -117,6 +117,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         metrics.commandCounter.labels('custom', 'custom').inc();
         await context.cluster.bbtag.execute(content, {
             ...options,
+            authorId: options.author,
+            authorizerId: options.authorizer,
             rootTagName: context.commandName,
             message: context.message,
             inputRaw: context.commandText,

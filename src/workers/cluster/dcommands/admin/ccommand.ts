@@ -165,7 +165,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
             isCC: true,
             limit: 'customCommandLimit',
             rootTagName: 'test',
-            author: context.author.id
+            authorId: context.author.id
         });
 
         return debug ? bbtag.createDebugOutput(result) : undefined;
@@ -202,8 +202,8 @@ export class CustomCommandCommand extends BaseGuildCommand {
             isCC: true,
             limit: 'customCommandLimit',
             rootTagName: match.name,
-            author: match.author,
-            authorizer: match.authorizer,
+            authorId: match.author,
+            authorizerId: match.authorizer,
             flags: match.flags,
             cooldown: match.cooldown
         });

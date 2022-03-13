@@ -1,7 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { Statement } from '@cluster/types';
-import { bbtag, overrides, parse, SubtagType } from '@cluster/utils';
+import { bbtag, clamp, overrides, parse, SubtagType } from '@cluster/utils';
 import { guard } from '@core/utils';
 
 const defaultCondition = bbtag.parse('true');
@@ -29,7 +28,7 @@ export class WaitMessageSubtag extends DefinedSubtag {
                     exampleCode: '{waitmessage}',
                     exampleOut: '["111111111111111","2222222222222"]',
                     returns: 'id[]',
-                    execute: (ctx) => this.awaitMessage(ctx, ctx.channel.id, ctx.user.id)
+                    execute: (ctx) => this.awaitMessage(ctx, '', '')
                 },
                 {
                     parameters: ['channelIDs', 'userIDs?'],
@@ -53,63 +52,33 @@ export class WaitMessageSubtag extends DefinedSubtag {
 
     public async awaitMessage(
         context: BBTagContext,
-        channelStr: string,
-        userStr: string,
-        condition: Statement = defaultCondition,
-        timeoutStr?: string
+        channelStr = '',
+        userStr = '',
+        condition = defaultCondition,
+        timeoutStr = '60'
     ): Promise<[channelId: string, messageId: string]> {
-        // parse channels
-        let channels;
-        if (channelStr !== '') {
-            let flattenedChannels;
-            flattenedChannels = bbtag.tagArray.flattenArray([channelStr]).map(i => parse.string(i));
-            flattenedChannels = await Promise.all(flattenedChannels.map(async input => await context.queryChannel(input, { noLookup: true })));
-            channels = flattenedChannels.filter(guard.hasValue);
-            if (flattenedChannels.length !== channels.length)
-                throw new ChannelNotFoundError(channelStr);
-            channels = channels.map(channel => channel.id);
-        } else {
-            channels = [context.channel.id];
-        }
-        // parse users
-        let users;
-        if (userStr !== '') {
-            const flattenedUsers = bbtag.tagArray.flattenArray([userStr]).map(i => parse.string(i));
-            users = await Promise.all(flattenedUsers.map(async input => {
-                const user = await context.queryUser(input, { noLookup: true });
-                if (user === undefined)
-                    throw new UserNotFoundError(input);
-                return user.id;
-            }));
-        } else {
-            users = [context.user.id];
-        }
+        const channels = await this.bulkLookup(channelStr, i => context.queryChannel(i, { noLookup: true }), ChannelNotFoundError)
+            ?? [context.channel];
 
-        // parse timeout
-        let timeout;
-        if (timeoutStr !== undefined) {
-            timeout = parse.float(timeoutStr, false);
-            if (timeout === undefined)
-                throw new NotANumberError(timeoutStr);
-            if (timeout < 0)
-                timeout = 0;
-            if (timeout > 300)
-                timeout = 300;
-        } else {
-            timeout = 60;
-        }
+        const users = await this.bulkLookup(userStr, i => context.queryUser(i, { noLookup: true }), UserNotFoundError)
+            ?? [context.user];
 
-        const userSet = new Set(users);
-        const result = await context.util.cluster.awaiter.messages.wait(channels, async message => {
+        const timeout = clamp(parse.float(timeoutStr), 0, 300);
+        if (isNaN(timeout))
+            throw new NotANumberError(timeoutStr);
+
+        const userSet = new Set(users.map(u => u.id));
+        const result = await context.util.cluster.awaiter.messages.getAwaiter(channels.map(c => c.id), async message => {
             if (!userSet.has(message.author.id) || !guard.isGuildMessage(message))
                 return false;
 
             const result = parse.boolean(await context.withChild({ message }, async context => await context.eval(condition)));
-            return typeof result === 'boolean' ? result : false; //Feel like it should error if a non-boolean is returned
-        }, timeout * 1000);
+            return result ?? false; //Feel like it should error if a non-boolean is returned
+        }, timeout * 1000).wait();
 
         if (result === undefined)
             throw new BBTagRuntimeError(`Wait timed out after ${timeout * 1000}`);
+
         return [result.channel.id, result.id];
 
     }

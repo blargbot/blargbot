@@ -1,9 +1,10 @@
 import { BBTagContext, limits, ScopeManager, SubtagCallStack, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
+import { Emote } from '@core/Emote';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Attachment, Embed, EmbedOptions, FileContent, Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, PartialEmoji, Role, Shard, User, Webhook } from 'eris';
+import { Attachment, Embed, EmbedOptions, FileContent, Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
@@ -247,8 +248,8 @@ export interface BBTagContextOptions {
     readonly flags?: readonly FlagDefinition[];
     readonly isCC: boolean;
     readonly tagVars?: boolean;
-    readonly author: string;
-    readonly authorizer?: string;
+    readonly authorId: string;
+    readonly authorizerId?: string;
     readonly rootTagName?: string;
     readonly tagName?: string;
     readonly cooldown?: number;
@@ -847,7 +848,7 @@ export interface CommandBinderStateFailureReason {
 }
 
 export interface AwaitReactionsResponse {
-    message: KnownMessage;
-    reaction: PartialEmoji;
-    user: User;
+    readonly message: KnownMessage;
+    readonly reaction: Emote;
+    readonly user: User;
 }

@@ -13,10 +13,10 @@ export class MessageAwaiterFactory extends AwaiterFactoryBase<KnownMessage> {
         return message.channel.id;
     }
 
-    public wait(pools: Iterable<string>, check?: (item: KnownMessage) => Awaitable<boolean>, timeout?: number): Awaiter<KnownMessage>;
-    public wait<T extends KnownTextableChannel>(pools: Iterable<T>, check?: (item: Message<T>) => Awaitable<boolean>, timeout?: number): Awaiter<Message<T>>;
-    public wait(pools: Iterable<string | KnownTextableChannel>, check?: (item: KnownMessage) => Awaitable<boolean>, timeout?: number): Awaiter<KnownMessage> {
-        return super.wait(getIds(pools), check, timeout);
+    public getAwaiter(pools: Iterable<string>, check?: (item: KnownMessage) => Awaitable<boolean>, timeout?: number): Awaiter<KnownMessage>;
+    public getAwaiter<T extends KnownTextableChannel>(pools: Iterable<T>, check?: (item: Message<T>) => Awaitable<boolean>, timeout?: number): Awaiter<Message<T>>;
+    public getAwaiter(pools: Iterable<string | KnownTextableChannel>, check?: (item: KnownMessage) => Awaitable<boolean>, timeout?: number): Awaiter<KnownMessage> {
+        return super.getAwaiter(getIds(pools), check, timeout);
     }
 }
 

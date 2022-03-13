@@ -85,8 +85,8 @@ ${codeBlock(code, 'js')}`
         const result = await this.cluster.bbtag.execute(tag.content, {
             message: msg,
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
-            author: tag.author,
-            authorizer: tag.authorizer,
+            authorId: tag.author,
+            authorizerId: tag.authorizer,
             inputRaw: msg.content,
             isCC: true,
             rootTagName: 'autoresponse',

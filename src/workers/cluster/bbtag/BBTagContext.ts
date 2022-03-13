@@ -25,7 +25,7 @@ function serializeEntity(entity: { id: string; }): { id: string; serialized: str
     return { id: entity.id, serialized: JSON.stringify(entity) };
 }
 
-export class BBTagContext {
+export class BBTagContext implements BBTagContextOptions {
     #isStaffPromise?: Promise<boolean>;
     #parent?: BBTagContext;
 
@@ -35,7 +35,7 @@ export class BBTagContext {
     public readonly flags: readonly FlagDefinition[];
     public readonly isCC: boolean;
     public readonly tagVars: boolean;
-    public readonly author: string;
+    public readonly authorId: string;
     public readonly authorizer: Member | undefined;
     public readonly authorizerId: string;
     public readonly rootTagName: string;
@@ -93,8 +93,8 @@ export class BBTagContext {
         this.flags = options.flags ?? [];
         this.isCC = options.isCC;
         this.tagVars = options.tagVars ?? !this.isCC;
-        this.author = options.author;
-        this.authorizerId = options.authorizer ?? this.author;
+        this.authorId = options.authorId;
+        this.authorizerId = options.authorizerId ?? this.authorId;
         this.authorizer = this.guild.members.get(this.authorizerId);
         this.permission = this.authorizer === undefined ? new Permission(0n)
             : this.authorizer.permissions.has('administrator') ? new Permission(Constants.Permissions.all)
@@ -315,7 +315,7 @@ export class BBTagContext {
         if (entities.length <= 1 || this.data.query.count >= 5 || noLookup)
             return entities.length === 1 ? entities[0] : undefined;
 
-        const result = await query({ context: this.channel, actors: this.author, choices: entities, filter: queryString });
+        const result = await query({ context: this.channel, actors: this.authorId, choices: entities, filter: queryString });
         const noErrors = options.noErrors === true || this.scopes.local.noLookupErrors === true;
         switch (result.state) {
             case 'FAILED':
@@ -439,8 +439,8 @@ export class BBTagContext {
             flags: obj.flags,
             rootTagName: obj.rootTagName,
             tagName: obj.tagName,
-            author: obj.author,
-            authorizer: obj.authorizer,
+            authorId: obj.author,
+            authorizerId: obj.authorizer,
             data: obj.state,
             limit: limit,
             tagVars: obj.tagVars
@@ -476,7 +476,7 @@ export class BBTagContext {
             rootTagName: this.rootTagName,
             tagName: this.tagName,
             tagVars: this.tagVars,
-            author: this.author,
+            author: this.authorId,
             authorizer: this.authorizerId,
             limit: this.limit.serialize(),
             tempVars: this.variables.list

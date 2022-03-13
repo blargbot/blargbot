@@ -1,6 +1,6 @@
 import { PromiseCompletionSource } from '@core/PromiseCompletionSource';
 
-export class Awaiter<T> implements PromiseLike<T | undefined> {
+export class Awaiter<T> {
     private readonly timeout: NodeJS.Timeout;
     private readonly pcs: PromiseCompletionSource<T | undefined>;
 
@@ -18,11 +18,8 @@ export class Awaiter<T> implements PromiseLike<T | undefined> {
         this.timeout = setTimeout(() => this.cancel(), timeout);
     }
 
-    public then<TResult1 = T | undefined, TResult2 = never>(
-        onfulfilled?: ((value: T | undefined) => TResult1 | PromiseLike<TResult1>) | null,
-        onrejected?: ((reason: unknown) => TResult2 | PromiseLike<TResult2>) | null
-    ): PromiseLike<TResult1 | TResult2> {
-        return this.pcs.promise.then(onfulfilled, onrejected);
+    public async wait(): Promise<T | undefined> {
+        return await this.pcs.promise;
     }
 
     public async tryConsume(item: T): Promise<boolean> {
