@@ -8,10 +8,8 @@ interface MultiKeyMapEvents<TKey, TValue> {
 }
 
 export class MultiKeyMap<TKey, TValue> extends EventEmitter<MultiKeyMapEvents<TKey, TValue>> {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #kv: Map<TKey, TValue>;
     readonly #vk: Map<TValue, Set<TKey>>;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get size(): number { return this.#vk.size; }
 

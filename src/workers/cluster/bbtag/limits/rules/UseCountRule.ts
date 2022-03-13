@@ -3,12 +3,10 @@ import { BBTagRuntimeError } from '@cluster/bbtag/errors';
 import { RuntimeLimitRule } from '@cluster/types';
 
 export class UseCountRule implements RuntimeLimitRule {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #initial: number;
     readonly #type: string;
     readonly #makeError: (subtagName: string) => BBTagRuntimeError;
     #remaining: number;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public constructor(count: number, type = 'uses', error: string | ((subtagName: string) => BBTagRuntimeError) = 'Usage') {
         this.#initial = count;

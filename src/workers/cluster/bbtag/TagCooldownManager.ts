@@ -4,7 +4,6 @@ import { Moment } from 'moment-timezone';
 import { BBTagContext } from './BBTagContext';
 
 export class TagCooldownManager {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cooldowns: Record<string, Moment | undefined>;
 
     public constructor() {

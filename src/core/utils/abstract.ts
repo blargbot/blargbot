@@ -15,19 +15,18 @@ function abstractDecorator(target: new (...args: unknown[]) => object): new (...
                 if (this.constructor === wrapper[target.name])
                     throw new Error(`${target.name} is abstract and cannot be directly constructed`);
 
-                const sealed = sealedMap.get(target.prototype);
+                const proto = target.prototype as Partial<typeof this>;
+                const sealed = sealedMap.get(proto);
                 for (const key of sealed ?? []) {
                     // @ts-expect-error it doesnt matter if the key doesnt exist as that correctly would cause an error
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                    if (this[key] !== target.prototype[key])
+                    if (this[key] !== proto[key])
                         throw new Error(`Member '${key.toString()}' is sealed on ${target.name} and cannot be overridden!`);
                 }
 
-                const abstract = abstractMap.get(target.prototype);
+                const abstract = abstractMap.get(proto);
                 for (const key of abstract ?? []) {
                     // @ts-expect-error it doesnt matter if the key doesnt exist as that correctly would cause an error
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                    if (this[key] !== target.prototype[key])
+                    if (this[key] !== proto[key])
                         throw new Error(`Member '${key.toString()}' is abstract on ${target.name} and must be overridden!`);
                 }
             }

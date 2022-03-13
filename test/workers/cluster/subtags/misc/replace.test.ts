@@ -11,7 +11,7 @@ runSubtagTests({
             code: '{replace;abc;123}',
             expected: '',
             assert(ctx) {
-                expect(ctx.state.replace).to.deep.equal({ regex: 'abc', with: '123' });
+                expect(ctx.data.replace).to.deep.equal({ regex: 'abc', with: '123' });
             }
         },
         { code: '{replace;This is a test;is;aaaa}', expected: 'Thaaaa is a test' }

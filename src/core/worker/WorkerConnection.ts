@@ -15,7 +15,6 @@ export const enum WorkerState {
 }
 
 export abstract class WorkerConnection<T extends string, Contracts extends IPCContracts> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     #killed: boolean;
 
     public get state(): WorkerState {

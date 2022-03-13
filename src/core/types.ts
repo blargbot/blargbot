@@ -23,7 +23,6 @@ export interface SendContent extends AdvancedMessageContent {
 export type SendPayload = SendContent | EmbedOptions | string | FileContent;
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
 export type WorkerPoolEventContext<TWorker extends WorkerConnection<string, IPCContracts>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
 export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => unknown;

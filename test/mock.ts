@@ -65,8 +65,11 @@ export class Mock<T> {
                 errors.push(err);
             }
         }
-        if (errors.length > 0)
-            throw new AggregateError(errors, errors.join('\n'));
+        switch (errors.length) {
+            case 0: break;
+            case 1: throw errors[0];
+            default: throw new AggregateError(errors, errors.join('\n'));
+        }
     }
 
     public get instance(): T {

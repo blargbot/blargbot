@@ -7,7 +7,6 @@ import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
 export class CensorManager extends ModerationManagerBase {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
 
     public constructor(manager: ModerationManager) {

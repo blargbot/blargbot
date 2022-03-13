@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { SubtagArgument } from '@cluster/types';
+import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
 import { bbtag, SubtagType } from '@cluster/utils';
 
 export class ForeachSubtag extends DefinedSubtag {
@@ -33,7 +33,7 @@ export class ForeachSubtag extends DefinedSubtag {
                 await context.variables.set(varName, item);
                 yield await code.execute();
 
-                if (context.state.return !== 0)
+                if (context.data.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         } finally {

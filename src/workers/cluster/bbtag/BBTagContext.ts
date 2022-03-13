@@ -1,5 +1,5 @@
 import { ClusterUtilities } from '@cluster';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, FindEntityOptions, FlagDefinition, FlagResult, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, RuntimeReturnState, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, FlagDefinition, FlagResult, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, SerializedBBTagContext, Statement, SubtagCall } from '@cluster/types';
 import { guard, hasFlag, humanize, parse } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Emote } from '@core/Emote';
@@ -53,7 +53,7 @@ export class BBTagContext {
     public readonly scopes: ScopeManager;
     public readonly variables: VariableCache;
     public dbObjectsCommitted: number;
-    public readonly state: BBTagContextState;
+    public readonly data: BBTagContextState;
     public readonly callStack: SubtagCallStack;
     public readonly permission: Permission;
 
@@ -115,7 +115,7 @@ export class BBTagContext {
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
-        this.state = {
+        this.data = {
             query: {
                 count: 0,
                 user: {},
@@ -124,7 +124,7 @@ export class BBTagContext {
             },
             outputMessage: undefined,
             ownedMsgs: [],
-            return: RuntimeReturnState.NONE,
+            state: BBTagRuntimeState.RUNNING,
             stackSize: 0,
             embeds: undefined,
             file: undefined,
@@ -141,7 +141,7 @@ export class BBTagContext {
                 roles: [],
                 everybody: false
             },
-            ...options.state ?? {}
+            ...options.data ?? {}
         };
     }
 
@@ -155,21 +155,21 @@ export class BBTagContext {
     }
 
     public withStack<T>(action: () => T, maxStack = 200): T {
-        if (this.state.stackSize >= maxStack) {
-            this.state.return = RuntimeReturnState.ALL;
-            throw new SubtagStackOverflowError(this.state.stackSize);
+        if (this.data.stackSize >= maxStack) {
+            this.data.state = BBTagRuntimeState.ABORT;
+            throw new SubtagStackOverflowError(this.data.stackSize);
         }
 
-        this.state.stackSize++;
+        this.data.stackSize++;
         let result;
 
         try {
             result = action();
         } finally {
             if (result instanceof Promise)
-                result.finally(() => this.state.stackSize--);
+                result.finally(() => this.data.stackSize--);
             else
-                this.state.stackSize--;
+                this.data.stackSize--;
         }
 
         return result;
@@ -236,7 +236,7 @@ export class BBTagContext {
     }
 
     public ownsMessage(messageId: string): boolean {
-        return messageId === this.message.id || this.state.ownedMsgs.includes(messageId);
+        return messageId === this.message.id || this.data.ownedMsgs.includes(messageId);
     }
 
     public getSubtag(name: string): Subtag {
@@ -306,13 +306,13 @@ export class BBTagContext {
         query: (options: EntityPickQueryOptions<T>) => Promise<ChoiceQueryResult<T>>,
         options: FindEntityOptions
     ): Promise<T | undefined> {
-        const cached = this.state.query[cacheKey][queryString];
+        const cached = this.data.query[cacheKey][queryString];
         if (cached !== undefined)
             return await fetch(cached) ?? undefined;
 
         const noLookup = options.noLookup === true || this.scopes.local.quiet === true;
         const entities = await find(queryString);
-        if (entities.length <= 1 || this.state.query.count >= 5 || noLookup)
+        if (entities.length <= 1 || this.data.query.count >= 5 || noLookup)
             return entities.length === 1 ? entities[0] : undefined;
 
         const result = await query({ context: this.channel, actors: this.author, choices: entities, filter: queryString });
@@ -322,17 +322,17 @@ export class BBTagContext {
             case 'NO_OPTIONS':
                 if (!noErrors) {
                     await this.util.send(this.channel, `No ${type.toLowerCase()} matching \`${queryString}\` found in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
-                    this.state.query.count++;
+                    this.data.query.count++;
                 }
                 return undefined;
             case 'TIMED_OUT':
             case 'CANCELLED':
-                this.state.query.count = Infinity;
+                this.data.query.count = Infinity;
                 if (!noErrors)
                     await this.util.send(this.channel, `${type} query canceled in ${this.isCC ? 'custom command' : 'tag'} \`${this.rootTagName}\`.`);
                 return undefined;
             case 'SUCCESS':
-                this.state.query[cacheKey][queryString] = result.value.id;
+                this.data.query[cacheKey][queryString] = result.value.id;
                 return result.value;
             default:
                 return result;
@@ -347,28 +347,28 @@ export class BBTagContext {
         let disableEveryone = true;
         if (this.isCC) {
             disableEveryone = await this.engine.database.guilds.getSetting(this.guild.id, 'disableeveryone') ?? false;
-            disableEveryone ||= !this.state.allowedMentions.everybody;
+            disableEveryone ||= !this.data.allowedMentions.everybody;
 
-            this.engine.logger.log('Allowed mentions:', this.state.allowedMentions, disableEveryone);
+            this.engine.logger.log('Allowed mentions:', this.data.allowedMentions, disableEveryone);
         }
         try {
             const response = await this.engine.util.send(this.message,
                 {
                     content: text,
                     replyToExecuting: true,
-                    embeds: this.state.embeds !== undefined ? this.state.embeds : undefined,
-                    nsfw: this.state.nsfw,
+                    embeds: this.data.embeds !== undefined ? this.data.embeds : undefined,
+                    nsfw: this.data.nsfw,
                     allowedMentions: {
                         everyone: !disableEveryone,
-                        roles: this.isCC ? this.state.allowedMentions.roles : undefined,
-                        users: this.isCC ? this.state.allowedMentions.users : undefined
+                        roles: this.isCC ? this.data.allowedMentions.roles : undefined,
+                        users: this.isCC ? this.data.allowedMentions.users : undefined
                     },
-                    files: this.state.file !== undefined ? [this.state.file] : undefined
+                    files: this.data.file !== undefined ? [this.data.file] : undefined
                 });
 
             if (response !== undefined) {
-                await this.util.addReactions(response, [...new Set(this.state.reactions)].map(Emote.parse));
-                this.state.ownedMsgs.push(response.id);
+                await this.util.addReactions(response, [...new Set(this.data.reactions)].map(Emote.parse));
+                this.data.ownedMsgs.push(response.id);
                 return response.id;
             }
             throw new Error(`Failed to send: ${text}`);
@@ -386,20 +386,20 @@ export class BBTagContext {
 
     public async sendOutput(text: string): Promise<string | undefined> {
         if (this.silent)
-            return this.state.outputMessage;
-        return this.state.outputMessage ??= await this.#sendOutput(text);
+            return this.data.outputMessage;
+        return this.data.outputMessage ??= await this.#sendOutput(text);
     }
 
     public async getTag(type: 'tag', key: string, resolver: (key: string) => Promise<StoredTag | undefined>): Promise<StoredTag | null>;
     public async getTag(type: 'cc', key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | undefined>): Promise<NamedGuildCommandTag | null>;
     public async getTag(type: string, key: string, resolver: (key: string) => Promise<NamedGuildCommandTag | StoredTag | undefined>): Promise<NamedGuildCommandTag | StoredTag | null> {
         const cacheKey = `${type}_${key}`;
-        if (cacheKey in this.state.cache)
-            return this.state.cache[cacheKey];
+        if (cacheKey in this.data.cache)
+            return this.data.cache[cacheKey];
         const fetchedValue = await resolver(key);
         if (fetchedValue !== undefined)
-            return this.state.cache[cacheKey] = fetchedValue;
-        return this.state.cache[cacheKey] = null;
+            return this.data.cache[cacheKey] = fetchedValue;
+        return this.data.cache[cacheKey] = null;
     }
 
     public static async deserialize(engine: BBTagEngine, obj: SerializedBBTagContext): Promise<BBTagContext> {
@@ -441,13 +441,13 @@ export class BBTagContext {
             tagName: obj.tagName,
             author: obj.author,
             authorizer: obj.authorizer,
-            state: obj.state,
+            data: obj.state,
             limit: limit,
             tagVars: obj.tagVars
         });
         Object.assign(result.scopes.local, obj.scope);
 
-        result.state.cache = {};
+        result.data.cache = {};
 
         for (const [key, value] of Object.entries(obj.tempVars))
             await result.variables.set(key, value);
@@ -456,7 +456,7 @@ export class BBTagContext {
     }
 
     public serialize(): SerializedBBTagContext {
-        const newState = { ...this.state, cache: undefined, overrides: undefined };
+        const newState = { ...this.data, cache: undefined, overrides: undefined };
         const newScope = { ...this.scopes.local };
         return {
             msg: {

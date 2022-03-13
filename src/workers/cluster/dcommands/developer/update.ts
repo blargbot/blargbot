@@ -77,7 +77,6 @@ export class UpdateCommand extends BaseGlobalCommand {
                 content: this.error(`Command: \`${command}\``),
                 files: [
                     {
-                        // eslint-disable-next-line no-control-regex
                         file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
                         name: 'output.txt'
                     }

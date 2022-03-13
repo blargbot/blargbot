@@ -5,7 +5,6 @@ import { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'reth
 import { RethinkDb } from './RethinkDb';
 
 export abstract class RethinkDbTable<Table> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #rethinkDb: RethinkDb;
 
     protected constructor(

@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { SubtagArgument } from '@cluster/types';
+import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
 import { bbtag, overrides, parse, SubtagType } from '@cluster/utils';
 
 export class FilterSubtag extends DefinedSubtag {
@@ -30,7 +30,7 @@ export class FilterSubtag extends DefinedSubtag {
                 if (parse.boolean(await code.execute()) === true)
                     yield item;
 
-                if (context.state.return !== 0)
+                if (context.data.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         } finally {

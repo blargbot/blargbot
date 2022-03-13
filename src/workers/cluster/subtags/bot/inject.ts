@@ -1,4 +1,5 @@
 import { DefinedSubtag } from '@cluster/bbtag';
+import { BBTagRuntimeState } from '@cluster/types';
 import { bbtag, SubtagType } from '@cluster/utils';
 
 export class InjectSubtag extends DefinedSubtag {
@@ -16,7 +17,10 @@ export class InjectSubtag extends DefinedSubtag {
                     execute: async (context, [code]) => {
                         return await context.withStack(async () => {
                             const ast = bbtag.parse(code.value, true);
-                            return await context.engine.eval(ast, context);
+                            const result = await context.engine.eval(ast, context);
+                            if (context.data.state === BBTagRuntimeState.RETURN)
+                                context.data.state = BBTagRuntimeState.RUNNING;
+                            return result;
                         });
                     }
                 }

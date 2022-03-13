@@ -7,11 +7,9 @@ import { Cluster } from '../Cluster';
 import { guard } from '../utils';
 
 export class TimeoutManager {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #events: Map<string, StoredEvent>;
     readonly #emitter: EventEmitter;
     #lastDuration: Duration;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public constructor(
         public readonly cluster: Cluster

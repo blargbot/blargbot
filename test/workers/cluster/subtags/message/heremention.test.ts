@@ -11,21 +11,21 @@ runSubtagTests({
             code: '{heremention}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.state.allowedMentions.everybody).to.be.true;
+                expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
             code: '{heremention;true}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.state.allowedMentions.everybody).to.be.true;
+                expect(ctx.data.allowedMentions.everybody).to.be.true;
             }
         },
         {
             code: '{heremention;false}',
             expected: '@here',
             assert(ctx) {
-                expect(ctx.state.allowedMentions.everybody).to.be.false;
+                expect(ctx.data.allowedMentions.everybody).to.be.false;
             }
         }
     ]

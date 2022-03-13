@@ -261,8 +261,11 @@ export class SubtagTestContext {
                 errors.push(err);
             }
         }
-        if (errors.length > 0)
-            throw new AggregateError(errors, errors.join('\n'));
+        switch (errors.length) {
+            case 0: break;
+            case 1: throw errors[0];
+            default: throw new AggregateError(errors, errors.join('\n'));
+        }
     }
 
     public createContext(): BBTagContext {
@@ -300,7 +303,7 @@ export class SubtagTestContext {
             ...this.options
         });
 
-        context.state.ownedMsgs.push(...this.ownedMessages);
+        context.data.ownedMsgs.push(...this.ownedMessages);
         Object.assign(context.scopes.root, this.rootScope);
 
         return context;

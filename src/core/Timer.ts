@@ -1,10 +1,8 @@
 import moment, { Duration } from 'moment';
 
 export class Timer {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #elapsed: number;
     #start: number | undefined;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public constructor() {
         this.#elapsed = 0;

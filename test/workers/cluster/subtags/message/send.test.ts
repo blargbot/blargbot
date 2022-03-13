@@ -37,10 +37,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -54,7 +54,7 @@ runSubtagTests({
                 }))).thenReject(new BBTagRuntimeError('Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.be.empty;
+                expect(bbctx.data.ownedMsgs).to.be.empty;
             }
         },
         {
@@ -73,10 +73,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -90,7 +90,7 @@ runSubtagTests({
                 }))).thenReject(ctx.createRESTError(0, 'Test error'));
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.be.empty;
+                expect(bbctx.data.ownedMsgs).to.be.empty;
             }
         },
         {
@@ -111,10 +111,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.logger.setup(m => m.error('Failed to send!', error)).thenReturn(undefined);
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
@@ -129,7 +129,7 @@ runSubtagTests({
                 }))).thenReject(error);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.be.empty;
+                expect(bbctx.data.ownedMsgs).to.be.empty;
             }
         },
         {
@@ -152,10 +152,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -171,7 +171,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -195,10 +195,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -214,7 +214,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -236,10 +236,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -253,7 +253,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -276,10 +276,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -293,7 +293,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -317,10 +317,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -336,7 +336,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -359,10 +359,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -376,7 +376,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -400,10 +400,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -419,7 +419,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -442,10 +442,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -459,7 +459,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -483,10 +483,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -508,7 +508,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -531,10 +531,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -554,7 +554,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -578,10 +578,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -597,7 +597,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -620,10 +620,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -637,7 +637,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -661,10 +661,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -686,7 +686,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         },
         {
@@ -709,10 +709,10 @@ runSubtagTests({
                 if (general === undefined)
                     throw new Error('Unable to locate the mocked channel');
 
-                bbctx.state.nsfw = 'This is a nsfw message';
-                bbctx.state.allowedMentions.everybody = true;
-                bbctx.state.allowedMentions.roles = roleMentions;
-                bbctx.state.allowedMentions.users = userMentions;
+                bbctx.data.nsfw = 'This is a nsfw message';
+                bbctx.data.allowedMentions.everybody = true;
+                bbctx.data.allowedMentions.roles = roleMentions;
+                bbctx.data.allowedMentions.users = userMentions;
 
                 ctx.util.setup(m => m.findChannels(bbctx.guild, '1923681361978632931')).thenResolve([general]);
                 ctx.util.setup(m => m.send(general as KnownGuildTextableChannel, argument.isDeepEqual({
@@ -732,7 +732,7 @@ runSubtagTests({
                 }))).thenResolve(message);
             },
             assert(bbctx) {
-                expect(bbctx.state.ownedMsgs).to.include('239476239742340234');
+                expect(bbctx.data.ownedMsgs).to.include('239476239742340234');
             }
         }
     ]

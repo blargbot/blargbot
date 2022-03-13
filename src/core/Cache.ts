@@ -1,11 +1,9 @@
 import moment, { Duration } from 'moment';
 
 export class Cache<TKey, TValue> {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #entries: Map<TKey, { data: TValue; timeout: NodeJS.Timeout; }>;
     readonly #defaultTTL: number;
     readonly #timout: (key: TKey) => void;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public constructor(defaultTimeToLive?: number | Duration);
     public constructor(...args: Parameters<typeof moment.duration>)

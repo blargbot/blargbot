@@ -2,7 +2,6 @@ import { Cluster } from '@cluster/Cluster';
 import { User } from 'eris';
 import reloadFactory from 'require-reload';
 
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const reload = reloadFactory(require);
 
 export class ContributorManager {

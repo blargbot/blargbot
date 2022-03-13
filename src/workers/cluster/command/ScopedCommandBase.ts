@@ -19,7 +19,6 @@ export abstract class ScopedCommandBase<TContext extends CommandContext> extends
         const definitions: ReadonlyArray<CommandDefinition<TContext>> = noHelp ? options.definitions : [
             {
                 parameters: 'help {page:integer=1}',
-                // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                 execute: (context, [page]) => context.cluster.help.viewCommand(context.channel, context.author, context.prefix, this.name, page.asInteger - 1),
                 description: 'Gets the help message for this command',
                 hidden: true

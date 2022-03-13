@@ -1,6 +1,8 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
+import { BBTagRuntimeState } from '@cluster/types';
 import { bbtag, humanize, SubtagType } from '@cluster/utils';
+import { parse } from '@core/utils';
 
 export class ExecccSubtag extends DefinedSubtag {
     public constructor() {
@@ -30,13 +32,20 @@ export class ExecccSubtag extends DefinedSubtag {
         if ('alias' in ccommand)
             throw new BBTagRuntimeError('Cannot execcc imported tag: ' + tagName);
 
+        let input = args[0] ?? '';
+        if (args.length > 1)
+            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
+
         return await context.withStack(() => context.withScope(true, () => context.withChild({
             tagName,
             cooldown: ccommand.cooldown ?? 0,
-            inputRaw: humanize.smartSplit.inverse(args)
+            inputRaw: input
         }, async context => {
             const ast = bbtag.parse(ccommand.content, true);
-            return await context.engine.eval(ast, context);
+            const result = await context.engine.eval(ast, context);
+            if (context.data.state === BBTagRuntimeState.RETURN)
+                context.data.state = BBTagRuntimeState.RUNNING;
+            return result;
         })));
     }
 }

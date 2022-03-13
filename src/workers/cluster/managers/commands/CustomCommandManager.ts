@@ -37,6 +37,10 @@ export class CustomCommandManager extends BaseCommandManager<NamedGuildCommandTa
         return { state: 'FOUND', detail: new NormalizedCommandTag(command, impl) };
     }
 
+    public load(): Promise<void> {
+        return Promise.resolve();
+    }
+
     protected async allCommandNames(location?: Guild | KnownTextableChannel): Promise<Iterable<string>> {
         if (location === undefined)
             return [];

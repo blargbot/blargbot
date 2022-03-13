@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { ProcessMessage, ProcessMessageContext, ProcessMessageHandler } from '@core/types';
 import { snowflake } from '@core/utils';
 import { Snowflake } from 'catflake';
@@ -7,11 +5,9 @@ import { ChildProcess } from 'child_process';
 import EventEmitter from 'eventemitter3';
 
 export class IPCMessageEmitter {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #events: EventEmitter;
     #process?: NodeJS.Process | ChildProcess;
     #sender?: (message: ProcessMessage) => boolean;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get process(): NodeJS.Process | ChildProcess | undefined { return this.#process; }
     public set process(value: NodeJS.Process | ChildProcess | undefined) {

@@ -400,7 +400,7 @@ runSubtagTests({
             },
             postSetup(bbctx, ctx) {
                 ctx.limit.setup(m => m.check(bbctx, 'reactremove:requests')).verifiable(1).thenResolve(undefined);
-                bbctx.state.ownedMsgs.push('2938453289453240');
+                bbctx.data.ownedMsgs.push('2938453289453240');
                 const general = bbctx.guild.channels.get(ctx.channels.general.id);
                 if (general === undefined)
                     throw new Error('General channel is missing');

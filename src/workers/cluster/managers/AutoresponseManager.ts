@@ -5,10 +5,8 @@ import { GuildTriggerTag } from '@core/types';
 import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
 
 export class AutoresponseManager {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #guilds: Set<string>;
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get guilds(): ReadonlySet<string> { return this.#guilds; }
 

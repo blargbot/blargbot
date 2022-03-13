@@ -22,7 +22,7 @@ runSubtagTests({
             code: '{reactadd;🤔}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.state.reactions).to.deep.equal(['🤔']);
+                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
             }
         },
         ...createGetMessagePropTestCases({
@@ -54,7 +54,7 @@ runSubtagTests({
                 ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
-                expect(bbctx.state.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -79,7 +79,7 @@ runSubtagTests({
                 ctx.roles.bot.permissions = Constants.Permissions.addReactions.toString();
             },
             assert(bbctx) {
-                expect(bbctx.state.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
+                expect(bbctx.data.reactions).to.deep.equal([unicodeEmote.toString(), guildEmote.toString()]);
             }
         },
         ...createGetMessagePropTestCases({
@@ -108,7 +108,7 @@ runSubtagTests({
             code: '{reactadd;abc;🤔;ghi}',
             expected: '',
             assert(bbctx) {
-                expect(bbctx.state.reactions).to.deep.equal(['🤔']);
+                expect(bbctx.data.reactions).to.deep.equal(['🤔']);
             }
         },
         {

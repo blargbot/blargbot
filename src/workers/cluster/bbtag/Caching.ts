@@ -15,7 +15,6 @@ interface ValueSource {
 }
 
 export class VariableCache {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #cache: Record<string, CacheEntry | undefined>;
 
     public get list(): VariableReference[] {

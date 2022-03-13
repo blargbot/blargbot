@@ -193,7 +193,7 @@ export interface BBTagContextState {
     };
     outputMessage: string | undefined;
     ownedMsgs: string[];
-    return: RuntimeReturnState;
+    state: BBTagRuntimeState;
     stackSize: number;
     embeds: undefined | EmbedOptions[];
     file: undefined | FileContent;
@@ -232,10 +232,13 @@ export interface RuntimeLimit {
     load(state: SerializedRuntimeLimit): void;
 }
 
-export const enum RuntimeReturnState {
-    NONE = 0,
-    CURRENTTAG = 1,
-    ALL = -1
+export const enum BBTagRuntimeState {
+    /** Indicates bbtag should continue to be executed */
+    RUNNING,
+    /** Indicates the current tag should be terminated */
+    RETURN,
+    /** Indicates the current execution should be terminated */
+    ABORT
 }
 
 export interface BBTagContextOptions {
@@ -253,7 +256,7 @@ export interface BBTagContextOptions {
     readonly locks?: Record<string, ReadWriteLock | undefined>;
     readonly limit: RuntimeLimit | keyof typeof import('./bbtag/limits')['limits'];
     readonly silent?: boolean;
-    readonly state?: Partial<BBTagContextState>;
+    readonly data?: Partial<BBTagContextState>;
     readonly scopes?: ScopeManager;
     readonly variables?: VariableCache;
     readonly callStack?: SubtagCallStack;

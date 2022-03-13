@@ -16,7 +16,6 @@ export abstract class SubtagLogicWrapper implements SubtagLogic<SubtagResult> {
 
     protected abstract getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Awaitable<SubtagResult | Iterable<string | undefined>>;
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     protected async *toAsyncIterable<T>(source: AsyncIterable<T> | Iterable<T>): AsyncGenerator<T, void, undefined> {
         yield* source;
     }

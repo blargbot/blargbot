@@ -66,7 +66,7 @@ export class DMSubtag extends DefinedSubtag {
             await context.util.sendDM(member, {
                 content,
                 embeds,
-                nsfw: context.state.nsfw
+                nsfw: context.data.nsfw
             });
             cache.count++;
         } catch (e: unknown) {

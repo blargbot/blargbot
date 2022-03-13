@@ -31,7 +31,7 @@ export class RegexReplaceSubtag extends RegexSubtag {
     }
 
     public setOutputReplacement(context: BBTagContext, regexStr: string, replacement: string): void {
-        context.state.replace = {
+        context.data.replace = {
             regex: this.createRegex(regexStr),
             with: replacement
         };

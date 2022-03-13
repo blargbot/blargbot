@@ -20,7 +20,7 @@ runSubtagTests({
                         role.id = '89176598273912362713';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.state.allowedMentions.roles).to.include('89176598273912362713');
+                        expect(ctx.data.allowedMentions.roles).to.include('89176598273912362713');
                     }
                 }
             ]

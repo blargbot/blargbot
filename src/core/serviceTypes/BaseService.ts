@@ -2,7 +2,7 @@ export abstract class BaseService {
     public readonly name: string;
     public abstract readonly type: string;
 
-    protected constructor(name?: string) {
+    public constructor(name?: string) {
         this.name = name ?? this.constructor.name;
     }
 

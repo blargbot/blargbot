@@ -1,14 +1,12 @@
-import { RuntimeReturnState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
+import { BBTagRuntimeState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
 import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../BBTagContext';
 import { ArgumentLengthError } from '../errors';
 
 export class ExecutingSubtagArgumentValue implements SubtagArgument {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #promise?: Promise<string>;
     #value?: string;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get isCached(): boolean { return this.#value !== undefined; }
     public get raw(): string { return this.code.source; }
@@ -47,7 +45,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
                     }
                 ]
             });
-            this.context.state.return = RuntimeReturnState.ALL;
+            this.context.data.state = BBTagRuntimeState.ABORT;
             throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
 

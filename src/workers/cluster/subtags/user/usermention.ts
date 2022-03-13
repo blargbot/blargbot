@@ -41,8 +41,8 @@ export class UserMentionSubtag extends DefinedSubtag {
                 .withDisplay(quiet ? '' : undefined);
         }
 
-        if (!context.state.allowedMentions.users.includes(user.id))
-            context.state.allowedMentions.users.push(user.id);
+        if (!context.data.allowedMentions.users.includes(user.id))
+            context.data.allowedMentions.users.push(user.id);
         return user.mention;
     }
 }

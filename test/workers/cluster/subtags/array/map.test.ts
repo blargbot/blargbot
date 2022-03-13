@@ -3,7 +3,7 @@ import { MapSubtag } from '@cluster/subtags/array/map';
 import { GetSubtag } from '@cluster/subtags/bot/get';
 import { ReturnSubtag } from '@cluster/subtags/bot/return';
 import { IfSubtag } from '@cluster/subtags/misc/if';
-import { RuntimeReturnState } from '@cluster/types';
+import { BBTagRuntimeState } from '@cluster/types';
 import { SubtagVariableType } from '@core/types';
 import { expect } from 'chai';
 
@@ -83,7 +83,7 @@ runSubtagTests({
             async assert(bbctx, _, ctx) {
                 expect((await bbctx.variables.get('a')).value).to.equal('initial');
                 expect(ctx.tagVariables[`${SubtagVariableType.LOCAL}.testTag.a`]).to.equal('initial');
-                expect(bbctx.state.return).to.equal(RuntimeReturnState.ALL);
+                expect(bbctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {

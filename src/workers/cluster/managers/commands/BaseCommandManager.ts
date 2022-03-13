@@ -13,8 +13,7 @@ export abstract class BaseCommandManager<T> implements ICommandManager<T> {
     ) {
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public load(_commands?: Iterable<string> | boolean): Promise<void> { return Promise.resolve(); }
+    public abstract load(commands?: Iterable<string> | boolean): Promise<void>;
     protected abstract getCore(name: string, location?: Guild | KnownGuildTextableChannel, user?: User): Promise<CommandGetCoreResult<T>>;
     protected abstract allCommandNames(location?: Guild | KnownGuildTextableChannel): AsyncIterable<string> | Iterable<string> | Promise<Iterable<string>>;
     public abstract configure(user: User, names: string[], guild: Guild, permissions: Partial<CommandPermissions>): Promise<readonly string[]>;

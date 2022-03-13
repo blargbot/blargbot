@@ -32,7 +32,7 @@ export class ReplaceSubtag extends DefinedSubtag {
     }
 
     public setOutputReplacement(context: BBTagContext, phrase: string, replacement: string): void {
-        context.state.replace = {
+        context.data.replace = {
             regex: phrase,
             with: replacement
         };

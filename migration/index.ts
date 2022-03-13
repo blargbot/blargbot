@@ -423,7 +423,6 @@ function nukedCC(newLocation: string): r.Expression<GuildCommandTag> {
 }
 
 async function* iterCursor<T>(cursor: r.Cursor<T>): AsyncIterable<T> {
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
     while (true) {
         try {
             yield await cursor.next();

@@ -100,7 +100,6 @@ function sentryPreHook(sentry: Sentry.Hub, ...[{ error: isError, args, level, co
     return null;
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 function sendToSentry(sentry: Sentry.Hub, scope: Sentry.Scope, level: Sentry.Severity, error: string | Error, context: object): void {
     if (typeof error !== 'string') {
         scope.setLevel(level);

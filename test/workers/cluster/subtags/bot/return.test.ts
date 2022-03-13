@@ -1,5 +1,5 @@
 import { ReturnSubtag } from '@cluster/subtags/bot/return';
-import { RuntimeReturnState } from '@cluster/types';
+import { BBTagRuntimeState } from '@cluster/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';
@@ -12,28 +12,28 @@ runSubtagTests({
             code: 'abc{return}def',
             expected: 'abc',
             assert(ctx) {
-                expect(ctx.state.return).to.equal(RuntimeReturnState.ALL);
+                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
             code: '{return;true}',
             expected: '',
             assert(ctx) {
-                expect(ctx.state.return).to.equal(RuntimeReturnState.ALL);
+                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         },
         {
             code: 'abc{return;false}def',
             expected: 'abc',
             assert(ctx) {
-                expect(ctx.state.return).to.equal(RuntimeReturnState.CURRENTTAG);
+                expect(ctx.data.state).to.equal(BBTagRuntimeState.RETURN);
             }
         },
         {
             code: '{return;abc}',
             expected: '',
             assert(ctx) {
-                expect(ctx.state.return).to.equal(RuntimeReturnState.ALL);
+                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }
     ]

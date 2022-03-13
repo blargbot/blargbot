@@ -21,12 +21,10 @@ export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
     }
 
     public async load(commands?: Iterable<string> | boolean): Promise<void> {
-        await Promise.all([
-            super.load(commands),
-            commands === undefined || typeof commands === 'boolean'
-                ? this.modules.reload(commands ?? true)
-                : this.modules.reload(this.modules.source(commands))
-        ]);
+        if (commands === undefined || typeof commands === 'boolean')
+            await this.modules.reload(commands ?? true);
+        else
+            this.modules.reload(this.modules.source(commands));
     }
 
     protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<BaseCommand>> {

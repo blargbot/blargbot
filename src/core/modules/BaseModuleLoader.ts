@@ -17,10 +17,8 @@ interface ModuleLoaderEvents<TModule> {
 }
 
 export abstract class BaseModuleLoader<TModule> extends EventEmitter<ModuleLoaderEvents<TModule>> {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #root: string;
     readonly #modules: MultiKeyMap<string, { module: TModule; location: string; }>;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get size(): number { return this.#modules.size; }
 

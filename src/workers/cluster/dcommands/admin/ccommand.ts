@@ -377,7 +377,6 @@ export class CustomCommandCommand extends BaseGuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return this.error(`The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``);
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...addFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const [flag, args] of Object.entries(addFlags)) {
@@ -407,7 +406,6 @@ export class CustomCommandCommand extends BaseGuildCommand {
         if (guard.isGuildImportedCommandTag(match))
             return this.error(`The \`${commandName}\` custom command is an alias to the tag \`${match.alias}\``);
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...removeFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);

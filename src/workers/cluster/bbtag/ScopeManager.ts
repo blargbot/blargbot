@@ -1,6 +1,5 @@
 import { BBTagRuntimeScope } from '@cluster/types';
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export class ScopeManager {
     private readonly scopes: BBTagRuntimeScope[];
     private readonly tags: number[];

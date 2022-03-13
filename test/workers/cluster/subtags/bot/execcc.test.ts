@@ -1,6 +1,6 @@
 import { BBTagRuntimeError, SubtagStackOverflowError } from '@cluster/bbtag/errors';
 import { ExecccSubtag } from '@cluster/subtags/bot/execcc';
-import { RuntimeReturnState } from '@cluster/types';
+import { BBTagRuntimeState } from '@cluster/types';
 import { expect } from 'chai';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite';
@@ -55,8 +55,8 @@ runSubtagTests({
                 expect(ctx.tagName).to.equal('othersubtag');
                 expect(ctx.rootTagName).to.equal('test tag');
                 expect(ctx.cooldown).to.equal(0);
-                expect(ctx.inputRaw).to.equal('""');
-                expect(ctx.input).to.deep.equal(['']);
+                expect(ctx.inputRaw).to.equal('');
+                expect(ctx.input).to.deep.equal([]);
                 expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 return 'Success!';
@@ -151,7 +151,7 @@ runSubtagTests({
                 { start: 0, end: 20, error: new SubtagStackOverflowError(200) }
             ],
             setup(ctx) {
-                ctx.options.state = { stackSize: 200 };
+                ctx.options.data = { stackSize: 200 };
                 ctx.ccommands['othersubtag'] = {
                     author: '212097368371683623',
                     content: '{fail}',
@@ -159,8 +159,8 @@ runSubtagTests({
                 };
             },
             assert(ctx) {
-                expect(ctx.state.stackSize).to.equal(200);
-                expect(ctx.state.return).to.equal(RuntimeReturnState.ALL);
+                expect(ctx.data.stackSize).to.equal(200);
+                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }
     ]
