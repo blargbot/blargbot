@@ -34,28 +34,20 @@ export class ExecCommand extends BaseGlobalCommand {
         const message = await context.reply(`Command: \`${command}\`\nRunning....`);
         try {
             await context.channel.sendTyping();
-            const payload = {
-                content: this.success(`Command: \`${command}\``),
-                files: [
-                    {
-                        file: Buffer.from(cleanConsole(await execCommandline(command))),
-                        name: 'output.txt'
-                    }
-                ]
+            const content = this.success(`Command: \`${command}\``);
+            const file = {
+                file: Buffer.from(cleanConsole(await execCommandline(command))),
+                name: 'output.txt'
             };
-            await (message?.edit(payload) ?? context.reply(payload));
+            await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
             return undefined;
         } catch (err: unknown) {
-            const payload = {
-                content: this.error(`Command: \`${command}\``),
-                files: [
-                    {
-                        file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
-                        name: 'output.txt'
-                    }
-                ]
+            const content = this.success(`Command: \`${command}\``);
+            const file = {
+                file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
+                name: 'output.txt'
             };
-            await (message?.edit(payload) ?? context.reply(payload));
+            await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
             throw err;
         }
     }

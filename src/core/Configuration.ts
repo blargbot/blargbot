@@ -20,7 +20,7 @@ export interface RethinkConfiguration {
 }
 
 export interface SequelizeConfiguration {
-    readonly host: string;
+    readonly host?: string;
     readonly pool: {
         readonly max: number;
         readonly min: number;
@@ -127,9 +127,11 @@ export interface GeneralConfiguration {
 }
 
 export interface PostgresConfiguration {
+    readonly host?: string;
     readonly user: string;
     readonly pass: string;
     readonly database: string;
+    readonly port?: number;
     readonly sequelize: SequelizeConfiguration;
 }
 
