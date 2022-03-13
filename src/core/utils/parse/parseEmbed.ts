@@ -1,5 +1,5 @@
 import { MalformedEmbed, TypeMappingImpl } from '@core/types';
-import { mapping } from '@core/utils';
+import { discord, mapping } from '@core/utils';
 import Color from 'color';
 import { EmbedOptions } from 'eris';
 
@@ -29,7 +29,7 @@ const mapEmbedCore = mapping.object<EmbedOptions>({
         icon_url: mapping.string.optional,
         name: mapping.string.optional.map(v => v ?? ''),
         url: mapping.string.optional
-    }).optional,
+    }, { strict: false }).optional,
     color: mapping.choice<number[]>(
         mapping.number,
         v => {
@@ -52,27 +52,27 @@ const mapEmbedCore = mapping.object<EmbedOptions>({
         inline: mapping.boolean.optional,
         name: mapping.string,
         value: mapping.string
-    })).optional,
+    }, { strict: false })).optional,
     footer: mapping.object<Exclude<EmbedOptions['footer'], undefined>>({
         icon_url: mapping.string.optional,
         text: mapping.string.optional.map(v => v ?? '')
-    }).optional,
+    }, { strict: false }).optional,
     image: mapping.object<Exclude<EmbedOptions['image'], undefined>>({
         url: mapping.string.optional
-    }).optional,
+    }, { strict: false }).optional,
     thumbnail: mapping.object<Exclude<EmbedOptions['thumbnail'], undefined>>({
         url: mapping.string.optional
-    }).optional,
+    }, { strict: false }).optional,
     timestamp: mapping.choice<Array<Exclude<EmbedOptions['timestamp'], undefined>>>(
         mapping.string,
         mapping.date
     ).optional,
     title: mapping.string.optional,
     url: mapping.string.optional
-});
+}, { strict: false });
 
 const mapMalformedEmbed: TypeMappingImpl<MalformedEmbed> = value => mapping.success({
-    fields: [{ name: 'Malformed JSON', value: JSON.stringify(value) }],
+    fields: [{ name: 'Malformed JSON', value: discord.overflowText('embed.field.value', JSON.stringify(value), '...') }],
     malformed: true
 });
 

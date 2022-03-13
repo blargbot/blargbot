@@ -3,13 +3,13 @@ import { TypeMapping, TypeMappingImpl, TypeMappings } from '@core/types';
 import { createMapping } from './createMapping';
 import { result } from './result';
 
-export function mapObject<T>(mappings: TypeMappings<T>, initial?: () => Partial<T>): TypeMapping<T> {
+export function mapObject<T>(mappings: TypeMappings<T>, options?: { initial?: () => Partial<T>; strict: boolean; }): TypeMapping<T> {
     return createMapping(value => {
         if (value === undefined || typeof value !== 'object' || value === null)
             return result.failed;
 
         const objValue = <Record<PropertyKey, unknown>>value;
-        const mapped: Partial<T> = initial?.() ?? {};
+        const mapped: Partial<T> = options?.initial?.() ?? {};
         const remainingKeys = new Set<PropertyKey>(Object.keys(objValue));
 
         function checkKey<K extends keyof T>(resultKey: K, sourceKey: PropertyKey | undefined, mapping: TypeMappingImpl<T[K]>): boolean {
@@ -29,7 +29,7 @@ export function mapObject<T>(mappings: TypeMappings<T>, initial?: () => Partial<
                 return result.failed;
         }
 
-        if (remainingKeys.size > 0)
+        if (options?.strict !== false && remainingKeys.size > 0)
             return result.failed;
 
         return result.success(<T>mapped);

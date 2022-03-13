@@ -93,7 +93,7 @@ runSubtagTests({
             }
         },
         {
-            code: '{webhook;abc;def;ghi;{escapebbtag;{"test":"This isnt an embed"}}}',
+            code: '{webhook;abc;def;ghi;{escapebbtag;{"color":"This isnt an embed"}}}',
             subtags: [new EscapeBbtagSubtag()],
             expected: '',
             setup(ctx) {
@@ -101,7 +101,7 @@ runSubtagTests({
                     username: undefined,
                     avatarURL: undefined,
                     content: 'ghi',
-                    embeds: [{ fields: [{ name: 'Malformed JSON', value: '{"test":"This isnt an embed"}' }], malformed: true }],
+                    embeds: [{ fields: [{ name: 'Malformed JSON', value: '{"color":"This isnt an embed"}' }], malformed: true }],
                     file: undefined
                 }))).thenResolve(undefined);
             }
