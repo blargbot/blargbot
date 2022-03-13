@@ -63,7 +63,7 @@ export class UpdateCommand extends BaseGlobalCommand {
             const result = cleanConsole(await execCommandline(command));
             const payload = {
                 content: this.success(`Command: \`${command}\``),
-                files: [
+                file: [
                     {
                         file: Buffer.from(result),
                         name: 'output.txt'
@@ -75,7 +75,7 @@ export class UpdateCommand extends BaseGlobalCommand {
         } catch (err: unknown) {
             const payload = {
                 content: this.error(`Command: \`${command}\``),
-                files: [
+                file: [
                     {
                         // eslint-disable-next-line no-control-regex
                         file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
