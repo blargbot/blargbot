@@ -47,17 +47,17 @@ export class SendSubtag extends DefinedSubtag {
 
         const disableEveryone = !context.isCC
             || (await context.database.guilds.getSetting(channel.guild.id, 'disableeveryone')
-                ?? !context.state.allowedMentions.everybody);
+                ?? !context.data.allowedMentions.everybody);
 
         try {
             const sent = await context.util.send(channel, {
                 content: message,
                 embeds: embed !== undefined ? embed : undefined,
-                nsfw: context.state.nsfw,
+                nsfw: context.data.nsfw,
                 allowedMentions: {
                     everyone: !disableEveryone,
-                    roles: context.isCC ? context.state.allowedMentions.roles : undefined,
-                    users: context.isCC ? context.state.allowedMentions.users : undefined
+                    roles: context.isCC ? context.data.allowedMentions.roles : undefined,
+                    users: context.isCC ? context.data.allowedMentions.users : undefined
                 },
                 files: file !== undefined ? [file] : undefined
             });
@@ -65,7 +65,7 @@ export class SendSubtag extends DefinedSubtag {
             if (sent === undefined)
                 throw new BBTagRuntimeError('Send unsuccessful');
 
-            context.state.ownedMsgs.push(sent.id);
+            context.data.ownedMsgs.push(sent.id);
             return sent.id;
         } catch (err: unknown) {
             if (err instanceof BBTagRuntimeError)

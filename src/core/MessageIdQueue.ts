@@ -1,7 +1,6 @@
 import { RollingArray } from '@core/RollingArray';
 
 export class MessageIdQueue {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #messageQueue: Record<string, RollingArray<string> | undefined>;
 
     public constructor(

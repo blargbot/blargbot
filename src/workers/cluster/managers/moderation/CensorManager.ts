@@ -7,7 +7,6 @@ import { ModerationManager } from '../ModerationManager';
 import { ModerationManagerBase } from './ModerationManagerBase';
 
 export class CensorManager extends ModerationManagerBase {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
 
     public constructor(manager: ModerationManager) {
@@ -61,8 +60,8 @@ export class CensorManager extends ModerationManagerBase {
                 limit: 'customCommandLimit',
                 inputRaw: message.content,
                 isCC: true,
-                author: tag.author,
-                authorizer: tag.authorizer
+                authorId: tag.author,
+                authorizerId: tag.authorizer
             });
 
             const key = this.getDebugKey(message.channel.guild.id, parseInt(id), message.author.id, type);

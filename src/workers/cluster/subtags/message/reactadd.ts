@@ -51,13 +51,13 @@ export class ReactAddSubtag extends DefinedSubtag {
 
         } else {
             // Defer reactions to output message
-            context.state.reactions.push(...reactions.map(m => m.toString()));
+            context.data.reactions.push(...reactions.map(m => m.toString()));
         }
     }
 
     private bindArguments(context: BBTagContext, args: string[]): [channel: string, message: string | undefined, reactions: Emote[]] {
         let channel = context.channel.id;
-        let message = context.state.outputMessage;
+        let message = context.data.outputMessage;
 
         if (args.length >= 2 && snowflake.test(args[1]))
             channel = args.splice(0, 1)[0];

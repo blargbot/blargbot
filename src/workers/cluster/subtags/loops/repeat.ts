@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgument } from '@cluster/types';
+import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class RepeatSubtag extends DefinedSubtag {
@@ -35,7 +35,7 @@ export class RepeatSubtag extends DefinedSubtag {
         for (let i = 0; i < amount; i++) {
             await context.limit.check(context, 'repeat:loops');
             yield await code.execute();
-            if (context.state.return !== 0)
+            if (context.data.state !== BBTagRuntimeState.RUNNING)
                 break;
         }
     }

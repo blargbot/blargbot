@@ -20,9 +20,9 @@ export const tagVariableScopes: readonly TagVariableScope[] = [
         prefix: '@',
         description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
             'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.',
-        setter: async (context, values) => await context.database.tagVariables.upsert(values, SubtagVariableType.AUTHOR, context.author),
-        getter: async (context, name) => await context.database.tagVariables.get(name, SubtagVariableType.AUTHOR, context.author),
-        getLock: (context, key): ReadWriteLock => getLock(...['AUTHOR', context.author, key])
+        setter: async (context, values) => await context.database.tagVariables.upsert(values, SubtagVariableType.AUTHOR, context.authorId),
+        getter: async (context, name) => await context.database.tagVariables.get(name, SubtagVariableType.AUTHOR, context.authorId),
+        getLock: (context, key): ReadWriteLock => getLock(...['AUTHOR', context.authorId, key])
     },
     {
         name: 'Global',

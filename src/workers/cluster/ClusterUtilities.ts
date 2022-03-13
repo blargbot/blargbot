@@ -89,7 +89,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             prompt,
             async getResult() {
-                const interaction = await awaiter;
+                const interaction = await awaiter.wait();
                 await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
@@ -168,7 +168,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             prompt,
             async getResult() {
-                const interaction = await awaiter;
+                const interaction = await awaiter.wait();
                 await cleanupQuery(prompt, interaction);
                 if (interaction === undefined)
                     return { state: 'TIMED_OUT' };
@@ -227,7 +227,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             prompt,
             async getResult() {
-                const interaction = await awaiter;
+                const interaction = await awaiter.wait();
                 await cleanupQuery(prompt, interaction);
                 switch (interaction?.data.custom_id) {
                     case component.confirmId: return true;
@@ -294,7 +294,7 @@ export class ClusterUtilities extends BaseUtilities {
         return {
             messages: messages,
             async getResult() {
-                const result = await Promise.race([componentAwaiter, messageAwaiter]);
+                const result = await Promise.race([componentAwaiter.wait(), messageAwaiter.wait()]);
                 componentAwaiter.cancel();
                 messageAwaiter.cancel();
                 await cleanupQuery(prompt, result);
@@ -325,7 +325,7 @@ export class ClusterUtilities extends BaseUtilities {
     ): Awaiter<ComponentInteraction> {
         const actorFilter = createActorFilter(actors);
         const validIds = new Set(Object.keys(options));
-        return this.cluster.awaiter.components.wait(validIds, async (interaction) => {
+        return this.cluster.awaiter.components.getAwaiter(validIds, async (interaction) => {
             if (!actorFilter(interaction.member?.user ?? interaction.user)) {
                 await interaction.createMessage({ content: rejectMessage, flags: Constants.MessageFlags.EPHEMERAL });
                 return false;
@@ -342,7 +342,7 @@ export class ClusterUtilities extends BaseUtilities {
         filter: (message: Message<T>) => Promise<boolean> | boolean
     ): Awaiter<Message<T>> {
         const actorFilter = createActorFilter(actors);
-        return this.cluster.awaiter.messages.wait([channel], async message => {
+        return this.cluster.awaiter.messages.getAwaiter([channel], async message => {
             return actorFilter(message.author) && await filter(message);
         }, timeout ?? 60000);
     }

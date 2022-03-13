@@ -15,7 +15,7 @@ export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
 
         const context = await BBTagContext.deserialize(this.cluster.bbtag, migratedEvent.context);
         context.limit.addRules(['timer', 'output'], rules.disabledRule);
-        context.state.stackSize--;
+        context.data.stackSize--;
 
         const ast = bbtag.parse(migratedEvent.content);
         await context.engine.eval(ast, context);

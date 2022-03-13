@@ -112,7 +112,7 @@ export abstract class RethinkDbCachedTable<Table extends { [P in KeyName]: strin
 
     private async watchChangesCore(shouldCache: (id: string) => boolean = () => true): Promise<never> {
         this.logger.info(`Registering a ${this.table} changefeed!`);
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition, no-constant-condition
+        // eslint-disable-next-line no-constant-condition
         while (true) {
             try {
                 const changefeed = this.rstream(t => t.changes({ squash: true }));
@@ -126,7 +126,6 @@ export abstract class RethinkDbCachedTable<Table extends { [P in KeyName]: strin
                             this.cache.set(id, data.new_val);
                     }
                 }
-                /* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment */
             } catch (err: unknown) {
                 this.logger.warn(`Error from changefeed for table '${this.table}', will try again in 10 seconds.`, err);
                 await sleep(10000);

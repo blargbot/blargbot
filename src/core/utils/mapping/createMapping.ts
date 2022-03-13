@@ -8,7 +8,7 @@ export function createMapping<T, TArgs extends unknown[] = []>(impl: TypeMapping
 
 function createMappingCore<T, U, TArgs extends unknown[]>(
     impl: TypeMappingImpl<T | U, TArgs>,
-    props: { [P in keyof TypeMapping<T, TArgs>]: StrongPropertyDescriptor<TypeMapping<T, TArgs>[P]>; })
+    props: { [P in keyof TypeMapping<T, TArgs>]: TypedPropertyDescriptor<TypeMapping<T, TArgs>[P]>; })
     : TypeMapping<T | U, TArgs> {
     return Object.defineProperties(impl, props);
 }

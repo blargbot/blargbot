@@ -5,7 +5,6 @@ import { guard } from '@core/utils';
 import { BaseModuleLoader } from './BaseModuleLoader';
 
 export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #getNames: (module: TModule) => Iterable<string>;
 
     public constructor(
@@ -26,7 +25,7 @@ export class ModuleLoader<TModule> extends BaseModuleLoader<TModule> {
 
     protected tryActivate(rawModule: unknown): ModuleResult<TModule> | undefined {
         if (rawModule instanceof this.type)
-            return { module: <TModule>rawModule, names: this.#getNames(<TModule>rawModule) };
+            return { module: rawModule, names: this.#getNames(rawModule) };
 
         if (guard.isClass(rawModule, this.type)) {
             const instance = new rawModule(...this.constructorArguments);

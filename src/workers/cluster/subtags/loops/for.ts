@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgument } from '@cluster/types';
+import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
 import { bbtag, parse, SubtagType } from '@cluster/utils';
 import { OrdinalOperator } from '@cluster/utils/bbtag/operators';
 
@@ -57,7 +57,7 @@ export class ForSubtag extends DefinedSubtag {
                 if (isNaN(i))
                     throw new NotANumberError(varEntry.value);
 
-                if (context.state.return !== 0)
+                if (context.data.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         } finally {

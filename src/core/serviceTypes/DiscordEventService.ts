@@ -4,7 +4,6 @@ import { Client as Discord, ClientEvents } from 'eris';
 import { BaseService } from './BaseService';
 
 export abstract class DiscordEventService<T extends keyof ClientEvents> extends BaseService {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #execute: (...args: ClientEvents[T]) => void;
     public readonly type: string;
 

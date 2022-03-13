@@ -37,6 +37,10 @@ export class CustomCommandManager extends BaseCommandManager<NamedGuildCommandTa
         return { state: 'FOUND', detail: new NormalizedCommandTag(command, impl) };
     }
 
+    public load(): Promise<void> {
+        return Promise.resolve();
+    }
+
     protected async allCommandNames(location?: Guild | KnownTextableChannel): Promise<Iterable<string>> {
         if (location === undefined)
             return [];
@@ -113,6 +117,8 @@ class NormalizedCommandTag implements ICommand<NamedGuildCommandTag> {
         metrics.commandCounter.labels('custom', 'custom').inc();
         await context.cluster.bbtag.execute(content, {
             ...options,
+            authorId: options.author,
+            authorizerId: options.authorizer,
             rootTagName: context.commandName,
             message: context.message,
             inputRaw: context.commandText,

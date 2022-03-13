@@ -4,7 +4,6 @@ import { MasterOptions } from '@master/types';
 import moment from 'moment';
 
 export class AvatarInterval extends CronService {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #avatars: readonly string[];
     public readonly type = 'discord';
 

@@ -1,14 +1,12 @@
-import { RuntimeReturnState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
+import { BBTagRuntimeState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
 import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../BBTagContext';
 import { ArgumentLengthError } from '../errors';
 
 export class ExecutingSubtagArgumentValue implements SubtagArgument {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #promise?: Promise<string>;
     #value?: string;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get isCached(): boolean { return this.#value !== undefined; }
     public get raw(): string { return this.code.source; }
@@ -47,7 +45,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
                     }
                 ]
             });
-            this.context.state.return = RuntimeReturnState.ALL;
+            this.context.data.state = BBTagRuntimeState.ABORT;
             throw new ArgumentLengthError(this.call.args.indexOf(this.code), this.parameter.maxLength, result.length);
         }
 
@@ -69,7 +67,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
 function buildLengthEmbed(context: BBTagContext, subtag: SubtagCall, subtagName: string): EmbedOptions {
     return {
         fields: [
-            { name: 'Details', value: `Guild: ${context.guild.id}\nChannel: ${context.channel.id}\nAuthor: <@${context.author}>\nUser: <@${context.user.id}>`, inline: true },
+            { name: 'Details', value: `Guild: ${context.guild.id}\nChannel: ${context.channel.id}\nAuthor: <@${context.authorId}>\nUser: <@${context.user.id}>`, inline: true },
             { name: `Type: ${context.isCC ? 'CC' : 'Tag'}`, value: context.rootTagName, inline: true },
             { name: 'Subtag', value: subtagName, inline: true },
             { name: 'Location', value: `(${subtag.start.line},${subtag.start.column}):(${subtag.end.line},${subtag.end.column})`, inline: true }

@@ -18,7 +18,7 @@ export abstract class BaseCommand implements CommandBaseOptions, IMiddleware<Com
 
     public get names(): readonly string[] { return [this.name, ...this.aliases]; }
 
-    protected constructor(
+    public constructor(
         options: CommandBaseOptions
     ) {
         this.name = options.name;

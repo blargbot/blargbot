@@ -21,6 +21,6 @@ export class TagAuthorSubtag extends DefinedSubtag {
     }
 
     public getAuthor(context: BBTagContext): string {
-        return context.author;
+        return context.authorId;
     }
 }

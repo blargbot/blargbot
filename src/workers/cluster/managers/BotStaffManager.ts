@@ -2,10 +2,8 @@ import { Cluster } from '@cluster';
 import { Guild } from 'eris';
 
 export class BotStaffManager {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     #staff: Set<string>;
     #support: Set<string>;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get staff(): ReadonlySet<string> { return this.#staff; }
     public get support(): ReadonlySet<string> { return this.#support; }

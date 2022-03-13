@@ -5,10 +5,8 @@ import { GuildTriggerTag } from '@core/types';
 import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
 
 export class AutoresponseManager {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #guilds: Set<string>;
     readonly #debugOutput: Record<string, { channelId: string; messageId: string; } | undefined>;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get guilds(): ReadonlySet<string> { return this.#guilds; }
 
@@ -87,8 +85,8 @@ ${codeBlock(code, 'js')}`
         const result = await this.cluster.bbtag.execute(tag.content, {
             message: msg,
             limit: id === 'everything' ? 'everythingAutoResponseLimit' : 'generalAutoResponseLimit',
-            author: tag.author,
-            authorizer: tag.authorizer,
+            authorId: tag.author,
+            authorizerId: tag.authorizer,
             inputRaw: msg.content,
             isCC: true,
             rootTagName: 'autoresponse',

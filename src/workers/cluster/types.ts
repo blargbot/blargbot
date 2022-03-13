@@ -1,9 +1,10 @@
 import { BBTagContext, limits, ScopeManager, SubtagCallStack, TagCooldownManager, VariableCache } from '@cluster/bbtag';
 import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
 import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
+import { Emote } from '@core/Emote';
 import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
 import { ImageResult } from '@image/types';
-import { Attachment, Embed, EmbedOptions, FileContent, Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, PartialEmoji, Role, Shard, User, Webhook } from 'eris';
+import { Attachment, Embed, EmbedOptions, FileContent, Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';
 import ReadWriteLock from 'rwlock';
@@ -193,7 +194,7 @@ export interface BBTagContextState {
     };
     outputMessage: string | undefined;
     ownedMsgs: string[];
-    return: RuntimeReturnState;
+    state: BBTagRuntimeState;
     stackSize: number;
     embeds: undefined | EmbedOptions[];
     file: undefined | FileContent;
@@ -232,10 +233,13 @@ export interface RuntimeLimit {
     load(state: SerializedRuntimeLimit): void;
 }
 
-export const enum RuntimeReturnState {
-    NONE = 0,
-    CURRENTTAG = 1,
-    ALL = -1
+export const enum BBTagRuntimeState {
+    /** Indicates bbtag should continue to be executed */
+    RUNNING,
+    /** Indicates the current tag should be terminated */
+    RETURN,
+    /** Indicates the current execution should be terminated */
+    ABORT
 }
 
 export interface BBTagContextOptions {
@@ -244,8 +248,8 @@ export interface BBTagContextOptions {
     readonly flags?: readonly FlagDefinition[];
     readonly isCC: boolean;
     readonly tagVars?: boolean;
-    readonly author: string;
-    readonly authorizer?: string;
+    readonly authorId: string;
+    readonly authorizerId?: string;
     readonly rootTagName?: string;
     readonly tagName?: string;
     readonly cooldown?: number;
@@ -253,7 +257,7 @@ export interface BBTagContextOptions {
     readonly locks?: Record<string, ReadWriteLock | undefined>;
     readonly limit: RuntimeLimit | keyof typeof import('./bbtag/limits')['limits'];
     readonly silent?: boolean;
-    readonly state?: Partial<BBTagContextState>;
+    readonly data?: Partial<BBTagContextState>;
     readonly scopes?: ScopeManager;
     readonly variables?: VariableCache;
     readonly callStack?: SubtagCallStack;
@@ -844,7 +848,7 @@ export interface CommandBinderStateFailureReason {
 }
 
 export interface AwaitReactionsResponse {
-    message: KnownMessage;
-    reaction: PartialEmoji;
-    user: User;
+    readonly message: KnownMessage;
+    readonly reaction: Emote;
+    readonly user: User;
 }

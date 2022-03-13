@@ -14,7 +14,6 @@ export class ClusterGetCommandHandler extends ClusterEventService<'getCommand'> 
         if (result.state !== 'ALLOWED')
             return undefined;
 
-        // eslint-disable-next-line @typescript-eslint/unbound-method
         return {
             aliases: result.detail.aliases,
             category: result.detail.category,

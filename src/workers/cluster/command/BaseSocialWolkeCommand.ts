@@ -31,7 +31,6 @@ export abstract class BaseSocialWolkeCommand extends BaseGlobalCommand {
                 } : {
                     parameters: '{user:user+?}',
                     description: options.description,
-                    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
                     execute: (ctx, [user]) => this.render(ctx, options.search, options.action, user.asOptionalUser ?? ctx.author)
                 }
             ]

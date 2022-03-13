@@ -18,7 +18,7 @@ export abstract class Subtag implements SubtagOptions {
     public readonly signatures: readonly SubtagSignatureDetails[];
     public readonly hidden: boolean;
 
-    protected constructor(options: SubtagOptions) {
+    public constructor(options: SubtagOptions) {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
@@ -38,7 +38,7 @@ export abstract class Subtag implements SubtagOptions {
         } finally {
             timer.end();
             metrics.subtagLatency.labels(this.name).observe(timer.elapsed);
-            const debugPerf = context.state.subtags[this.name] ??= [];
+            const debugPerf = context.data.subtags[this.name] ??= [];
             debugPerf.push(timer.elapsed);
         }
     }

@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
 import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { bbtag, humanize, SubtagType } from '@cluster/utils';
+import { BBTagRuntimeState } from '@cluster/types';
+import { bbtag, humanize, parse, SubtagType } from '@cluster/utils';
 
 export class ExecSubtag extends DefinedSubtag {
     public constructor() {
@@ -28,13 +29,20 @@ export class ExecSubtag extends DefinedSubtag {
         if (tag === null)
             throw new BBTagRuntimeError('Tag not found: ' + tagName);
 
+        let input = args[0] ?? '';
+        if (args.length > 1)
+            input = humanize.smartSplit.inverse(bbtag.tagArray.flattenArray(args).map(x => parse.string(x)));
+
         return await context.withStack(() => context.withScope(true, () => context.withChild({
             tagName,
             cooldown: tag.cooldown ?? 0,
-            inputRaw: humanize.smartSplit.inverse(args)
+            inputRaw: input
         }, async context => {
             const ast = bbtag.parse(tag.content, true);
-            return await context.engine.eval(ast, context);
+            const result = await context.engine.eval(ast, context);
+            if (context.data.state === BBTagRuntimeState.RETURN)
+                context.data.state = BBTagRuntimeState.RUNNING;
+            return result;
         })));
     }
 }

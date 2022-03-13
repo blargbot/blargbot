@@ -1,4 +1,5 @@
 import { Cluster } from '@cluster';
+import { Emote } from '@core/Emote';
 import { DiscordEventService } from '@core/serviceTypes';
 import { KnownMessage, Member, PossiblyUncachedMessage, Uncached, User } from 'eris';
 
@@ -14,7 +15,7 @@ export class DiscordMessageReactionAddHandler extends DiscordEventService<'messa
                 return;
 
             await this.cluster.autoresponses.handleWhitelistApproval(_message, emoji, _user);
-            await this.cluster.awaiter.reactions.tryConsume({ message: _message, user: _user, reaction: emoji });
+            await this.cluster.awaiter.reactions.tryConsume({ message: _message, user: _user, reaction: Emote.create(emoji) });
         });
     }
 

@@ -3,7 +3,6 @@ import { TimeoutManager } from '@cluster/managers';
 import { IntervalService } from '@core/serviceTypes';
 
 export class TimeoutRefresh extends IntervalService {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #timeouts: TimeoutManager;
     public readonly type: string = 'timeout';
 

@@ -28,8 +28,7 @@ export class Mock<T> {
         this.#assertions = [];
     }
 
-    public setup<R>(action: (instance: T) => Promise<R>, requireCall?: boolean): VerifiableMethodStubSetter<Promise<R>, R, Error>
-    public setup<R>(action: (instance: T) => R, requireCall?: boolean): VerifiableMethodStubSetter<R>
+    public setup<R>(action: (instance: T) => R, requireCall?: boolean): [R] extends [PromiseLike<infer P>] ? VerifiableMethodStubSetter<R, P, Error> : VerifiableMethodStubSetter<R>
     public setup(action: (instance: T) => unknown, requireCall = true): VerifiableMethodStubSetter<unknown, unknown, unknown> {
         const call = action(this.#expressionProvider);
         const setter = when(call);
@@ -65,8 +64,11 @@ export class Mock<T> {
                 errors.push(err);
             }
         }
-        if (errors.length > 0)
-            throw new AggregateError(errors, errors.join('\n'));
+        switch (errors.length) {
+            case 0: break;
+            case 1: throw errors[0];
+            default: throw new AggregateError(errors, errors.join('\n'));
+        }
     }
 
     public get instance(): T {

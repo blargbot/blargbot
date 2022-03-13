@@ -1,6 +1,6 @@
 import { SubtagStackOverflowError, UnknownSubtagError } from '@cluster/bbtag/errors';
 import { FunctionInvokeSubtag } from '@cluster/subtags/bot/func.';
-import { RuntimeReturnState } from '@cluster/types';
+import { BBTagRuntimeState } from '@cluster/types';
 import { bbtag } from '@cluster/utils';
 import { expect } from 'chai';
 
@@ -15,16 +15,16 @@ runSubtagTests({
             expected: 'Success!',
             subtags: [new AssertSubtag(ctx => {
                 expect(ctx.scopes.local.paramsarray).to.deep.equal([]);
-                expect(ctx.state.stackSize).to.equal(123);
+                expect(ctx.data.stackSize).to.equal(123);
                 return 'Success!';
             })],
             setup(ctx) {
                 ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
-                ctx.options.state = { stackSize: 122 };
+                ctx.options.data = { stackSize: 122 };
             },
             assert(ctx) {
                 expect(ctx.scopes.local.paramsarray).to.be.undefined;
-                expect(ctx.state.stackSize).to.equal(122);
+                expect(ctx.data.stackSize).to.equal(122);
             }
         },
         {
@@ -32,16 +32,16 @@ runSubtagTests({
             expected: 'Success!',
             subtags: [new AssertSubtag(ctx => {
                 expect(ctx.scopes.local.paramsarray).to.deep.equal(['arg1', 'arg2', '["arg3","arg3"]', 'arg4', '']);
-                expect(ctx.state.stackSize).to.equal(123);
+                expect(ctx.data.stackSize).to.equal(123);
                 return 'Success!';
             })],
             setup(ctx) {
                 ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
-                ctx.options.state = { stackSize: 122 };
+                ctx.options.data = { stackSize: 122 };
             },
             assert(ctx) {
                 expect(ctx.scopes.local.paramsarray).to.be.undefined;
-                expect(ctx.state.stackSize).to.equal(122);
+                expect(ctx.data.stackSize).to.equal(122);
             }
         },
         {
@@ -58,12 +58,12 @@ runSubtagTests({
                 { start: 0, end: 11, error: new SubtagStackOverflowError(200) }
             ],
             setup(ctx) {
-                ctx.options.state = { stackSize: 200 };
+                ctx.options.data = { stackSize: 200 };
                 ctx.rootScope.functions['test'] = bbtag.parse('{assert}');
             },
             assert(ctx) {
-                expect(ctx.state.stackSize).to.equal(200);
-                expect(ctx.state.return).to.equal(RuntimeReturnState.ALL);
+                expect(ctx.data.stackSize).to.equal(200);
+                expect(ctx.data.state).to.equal(BBTagRuntimeState.ABORT);
             }
         }
     ]

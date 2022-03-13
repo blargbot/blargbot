@@ -1,9 +1,3 @@
-import { ConnectionOptions as RethinkConfiguration } from 'rethinkdb';
-import { Options as SequelizeConfiguration } from 'sequelize';
-
-export { ConnectionOptions as RethinkConfiguration } from 'rethinkdb';
-export { Options as SequelizeConfiguration } from 'sequelize';
-
 export interface Configuration {
     readonly cassandra: CassandraConfiguration;
     readonly rethink: RethinkConfiguration;
@@ -15,6 +9,24 @@ export interface Configuration {
     readonly website: WebsiteConfiguration;
     readonly api: ApiWorkerConfiguration;
     readonly discord: DiscordConfiguration;
+}
+
+export interface RethinkConfiguration {
+    readonly host: string;
+    readonly port: number;
+    readonly db: string;
+    readonly user: string;
+    readonly password: string;
+}
+
+export interface SequelizeConfiguration {
+    readonly host: string;
+    readonly pool: {
+        readonly max: number;
+        readonly min: number;
+        readonly acquire: number;
+        readonly idle: number;
+    };
 }
 
 export interface DiscordConfiguration {

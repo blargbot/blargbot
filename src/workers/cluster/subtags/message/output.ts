@@ -24,7 +24,7 @@ export class OutputSubtag extends DefinedSubtag {
     }
 
     public async sendTagOutput(context: BBTagContext, text: string): Promise<string> {
-        if (context.state.outputMessage !== undefined && text.length > 0)
+        if (context.data.outputMessage !== undefined && text.length > 0)
             throw new BBTagRuntimeError('Cannot send multiple outputs');
         return await context.sendOutput(text) ?? '';
     }

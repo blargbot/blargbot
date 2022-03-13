@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { RuntimeReturnState } from '@cluster/types';
+import { BBTagRuntimeState } from '@cluster/types';
 import { parse, SubtagType } from '@cluster/utils';
 
 export class ReturnSubtag extends DefinedSubtag {
@@ -23,6 +23,6 @@ export class ReturnSubtag extends DefinedSubtag {
 
     public setReturn(context: BBTagContext, forcedStr: string): void {
         const forced = parse.boolean(forcedStr, true);
-        context.state.return = forced ? RuntimeReturnState.ALL : RuntimeReturnState.CURRENTTAG;
+        context.data.state = forced ? BBTagRuntimeState.ABORT : BBTagRuntimeState.RETURN;
     }
 }

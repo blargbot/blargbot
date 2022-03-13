@@ -186,8 +186,8 @@ export class TagCommand extends BaseGuildCommand {
             isCC: false,
             limit: 'tagLimit',
             rootTagName: match.name,
-            author: match.author,
-            authorizer: match.authorizer,
+            authorId: match.author,
+            authorizerId: match.authorizer,
             flags: match.flags,
             cooldown: match.cooldown
         });
@@ -207,7 +207,7 @@ export class TagCommand extends BaseGuildCommand {
             isCC: false,
             limit: 'tagLimit',
             rootTagName: 'test',
-            author: context.author.id
+            authorId: context.author.id
         });
 
         return debug ? bbtag.createDebugOutput(result) : undefined;
@@ -534,7 +534,6 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...addFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []];
         for (const [flag, args] of Object.entries(addFlags)) {
@@ -561,7 +560,6 @@ export class TagCommand extends BaseGuildCommand {
         if (typeof match !== 'object')
             return match;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { _, ...removeFlags } = parse.flags([], flagsRaw);
         const flags = [...match.flags ?? []]
             .filter(f => removeFlags[f.flag] === undefined);

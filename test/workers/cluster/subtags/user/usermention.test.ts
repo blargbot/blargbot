@@ -21,7 +21,7 @@ runSubtagTests({
                         member.user.id = '12345678900987236';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.state.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                        expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
                     }
                 },
                 {
@@ -30,7 +30,7 @@ runSubtagTests({
                         member.user.id = '098765434512212678';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.state.allowedMentions.users).to.deep.equal(['098765434512212678']);
+                        expect(ctx.data.allowedMentions.users).to.deep.equal(['098765434512212678']);
                     }
                 },
                 {
@@ -39,7 +39,7 @@ runSubtagTests({
                         member.user.id = '876543456782978367654';
                     },
                     assert(_, __, ctx) {
-                        expect(ctx.state.allowedMentions.users).to.deep.equal(['876543456782978367654']);
+                        expect(ctx.data.allowedMentions.users).to.deep.equal(['876543456782978367654']);
                     }
                 }
             ]
@@ -51,7 +51,7 @@ runSubtagTests({
                 ctx.users.command.id = '12345678900987236';
             },
             assert(ctx) {
-                expect(ctx.state.allowedMentions.users).to.deep.equal(['12345678900987236']);
+                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236']);
             }
         },
         {
@@ -71,7 +71,7 @@ runSubtagTests({
                 ctx.util.setup(m => m.findMembers(bbctx.guild, '098765434512212678')).verifiable(1).thenResolve([otherMember.instance]);
             },
             assert(ctx) {
-                expect(ctx.state.allowedMentions.users).to.deep.equal(['12345678900987236', '098765434512212678']);
+                expect(ctx.data.allowedMentions.users).to.deep.equal(['12345678900987236', '098765434512212678']);
             }
         }
     ]

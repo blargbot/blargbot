@@ -42,7 +42,7 @@ runSubtagTests({
                         ctx.discord.setup(m => m.removeMessageReactions(channel.id, message.id)).thenResolve(undefined);
                     },
                     postSetup(_, message, bbctx) {
-                        bbctx.state.ownedMsgs.push(message.id);
+                        bbctx.data.ownedMsgs.push(message.id);
                     }
                 },
                 {

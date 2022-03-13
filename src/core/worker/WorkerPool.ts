@@ -6,11 +6,9 @@ import EventEmitter from 'eventemitter3';
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
 export abstract class WorkerPool<Worker extends WorkerConnection<string, IPCContracts>> {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #workers: Map<number, Worker>;
     readonly #events: EventEmitter;
     readonly #inProgress: Map<number, boolean>;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public *[Symbol.iterator](): IterableIterator<Worker | undefined> {
         for (let i = 0; i < this.workerCount; i++)

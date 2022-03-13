@@ -25,7 +25,7 @@ export class HereMentionSubtag extends DefinedSubtag {
         mention: string
     ): string {
         const enabled = parse.boolean(mention, true);
-        context.state.allowedMentions.everybody = enabled;
+        context.data.allowedMentions.everybody = enabled;
         return '@here';
     }
 }

@@ -21,6 +21,6 @@ export class NsfwSubtag extends DefinedSubtag {
     }
 
     public setNsfw(context: BBTagContext, message: string): void {
-        context.state.nsfw = message;
+        context.data.nsfw = message;
     }
 }

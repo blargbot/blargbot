@@ -1,15 +1,23 @@
 export class PromiseCompletionSource<T> {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
-    #resolve?: (value: Awaitable<T>) => void;
-    #reject?: (reason?: unknown) => void;
+    #resolve: (value: Awaitable<T>) => void;
+    #reject: (reason?: unknown) => void;
     #state: 'pending' | 'resolved' | 'rejected';
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
+
     public readonly promise: Promise<T>;
     public get state(): 'pending' | 'resolved' | 'rejected' { return this.#state; }
 
     public constructor() {
         this.#state = 'pending';
+        let rejectVal: { value: unknown; } | undefined;
+        let resolveVal: { value: Awaitable<T>; } | undefined;
+        this.#resolve = v => resolveVal = { value: v };
+        this.#reject = v => rejectVal = { value: v };
         this.promise = new Promise<T>((resolve, reject) => {
+            if (rejectVal !== undefined)
+                reject(rejectVal.value);
+            if (resolveVal !== undefined)
+                resolve(resolveVal.value);
+
             this.#resolve = resolve;
             this.#reject = reject;
         });
@@ -19,8 +27,7 @@ export class PromiseCompletionSource<T> {
         if (this.#state !== 'pending')
             return false;
         this.#state = 'resolved';
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.#resolve!(value);
+        this.#resolve(value);
         return true;
     }
 
@@ -29,8 +36,7 @@ export class PromiseCompletionSource<T> {
             return false;
 
         this.#state = 'rejected';
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        this.#reject!(error);
+        this.#reject(error);
         return true;
     }
 }

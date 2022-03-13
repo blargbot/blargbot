@@ -23,6 +23,6 @@ export class FileSubtag extends DefinedSubtag {
         const data = fileContent.startsWith('buffer:')
             ? Buffer.from(fileContent.substring(7), 'base64')
             : fileContent;
-        context.state.file = { file: data, name: fileName };
+        context.data.file = { file: data, name: fileName };
     }
 }

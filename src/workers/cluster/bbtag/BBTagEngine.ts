@@ -1,5 +1,5 @@
 import { Cluster, ClusterUtilities } from '@cluster';
-import { AnalysisResults, BBTagContextOptions, ExecutionResult, RuntimeReturnState, Statement, SubtagCall } from '@cluster/types';
+import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult, Statement, SubtagCall } from '@cluster/types';
 import { bbtag as bbtagUtil, discord, parse, sleep } from '@cluster/utils';
 import { Database } from '@core/database';
 import { Logger } from '@core/Logger';
@@ -40,27 +40,27 @@ export class BBTagEngine {
         let content: string;
         if (context.cooldownEnd.isAfter(moment())) {
             const remaining = moment.duration(context.cooldownEnd.diff(moment()));
-            if (context.state.stackSize === 0)
+            if (context.data.stackSize === 0)
                 await context.sendOutput(`This ${context.isCC ? 'custom command' : 'tag'} is currently under cooldown. Please try again <t:${moment().add(remaining).unix()}:R>.`);
-            context.state.return = RuntimeReturnState.ALL;
+            context.data.state = BBTagRuntimeState.ABORT;
             content = context.addError(new TagCooldownError(context.tagName, context.isCC, remaining), caller);
-        } else if (context.state.stackSize > 200) {
-            context.state.return = RuntimeReturnState.ALL;
-            content = context.addError(new SubtagStackOverflowError(context.state.stackSize), caller);
+        } else if (context.data.stackSize > 200) {
+            context.data.state = BBTagRuntimeState.ABORT;
+            content = context.addError(new SubtagStackOverflowError(context.data.stackSize), caller);
         } else {
             context.cooldowns.set(context);
             context.execTimer.start();
             content = await context.withStack(async () => {
                 const result = await joinResults(this.evalStatement(bbtag, context));
-                if (context.state.replace !== undefined)
-                    return result.replace(context.state.replace.regex, context.state.replace.with);
+                if (context.data.replace !== undefined)
+                    return result.replace(context.data.replace.regex, context.data.replace.with);
                 return result;
             });
             context.execTimer.end();
             this.logger.bbtag(`Tag run complete in ${timer.poll(true)}ms`);
             await context.variables.persist();
             this.logger.bbtag(`Saved variables in ${timer.poll(true)}ms`);
-            if (context.state.stackSize === 0) {
+            if (context.data.stackSize === 0) {
                 await context.sendOutput(content);
                 this.logger.bbtag(`Sent final output in ${timer.poll(true)}ms`);
             }
@@ -77,7 +77,7 @@ export class BBTagEngine {
                 active: context.execTimer.elapsed,
                 database: context.dbTimer.elapsed,
                 total: context.totalDuration.asMilliseconds(),
-                subtag: context.state.subtags
+                subtag: context.data.subtags
             },
             database: {
                 committed: context.dbObjectsCommitted,
@@ -102,7 +102,7 @@ export class BBTagEngine {
             try {
                 for await (const item of subtag.execute(context, name, bbtag)) {
                     // allow the eventloop to process other stuff every 1000 subtag calls
-                    if (++context.state.subtagCount % 1000 === 0)
+                    if (++context.data.subtagCount % 1000 === 0)
                         await sleep(0);
 
                     if (item !== undefined)
@@ -124,14 +124,13 @@ export class BBTagEngine {
 
     }
 
-    // eslint-disable-next-line @typescript-eslint/require-await
     private async * evalStatement(bbtag: Statement, context: BBTagContext): AsyncIterable<string> {
         for (const elem of bbtag.values) {
             if (typeof elem === 'string')
                 yield elem;
             else {
                 yield* this.evalSubtag(elem, context);
-                if (context.state.return !== RuntimeReturnState.NONE)
+                if (context.data.state !== BBTagRuntimeState.RUNNING)
                     break;
             }
         }
@@ -141,7 +140,7 @@ export class BBTagEngine {
         if (context.engine !== this)
             throw new Error('Cannot execute a context from another engine!');
 
-        if (context.state.return !== RuntimeReturnState.NONE)
+        if (context.data.state !== BBTagRuntimeState.RUNNING)
             return '';
 
         const results = 'values' in bbtag

@@ -1,5 +1,5 @@
 import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { RuntimeReturnState, SubtagArgument } from '@cluster/types';
+import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
 import { bbtag, SubtagType } from '@cluster/utils';
 
 export class WhileSubtag extends DefinedSubtag {
@@ -37,8 +37,7 @@ export class WhileSubtag extends DefinedSubtag {
         val2Raw: SubtagArgument | string,
         codeRaw: SubtagArgument
     ): AsyncIterable<string> {
-        while (context.state.return === RuntimeReturnState.NONE) {
-            await context.limit.check(context, 'while:loops');
+        while (context.data.state === BBTagRuntimeState.RUNNING) {
 
             let right = await val1Raw.execute();
             let operator = typeof evaluator === 'string' ? evaluator : await evaluator.execute();
@@ -54,13 +53,16 @@ export class WhileSubtag extends DefinedSubtag {
                 [operator, right] = [right, operator];
             }
 
-            if (!bbtag.isComparisonOperator(operator))
+            if (!bbtag.isComparisonOperator(operator)) {
                 //TODO invalid operator stuff here
+                await context.limit.check(context, 'while:loops');
                 yield await codeRaw.execute();
-            else if (!bbtag.operate(operator, right, left))
+            } else if (!bbtag.operate(operator, right, left))
                 break;
-            else
+            else {
+                await context.limit.check(context, 'while:loops');
                 yield await codeRaw.execute();
+            }
         }
     }
 }

@@ -14,12 +14,12 @@ runSubtagTests({
             code: '{inject;{lb}assert{rb}}',
             subtags: [new LbSubtag(), new RbSubtag(), new AssertSubtag(ctx => {
                 expect(ctx.parent).to.be.undefined;
-                expect(ctx.state.stackSize).to.equal(123);
+                expect(ctx.data.stackSize).to.equal(123);
                 return 'Inject successful';
             })],
             expected: 'Inject successful',
             setup(ctx) {
-                ctx.options.state = { stackSize: 122 };
+                ctx.options.data = { stackSize: 122 };
             }
         },
         {

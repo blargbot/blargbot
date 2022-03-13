@@ -6,7 +6,6 @@ import { inspect } from 'util';
 import { TimeoutManager } from '../managers/TimeoutManager';
 
 export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeMap> extends BaseService {
-    // eslint-disable-next-line @typescript-eslint/explicit-member-accessibility
     readonly #execute: (event: StoredEvent<TEvent>) => void;
     public readonly type: string;
 

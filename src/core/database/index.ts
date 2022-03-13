@@ -21,7 +21,6 @@ import { RethinkDbUserTable } from './RethinkDbUserTable';
 import { RethinkDbVarsTable } from './RethinkDbVarsTable';
 
 export class Database {
-    /* eslint-disable @typescript-eslint/explicit-member-accessibility */
     readonly #rethinkDb: RethinkDb;
     readonly #cassandra: Cassandra;
     readonly #postgres: PostgresDb;
@@ -39,7 +38,6 @@ export class Database {
     readonly #suggestions: AirtableSuggestionsTable;
     readonly #logger: Logger;
     readonly #discord: Discord;
-    /* eslint-enable @typescript-eslint/explicit-member-accessibility */
 
     public get guilds(): GuildTable { return this.#guilds; }
     public get users(): UserTable { return this.#users; }
