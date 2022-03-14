@@ -1,5 +1,3 @@
-import 'module-alias/register';
-
 import { ApiWorker } from '@blargbot/api/ApiWorker';
 import { createLogger } from '@blargbot/core/Logger';
 
@@ -9,7 +7,7 @@ export * from './ApiWorker';
 export * from './Api';
 
 export default async function start(): Promise<void> {
-    const config = await import('@blargbot/config');
+    const { config } = await import('@blargbot/config');
     const logger = createLogger(config, `API${process.env.WORKER_ID ?? ''}`);
     logger.setGlobal();
 

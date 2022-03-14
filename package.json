@@ -1,8 +1,12 @@
 {
     "name": "blargbot",
-    "version": "1.0.0",
+    "private": true,
     "description": "blargbot is multipurpose discord bot. Coded in node.js using [Eris](https://github.com/abalabahaha/eris), blargbot hopes to bring commands and services to your discord.",
     "main": "index.js",
+    "workspaces": [
+        "src/*",
+        "test/*"
+    ],
     "dependencies": {
         "@hunteroi/versioning": "^1.2.0",
         "@sentry/node": "^6.15.0",
@@ -29,7 +33,6 @@
         "jimp": "^0.16.1",
         "limax": "^3.0.0",
         "md5": "^2.2.1",
-        "module-alias": "^2.2.2",
         "moment-timezone": "^0.5.34",
         "node-fetch": "^2.6.1",
         "pg": "^8.7.1",
@@ -61,7 +64,6 @@
         "@types/gm": "^1.18.10",
         "@types/md5": "^2.3.1",
         "@types/mocha": "^9.0.0",
-        "@types/module-alias": "^2.0.1",
         "@types/node": "^16.11.11",
         "@types/node-fetch": "^2.5.12",
         "@types/pg": "^8.6.1",
@@ -118,15 +120,5 @@
     "bugs": {
         "url": "https://github.com/blargbot/blargbot/issues"
     },
-    "homepage": "https://github.com/blargbot/blargbot#readme",
-    "_moduleAliases": {
-        "@blargbot/config": "config.json",
-        "@blargbot/package": "package.json",
-        "@blargbot/res": "res",
-        "@blargbot/core": "src/core",
-        "@blargbot/cluster": "src/cluster",
-        "@blargbot/master": "src/master",
-        "@blargbot/image": "src/image",
-        "@blargbot/api": "src/api"
-    }
+    "homepage": "https://github.com/blargbot/blargbot#readme"
 }

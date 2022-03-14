@@ -1,6 +1,5 @@
 import { BaseGlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, mapping, randInt } from '@blargbot/cluster/utils';
-import packageJson from '@blargbot/package';
 import { EmbedOptions } from 'eris';
 import fetch, { Response } from 'node-fetch';
 
@@ -67,7 +66,7 @@ export class CommitCommand extends BaseGlobalCommand {
     }
 
     private async fetchCommitRaw(commitNumber: number): Promise<Response> {
-        return await fetch(`${packageJson.repository.url.replace('github.com', 'api.github.com/repos')}/commits?per_page=1&page=${commitNumber}`);
+        return await fetch(`https://api.github.com/repos/blargbot/blargbot/commits?per_page=1&page=${commitNumber}`);
     }
 }
 

@@ -23,47 +23,6 @@
         "types": [],
         "lib": [
             "ES2021"
-        ],
-        "paths": {
-            "@blargbot/core": [
-                "./src/core"
-            ],
-            "@blargbot/core/*": [
-                "./src/core/*"
-            ],
-            "@blargbot/cluster": [
-                "./src/cluster",
-            ],
-            "@blargbot/cluster/*": [
-                "./src/cluster/*"
-            ],
-            "@blargbot/master": [
-                "./src/master"
-            ],
-            "@blargbot/master/*": [
-                "./src/master/*"
-            ],
-            "@blargbot/image": [
-                "./src/image"
-            ],
-            "@blargbot/image/*": [
-                "./src/image/*"
-            ],
-            "@blargbot/api": [
-                "./src/api"
-            ],
-            "@blargbot/api/*": [
-                "./src/api/*"
-            ],
-            "@blargbot/config": [
-                "./config.json"
-            ],
-            "@blargbot/package": [
-                "./package.json"
-            ],
-            "@blargbot/res/*": [
-                "./res/*"
-            ]
-        }
+        ]
     }
 }

@@ -1,6 +1,4 @@
-import 'module-alias/register';
-
-import config from '@blargbot/config';
+import { config } from '@blargbot/config';
 import { createLogger } from '@blargbot/core/Logger';
 import { TypeMapping } from '@blargbot/core/types';
 import { mapping } from '@blargbot/core/utils';

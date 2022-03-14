@@ -1,5 +1,3 @@
-import 'module-alias/register';
-
 import { createLogger } from '@blargbot/core/Logger';
 import { MasterWorker } from '@blargbot/master';
 import avatars from '@blargbot/res/avatars.json';
@@ -9,7 +7,7 @@ export * from './Master';
 export * from './MasterWorker';
 
 export default async function start(): Promise<void> {
-    const config = await import('@blargbot/config');
+    const { config } = await import('@blargbot/config');
     const logger = createLogger(config, 'MS');
     logger.setGlobal();
 
