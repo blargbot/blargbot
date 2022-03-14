@@ -25,7 +25,7 @@ export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
 export type WorkerPoolEventContext<TWorker extends WorkerConnection<string, IPCContracts>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
-export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => unknown;
+export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => Awaitable<unknown>;
 export type WorkerPoolEventHandler<TWorker extends WorkerConnection<string, IPCContracts>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => unknown;
 export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };

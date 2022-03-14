@@ -8,12 +8,12 @@ export class ClusterMetricsHandler extends ClusterEventService<'metrics'> {
         super(
             cluster,
             'metrics',
-            ({ reply }) => reply(this.getMetrics())
+            async ({ reply }) => reply(await this.getMetrics())
         );
     }
 
-    public getMetrics(): metric[] {
+    public async getMetrics(): Promise<metric[]> {
         metrics.userGauge.set(this.cluster.discord.users.size);
-        return metrics.aggregated.getMetricsAsJSON();
+        return await metrics.getAggregated();
     }
 }

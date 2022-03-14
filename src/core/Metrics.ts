@@ -55,10 +55,10 @@ export const metrics = {
         name: 'https_requests', help: 'HTTPS Requests',
         labelNames: ['method', 'endpoint']
     }),
-    get aggregated(): Prometheus.Registry {
+    async getAggregated(): Promise<metric[]> {
         const c = [...metrics.registryCache];
-        c.unshift(Prometheus.register.getMetricsAsJSON());
-        return aggregate(c);
+        c.unshift(await Prometheus.register.getMetricsAsJSON());
+        return await aggregate(c).getMetricsAsJSON();
     }
 };
 
