@@ -40,16 +40,15 @@ export class ExecCommand extends BaseGlobalCommand {
                 name: 'output.txt'
             };
             await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
-            return undefined;
         } catch (err: unknown) {
-            const content = this.success(`Command: \`${command}\``);
+            const content = this.error(`Command: \`${command}\``);
             const file = {
                 file: Buffer.from(cleanConsole(err instanceof Error ? err.toString() : Object.prototype.toString.call(err))),
                 name: 'output.txt'
             };
             await (message?.channel.editMessage(message.id, { content, file }) ?? context.reply({ content, files: [file] }));
-            throw err;
         }
+        return undefined;
     }
 }
 
