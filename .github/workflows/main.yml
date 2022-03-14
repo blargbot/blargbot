@@ -18,7 +18,7 @@ jobs:
         run: |
           echo "declare const config: import('@blargbot/core/Configuration').Configuration;
           export = config;" >> config.json.d.ts
-          echo '["abc"]' >> res/avatars.json
+          echo '["abc"]' >> src/res/avatars.json
 
       - name: Install Node
         uses: actions/setup-node@v2
