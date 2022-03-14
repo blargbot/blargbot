@@ -1,6 +1,6 @@
-import { SetSubtag } from '@cluster/subtags/bot/set';
-import { snowflake } from '@cluster/utils';
-import { SubtagVariableType } from '@core/types';
+import { SetSubtag } from '@blargbot/cluster/subtags/bot/set';
+import { snowflake } from '@blargbot/cluster/utils';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { argument } from '../../../mock';

@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
-import { guard } from '@core/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { ChannelNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagType } from '@blargbot/cluster/utils';
+import { guard } from '@blargbot/core/utils';
 
 export class ChannelIsVoiceSubtag extends DefinedSubtag {
     public constructor() {

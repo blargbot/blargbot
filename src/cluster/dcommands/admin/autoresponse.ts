@@ -1,8 +1,8 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@cluster/utils';
-import { GuildFilteredAutoresponse, GuildTriggerTag, SendContent, SendPayload } from '@core/types';
-import { codeBlock, guard } from '@core/utils';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils';
+import { GuildFilteredAutoresponse, GuildTriggerTag, SendContent, SendPayload } from '@blargbot/core/types';
+import { codeBlock, guard } from '@blargbot/core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
 export class AutoResponseCommand extends BaseGuildCommand {

@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgument } from '@cluster/types';
-import { parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagArgument } from '@blargbot/cluster/types';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class ChooseSubtag extends DefinedSubtag {
     public constructor() {

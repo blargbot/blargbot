@@ -1,5 +1,5 @@
-import { Cluster } from '@cluster';
-import { guard, humanize, ModlogColour } from '@cluster/utils';
+import { Cluster } from '@blargbot/cluster';
+import { guard, humanize, ModlogColour } from '@blargbot/cluster/utils';
 import { EmbedField, EmbedOptions, Guild, User } from 'eris';
 import { Duration } from 'moment-timezone';
 

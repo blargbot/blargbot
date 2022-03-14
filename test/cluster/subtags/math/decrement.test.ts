@@ -1,5 +1,5 @@
-import { NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
-import { DecrementSubtag } from '@cluster/subtags/math/decrement';
+import { NotABooleanError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { DecrementSubtag } from '@blargbot/cluster/subtags/math/decrement';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

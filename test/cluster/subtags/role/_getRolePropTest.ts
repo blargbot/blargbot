@@ -1,5 +1,5 @@
-import { BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError, RoleNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagContext } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/cluster/bbtag/errors';
 import { APIRole } from 'discord-api-types';
 import { Guild, Role } from 'eris';
 

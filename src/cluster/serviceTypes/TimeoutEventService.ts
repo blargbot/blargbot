@@ -1,6 +1,6 @@
-import { Logger } from '@core/Logger';
-import { BaseService } from '@core/serviceTypes';
-import { EventOptionsTypeMap, StoredEvent } from '@core/types';
+import { Logger } from '@blargbot/core/Logger';
+import { BaseService } from '@blargbot/core/serviceTypes';
+import { EventOptionsTypeMap, StoredEvent } from '@blargbot/core/types';
 import { inspect } from 'util';
 
 import { TimeoutManager } from '../managers/TimeoutManager';

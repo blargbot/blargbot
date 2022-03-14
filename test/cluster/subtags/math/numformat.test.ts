@@ -1,4 +1,4 @@
-import { NumFormatSubtag } from '@cluster/subtags/math/numformat';
+import { NumFormatSubtag } from '@blargbot/cluster/subtags/math/numformat';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

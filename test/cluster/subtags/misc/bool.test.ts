@@ -1,6 +1,6 @@
-import { InvalidOperatorError } from '@cluster/bbtag/errors';
-import { BoolSubtag } from '@cluster/subtags/misc/bool';
-import { bbtag, OrdinalOperator, StringOperator } from '@cluster/utils';
+import { InvalidOperatorError } from '@blargbot/cluster/bbtag/errors';
+import { BoolSubtag } from '@blargbot/cluster/subtags/misc/bool';
+import { bbtag, OrdinalOperator, StringOperator } from '@blargbot/cluster/utils';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 

@@ -1,7 +1,7 @@
-import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { PopSubtag } from '@cluster/subtags/array/pop';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { SubtagVariableType } from '@core/types';
+import { NotAnArrayError } from '@blargbot/cluster/bbtag/errors';
+import { PopSubtag } from '@blargbot/cluster/subtags/array/pop';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { argument } from '../../../mock';

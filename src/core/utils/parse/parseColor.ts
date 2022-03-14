@@ -1,4 +1,4 @@
-import colors from '@res/colors.json';
+import colors from '@blargbot/res/colors.json';
 
 import { randInt } from '../random';
 import { parseHex } from './parseHex';

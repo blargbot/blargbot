@@ -1,4 +1,4 @@
-import { ClusterStats, CommandListResult, GuildPermissionDetails, ICommandDetails, SubtagDetails, SubtagListResult } from '@cluster/types';
+import { ClusterStats, CommandListResult, GuildPermissionDetails, ICommandDetails, SubtagDetails, SubtagListResult } from '@blargbot/cluster/types';
 import { Request, Response } from 'express';
 import { NextFunction, RouteParameters } from 'express-serve-static-core';
 

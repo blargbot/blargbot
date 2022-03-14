@@ -1,7 +1,7 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { CommandType, discord } from '@cluster/utils';
-import { guard, humanize } from '@core/utils';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType, discord } from '@blargbot/cluster/utils';
+import { guard, humanize } from '@blargbot/core/utils';
 import { AllowedMentions, Constants, EmbedOptions, KnownChannel, KnownGuildTextableChannel, Role } from 'eris';
 import moment from 'moment-timezone';
 

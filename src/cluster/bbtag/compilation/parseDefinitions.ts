@@ -1,5 +1,5 @@
-import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagLogic, SubtagResult, SubtagReturnTypeMap } from '@cluster/types';
-import { parse } from '@cluster/utils';
+import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagLogic, SubtagResult, SubtagReturnTypeMap } from '@blargbot/cluster/types';
+import { parse } from '@blargbot/cluster/utils';
 
 import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, ArrayWithErrorsSubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic';
 

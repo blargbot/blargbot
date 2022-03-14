@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { OutputSubtag } from '@cluster/subtags/message/output';
-import { Emote } from '@core/Emote';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { OutputSubtag } from '@blargbot/cluster/subtags/message/output';
+import { Emote } from '@blargbot/core/Emote';
 import { expect } from 'chai';
 
 import { argument } from '../../../mock';

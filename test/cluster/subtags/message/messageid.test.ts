@@ -1,4 +1,4 @@
-import { MessageIdSubtag } from '@cluster/subtags/message/messageid';
+import { MessageIdSubtag } from '@blargbot/cluster/subtags/message/messageid';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

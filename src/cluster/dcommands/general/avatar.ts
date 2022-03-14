@@ -1,7 +1,7 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
-import { SendPayload } from '@core/types';
-import { humanize, parse } from '@core/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType } from '@blargbot/cluster/utils';
+import { SendPayload } from '@blargbot/core/types';
+import { humanize, parse } from '@blargbot/core/utils';
 import { ImageFormat, User } from 'eris';
 import fetch from 'node-fetch';
 

@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
-import { bbtag, overrides, parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeState, SubtagArgument } from '@blargbot/cluster/types';
+import { bbtag, overrides, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class FilterSubtag extends DefinedSubtag {
     public constructor() {

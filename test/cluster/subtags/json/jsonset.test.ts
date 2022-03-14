@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { JsonSubtag } from '@cluster/subtags/json/json';
-import { JsonSetSubtag } from '@cluster/subtags/json/jsonset';
-import { SubtagVariableType } from '@core/types';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { JsonSubtag } from '@blargbot/cluster/subtags/json/json';
+import { JsonSetSubtag } from '@blargbot/cluster/subtags/json/jsonset';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

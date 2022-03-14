@@ -1,5 +1,5 @@
-import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@cluster/types';
-import { guard } from '@cluster/utils';
+import { CommandBinderParseResult, CommandBinderStateLookupCache, CommandVariableTypeMap, GuildCommandContext, PrivateCommandContext } from '@blargbot/cluster/types';
+import { guard } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
 import { CommandContext } from '../CommandContext';

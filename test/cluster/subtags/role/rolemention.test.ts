@@ -1,4 +1,4 @@
-import { RoleMentionSubtag } from '@cluster/subtags/role/rolemention';
+import { RoleMentionSubtag } from '@blargbot/cluster/subtags/role/rolemention';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

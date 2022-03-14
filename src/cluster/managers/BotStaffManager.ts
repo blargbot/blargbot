@@ -1,4 +1,4 @@
-import { Cluster } from '@cluster';
+import { Cluster } from '@blargbot/cluster';
 import { Guild } from 'eris';
 
 export class BotStaffManager {

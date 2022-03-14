@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { BaseNumberSubtag } from '@cluster/subtags/math/base';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { BaseNumberSubtag } from '@blargbot/cluster/subtags/math/base';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

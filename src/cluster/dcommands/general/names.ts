@@ -1,5 +1,5 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, pluralise as p } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType, pluralise as p } from '@blargbot/cluster/utils';
 import { EmbedOptions, User } from 'eris';
 import moment from 'moment-timezone';
 

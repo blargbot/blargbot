@@ -1,7 +1,7 @@
-import { BaseClient } from '@core/BaseClient';
-import { Configuration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
-import { ModuleLoader } from '@core/modules';
+import { BaseClient } from '@blargbot/core/BaseClient';
+import { Configuration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
+import { ModuleLoader } from '@blargbot/core/modules';
 import express, { Express } from 'express';
 import http from 'http';
 

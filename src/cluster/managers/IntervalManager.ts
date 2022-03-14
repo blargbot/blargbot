@@ -1,7 +1,7 @@
-import { Cluster } from '@cluster';
-import { ExecutionResult } from '@cluster/types';
-import { guard, sleep, snowflake } from '@cluster/utils';
-import { GuildTriggerTag } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { ExecutionResult } from '@blargbot/cluster/types';
+import { guard, sleep, snowflake } from '@blargbot/cluster/utils';
+import { GuildTriggerTag } from '@blargbot/core/types';
 import { Guild, KnownGuildTextableChannel, Member } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';

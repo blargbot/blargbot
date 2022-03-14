@@ -1,6 +1,6 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
-import { humanize } from '@core/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType } from '@blargbot/cluster/utils';
+import { humanize } from '@blargbot/core/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 

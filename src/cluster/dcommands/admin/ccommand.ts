@@ -1,10 +1,10 @@
-import { Cluster } from '@cluster';
-import { getDocsEmbed } from '@cluster/bbtag';
-import { BaseGuildCommand } from '@cluster/command';
-import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@cluster/types';
-import { bbtag, codeBlock, CommandType, guard, humanize, mapping, parse } from '@cluster/utils';
-import { Configuration } from '@core/Configuration';
-import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { getDocsEmbed } from '@blargbot/cluster/bbtag';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
+import { bbtag, codeBlock, CommandType, guard, humanize, mapping, parse } from '@blargbot/cluster/utils';
+import { Configuration } from '@blargbot/core/Configuration';
+import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@blargbot/core/types';
 import { createHmac } from 'crypto';
 import { EmbedOptions, FileContent, Role } from 'eris';
 import moment from 'moment';

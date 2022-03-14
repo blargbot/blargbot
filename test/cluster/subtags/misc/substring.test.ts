@@ -1,5 +1,5 @@
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { SubstringSubtag } from '@cluster/subtags/misc/substring';
+import { NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { SubstringSubtag } from '@blargbot/cluster/subtags/misc/substring';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

@@ -1,4 +1,4 @@
-import { GuildCreatedAtSubtag } from '@cluster/subtags/guild/guildcreatedat';
+import { GuildCreatedAtSubtag } from '@blargbot/cluster/subtags/guild/guildcreatedat';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

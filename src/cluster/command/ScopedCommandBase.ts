@@ -1,7 +1,7 @@
-import { ClusterUtilities } from '@cluster/ClusterUtilities';
-import { CommandDefinition, CommandOptions, CommandResult } from '@cluster/types';
-import { commandTypeDetails, runMiddleware } from '@cluster/utils';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
+import { CommandDefinition, CommandOptions, CommandResult } from '@blargbot/cluster/types';
+import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { BaseCommand } from './BaseCommand';

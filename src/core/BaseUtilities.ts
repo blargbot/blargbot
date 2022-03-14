@@ -1,4 +1,4 @@
-import { DMContext, SendContent, SendContext, SendPayload, StoredUser } from '@core/types';
+import { DMContext, SendContent, SendContext, SendPayload, StoredUser } from '@blargbot/core/types';
 import { Snowflake } from 'catflake';
 import { ApiError, ChannelInteraction, Client as Discord, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment';

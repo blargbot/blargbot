@@ -1,4 +1,4 @@
-import { SubtagVariableType } from '@core/types';
+import { SubtagVariableType } from '@blargbot/core/types';
 import ReadWriteLock from 'rwlock';
 
 import { BBTagContext } from './BBTagContext';

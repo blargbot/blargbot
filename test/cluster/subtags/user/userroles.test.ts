@@ -1,4 +1,4 @@
-import { UserRolesSubtag } from '@cluster/subtags/user/userroles';
+import { UserRolesSubtag } from '@blargbot/cluster/subtags/user/userroles';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

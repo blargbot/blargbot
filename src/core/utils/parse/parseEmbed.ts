@@ -1,5 +1,5 @@
-import { MalformedEmbed, TypeMappingImpl } from '@core/types';
-import { discord, mapping } from '@core/utils';
+import { MalformedEmbed, TypeMappingImpl } from '@blargbot/core/types';
+import { discord, mapping } from '@blargbot/core/utils';
 import Color from 'color';
 import { EmbedOptions } from 'eris';
 

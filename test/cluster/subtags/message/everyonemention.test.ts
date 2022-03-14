@@ -1,4 +1,4 @@
-import { EveryoneMentionSubtag } from '@cluster/subtags/message/everyonemention';
+import { EveryoneMentionSubtag } from '@blargbot/cluster/subtags/message/everyonemention';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

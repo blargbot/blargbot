@@ -1,6 +1,6 @@
-import { Logger } from '@core/Logger';
-import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableGuildCensorExceptions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@core/types';
-import { guard } from '@core/utils';
+import { Logger } from '@blargbot/core/Logger';
+import { ChannelSettings, CommandPermissions, GuildAnnounceOptions, GuildAutoresponses, GuildCensor, GuildCensors, GuildCommandTag, GuildFilteredAutoresponse, GuildModlogEntry, GuildRolemeEntry, GuildTable, GuildTriggerTag, GuildVotebans, MutableCommandPermissions, MutableGuildCensorExceptions, MutableStoredGuild, MutableStoredGuildEventLogConfig, MutableStoredGuildSettings, NamedGuildCommandTag, StoredGuild, StoredGuildEventLogConfig, StoredGuildEventLogType, StoredGuildSettings } from '@blargbot/core/types';
+import { guard } from '@blargbot/core/utils';
 import { Guild } from 'eris';
 import { UpdateData } from 'rethinkdb';
 

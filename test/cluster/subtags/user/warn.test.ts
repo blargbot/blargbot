@@ -1,5 +1,5 @@
-import { WarnSubtag } from '@cluster/subtags/user/warn';
-import { ModerationType } from '@cluster/utils';
+import { WarnSubtag } from '@blargbot/cluster/subtags/user/warn';
+import { ModerationType } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

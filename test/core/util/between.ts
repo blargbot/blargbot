@@ -1,4 +1,4 @@
-import { between } from '@core/utils';
+import { between } from '@blargbot/core/utils';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 

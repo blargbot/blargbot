@@ -1,5 +1,5 @@
-import { Logger } from '@core/Logger';
-import { GetStoredVar, KnownStoredVars, MutableKnownStoredVars, VarsTable } from '@core/types';
+import { Logger } from '@blargbot/core/Logger';
+import { GetStoredVar, KnownStoredVars, MutableKnownStoredVars, VarsTable } from '@blargbot/core/types';
 
 import { RethinkDb, RethinkDbTable } from './base';
 

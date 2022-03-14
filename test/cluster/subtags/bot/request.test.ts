@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RequestSubtag } from '@cluster/subtags/bot/request';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { RequestSubtag } from '@blargbot/cluster/subtags/bot/request';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,4 +1,4 @@
-import { parse as coreParse } from '@core/utils';
+import { parse as coreParse } from '@blargbot/core/utils';
 
 import { flags } from './flags';
 import { guildSetting } from './guildSetting';

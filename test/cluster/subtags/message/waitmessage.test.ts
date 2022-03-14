@@ -1,9 +1,9 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { Awaiter } from '@cluster/managers';
-import { MessageAwaiterFactory } from '@cluster/managers/awaiters/MessageAwaiterFactory';
-import { MessageIdSubtag } from '@cluster/subtags/message/messageid';
-import { WaitMessageSubtag } from '@cluster/subtags/message/waitmessage';
-import { OperatorSubtag } from '@cluster/subtags/misc/operator';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { Awaiter } from '@blargbot/cluster/managers';
+import { MessageAwaiterFactory } from '@blargbot/cluster/managers/awaiters/MessageAwaiterFactory';
+import { MessageIdSubtag } from '@blargbot/cluster/subtags/message/messageid';
+import { WaitMessageSubtag } from '@blargbot/cluster/subtags/message/waitmessage';
+import { OperatorSubtag } from '@blargbot/cluster/subtags/misc/operator';
 import { expect } from 'chai';
 import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
 

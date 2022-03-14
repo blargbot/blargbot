@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtag, clamp, overrides, parse, SubtagType } from '@cluster/utils';
-import { guard } from '@core/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, ChannelNotFoundError, NotANumberError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, clamp, overrides, parse, SubtagType } from '@blargbot/cluster/utils';
+import { guard } from '@blargbot/core/utils';
 
 const defaultCondition = bbtag.parse('true');
 

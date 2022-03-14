@@ -1,6 +1,6 @@
-import { Logger } from '@core/Logger';
-import { Timer } from '@core/Timer';
-import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@core/types';
+import { Logger } from '@blargbot/core/Logger';
+import { Timer } from '@blargbot/core/Timer';
+import { GetMasterProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets } from '@blargbot/core/types';
 import child_process from 'child_process';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';

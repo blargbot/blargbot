@@ -1,5 +1,5 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, randInt } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType, randInt } from '@blargbot/cluster/utils';
 
 export class PingCommand extends BaseGlobalCommand {
     public constructor() {

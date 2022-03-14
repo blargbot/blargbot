@@ -1,8 +1,8 @@
-import { Api } from '@api';
-import { BaseRoute } from '@api/BaseRoute';
-import { ApiResponse } from '@api/types';
-import { StoredTag } from '@core/types';
-import { mapping } from '@core/utils';
+import { Api } from '@blargbot/api';
+import { BaseRoute } from '@blargbot/api/BaseRoute';
+import { ApiResponse } from '@blargbot/api/types';
+import { StoredTag } from '@blargbot/core/types';
+import { mapping } from '@blargbot/core/utils';
 
 export class TagsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {

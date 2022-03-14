@@ -1,4 +1,4 @@
-import { ChannelIdSubtag } from '@cluster/subtags/channel/channelid';
+import { ChannelIdSubtag } from '@blargbot/cluster/subtags/channel/channelid';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetChannelPropTestCases } from './_getChannelPropTest';

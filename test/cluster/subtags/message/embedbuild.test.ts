@@ -1,6 +1,6 @@
-import { InvalidEmbedError } from '@cluster/bbtag/errors';
-import { EmbedBuildSubtag } from '@cluster/subtags/message/embedbuild';
-import { repeat } from '@cluster/utils';
+import { InvalidEmbedError } from '@blargbot/cluster/bbtag/errors';
+import { EmbedBuildSubtag } from '@blargbot/cluster/subtags/message/embedbuild';
+import { repeat } from '@blargbot/cluster/utils';
 import moment from 'moment-timezone';
 
 import { runSubtagTests, TestDataSubtag } from '../SubtagTestSuite';

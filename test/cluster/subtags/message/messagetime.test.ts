@@ -1,4 +1,4 @@
-import { MessageTimeSubtag } from '@cluster/subtags/message/messagetime';
+import { MessageTimeSubtag } from '@blargbot/cluster/subtags/message/messagetime';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';

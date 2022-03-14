@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
-import { ThreadCreateSubtag } from '@cluster/subtags/thread/threadcreate';
+import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
+import { ThreadCreateSubtag } from '@blargbot/cluster/subtags/thread/threadcreate';
 import { ChannelType, GuildFeature } from 'discord-api-types';
 import { ApiError, KnownMessage, Message, PrivateThreadChannel, PublicThreadChannel, VoiceChannel } from 'eris';
 

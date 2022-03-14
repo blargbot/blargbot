@@ -1,5 +1,5 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { codeBlock, CommandType, parse, pluralise as p, randChoose, randInt, repeat } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { codeBlock, CommandType, parse, pluralise as p, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 
 export class RollCommand extends BaseGlobalCommand {

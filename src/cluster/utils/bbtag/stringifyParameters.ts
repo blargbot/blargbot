@@ -1,4 +1,4 @@
-import { SubtagHandlerParameter } from '@cluster/types';
+import { SubtagHandlerParameter } from '@blargbot/cluster/types';
 
 export function stringifyParameters(subtagName: string, parameters: readonly SubtagHandlerParameter[]): string {
     return `{${[subtagName, ...parameters.map(stringifyParameter)].join(';')}}`;

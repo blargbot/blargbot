@@ -1,6 +1,6 @@
-import { Cache } from '@core/Cache';
-import { Logger } from '@core/Logger';
-import { guard, sleep } from '@core/utils';
+import { Cache } from '@blargbot/core/Cache';
+import { Logger } from '@blargbot/core/Logger';
+import { guard, sleep } from '@blargbot/core/utils';
 import { UpdateRequest } from 'rethinkdb';
 
 import { RethinkDb } from './RethinkDb';

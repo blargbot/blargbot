@@ -1,7 +1,7 @@
-import { ImageWorkerConfiguration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
-import { WorkerPool } from '@core/worker';
-import { ImageGeneratorMap, ImageResult } from '@image/types';
+import { ImageWorkerConfiguration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
+import { WorkerPool } from '@blargbot/core/worker';
+import { ImageGeneratorMap, ImageResult } from '@blargbot/image/types';
 
 import { ImageConnection } from './ImageConnection';
 

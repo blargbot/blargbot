@@ -1,4 +1,4 @@
-import { ChannelIsVoiceSubtag } from '@cluster/subtags/channel/channelisvoice';
+import { ChannelIsVoiceSubtag } from '@blargbot/cluster/subtags/channel/channelisvoice';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

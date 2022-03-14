@@ -1,5 +1,5 @@
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { AbsSubtag } from '@cluster/subtags/math/abs';
+import { NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { AbsSubtag } from '@blargbot/cluster/subtags/math/abs';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

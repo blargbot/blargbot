@@ -1,5 +1,5 @@
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { ModlogSubtag } from '@cluster/subtags/bot/modlog';
+import { UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { ModlogSubtag } from '@blargbot/cluster/subtags/bot/modlog';
 import { Member, User } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

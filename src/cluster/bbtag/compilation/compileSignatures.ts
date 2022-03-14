@@ -1,4 +1,4 @@
-import { ArgumentResolver, CompositeSubtagHandler, ConditionalSubtagHandler, SubtagCall, SubtagHandlerCallSignature } from '@cluster/types';
+import { ArgumentResolver, CompositeSubtagHandler, ConditionalSubtagHandler, SubtagCall, SubtagHandlerCallSignature } from '@blargbot/cluster/types';
 
 import { BBTagContext } from '../BBTagContext';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';

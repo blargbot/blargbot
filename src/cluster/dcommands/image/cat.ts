@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType, randInt } from '@cluster/utils';
+import { Cluster } from '@blargbot/cluster';
+import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 import { Handler as Wolken } from 'wolken';
 

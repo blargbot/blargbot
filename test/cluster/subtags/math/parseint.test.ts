@@ -1,4 +1,4 @@
-import { ParseIntSubtag } from '@cluster/subtags/math/parseint';
+import { ParseIntSubtag } from '@blargbot/cluster/subtags/math/parseint';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

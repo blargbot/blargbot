@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { PadSubtag } from '@cluster/subtags/misc/pad';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { PadSubtag } from '@blargbot/cluster/subtags/misc/pad';
 import { expect } from 'chai';
 import { it } from 'mocha';
 

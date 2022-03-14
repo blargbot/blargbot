@@ -1,4 +1,4 @@
-import { RandUserSubtag } from '@cluster/subtags/user/randuser';
+import { RandUserSubtag } from '@blargbot/cluster/subtags/user/randuser';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

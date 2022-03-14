@@ -1,4 +1,4 @@
-import { CommandNameSubtag } from '@cluster/subtags/bot/commandname';
+import { CommandNameSubtag } from '@blargbot/cluster/subtags/bot/commandname';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

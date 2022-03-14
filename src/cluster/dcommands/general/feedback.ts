@@ -1,7 +1,7 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { FlagResult } from '@cluster/types';
-import { CommandType, guard } from '@cluster/utils';
-import { humanize } from '@core/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { FlagResult } from '@blargbot/cluster/types';
+import { CommandType, guard } from '@blargbot/cluster/utils';
+import { humanize } from '@blargbot/core/utils';
 import moment from 'moment-timezone';
 
 export class FeedbackCommand extends BaseGlobalCommand {

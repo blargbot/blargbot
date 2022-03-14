@@ -1,6 +1,6 @@
-import { ClusterConnection } from '@cluster';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { ClusterConnection } from '@blargbot/cluster';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class ClusterKillAllHandler extends WorkerPoolEventService<ClusterConnection, 'killAll'> {
     public constructor(private readonly master: Master) {

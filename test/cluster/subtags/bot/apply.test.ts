@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ApplySubtag } from '@cluster/subtags/bot/apply';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ApplySubtag } from '@blargbot/cluster/subtags/bot/apply';
 
 import { EchoArgsSubtag, MarkerError, runSubtagTests, TestDataSubtag } from '../SubtagTestSuite';
 

@@ -1,7 +1,7 @@
-import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType, mapping, shuffle } from '@cluster/utils';
-import { SendContent } from '@core/types';
-import { humanize } from '@core/utils';
+import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { CommandType, mapping, shuffle } from '@blargbot/cluster/utils';
+import { SendContent } from '@blargbot/core/types';
+import { humanize } from '@blargbot/core/utils';
 import fetch from 'node-fetch';
 import xml2js from 'xml2js';
 

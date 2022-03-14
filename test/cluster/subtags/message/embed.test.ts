@@ -1,5 +1,5 @@
-import { EmbedSubtag } from '@cluster/subtags/message/embed';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
+import { EmbedSubtag } from '@blargbot/cluster/subtags/message/embed';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

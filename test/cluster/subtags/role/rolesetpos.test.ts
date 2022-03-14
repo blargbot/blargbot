@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { RoleSetPosSubtag } from '@cluster/subtags/role/rolesetpos';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { RoleSetPosSubtag } from '@blargbot/cluster/subtags/role/rolesetpos';
 import { ApiError, Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

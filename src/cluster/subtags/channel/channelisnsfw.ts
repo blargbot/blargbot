@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { guard, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { ChannelNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { guard, SubtagType } from '@blargbot/cluster/utils';
 
 export class ChannelIsNsfwSubtag extends DefinedSubtag {
     public constructor() {

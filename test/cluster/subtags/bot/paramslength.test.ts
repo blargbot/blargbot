@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ParamsLengthSubtag } from '@cluster/subtags/bot/paramslength';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ParamsLengthSubtag } from '@blargbot/cluster/subtags/bot/paramslength';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

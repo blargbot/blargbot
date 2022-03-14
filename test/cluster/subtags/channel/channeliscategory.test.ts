@@ -1,4 +1,4 @@
-import { ChannelIsCategorySubtag } from '@cluster/subtags/channel/channeliscategory';
+import { ChannelIsCategorySubtag } from '@blargbot/cluster/subtags/channel/channeliscategory';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { EmojiCreateSubtag } from '@cluster/subtags/guild/emojicreate';
-import { SemiSubtag } from '@cluster/subtags/simple/semi';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { EmojiCreateSubtag } from '@blargbot/cluster/subtags/guild/emojicreate';
+import { SemiSubtag } from '@blargbot/cluster/subtags/simple/semi';
 import { Constants } from 'eris';
 
 import { argument } from '../../../mock';

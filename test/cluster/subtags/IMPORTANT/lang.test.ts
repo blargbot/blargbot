@@ -1,4 +1,4 @@
-import { LangSubtag } from '@cluster/subtags/IMPORTANT/lang';
+import { LangSubtag } from '@blargbot/cluster/subtags/IMPORTANT/lang';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

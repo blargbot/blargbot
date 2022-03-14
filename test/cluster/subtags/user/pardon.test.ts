@@ -1,5 +1,5 @@
-import { NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { PardonSubtag } from '@cluster/subtags/user/pardon';
+import { NotANumberError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { PardonSubtag } from '@blargbot/cluster/subtags/user/pardon';
 import { Guild, Member } from 'eris';
 
 import { argument } from '../../../mock';

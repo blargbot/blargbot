@@ -1,6 +1,6 @@
-import { ExecutionResult, SubtagCall } from '@cluster/types';
-import { SendContent } from '@core/types';
-import { codeBlock, humanize } from '@core/utils';
+import { ExecutionResult, SubtagCall } from '@blargbot/cluster/types';
+import { SendContent } from '@blargbot/core/types';
+import { codeBlock, humanize } from '@blargbot/core/utils';
 import moment from 'moment';
 
 import { stringify } from './stringify';

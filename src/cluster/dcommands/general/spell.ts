@@ -1,6 +1,6 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, guard, randChoose } from '@cluster/utils';
-import spellsJson from '@res/spells.json';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
+import spellsJson from '@blargbot/res/spells.json';
 import { EmbedOptions } from 'eris';
 
 export class SpellCommand extends BaseGlobalCommand {

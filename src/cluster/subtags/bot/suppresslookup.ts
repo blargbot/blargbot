@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { NotABooleanError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { NotABooleanError } from '@blargbot/cluster/bbtag/errors';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class SuppressLookupSubtag extends DefinedSubtag {
     public constructor() {

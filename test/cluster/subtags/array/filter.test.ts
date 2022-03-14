@@ -1,12 +1,12 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { FilterSubtag } from '@cluster/subtags/array/filter';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { ReturnSubtag } from '@cluster/subtags/bot/return';
-import { IfSubtag } from '@cluster/subtags/misc/if';
-import { LengthSubtag } from '@cluster/subtags/misc/length';
-import { OperatorSubtag } from '@cluster/subtags/misc/operator';
-import { BBTagRuntimeState } from '@cluster/types';
-import { SubtagVariableType } from '@core/types';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { FilterSubtag } from '@blargbot/cluster/subtags/array/filter';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { ReturnSubtag } from '@blargbot/cluster/subtags/bot/return';
+import { IfSubtag } from '@blargbot/cluster/subtags/misc/if';
+import { LengthSubtag } from '@blargbot/cluster/subtags/misc/length';
+import { OperatorSubtag } from '@blargbot/cluster/subtags/misc/operator';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

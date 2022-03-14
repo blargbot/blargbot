@@ -25,43 +25,43 @@
             "ES2021"
         ],
         "paths": {
-            "@core": [
+            "@blargbot/core": [
                 "./src/core"
             ],
-            "@core/*": [
+            "@blargbot/core/*": [
                 "./src/core/*"
             ],
-            "@cluster": [
+            "@blargbot/cluster": [
                 "./src/cluster",
             ],
-            "@cluster/*": [
+            "@blargbot/cluster/*": [
                 "./src/cluster/*"
             ],
-            "@master": [
+            "@blargbot/master": [
                 "./src/master"
             ],
-            "@master/*": [
+            "@blargbot/master/*": [
                 "./src/master/*"
             ],
-            "@image": [
+            "@blargbot/image": [
                 "./src/image"
             ],
-            "@image/*": [
+            "@blargbot/image/*": [
                 "./src/image/*"
             ],
-            "@api": [
+            "@blargbot/api": [
                 "./src/api"
             ],
-            "@api/*": [
+            "@blargbot/api/*": [
                 "./src/api/*"
             ],
-            "@config": [
+            "@blargbot/config": [
                 "./config.json"
             ],
-            "@package": [
+            "@blargbot/package": [
                 "./package.json"
             ],
-            "@res/*": [
+            "@blargbot/res/*": [
                 "./res/*"
             ]
         }

@@ -1,4 +1,4 @@
-export * from '@core/utils';
+export * from '@blargbot/core/utils';
 export * from './bbtag';
 export * from './constants';
 export * from './guard';

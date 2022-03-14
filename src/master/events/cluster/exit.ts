@@ -1,8 +1,8 @@
-import { ClusterConnection } from '@cluster';
-import { codeBlock } from '@cluster/utils';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { WorkerState } from '@core/worker';
-import { Master } from '@master';
+import { ClusterConnection } from '@blargbot/cluster';
+import { codeBlock } from '@blargbot/cluster/utils';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { WorkerState } from '@blargbot/core/worker';
+import { Master } from '@blargbot/master';
 import moment from 'moment';
 
 export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection, 'exit'> {

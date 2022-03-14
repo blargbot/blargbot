@@ -1,9 +1,9 @@
-import { BBTagContext, limits, ScopeManager, SubtagCallStack, TagCooldownManager, VariableCache } from '@cluster/bbtag';
-import { BaseCommand, CommandContext, ScopedCommandBase } from '@cluster/command';
-import { CommandType, ModerationType, SubtagType } from '@cluster/utils';
-import { Emote } from '@core/Emote';
-import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@core/types';
-import { ImageResult } from '@image/types';
+import { BBTagContext, limits, ScopeManager, SubtagCallStack, TagCooldownManager, VariableCache } from '@blargbot/cluster/bbtag';
+import { BaseCommand, CommandContext, ScopedCommandBase } from '@blargbot/cluster/command';
+import { CommandType, ModerationType, SubtagType } from '@blargbot/cluster/utils';
+import { Emote } from '@blargbot/core/Emote';
+import { CommandPermissions, EvalRequest, EvalResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings, StoredTag } from '@blargbot/core/types';
+import { ImageResult } from '@blargbot/image/types';
 import { Attachment, Embed, EmbedOptions, FileContent, Guild, KnownChannel, KnownGuildTextableChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, Shard, User, Webhook } from 'eris';
 import { Duration } from 'moment-timezone';
 import { metric } from 'prom-client';

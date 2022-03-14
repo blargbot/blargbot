@@ -1,4 +1,4 @@
-import { createSafeRegExp } from '@cluster/utils';
+import { createSafeRegExp } from '@blargbot/cluster/utils';
 
 import { DefinedSubtag } from './DefinedSubtag';
 import { BBTagRuntimeError } from './errors';

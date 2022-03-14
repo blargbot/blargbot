@@ -1,8 +1,8 @@
-import { Api } from '@api/Api';
-import { BaseRoute } from '@api/BaseRoute';
-import { ApiResponse } from '@api/types';
-import { GuildSourceCommandTag, NamedGuildSourceCommandTag } from '@core/types';
-import { mapping } from '@core/utils';
+import { Api } from '@blargbot/api/Api';
+import { BaseRoute } from '@blargbot/api/BaseRoute';
+import { ApiResponse } from '@blargbot/api/types';
+import { GuildSourceCommandTag, NamedGuildSourceCommandTag } from '@blargbot/core/types';
+import { mapping } from '@blargbot/core/utils';
 
 export class CCommandsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {

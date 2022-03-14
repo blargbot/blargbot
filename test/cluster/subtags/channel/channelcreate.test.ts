@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ChannelCreateSubtag } from '@cluster/subtags/channel/channelcreate';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ChannelCreateSubtag } from '@blargbot/cluster/subtags/channel/channelcreate';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { ChannelType, OverwriteType } from 'discord-api-types';
 import { ApiError, CategoryChannel, Channel, Constants, NewsChannel, StoreChannel, TextChannel, VoiceChannel } from 'eris';
 

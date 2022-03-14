@@ -1,5 +1,5 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { SubtagType } from '@blargbot/cluster/utils';
 
 export class ArgsLengthSubtag extends DefinedSubtag {
     public constructor() {

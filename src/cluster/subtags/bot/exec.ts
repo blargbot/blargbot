@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { BBTagRuntimeState } from '@cluster/types';
-import { bbtag, humanize, parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
+import { bbtag, humanize, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class ExecSubtag extends DefinedSubtag {
     public constructor() {

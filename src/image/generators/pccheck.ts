@@ -1,5 +1,5 @@
-import { BaseApiImageGenerator } from '@image/BaseApiImageGenerator';
-import { ImageWorker } from '@image/ImageWorker';
+import { BaseApiImageGenerator } from '@blargbot/image/BaseApiImageGenerator';
+import { ImageWorker } from '@blargbot/image/ImageWorker';
 
 export class PCCheckGenerator extends BaseApiImageGenerator<'pccheck'> {
     public constructor(worker: ImageWorker) {

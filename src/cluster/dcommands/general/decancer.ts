@@ -1,5 +1,5 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, guard, humanize } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
 export class DecancerCommand extends BaseGlobalCommand {

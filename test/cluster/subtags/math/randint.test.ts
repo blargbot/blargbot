@@ -1,5 +1,5 @@
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { RandIntSubtag } from '@cluster/subtags/math/randint';
+import { NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { RandIntSubtag } from '@blargbot/cluster/subtags/math/randint';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

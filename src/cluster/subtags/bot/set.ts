@@ -1,5 +1,5 @@
-import { BBTagContext, DefinedSubtag, tagVariableScopes } from '@cluster/bbtag';
-import { bbtag, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag, tagVariableScopes } from '@blargbot/cluster/bbtag';
+import { bbtag, SubtagType } from '@blargbot/cluster/utils';
 
 export class SetSubtag extends DefinedSubtag {
     public constructor() {

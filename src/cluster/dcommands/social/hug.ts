@@ -1,5 +1,5 @@
-import { Cluster } from '@cluster';
-import { BaseSocialWolkeCommand } from '@cluster/command';
+import { Cluster } from '@blargbot/cluster';
+import { BaseSocialWolkeCommand } from '@blargbot/cluster/command';
 
 export class HugCommand extends BaseSocialWolkeCommand {
     public constructor(cluster: Cluster) {

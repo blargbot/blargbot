@@ -1,5 +1,5 @@
-import { BBTagContext, RegexSubtag } from '@cluster/bbtag';
-import { SubtagType } from '@cluster/utils';
+import { BBTagContext, RegexSubtag } from '@blargbot/cluster/bbtag';
+import { SubtagType } from '@blargbot/cluster/utils';
 
 export class RegexReplaceSubtag extends RegexSubtag {
     public constructor() {

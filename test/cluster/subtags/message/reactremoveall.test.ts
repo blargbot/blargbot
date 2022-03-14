@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ReactRemoveAllSubtag } from '@cluster/subtags/message/reactremoveall';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ReactRemoveAllSubtag } from '@blargbot/cluster/subtags/message/reactremoveall';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

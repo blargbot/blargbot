@@ -1,4 +1,4 @@
-import { SubtagCall } from '@cluster/types';
+import { SubtagCall } from '@blargbot/cluster/types';
 
 import { stringifyLocation } from './stringifyLocation';
 

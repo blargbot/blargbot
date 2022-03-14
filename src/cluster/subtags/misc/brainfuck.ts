@@ -1,6 +1,6 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagType } from '@blargbot/cluster/utils';
 import { default as Brainfuck } from 'brainfuck-node';
 
 export class BrainfuckSubtag extends DefinedSubtag {

@@ -1,5 +1,5 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class MaxSubtag extends DefinedSubtag {
     public constructor() {

@@ -1,4 +1,4 @@
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class IgnoreBotsMiddleware implements IMiddleware<KnownMessage, boolean> {

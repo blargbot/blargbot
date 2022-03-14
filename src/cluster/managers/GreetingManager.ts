@@ -1,8 +1,8 @@
-import { Cluster } from '@cluster';
-import { ExecutionResult } from '@cluster/types';
-import { snowflake } from '@cluster/utils';
-import { GuildTriggerTag } from '@core/types';
-import { guard } from '@core/utils';
+import { Cluster } from '@blargbot/cluster';
+import { ExecutionResult } from '@blargbot/cluster/types';
+import { snowflake } from '@blargbot/cluster/utils';
+import { GuildTriggerTag } from '@blargbot/core/types';
+import { guard } from '@blargbot/core/utils';
 import { Guild, KnownGuildTextableChannel, Member } from 'eris';
 import moment from 'moment';
 

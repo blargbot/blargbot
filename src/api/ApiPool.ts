@@ -1,5 +1,5 @@
-import { Logger } from '@core/Logger';
-import { WorkerPool } from '@core/worker';
+import { Logger } from '@blargbot/core/Logger';
+import { WorkerPool } from '@blargbot/core/worker';
 
 import { ApiConnection } from './ApiConnection';
 

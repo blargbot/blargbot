@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ReactAddSubtag } from '@cluster/subtags/message/reactadd';
-import { Emote } from '@core/Emote';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ReactAddSubtag } from '@blargbot/cluster/subtags/message/reactadd';
+import { Emote } from '@blargbot/core/Emote';
 import { expect } from 'chai';
 import { Constants } from 'eris';
 

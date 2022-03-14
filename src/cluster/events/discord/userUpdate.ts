@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { guard } from '@cluster/utils';
-import { DiscordEventService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster/utils';
+import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { PartialUser, User } from 'eris';
 
 export class DiscordUserUpdateHandler extends DiscordEventService<'userUpdate'> {

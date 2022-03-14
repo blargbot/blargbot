@@ -1,7 +1,7 @@
-import { CronService } from '@core/serviceTypes';
-import { randChoose } from '@core/utils';
-import { Master } from '@master';
-import { MasterOptions } from '@master/types';
+import { CronService } from '@blargbot/core/serviceTypes';
+import { randChoose } from '@blargbot/core/utils';
+import { Master } from '@blargbot/master';
+import { MasterOptions } from '@blargbot/master/types';
 import { ActivityPartial, BotActivityType, Constants } from 'eris';
 import moment from 'moment';
 

@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RegexSplitSubtag } from '@cluster/subtags/misc/regexsplit';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { RegexSplitSubtag } from '@blargbot/cluster/subtags/misc/regexsplit';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

@@ -1,5 +1,5 @@
-import { AnySubtagHandlerDefinition, CompositeSubtagHandler, SubtagCall, SubtagOptions, SubtagResult } from '@cluster/types';
-import { bbtag, parse } from '@cluster/utils';
+import { AnySubtagHandlerDefinition, CompositeSubtagHandler, SubtagCall, SubtagOptions, SubtagResult } from '@blargbot/cluster/types';
+import { bbtag, parse } from '@blargbot/cluster/utils';
 
 import { BBTagContext } from './BBTagContext';
 import { compileSignatures, parseDefinitions } from './compilation';

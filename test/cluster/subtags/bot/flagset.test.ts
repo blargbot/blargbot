@@ -1,4 +1,4 @@
-import { FlagSetSubtag } from '@cluster/subtags/bot/flagset';
+import { FlagSetSubtag } from '@blargbot/cluster/subtags/bot/flagset';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

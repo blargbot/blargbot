@@ -1,6 +1,6 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { FlagResult, GuildCommandContext } from '@cluster/types';
-import { CommandType, humanize } from '@cluster/utils';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { FlagResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType, humanize } from '@blargbot/cluster/utils';
 
 export class UnbanCommand extends BaseGuildCommand {
     public constructor() {

@@ -1,6 +1,6 @@
-import { BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { snowflake } from '@cluster/utils';
+import { BBTagContext } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { snowflake } from '@blargbot/cluster/utils';
 import { APIChannel, APIMessage } from 'discord-api-types';
 import { GuildTextableChannel, KnownGuildChannel, KnownTextableChannel, Message } from 'eris';
 

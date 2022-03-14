@@ -1,5 +1,5 @@
-import type { FlagDefinition, SerializedBBTagContext } from '@cluster/types'; // TODO Core shouldnt reference cluster
-import { Logger } from '@core/Logger';
+import type { FlagDefinition, SerializedBBTagContext } from '@blargbot/cluster/types'; // TODO Core shouldnt reference cluster
+import { Logger } from '@blargbot/core/Logger';
 import { Snowflake } from 'catflake';
 import { AdvancedMessageContent, ChannelInteraction, Client as Discord, Embed, EmbedField, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenuOptions, User, UserChannelInteraction } from 'eris';
 import { Duration, Moment } from 'moment-timezone';

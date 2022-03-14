@@ -1,5 +1,5 @@
-import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
-import { ImageResult } from '@image/types';
+import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { ImageResult } from '@blargbot/image/types';
 
 export class TheSearchCommand extends BaseGlobalImageCommand {
     public constructor() {

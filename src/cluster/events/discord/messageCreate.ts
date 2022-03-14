@@ -1,8 +1,8 @@
-import { Cluster } from '@cluster';
-import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware, SendTypingMiddleware } from '@cluster/command';
-import { guard, humanize, runMiddleware, snowflake } from '@cluster/utils';
-import { DiscordEventService } from '@core/serviceTypes';
-import { IMiddleware } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { CommandLoggerMiddleware, ErrorMiddleware, RollingRatelimitMiddleware, SendTypingMiddleware } from '@blargbot/cluster/command';
+import { guard, humanize, runMiddleware, snowflake } from '@blargbot/cluster/utils';
+import { DiscordEventService } from '@blargbot/core/serviceTypes';
+import { IMiddleware } from '@blargbot/core/types';
 import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment';
 

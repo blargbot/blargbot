@@ -1,7 +1,7 @@
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { JsonSubtag } from '@cluster/subtags/json/json';
-import { JsonStringifySubtag } from '@cluster/subtags/json/jsonstringify';
-import { SubtagVariableType } from '@core/types';
+import { NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { JsonSubtag } from '@blargbot/cluster/subtags/json/json';
+import { JsonStringifySubtag } from '@blargbot/cluster/subtags/json/jsonstringify';
+import { SubtagVariableType } from '@blargbot/core/types';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

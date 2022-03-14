@@ -1,4 +1,4 @@
-import { MessageTextSubtag } from '@cluster/subtags/message/messagetext';
+import { MessageTextSubtag } from '@blargbot/cluster/subtags/message/messagetext';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';

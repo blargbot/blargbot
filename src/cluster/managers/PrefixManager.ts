@@ -1,5 +1,5 @@
-import { guard } from '@cluster/utils';
-import { GuildTable, UserTable } from '@core/types';
+import { guard } from '@blargbot/cluster/utils';
+import { GuildTable, UserTable } from '@blargbot/core/types';
 import { Client as Discord, KnownMessage } from 'eris';
 
 export class PrefixManager {

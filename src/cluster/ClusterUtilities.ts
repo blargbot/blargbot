@@ -1,6 +1,6 @@
-import { codeBlock, defaultStaff, discord, guard, humanize, parse, snowflake } from '@cluster/utils';
-import { BaseUtilities } from '@core/BaseUtilities';
-import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@core/types';
+import { codeBlock, defaultStaff, discord, guard, humanize, parse, snowflake } from '@blargbot/cluster/utils';
+import { BaseUtilities } from '@blargbot/core/BaseUtilities';
+import { ChoiceQuery, ChoiceQueryOptions, ChoiceQueryResult as ChoiceResult, ConfirmQuery, ConfirmQueryOptions, EntityFindQueryOptions, EntityPickQueryOptions, EntityQueryOptions, MultipleQuery, MultipleQueryOptions, MultipleResult, QueryButton, TextQuery, TextQueryOptions, TextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { ActionRow, AdvancedMessageContent, Button, ComponentInteraction, Constants, Guild, InteractionButton, KnownCategoryChannel, KnownChannel, KnownGuildChannel, KnownMessage, KnownPrivateChannel, KnownTextableChannel, Member, Message, Role, SelectMenu, SelectMenuOptions, User, Webhook } from 'eris';
 import fetch from 'node-fetch';
 

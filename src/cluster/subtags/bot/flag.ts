@@ -1,5 +1,5 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { guard, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { guard, SubtagType } from '@blargbot/cluster/utils';
 
 export class FlagSubtag extends DefinedSubtag {
     public constructor() {

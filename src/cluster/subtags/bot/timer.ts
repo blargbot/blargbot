@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 import moment from 'moment-timezone';
 
 export class TimerSubtag extends DefinedSubtag {

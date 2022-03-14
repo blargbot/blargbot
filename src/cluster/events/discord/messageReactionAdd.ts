@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { Emote } from '@core/Emote';
-import { DiscordEventService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { Emote } from '@blargbot/core/Emote';
+import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { KnownMessage, Member, PossiblyUncachedMessage, Uncached, User } from 'eris';
 
 export class DiscordMessageReactionAddHandler extends DiscordEventService<'messageReactionAdd'> {

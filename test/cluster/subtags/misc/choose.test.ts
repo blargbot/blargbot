@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { ChooseSubtag } from '@cluster/subtags/misc/choose';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { ChooseSubtag } from '@blargbot/cluster/subtags/misc/choose';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

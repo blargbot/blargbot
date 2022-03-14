@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { BanSubtag } from '@cluster/subtags/user/ban';
+import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { BanSubtag } from '@blargbot/cluster/subtags/user/ban';
 import { Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 

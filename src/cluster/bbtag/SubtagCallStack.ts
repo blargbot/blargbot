@@ -1,4 +1,4 @@
-import { SubtagCall } from '@cluster/types';
+import { SubtagCall } from '@blargbot/cluster/types';
 
 export class SubtagCallStack {
     private readonly callCounts: Record<string, number | undefined>;

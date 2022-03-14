@@ -1,5 +1,5 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { SubtagType } from '@blargbot/cluster/utils';
 import md5 from 'md5';
 
 export class Md5Subtag extends DefinedSubtag {

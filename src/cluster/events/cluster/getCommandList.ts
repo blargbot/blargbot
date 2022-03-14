@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { ClusterEventService } from '@cluster/serviceTypes';
-import { CommandListResult } from '@cluster/types';
+import { Cluster } from '@blargbot/cluster';
+import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
+import { CommandListResult } from '@blargbot/cluster/types';
 
 export class ClusterGetCommandListHandler extends ClusterEventService<'getCommandList'> {
     public constructor(

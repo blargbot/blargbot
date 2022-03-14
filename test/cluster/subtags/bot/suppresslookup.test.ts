@@ -1,5 +1,5 @@
-import { NotABooleanError } from '@cluster/bbtag/errors';
-import { SuppressLookupSubtag } from '@cluster/subtags/bot/suppresslookup';
+import { NotABooleanError } from '@blargbot/cluster/bbtag/errors';
+import { SuppressLookupSubtag } from '@blargbot/cluster/subtags/bot/suppresslookup';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

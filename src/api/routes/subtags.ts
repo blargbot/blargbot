@@ -1,6 +1,6 @@
-import { Api } from '@api';
-import { BaseRoute } from '@api/BaseRoute';
-import { ApiResponse } from '@api/types';
+import { Api } from '@blargbot/api';
+import { BaseRoute } from '@blargbot/api/BaseRoute';
+import { ApiResponse } from '@blargbot/api/types';
 
 export class SubtagsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {

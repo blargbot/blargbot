@@ -1,4 +1,4 @@
-import { VoidSubtag } from '@cluster/subtags/misc/void';
+import { VoidSubtag } from '@blargbot/cluster/subtags/misc/void';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

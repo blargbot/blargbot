@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { TimeoutEventService } from '@cluster/serviceTypes';
-import { StoredEvent } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
+import { StoredEvent } from '@blargbot/core/types';
 
 export class TimeoutUnbanEventService extends TimeoutEventService<'unban'> {
     public constructor(protected readonly cluster: Cluster) {

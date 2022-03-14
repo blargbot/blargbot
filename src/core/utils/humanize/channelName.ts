@@ -1,4 +1,4 @@
-import { guard } from '@core/utils';
+import { guard } from '@blargbot/core/utils';
 import { KnownChannel } from 'eris';
 
 import { fullName } from './fullName';

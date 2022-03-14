@@ -1,7 +1,7 @@
-import { CommandArgument, CommandArrayArgument, CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandVariableTypeName } from '@cluster/types';
-import { humanize } from '@cluster/utils';
-import { Binder } from '@core/Binder';
-import { Binding, BindingResultAsyncIterator } from '@core/types';
+import { CommandArgument, CommandArrayArgument, CommandBinderParseResult, CommandBinderState, CommandBinderValue, CommandGreedyParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
+import { humanize } from '@blargbot/cluster/utils';
+import { Binder } from '@blargbot/core/Binder';
+import { Binding, BindingResultAsyncIterator } from '@blargbot/core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { createCommandArgument, populateMissingArgumentAccessors } from '../commandArgument';

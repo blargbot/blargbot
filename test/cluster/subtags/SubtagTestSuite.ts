@@ -1,18 +1,18 @@
-import { Cluster, ClusterUtilities } from '@cluster';
-import { BBTagContext, BBTagEngine, Subtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@cluster/bbtag/errors';
-import { BaseRuntimeLimit } from '@cluster/bbtag/limits/BaseRuntimeLimit';
-import { AwaiterManager, DomainManager, ModerationManager, TimeoutManager } from '@cluster/managers';
-import { MessageAwaiterFactory } from '@cluster/managers/awaiters/MessageAwaiterFactory';
-import { ReactionAwaiterFactory } from '@cluster/managers/awaiters/ReactionAwaiterFactory';
-import { BanManager, ModLogManager, WarnManager } from '@cluster/managers/moderation';
-import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@cluster/types';
-import { bbtag, guard, pluralise as p, repeat, snowflake, SubtagType } from '@cluster/utils';
-import { Database } from '@core/database';
-import { Logger } from '@core/Logger';
-import { ModuleLoader } from '@core/modules';
-import { Timer } from '@core/Timer';
-import { GuildCommandTag, GuildTable, StoredTag, SubtagVariableType, TagsTable, TagVariablesTable, UserTable } from '@core/types';
+import { Cluster, ClusterUtilities } from '@blargbot/cluster';
+import { BBTagContext, BBTagEngine, Subtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/cluster/bbtag/errors';
+import { BaseRuntimeLimit } from '@blargbot/cluster/bbtag/limits/BaseRuntimeLimit';
+import { AwaiterManager, DomainManager, ModerationManager, TimeoutManager } from '@blargbot/cluster/managers';
+import { MessageAwaiterFactory } from '@blargbot/cluster/managers/awaiters/MessageAwaiterFactory';
+import { ReactionAwaiterFactory } from '@blargbot/cluster/managers/awaiters/ReactionAwaiterFactory';
+import { BanManager, ModLogManager, WarnManager } from '@blargbot/cluster/managers/moderation';
+import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@blargbot/cluster/types';
+import { bbtag, guard, pluralise as p, repeat, snowflake, SubtagType } from '@blargbot/cluster/utils';
+import { Database } from '@blargbot/core/database';
+import { Logger } from '@blargbot/core/Logger';
+import { ModuleLoader } from '@blargbot/core/modules';
+import { Timer } from '@blargbot/core/Timer';
+import { GuildCommandTag, GuildTable, StoredTag, SubtagVariableType, TagsTable, TagVariablesTable, UserTable } from '@blargbot/core/types';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
@@ -506,7 +506,7 @@ Actual:
 |${c.code}|}`).join('\n')}}
 ---------------
 Finished!`;
-        const root = require.resolve('@config');
+        const root = require.resolve('@blargbot/config');
         fs.writeFileSync(path.dirname(root) + '/test.bbtag', blargTestSuite);
     }
 }

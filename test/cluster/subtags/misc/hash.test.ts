@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { HashSubtag, supportedHashes } from '@cluster/subtags/misc/hash';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { HashSubtag, supportedHashes } from '@blargbot/cluster/subtags/misc/hash';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

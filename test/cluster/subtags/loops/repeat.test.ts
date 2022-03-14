@@ -1,11 +1,11 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { ReturnSubtag } from '@cluster/subtags/bot/return';
-import { RepeatSubtag } from '@cluster/subtags/loops/repeat';
-import { IncrementSubtag } from '@cluster/subtags/math/increment';
-import { IfSubtag } from '@cluster/subtags/misc/if';
-import { BBTagRuntimeState } from '@cluster/types';
-import { SubtagVariableType } from '@core/types';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { ReturnSubtag } from '@blargbot/cluster/subtags/bot/return';
+import { RepeatSubtag } from '@blargbot/cluster/subtags/loops/repeat';
+import { IncrementSubtag } from '@blargbot/cluster/subtags/math/increment';
+import { IfSubtag } from '@blargbot/cluster/subtags/misc/if';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

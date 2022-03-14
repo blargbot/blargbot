@@ -1,4 +1,4 @@
-import { CleanSubtag } from '@cluster/subtags/misc/clean';
+import { CleanSubtag } from '@blargbot/cluster/subtags/misc/clean';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

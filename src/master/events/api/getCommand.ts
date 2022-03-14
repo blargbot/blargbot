@@ -1,7 +1,7 @@
-import { ApiConnection } from '@api';
-import { ICommandDetails } from '@cluster/types';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { ApiConnection } from '@blargbot/api';
+import { ICommandDetails } from '@blargbot/cluster/types';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class ApiGetCommandHandler extends WorkerPoolEventService<ApiConnection, 'getCommand'> {
     private nextCluster: number;

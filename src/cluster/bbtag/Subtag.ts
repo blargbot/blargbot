@@ -1,7 +1,7 @@
-import { SubtagCall, SubtagOptions, SubtagResult, SubtagSignatureDetails } from '@cluster/types';
-import { abstract, SubtagType } from '@cluster/utils';
-import { metrics } from '@core/Metrics';
-import { Timer } from '@core/Timer';
+import { SubtagCall, SubtagOptions, SubtagResult, SubtagSignatureDetails } from '@blargbot/cluster/types';
+import { abstract, SubtagType } from '@blargbot/cluster/utils';
+import { metrics } from '@blargbot/core/Metrics';
+import { Timer } from '@blargbot/core/Timer';
 import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from './BBTagContext';

@@ -1,5 +1,5 @@
-import { Cluster } from '@cluster';
-import { DiscordEventService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core/serviceTypes';
 
 export class DiscordGuildMemeberAddHandler extends DiscordEventService<'guildMemberAdd'> {
     public constructor(protected readonly cluster: Cluster) {

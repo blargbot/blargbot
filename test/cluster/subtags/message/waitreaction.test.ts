@@ -1,13 +1,13 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { Awaiter } from '@cluster/managers';
-import { ReactionAwaiterFactory } from '@cluster/managers/awaiters/ReactionAwaiterFactory';
-import { MessageIdSubtag } from '@cluster/subtags/message/messageid';
-import { ReactionSubtag } from '@cluster/subtags/message/reaction';
-import { ReactionUserSubtag } from '@cluster/subtags/message/reactionuser';
-import { WaitReactionSubtag } from '@cluster/subtags/message/waitreaction';
-import { OperatorSubtag } from '@cluster/subtags/misc/operator';
-import { AwaitReactionsResponse } from '@cluster/types';
-import { Emote } from '@core/Emote';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { Awaiter } from '@blargbot/cluster/managers';
+import { ReactionAwaiterFactory } from '@blargbot/cluster/managers/awaiters/ReactionAwaiterFactory';
+import { MessageIdSubtag } from '@blargbot/cluster/subtags/message/messageid';
+import { ReactionSubtag } from '@blargbot/cluster/subtags/message/reaction';
+import { ReactionUserSubtag } from '@blargbot/cluster/subtags/message/reactionuser';
+import { WaitReactionSubtag } from '@blargbot/cluster/subtags/message/waitreaction';
+import { OperatorSubtag } from '@blargbot/cluster/subtags/misc/operator';
+import { AwaitReactionsResponse } from '@blargbot/cluster/types';
+import { Emote } from '@blargbot/core/Emote';
 import { expect } from 'chai';
 import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
 

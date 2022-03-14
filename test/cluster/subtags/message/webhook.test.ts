@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { WebhookSubtag } from '@cluster/subtags/message/webhook';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { WebhookSubtag } from '@blargbot/cluster/subtags/message/webhook';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 
 import { argument } from '../../../mock';

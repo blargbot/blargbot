@@ -1,5 +1,5 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { bbtag, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { bbtag, SubtagType } from '@blargbot/cluster/utils';
 
 export class JsonKeysSubtag extends DefinedSubtag {
     public constructor() {

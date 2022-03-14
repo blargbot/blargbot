@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { EditSubtag } from '@cluster/subtags/message/edit';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { EditSubtag } from '@blargbot/cluster/subtags/message/edit';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 import { KnownGuildTextableChannel } from 'eris';
 

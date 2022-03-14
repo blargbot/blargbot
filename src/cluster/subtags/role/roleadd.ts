@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtag, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, SubtagType } from '@blargbot/cluster/utils';
 import { Role } from 'eris';
 
 export class RoleAddSubtag extends DefinedSubtag {

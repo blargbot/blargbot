@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
-import { guard } from '@core/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
+import { guard } from '@blargbot/core/utils';
 import { ApiError, Constants, DiscordRESTError } from 'eris';
 
 export class ChannelSetPermsSubtag extends DefinedSubtag {

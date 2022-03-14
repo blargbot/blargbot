@@ -1,5 +1,5 @@
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { ReverseSubtag } from '@cluster/subtags/misc/reverse';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { ReverseSubtag } from '@blargbot/cluster/subtags/misc/reverse';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

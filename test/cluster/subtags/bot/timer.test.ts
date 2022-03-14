@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { TimerSubtag } from '@cluster/subtags/bot/timer';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { TimerSubtag } from '@blargbot/cluster/subtags/bot/timer';
 import { expect } from 'chai';
 import moment from 'moment';
 

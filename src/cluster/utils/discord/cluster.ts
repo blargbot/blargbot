@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { ClusterStats, ShardStats } from '@cluster/types';
-import { cpuLoad } from '@cluster/utils';
+import { Cluster } from '@blargbot/cluster';
+import { ClusterStats, ShardStats } from '@blargbot/cluster/types';
+import { cpuLoad } from '@blargbot/cluster/utils';
 import { Shard } from 'eris';
 import moment, { Moment } from 'moment';
 

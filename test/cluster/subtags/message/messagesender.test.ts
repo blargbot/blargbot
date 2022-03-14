@@ -1,4 +1,4 @@
-import { MessageSenderSubtag } from '@cluster/subtags/message/messagesender';
+import { MessageSenderSubtag } from '@blargbot/cluster/subtags/message/messagesender';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';

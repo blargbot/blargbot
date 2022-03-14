@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
-import { ParamsSubtag } from '@cluster/subtags/bot/params';
+import { BBTagRuntimeError, NotANumberError, NotEnoughArgumentsError } from '@blargbot/cluster/bbtag/errors';
+import { ParamsSubtag } from '@blargbot/cluster/subtags/bot/params';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

@@ -1,5 +1,5 @@
-import { UnknownSubtagError } from '@cluster/bbtag/errors';
-import { FallBackSubtag } from '@cluster/subtags/bot/fallback';
+import { UnknownSubtagError } from '@blargbot/cluster/bbtag/errors';
+import { FallBackSubtag } from '@blargbot/cluster/subtags/bot/fallback';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

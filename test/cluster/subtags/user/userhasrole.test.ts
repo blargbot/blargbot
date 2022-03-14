@@ -1,5 +1,5 @@
-import { RoleNotFoundError } from '@cluster/bbtag/errors';
-import { UserHasRoleSubtag } from '@cluster/subtags/user/userhasrole';
+import { RoleNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { UserHasRoleSubtag } from '@blargbot/cluster/subtags/user/userhasrole';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

@@ -1,7 +1,7 @@
-import { Cluster } from '@cluster';
-import { ExecutionResult } from '@cluster/types';
-import { GuildRolemeEntry } from '@core/types';
-import { guard } from '@core/utils';
+import { Cluster } from '@blargbot/cluster';
+import { ExecutionResult } from '@blargbot/cluster/types';
+import { GuildRolemeEntry } from '@blargbot/core/types';
+import { guard } from '@blargbot/core/utils';
 import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
 
 export class RolemeManager {

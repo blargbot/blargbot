@@ -1,4 +1,4 @@
-import { MessageAttachmentsSubtag } from '@cluster/subtags/message/messageattachments';
+import { MessageAttachmentsSubtag } from '@blargbot/cluster/subtags/message/messageattachments';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';

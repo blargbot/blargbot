@@ -1,8 +1,8 @@
-import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@cluster/types';
-import { parse, pluralise as p } from '@cluster/utils';
-import { Binder } from '@core/Binder';
-import { Binding } from '@core/types';
-import { humanize } from '@core/utils';
+import { CommandBinderState, CommandBinderStateFailureReason, CommandGreedyParameter, CommandHandler, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
+import { parse, pluralise as p } from '@blargbot/cluster/utils';
+import { Binder } from '@blargbot/core/Binder';
+import { Binding } from '@blargbot/core/types';
+import { humanize } from '@blargbot/core/utils';
 
 import { CommandContext } from '../CommandContext';
 import { ScopedCommandBase } from '../ScopedCommandBase';

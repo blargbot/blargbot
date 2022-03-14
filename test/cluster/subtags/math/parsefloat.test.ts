@@ -1,4 +1,4 @@
-import { ParseFloatSubtag } from '@cluster/subtags/math/parsefloat';
+import { ParseFloatSubtag } from '@blargbot/cluster/subtags/math/parsefloat';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

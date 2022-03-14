@@ -1,6 +1,6 @@
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
-import { DMSubtag } from '@cluster/subtags/user/dm';
+import { UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
+import { DMSubtag } from '@blargbot/cluster/subtags/user/dm';
 import { Guild, Member } from 'eris';
 
 import { argument, Mock } from '../../../mock';

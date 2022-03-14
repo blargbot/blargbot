@@ -1,5 +1,5 @@
-import { AutoresponseManager } from '@cluster/managers';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { AutoresponseManager } from '@blargbot/cluster/managers';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class AutoresponseMiddleware implements IMiddleware<KnownMessage, boolean> {

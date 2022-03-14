@@ -1,6 +1,6 @@
-import { IsArraySubtag } from '@cluster/subtags/array/isarray';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { SubtagVariableType } from '@core/types';
+import { IsArraySubtag } from '@blargbot/cluster/subtags/array/isarray';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { SubtagVariableType } from '@blargbot/core/types';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

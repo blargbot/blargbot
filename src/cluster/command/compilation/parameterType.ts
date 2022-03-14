@@ -1,5 +1,5 @@
-import { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@cluster/types';
-import { humanize, parse } from '@cluster/utils';
+import { CommandVariableParser, CommandVariableType, CommandVariableTypeBase, CommandVariableTypeName, CommandVariableTypes } from '@blargbot/cluster/types';
+import { humanize, parse } from '@blargbot/cluster/utils';
 
 import { createCommandArgument } from './commandArgument';
 

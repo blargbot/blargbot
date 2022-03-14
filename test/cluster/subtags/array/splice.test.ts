@@ -1,7 +1,7 @@
-import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
-import { SpliceSubtag } from '@cluster/subtags/array/splice';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { SubtagVariableType } from '@core/types';
+import { NotAnArrayError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { SpliceSubtag } from '@blargbot/cluster/subtags/array/splice';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

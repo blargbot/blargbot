@@ -1,5 +1,5 @@
-import { BBTagContext } from '@cluster/bbtag';
-import { RollbackSubtag } from '@cluster/subtags/bot/rollback';
+import { BBTagContext } from '@blargbot/cluster/bbtag';
+import { RollbackSubtag } from '@blargbot/cluster/subtags/bot/rollback';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

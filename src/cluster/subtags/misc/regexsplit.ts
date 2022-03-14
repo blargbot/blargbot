@@ -1,5 +1,5 @@
-import { RegexSubtag } from '@cluster/bbtag';
-import { SubtagType } from '@cluster/utils';
+import { RegexSubtag } from '@blargbot/cluster/bbtag';
+import { SubtagType } from '@blargbot/cluster/utils';
 
 export class RegexSplitSubtag extends RegexSubtag {
     public constructor() {

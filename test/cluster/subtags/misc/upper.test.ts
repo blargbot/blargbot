@@ -1,4 +1,4 @@
-import { UpperSubtag } from '@cluster/subtags/misc/upper';
+import { UpperSubtag } from '@blargbot/cluster/subtags/misc/upper';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

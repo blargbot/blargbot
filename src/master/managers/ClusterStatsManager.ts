@@ -1,4 +1,4 @@
-import { ClusterStats } from '@cluster/types';
+import { ClusterStats } from '@blargbot/cluster/types';
 
 export class ClusterStatsManager {
     private readonly statsMap: Record<number, ClusterStats | undefined>;

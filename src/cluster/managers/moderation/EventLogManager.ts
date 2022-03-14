@@ -1,7 +1,7 @@
-import { Cluster } from '@cluster';
-import { discord, guard, humanize } from '@cluster/utils';
-import { BaseUtilities } from '@core/BaseUtilities';
-import { StoredGuildEventLogType } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { discord, guard, humanize } from '@blargbot/cluster/utils';
+import { BaseUtilities } from '@blargbot/core/BaseUtilities';
+import { StoredGuildEventLogType } from '@blargbot/core/types';
 import { ApiError, AuditLogActionType, DiscordRESTError, EmbedAuthor, EmbedField, EmbedOptions, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';

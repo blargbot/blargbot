@@ -1,11 +1,11 @@
-import { Cluster, ClusterUtilities } from '@cluster';
-import { BBTagEngine } from '@cluster/bbtag';
-import { CommandResult, GuildCommandContext, ICommand } from '@cluster/types';
-import { Configuration } from '@core/Configuration';
-import { Database } from '@core/database';
-import { Logger } from '@core/Logger';
-import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@core/types';
-import { guard } from '@core/utils';
+import { Cluster, ClusterUtilities } from '@blargbot/cluster';
+import { BBTagEngine } from '@blargbot/cluster/bbtag';
+import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
+import { Configuration } from '@blargbot/core/Configuration';
+import { Database } from '@blargbot/core/database';
+import { Logger } from '@blargbot/core/Logger';
+import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
+import { guard } from '@blargbot/core/utils';
 import { Client as Discord, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
 
 export class CommandContext<TChannel extends KnownTextableChannel = KnownTextableChannel> {

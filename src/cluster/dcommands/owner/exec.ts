@@ -1,5 +1,5 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { codeBlock, CommandType } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { codeBlock, CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
 export class ExecCommand extends BaseGlobalCommand {

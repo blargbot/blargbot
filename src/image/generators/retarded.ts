@@ -1,6 +1,6 @@
-import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ImageWorker } from '@image/ImageWorker';
-import { ImageResult, RetardedOptions } from '@image/types';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
+import { ImageWorker } from '@blargbot/image/ImageWorker';
+import { ImageResult, RetardedOptions } from '@blargbot/image/types';
 import Jimp from 'jimp';
 
 export class RetardedGenerator extends BaseImageGenerator<'retarded'> {

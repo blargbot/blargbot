@@ -1,7 +1,7 @@
-import { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@cluster/types';
-import { humanize } from '@cluster/utils';
-import { Binder } from '@core/Binder';
-import { Binding, BindingResultAsyncIterator } from '@core/types';
+import { CommandBinderState, CommandSingleParameter, CommandVariableTypeName } from '@blargbot/cluster/types';
+import { humanize } from '@blargbot/cluster/utils';
+import { Binder } from '@blargbot/core/Binder';
+import { Binding, BindingResultAsyncIterator } from '@blargbot/core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { createCommandArgument } from '../commandArgument';

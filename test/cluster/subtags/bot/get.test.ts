@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { SubtagVariableType } from '@core/types';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { SubtagVariableType } from '@blargbot/core/types';
 
 import { runSubtagTests, SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 

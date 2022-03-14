@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 export class RoleSetPosSubtag extends DefinedSubtag {

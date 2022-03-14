@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { Statement } from '@cluster/types';
-import { SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { Statement } from '@blargbot/cluster/types';
+import { SubtagType } from '@blargbot/cluster/utils';
 
 export class FunctionSubtag extends DefinedSubtag {
     public constructor() {

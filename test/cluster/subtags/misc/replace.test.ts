@@ -1,4 +1,4 @@
-import { ReplaceSubtag } from '@cluster/subtags/misc/replace';
+import { ReplaceSubtag } from '@blargbot/cluster/subtags/misc/replace';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

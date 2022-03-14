@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ColorFormat, ColorSubtag } from '@cluster/subtags/misc/color';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ColorFormat, ColorSubtag } from '@blargbot/cluster/subtags/misc/color';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 

@@ -1,7 +1,7 @@
-import { getDocsEmbed } from '@cluster/bbtag';
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
-import { SendPayload } from '@core/types';
+import { getDocsEmbed } from '@blargbot/cluster/bbtag';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType } from '@blargbot/cluster/utils';
+import { SendPayload } from '@blargbot/core/types';
 
 export class DocsCommand extends BaseGlobalCommand {
     public constructor() {

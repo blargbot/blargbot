@@ -1,4 +1,4 @@
-import { Statement, SubtagArgument, SubtagHandlerValueParameter } from '@cluster/types';
+import { Statement, SubtagArgument, SubtagHandlerValueParameter } from '@blargbot/cluster/types';
 
 export class DefaultSubtagArgumentValue implements SubtagArgument {
     public readonly isCached = true;

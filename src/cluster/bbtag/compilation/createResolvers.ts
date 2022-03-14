@@ -1,4 +1,4 @@
-import { ArgumentResolver, Statement, SubtagArgument, SubtagHandlerCallSignature, SubtagHandlerParameter, SubtagHandlerValueParameter } from '@cluster/types';
+import { ArgumentResolver, Statement, SubtagArgument, SubtagHandlerCallSignature, SubtagHandlerParameter, SubtagHandlerValueParameter } from '@blargbot/cluster/types';
 
 import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue } from '../arguments';
 

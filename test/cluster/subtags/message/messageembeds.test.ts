@@ -1,4 +1,4 @@
-import { MessageEmbedsSubtag } from '@cluster/subtags/message/messageembeds';
+import { MessageEmbedsSubtag } from '@blargbot/cluster/subtags/message/messageembeds';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';

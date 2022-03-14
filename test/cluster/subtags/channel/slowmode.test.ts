@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SlowmodeSubtag } from '@cluster/subtags/channel/slowmode';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { SlowmodeSubtag } from '@blargbot/cluster/subtags/channel/slowmode';
 import { ApiError, Constants, TextChannel } from 'eris';
 
 import { argument } from '../../../mock';

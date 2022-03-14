@@ -1,6 +1,6 @@
-import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
-import { LogicSubtag } from '@cluster/subtags/misc/logic';
-import { LogicOperator } from '@cluster/utils/bbtag/operators';
+import { InvalidOperatorError, NotABooleanError } from '@blargbot/cluster/bbtag/errors';
+import { LogicSubtag } from '@blargbot/cluster/subtags/misc/logic';
+import { LogicOperator } from '@blargbot/cluster/utils/bbtag/operators';
 
 import { MarkerError, runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 

@@ -1,4 +1,4 @@
-import { IsCCSubtag } from '@cluster/subtags/simple/iscc';
+import { IsCCSubtag } from '@blargbot/cluster/subtags/simple/iscc';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

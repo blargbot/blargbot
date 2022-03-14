@@ -1,5 +1,5 @@
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
-import { HtmlDecodeSubtag } from '@cluster/subtags/misc/htmldecode';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
+import { HtmlDecodeSubtag } from '@blargbot/cluster/subtags/misc/htmldecode';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { ClusterEventService } from '@cluster/serviceTypes';
-import { SubtagListResult } from '@cluster/types';
+import { Cluster } from '@blargbot/cluster';
+import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
+import { SubtagListResult } from '@blargbot/cluster/types';
 
 export class ClusterGetSubtagListHandler extends ClusterEventService<'getSubtagList'> {
     public constructor(

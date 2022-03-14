@@ -1,5 +1,5 @@
-import { CommandResult, PrivateCommandContext } from '@cluster/types';
-import { guard } from '@cluster/utils';
+import { CommandResult, PrivateCommandContext } from '@blargbot/cluster/types';
+import { guard } from '@blargbot/cluster/utils';
 
 import { CommandContext } from './CommandContext';
 import { ScopedCommandBase } from './ScopedCommandBase';

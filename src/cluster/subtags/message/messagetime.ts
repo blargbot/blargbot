@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { snowflake, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { ChannelNotFoundError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { snowflake, SubtagType } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 

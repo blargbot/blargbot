@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { ChannelSetPosSubtag } from '@cluster/subtags/channel/channelsetpos';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { ChannelSetPosSubtag } from '@blargbot/cluster/subtags/channel/channelsetpos';
 import { ApiError, Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

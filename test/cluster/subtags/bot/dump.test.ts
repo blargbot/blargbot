@@ -1,4 +1,4 @@
-import { DumpSubtag } from '@cluster/subtags/bot/dump';
+import { DumpSubtag } from '@blargbot/cluster/subtags/bot/dump';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

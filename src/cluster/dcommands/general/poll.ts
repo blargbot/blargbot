@@ -1,7 +1,7 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { CommandType, parse, randInt } from '@cluster/utils';
-import { Emote } from '@core/Emote';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType, parse, randInt } from '@blargbot/cluster/utils';
+import { Emote } from '@blargbot/core/Emote';
 import { Duration, duration } from 'moment-timezone';
 
 interface PollOptions {

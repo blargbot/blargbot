@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { JsonSubtag } from '@cluster/subtags/json/json';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { JsonSubtag } from '@blargbot/cluster/subtags/json/json';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

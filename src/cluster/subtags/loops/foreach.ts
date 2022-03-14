@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
-import { bbtag, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeState, SubtagArgument } from '@blargbot/cluster/types';
+import { bbtag, SubtagType } from '@blargbot/cluster/utils';
 
 export class ForeachSubtag extends DefinedSubtag {
     public constructor() {

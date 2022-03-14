@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { BrainfuckSubtag } from '@cluster/subtags/misc/brainfuck';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { BrainfuckSubtag } from '@blargbot/cluster/subtags/misc/brainfuck';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

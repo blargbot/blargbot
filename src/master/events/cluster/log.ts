@@ -1,7 +1,7 @@
-import { ClusterConnection } from '@cluster';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { LogEntry } from '@core/types';
-import { Master } from '@master';
+import { ClusterConnection } from '@blargbot/cluster';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { LogEntry } from '@blargbot/core/types';
+import { Master } from '@blargbot/master';
 import stripAnsi from 'strip-ansi';
 
 export class ClusterLogHandler extends WorkerPoolEventService<ClusterConnection, 'log'> {

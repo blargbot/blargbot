@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { DeleteThreadSubtag } from '@cluster/subtags/thread/deletethread';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { DeleteThreadSubtag } from '@blargbot/cluster/subtags/thread/deletethread';
 import { ChannelType } from 'discord-api-types';
 import { ApiError } from 'eris';
 

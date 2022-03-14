@@ -1,4 +1,4 @@
-import { GuildSizeSubtag } from '@cluster/subtags/guild/guildsize';
+import { GuildSizeSubtag } from '@blargbot/cluster/subtags/guild/guildsize';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

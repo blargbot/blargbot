@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ChannelCategorySubtag } from '@cluster/subtags/channel/channelcategory';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ChannelCategorySubtag } from '@blargbot/cluster/subtags/channel/channelcategory';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetChannelPropTestCases } from './_getChannelPropTest';

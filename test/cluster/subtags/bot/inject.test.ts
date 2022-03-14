@@ -1,7 +1,7 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { InjectSubtag } from '@cluster/subtags/bot/inject';
-import { LbSubtag } from '@cluster/subtags/simple/lb';
-import { RbSubtag } from '@cluster/subtags/simple/rb';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { InjectSubtag } from '@blargbot/cluster/subtags/bot/inject';
+import { LbSubtag } from '@blargbot/cluster/subtags/simple/lb';
+import { RbSubtag } from '@blargbot/cluster/subtags/simple/rb';
 import { expect } from 'chai';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite';

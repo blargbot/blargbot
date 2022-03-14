@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { snowflake, SubtagType } from '@cluster/utils';
-import { Emote } from '@core/Emote';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { snowflake, SubtagType } from '@blargbot/cluster/utils';
+import { Emote } from '@blargbot/core/Emote';
 import { ApiError, DiscordRESTError, EmbedOptions } from 'eris';
 
 export class ReactListSubtag extends DefinedSubtag {

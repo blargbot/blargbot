@@ -1,5 +1,5 @@
-import { ReturnSubtag } from '@cluster/subtags/bot/return';
-import { BBTagRuntimeState } from '@cluster/types';
+import { ReturnSubtag } from '@blargbot/cluster/subtags/bot/return';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

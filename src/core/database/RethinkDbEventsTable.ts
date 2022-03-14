@@ -1,5 +1,5 @@
-import { Logger } from '@core/Logger';
-import { EventsTable, EventType, StoredEvent, StoredEventOptions } from '@core/types';
+import { Logger } from '@blargbot/core/Logger';
+import { EventsTable, EventType, StoredEvent, StoredEventOptions } from '@blargbot/core/types';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';
 

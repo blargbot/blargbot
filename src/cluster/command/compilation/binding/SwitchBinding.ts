@@ -1,7 +1,7 @@
-import { CommandBinderState } from '@cluster/types';
-import { guard } from '@cluster/utils';
-import { Binder } from '@core/Binder';
-import { Binding, BindingResult } from '@core/types';
+import { CommandBinderState } from '@blargbot/cluster/types';
+import { guard } from '@blargbot/cluster/utils';
+import { Binder } from '@blargbot/core/Binder';
+import { Binding, BindingResult } from '@blargbot/core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';

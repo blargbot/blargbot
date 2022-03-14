@@ -1,5 +1,5 @@
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { RoundUpSubtag } from '@cluster/subtags/math/roundup';
+import { NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { RoundUpSubtag } from '@blargbot/cluster/subtags/math/roundup';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

@@ -1,4 +1,4 @@
-import { ChannelIsThreadSubtag } from '@cluster/subtags/channel/channelisthread';
+import { ChannelIsThreadSubtag } from '@blargbot/cluster/subtags/channel/channelisthread';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

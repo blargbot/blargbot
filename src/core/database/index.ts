@@ -1,6 +1,6 @@
-import { Logger } from '@core/Logger';
-import { ChatlogIndexTable, ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, SuggestionsTable, SuggestorsTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@core/types';
-import { sleep } from '@core/utils';
+import { Logger } from '@blargbot/core/Logger';
+import { ChatlogIndexTable, ChatlogsTable, DatabaseOptions, DumpsTable, EventsTable, GuildTable, SuggestionsTable, SuggestorsTable, TagsTable, TagVariablesTable, UserTable, VarsTable } from '@blargbot/core/types';
+import { sleep } from '@blargbot/core/utils';
 import Airtable from 'airtable';
 import { AirtableBase } from 'airtable/lib/airtable_base';
 import AirtableError from 'airtable/lib/airtable_error';

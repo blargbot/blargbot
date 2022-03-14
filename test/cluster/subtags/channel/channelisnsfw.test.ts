@@ -1,4 +1,4 @@
-import { ChannelIsNsfwSubtag } from '@cluster/subtags/channel/channelisnsfw';
+import { ChannelIsNsfwSubtag } from '@blargbot/cluster/subtags/channel/channelisnsfw';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetChannelPropTestCases } from './_getChannelPropTest';

@@ -1,4 +1,4 @@
-import { discord } from '@core/utils/discord';
+import { discord } from '@blargbot/core/utils/discord';
 import { Embed, EmbedOptions } from 'eris';
 
 import { hasValue } from './hasValue';

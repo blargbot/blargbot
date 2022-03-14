@@ -1,4 +1,4 @@
-import { RbSubtag } from '@cluster/subtags/simple/rb';
+import { RbSubtag } from '@blargbot/cluster/subtags/simple/rb';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

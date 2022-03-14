@@ -1,12 +1,12 @@
-import { BBTagEngine, Subtag } from '@cluster/bbtag';
-import { ClusterOptions } from '@cluster/types';
-import { BaseClient } from '@core/BaseClient';
-import { Configuration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
-import { ModuleLoader } from '@core/modules';
-import { BaseService } from '@core/serviceTypes';
-import { EvalResult } from '@core/types';
-import { ImagePool } from '@image';
+import { BBTagEngine, Subtag } from '@blargbot/cluster/bbtag';
+import { ClusterOptions } from '@blargbot/cluster/types';
+import { BaseClient } from '@blargbot/core/BaseClient';
+import { Configuration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
+import { ModuleLoader } from '@blargbot/core/modules';
+import { BaseService } from '@blargbot/core/serviceTypes';
+import { EvalResult } from '@blargbot/core/types';
+import { ImagePool } from '@blargbot/image';
 import moment, { duration, Moment } from 'moment-timezone';
 import { inspect } from 'util';
 

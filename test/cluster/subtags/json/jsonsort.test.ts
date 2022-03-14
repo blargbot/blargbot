@@ -1,7 +1,7 @@
-import { BBTagRuntimeError, NotAnArrayError } from '@cluster/bbtag/errors';
-import { JsonSubtag } from '@cluster/subtags/json/json';
-import { JsonSortSubtag } from '@cluster/subtags/json/jsonsort';
-import { SubtagVariableType } from '@core/types';
+import { BBTagRuntimeError, NotAnArrayError } from '@blargbot/cluster/bbtag/errors';
+import { JsonSubtag } from '@blargbot/cluster/subtags/json/json';
+import { JsonSortSubtag } from '@blargbot/cluster/subtags/json/jsonsort';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

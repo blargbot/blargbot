@@ -1,4 +1,4 @@
-import { CommandType } from '@cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils';
 import { EmbedOptions, User } from 'eris';
 import Wolke from 'wolken';
 

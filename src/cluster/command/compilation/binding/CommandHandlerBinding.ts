@@ -1,6 +1,6 @@
-import { CommandBinderState, CommandSignatureHandler } from '@cluster/types';
-import { Binder } from '@core/Binder';
-import { BindingResultValue } from '@core/types';
+import { CommandBinderState, CommandSignatureHandler } from '@blargbot/cluster/types';
+import { Binder } from '@blargbot/core/Binder';
+import { BindingResultValue } from '@blargbot/core/types';
 
 import { CommandContext } from '../../CommandContext';
 import { CommandBindingBase } from './CommandBindingBase';

@@ -1,8 +1,8 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
-import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
-import { OrdinalOperator } from '@cluster/utils/bbtag/operators';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { BBTagRuntimeState, SubtagArgument } from '@blargbot/cluster/types';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
+import { OrdinalOperator } from '@blargbot/cluster/utils/bbtag/operators';
 
 export class ForSubtag extends DefinedSubtag {
     public constructor() {

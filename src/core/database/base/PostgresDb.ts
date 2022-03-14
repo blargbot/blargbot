@@ -1,5 +1,5 @@
-import { PostgresConfiguration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
+import { PostgresConfiguration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
 import { Sequelize, Transaction } from 'sequelize';
 
 import { BBTagVariableModel, createBBTagVariableModel } from './postgresModels';

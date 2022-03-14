@@ -1,6 +1,6 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { InvalidEmbedError } from '@cluster/bbtag/errors';
-import { discord, guard, MessageComponent, parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { InvalidEmbedError } from '@blargbot/cluster/bbtag/errors';
+import { discord, guard, MessageComponent, parse, SubtagType } from '@blargbot/cluster/utils';
 import { EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions } from 'eris';
 
 export class EmbedBuildSubtag extends DefinedSubtag {

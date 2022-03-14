@@ -1,4 +1,4 @@
-import { AnalysisResults } from '@cluster/types';
+import { AnalysisResults } from '@blargbot/cluster/types';
 
 import { stringifyLocation } from './stringifyLocation';
 

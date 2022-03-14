@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag, tagVariableScopes } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag, tagVariableScopes } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class GetSubtag extends DefinedSubtag {
     public constructor() {

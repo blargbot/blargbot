@@ -1,5 +1,5 @@
-import { Timer } from '@core/Timer';
-import { guard } from '@core/utils';
+import { Timer } from '@blargbot/core/Timer';
+import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from './BBTagContext';
 import { TagVariableScope } from './tagVariables';

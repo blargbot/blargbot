@@ -1,6 +1,6 @@
-import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ImageWorker } from '@image/ImageWorker';
-import { ImageResult, PixelateOptions } from '@image/types';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
+import { ImageWorker } from '@blargbot/image/ImageWorker';
+import { ImageResult, PixelateOptions } from '@blargbot/image/types';
 import Jimp from 'jimp';
 
 export class PixelateGenerator extends BaseImageGenerator<'pixelate'> {

@@ -1,5 +1,5 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { randChoose, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { randChoose, SubtagType } from '@blargbot/cluster/utils';
 
 export class RandUserSubtag extends DefinedSubtag {
     public constructor() {

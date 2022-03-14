@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { EmojiDeleteSubtag } from '@cluster/subtags/guild/emojidelete';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { EmojiDeleteSubtag } from '@blargbot/cluster/subtags/guild/emojidelete';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

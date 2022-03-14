@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError } from '@cluster/bbtag/errors';
-import { guard, parse, SubtagType } from '@cluster/utils';
-import { MalformedEmbed } from '@core/types';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, ChannelNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { guard, parse, SubtagType } from '@blargbot/cluster/utils';
+import { MalformedEmbed } from '@blargbot/core/types';
 import { DiscordRESTError, EmbedOptions, FileContent } from 'eris';
 
 export class SendSubtag extends DefinedSubtag {

@@ -1,4 +1,4 @@
-import { BBTagRuntimeScope } from '@cluster/types';
+import { BBTagRuntimeScope } from '@blargbot/cluster/types';
 
 export class ScopeManager {
     private readonly scopes: BBTagRuntimeScope[];

@@ -1,4 +1,4 @@
-import { CommentSubtag } from '@cluster/subtags/misc/comment';
+import { CommentSubtag } from '@blargbot/cluster/subtags/misc/comment';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

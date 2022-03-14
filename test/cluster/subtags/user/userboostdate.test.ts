@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { UserBoostDataSubtag } from '@cluster/subtags/user/userboostdate';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { UserBoostDataSubtag } from '@blargbot/cluster/subtags/user/userboostdate';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

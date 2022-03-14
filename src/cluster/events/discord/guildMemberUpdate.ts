@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { guard } from '@cluster/utils';
-import { DiscordEventService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster/utils';
+import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { Member, OldMember } from 'eris';
 
 export class DiscordMemberUpdateHandler extends DiscordEventService<'guildMemberUpdate'> {

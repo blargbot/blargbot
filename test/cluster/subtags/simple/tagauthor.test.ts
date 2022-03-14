@@ -1,4 +1,4 @@
-import { TagAuthorSubtag } from '@cluster/subtags/simple/tagauthor';
+import { TagAuthorSubtag } from '@blargbot/cluster/subtags/simple/tagauthor';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

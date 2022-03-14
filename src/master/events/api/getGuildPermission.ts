@@ -1,7 +1,7 @@
-import { ApiConnection } from '@api';
-import { GuildPermissionDetails } from '@cluster/types';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { ApiConnection } from '@blargbot/api';
+import { GuildPermissionDetails } from '@blargbot/cluster/types';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class ApiGetGuildPermissionHandler extends WorkerPoolEventService<ApiConnection, 'getGuildPermission'> {
     public constructor(private readonly master: Master) {

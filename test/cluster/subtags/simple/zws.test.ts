@@ -1,4 +1,4 @@
-import { ZwsSubtag } from '@cluster/subtags/simple/zws';
+import { ZwsSubtag } from '@blargbot/cluster/subtags/simple/zws';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

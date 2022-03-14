@@ -1,4 +1,4 @@
-import { SubtagPropertiesSet } from '@cluster/types';
+import { SubtagPropertiesSet } from '@blargbot/cluster/types';
 
 export enum SubtagType {
     SIMPLE = 1,

@@ -1,4 +1,4 @@
-import { EmojisSubtag } from '@cluster/subtags/guild/emojis';
+import { EmojisSubtag } from '@blargbot/cluster/subtags/guild/emojis';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

@@ -1,5 +1,5 @@
-import { FlagDefinition, FlagResult, FlagResultValueSet } from '@cluster/types';
-import { guard, humanize } from '@core/utils';
+import { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/cluster/types';
+import { guard, humanize } from '@blargbot/core/utils';
 
 export function flags(definitions: Iterable<FlagDefinition>, text: string, strict = false): FlagResult {
     let currentFlag: keyof FlagResult = '_';

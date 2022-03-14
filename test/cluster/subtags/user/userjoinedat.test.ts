@@ -1,4 +1,4 @@
-import { UserJoinedAtSubtag } from '@cluster/subtags/user/userjoinedat';
+import { UserJoinedAtSubtag } from '@blargbot/cluster/subtags/user/userjoinedat';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

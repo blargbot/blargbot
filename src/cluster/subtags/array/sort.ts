@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtag, compare, parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { NotAnArrayError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, compare, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class SortSubtag extends DefinedSubtag {
     public constructor() {

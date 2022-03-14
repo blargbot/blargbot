@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { LastMessageIdSubtag } from '@cluster/subtags/channel/lastmessageid';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { LastMessageIdSubtag } from '@blargbot/cluster/subtags/channel/lastmessageid';
 import { Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { BBTagRuntimeState, SubtagArgument } from '@cluster/types';
-import { parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { BBTagRuntimeState, SubtagArgument } from '@blargbot/cluster/types';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class RepeatSubtag extends DefinedSubtag {
     public constructor() {

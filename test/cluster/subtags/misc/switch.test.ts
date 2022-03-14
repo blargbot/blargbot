@@ -1,4 +1,4 @@
-import { SwitchSubtag } from '@cluster/subtags/misc/switch';
+import { SwitchSubtag } from '@blargbot/cluster/subtags/misc/switch';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

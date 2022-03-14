@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { ClusterEventService } from '@cluster/serviceTypes';
-import { metrics } from '@core/Metrics';
+import { Cluster } from '@blargbot/cluster';
+import { ClusterEventService } from '@blargbot/cluster/serviceTypes';
+import { metrics } from '@blargbot/core/Metrics';
 import { metric } from 'prom-client';
 
 export class ClusterMetricsHandler extends ClusterEventService<'metrics'> {

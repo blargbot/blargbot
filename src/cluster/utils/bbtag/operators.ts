@@ -1,5 +1,5 @@
-import { compare as compareFn, guard } from '@core/utils';
-import { parseString } from '@core/utils/parse/parseString';
+import { compare as compareFn, guard } from '@blargbot/core/utils';
+import { parseString } from '@blargbot/core/utils/parse/parseString';
 
 import { tagArray } from './tagArray';
 

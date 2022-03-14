@@ -1,7 +1,7 @@
-import { BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RuntimeLimitRule, SubtagCall } from '@cluster/types';
-import { humanize } from '@cluster/utils';
+import { BBTagContext } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { RuntimeLimitRule, SubtagCall } from '@blargbot/cluster/types';
+import { humanize } from '@blargbot/cluster/utils';
 
 export class DisabledInRule implements RuntimeLimitRule {
     private readonly subtags: readonly string[];

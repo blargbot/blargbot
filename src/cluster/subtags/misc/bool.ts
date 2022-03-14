@@ -1,6 +1,6 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { InvalidOperatorError } from '@cluster/bbtag/errors';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { InvalidOperatorError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class BoolSubtag extends DefinedSubtag {
     public constructor() {

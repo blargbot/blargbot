@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, UnknownSubtagError } from '@cluster/bbtag/errors';
-import { SubtagCall } from '@cluster/types';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, UnknownSubtagError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagCall } from '@blargbot/cluster/types';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class ApplySubtag extends DefinedSubtag {
     public constructor() {

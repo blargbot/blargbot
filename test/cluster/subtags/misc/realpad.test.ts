@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { RealPadSubtag } from '@cluster/subtags/misc/realpad';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { RealPadSubtag } from '@blargbot/cluster/subtags/misc/realpad';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

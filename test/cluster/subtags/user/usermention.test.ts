@@ -1,4 +1,4 @@
-import { UserMentionSubtag } from '@cluster/subtags/user/usermention';
+import { UserMentionSubtag } from '@blargbot/cluster/subtags/user/usermention';
 import { expect } from 'chai';
 import { Member, User } from 'eris';
 

@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { UriDecodeSubtag } from '@cluster/subtags/misc/uridecode';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { UriDecodeSubtag } from '@blargbot/cluster/subtags/misc/uridecode';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

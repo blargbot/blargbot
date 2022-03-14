@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { InvalidOperatorError, NotABooleanError, NotANumberError } from '@cluster/bbtag/errors';
-import { SubtagArgumentArray } from '@cluster/types';
-import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, parse, StringOperator, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { InvalidOperatorError, NotABooleanError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagArgumentArray } from '@blargbot/cluster/types';
+import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, parse, StringOperator, SubtagType } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 
 export class OperatorSubtag extends DefinedSubtag {

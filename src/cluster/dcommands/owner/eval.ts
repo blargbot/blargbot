@@ -1,6 +1,6 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { codeBlock, CommandType } from '@cluster/utils';
-import { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@core/types';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { codeBlock, CommandType } from '@blargbot/cluster/utils';
+import { EvalResult, GlobalEvalResult, MasterEvalRequest } from '@blargbot/core/types';
 
 export class EvalCommand extends BaseGlobalCommand {
     public constructor() {

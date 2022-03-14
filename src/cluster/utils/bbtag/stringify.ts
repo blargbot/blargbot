@@ -1,4 +1,4 @@
-import { Statement, SubtagCall } from '@cluster/types';
+import { Statement, SubtagCall } from '@blargbot/cluster/types';
 
 export function stringify(bbtag: Statement | SubtagCall): string {
     if ('values' in bbtag) {

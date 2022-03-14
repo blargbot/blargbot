@@ -1,7 +1,7 @@
-import { guard } from '@cluster/utils';
-import { Logger } from '@core/Logger';
-import { metrics } from '@core/Metrics';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { guard } from '@blargbot/cluster/utils';
+import { Logger } from '@blargbot/core/Logger';
+import { metrics } from '@blargbot/core/Metrics';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { Client as Discord, KnownMessage } from 'eris';
 
 export class IgnoreSelfMiddleware implements IMiddleware<KnownMessage, boolean> {

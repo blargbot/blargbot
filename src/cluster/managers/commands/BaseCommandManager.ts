@@ -1,8 +1,8 @@
-import { Cluster } from '@cluster';
-import { CommandGetCoreResult, CommandGetResult, ICommand, ICommandManager, PermissionCheckResult } from '@cluster/types';
-import { defaultStaff, guard } from '@cluster/utils';
-import { CommandPermissions } from '@core/types';
-import { parse } from '@core/utils';
+import { Cluster } from '@blargbot/cluster';
+import { CommandGetCoreResult, CommandGetResult, ICommand, ICommandManager, PermissionCheckResult } from '@blargbot/cluster/types';
+import { defaultStaff, guard } from '@blargbot/cluster/utils';
+import { CommandPermissions } from '@blargbot/core/types';
+import { parse } from '@blargbot/core/utils';
 import { Guild, KnownGuildTextableChannel, User } from 'eris';
 
 export abstract class BaseCommandManager<T> implements ICommandManager<T> {

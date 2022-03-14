@@ -1,7 +1,7 @@
-import { Cluster } from '@cluster';
-import { guard } from '@cluster/utils';
-import { metrics } from '@core/Metrics';
-import { DiscordEventService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { guard } from '@blargbot/cluster/utils';
+import { metrics } from '@blargbot/core/Metrics';
+import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { Guild } from 'eris';
 
 export class DiscordGuildCreateHandler extends DiscordEventService<'guildCreate'> {

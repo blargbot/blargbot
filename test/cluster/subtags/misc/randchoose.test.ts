@@ -1,6 +1,6 @@
 import 'chai-exclude';
 
-import { RandChooseSubtag } from '@cluster/subtags/misc/randchoose';
+import { RandChooseSubtag } from '@blargbot/cluster/subtags/misc/randchoose';
 import { expect } from 'chai';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';

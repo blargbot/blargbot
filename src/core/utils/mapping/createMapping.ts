@@ -1,4 +1,4 @@
-import { NormalizedTypeMapping, TypeMapping, TypeMappingImpl, TypeMappingResult } from '@core/types';
+import { NormalizedTypeMapping, TypeMapping, TypeMappingImpl, TypeMappingResult } from '@blargbot/core/types';
 
 import { result } from './result';
 

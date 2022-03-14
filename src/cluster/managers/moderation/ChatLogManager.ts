@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { guard, snowflake } from '@cluster/utils';
-import { Chatlog, ChatlogIndex, ChatlogSearchOptions, ChatlogType } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { guard, snowflake } from '@blargbot/cluster/utils';
+import { Chatlog, ChatlogIndex, ChatlogSearchOptions, ChatlogType } from '@blargbot/core/types';
 import { KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel } from 'eris';
 
 export class ChatLogManager {

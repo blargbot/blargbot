@@ -1,5 +1,5 @@
-import { GuildSettingDescriptor } from '@cluster/types';
-import { StoredGuildSettings } from '@core/types';
+import { GuildSettingDescriptor } from '@blargbot/cluster/types';
+import { StoredGuildSettings } from '@blargbot/core/types';
 
 // prefix excluded as it is an array of strings
 export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix' | 'greeting' | 'farewell'>]-?: GuildSettingDescriptor<P> } = {

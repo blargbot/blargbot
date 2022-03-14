@@ -1,5 +1,5 @@
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { UserSetNickSubtag } from '@cluster/subtags/user/usersetnick';
+import { UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { UserSetNickSubtag } from '@blargbot/cluster/subtags/user/usersetnick';
 import { Member } from 'eris';
 
 import { argument } from '../../../mock';

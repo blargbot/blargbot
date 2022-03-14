@@ -1,7 +1,7 @@
-import { Configuration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
-import { BaseWorker } from '@core/worker';
-import { MasterIPCContract, MasterOptions } from '@master/types';
+import { Configuration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
+import { BaseWorker } from '@blargbot/core/worker';
+import { MasterIPCContract, MasterOptions } from '@blargbot/master/types';
 
 import { Master } from './Master';
 

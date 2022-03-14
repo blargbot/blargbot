@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { RoleNotFoundError } from '@cluster/bbtag/errors';
-import { /*parse,*/ SubtagType } from '@cluster/utils'; //TODO uncomment parse module for new code
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { RoleNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { /*parse,*/ SubtagType } from '@blargbot/cluster/utils'; //TODO uncomment parse module for new code
 
 export class RoleSizeSubtag extends DefinedSubtag {
     public constructor() {

@@ -1,6 +1,6 @@
-import { InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
-import { MathSubtag } from '@cluster/subtags/math/math';
-import { NumericOperator } from '@cluster/utils';
+import { InvalidOperatorError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { MathSubtag } from '@blargbot/cluster/subtags/math/math';
+import { NumericOperator } from '@blargbot/cluster/utils';
 
 import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 

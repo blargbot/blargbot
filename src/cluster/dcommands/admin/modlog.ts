@@ -1,7 +1,7 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { CommandType, humanize } from '@cluster/utils';
-import { guard, pluralise as p } from '@core/utils';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType, humanize } from '@blargbot/cluster/utils';
+import { guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownChannel } from 'eris';
 
 export class ModlogCommand extends BaseGuildCommand {

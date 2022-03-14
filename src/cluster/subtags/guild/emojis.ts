@@ -1,5 +1,5 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { SubtagType } from '@blargbot/cluster/utils';
 
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
 export class EmojisSubtag extends DefinedSubtag {

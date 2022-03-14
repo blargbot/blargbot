@@ -1,4 +1,4 @@
-import { UserActivitySubtag } from '@cluster/subtags/user/useractivity';
+import { UserActivitySubtag } from '@blargbot/cluster/subtags/user/useractivity';
 import { ActivityType } from 'discord-api-types';
 import moment from 'moment-timezone';
 

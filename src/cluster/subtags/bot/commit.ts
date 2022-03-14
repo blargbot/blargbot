@@ -1,5 +1,5 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class CommitSubtag extends DefinedSubtag {
     public constructor() {

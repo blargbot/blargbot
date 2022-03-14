@@ -1,4 +1,4 @@
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

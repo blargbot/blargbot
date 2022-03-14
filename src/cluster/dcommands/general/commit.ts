@@ -1,6 +1,6 @@
-import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType, mapping, randInt } from '@cluster/utils';
-import packageJson from '@package';
+import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { CommandType, mapping, randInt } from '@blargbot/cluster/utils';
+import packageJson from '@blargbot/package';
 import { EmbedOptions } from 'eris';
 import fetch, { Response } from 'node-fetch';
 

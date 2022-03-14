@@ -1,4 +1,4 @@
-import { Cluster } from '@cluster';
+import { Cluster } from '@blargbot/cluster';
 
 import { BanManager, CensorManager, ChatLogManager, EventLogManager, ModLogManager, MuteManager, WarnManager } from './moderation';
 

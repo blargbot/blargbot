@@ -1,5 +1,5 @@
-import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
+import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { CommandType } from '@blargbot/cluster/utils';
 
 export class NatoCommand extends BaseGlobalCommand {
     public constructor() {

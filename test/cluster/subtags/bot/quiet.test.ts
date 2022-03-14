@@ -1,4 +1,4 @@
-import { QuietSubtag } from '@cluster/subtags/bot/quiet';
+import { QuietSubtag } from '@blargbot/cluster/subtags/bot/quiet';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

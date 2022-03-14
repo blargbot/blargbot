@@ -1,4 +1,4 @@
-import { NsfwSubtag } from '@cluster/subtags/bot/nsfw';
+import { NsfwSubtag } from '@blargbot/cluster/subtags/bot/nsfw';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

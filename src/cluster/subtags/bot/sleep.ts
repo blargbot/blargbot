@@ -1,6 +1,6 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { parse, sleep, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { parse, sleep, SubtagType } from '@blargbot/cluster/utils';
 import moment from 'moment';
 
 const maxSleep = moment.duration(5, 'minutes');

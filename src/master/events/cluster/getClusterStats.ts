@@ -1,7 +1,7 @@
-import { ClusterConnection } from '@cluster';
-import { ClusterStats } from '@cluster/types';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { ClusterConnection } from '@blargbot/cluster';
+import { ClusterStats } from '@blargbot/cluster/types';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class ClusterGetClusterStatsHandler extends WorkerPoolEventService<ClusterConnection, 'getClusterStats'> {
     public constructor(private readonly master: Master) {

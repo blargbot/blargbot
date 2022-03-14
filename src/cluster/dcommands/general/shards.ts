@@ -1,6 +1,6 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { ClusterStats, ShardStats } from '@cluster/types';
-import { CommandType, discord, guard, humanize, snowflake } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { ClusterStats, ShardStats } from '@blargbot/cluster/types';
+import { CommandType, discord, guard, humanize, snowflake } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 import moment from 'moment';
 

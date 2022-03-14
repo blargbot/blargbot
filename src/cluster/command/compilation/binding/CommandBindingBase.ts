@@ -1,6 +1,6 @@
-import { CommandBinderParseResult, CommandBinderState, CommandBinderStateFailureReason } from '@cluster/types';
-import { Binder } from '@core/Binder';
-import { Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '@core/types';
+import { CommandBinderParseResult, CommandBinderState, CommandBinderStateFailureReason } from '@blargbot/cluster/types';
+import { Binder } from '@blargbot/core/Binder';
+import { Binding, BindingFailure, BindingResult, BindingResultValue, BindingSuccess } from '@blargbot/core/types';
 
 import { CommandContext } from '../../CommandContext';
 

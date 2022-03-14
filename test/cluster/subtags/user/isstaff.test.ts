@@ -1,5 +1,5 @@
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { IsStaffSubtag } from '@cluster/subtags/user/isstaff';
+import { UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { IsStaffSubtag } from '@blargbot/cluster/subtags/user/isstaff';
 import { Member } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,5 +1,5 @@
-import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType, randChoose } from '@cluster/utils';
+import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { CommandType, randChoose } from '@blargbot/cluster/utils';
 import { FileContent } from 'eris';
 import fetch from 'node-fetch';
 

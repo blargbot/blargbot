@@ -1,5 +1,5 @@
-import { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerIPCContractNames } from '@core/types';
-import { WorkerConnection, WorkerPool } from '@core/worker';
+import { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerIPCContractNames } from '@blargbot/core/types';
+import { WorkerConnection, WorkerPool } from '@blargbot/core/worker';
 
 import { BaseService } from './BaseService';
 

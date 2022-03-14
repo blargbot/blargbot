@@ -1,4 +1,4 @@
-import { UnindentSubtag } from '@cluster/subtags/misc/unindent';
+import { UnindentSubtag } from '@blargbot/cluster/subtags/misc/unindent';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

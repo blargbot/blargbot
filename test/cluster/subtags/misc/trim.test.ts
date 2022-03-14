@@ -1,5 +1,5 @@
-import { SpaceSubtag } from '@cluster/subtags/misc/space';
-import { TrimSubtag } from '@cluster/subtags/misc/trim';
+import { SpaceSubtag } from '@blargbot/cluster/subtags/misc/space';
+import { TrimSubtag } from '@blargbot/cluster/subtags/misc/trim';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

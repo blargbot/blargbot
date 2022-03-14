@@ -1,8 +1,8 @@
-import { Cluster } from '@cluster';
-import { CommandContext } from '@cluster/command';
-import { CommandResult } from '@cluster/types';
-import { IMiddleware, NextMiddleware } from '@core/types';
-import { humanize, pluralise as p, runMiddleware } from '@core/utils';
+import { Cluster } from '@blargbot/cluster';
+import { CommandContext } from '@blargbot/cluster/command';
+import { CommandResult } from '@blargbot/cluster/types';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { humanize, pluralise as p, runMiddleware } from '@blargbot/core/utils';
 import { KnownMessage } from 'eris';
 
 export class CommandMiddleware implements IMiddleware<KnownMessage, boolean> {

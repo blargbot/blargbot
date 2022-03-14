@@ -1,5 +1,5 @@
-import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType, randInt } from '@cluster/utils';
+import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { CommandType, randInt } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
 export class ShipCommand extends BaseGlobalCommand {

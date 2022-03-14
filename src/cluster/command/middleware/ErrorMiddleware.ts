@@ -1,6 +1,6 @@
-import { CommandResult } from '@cluster/types';
-import { IMiddleware, NextMiddleware } from '@core/types';
-import { guard, snowflake } from '@core/utils';
+import { CommandResult } from '@blargbot/cluster/types';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { guard, snowflake } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 import { CommandContext } from '../CommandContext';

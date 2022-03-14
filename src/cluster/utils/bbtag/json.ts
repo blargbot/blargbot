@@ -1,7 +1,7 @@
-import { BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { BBTagArray } from '@cluster/types';
-import { parse } from '@core/utils';
+import { BBTagContext } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { BBTagArray } from '@blargbot/cluster/types';
+import { parse } from '@blargbot/core/utils';
 
 import { tagArray } from './tagArray';
 

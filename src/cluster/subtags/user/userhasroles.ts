@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { RoleNotFoundError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class UserHasRolesSubtag extends DefinedSubtag {
     public constructor() {

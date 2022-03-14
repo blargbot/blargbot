@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagType } from '@blargbot/cluster/utils';
 
 export class UserTimezoneSubtag extends DefinedSubtag {
     public constructor() {

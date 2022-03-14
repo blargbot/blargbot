@@ -1,6 +1,6 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
-import { bbtag, LogicOperator, parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { InvalidOperatorError, NotABooleanError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, LogicOperator, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class LogicSubtag extends DefinedSubtag {
     public constructor() {

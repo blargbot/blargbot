@@ -1,6 +1,6 @@
-import { BaseGlobalImageCommand, CommandContext } from '@cluster/command';
-import { guard } from '@cluster/utils';
-import { ImageResult } from '@image/types';
+import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { guard } from '@blargbot/cluster/utils';
+import { ImageResult } from '@blargbot/image/types';
 
 export class RetardedCommand extends BaseGlobalImageCommand {
     public constructor() {

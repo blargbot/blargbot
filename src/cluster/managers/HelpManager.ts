@@ -1,7 +1,7 @@
-import { ClusterUtilities } from '@cluster';
-import { CommandParameter, ICommand, ICommandManager } from '@cluster/types';
-import { codeBlock, guard, humanize } from '@cluster/utils';
-import { SendPayload } from '@core/types';
+import { ClusterUtilities } from '@blargbot/cluster';
+import { CommandParameter, ICommand, ICommandManager } from '@blargbot/cluster/types';
+import { codeBlock, guard, humanize } from '@blargbot/cluster/utils';
+import { SendPayload } from '@blargbot/core/types';
 import { EmbedField, KnownChannel, KnownTextableChannel, User } from 'eris';
 
 export class HelpManager {

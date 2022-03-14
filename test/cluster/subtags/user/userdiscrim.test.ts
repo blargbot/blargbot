@@ -1,4 +1,4 @@
-import { UserDiscrimSubtag } from '@cluster/subtags/user/userdiscrim';
+import { UserDiscrimSubtag } from '@blargbot/cluster/subtags/user/userdiscrim';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

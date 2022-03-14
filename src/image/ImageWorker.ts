@@ -1,8 +1,8 @@
-import { Configuration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
-import { ModuleLoader } from '@core/modules';
-import { BaseWorker } from '@core/worker';
-import { ImageGeneratorMap, ImageIPCContract } from '@image/types';
+import { Configuration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
+import { ModuleLoader } from '@blargbot/core/modules';
+import { BaseWorker } from '@blargbot/core/worker';
+import { ImageGeneratorMap, ImageIPCContract } from '@blargbot/image/types';
 
 import { BaseImageGenerator } from './BaseImageGenerator';
 

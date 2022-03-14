@@ -1,4 +1,4 @@
-import { RolePosSubtag } from '@cluster/subtags/role/rolepos';
+import { RolePosSubtag } from '@blargbot/cluster/subtags/role/rolepos';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetRolePropTestCases } from './_getRolePropTest';

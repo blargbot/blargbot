@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { UnknownSubtagError } from '@cluster/bbtag/errors';
-import { SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { UnknownSubtagError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagType } from '@blargbot/cluster/utils';
 
 export class FunctionInvokeSubtag extends DefinedSubtag {
     public constructor() {

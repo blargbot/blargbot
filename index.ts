@@ -1,5 +1,5 @@
 import 'module-alias/register.js';
 
-import start from '@master';
+import start from '@blargbot/master';
 
 void start();

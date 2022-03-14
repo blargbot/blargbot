@@ -1,7 +1,7 @@
-import { BaseGuildCommand, SingleThreadMiddleware } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { CommandType } from '@cluster/utils';
-import { createSafeRegExp, guard, pluralise as p } from '@core/utils';
+import { BaseGuildCommand, SingleThreadMiddleware } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
+import { createSafeRegExp, guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
 import moment from 'moment';
 import { Moment } from 'moment-timezone';

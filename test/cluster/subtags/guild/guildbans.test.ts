@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { GuildBansSubtag } from '@cluster/subtags/guild/guildbans';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { GuildBansSubtag } from '@blargbot/cluster/subtags/guild/guildbans';
 import { ApiError, User } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ThrowSubtag } from '@cluster/subtags/bot/throw';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ThrowSubtag } from '@blargbot/cluster/subtags/bot/throw';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

@@ -1,6 +1,6 @@
-import { BaseGlobalCommand, CommandContext, RatelimitMiddleware, SingleThreadMiddleware } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
-import { ImageResult } from '@image/types';
+import { BaseGlobalCommand, CommandContext, RatelimitMiddleware, SingleThreadMiddleware } from '@blargbot/cluster/command';
+import { CommandType } from '@blargbot/cluster/utils';
+import { ImageResult } from '@blargbot/image/types';
 import { duration } from 'moment';
 
 export class FreeCommand extends BaseGlobalCommand {

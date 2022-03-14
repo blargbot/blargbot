@@ -1,7 +1,7 @@
-import { ClusterConnection } from '@cluster';
-import { IntervalService } from '@core/serviceTypes';
-import { WorkerState } from '@core/worker';
-import { Master } from '@master';
+import { ClusterConnection } from '@blargbot/cluster';
+import { IntervalService } from '@blargbot/core/serviceTypes';
+import { WorkerState } from '@blargbot/core/worker';
+import { Master } from '@blargbot/master';
 import moment from 'moment';
 
 export class ClusterMonitor extends IntervalService {

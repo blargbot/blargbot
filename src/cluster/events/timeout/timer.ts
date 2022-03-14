@@ -1,6 +1,6 @@
-import { Cluster } from '@cluster';
-import { TimeoutEventService } from '@cluster/serviceTypes';
-import { StoredEvent } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
+import { StoredEvent } from '@blargbot/core/types';
 import moment from 'moment';
 
 export class TimeoutTimerEventService extends TimeoutEventService<'timer'> {

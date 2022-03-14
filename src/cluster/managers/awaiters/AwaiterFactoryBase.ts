@@ -1,5 +1,5 @@
-import { Logger } from '@core/Logger';
-import { Semaphore } from '@core/Semaphore';
+import { Logger } from '@blargbot/core/Logger';
+import { Semaphore } from '@blargbot/core/Semaphore';
 
 import { Awaiter } from './Awaiter';
 

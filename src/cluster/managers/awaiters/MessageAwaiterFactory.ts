@@ -1,4 +1,4 @@
-import { Logger } from '@core/Logger';
+import { Logger } from '@blargbot/core/Logger';
 import { KnownMessage, KnownTextableChannel, Message } from 'eris';
 
 import { Awaiter } from './Awaiter';

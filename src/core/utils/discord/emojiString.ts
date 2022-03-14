@@ -1,4 +1,4 @@
-import { Emote } from '@core/Emote';
+import { Emote } from '@blargbot/core/Emote';
 import { PartialEmoji } from 'eris';
 
 export function emojiString(emoji: PartialEmoji | Emote): string {

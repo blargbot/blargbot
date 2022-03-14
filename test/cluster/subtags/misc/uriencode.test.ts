@@ -1,5 +1,5 @@
-import { UriEncodeSubtag } from '@cluster/subtags/misc/uriencode';
-import { SemiSubtag } from '@cluster/subtags/simple/semi';
+import { UriEncodeSubtag } from '@blargbot/cluster/subtags/misc/uriencode';
+import { SemiSubtag } from '@blargbot/cluster/subtags/simple/semi';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

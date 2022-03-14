@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { between, parse, SubtagType } from '@cluster/utils';
-import { Lazy } from '@core/Lazy';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { between, parse, SubtagType } from '@blargbot/cluster/utils';
+import { Lazy } from '@blargbot/core/Lazy';
 
 export class BaseNumberSubtag extends DefinedSubtag {
     public constructor() {

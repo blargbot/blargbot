@@ -1,6 +1,6 @@
-import { Logger } from '@core/Logger';
-import { IPCContracts } from '@core/types';
-import { getRange } from '@core/utils';
+import { Logger } from '@blargbot/core/Logger';
+import { IPCContracts } from '@blargbot/core/types';
+import { getRange } from '@blargbot/core/utils';
 import EventEmitter from 'eventemitter3';
 
 import { WorkerConnection, WorkerState } from './WorkerConnection';

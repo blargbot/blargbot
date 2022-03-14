@@ -1,10 +1,10 @@
-import { Cluster, ClusterUtilities } from '@cluster';
-import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult, Statement, SubtagCall } from '@cluster/types';
-import { bbtag as bbtagUtil, discord, parse, sleep } from '@cluster/utils';
-import { Database } from '@core/database';
-import { Logger } from '@core/Logger';
-import { ModuleLoader } from '@core/modules';
-import { Timer } from '@core/Timer';
+import { Cluster, ClusterUtilities } from '@blargbot/cluster';
+import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult, Statement, SubtagCall } from '@blargbot/cluster/types';
+import { bbtag as bbtagUtil, discord, parse, sleep } from '@blargbot/cluster/utils';
+import { Database } from '@blargbot/core/database';
+import { Logger } from '@blargbot/core/Logger';
+import { ModuleLoader } from '@blargbot/core/modules';
+import { Timer } from '@blargbot/core/Timer';
 import { Client as Discord } from 'eris';
 import moment from 'moment';
 import { inspect } from 'util';

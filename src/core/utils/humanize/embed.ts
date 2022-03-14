@@ -1,4 +1,4 @@
-import { guard } from '@core/utils';
+import { guard } from '@blargbot/core/utils';
 import { Embed, EmbedOptions } from 'eris';
 import moment from 'moment';
 

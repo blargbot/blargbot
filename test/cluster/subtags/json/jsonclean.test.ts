@@ -1,6 +1,6 @@
-import { JsonSubtag } from '@cluster/subtags/json/json';
-import { JsonCleanSubtag } from '@cluster/subtags/json/jsonclean';
-import { SubtagVariableType } from '@core/types';
+import { JsonSubtag } from '@blargbot/cluster/subtags/json/json';
+import { JsonCleanSubtag } from '@blargbot/cluster/subtags/json/jsonclean';
+import { SubtagVariableType } from '@blargbot/core/types';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

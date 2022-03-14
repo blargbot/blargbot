@@ -1,4 +1,4 @@
-import { GuildFeaturesSubtag } from '@cluster/subtags/guild/guildfeatures';
+import { GuildFeaturesSubtag } from '@blargbot/cluster/subtags/guild/guildfeatures';
 import { GuildFeature } from 'discord-api-types';
 import { Constants } from 'eris';
 

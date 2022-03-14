@@ -1,4 +1,4 @@
-import { BBTagRuntimeState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@cluster/types';
+import { BBTagRuntimeState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '@blargbot/cluster/types';
 import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../BBTagContext';

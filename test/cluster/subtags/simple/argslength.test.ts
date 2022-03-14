@@ -1,4 +1,4 @@
-import { ArgsLengthSubtag } from '@cluster/subtags/simple/argslength';
+import { ArgsLengthSubtag } from '@blargbot/cluster/subtags/simple/argslength';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

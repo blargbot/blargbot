@@ -1,8 +1,8 @@
-import { randInt } from '@core/utils';
-import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ImageWorker } from '@image/ImageWorker';
-import { JimpGifEncoder } from '@image/JimpGifEncoder';
-import { ImageResult, TriggeredOptions } from '@image/types';
+import { randInt } from '@blargbot/core/utils';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
+import { ImageWorker } from '@blargbot/image/ImageWorker';
+import { JimpGifEncoder } from '@blargbot/image/JimpGifEncoder';
+import { ImageResult, TriggeredOptions } from '@blargbot/image/types';
 import Jimp from 'jimp';
 
 export class TriggeredGenerator extends BaseImageGenerator<'triggered'> {

@@ -1,4 +1,4 @@
-import { TimeSubtag } from '@cluster/subtags/misc/time';
+import { TimeSubtag } from '@blargbot/cluster/subtags/misc/time';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite';

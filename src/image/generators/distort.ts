@@ -1,7 +1,7 @@
-import { randInt } from '@core/utils';
-import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ImageWorker } from '@image/ImageWorker';
-import { DistortOptions, ImageResult } from '@image/types';
+import { randInt } from '@blargbot/core/utils';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
+import { ImageWorker } from '@blargbot/image/ImageWorker';
+import { DistortOptions, ImageResult } from '@blargbot/image/types';
 import { BetterColorAction } from '@jimp/plugin-color';
 
 export class DistortGenerator extends BaseImageGenerator<'distort'> {

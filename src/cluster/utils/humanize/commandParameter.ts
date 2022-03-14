@@ -1,4 +1,4 @@
-import { CommandParameter } from '@cluster/types';
+import { CommandParameter } from '@blargbot/cluster/types';
 
 export function commandParameters(parameters: readonly CommandParameter[]): string {
     return parameters.map(commandParameter).join(' ');

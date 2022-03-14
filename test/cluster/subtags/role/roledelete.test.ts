@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RoleDeleteSubtag } from '@cluster/subtags/role/roledelete';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { RoleDeleteSubtag } from '@blargbot/cluster/subtags/role/roledelete';
 import { ApiError, Constants } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

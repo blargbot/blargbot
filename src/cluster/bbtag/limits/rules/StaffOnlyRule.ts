@@ -1,5 +1,5 @@
-import { StaffOnlyError } from '@cluster/bbtag/errors';
-import { RuntimeLimitRule } from '@cluster/types';
+import { StaffOnlyError } from '@blargbot/cluster/bbtag/errors';
+import { RuntimeLimitRule } from '@blargbot/cluster/types';
 
 import { BBTagContext } from '../../BBTagContext';
 

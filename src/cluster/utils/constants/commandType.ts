@@ -1,5 +1,5 @@
-import { CommandPropertiesSet } from '@cluster/types';
-import { guard } from '@cluster/utils';
+import { CommandPropertiesSet } from '@blargbot/cluster/types';
+import { guard } from '@blargbot/cluster/utils';
 import { Guild } from 'eris';
 
 import { defaultStaff } from './defaultStaff';

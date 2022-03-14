@@ -1,4 +1,4 @@
-import { WarningsSubtag } from '@cluster/subtags/user/warnings';
+import { WarningsSubtag } from '@blargbot/cluster/subtags/user/warnings';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

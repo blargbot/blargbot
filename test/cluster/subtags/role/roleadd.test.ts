@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { RoleAddSubtag } from '@cluster/subtags/role/roleadd';
+import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { RoleAddSubtag } from '@blargbot/cluster/subtags/role/roleadd';
 import { Constants } from 'eris';
 
 import { argument } from '../../../mock';

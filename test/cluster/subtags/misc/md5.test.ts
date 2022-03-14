@@ -1,4 +1,4 @@
-import { Md5Subtag } from '@cluster/subtags/misc/md5';
+import { Md5Subtag } from '@blargbot/cluster/subtags/misc/md5';
 import { expect } from 'chai';
 import { it } from 'mocha';
 

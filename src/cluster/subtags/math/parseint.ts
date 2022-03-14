@@ -1,5 +1,5 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class ParseIntSubtag extends DefinedSubtag {
     public constructor() {

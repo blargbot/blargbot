@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { ReactRemoveSubtag } from '@cluster/subtags/message/reactremove';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { ReactRemoveSubtag } from '@blargbot/cluster/subtags/message/reactremove';
 import { ApiError, Constants } from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';

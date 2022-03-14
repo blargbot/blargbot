@@ -1,6 +1,6 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { CommandType, humanize, pluralise as p } from '@cluster/utils';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType, humanize, pluralise as p } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
 export class WarningsCommand extends BaseGuildCommand {

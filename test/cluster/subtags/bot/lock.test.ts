@@ -1,4 +1,4 @@
-import { LockSubtag } from '@cluster/subtags/bot/lock';
+import { LockSubtag } from '@blargbot/cluster/subtags/bot/lock';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

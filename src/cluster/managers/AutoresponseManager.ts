@@ -1,7 +1,7 @@
-import { Cluster } from '@cluster';
-import { WhitelistResponse } from '@cluster/types';
-import { bbtag, codeBlock, guard, humanize, mapping } from '@cluster/utils';
-import { GuildTriggerTag } from '@core/types';
+import { Cluster } from '@blargbot/cluster';
+import { WhitelistResponse } from '@blargbot/cluster/types';
+import { bbtag, codeBlock, guard, humanize, mapping } from '@blargbot/cluster/utils';
+import { GuildTriggerTag } from '@blargbot/core/types';
 import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';
 
 export class AutoresponseManager {

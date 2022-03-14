@@ -1,4 +1,4 @@
-import { guard } from '@core/utils';
+import { guard } from '@blargbot/core/utils';
 import * as Sentry from '@sentry/node';
 import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts';
 import { ValidationError } from 'sequelize';

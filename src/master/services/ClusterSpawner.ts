@@ -1,6 +1,6 @@
-import { BaseService } from '@core/serviceTypes';
-import { humanize } from '@core/utils';
-import { Master } from '@master';
+import { BaseService } from '@blargbot/core/serviceTypes';
+import { humanize } from '@blargbot/core/utils';
+import { Master } from '@blargbot/master';
 import moment from 'moment';
 
 export class ClusterSpawner extends BaseService {

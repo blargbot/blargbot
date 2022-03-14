@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SleepSubtag } from '@cluster/subtags/bot/sleep';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { SleepSubtag } from '@blargbot/cluster/subtags/bot/sleep';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

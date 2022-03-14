@@ -1,4 +1,4 @@
-import { DecancerSubtag } from '@cluster/subtags/misc/decancer';
+import { DecancerSubtag } from '@blargbot/cluster/subtags/misc/decancer';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

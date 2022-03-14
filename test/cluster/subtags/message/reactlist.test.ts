@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { ReactListSubtag } from '@cluster/subtags/message/reactlist';
+import { BBTagRuntimeError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { ReactListSubtag } from '@blargbot/cluster/subtags/message/reactlist';
 import { ApiError } from 'eris';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';

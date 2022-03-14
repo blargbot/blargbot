@@ -1,4 +1,4 @@
-import { RoleSizeSubtag } from '@cluster/subtags/role/rolesize';
+import { RoleSizeSubtag } from '@blargbot/cluster/subtags/role/rolesize';
 import { RequestGuildMembersReturn } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

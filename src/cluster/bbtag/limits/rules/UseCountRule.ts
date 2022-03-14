@@ -1,6 +1,6 @@
-import { BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RuntimeLimitRule } from '@cluster/types';
+import { BBTagContext } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { RuntimeLimitRule } from '@blargbot/cluster/types';
 
 export class UseCountRule implements RuntimeLimitRule {
     readonly #initial: number;

@@ -1,5 +1,5 @@
-import { Cluster } from '@cluster';
-import { DiscordEventService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { ComponentInteraction, KnownInteraction } from 'eris';
 
 export class DiscordInteractionCreateHandler extends DiscordEventService<'interactionCreate'> {

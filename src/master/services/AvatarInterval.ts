@@ -1,6 +1,6 @@
-import { CronService } from '@core/serviceTypes';
-import { Master } from '@master';
-import { MasterOptions } from '@master/types';
+import { CronService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
+import { MasterOptions } from '@blargbot/master/types';
 import moment from 'moment';
 
 export class AvatarInterval extends CronService {

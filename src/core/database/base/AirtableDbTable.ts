@@ -1,4 +1,4 @@
-import { Logger } from '@core/Logger';
+import { Logger } from '@blargbot/core/Logger';
 import { FieldSet, Record as AirRecord, Record, Table } from 'airtable';
 import { AirtableBase } from 'airtable/lib/airtable_base';
 import AirtableError from 'airtable/lib/airtable_error';

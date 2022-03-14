@@ -1,4 +1,4 @@
-import { HereMentionSubtag } from '@cluster/subtags/message/heremention';
+import { HereMentionSubtag } from '@blargbot/cluster/subtags/message/heremention';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

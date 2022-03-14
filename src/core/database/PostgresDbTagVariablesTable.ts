@@ -1,6 +1,6 @@
-import { Logger } from '@core/Logger';
-import { SubtagVariableType, TagVariablesTable } from '@core/types';
-import { guard } from '@core/utils';
+import { Logger } from '@blargbot/core/Logger';
+import { SubtagVariableType, TagVariablesTable } from '@blargbot/core/types';
+import { guard } from '@blargbot/core/utils';
 
 import { PostgresDb } from './base';
 

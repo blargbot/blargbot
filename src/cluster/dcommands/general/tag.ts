@@ -1,9 +1,9 @@
-import { Cluster, ClusterUtilities } from '@cluster';
-import { getDocsEmbed } from '@cluster/bbtag';
-import { BaseGuildCommand, CommandContext } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { bbtag, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@cluster/utils';
-import { SendContent, SendPayload, StoredTag } from '@core/types';
+import { Cluster, ClusterUtilities } from '@blargbot/cluster';
+import { getDocsEmbed } from '@blargbot/cluster/bbtag';
+import { BaseGuildCommand, CommandContext } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { bbtag, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
+import { SendContent, SendPayload, StoredTag } from '@blargbot/core/types';
 import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
 import moment from 'moment';
 import { Duration } from 'moment-timezone';

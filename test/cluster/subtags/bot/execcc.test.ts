@@ -1,6 +1,6 @@
-import { BBTagRuntimeError, SubtagStackOverflowError } from '@cluster/bbtag/errors';
-import { ExecccSubtag } from '@cluster/subtags/bot/execcc';
-import { BBTagRuntimeState } from '@cluster/types';
+import { BBTagRuntimeError, SubtagStackOverflowError } from '@blargbot/cluster/bbtag/errors';
+import { ExecccSubtag } from '@blargbot/cluster/subtags/bot/execcc';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
 import { expect } from 'chai';
 
 import { AssertSubtag, MarkerError, runSubtagTests } from '../SubtagTestSuite';

@@ -1,5 +1,5 @@
-import { AwaiterFactoryBase } from '@cluster/managers/awaiters/AwaiterFactoryBase';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { AwaiterFactoryBase } from '@blargbot/cluster/managers/awaiters/AwaiterFactoryBase';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class MessageAwaiterMiddleware implements IMiddleware<KnownMessage, boolean> {

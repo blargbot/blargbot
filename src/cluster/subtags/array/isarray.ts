@@ -1,5 +1,5 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { bbtag, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { bbtag, SubtagType } from '@blargbot/cluster/utils';
 
 export class IsArraySubtag extends DefinedSubtag {
     public constructor() {

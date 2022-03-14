@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { NotAnArrayError } from '@cluster/bbtag/errors';
-import { bbtag, shuffle, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { NotAnArrayError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, shuffle, SubtagType } from '@blargbot/cluster/utils';
 
 export class ShuffleSubtag extends DefinedSubtag {
     public constructor() {

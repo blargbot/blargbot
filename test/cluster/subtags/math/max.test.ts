@@ -1,4 +1,4 @@
-import { MaxSubtag } from '@cluster/subtags/math/max';
+import { MaxSubtag } from '@blargbot/cluster/subtags/math/max';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

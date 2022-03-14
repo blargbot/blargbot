@@ -1,6 +1,6 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, randChoose } from '@cluster/utils';
-import script from '@res/beemovie.json';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType, randChoose } from '@blargbot/cluster/utils';
+import script from '@blargbot/res/beemovie.json';
 
 const scriptMap = script.reduce<{ characterLines: typeof script; allLines: typeof script; }>((a, l) => {
     if (l.type !== 2)

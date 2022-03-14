@@ -1,4 +1,4 @@
-import { IMiddleware, NextMiddleware, UserTable } from '@core/types';
+import { IMiddleware, NextMiddleware, UserTable } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class UpsertUserMiddleware implements IMiddleware<KnownMessage, boolean> {

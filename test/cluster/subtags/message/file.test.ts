@@ -1,4 +1,4 @@
-import { FileSubtag } from '@cluster/subtags/message/file';
+import { FileSubtag } from '@blargbot/cluster/subtags/message/file';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

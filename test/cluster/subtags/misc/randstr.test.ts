@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, NotANumberError } from '@cluster/bbtag/errors';
-import { RandStrSubtag } from '@cluster/subtags/misc/randstr';
+import { BBTagRuntimeError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { RandStrSubtag } from '@blargbot/cluster/subtags/misc/randstr';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

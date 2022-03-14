@@ -1,8 +1,8 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { codeBlock, CommandType } from '@cluster/utils';
-import { CommandPermissions } from '@core/types';
-import { guard } from '@core/utils';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { codeBlock, CommandType } from '@blargbot/cluster/utils';
+import { CommandPermissions } from '@blargbot/core/types';
+import { guard } from '@blargbot/core/utils';
 import { EmbedOptions, Role } from 'eris';
 
 export class EditCommandCommand extends BaseGuildCommand {

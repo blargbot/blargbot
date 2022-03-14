@@ -1,4 +1,4 @@
-import { RuntimeLimit, RuntimeLimitRule, SerializedRuntimeLimit } from '@cluster/types';
+import { RuntimeLimit, RuntimeLimitRule, SerializedRuntimeLimit } from '@blargbot/cluster/types';
 
 import { BBTagContext } from '../BBTagContext';
 import { limits } from './index';

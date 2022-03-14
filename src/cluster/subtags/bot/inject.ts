@@ -1,6 +1,6 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeState } from '@cluster/types';
-import { bbtag, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
+import { bbtag, SubtagType } from '@blargbot/cluster/utils';
 
 export class InjectSubtag extends DefinedSubtag {
     public constructor() {

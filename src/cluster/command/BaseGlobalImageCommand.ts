@@ -1,6 +1,6 @@
-import { CommandOptions } from '@cluster/types';
-import { CommandType } from '@cluster/utils';
-import { ImageGeneratorMap, ImageResult } from '@image/types';
+import { CommandOptions } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
+import { ImageGeneratorMap, ImageResult } from '@blargbot/image/types';
 import { duration } from 'moment';
 import { Duration } from 'moment-timezone';
 

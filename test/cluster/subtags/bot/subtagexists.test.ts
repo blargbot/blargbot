@@ -1,6 +1,6 @@
-import { FunctionSubtag } from '@cluster/subtags/bot/function';
-import { SubtagExistsSubtag } from '@cluster/subtags/bot/subtagexists';
-import { IfSubtag } from '@cluster/subtags/misc/if';
+import { FunctionSubtag } from '@blargbot/cluster/subtags/bot/function';
+import { SubtagExistsSubtag } from '@blargbot/cluster/subtags/bot/subtagexists';
+import { IfSubtag } from '@blargbot/cluster/subtags/misc/if';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

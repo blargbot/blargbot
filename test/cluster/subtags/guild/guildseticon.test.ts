@@ -1,6 +1,6 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { GuildSetIconSubtag } from '@cluster/subtags/guild/guildseticon';
-import { SemiSubtag } from '@cluster/subtags/simple/semi';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { GuildSetIconSubtag } from '@blargbot/cluster/subtags/guild/guildseticon';
+import { SemiSubtag } from '@blargbot/cluster/subtags/simple/semi';
 import { Constants } from 'eris';
 
 import { argument } from '../../../mock';

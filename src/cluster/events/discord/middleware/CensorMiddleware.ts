@@ -1,6 +1,6 @@
-import { CensorManager } from '@cluster/managers/moderation';
-import { guard } from '@cluster/utils';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { CensorManager } from '@blargbot/cluster/managers/moderation';
+import { guard } from '@blargbot/cluster/utils';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class CensorMiddleware implements IMiddleware<KnownMessage, boolean> {

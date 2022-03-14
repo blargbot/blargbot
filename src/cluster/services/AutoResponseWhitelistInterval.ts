@@ -1,5 +1,5 @@
-import { Cluster } from '@cluster';
-import { IntervalService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { IntervalService } from '@blargbot/core/serviceTypes';
 
 export class AutoResponseWhitelistInterval extends IntervalService {
     public readonly type: string = 'bbtag';

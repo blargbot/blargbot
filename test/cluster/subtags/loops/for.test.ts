@@ -1,12 +1,12 @@
-import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@cluster/bbtag/errors';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { ReturnSubtag } from '@cluster/subtags/bot/return';
-import { SetSubtag } from '@cluster/subtags/bot/set';
-import { ForSubtag } from '@cluster/subtags/loops/for';
-import { IfSubtag } from '@cluster/subtags/misc/if';
-import { OperatorSubtag } from '@cluster/subtags/misc/operator';
-import { BBTagRuntimeState } from '@cluster/types';
-import { SubtagVariableType } from '@core/types';
+import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { ReturnSubtag } from '@blargbot/cluster/subtags/bot/return';
+import { SetSubtag } from '@blargbot/cluster/subtags/bot/set';
+import { ForSubtag } from '@blargbot/cluster/subtags/loops/for';
+import { IfSubtag } from '@blargbot/cluster/subtags/misc/if';
+import { OperatorSubtag } from '@blargbot/cluster/subtags/misc/operator';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,4 +1,4 @@
-import { MinSubtag } from '@cluster/subtags/math/min';
+import { MinSubtag } from '@blargbot/cluster/subtags/math/min';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

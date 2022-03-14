@@ -1,5 +1,5 @@
-import { CommandHandler, CommandResult, CommandSignatureHandler } from '@cluster/types';
-import { IMiddleware } from '@core/types';
+import { CommandHandler, CommandResult, CommandSignatureHandler } from '@blargbot/cluster/types';
+import { IMiddleware } from '@blargbot/core/types';
 
 import { CommandContext } from '../CommandContext';
 import { compileHandler } from '../compilation';

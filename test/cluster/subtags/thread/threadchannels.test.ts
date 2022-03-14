@@ -1,5 +1,5 @@
-import { ChannelNotFoundError, InvalidChannelError } from '@cluster/bbtag/errors';
-import { ThreadChannelsSubtag } from '@cluster/subtags/thread/threadchannels';
+import { ChannelNotFoundError, InvalidChannelError } from '@blargbot/cluster/bbtag/errors';
+import { ThreadChannelsSubtag } from '@blargbot/cluster/subtags/thread/threadchannels';
 import { ChannelType } from 'discord-api-types';
 import { PublicThreadChannel, VoiceChannel } from 'eris';
 

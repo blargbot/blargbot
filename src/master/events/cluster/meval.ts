@@ -1,8 +1,8 @@
-import { ClusterConnection } from '@cluster';
-import { parse } from '@cluster/utils';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@core/types';
-import { Master } from '@master';
+import { ClusterConnection } from '@blargbot/cluster';
+import { parse } from '@blargbot/cluster/utils';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { EvalRequest, EvalResult, EvalType, GlobalEvalResult } from '@blargbot/core/types';
+import { Master } from '@blargbot/master';
 import { inspect } from 'util';
 
 export class ClusterMevalHandler extends WorkerPoolEventService<ClusterConnection, 'meval'> {

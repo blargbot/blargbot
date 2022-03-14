@@ -1,7 +1,7 @@
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@cluster/bbtag/errors';
-import { AggregateCommandManager } from '@cluster/managers';
-import { DeleteSubtag } from '@cluster/subtags/message/delete';
-import { MessageIdQueue } from '@core/MessageIdQueue';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { AggregateCommandManager } from '@blargbot/cluster/managers';
+import { DeleteSubtag } from '@blargbot/cluster/subtags/message/delete';
+import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
 import { expect } from 'chai';
 import { KnownGuildChannel } from 'eris';
 

@@ -1,6 +1,6 @@
-import { UnknownSubtagError } from '@cluster/bbtag/errors';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
-import { LengthSubtag } from '@cluster/subtags/misc/length';
+import { UnknownSubtagError } from '@blargbot/cluster/bbtag/errors';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
+import { LengthSubtag } from '@blargbot/cluster/subtags/misc/length';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

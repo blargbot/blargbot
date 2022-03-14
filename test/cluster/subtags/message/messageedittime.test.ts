@@ -1,4 +1,4 @@
-import { MessageEditTimeSubtag } from '@cluster/subtags/message/messageedittime';
+import { MessageEditTimeSubtag } from '@blargbot/cluster/subtags/message/messageedittime';
 import moment from 'moment-timezone';
 
 import { runSubtagTests } from '../SubtagTestSuite';

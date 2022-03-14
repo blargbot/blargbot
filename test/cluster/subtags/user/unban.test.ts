@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { UnbanSubtag } from '@cluster/subtags/user/unban';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { UnbanSubtag } from '@blargbot/cluster/subtags/user/unban';
 import { Member, User } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

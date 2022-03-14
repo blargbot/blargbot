@@ -1,5 +1,5 @@
-import { CommandDefinition, CommandGreedyParameter, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableType, CommandVariableTypeName } from '@cluster/types';
-import { guard } from '@cluster/utils';
+import { CommandDefinition, CommandGreedyParameter, CommandHandlerDefinition, CommandLiteralParameter, CommandParameter, CommandSignatureHandler, CommandSingleParameter, CommandVariableType, CommandVariableTypeName } from '@blargbot/cluster/types';
+import { guard } from '@blargbot/cluster/utils';
 
 import { CommandContext } from '../CommandContext';
 import { parseParameterType } from './parameterType';

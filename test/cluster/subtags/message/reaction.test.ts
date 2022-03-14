@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { ReactionSubtag } from '@cluster/subtags/message/reaction';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { ReactionSubtag } from '@blargbot/cluster/subtags/message/reaction';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

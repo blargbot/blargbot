@@ -1,4 +1,4 @@
-import { CapitalizeSubtag } from '@cluster/subtags/misc/capitalize';
+import { CapitalizeSubtag } from '@blargbot/cluster/subtags/misc/capitalize';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

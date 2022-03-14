@@ -1,5 +1,5 @@
-import { PardonResult, WarnDetails, WarnResult } from '@cluster/types';
-import { ModerationType } from '@cluster/utils';
+import { PardonResult, WarnDetails, WarnResult } from '@blargbot/cluster/types';
+import { ModerationType } from '@blargbot/cluster/utils';
 import { Member, User } from 'eris';
 import moment from 'moment-timezone';
 

@@ -1,4 +1,4 @@
-import { VarsTable } from '@core/types';
+import { VarsTable } from '@blargbot/core/types';
 
 export class DomainManager {
     private whitelist: Record<string, boolean>;

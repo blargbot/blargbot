@@ -1,6 +1,6 @@
-import { Configuration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
-import { BaseWorker } from '@core/worker';
+import { Configuration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
+import { BaseWorker } from '@blargbot/core/worker';
 
 import { Cluster } from './Cluster';
 import { ClusterIPCContract } from './types';

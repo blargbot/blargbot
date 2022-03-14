@@ -1,6 +1,6 @@
-import { SortSubtag } from '@cluster/subtags/array/sort';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { SubtagVariableType } from '@core/types';
+import { SortSubtag } from '@blargbot/cluster/subtags/array/sort';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { argument } from '../../../mock';

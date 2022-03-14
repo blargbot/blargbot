@@ -1,6 +1,6 @@
-import { ClusterUtilities } from '@cluster/ClusterUtilities';
-import { guard } from '@cluster/utils';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
+import { guard } from '@blargbot/cluster/utils';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class ChannelBlacklistMiddleware implements IMiddleware<KnownMessage, boolean> {

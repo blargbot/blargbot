@@ -1,4 +1,4 @@
-import { SplitSubtag } from '@cluster/subtags/array/split';
+import { SplitSubtag } from '@blargbot/cluster/subtags/array/split';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

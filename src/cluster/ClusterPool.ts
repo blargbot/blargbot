@@ -1,7 +1,7 @@
-import { ClusterWorkerConfiguration } from '@core/Configuration';
-import { Logger } from '@core/Logger';
-import { ProcessMessageHandler } from '@core/types';
-import { WorkerPool } from '@core/worker';
+import { ClusterWorkerConfiguration } from '@blargbot/core/Configuration';
+import { Logger } from '@blargbot/core/Logger';
+import { ProcessMessageHandler } from '@blargbot/core/types';
+import { WorkerPool } from '@blargbot/core/worker';
 
 import { ClusterConnection } from './ClusterConnection';
 

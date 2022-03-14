@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { NotANumberError, NotEnoughArgumentsError } from '@cluster/bbtag/errors';
-import { parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { NotANumberError, NotEnoughArgumentsError } from '@blargbot/cluster/bbtag/errors';
+import { parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class ArgsSubtag extends DefinedSubtag {
     public constructor() {

@@ -1,6 +1,6 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class AbsSubtag extends DefinedSubtag {
     public constructor() {

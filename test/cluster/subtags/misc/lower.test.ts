@@ -1,4 +1,4 @@
-import { LowerSubtag } from '@cluster/subtags/misc/lower';
+import { LowerSubtag } from '@blargbot/cluster/subtags/misc/lower';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

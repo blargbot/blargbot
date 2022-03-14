@@ -1,5 +1,5 @@
-import { RollingArray } from '@core/RollingArray';
-import { LogEntry } from '@core/types';
+import { RollingArray } from '@blargbot/core/RollingArray';
+import { LogEntry } from '@blargbot/core/types';
 
 export class ClusterLogManager {
     private readonly logMap: Record<number, RollingArray<LogEntry> | undefined>;

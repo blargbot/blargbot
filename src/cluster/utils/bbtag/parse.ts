@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '@cluster/types';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '@blargbot/cluster/types';
 
 type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
     : T extends SubtagCall ? MutableSubtagCall

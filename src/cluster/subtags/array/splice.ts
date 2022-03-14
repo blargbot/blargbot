@@ -1,7 +1,7 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
-import { Lazy } from '@core/Lazy';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { NotAnArrayError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
+import { Lazy } from '@blargbot/core/Lazy';
 
 export class SpliceSubtag extends DefinedSubtag {
     public constructor() {

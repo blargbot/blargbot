@@ -1,7 +1,7 @@
-import { SubtagStackOverflowError, UnknownSubtagError } from '@cluster/bbtag/errors';
-import { FunctionInvokeSubtag } from '@cluster/subtags/bot/func.';
-import { BBTagRuntimeState } from '@cluster/types';
-import { bbtag } from '@cluster/utils';
+import { SubtagStackOverflowError, UnknownSubtagError } from '@blargbot/cluster/bbtag/errors';
+import { FunctionInvokeSubtag } from '@blargbot/cluster/subtags/bot/func.';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
+import { bbtag } from '@blargbot/cluster/utils';
 import { expect } from 'chai';
 
 import { AssertSubtag, runSubtagTests } from '../SubtagTestSuite';

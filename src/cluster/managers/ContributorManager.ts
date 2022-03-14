@@ -1,4 +1,4 @@
-import { Cluster } from '@cluster/Cluster';
+import { Cluster } from '@blargbot/cluster/Cluster';
 import { User } from 'eris';
 import reloadFactory from 'require-reload';
 
@@ -18,7 +18,7 @@ export class ContributorManager {
     }
 
     public async refresh(): Promise<void> {
-        const config = reload('@res/contributors.json') as typeof import('@res/contributors.json');
+        const config = reload('@blargbot/res/contributors.json') as typeof import('@blargbot/res/contributors.json');
         this.patrons = await Promise.all(config.patrons.map(p => this.resolveUser(p)));
         this.donators = await Promise.all(config.donators.map(d => this.resolveUser(d)));
         this.others = await Promise.all(config.other.map(async o => ({ ...o, user: await this.resolveUser(o.user) })));

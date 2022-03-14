@@ -1,5 +1,5 @@
-import { Cluster } from '@cluster';
-import { BaseService } from '@core/serviceTypes';
+import { Cluster } from '@blargbot/cluster';
+import { BaseService } from '@blargbot/core/serviceTypes';
 
 export class ImageSpawner extends BaseService {
     public readonly type = 'image';

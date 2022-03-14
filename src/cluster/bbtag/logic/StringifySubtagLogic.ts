@@ -1,4 +1,4 @@
-import { SubtagArgumentArray, SubtagCall, SubtagLogic } from '@cluster/types';
+import { SubtagArgumentArray, SubtagCall, SubtagLogic } from '@blargbot/cluster/types';
 
 import { BBTagContext } from '../BBTagContext';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';

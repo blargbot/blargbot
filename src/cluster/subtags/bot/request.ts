@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { mapping, parse, SubtagType } from '@cluster/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { mapping, parse, SubtagType } from '@blargbot/cluster/utils';
 import fetch, { BodyInit } from 'node-fetch';
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;

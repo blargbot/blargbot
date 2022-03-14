@@ -1,5 +1,5 @@
-import { ChatLogManager } from '@cluster/managers/moderation';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { ChatLogManager } from '@blargbot/cluster/managers/moderation';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 
 export class ChatlogMiddleware implements IMiddleware<KnownMessage, boolean> {

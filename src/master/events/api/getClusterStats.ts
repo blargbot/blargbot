@@ -1,7 +1,7 @@
-import { ApiConnection } from '@api';
-import { ClusterStats } from '@cluster/types';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { ApiConnection } from '@blargbot/api';
+import { ClusterStats } from '@blargbot/cluster/types';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class ApiGetClusterStatsHandler extends WorkerPoolEventService<ApiConnection, 'getClusterStats'> {
     public constructor(private readonly master: Master) {

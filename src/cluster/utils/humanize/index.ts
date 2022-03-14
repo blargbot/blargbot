@@ -1,4 +1,4 @@
-import { humanize as coreHumanize } from '@core/utils/humanize';
+import { humanize as coreHumanize } from '@blargbot/core/utils/humanize';
 
 import * as commandParameter from './commandParameter';
 import * as flags from './flags';

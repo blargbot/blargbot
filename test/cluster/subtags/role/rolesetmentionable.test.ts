@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RoleSetMentionableSubtag } from '@cluster/subtags/role/rolesetmentionable';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { RoleSetMentionableSubtag } from '@blargbot/cluster/subtags/role/rolesetmentionable';
 import { ApiError, Constants } from 'eris';
 
 import { argument } from '../../../mock';

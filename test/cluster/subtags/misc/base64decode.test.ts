@@ -1,4 +1,4 @@
-import { Base64DecodeSubtag } from '@cluster/subtags/misc/base64decode';
+import { Base64DecodeSubtag } from '@blargbot/cluster/subtags/misc/base64decode';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

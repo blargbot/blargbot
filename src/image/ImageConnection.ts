@@ -1,13 +1,13 @@
-import { Logger } from '@core/Logger';
-import { WorkerConnection } from '@core/worker';
-import { ImageGeneratorMap, ImageIPCContract, ImageResult } from '@image/types';
+import { Logger } from '@blargbot/core/Logger';
+import { WorkerConnection } from '@blargbot/core/worker';
+import { ImageGeneratorMap, ImageIPCContract, ImageResult } from '@blargbot/image/types';
 
-export class ImageConnection extends WorkerConnection<'@image', ImageIPCContract> {
+export class ImageConnection extends WorkerConnection<'@blargbot/image', ImageIPCContract> {
     public constructor(
         id: number,
         logger: Logger
     ) {
-        super(id, '@image', logger);
+        super(id, '@blargbot/image', logger);
         this.env.IMAGE_ID = id.toString();
     }
 

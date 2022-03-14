@@ -1,5 +1,5 @@
-import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { KickSubtag } from '@cluster/subtags/user/kick';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { KickSubtag } from '@blargbot/cluster/subtags/user/kick';
 import { Member, User } from 'eris';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,7 +1,7 @@
-import { ApiConnection } from '@api';
-import { SubtagListResult } from '@cluster/types';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { ApiConnection } from '@blargbot/api';
+import { SubtagListResult } from '@blargbot/cluster/types';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class ApiGetSubtagListHandler extends WorkerPoolEventService<ApiConnection, 'getSubtagList'> {
     private nextCluster: number;

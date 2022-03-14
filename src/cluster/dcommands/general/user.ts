@@ -1,5 +1,5 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, discord, guard, parse } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType, discord, guard, parse } from '@blargbot/cluster/utils';
 import { Activity, Constants, EmbedOptions, Member, User } from 'eris';
 import moment from 'moment';
 

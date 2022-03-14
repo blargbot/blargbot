@@ -1,6 +1,6 @@
-import { NotAnArrayError, NotANumberError } from '@cluster/bbtag/errors';
-import { SliceSubtag } from '@cluster/subtags/array/slice';
-import { SubtagVariableType } from '@core/types';
+import { NotAnArrayError, NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { SliceSubtag } from '@blargbot/cluster/subtags/array/slice';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

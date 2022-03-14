@@ -1,4 +1,4 @@
-import { Logger } from '@core/Logger';
+import { Logger } from '@blargbot/core/Logger';
 import { CronJob, CronJobParameters } from 'cron';
 import { inspect } from 'util';
 

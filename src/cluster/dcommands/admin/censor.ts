@@ -1,8 +1,8 @@
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { CommandType } from '@cluster/utils';
-import { GuildCensor, GuildTriggerTag, SendContent } from '@core/types';
-import { codeBlock, guard } from '@core/utils';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { CommandType } from '@blargbot/cluster/utils';
+import { GuildCensor, GuildTriggerTag, SendContent } from '@blargbot/core/types';
+import { codeBlock, guard } from '@blargbot/core/utils';
 import { EmbedOptions, KnownChannel, Role, User } from 'eris';
 
 export class CensorCommand extends BaseGuildCommand {

@@ -1,5 +1,5 @@
-import { BaseService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { BaseService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class ApiSpawner extends BaseService {
     public readonly type = 'api';

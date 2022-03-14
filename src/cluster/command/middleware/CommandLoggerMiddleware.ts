@@ -1,6 +1,6 @@
-import { CommandResult } from '@cluster/types';
-import { guard } from '@cluster/utils';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { CommandResult } from '@blargbot/cluster/types';
+import { guard } from '@blargbot/cluster/utils';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 
 import { CommandContext } from '../CommandContext';
 

@@ -1,4 +1,4 @@
-import { FlagsArraySubtag } from '@cluster/subtags/bot/flagsarray';
+import { FlagsArraySubtag } from '@blargbot/cluster/subtags/bot/flagsarray';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

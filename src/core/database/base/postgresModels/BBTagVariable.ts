@@ -1,5 +1,5 @@
-import { Logger } from '@core/Logger';
-import { BBTagVariable, SubtagVariableType } from '@core/types';
+import { Logger } from '@blargbot/core/Logger';
+import { BBTagVariable, SubtagVariableType } from '@blargbot/core/types';
 import { ENUM, Model, ModelCtor, Sequelize, STRING, TEXT } from 'sequelize';
 
 export type BBTagVariableModel = ModelCtor<Model<BBTagVariable>>;

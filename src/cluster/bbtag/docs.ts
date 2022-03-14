@@ -1,7 +1,7 @@
-import { CommandContext } from '@cluster/command';
-import { SubtagHandlerValueParameter, SubtagSignatureDetails } from '@cluster/types';
-import { bbtag, codeBlock, quote, SubtagType, tagTypeDetails } from '@cluster/utils';
-import { humanize } from '@core/utils';
+import { CommandContext } from '@blargbot/cluster/command';
+import { SubtagHandlerValueParameter, SubtagSignatureDetails } from '@blargbot/cluster/types';
+import { bbtag, codeBlock, quote, SubtagType, tagTypeDetails } from '@blargbot/cluster/utils';
+import { humanize } from '@blargbot/core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
 import { limits } from './limits';

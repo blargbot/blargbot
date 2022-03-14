@@ -1,6 +1,6 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { SubtagType } from '@cluster/utils';
-import { guard } from '@core/utils';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { SubtagType } from '@blargbot/cluster/utils';
+import { guard } from '@blargbot/core/utils';
 
 export class ChannelCategoriesSubtag extends DefinedSubtag {
     public constructor() {

@@ -1,5 +1,5 @@
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType, guard } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType, guard } from '@blargbot/cluster/utils';
 import { Constants, EmbedField, EmbedOptions } from 'eris';
 
 export class PatchCommand extends BaseGlobalCommand {

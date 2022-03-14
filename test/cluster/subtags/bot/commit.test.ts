@@ -1,5 +1,5 @@
-import { CommitSubtag } from '@cluster/subtags/bot/commit';
-import { SubtagVariableType } from '@core/types';
+import { CommitSubtag } from '@blargbot/cluster/subtags/bot/commit';
+import { SubtagVariableType } from '@blargbot/core/types';
 
 import { argument } from '../../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';

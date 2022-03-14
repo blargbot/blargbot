@@ -1,5 +1,5 @@
-import { Logger } from '@core/Logger';
-import { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets, LogEntry } from '@core/types';
+import { Logger } from '@blargbot/core/Logger';
+import { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets, LogEntry } from '@blargbot/core/types';
 
 import { IPCMessageEmitter } from './IPCMessageEmitter';
 

@@ -1,4 +1,4 @@
-import { UserTimezoneSubtag } from '@cluster/subtags/user/usertimezone';
+import { UserTimezoneSubtag } from '@blargbot/cluster/subtags/user/usertimezone';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

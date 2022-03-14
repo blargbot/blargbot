@@ -1,5 +1,5 @@
-import { Logger } from '@core/Logger';
-import { Suggestor, SuggestorsTable } from '@core/types';
+import { Logger } from '@blargbot/core/Logger';
+import { Suggestor, SuggestorsTable } from '@blargbot/core/types';
 import { AirtableBase } from 'airtable/lib/airtable_base';
 
 import { AirtableDbTable } from './base';

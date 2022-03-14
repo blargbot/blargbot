@@ -1,4 +1,4 @@
-import { UserCreatedAtSubtag } from '@cluster/subtags/user/usercreatedat';
+import { UserCreatedAtSubtag } from '@blargbot/cluster/subtags/user/usercreatedat';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

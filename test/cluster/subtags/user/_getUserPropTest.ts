@@ -1,5 +1,5 @@
-import { BBTagContext } from '@cluster/bbtag';
-import { BBTagRuntimeError, UserNotFoundError } from '@cluster/bbtag/errors';
+import { BBTagContext } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
 import { APIGuildMember } from 'discord-api-types';
 import { Guild, Member } from 'eris';
 

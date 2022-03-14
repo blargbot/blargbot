@@ -1,5 +1,5 @@
-import { mapping } from '@cluster/utils';
-import { VarsTable } from '@core/types';
+import { mapping } from '@blargbot/cluster/utils';
+import { VarsTable } from '@blargbot/core/types';
 import { UpdateType, Version, VersionManager } from '@hunteroi/versioning';
 
 const mapUpdateType = mapping.choice(
@@ -8,7 +8,7 @@ const mapUpdateType = mapping.choice(
 );
 
 export class VersionStateManager {
-    public constructor(private readonly db: VarsTable) {}
+    public constructor(private readonly db: VarsTable) { }
 
     public async getVersion(): Promise<string> {
         const version = await this.getFromStorage();

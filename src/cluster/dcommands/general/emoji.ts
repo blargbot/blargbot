@@ -1,7 +1,7 @@
-import { BaseGlobalCommand } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
-import { Emote } from '@core/Emote';
-import { SendPayload } from '@core/types';
+import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { CommandType } from '@blargbot/cluster/utils';
+import { Emote } from '@blargbot/core/Emote';
+import { SendPayload } from '@blargbot/core/types';
 import { FileContent } from 'eris';
 import fs from 'fs';
 import svg2png from 'svg2png';

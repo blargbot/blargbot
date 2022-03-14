@@ -1,7 +1,7 @@
-import { ClusterUtilities } from '@cluster/ClusterUtilities';
-import { guard } from '@cluster/utils';
-import { metrics } from '@core/Metrics';
-import { IMiddleware, NextMiddleware } from '@core/types';
+import { ClusterUtilities } from '@blargbot/cluster/ClusterUtilities';
+import { guard } from '@blargbot/cluster/utils';
+import { metrics } from '@blargbot/core/Metrics';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { KnownMessage } from 'eris';
 import fetch from 'node-fetch';
 import { URLSearchParams } from 'url';

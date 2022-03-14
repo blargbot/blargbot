@@ -1,4 +1,4 @@
-import { snowflake } from '@core/utils';
+import { snowflake } from '@blargbot/core/utils';
 import limax from 'limax';
 import { nfkd } from 'unorm';
 

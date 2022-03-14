@@ -1,4 +1,4 @@
-import { TypeMappingResult } from '@core/types';
+import { TypeMappingResult } from '@blargbot/core/types';
 
 export const result = {
     failed: { valid: false } as TypeMappingResult<never>,

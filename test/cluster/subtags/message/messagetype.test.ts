@@ -1,5 +1,5 @@
-import { MessageTypeSubtag } from '@cluster/subtags/message/messagetype';
-import { snowflake } from '@cluster/utils';
+import { MessageTypeSubtag } from '@blargbot/cluster/subtags/message/messagetype';
+import { snowflake } from '@blargbot/cluster/utils';
 import { MessageType } from 'discord-api-types';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';

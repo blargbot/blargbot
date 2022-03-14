@@ -1,6 +1,6 @@
-import { BaseImageGenerator } from '@image/BaseImageGenerator';
-import { ImageWorker } from '@image/ImageWorker';
-import { CaptionOptions, ImageResult } from '@image/types';
+import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
+import { ImageWorker } from '@blargbot/image/ImageWorker';
+import { CaptionOptions, ImageResult } from '@blargbot/image/types';
 import Jimp from 'jimp';
 
 export class CaptionGenerator extends BaseImageGenerator<'caption'> {

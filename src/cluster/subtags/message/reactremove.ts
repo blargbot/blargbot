@@ -1,8 +1,8 @@
-import { BBTagContext, DefinedSubtag } from '@cluster/bbtag';
-import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@cluster/bbtag/errors';
-import { SubtagArgumentArray } from '@cluster/types';
-import { SubtagType } from '@cluster/utils';
-import { Emote } from '@core/Emote';
+import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagArgumentArray } from '@blargbot/cluster/types';
+import { SubtagType } from '@blargbot/cluster/utils';
+import { Emote } from '@blargbot/core/Emote';
 import { ApiError, DiscordRESTError, EmbedField, EmbedOptions } from 'eris';
 
 export class ReactRemoveSubtag extends DefinedSubtag {

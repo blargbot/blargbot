@@ -1,4 +1,4 @@
-import { SemiSubtag } from '@cluster/subtags/simple/semi';
+import { SemiSubtag } from '@blargbot/cluster/subtags/simple/semi';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

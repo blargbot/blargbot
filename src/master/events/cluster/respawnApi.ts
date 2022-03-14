@@ -1,6 +1,6 @@
-import { ClusterConnection } from '@cluster';
-import { WorkerPoolEventService } from '@core/serviceTypes';
-import { Master } from '@master';
+import { ClusterConnection } from '@blargbot/cluster';
+import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
+import { Master } from '@blargbot/master';
 
 export class RespawnApiHandler extends WorkerPoolEventService<ClusterConnection, 'respawnApi'> {
     public constructor(private readonly master: Master) {

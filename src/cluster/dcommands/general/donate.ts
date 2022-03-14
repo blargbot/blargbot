@@ -1,8 +1,8 @@
 // const BaseCommand = require('../structures/BaseCommand');
 // const newbutils = require('../newbu');
 
-import { BaseGlobalCommand, CommandContext } from '@cluster/command';
-import { CommandType } from '@cluster/utils';
+import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandType } from '@blargbot/cluster/utils';
 
 export class DonateCommand extends BaseGlobalCommand {
     public constructor() {

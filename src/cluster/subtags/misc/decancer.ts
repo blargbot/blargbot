@@ -1,5 +1,5 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { humanize, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { humanize, SubtagType } from '@blargbot/cluster/utils';
 
 export class DecancerSubtag extends DefinedSubtag {
     public constructor() {

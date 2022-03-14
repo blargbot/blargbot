@@ -1,4 +1,4 @@
-import { guard as coreGuard } from '@core/utils/guard';
+import { guard as coreGuard } from '@blargbot/core/utils/guard';
 
 import * as isGuildCommandContext from './isGuildCommandContext';
 import * as isGuildImportedCommandTag from './isGuildImportedCommandTag';

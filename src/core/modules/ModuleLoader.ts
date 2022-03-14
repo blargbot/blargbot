@@ -1,6 +1,6 @@
-import { Logger } from '@core/Logger';
-import { ModuleResult } from '@core/types';
-import { guard } from '@core/utils';
+import { Logger } from '@blargbot/core/Logger';
+import { ModuleResult } from '@blargbot/core/types';
+import { guard } from '@blargbot/core/utils';
 
 import { BaseModuleLoader } from './BaseModuleLoader';
 

@@ -1,7 +1,7 @@
-import { Cluster } from '@cluster';
-import { BaseGuildCommand } from '@cluster/command';
-import { GuildCommandContext } from '@cluster/types';
-import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@cluster/utils';
+import { Cluster } from '@blargbot/cluster';
+import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommandContext } from '@blargbot/cluster/types';
+import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
 import { EmbedOptions, Guild } from 'eris';
 
 export class SettingsCommand extends BaseGuildCommand {

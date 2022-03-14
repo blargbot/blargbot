@@ -1,4 +1,4 @@
-import { ChannelsSubtag } from '@cluster/subtags/channel/channels';
+import { ChannelsSubtag } from '@blargbot/cluster/subtags/channel/channels';
 import { ChannelType } from 'discord-api-types';
 
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';

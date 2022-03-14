@@ -1,4 +1,4 @@
-import { TypeMapping } from '@core/types';
+import { TypeMapping } from '@blargbot/core/types';
 import { Duration, duration } from 'moment-timezone';
 
 import { createMapping } from './createMapping';

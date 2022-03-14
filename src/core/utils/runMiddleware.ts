@@ -1,4 +1,4 @@
-import { IMiddleware, MiddlewareOptions, NextMiddleware } from '@core/types';
+import { IMiddleware, MiddlewareOptions, NextMiddleware } from '@blargbot/core/types';
 
 export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddleware<Context, Result>>, context: Context, next: NextMiddleware<Result>): Awaitable<Result>;
 export function runMiddleware<Context, Result>(middleware: ReadonlyArray<IMiddleware<Context, Result>>, context: Context, options: MiddlewareOptions, terminate: () => Awaitable<Result>): Awaitable<Result>;

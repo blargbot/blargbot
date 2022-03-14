@@ -1,4 +1,4 @@
-import { TypeMapping } from '@core/types';
+import { TypeMapping } from '@blargbot/core/types';
 
 import { createMapping } from './createMapping';
 import { result } from './result';

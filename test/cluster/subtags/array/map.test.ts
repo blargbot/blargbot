@@ -1,10 +1,10 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { MapSubtag } from '@cluster/subtags/array/map';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { ReturnSubtag } from '@cluster/subtags/bot/return';
-import { IfSubtag } from '@cluster/subtags/misc/if';
-import { BBTagRuntimeState } from '@cluster/types';
-import { SubtagVariableType } from '@core/types';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { MapSubtag } from '@blargbot/cluster/subtags/array/map';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { ReturnSubtag } from '@blargbot/cluster/subtags/bot/return';
+import { IfSubtag } from '@blargbot/cluster/subtags/misc/if';
+import { BBTagRuntimeState } from '@blargbot/cluster/types';
+import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

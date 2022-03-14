@@ -1,5 +1,5 @@
-import { BBTagRuntimeError } from '@cluster/bbtag/errors';
-import { RegexReplaceSubtag } from '@cluster/subtags/misc/regexreplace';
+import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
+import { RegexReplaceSubtag } from '@blargbot/cluster/subtags/misc/regexreplace';
 import { expect } from 'chai';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';

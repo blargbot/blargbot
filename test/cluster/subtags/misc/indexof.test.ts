@@ -1,6 +1,6 @@
-import { NotANumberError } from '@cluster/bbtag/errors';
-import { EscapeBbtagSubtag } from '@cluster/subtags/misc/escapebbtag';
-import { IndexOfSubtag } from '@cluster/subtags/misc/indexof';
+import { NotANumberError } from '@blargbot/cluster/bbtag/errors';
+import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
+import { IndexOfSubtag } from '@blargbot/cluster/subtags/misc/indexof';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

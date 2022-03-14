@@ -1,4 +1,4 @@
-import { UserNickSubtag } from '@cluster/subtags/user/usernick';
+import { UserNickSubtag } from '@blargbot/cluster/subtags/user/usernick';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetUserPropTestCases } from './_getUserPropTest';

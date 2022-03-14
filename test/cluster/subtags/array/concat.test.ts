@@ -1,6 +1,6 @@
-import { ConcatSubtag } from '@cluster/subtags/array/concat';
-import { GetSubtag } from '@cluster/subtags/bot/get';
-import { SubtagVariableType } from '@core/types';
+import { ConcatSubtag } from '@blargbot/cluster/subtags/array/concat';
+import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
+import { SubtagVariableType } from '@blargbot/core/types';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

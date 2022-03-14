@@ -1,4 +1,4 @@
-import { TagAuthorizerSubtag } from '@cluster/subtags/simple/tagauthorizer';
+import { TagAuthorizerSubtag } from '@blargbot/cluster/subtags/simple/tagauthorizer';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

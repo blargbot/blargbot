@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '@cluster/bbtag';
-import { InvalidOperatorError, NotABooleanError } from '@cluster/bbtag/errors';
-import { SubtagArgument } from '@cluster/types';
-import { bbtag, parse, SubtagType } from '@cluster/utils';
+import { DefinedSubtag } from '@blargbot/cluster/bbtag';
+import { InvalidOperatorError, NotABooleanError } from '@blargbot/cluster/bbtag/errors';
+import { SubtagArgument } from '@blargbot/cluster/types';
+import { bbtag, parse, SubtagType } from '@blargbot/cluster/utils';
 
 export class IfSubtag extends DefinedSubtag {
     public constructor() {
