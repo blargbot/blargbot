@@ -124,10 +124,9 @@
         "@package": "package.json",
         "@res": "res",
         "@core": "src/core",
-        "@cluster": "src/workers/cluster",
-        "@master": "src/workers/master",
-        "@image": "src/workers/image",
-        "@api": "src/workers/api",
-        "@workers": "src/workers"
+        "@cluster": "src/cluster",
+        "@master": "src/master",
+        "@image": "src/image",
+        "@api": "src/api"
     }
 }

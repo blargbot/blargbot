@@ -24,7 +24,6 @@
         "lib": [
             "ES2021"
         ],
-        // "noUncheckedIndexedAccess": true
         "paths": {
             "@core": [
                 "./src/core"
@@ -33,31 +32,28 @@
                 "./src/core/*"
             ],
             "@cluster": [
-                "./src/workers/cluster",
+                "./src/cluster",
             ],
             "@cluster/*": [
-                "./src/workers/cluster/*"
+                "./src/cluster/*"
             ],
             "@master": [
-                "./src/workers/master"
+                "./src/master"
             ],
             "@master/*": [
-                "./src/workers/master/*"
+                "./src/master/*"
             ],
             "@image": [
-                "./src/workers/image"
+                "./src/image"
             ],
             "@image/*": [
-                "./src/workers/image/*"
+                "./src/image/*"
             ],
             "@api": [
-                "./src/workers/api"
+                "./src/api"
             ],
             "@api/*": [
-                "./src/workers/api/*"
-            ],
-            "@workers/*": [
-                "./src/workers/*"
+                "./src/api/*"
             ],
             "@config": [
                 "./config.json"

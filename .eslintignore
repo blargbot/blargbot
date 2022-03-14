@@ -1,5 +1,1 @@
-**/*.hbs
 **/*.js
-src/workers/website_old/public/codemirror/*
-src/workers/website_old/public/js/jquery*
-src/workers/website_old/public/js/materialize*

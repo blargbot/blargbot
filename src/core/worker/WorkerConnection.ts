@@ -43,7 +43,7 @@ export abstract class WorkerConnection<T extends string, Contracts extends IPCCo
         this.args = [...process.execArgv];
         // eslint-disable-next-line @typescript-eslint/naming-convention
         this.env = { ...process.env, WORKER_ID: id.toString() };
-        this.file = require.resolve(`@workers/${this.worker}`);
+        this.file = require.resolve(this.worker);
         this.#killed = false;
 
         this.on('alive', () => this.logger.worker(this.worker, 'worker ( ID:', this.id, ') is alive'));

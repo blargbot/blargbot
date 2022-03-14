@@ -7,9 +7,9 @@
     ".mts"
   ],
   "include": [
-    "src/workers/cluster/subtags/**/*.{js,ts,mjs,mts,cjs,cts}",
-    "src/workers/cluster/bbtag/**/*.{js,ts,mjs,mts,cjs,cts}",
-    "src/workers/cluster/utils/bbtag/**/*.{js,ts,mjs,mts,cjs,cts}"
+    "src/cluster/subtags/**/*.{js,ts,mjs,mts,cjs,cts}",
+    "src/cluster/bbtag/**/*.{js,ts,mjs,mts,cjs,cts}",
+    "src/cluster/utils/bbtag/**/*.{js,ts,mjs,mts,cjs,cts}"
   ],
   "exclude": [
     "coverage/**",

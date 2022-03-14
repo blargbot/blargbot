@@ -78,7 +78,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/workers/cluster/index.ts",
+            "program": "${workspaceFolder}/src/cluster/index.ts",
             "args": [
                 "--max-old-space-size=4096"
             ],
@@ -99,7 +99,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/workers/cluster/index.ts",
+            "program": "${workspaceFolder}/src/cluster/index.ts",
             "preLaunchTask": "yarn: build",
             "args": [
                 "--max-old-space-size=4096"
