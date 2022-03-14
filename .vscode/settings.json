@@ -23,5 +23,6 @@
     },
     "editor.insertSpaces": true,
     "editor.tabSize": 4,
-    "prettier.useTabs": false
+    "prettier.useTabs": false,
+    "typescript.tsdk": "node_modules/typescript/lib"
 }
