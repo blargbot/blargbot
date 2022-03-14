@@ -39,7 +39,7 @@
         "pg": "^8.7.1",
         "pg-hstore": "^2.3.4",
         "phantom": "^4.0.12",
-        "prom-client": "github:ratismal/prom-client",
+        "prom-client": "^14.0.0",
         "require-reload": "^0.2.2",
         "rethinkdb": "^2.4.2",
         "rethinkdbdash": "^2.3.26",
