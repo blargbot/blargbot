@@ -33,7 +33,7 @@ jobs:
         continue-on-error: true
 
       - name: Install packages
-        run: yarn cache clear && yarn install
+        run: yarn install
 
       - name: Build
         run: yarn build
