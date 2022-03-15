@@ -26,13 +26,13 @@ export const json = Object.freeze({
             return { variable: input, object: variable.value };
 
         if (typeof variable.value !== 'string')
-            return { variable: undefined, object: {} };
+            return { variable: input, object: {} };
 
         obj = this.parse(variable.value);
         if (typeof obj === 'object' && obj !== null)
             return { variable: input, object: obj };
 
-        return { variable: undefined, object: {} };
+        return { variable: input, object: {} };
     },
     parseObj(input: string): JObject | JArray {
         let obj = this.parse(input) ?? {};

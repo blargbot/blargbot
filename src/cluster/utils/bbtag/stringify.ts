@@ -7,6 +7,6 @@ export function stringify(bbtag: Statement | SubtagCall): string {
 
     const parts = [bbtag.name, ...bbtag.args]
         .map(stringify)
-        .join('');
+        .join(';');
     return `{${parts}}`;
 }

@@ -21,20 +21,32 @@ runSubtagTests({
             subtags: [new JsonSubtag()]
         },
         {
-            code: '{jsonset;null;somethingElse}',
-            expected: '{}'
+            code: '{jsonset;null;myProp;123}',
+            expected: '',
+            async assert(bbctx) {
+                expect((await bbctx.variables.get('null')).value).to.deep.equal({ myProp: '123' });
+            }
         },
         {
-            code: '{jsonset;"abc";somethingElse}',
-            expected: '{}'
+            code: '{jsonset;"abc";myProp;123}',
+            expected: '',
+            async assert(bbctx) {
+                expect((await bbctx.variables.get('"abc"')).value).to.deep.equal({ myProp: '123' });
+            }
         },
         {
-            code: '{jsonset;true;somethingElse}',
-            expected: '{}'
+            code: '{jsonset;true;myProp;123}',
+            expected: '',
+            async assert(bbctx) {
+                expect((await bbctx.variables.get('true')).value).to.deep.equal({ myProp: '123' });
+            }
         },
         {
-            code: '{jsonset;123;somethingElse}',
-            expected: '{}'
+            code: '{jsonset;123;myProp;123}',
+            expected: '',
+            async assert(bbctx) {
+                expect((await bbctx.variables.get('123')).value).to.deep.equal({ myProp: '123' });
+            }
         },
         {
             code: '{jsonset;[123,456];somethingElse}',

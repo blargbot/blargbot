@@ -9,7 +9,7 @@ export class JsonValuesSubtag extends DefinedSubtag {
             aliases: ['jvalues'],
             definition: [
                 {
-                    parameters: ['object', 'path?'],
+                    parameters: ['object:{}#10000000', 'path?'],
                     description: 'Retrieves all values from provided the JSON object. ' +
                         '`object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
                         '`path` is a dot-noted series of properties.',

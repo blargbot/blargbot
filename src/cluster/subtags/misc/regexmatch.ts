@@ -8,7 +8,7 @@ export class RegexMatchSubtag extends RegexSubtag {
             category: SubtagType.ARRAY, //? Why?
             definition: [
                 {
-                    parameters: ['text', '~regex'],
+                    parameters: ['text', '~regex#50000'],
                     description: 'Returns an array of everything in `text` that matches `regex`. Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. ' +
                         '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
                         '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',

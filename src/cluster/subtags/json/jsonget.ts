@@ -9,7 +9,7 @@ export class JsonGetSubtag extends DefinedSubtag {
             aliases: ['jget'],
             definition: [
                 {
-                    parameters: ['input:{}', 'path'],
+                    parameters: ['input:{}#10000000', 'path'],
                     description: 'Navigates the path of a JSON object. Works with arrays too!\n' +
                         '`input` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
                         '`path` is a dot-noted series of properties.',
