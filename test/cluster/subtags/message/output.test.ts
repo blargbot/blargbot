@@ -3,7 +3,7 @@ import { OutputSubtag } from '@blargbot/cluster/subtags/message/output';
 import { Emote } from '@blargbot/core/Emote';
 import { expect } from 'chai';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 const emotes = [Emote.parse('<a:test:120272372032032937>'), Emote.parse('<:alsoatest:23094632472398746234>'), Emote.parse('🤔')];

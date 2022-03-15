@@ -1,6 +1,6 @@
 import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
 import { SubtagType } from '@blargbot/cluster/utils';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class GuildCreatedAtSubtag extends DefinedSubtag {
     public constructor() {

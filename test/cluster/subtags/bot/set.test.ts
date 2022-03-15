@@ -3,7 +3,7 @@ import { snowflake } from '@blargbot/cluster/utils';
 import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestCase } from '../SubtagTestSuite';
 
 runSubtagTests({

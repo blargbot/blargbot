@@ -7,7 +7,7 @@ import { ModuleLoader } from '@blargbot/core/modules';
 import { BaseService } from '@blargbot/core/serviceTypes';
 import { EvalResult } from '@blargbot/core/types';
 import { MasterOptions } from '@blargbot/master/types';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import fetch from 'node-fetch';
 import { inspect } from 'util';
 

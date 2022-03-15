@@ -2,7 +2,7 @@ import { UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
 import { UserSetNickSubtag } from '@blargbot/cluster/subtags/user/usersetnick';
 import { Member } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

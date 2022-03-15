@@ -4,7 +4,7 @@ import { ThreadCreateSubtag } from '@blargbot/cluster/subtags/thread/threadcreat
 import { ChannelType, GuildFeature } from 'discord-api-types';
 import { ApiError, KnownMessage, Message, PrivateThreadChannel, PublicThreadChannel, VoiceChannel } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

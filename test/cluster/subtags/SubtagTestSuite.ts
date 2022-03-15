@@ -29,7 +29,7 @@ import path from 'path';
 import { anyString, anything } from 'ts-mockito';
 import { inspect } from 'util';
 
-import { argument, Mock } from '../../mock';
+import { argument, Mock } from '../mock';
 
 chai.use(chaiExclude);
 chai.use(chaiBytes);

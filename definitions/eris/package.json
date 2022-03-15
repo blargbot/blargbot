@@ -1,0 +1,7 @@
+{
+    "name": "@types/eris",
+    "version": "0.16.1",
+    "dependencies": {
+        "eris": "^0.16.1"
+    }
+}

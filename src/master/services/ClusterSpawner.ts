@@ -1,7 +1,7 @@
 import { BaseService } from '@blargbot/core/serviceTypes';
 import { humanize } from '@blargbot/core/utils';
 import { Master } from '@blargbot/master';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class ClusterSpawner extends BaseService {
     public readonly type = 'cluster';

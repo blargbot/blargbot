@@ -3,7 +3,7 @@ import { randChoose } from '@blargbot/core/utils';
 import { Master } from '@blargbot/master';
 import { MasterOptions } from '@blargbot/master/types';
 import { ActivityPartial, BotActivityType, Constants } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class StatusInterval extends CronService {
     readonly #holidays: Record<string, string | undefined>;

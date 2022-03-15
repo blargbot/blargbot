@@ -1,0 +1,7 @@
+{
+    "name": "@types/require-reload",
+    "version": "0.2.2",
+    "devDependencies": {
+        "@types/node": "^16.11.11"
+    }
+}

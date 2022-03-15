@@ -20,7 +20,7 @@
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "moduleResolution": "node",
-        "types": [],
+        "skipLibCheck": true,
         "lib": [
             "ES2021"
         ]

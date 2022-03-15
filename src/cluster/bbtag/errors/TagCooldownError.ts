@@ -1,4 +1,4 @@
-import { Duration } from 'moment';
+import { Duration } from 'moment-timezone';
 
 import { BBTagRuntimeError } from './BBTagRuntimeError';
 

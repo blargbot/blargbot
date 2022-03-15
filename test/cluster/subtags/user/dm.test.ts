@@ -3,7 +3,7 @@ import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { DMSubtag } from '@blargbot/cluster/subtags/user/dm';
 import { Guild, Member } from 'eris';
 
-import { argument, Mock } from '../../../mock';
+import { argument, Mock } from '../../mock';
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

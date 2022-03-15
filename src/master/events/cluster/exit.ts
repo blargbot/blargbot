@@ -3,7 +3,7 @@ import { codeBlock } from '@blargbot/cluster/utils';
 import { WorkerPoolEventService } from '@blargbot/core/serviceTypes';
 import { WorkerState } from '@blargbot/core/worker';
 import { Master } from '@blargbot/master';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class ClusterExitHandler extends WorkerPoolEventService<ClusterConnection, 'exit'> {
     public constructor(

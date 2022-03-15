@@ -2,7 +2,7 @@ import { Cluster } from '@blargbot/cluster';
 import { ClusterStats, ShardStats } from '@blargbot/cluster/types';
 import { cpuLoad } from '@blargbot/cluster/utils';
 import { Shard } from 'eris';
-import moment, { Moment } from 'moment';
+import moment, { Moment } from 'moment-timezone';
 
 const lastReady: Map<number, Moment> = new Map();
 

@@ -1,4 +1,4 @@
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Moment } from 'moment-timezone';
 
 import { BBTagContext } from './BBTagContext';

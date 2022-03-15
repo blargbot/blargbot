@@ -2,7 +2,7 @@ import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
 import { RoleSetNameSubtag } from '@blargbot/cluster/subtags/role/rolesetname';
 import { ApiError, Constants } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 import { createGetRolePropTestCases } from './_getRolePropTest';
 

@@ -1,7 +1,7 @@
 import { ExecutionResult, SubtagCall } from '@blargbot/cluster/types';
 import { SendContent } from '@blargbot/core/types';
 import { codeBlock, humanize } from '@blargbot/core/utils';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { stringify } from './stringify';
 

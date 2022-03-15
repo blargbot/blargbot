@@ -1,4 +1,4 @@
-import moment, { Duration } from 'moment';
+import moment, { Duration } from 'moment-timezone';
 
 export class Cache<TKey, TValue> {
     readonly #entries: Map<TKey, { data: TValue; timeout: NodeJS.Timeout; }>;

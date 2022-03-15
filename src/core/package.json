@@ -1,5 +1,44 @@
 {
     "name": "@blargbot/core",
     "version": "1.0.0",
-    "private": true
+    "private": true,
+    "dependencies": {
+        "@blargbot/cluster": "workspace:^",
+        "@blargbot/res": "workspace:^",
+        "@sentry/node": "^6.15.0",
+        "@sentry/tracing": "^6.15.0",
+        "airtable": "^0.11.1",
+        "cassandra-driver": "^4.6.3",
+        "cat-loggr": "^1.1.0",
+        "catflake": "^1.0.0",
+        "color": "^4.1.0",
+        "cron": "^1.4.1",
+        "eris": "^0.16.1",
+        "eventemitter3": "^4.0.7",
+        "limax": "^3.0.0",
+        "moment-timezone": "^0.5.34",
+        "pg": "^8.7.1",
+        "pg-hstore": "^2.3.4",
+        "prom-client": "^14.0.0",
+        "require-reload": "^0.2.2",
+        "rethinkdb": "^2.4.2",
+        "safe-regex": "^2.1.1",
+        "sequelize": "^6.11.0",
+        "twemoji": "13.1.0",
+        "unorm": "^1.4.1"
+    },
+    "devDependencies": {
+        "@types/cat-loggr": "workspace:^",
+        "@types/catflake": "workspace:^",
+        "@types/color": "^3.0.2",
+        "@types/cron": "^1.7.3",
+        "@types/eris": "workspace:^",
+        "@types/pg": "^8.6.1",
+        "@types/require-reload": "workspace:^",
+        "@types/rethinkdb": "workspace:^",
+        "@types/safe-regex": "^1.1.3",
+        "@types/sequelize": "^4.28.10",
+        "@types/twemoji": "workspace:^",
+        "@types/unorm": "^1.3.28"
+    }
 }

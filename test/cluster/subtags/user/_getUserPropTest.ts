@@ -3,7 +3,7 @@ import { BBTagRuntimeError, UserNotFoundError } from '@blargbot/cluster/bbtag/er
 import { APIGuildMember } from 'discord-api-types';
 import { Guild, Member } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
 export function createGetUserPropTestCases(options: GetUserPropTestData): SubtagTestCase[] {

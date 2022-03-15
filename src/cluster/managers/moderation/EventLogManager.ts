@@ -3,7 +3,7 @@ import { discord, guard, humanize } from '@blargbot/cluster/utils';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { StoredGuildEventLogType } from '@blargbot/core/types';
 import { ApiError, AuditLogActionType, DiscordRESTError, EmbedAuthor, EmbedField, EmbedOptions, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Moment } from 'moment-timezone';
 
 export class EventLogManager {

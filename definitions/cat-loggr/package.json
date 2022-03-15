@@ -1,0 +1,7 @@
+{
+    "name": "@types/cat-loggr",
+    "version": "1.1.0",
+    "dependencies": {
+        "cat-loggr": "^1.1.0"
+    }
+}

@@ -2,7 +2,6 @@ import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, StarVsTheForcesOfOptions } from '@blargbot/image/types';
 import { BetterColorAction } from '@jimp/plugin-color';
-import colorThief from 'color-thief-jimp';
 import Jimp from 'jimp';
 
 export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheForcesOf'> {

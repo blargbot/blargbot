@@ -3,7 +3,7 @@ import { EmojiCreateSubtag } from '@blargbot/cluster/subtags/guild/emojicreate';
 import { SemiSubtag } from '@blargbot/cluster/subtags/simple/semi';
 import { Constants } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

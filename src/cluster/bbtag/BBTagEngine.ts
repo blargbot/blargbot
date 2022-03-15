@@ -6,7 +6,7 @@ import { Logger } from '@blargbot/core/Logger';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { Client as Discord } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { inspect } from 'util';
 
 import { BBTagContext } from './BBTagContext';

@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext, RatelimitMiddleware, SingleThreadMiddleware } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { ImageResult } from '@blargbot/image/types';
-import { duration } from 'moment';
+import { duration } from 'moment-timezone';
 
 export class FreeCommand extends BaseGlobalCommand {
     public constructor() {

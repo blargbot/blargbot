@@ -3,7 +3,7 @@ import { BanSubtag } from '@blargbot/cluster/subtags/user/ban';
 import { Member, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 function isDuration(ms: number): Duration {

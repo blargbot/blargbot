@@ -1,6 +1,5 @@
-import { Request, Router } from 'express';
+import { Request, RequestHandler, Router } from 'express';
 import asyncRouter from 'express-promise-router';
-import { RequestHandler } from 'express-serve-static-core';
 
 import { ApiResponse, RequestHandlers } from './types';
 

@@ -4,7 +4,7 @@ import { Emote } from '@blargbot/core/Emote';
 import { expect } from 'chai';
 import { Constants } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 import { createGetMessagePropTestCases } from './_getMessagePropTest';
 

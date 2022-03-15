@@ -4,7 +4,7 @@ import { snowflake } from '@blargbot/cluster/utils';
 import { GuildTriggerTag } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { Guild, KnownGuildTextableChannel, Member } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class GreetingManager {
     public constructor(protected readonly cluster: Cluster) {

@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/core/utils';
 import { Embed, EmbedOptions } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export function embed(embeds: ReadonlyArray<(EmbedOptions | Embed) & { asString?: string; }>): string {
     return [...embedsIter(embeds)].join('\n').trim();

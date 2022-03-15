@@ -3,7 +3,7 @@ import { WebhookSubtag } from '@blargbot/cluster/subtags/message/webhook';
 import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

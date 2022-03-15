@@ -3,7 +3,7 @@ import { ExecutionResult } from '@blargbot/cluster/types';
 import { guard, sleep, snowflake } from '@blargbot/cluster/utils';
 import { GuildTriggerTag } from '@blargbot/core/types';
 import { Guild, KnownGuildTextableChannel, Member } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { Duration } from 'moment-timezone';
 
 export class IntervalManager {

@@ -11,7 +11,7 @@ import { Emote } from '@blargbot/core/Emote';
 import { expect } from 'chai';
 import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 type AwaitCondition = Exclude<Parameters<ReactionAwaiterFactory['getAwaiter']>[1], undefined>;

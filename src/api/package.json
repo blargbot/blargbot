@@ -1,5 +1,16 @@
 {
     "name": "@blargbot/api",
     "version": "1.0.0",
-    "private": true
+    "private": true,
+    "dependencies": {
+        "@blargbot/cluster": "workspace:^",
+        "@blargbot/config": "workspace:^",
+        "@blargbot/core": "workspace:^",
+        "express": "^4.17.3",
+        "express-promise-router": "^4.1.1"
+    },
+    "devDependencies": {
+        "@types/express": "^4.17.13",
+        "@types/express-serve-static-core": "^4.17.28"
+    }
 }

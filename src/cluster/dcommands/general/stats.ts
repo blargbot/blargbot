@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
 import { avatarColours, CommandType, humanize, randChoose } from '@blargbot/cluster/utils';
 import eris, { EmbedOptions } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class StatsCommand extends BaseGlobalCommand {
     public constructor() {

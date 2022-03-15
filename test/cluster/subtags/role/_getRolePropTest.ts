@@ -3,7 +3,7 @@ import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/cluster/bbtag/er
 import { APIRole } from 'discord-api-types';
 import { Guild, Role } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';
 
 export function createGetRolePropTestCases(options: GetRolePropTestData): SubtagTestCase[] {

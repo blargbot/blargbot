@@ -1,9 +1,9 @@
 import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
 import { TimerSubtag } from '@blargbot/cluster/subtags/bot/timer';
 import { expect } from 'chai';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

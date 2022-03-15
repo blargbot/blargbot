@@ -2,7 +2,7 @@ import { ClusterConnection } from '@blargbot/cluster';
 import { IntervalService } from '@blargbot/core/serviceTypes';
 import { WorkerState } from '@blargbot/core/worker';
 import { Master } from '@blargbot/master';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class ClusterMonitor extends IntervalService {
     public readonly type = 'cluster';

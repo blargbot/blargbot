@@ -1,6 +1,7 @@
 {
-    "recommendations": [
-        "dbaeumer.vscode-eslint",
-        "gamunu.vscode-yarn"
-    ]
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "gamunu.vscode-yarn",
+    "arcanis.vscode-zipfs"
+  ]
 }

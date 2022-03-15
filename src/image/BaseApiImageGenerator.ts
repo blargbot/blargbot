@@ -1,4 +1,4 @@
-import { CommandMap } from 'blargbot-api';
+import { CommandMap } from 'blargbot-image-api';
 import fetch from 'node-fetch';
 
 import { BaseImageGenerator } from './BaseImageGenerator';

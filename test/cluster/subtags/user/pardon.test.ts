@@ -2,7 +2,7 @@ import { NotANumberError, UserNotFoundError } from '@blargbot/cluster/bbtag/erro
 import { PardonSubtag } from '@blargbot/cluster/subtags/user/pardon';
 import { Guild, Member } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

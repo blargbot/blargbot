@@ -1,7 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class TimeCommand extends BaseGlobalCommand {
     public constructor() {

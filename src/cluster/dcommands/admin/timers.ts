@@ -2,7 +2,7 @@ import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
 import { codeBlock, CommandType, guard, humanize, pluralise as p } from '@blargbot/cluster/utils';
 import { SendPayload } from '@blargbot/core/types';
 import { EmbedField, EmbedOptions } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class TimersCommand extends BaseGlobalCommand {
     public constructor() {

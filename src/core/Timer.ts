@@ -1,4 +1,4 @@
-import moment, { Duration } from 'moment';
+import moment, { Duration } from 'moment-timezone';
 
 export class Timer {
     #elapsed: number;

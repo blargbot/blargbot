@@ -4,7 +4,7 @@ import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { expect } from 'chai';
 import { KnownGuildTextableChannel } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({

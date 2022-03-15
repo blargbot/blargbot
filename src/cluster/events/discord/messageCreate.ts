@@ -4,7 +4,7 @@ import { guard, humanize, runMiddleware, snowflake } from '@blargbot/cluster/uti
 import { DiscordEventService } from '@blargbot/core/serviceTypes';
 import { IMiddleware } from '@blargbot/core/types';
 import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatlogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
 

@@ -7,7 +7,7 @@ import { OperatorSubtag } from '@blargbot/cluster/subtags/misc/operator';
 import { expect } from 'chai';
 import { Guild, KnownMessage, Member, Message, TextChannel, User } from 'eris';
 
-import { argument, Mock } from '../../../mock';
+import { argument, Mock } from '../../mock';
 import { MarkerError, runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 type AwaitCondition = Exclude<Parameters<MessageAwaiterFactory['getAwaiter']>[1], undefined>;

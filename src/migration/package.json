@@ -1,5 +1,16 @@
 {
     "name": "@blargbot/migration",
     "version": "1.0.0",
-    "private": true
+    "private": true,
+    "dependencies": {
+        "@blargbot/cluster": "workspace:^",
+        "@blargbot/config": "workspace:^",
+        "@blargbot/core": "workspace:^",
+        "eris": "^0.16.1",
+        "rethinkdb": "^2.4.2"
+    },
+    "devDependencies": {
+        "@types/eris": "workspace:^",
+        "@types/rethinkdb": "workspace:^"
+    }
 }

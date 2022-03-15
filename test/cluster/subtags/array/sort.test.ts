@@ -3,7 +3,7 @@ import { GetSubtag } from '@blargbot/cluster/subtags/bot/get';
 import { SubtagVariableType } from '@blargbot/core/types';
 import { expect } from 'chai';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

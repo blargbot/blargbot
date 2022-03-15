@@ -2,7 +2,7 @@ import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '@blargb
 import { RoleRemoveSubtag } from '@blargbot/cluster/subtags/role/roleremove';
 import { Constants } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

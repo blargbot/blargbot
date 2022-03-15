@@ -4,7 +4,7 @@ import { EscapeBbtagSubtag } from '@blargbot/cluster/subtags/misc/escapebbtag';
 import { ChannelType, OverwriteType } from 'discord-api-types';
 import { ApiError, CategoryChannel, Channel, Constants, NewsChannel, StoreChannel, TextChannel, VoiceChannel } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests, SubtagTestContext } from '../SubtagTestSuite';
 
 runSubtagTests({

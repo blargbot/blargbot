@@ -1,7 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
 import { UserNotFoundError } from '@blargbot/cluster/bbtag/errors';
 import { SubtagType } from '@blargbot/cluster/utils';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class UserJoinedAtSubtag extends DefinedSubtag {
     public constructor() {

@@ -3,7 +3,7 @@ import { GuildSetIconSubtag } from '@blargbot/cluster/subtags/guild/guildseticon
 import { SemiSubtag } from '@blargbot/cluster/subtags/simple/semi';
 import { Constants } from 'eris';
 
-import { argument } from '../../../mock';
+import { argument } from '../../mock';
 import { runSubtagTests } from '../SubtagTestSuite';
 
 runSubtagTests({

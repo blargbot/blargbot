@@ -2,7 +2,7 @@ import { BaseGuildCommand } from '@blargbot/cluster/command';
 import { FlagResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class BanCommand extends BaseGuildCommand {
     public constructor() {

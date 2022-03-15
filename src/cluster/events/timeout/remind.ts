@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
 import { StoredEvent } from '@blargbot/core/types';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 export class TimeoutRemindEventService extends TimeoutEventService<'remind'> {
     public constructor(protected readonly cluster: Cluster) {
