@@ -5,8 +5,7 @@ import { GuildCommandContext } from '@blargbot/cluster/types';
 import { bbtag, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
 import { SendContent, SendPayload, StoredTag } from '@blargbot/core/types';
 import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
-import moment from 'moment-timezone';
-import { Duration } from 'moment-timezone';
+import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
 export class TagCommand extends BaseGuildCommand {

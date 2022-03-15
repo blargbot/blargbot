@@ -1,7 +1,8 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
 import { ImageResult, StarVsTheForcesOfOptions } from '@blargbot/image/types';
-import { BetterColorAction } from '@jimp/plugin-color';
+import { ColorAction } from '@jimp/plugin-color';
+import colorThief from 'color-thief-jimp';
 import Jimp from 'jimp';
 
 export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheForcesOf'> {
@@ -29,7 +30,7 @@ export class StarVsTheForcesOfGenerator extends BaseImageGenerator<'starVsTheFor
 
         const foreground = await this.getLocalJimp('starvstheforcesof.png');
         foreground.resize(960, 540);
-        const actions: BetterColorAction[] = [];
+        const actions: ColorAction[] = [];
         if (mappedColor[0] > 0)
             actions.push({ apply: 'red', params: [mappedColor[0]] });
         if (mappedColor[1] > 0)

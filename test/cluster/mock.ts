@@ -108,9 +108,6 @@ export const argument = {
             return true;
         });
     },
-    isNumber(): MockArgumentFilter<number> {
-        return this.isTypeof('number');
-    },
     isInstanceof<T>(type: new (...args: never) => T): MockArgumentFilter<T> {
         return this.is((x): x is T => x instanceof type);
     },

@@ -3,8 +3,7 @@ import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { createSafeRegExp, guard, pluralise as p } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, KnownMessage, KnownTextableChannel, User } from 'eris';
-import moment from 'moment-timezone';
-import { Moment } from 'moment-timezone';
+import moment, { Moment } from 'moment-timezone';
 
 export class TidyCommand extends BaseGuildCommand {
     public constructor() {

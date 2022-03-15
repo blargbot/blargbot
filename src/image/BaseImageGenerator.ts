@@ -9,7 +9,7 @@ import { ImageWorker } from './ImageWorker';
 import { ImageGeneratorMap, ImageResult, MagickSource, PhantomOptions, PhantomTransformOptions, TextOptions } from './types';
 
 const im = gm.subClass({ imageMagick: true });
-const imgDir = path.join(path.dirname(require.resolve('@blargbot/res/contributors')), 'img');
+const imgDir = path.join(path.dirname(require.resolve('@blargbot/res/package')), 'img');
 
 export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
     public constructor(

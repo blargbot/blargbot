@@ -7,8 +7,7 @@ import { Configuration } from '@blargbot/core/Configuration';
 import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@blargbot/core/types';
 import { createHmac } from 'crypto';
 import { EmbedOptions, FileContent, Role } from 'eris';
-import moment from 'moment-timezone';
-import { Duration } from 'moment-timezone';
+import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
 export class CustomCommandCommand extends BaseGuildCommand {

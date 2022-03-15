@@ -1,8 +1,0 @@
-{
-    "name": "@types/jimp-plugin-color",
-    "version": "2.4.2",
-    "dependencies": {
-        "@jimp/core": "^0.16.1",
-        "@types/tinycolor2": "^1.4.3"
-    }
-}

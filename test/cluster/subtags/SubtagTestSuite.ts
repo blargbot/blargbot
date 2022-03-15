@@ -26,7 +26,7 @@ import * as inspector from 'inspector';
 import { Context, describe, it } from 'mocha';
 import moment, { Moment } from 'moment-timezone';
 import path from 'path';
-import { anyString, anything } from 'ts-mockito';
+import { anything } from 'ts-mockito';
 import { inspect } from 'util';
 
 import { argument, Mock } from '../mock';
@@ -210,19 +210,21 @@ export class SubtagTestContext {
         this.database.setup(m => m.users, false).thenReturn(this.userTable.instance);
         this.database.setup(m => m.tags, false).thenReturn(this.tagsTable.instance);
 
-        this.tagVariablesTable.setup(m => m.get(anyString(), anyString(), anyString()), false)
+        const isVariableType = argument.isTypeof('string').and((v): v is SubtagVariableType => Object.values(SubtagVariableType).includes(v)).value;
+
+        this.tagVariablesTable.setup(m => m.get(argument.isTypeof('string').value, isVariableType, argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<TagVariablesTable['get']>) => this.tagVariables[`${args[1]}.${args[2]}.${args[0]}`]);
         if (this.testCase.setupSaveVariables !== false) {
-            this.tagVariablesTable.setup(m => m.upsert(anything() as never, anyString(), anyString()), false)
+            this.tagVariablesTable.setup(m => m.upsert(anything() as never, isVariableType, argument.isTypeof('string').value), false)
                 .thenCall((...args: Parameters<TagVariablesTable['upsert']>) => {
                     for (const [name, value] of Object.entries(args[0]))
                         this.tagVariables[`${args[1]}.${args[2]}.${name}`] = value;
                 });
         }
 
-        this.tagsTable.setup(m => m.get(anyString()), false)
+        this.tagsTable.setup(m => m.get(argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<TagsTable['get']>) => this.tags[args[0]]);
-        this.guildTable.setup(m => m.getCommand(this.guild.id, anyString()), false)
+        this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<GuildTable['getCommand']>) => this.ccommands[args[1]]);
 
         this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
@@ -240,7 +242,7 @@ export class SubtagTestContext {
 
         const subtagLoader = this.createMock<ModuleLoader<Subtag>>(ModuleLoader);
         const subtagMap = new Map([...subtags].flatMap(s => [s.name, ...s.aliases].map(n => [n, s])));
-        subtagLoader.setup(m => m.get(anyString()), false).thenCall((name: string) => subtagMap.get(name));
+        subtagLoader.setup(m => m.get(argument.isTypeof('string').value), false).thenCall((name: string) => subtagMap.get(name));
 
         this.cluster.setup(c => c.subtags, false).thenReturn(subtagLoader.instance);
     }
@@ -506,8 +508,7 @@ Actual:
 |${c.code}|}`).join('\n')}}
 ---------------
 Finished!`;
-        const root = require.resolve('@blargbot/config');
-        fs.writeFileSync(path.dirname(root) + '/test.bbtag', blargTestSuite);
+        fs.writeFileSync(path.join(__dirname, '../../../test.bbtag'), blargTestSuite);
     }
 }
 

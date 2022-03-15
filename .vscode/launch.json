@@ -14,14 +14,17 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/index.ts"
+            "program": "${workspaceFolder}/index.ts",
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            }
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Test all",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
             "args": [
                 "--no-timeouts",
                 "--config",
@@ -32,14 +35,17 @@
                 "<node_internals>/**",
                 "**/node_modules/**"
             ],
-            "autoAttachChildProcesses": true
+            "autoAttachChildProcesses": true,
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            }
         },
         {
             "type": "node",
             "request": "launch",
             "name": "Test current file",
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/node_modules/mocha/bin/_mocha",
+            "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
             "args": [
                 "--no-timeouts",
                 "--config",
@@ -51,6 +57,7 @@
                 "**/node_modules/**"
             ],
             "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
                 "TS_NODE_FILES": "true"
             },
             "autoAttachChildProcesses": true
@@ -66,7 +73,10 @@
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/index.ts",
-            "preLaunchTask": "yarn: build"
+            "preLaunchTask": "yarn: build",
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            }
         },
         {
             "type": "node",
@@ -83,6 +93,7 @@
                 "--max-old-space-size=4096"
             ],
             "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
                 "SHARDS_FIRST": "0",
@@ -105,6 +116,7 @@
                 "--max-old-space-size=4096"
             ],
             "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
                 "CLUSTER_ID": "0",
                 "SHARDS_MAX": "1",
                 "SHARDS_FIRST": "0",
@@ -121,7 +133,10 @@
                 "<node_internals>/**",
                 "${workspaceFolder}/node_modules/**"
             ],
-            "autoAttachChildProcesses": true
+            "autoAttachChildProcesses": true,
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            },
         }
     ]
 }

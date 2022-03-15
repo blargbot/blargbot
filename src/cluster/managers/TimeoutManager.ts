@@ -1,7 +1,6 @@
 import { EventType, EventTypeMap, StoredEvent, StoredEventOptions } from '@blargbot/core/types';
 import EventEmitter from 'eventemitter3';
-import moment from 'moment-timezone';
-import { Duration, duration } from 'moment-timezone';
+import moment, { Duration, duration } from 'moment-timezone';
 
 import { Cluster } from '../Cluster';
 import { guard } from '../utils';
