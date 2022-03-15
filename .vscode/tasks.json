@@ -4,7 +4,7 @@
 		{
 			"label": "Run build server on project open",
 			"type": "shell",
-			"command": "yarn watch",
+			"command": "yarn run watch",
 			"presentation": {
 				"echo": false,
 				"reveal": "always",

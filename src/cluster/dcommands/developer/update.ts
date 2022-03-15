@@ -33,7 +33,7 @@ export class UpdateCommand extends BaseGlobalCommand {
         }
 
         try {
-            await this.showCommand(context, 'yarn rebuild');
+            await this.showCommand(context, 'yarn run rebuild');
 
             await context.cluster.version.updateVersion(type);
 
@@ -48,7 +48,7 @@ export class UpdateCommand extends BaseGlobalCommand {
         try {
             await this.showCommand(context, `git reset --hard ${oldCommit}`);
             await this.showCommand(context, 'yarn install');
-            await this.showCommand(context, 'yarn rebuild');
+            await this.showCommand(context, 'yarn run rebuild');
             return this.error(`Failed to update due to a build issue, but successfully rolled back to commit \`${oldCommit}\``);
         } catch (err: unknown) {
             context.logger.error(err);
