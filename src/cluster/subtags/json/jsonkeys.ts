@@ -9,7 +9,7 @@ export class JsonKeysSubtag extends DefinedSubtag {
             aliases: ['jkeys'],
             definition: [
                 {
-                    parameters: ['object', 'path?'],
+                    parameters: ['object:{}#10000000', 'path?'],
                     description: 'Retrieves all keys from provided the JSON object. ' +
                         '`object` can be a JSON object, array, or string. If a string is provided, a variable with the same name will be used.\n' +
                         '`path` is a dot-noted series of properties.',

@@ -8,7 +8,7 @@ export class RegexTestSubtag extends RegexSubtag {
             category: SubtagType.MISC,
             definition: [
                 {
-                    parameters: ['text', '~regex'],
+                    parameters: ['text', '~regex#50000'],
                     description: 'Tests if the `regex` phrase matches the `text`, and returns a boolean (true/false). Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. ' +
                         '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
                         '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',
