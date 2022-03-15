@@ -3,7 +3,7 @@ import { WorkerConnection, WorkerPool } from '@blargbot/core/worker';
 
 import { BaseService } from './BaseService';
 
-export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<string, IPCContracts>, Contract extends WorkerIPCContractNames<TWorker>> extends BaseService {
+export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<IPCContracts>, Contract extends WorkerIPCContractNames<TWorker>> extends BaseService {
     public readonly type: string;
     readonly #attach: (worker: TWorker) => void;
     readonly #detach: (worker: TWorker) => void;

@@ -13,7 +13,7 @@ export const enum WorkerState {
     EXITED
 }
 
-export abstract class WorkerConnection<T extends string, Contracts extends IPCContracts> {
+export abstract class WorkerConnection<Contracts extends IPCContracts> {
     #killed: boolean;
 
     public get state(): WorkerState {
@@ -30,11 +30,11 @@ export abstract class WorkerConnection<T extends string, Contracts extends IPCCo
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
     public readonly created: Moment;
-    public readonly file: string;
 
     protected constructor(
         public readonly id: number,
-        public readonly worker: T,
+        public readonly worker: string,
+        public readonly entrypoint: string,
         public readonly logger: Logger
     ) {
         this.ipc = new IPCMessageEmitter();
@@ -42,7 +42,6 @@ export abstract class WorkerConnection<T extends string, Contracts extends IPCCo
         this.args = [...process.execArgv];
         // eslint-disable-next-line @typescript-eslint/naming-convention
         this.env = { ...process.env, WORKER_ID: id.toString() };
-        this.file = require.resolve(this.worker);
         this.#killed = false;
 
         this.on('alive', () => this.logger.worker(this.worker, 'worker ( ID:', this.id, ') is alive'));
@@ -60,7 +59,7 @@ export abstract class WorkerConnection<T extends string, Contracts extends IPCCo
         const timer = new Timer();
         timer.start();
 
-        const process = this.ipc.process = child_process.fork(this.file, {
+        const process = this.ipc.process = child_process.fork(this.entrypoint, {
             env: this.env,
             execArgv: this.args
         });

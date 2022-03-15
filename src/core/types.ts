@@ -24,9 +24,9 @@ export type SendPayload = SendContent | EmbedOptions | string | FileContent;
 export type LogEntry = { text: string; level: string; timestamp: string; }
 export type ProcessMessage = { type: string; id: Snowflake; data: unknown; };
 export type ProcessMessageContext<TData, TReply> = { data: TData; id: Snowflake; reply: (data: TReply) => void; };
-export type WorkerPoolEventContext<TWorker extends WorkerConnection<string, IPCContracts>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
+export type WorkerPoolEventContext<TWorker extends WorkerConnection<IPCContracts>, TData, TReply> = ProcessMessageContext<TData, TReply> & { worker: TWorker; };
 export type ProcessMessageHandler<TData = unknown, TReply = unknown> = (context: ProcessMessageContext<TData, TReply>) => Awaitable<unknown>;
-export type WorkerPoolEventHandler<TWorker extends WorkerConnection<string, IPCContracts>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => unknown;
+export type WorkerPoolEventHandler<TWorker extends WorkerConnection<IPCContracts>, TData = unknown, TReply = unknown> = (context: WorkerPoolEventContext<TWorker, TData, TReply>) => unknown;
 export type EvalRequest = { userId: string; code: string; };
 export type MasterEvalRequest = EvalRequest & { type: EvalType; };
 export type GlobalEvalResult = Record<string, EvalResult>;
@@ -44,13 +44,13 @@ export type GetMasterProcessMessageHandler<Contracts extends IPCContracts, Contr
     ProcessMessageHandler<IPCContractMasterGets<Contracts, Contract>, IPCContractWorkerGets<Contracts, Contract>>
 export type GetWorkerProcessMessageHandler<Contracts extends IPCContracts, Contract extends IPCContractNames<Contracts>> =
     ProcessMessageHandler<IPCContractWorkerGets<Contracts, Contract>, IPCContractMasterGets<Contracts, Contract>>
-export type GetWorkerPoolEventHandler<Worker extends WorkerConnection<string, IPCContracts>, Contract extends WorkerIPCContractNames<Worker>> =
-    Worker extends WorkerConnection<string, infer Contracts>
+export type GetWorkerPoolEventHandler<Worker extends WorkerConnection<IPCContracts>, Contract extends WorkerIPCContractNames<Worker>> =
+    Worker extends WorkerConnection<infer Contracts>
     ? WorkerPoolEventHandler<Worker, IPCContractMasterGets<Contracts, Contract>, IPCContractWorkerGets<Contracts, Contract>>
     : never;
 
-export type WorkerIPCContractNames<Worker extends WorkerConnection<string, IPCContracts>> =
-    Worker extends WorkerConnection<string, infer Contracts>
+export type WorkerIPCContractNames<Worker extends WorkerConnection<IPCContracts>> =
+    Worker extends WorkerConnection<infer Contracts>
     ? IPCContractNames<Contracts>
     : never;
 

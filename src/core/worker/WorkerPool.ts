@@ -5,7 +5,7 @@ import EventEmitter from 'eventemitter3';
 
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
-export abstract class WorkerPool<Worker extends WorkerConnection<string, IPCContracts>> {
+export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> {
     readonly #workers: Map<number, Worker>;
     readonly #events: EventEmitter;
     readonly #inProgress: Map<number, boolean>;

@@ -3,8 +3,8 @@ import { WorkerConnection } from '@blargbot/core/worker';
 
 import { ApiIPCContracts } from './types';
 
-export class ApiConnection extends WorkerConnection<'@blargbot/api', ApiIPCContracts> {
+export class ApiConnection extends WorkerConnection<ApiIPCContracts> {
     public constructor(id: number, logger: Logger) {
-        super(id, '@blargbot/api', logger);
+        super(id, '@blargbot/api', require.resolve('@blargbot/api'), logger);
     }
 }
