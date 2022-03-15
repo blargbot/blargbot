@@ -53,7 +53,7 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
         return this.#workers.get(id);
     }
 
-    public async spawn(id: number, timeoutMS = this.defaultTimeout): Promise<Worker> {
+    public async spawn(id: number, timeoutMs = this.defaultTimeout): Promise<Worker> {
         if (id >= this.workerCount)
             throw new Error(`${this.type} ${id} doesnt exist`);
         if (this.#inProgress.get(id) === true)
@@ -65,7 +65,7 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
             const oldWorker = this.#workers.get(id);
             this.#workers.delete(id);
             this.#events.emit('spawningworker', worker);
-            await worker.connect(timeoutMS);
+            await worker.connect(timeoutMs);
             this.#workers.set(id, worker);
             if (oldWorker !== undefined) {
                 this.#events.emit('killingworker', oldWorker);
@@ -95,9 +95,9 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
         this.#events.emit('killedworker', worker);
     }
 
-    public async spawnAll(timeoutMS = this.defaultTimeout): Promise<Worker[]> {
+    public async spawnAll(timeoutMs = this.defaultTimeout): Promise<Worker[]> {
         return await Promise.all(getRange(0, this.workerCount - 1)
-            .map(id => this.spawn(id, timeoutMS)));
+            .map(id => this.spawn(id, timeoutMs)));
     }
 
     public async killAll(): Promise<void> {

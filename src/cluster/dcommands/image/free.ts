@@ -10,7 +10,7 @@ export class FreeCommand extends BaseGlobalCommand {
             category: CommandType.IMAGE,
             definitions: [
                 {
-                    parameters: '{caption}',
+                    parameters: '{caption+}',
                     description: 'Tells everyone what you got for free',
                     execute: (ctx, [caption], flags) => this.render(ctx, caption.asString, flags.b?.merge().value)
                 }

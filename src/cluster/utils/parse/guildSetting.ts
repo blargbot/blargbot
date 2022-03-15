@@ -77,5 +77,7 @@ export async function guildSetting<T extends Exclude<keyof StoredGuildSettings, 
                 display: result.value.mention
             };
         }
+        default:
+            return def.type;
     }
 }

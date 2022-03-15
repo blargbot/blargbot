@@ -58,7 +58,7 @@ export interface ImageGeneratorMap extends CommandMap {
     'clyde': ClydeOptions;
     'clippy': ClippyOptions;
     'caption': CaptionOptions;
-    'cah': CAHOptions;
+    'cah': CahOptions;
     'art': ArtOptions;
 }
 
@@ -116,7 +116,7 @@ export interface CaptionOptions {
     font: ValidFont;
 }
 
-export interface CAHOptions {
+export interface CahOptions {
     white: string[];
     black: string;
 }

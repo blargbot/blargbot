@@ -262,19 +262,18 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<MutableStoredGuild
     public async setAutoresponse(guildId: string, id: 'everything', autoresponse: GuildTriggerTag | undefined): Promise<boolean>
     public async setAutoresponse(guildId: string, id: number | 'everything', autoresponse: undefined): Promise<boolean>
     public async setAutoresponse(...args:
-        | [guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined]
-        | [guildId: string, index: 'everything', autoresponse: GuildTriggerTag | undefined]
-        | [guildId: string, index: number | 'everything', autoresponse: undefined]
+        | readonly [guildId: string, index: number, autoresponse: GuildFilteredAutoresponse | undefined]
+        | readonly [guildId: string, index: 'everything', autoresponse: GuildTriggerTag | undefined]
+        | readonly [guildId: string, index: number | 'everything', autoresponse: undefined]
     ): Promise<boolean> {
-        const guildId = args[0];
+        const [guildId, index, autoresponse] = args;
         const guild = await this.rget(guildId);
         if (guild === undefined)
             return false;
 
         guild.autoresponse ??= {};
-        switch (typeof args[1]) {
-            case 'string': {
-                const [, , autoresponse] = <Extract<typeof args, { 1: string; }>>args;
+        switch (index) {
+            case 'everything': {
                 if (!await this.rupdate(guildId, { autoresponse: { everything: this.setExpr(autoresponse) } }))
                     return false;
 
@@ -284,8 +283,7 @@ export class RethinkDbGuildTable extends RethinkDbCachedTable<MutableStoredGuild
                     guild.autoresponse.everything = autoresponse;
                 return true;
             }
-            case 'number': {
-                const [, index, autoresponse] = <Extract<typeof args, { 1: number; }>>args;
+            default: {
                 if (!await this.rupdate(guildId, { autoresponse: { filtered: { [index]: this.setExpr(autoresponse) } } }))
                     return false;
 

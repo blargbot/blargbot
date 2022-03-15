@@ -1,7 +1,7 @@
 import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagLogic, SubtagResult, SubtagReturnTypeMap } from '@blargbot/cluster/types';
 import { parse } from '@blargbot/cluster/utils';
 
-import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, ArrayWithErrorsSubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic';
+import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic';
 
 export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
     return definitions.map(parseDefinition);
@@ -89,7 +89,6 @@ const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLog
     'string': StringSubtagLogic,
     'string|nothing': StringSubtagLogic,
     'string[]': ArraySubtagLogic,
-    '(string|error)[]': ArrayWithErrorsSubtagLogic,
     'json': StringSubtagLogic.withConversion(parse.string),
     'json|nothing': StringSubtagLogic.withConversion(parse.string),
     'json[]': ArraySubtagLogic,

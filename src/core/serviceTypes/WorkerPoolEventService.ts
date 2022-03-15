@@ -1,4 +1,4 @@
-import { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerIPCContractNames } from '@blargbot/core/types';
+import { GetWorkerPoolEventHandler, IPCContracts, ProcessMessageHandler, WorkerIPCContractNames, WorkerPoolEventContext } from '@blargbot/core/types';
 import { WorkerConnection, WorkerPool } from '@blargbot/core/worker';
 
 import { BaseService } from './BaseService';
@@ -8,6 +8,7 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<IP
     readonly #attach: (worker: TWorker) => void;
     readonly #detach: (worker: TWorker) => void;
     readonly #handlers: WeakMap<TWorker, ProcessMessageHandler>;
+    readonly #execute: (context: WorkerPoolEventContext<TWorker, unknown, unknown>) => void;
 
     public constructor(
         public readonly workers: WorkerPool<TWorker>,
@@ -19,6 +20,7 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<IP
         this.#attach = this.attach.bind(this);
         this.#detach = this.detach.bind(this);
         this.#handlers = new WeakMap();
+        this.#execute = this.makeSafeCaller(execute, workers.logger, `${this.workers.type} worker pool event handler`);
     }
 
     public start(): void {
@@ -32,14 +34,7 @@ export abstract class WorkerPoolEventService<TWorker extends WorkerConnection<IP
     }
 
     private attach(worker: TWorker): void {
-        const handler: ProcessMessageHandler = ({ data, id, reply }) => {
-            try {
-                this.workers.logger.debug(`Executing ${this.workers.type} worker pool event handler ${this.name}`);
-                this.execute({ worker, data, id, reply });
-            } catch (err: unknown) {
-                this.workers.logger.error(`${this.workers.type} worker pool event handler ${this.name} threw an error`, err);
-            }
-        };
+        const handler: ProcessMessageHandler = message => this.#execute({ ...message, worker });
         this.#handlers.set(worker, handler);
         worker.on(this.contract, handler);
     }

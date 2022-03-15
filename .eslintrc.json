@@ -161,18 +161,17 @@
                         ]
                     },
                     {
-                        "selector": "default",
-                        "format": null,
-                        "filter": {
-                            "regex": "icon_url|proxy_url|ownerID|parentID|isCC|custom_id|max_values|min_values|channel_id|created_at|parent_id|require_colons",
-                            "match": true
-                        }
-                    },
-                    {
                         "selector": "typeLike",
                         "format": [
                             "PascalCase"
                         ]
+                    },
+                    {
+                        "selector": [
+                            "objectLiteralProperty",
+                            "objectLiteralMethod"
+                        ],
+                        "format": null
                     }
                 ],
                 "@typescript-eslint/no-unnecessary-condition": [

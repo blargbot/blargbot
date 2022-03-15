@@ -1,6 +1,7 @@
 import { SubtagArgumentArray, SubtagCall, SubtagLogic, SubtagResult } from '@blargbot/cluster/types';
 
 import { BBTagContext } from '../BBTagContext';
+import { BBTagRuntimeError } from '../errors';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class ArraySubtagLogic extends SubtagLogicWrapper {
@@ -17,9 +18,15 @@ export class ArraySubtagLogic extends SubtagLogicWrapper {
             return yield JSON.stringify(values);
 
         const result = [];
-        for await (const item of this.toAsyncIterable(values)) {
-            yield undefined;
-            result.push(item);
+        try {
+            for await (const item of this.toAsyncIterable(values)) {
+                yield undefined;
+                result.push(item);
+            }
+        } catch (err: unknown) {
+            if (!(err instanceof BBTagRuntimeError))
+                throw err;
+            result.push(context.addError(err, subtag));
         }
 
         yield JSON.stringify(result);

@@ -1,6 +1,5 @@
 import { Logger } from '@blargbot/core/Logger';
 import { CronJob, CronJobParameters } from 'cron';
-import { inspect } from 'util';
 
 import { BaseService } from './BaseService';
 
@@ -14,14 +13,7 @@ export abstract class CronService extends BaseService {
         super();
         this.#cronJob = new CronJob({
             ...options,
-            onTick: async () => {
-                try {
-                    this.logger.debug(`Executing CronJob ${this.name}`);
-                    await this.execute();
-                } catch (err: unknown) {
-                    this.logger.error(`CronJob ${this.name} threw an error: ${inspect(err)}`);
-                }
-            }
+            onTick: this.makeSafeCaller(this.execute.bind(this), this.logger, 'CronJob')
         });
     }
 

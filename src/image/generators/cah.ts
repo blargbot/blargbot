@@ -1,14 +1,14 @@
 import { BaseImageGenerator } from '@blargbot/image/BaseImageGenerator';
 import { ImageWorker } from '@blargbot/image/ImageWorker';
-import { CAHOptions, ImageResult } from '@blargbot/image/types';
+import { CahOptions, ImageResult } from '@blargbot/image/types';
 import Jimp from 'jimp';
 
-export class CAHGenerator extends BaseImageGenerator<'cah'> {
+export class CahGenerator extends BaseImageGenerator<'cah'> {
     public constructor(worker: ImageWorker) {
         super('cah', worker);
     }
 
-    public async execute({ white, black }: CAHOptions): Promise<ImageResult> {
+    public async execute({ white, black }: CahOptions): Promise<ImageResult> {
         const blackCard = await this.getLocalJimp('blackcard.png');
         const whiteCard = await this.getLocalJimp('whitecard.png');
 

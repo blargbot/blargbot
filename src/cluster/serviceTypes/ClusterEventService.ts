@@ -14,14 +14,7 @@ export abstract class ClusterEventService<Contract extends IPCContractNames<Clus
     ) {
         super();
         this.type = `ClusterEvent:${this.event}`;
-        this.#execute = async ({ data, id, reply }): Promise<void> => {
-            try {
-                this.cluster.logger.debug(`Executing Cluster event handler ${this.name}`);
-                await this.execute({ data, id, reply });
-            } catch (err: unknown) {
-                this.cluster.logger.error(`Cluster event handler ${this.name} threw an error`, err);
-            }
-        };
+        this.#execute = this.makeSafeCaller(execute, this.cluster.logger, 'Cluster event handler');
     }
 
     public start(): void {

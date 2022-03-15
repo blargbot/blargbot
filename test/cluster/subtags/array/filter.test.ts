@@ -90,7 +90,7 @@ runSubtagTests({
         },
         {
             code: '{filter;a;{get;arr1};true}',
-            expected: '`Too many loops`',
+            expected: '["this","`Too many loops`"]',
             errors: [
                 { start: 0, end: 26, error: new BBTagRuntimeError('Too many loops') }
             ],

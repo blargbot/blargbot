@@ -388,7 +388,7 @@ export interface PollEventOptions extends StoredEventOptionsBase {
 }
 
 export type EventOptionsTypeMap = {
-    'tag': TagStoredEventOptions;
+    'tag': TagV4StoredEventOptions;
     'unmute': UnmuteEventOptions;
     'unban': UnbanEventOptions;
     'timer': TimerEventOptions;

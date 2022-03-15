@@ -1,6 +1,5 @@
 import { Logger } from '@blargbot/core/Logger';
 import { Duration, duration, DurationInputArg1, DurationInputArg2 } from 'moment-timezone';
-import { inspect } from 'util';
 
 import { BaseService } from './BaseService';
 
@@ -27,15 +26,7 @@ export abstract class IntervalService extends BaseService {
         this.period = duration(period, unit);
         this.logger = logger;
         this.immediate = immediate ?? false;
-
-        this.#execute = async () => {
-            try {
-                this.logger.debug(`Executing Interval ${this.name}`);
-                await this.execute();
-            } catch (err: unknown) {
-                this.logger.error(`Interval ${this.name} threw an error: ${inspect(err)}`);
-            }
-        };
+        this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, 'Interval');
     }
 
     public abstract execute(): Promise<void> | void;

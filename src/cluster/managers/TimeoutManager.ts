@@ -33,7 +33,8 @@ export class TimeoutManager {
         return this;
     }
 
-    public async insert<E extends EventType>(type: E, event: StoredEventOptions<E>): Promise<void> {
+    public async insert<E extends EventType>(type: E, event: StoredEventOptions<E>): Promise<void>;
+    public async insert(type: EventType, event: StoredEventOptions<EventType>): Promise<void> {
         const storedEvent = await this.cluster.database.events.add(type, event);
         if (storedEvent === undefined)
             return;

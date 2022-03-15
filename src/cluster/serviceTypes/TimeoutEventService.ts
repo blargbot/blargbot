@@ -1,7 +1,6 @@
 import { Logger } from '@blargbot/core/Logger';
 import { BaseService } from '@blargbot/core/serviceTypes';
 import { EventOptionsTypeMap, StoredEvent } from '@blargbot/core/types';
-import { inspect } from 'util';
 
 import { TimeoutManager } from '../managers/TimeoutManager';
 
@@ -16,15 +15,7 @@ export abstract class TimeoutEventService<TEvent extends keyof EventOptionsTypeM
     ) {
         super();
         this.type = `timeout:${this.event}`;
-        const execute = async (event: StoredEvent<TEvent>): Promise<void> => {
-            try {
-                logger.debug(`Executing Timeout event handler ${this.name}`);
-                await this.execute(event);
-            } catch (err: unknown) {
-                logger.error(`Timeout event handler ${this.name} threw an error: ${inspect(err)}`);
-            }
-        };
-        this.#execute = event => void execute(event);
+        this.#execute = this.makeSafeCaller(this.execute.bind(this), this.logger, 'Timeout event handler');
     }
 
     public abstract execute(event: StoredEvent<TEvent>): Promise<void> | void;

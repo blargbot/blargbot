@@ -378,7 +378,6 @@ type SubtagReturnTypeMapHelper = Omit<SubtagReturnTypeAtomicMap, 'nothing'>
     & {
         'unknown': SubtagResult;
         'nothing': void;
-        '(string|error)[]': AwaitableIterable<string>;
         'error': never;
         'loop': AwaitableIterable<string>;
     }

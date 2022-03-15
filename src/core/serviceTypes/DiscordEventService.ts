@@ -15,14 +15,7 @@ export abstract class DiscordEventService<T extends keyof ClientEvents> extends 
     ) {
         super();
         this.type = `DiscordEvent:${this.event}`;
-        this.#execute = async (...args: ClientEvents[T]): Promise<void> => {
-            try {
-                this.logger.debug(`Executing Discord event handler ${this.name}`);
-                await handler(...args);
-            } catch (err: unknown) {
-                this.logger.error(`Discord event handler ${this.name} threw an error:`, err);
-            }
-        };
+        this.#execute = this.makeSafeCaller(handler, logger, 'Discord event handler');
     }
 
     public start(): void {

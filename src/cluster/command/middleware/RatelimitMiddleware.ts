@@ -16,7 +16,7 @@ export class RatelimitMiddleware<TContext extends CommandContext> implements IMi
     public async execute(context: TContext, next: NextMiddleware<CommandResult>): Promise<CommandResult> {
         const key = this.keySelector(context);
         const lastUsage = this.cooldowns[key] ??= { timestamp: moment(), warned: false };
-        if (moment().isAfter(lastUsage.timestamp)) {
+        if (moment().isBefore(lastUsage.timestamp)) {
             if (lastUsage.warned)
                 return;
 

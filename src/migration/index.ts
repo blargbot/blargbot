@@ -116,8 +116,8 @@ async function migrateGuild(guild: OldRethinkGuild, rethink: r.Connection, logge
         migrateInterval(guildId, guild, logger, context),
         migrateGreeting(guildId, guild, logger, context, 'greeting'),
         migrateGreeting(guildId, guild, logger, context, 'farewell'),
-        migrateEverythingAR(guildId, guild, logger, context),
-        migrateFilteredARs(guildId, guild, logger, context),
+        migrateEverythingAr(guildId, guild, logger, context),
+        migrateFilteredArs(guildId, guild, logger, context),
         migrateCensors(guildId, guild, logger, context),
         migrateRolemes(guildId, guild, logger, context),
         migrateCommandPerms(guildId, guild, logger, context),
@@ -178,7 +178,7 @@ function migrateGreeting(guildId: string, guild: OldRethinkGuild, logger: Logger
     return true;
 }
 
-function migrateEverythingAR(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
+function migrateEverythingAr(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     const everythingAr = guild.autoresponse?.everything?.executes;
     if (everythingAr === undefined)
         return false;
@@ -211,7 +211,7 @@ function migrateEverythingAR(guildId: string, guild: OldRethinkGuild, logger: Lo
     return true;
 }
 
-function migrateFilteredARs(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
+function migrateFilteredArs(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     const arList = guild.autoresponse?.list;
     if (arList === undefined)
         return false;
@@ -223,7 +223,7 @@ function migrateFilteredARs(guildId: string, guild: OldRethinkGuild, logger: Log
 
     let i = 0;
     for (const filteredAr of arList) {
-        const migrated = migrateFilteredAR(guildId, guild, filteredAr, i, logger, context);
+        const migrated = migrateFilteredAr(guildId, guild, filteredAr, i, logger, context);
         if (migrated !== undefined) {
             context.autoresponse.filtered = filtered;
             filtered[i++] = migrated;
@@ -233,7 +233,7 @@ function migrateFilteredARs(guildId: string, guild: OldRethinkGuild, logger: Log
     return true;
 }
 
-function migrateFilteredAR(guildId: string, guild: OldRethinkGuild, ar: { executes: string; regex: boolean; term: string; }, index: number, logger: Logger, context: GuildMigrateContext): GuildTriggerTag | undefined {
+function migrateFilteredAr(guildId: string, guild: OldRethinkGuild, ar: { executes: string; regex: boolean; term: string; }, index: number, logger: Logger, context: GuildMigrateContext): GuildTriggerTag | undefined {
     const ccommand = guild.ccommands[ar.executes];
     if (ccommand === undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating autoresponse', index);

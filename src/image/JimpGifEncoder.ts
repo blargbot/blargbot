@@ -1,4 +1,4 @@
-import { Canvas, createCanvas, ImageData, NodeCanvasRenderingContext2D } from 'canvas';
+import { Canvas, createCanvas, ImageData } from 'canvas';
 import GIFEncoder from 'gifencoder';
 import Jimp from 'jimp';
 
@@ -6,14 +6,14 @@ import { JimpGifEncoderOptions } from './types';
 
 export class JimpGifEncoder {
     readonly #canvas: Canvas;
-    readonly #canvasContext: NodeCanvasRenderingContext2D;
+    readonly #canvasContext: CanvasRenderingContext2D;
     readonly #encoder: GIFEncoder;
     readonly #buffers: Uint8Array[];
     readonly #promise: Promise<Buffer>;
 
     public constructor({ width, height, repeat = 0, quality = 10, delay = 0 }: JimpGifEncoderOptions) {
         this.#canvas = createCanvas(width, height);
-        this.#canvasContext = this.#canvas.getContext('2d');
+        this.#canvasContext = this.#canvas.getContext('2d') as CanvasRenderingContext2D;
         this.#encoder = new GIFEncoder(width, height);
         this.#encoder.setRepeat(repeat);
         this.#encoder.setQuality(quality);

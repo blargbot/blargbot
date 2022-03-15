@@ -1,6 +1,5 @@
 export * from './ArrayOrValueSubtagLogicWrapper';
 export * from './ArraySubtagLogic';
-export * from './ArrayWithErrorsSubtagLogic';
 export * from './DeferredSubtagLogic';
 export * from './IgnoreSubtagLogic';
 export * from './StringIterableSubtagLogic';
