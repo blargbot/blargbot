@@ -71,7 +71,7 @@ function sequelizeErrorArgHook(...[{ arg }]: Parameters<ArgHookCallback>): strin
 function createSentryPreHook(config: Configuration, workerId: string): PreHookCallback {
     const sentry = new Sentry.Hub(new Sentry.NodeClient({
         dsn: config.sentry.base,
-        environment: config.general.isbeta ? 'development' : 'production',
+        environment: config.general.isProd !== true ? 'development' : 'production',
         integrations: [
             new Sentry.Integrations.Http({ tracing: true })
         ],

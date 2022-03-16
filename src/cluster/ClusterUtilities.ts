@@ -496,9 +496,6 @@ export class ClusterUtilities extends BaseUtilities {
         };
         this.logger.log(stats);
 
-        if (this.config.general.isbeta)
-            return;
-
         const promises = [];
         if (this.config.general.botlisttoken.length > 0) {
             promises.push(

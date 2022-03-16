@@ -122,7 +122,7 @@ export interface GeneralConfiguration {
     readonly shrinkwrapKey: string;
     readonly wolke: string;
     readonly mashape: string;
-    readonly isbeta: boolean;
+    readonly isProd?: boolean;
     readonly loglevel: string;
 }
 

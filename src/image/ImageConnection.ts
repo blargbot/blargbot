@@ -7,7 +7,7 @@ export class ImageConnection extends WorkerConnection<ImageIPCContract> {
         id: number,
         logger: Logger
     ) {
-        super(id, '@blargbot/image', require.resolve('@blargbot/image'), logger);
+        super(id, '@blargbot/image', require.resolve('@blargbot/image/start'), logger);
         this.env.IMAGE_ID = id.toString();
     }
 

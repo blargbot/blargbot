@@ -1,5 +1,2 @@
 import './ensurePnP';
-
-import start from '@blargbot/master';
-
-void start();
+import '@blargbot/master/start';

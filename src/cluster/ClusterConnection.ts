@@ -10,7 +10,7 @@ export class ClusterConnection extends WorkerConnection<ClusterIPCContract> {
         shardCount: number,
         logger: Logger
     ) {
-        super(id, '@blargbot/cluster', require.resolve('@blargbot/cluster'), logger);
+        super(id, '@blargbot/cluster', require.resolve('@blargbot/cluster/start'), logger);
         this.args.push('--max-old-space-size=4096');
         this.env.CLUSTER_ID = id.toString();
         this.env.SHARDS_MAX = shardCount.toString();
