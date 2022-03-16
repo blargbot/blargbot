@@ -1,5 +1,5 @@
+import { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient';
-import { Configuration } from '@blargbot/core/Configuration';
 import { Logger } from '@blargbot/core/Logger';
 import { ModuleLoader } from '@blargbot/core/modules';
 import express, { Express } from 'express';

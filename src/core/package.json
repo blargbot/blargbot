@@ -4,6 +4,7 @@
     "private": true,
     "dependencies": {
         "@blargbot/cluster": "workspace:^",
+        "@blargbot/config": "workspace:^",
         "@blargbot/res": "workspace:^",
         "@sentry/node": "^6.15.0",
         "@sentry/tracing": "^6.15.0",

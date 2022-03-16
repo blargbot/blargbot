@@ -1,9 +1,8 @@
+import { Configuration } from '@blargbot/config/Configuration';
 import { guard } from '@blargbot/core/utils';
 import * as Sentry from '@sentry/node';
 import CatLoggr, { ArgHookCallback, Color, LogLevel as CatLogLevel, PreHookCallback } from 'cat-loggr/ts';
 import { ValidationError } from 'sequelize';
-
-import { Configuration } from './Configuration';
 
 export type LoggerMethods = { [P in LogTypes]: (...args: unknown[]) => void; }
 

@@ -1,4 +1,4 @@
-import { Configuration } from '@blargbot/core/Configuration';
+import { Configuration } from '@blargbot/config';
 import { Logger } from '@blargbot/core/Logger';
 import { BaseWorker } from '@blargbot/core/worker';
 

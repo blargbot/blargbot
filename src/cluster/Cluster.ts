@@ -1,7 +1,7 @@
 import { BBTagEngine, Subtag } from '@blargbot/cluster/bbtag';
 import { ClusterOptions } from '@blargbot/cluster/types';
+import { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient';
-import { Configuration } from '@blargbot/core/Configuration';
 import { Logger } from '@blargbot/core/Logger';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { BaseService } from '@blargbot/core/serviceTypes';

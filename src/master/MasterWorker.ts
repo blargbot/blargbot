@@ -1,4 +1,4 @@
-import { Configuration } from '@blargbot/core/Configuration';
+import { Configuration } from '@blargbot/config/Configuration';
 import { Logger } from '@blargbot/core/Logger';
 import { BaseWorker } from '@blargbot/core/worker';
 import { MasterIPCContract, MasterOptions } from '@blargbot/master/types';

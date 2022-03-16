@@ -1,4 +1,4 @@
-import { ClusterWorkerConfiguration } from '@blargbot/core/Configuration';
+import { ClusterWorkerConfiguration } from '@blargbot/config';
 import { Logger } from '@blargbot/core/Logger';
 import { ProcessMessageHandler } from '@blargbot/core/types';
 import { WorkerPool } from '@blargbot/core/worker';

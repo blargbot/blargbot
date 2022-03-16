@@ -1,4 +1,4 @@
-import { PostgresConfiguration } from '@blargbot/core/Configuration';
+import { PostgresConfiguration } from '@blargbot/config';
 import { Logger } from '@blargbot/core/Logger';
 import { Sequelize, Transaction } from 'sequelize';
 

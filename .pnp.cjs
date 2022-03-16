@@ -310,6 +310,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageDependencies": [\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/cluster", "workspace:src/cluster"],\
+            ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/res", "workspace:src/res"],\
             ["@sentry/node", "npm:6.18.2"],\
             ["@sentry/tracing", "npm:6.18.2"],\

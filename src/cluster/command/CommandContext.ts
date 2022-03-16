@@ -1,7 +1,7 @@
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { BBTagEngine } from '@blargbot/cluster/bbtag';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
-import { Configuration } from '@blargbot/core/Configuration';
+import { Configuration } from '@blargbot/config';
 import { Database } from '@blargbot/core/database';
 import { Logger } from '@blargbot/core/Logger';
 import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';

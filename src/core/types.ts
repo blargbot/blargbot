@@ -1,11 +1,11 @@
 import type { FlagDefinition, SerializedBBTagContext } from '@blargbot/cluster/types'; // TODO Core shouldnt reference cluster
+import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from '@blargbot/config';
 import { Logger } from '@blargbot/core/Logger';
 import { Snowflake } from 'catflake';
 import { AdvancedMessageContent, ChannelInteraction, Client as Discord, Embed, EmbedField, EmbedOptions, FileContent, Guild, InteractionButton, KnownMessage, KnownTextableChannel, Member, SelectMenuOptions, User, UserChannelInteraction } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 
 import { Binder } from './Binder';
-import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from './Configuration';
 import { WorkerConnection } from './worker';
 
 export type MalformedEmbed = { fields: [EmbedField]; malformed: true; };

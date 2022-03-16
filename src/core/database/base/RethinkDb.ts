@@ -1,4 +1,4 @@
-import { RethinkConfiguration } from '@blargbot/core/Configuration';
+import { RethinkConfiguration } from '@blargbot/config/Configuration';
 import * as r from 'rethinkdb';
 import { Connection, Cursor, Expression, Query, Time } from 'rethinkdb';
 

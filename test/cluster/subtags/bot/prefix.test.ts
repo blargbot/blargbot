@@ -1,5 +1,5 @@
 import { PrefixSubtag } from '@blargbot/cluster/subtags/bot/prefix';
-import { Configuration } from '@blargbot/core/Configuration';
+import { Configuration } from '@blargbot/config';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

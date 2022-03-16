@@ -1,10 +1,10 @@
+import { Configuration } from '@blargbot/config/Configuration';
 import { DMContext, SendContent, SendContext, SendPayload, StoredUser } from '@blargbot/core/types';
 import { Snowflake } from 'catflake';
 import { ApiError, ChannelInteraction, Client as Discord, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
-import { Configuration } from './Configuration';
 import { Database } from './database';
 import { Emote } from './Emote';
 import { Logger } from './Logger';
