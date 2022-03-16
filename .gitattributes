@@ -3,3 +3,4 @@
 
 # Dont modify binary files
 *.png binary
+*.zip binary
