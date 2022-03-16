@@ -97,6 +97,12 @@ export interface WebsiteConfiguration {
     readonly host: string;
     readonly secure: boolean;
     readonly port: number;
+    readonly sessionExpiry: number;
+    readonly sessionSecret: string;
+    readonly clientId: string;
+    readonly secret: string;
+    readonly callback: string;
+    
 }
 
 export interface AirtableConfiguration {

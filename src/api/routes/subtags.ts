@@ -1,6 +1,7 @@
 import { Api } from '@blargbot/api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
+import { tagTypeDetails } from '@blargbot/cluster/utils/constants/subtagType';
 
 export class SubtagsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {
@@ -10,6 +11,8 @@ export class SubtagsRoute extends BaseRoute {
             get: () => this.listSubtags()
         }).addRoute('/:subtagName', {
             get: (req) => this.getSubtag(req.params.subtagName)
+        }).addRoute('/meta/categories', {
+            get: () => this.getCategories()
         });
     }
 
@@ -23,5 +26,9 @@ export class SubtagsRoute extends BaseRoute {
         if (subtag === undefined)
             return this.notFound();
         return this.ok(subtag);
+    }
+
+    public getCategories(): ApiResponse {
+        return this.ok(tagTypeDetails);
     }
 }

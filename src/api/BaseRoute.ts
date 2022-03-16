@@ -1,6 +1,7 @@
 import { Request, RequestHandler, Router } from 'express';
 import asyncRouter from 'express-promise-router';
 
+import Security from './Security';
 import { ApiResponse, RequestHandlers } from './types';
 
 export class BaseRoute {
@@ -29,7 +30,11 @@ export class BaseRoute {
     }
 
     protected getUserId(request: Request): string | undefined {
-        return request.header('x-user-id');
+        const token = request.header('Authorization');
+        if (token === undefined)
+            return undefined;
+
+        return Security.validateToken(token) ?? undefined;
     }
 
     protected status(status: number, body?: unknown): ApiResponse {

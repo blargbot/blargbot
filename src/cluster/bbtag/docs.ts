@@ -165,8 +165,8 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
             description: 'In bbtag, even the names of subtags can be dynamic. This can be achieved simply by placing subtags before the ' +
                 'first `;` of a subtag. \n e.g. ```{user{get;~action};{userid}}``` If `~action` is set to `name`, then this will run the `username` subtag, ' +
                 'if it is set to `avatar` then it will run the `useravatar` subtag, and so on. Because dynamic subtags are by definition not set in ' +
-                'stone, it is reccommended not to use them, and as such you will recieve warnings when editing/creating a tag/cc which contains a ' +
-                'dynamic subtag. Your tag will function correctly, however some optimisations employed by bbtag will be unable to run on any such tag.'
+                'stone, it is recommended not to use them, and as such you will receive warnings when editing/creating a tag/cc which contains a ' +
+                'dynamic subtag. Your tag will function correctly, however some optimizations employed by bbtag will be unable to run on any such tag.'
         };
         default: {
             const subtag = await lookupSubtag(context, words[0]);
@@ -394,13 +394,13 @@ const variablesScopes = [
         prefix: '_',
         description: 'Server variables (also referred to as Guild variables) are commonly used if you wish to store data on a per server level. ' +
             'They are however stored in 2 separate \'pools\', one for tags and one for custom commands, meaning they cannot be used to pass data between the two\n' +
-            'This makes then very useful for communicating data between tags that are intended to be used within 1 server at a time.'
+            'This makes them very useful for communicating data between tags that are intended to be used within 1 server at a time.'
     },
     {
         name: 'Author',
         prefix: '@',
         description: 'Author variables are stored against the author of the tag, meaning that only tags made by you can access or edit your author variables.\n' +
-            'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with eachother.'
+            'These are very useful when you have a set of tags that are designed to be used by people between servers, effectively allowing servers to communicate with each other.'
     },
     {
         name: 'Global',
@@ -417,7 +417,7 @@ const variablesScopes = [
     {
         name: 'Local',
         prefix: '',
-        description: 'Local variables are the default variable type, only usable if your variable name doesnt start with one of the other prefixes. ' +
+        description: 'Local variables are the default variable type, only usable if your variable name doesn\'t start with one of the other prefixes. ' +
             'These variables are only accessible by the tag that created them, meaning there is no possibility to share the values with any other tag.\n' +
             'These are useful if you are intending to create a single tag which is usable anywhere, as the variables are not confined to a single server, just a single tag'
     }

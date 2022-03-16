@@ -23,5 +23,5 @@ export interface ApiResponse {
 }
 
 export type RequestMethods = 'all' | 'get' | 'post' | 'put' | 'delete' | 'patch' | 'options' | 'head'
-export type AsyncRequestHandler<Route extends string> = (req: Request<RouteParameters<Route>>, res: Response, next: NextFunction) => Promise<ApiResponse>;
+export type AsyncRequestHandler<Route extends string> = (req: Request<RouteParameters<Route>>, res: Response, next: NextFunction) => Awaitable<ApiResponse>;
 export type RequestHandlers<Route extends string> = { [P in RequestMethods]?: AsyncRequestHandler<Route> }

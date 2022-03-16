@@ -21,7 +21,7 @@ export class WhileSubtag extends DefinedSubtag {
                     description: 'This will continuously execute `code` for as long as the condition returns `true`. The condition is as follows:\n' +
                         'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
                         'Valid evaluators are `' + Object.keys(bbtag.comparisonOperators).join('`, `') + '`.',
-                    exampleCode: '{set;~x;0}\n{while;{get;~x};<=;10;{increment;~x},}.',
+                    exampleCode: '{set;~x;0}\n{while;{get;~x};<=;10;{increment;~x},}',
                     exampleOut: '1,2,3,4,5,6,7,8,9,10,11,',
                     returns: 'loop',
                     execute: (ctx, [val1, evaluator, val2, code]) => this.while(ctx, val1, evaluator, val2, code)
