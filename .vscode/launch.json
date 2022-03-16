@@ -14,7 +14,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/index.ts",
+            "program": "${workspaceFolder}/src/master/start.ts",
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
             }
@@ -72,7 +72,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/index.ts",
+            "program": "${workspaceFolder}/src/master/start.ts",
             "preLaunchTask": "yarn: build",
             "env": {
                 "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
@@ -88,7 +88,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/cluster/index.ts",
+            "program": "${workspaceFolder}/src/cluster/start.ts",
             "args": [
                 "--max-old-space-size=4096"
             ],
@@ -110,7 +110,7 @@
             ],
             "autoAttachChildProcesses": true,
             "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/cluster/index.ts",
+            "program": "${workspaceFolder}/src/cluster/start.ts",
             "preLaunchTask": "yarn: build",
             "args": [
                 "--max-old-space-size=4096"
