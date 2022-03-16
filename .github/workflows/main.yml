@@ -16,7 +16,7 @@ jobs:
 
       - name: Add configuration files
         run: |
-          echo "declare const config: import('./src/core/Configuration').Configuration;
+          echo "declare const config: import('./src/config/Configuration').Configuration;
           export = config;" >> config.json.d.ts
           echo '["abc"]' >> src/res/avatars.json
 
