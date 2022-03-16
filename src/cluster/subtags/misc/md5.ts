@@ -1,6 +1,6 @@
 import { DefinedSubtag } from '@blargbot/cluster/bbtag';
 import { SubtagType } from '@blargbot/cluster/utils';
-import md5 from 'md5';
+import { createHash } from 'crypto';
 
 export class Md5Subtag extends DefinedSubtag {
     public constructor() {
@@ -23,6 +23,7 @@ export class Md5Subtag extends DefinedSubtag {
     }
 
     public md5Hash(value: string): string {
-        return md5(value);
+        const hash = createHash('md5');
+        return hash.update(value).digest('hex');
     }
 }
