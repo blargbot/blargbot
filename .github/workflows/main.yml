@@ -18,7 +18,6 @@ jobs:
         run: |
           echo "declare const config: import('./src/config/Configuration').Configuration;
           export = config;" >> config.json.d.ts
-          echo '["abc"]' >> src/res/avatars.json
 
       - name: Install Node
         uses: actions/setup-node@v2
