@@ -425,7 +425,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/master@workspace:^, @blargbot/master@workspace:src/master":
+"@blargbot/master@workspace:src/master":
   version: 0.0.0-use.local
   resolution: "@blargbot/master@workspace:src/master"
   dependencies:
@@ -2493,7 +2493,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "blargbot@workspace:."
   dependencies:
-    "@blargbot/master": "workspace:^"
     "@types/node": ^16.11.11
     "@typescript-eslint/eslint-plugin": ^5.5.0
     "@typescript-eslint/parser": ^5.5.0
