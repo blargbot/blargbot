@@ -1,7 +1,7 @@
-import { Logger } from '@blargbot/core/Logger';
 import { MultiKeyMap } from '@blargbot/core/MultiKeyMap';
 import { ModuleResult } from '@blargbot/core/types';
 import { guard, pluralise as p } from '@blargbot/core/utils';
+import { Logger } from '@blargbot/logger';
 import { EventEmitter } from 'eventemitter3';
 import { promises as fs } from 'fs';
 import path from 'path';

@@ -6,6 +6,7 @@
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/logger": "workspace:^",
         "express": "^4.17.3",
         "express-promise-router": "^4.1.1",
         "jsonwebtoken": "^8.5.1",

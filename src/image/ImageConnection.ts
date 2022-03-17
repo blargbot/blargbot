@@ -1,6 +1,6 @@
-import { Logger } from '@blargbot/core/Logger';
 import { WorkerConnection } from '@blargbot/core/worker';
 import { ImageGeneratorMap, ImageIPCContract, ImageResult } from '@blargbot/image/types';
+import { Logger } from '@blargbot/logger';
 
 export class ImageConnection extends WorkerConnection<ImageIPCContract> {
     public constructor(

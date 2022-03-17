@@ -7,7 +7,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Launch Master (no build)",
+            "name": "node: master",
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**"
@@ -22,7 +22,44 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Test all",
+            "name": "node: cluster",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ],
+            "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/src/cluster/start.ts",
+            "args": [
+                "--max-old-space-size=4096"
+            ],
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
+                "CLUSTER_ID": "0",
+                "SHARDS_MAX": "1",
+                "SHARDS_FIRST": "0",
+                "SHARDS_LAST": "0"
+            }
+        },
+        {
+            "name": "node: current",
+            "type": "node",
+            "console": "integratedTerminal",
+            "program": "${file}",
+            "request": "launch",
+            "skipFiles": [
+                "<node_internals>/**",
+                "${workspaceFolder}/node_modules/**"
+            ],
+            "autoAttachChildProcesses": true,
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            },
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "mocha: all",
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
             "args": [
@@ -43,7 +80,7 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Test current file",
+            "name": "mocha: current",
             "console": "integratedTerminal",
             "program": "${workspaceFolder}/.yarn/unplugged/mocha-npm-9.2.2-f7735febb8/node_modules/mocha/bin/_mocha",
             "args": [
@@ -61,82 +98,6 @@
                 "TS_NODE_FILES": "true"
             },
             "autoAttachChildProcesses": true
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch master",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**"
-            ],
-            "autoAttachChildProcesses": true,
-            "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/master/start.ts",
-            "preLaunchTask": "yarn: build",
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch cluster (no build)",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**"
-            ],
-            "autoAttachChildProcesses": true,
-            "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/cluster/start.ts",
-            "args": [
-                "--max-old-space-size=4096"
-            ],
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
-                "CLUSTER_ID": "0",
-                "SHARDS_MAX": "1",
-                "SHARDS_FIRST": "0",
-                "SHARDS_LAST": "0"
-            }
-        },
-        {
-            "type": "node",
-            "request": "launch",
-            "name": "Launch cluster",
-            "skipFiles": [
-                "<node_internals>/**",
-                "**/node_modules/**"
-            ],
-            "autoAttachChildProcesses": true,
-            "console": "integratedTerminal",
-            "program": "${workspaceFolder}/src/cluster/start.ts",
-            "preLaunchTask": "yarn: build",
-            "args": [
-                "--max-old-space-size=4096"
-            ],
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs",
-                "CLUSTER_ID": "0",
-                "SHARDS_MAX": "1",
-                "SHARDS_FIRST": "0",
-                "SHARDS_LAST": "0"
-            }
-        },
-        {
-            "name": "Debug current file",
-            "type": "node",
-            "console": "integratedTerminal",
-            "program": "${file}",
-            "request": "launch",
-            "skipFiles": [
-                "<node_internals>/**",
-                "${workspaceFolder}/node_modules/**"
-            ],
-            "autoAttachChildProcesses": true,
-            "env": {
-                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
-            },
         }
     ]
 }

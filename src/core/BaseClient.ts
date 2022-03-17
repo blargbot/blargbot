@@ -1,7 +1,7 @@
 import { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
 import { Database } from '@blargbot/core/database';
-import { Logger } from '@blargbot/core/Logger';
+import { Logger } from '@blargbot/logger';
 import { Client as Discord, ClientOptions as DiscordOptions, OAuthTeamMemberState } from 'eris';
 
 import { getRange } from './utils';

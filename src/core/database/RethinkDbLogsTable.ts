@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/core/Logger';
 import { ChatlogIndex, ChatlogIndexTable } from '@blargbot/core/types';
+import { Logger } from '@blargbot/logger';
 
 import { RethinkDb, RethinkDbTable } from './base';
 

@@ -1,6 +1,6 @@
 import { Configuration } from '@blargbot/config/Configuration';
-import { Logger } from '@blargbot/core/Logger';
 import { BaseWorker } from '@blargbot/core/worker';
+import { Logger } from '@blargbot/logger';
 import { MasterIPCContract, MasterOptions } from '@blargbot/master/types';
 
 import { Master } from './Master';

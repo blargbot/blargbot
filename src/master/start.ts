@@ -1,5 +1,5 @@
 import { config } from '@blargbot/config';
-import { createLogger } from '@blargbot/core/Logger';
+import { createLogger } from '@blargbot/logger';
 import { MasterWorker } from '@blargbot/master';
 import devAvatars from '@blargbot/res/avatars.dev.json';
 import prdAvatars from '@blargbot/res/avatars.prd.json';

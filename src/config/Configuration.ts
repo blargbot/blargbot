@@ -102,7 +102,7 @@ export interface WebsiteConfiguration {
     readonly clientId: string;
     readonly secret: string;
     readonly callback: string;
-    
+
 }
 
 export interface AirtableConfiguration {

@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/core/Logger';
 import { WorkerConnection } from '@blargbot/core/worker';
+import { Logger } from '@blargbot/logger';
 
 import { ApiIPCContracts } from './types';
 

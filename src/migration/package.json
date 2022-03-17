@@ -6,6 +6,7 @@
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/logger": "workspace:^",
         "eris": "^0.16.1",
         "rethinkdb": "^2.4.2"
     },

@@ -1,4 +1,4 @@
-import { Logger } from '@blargbot/core/Logger';
+import { Logger } from '@blargbot/logger';
 import { Client as Discord, ClientEvents } from 'eris';
 
 import { BaseService } from './BaseService';

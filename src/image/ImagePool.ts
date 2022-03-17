@@ -1,7 +1,7 @@
 import { ImageWorkerConfiguration } from '@blargbot/config';
-import { Logger } from '@blargbot/core/Logger';
 import { WorkerPool } from '@blargbot/core/worker';
 import { ImageGeneratorMap, ImageResult } from '@blargbot/image/types';
+import { Logger } from '@blargbot/logger';
 
 import { ImageConnection } from './ImageConnection';
 

@@ -9,10 +9,10 @@ import { BanManager, ModLogManager, WarnManager } from '@blargbot/cluster/manage
 import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@blargbot/cluster/types';
 import { bbtag, guard, pluralise as p, repeat, snowflake, SubtagType } from '@blargbot/cluster/utils';
 import { Database } from '@blargbot/core/database';
-import { Logger } from '@blargbot/core/Logger';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { GuildCommandTag, GuildTable, StoredTag, SubtagVariableType, TagsTable, TagVariablesTable, UserTable } from '@blargbot/core/types';
+import { Logger } from '@blargbot/logger';
 import { expect } from 'chai';
 import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';

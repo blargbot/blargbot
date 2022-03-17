@@ -1,7 +1,7 @@
-import { Logger } from '@blargbot/core/Logger';
 import { metrics } from '@blargbot/core/Metrics';
 import { Chatlog, ChatlogMessage, ChatlogSearchOptions, ChatlogsTable, ChatlogType, TypeMappingResult } from '@blargbot/core/types';
 import { mapping, snowflake } from '@blargbot/core/utils';
+import { Logger } from '@blargbot/logger';
 import { Client as Cassandra } from 'cassandra-driver';
 import { Embed } from 'eris';
 import { Duration } from 'moment-timezone';

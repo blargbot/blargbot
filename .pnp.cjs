@@ -29,10 +29,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:definitions/brainfuck-node"\
       },\
       {\
-        "name": "@types/cat-loggr",\
-        "reference": "workspace:definitions/cat-loggr"\
-      },\
-      {\
         "name": "@types/catflake",\
         "reference": "workspace:definitions/catflake"\
       },\
@@ -89,6 +85,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/image"\
       },\
       {\
+        "name": "@blargbot/logger",\
+        "reference": "workspace:src/logger"\
+      },\
+      {\
         "name": "@blargbot/master",\
         "reference": "workspace:src/master"\
       },\
@@ -119,12 +119,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/core", ["workspace:src/core"]],\
       ["@blargbot/core-tests", ["workspace:test/core"]],\
       ["@blargbot/image", ["workspace:src/image"]],\
+      ["@blargbot/logger", ["workspace:src/logger"]],\
       ["@blargbot/master", ["workspace:src/master"]],\
       ["@blargbot/migration", ["workspace:src/migration"]],\
       ["@blargbot/res", ["workspace:src/res"]],\
       ["@types/blargbot-image-api", ["workspace:definitions/blargbot-image-api"]],\
       ["@types/brainfuck-node", ["workspace:definitions/brainfuck-node"]],\
-      ["@types/cat-loggr", ["workspace:definitions/cat-loggr"]],\
       ["@types/catflake", ["workspace:definitions/catflake"]],\
       ["@types/color-thief-jimp", ["workspace:definitions/color-thief-jimp"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
@@ -463,6 +463,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
             ["@types/express", "npm:4.17.13"],\
             ["@types/express-serve-static-core", "npm:4.17.28"],\
             ["@types/jsonwebtoken", "npm:8.5.8"],\
@@ -483,6 +484,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/image", "workspace:src/image"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/res", "workspace:src/res"],\
             ["@hunteroi/versioning", "npm:1.3.0"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
@@ -524,6 +526,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
             ["@types/chai", "npm:4.3.0"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -557,10 +560,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/res", "workspace:src/res"],\
-            ["@sentry/node", "npm:6.18.2"],\
-            ["@sentry/tracing", "npm:6.18.2"],\
-            ["@types/cat-loggr", "workspace:definitions/cat-loggr"],\
             ["@types/catflake", "workspace:definitions/catflake"],\
             ["@types/color", "npm:3.0.3"],\
             ["@types/cron", "npm:1.7.3"],\
@@ -574,7 +575,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/unorm", "npm:1.3.28"],\
             ["airtable", "npm:0.11.2"],\
             ["cassandra-driver", "npm:4.6.3"],\
-            ["cat-loggr", "npm:1.2.2"],\
             ["catflake", "npm:1.0.0"],\
             ["color", "npm:4.2.1"],\
             ["cron", "npm:1.8.2"],\
@@ -617,6 +617,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/image", "workspace:src/image"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/res", "workspace:src/res"],\
             ["@jimp/custom", "npm:0.16.1"],\
             ["@jimp/plugin-color", "virtual:6255d76869ff90595b76a7ee4bcabb85cfc765fac344874165f5377b8877b2c7bce5705c3d46f70b701c13e997942783c775d98c23ba90599d4588534c55652f#npm:0.16.1"],\
@@ -637,6 +638,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
+      ["@blargbot/logger", [\
+        ["workspace:src/logger", {\
+          "packageLocation": "./src/logger/",\
+          "packageDependencies": [\
+            ["@blargbot/logger", "workspace:src/logger"],\
+            ["@blargbot/config", "workspace:src/config"],\
+            ["@sentry/node", "npm:6.18.2"],\
+            ["@sentry/tracing", "npm:6.18.2"],\
+            ["cat-loggr", "npm:1.2.2"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
       ["@blargbot/master", [\
         ["workspace:src/master", {\
           "packageLocation": "./src/master/",\
@@ -646,6 +660,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/res", "workspace:src/res"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/node-fetch", "npm:2.6.1"],\
@@ -665,6 +680,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
             ["eris", "npm:0.16.1"],\
@@ -2061,16 +2077,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/responselike", "npm:1.0.0"]\
           ],\
           "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@types/cat-loggr", [\
-        ["workspace:definitions/cat-loggr", {\
-          "packageLocation": "./definitions/cat-loggr/",\
-          "packageDependencies": [\
-            ["@types/cat-loggr", "workspace:definitions/cat-loggr"],\
-            ["cat-loggr", "npm:1.2.2"]\
-          ],\
-          "linkType": "SOFT"\
         }]\
       ]],\
       ["@types/catflake", [\

@@ -3,11 +3,11 @@ import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRunti
 import { guard, hasFlag, humanize, parse } from '@blargbot/cluster/utils';
 import { Database } from '@blargbot/core/database';
 import { Emote } from '@blargbot/core/Emote';
-import { Logger } from '@blargbot/core/Logger';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { ChoiceQueryResult, EntityPickQueryOptions, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
 import { discord } from '@blargbot/core/utils/discord';
+import { Logger } from '@blargbot/logger';
 import { Base, Client as Discord, Constants, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';

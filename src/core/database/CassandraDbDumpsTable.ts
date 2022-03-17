@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/core/Logger';
 import { Dump, DumpsTable } from '@blargbot/core/types';
+import { Logger } from '@blargbot/logger';
 import { Client as Cassandra } from 'cassandra-driver';
 import { Duration } from 'moment-timezone';
 

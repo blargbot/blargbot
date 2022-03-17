@@ -1,7 +1,7 @@
 import { config } from '@blargbot/config';
-import { createLogger } from '@blargbot/core/Logger';
 import { TypeMapping } from '@blargbot/core/types';
 import { mapping } from '@blargbot/core/utils';
+import { createLogger } from '@blargbot/logger';
 import fs from 'fs/promises';
 import path from 'path';
 import * as r from 'rethinkdb';

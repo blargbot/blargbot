@@ -1,5 +1,5 @@
 import { AwaitReactionsResponse } from '@blargbot/cluster/types';
-import { Logger } from '@blargbot/core/Logger';
+import { Logger } from '@blargbot/logger';
 
 import { AwaiterFactoryBase } from './AwaiterFactoryBase';
 

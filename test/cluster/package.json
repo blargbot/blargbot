@@ -6,6 +6,7 @@
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/logger": "workspace:^",
         "chai": "^4.3.6",
         "chai-bytes": "^0.1.2",
         "chai-datetime": "^1.8.0",

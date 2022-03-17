@@ -1,4 +1,4 @@
-import { Logger } from '../Logger';
+import { Logger } from '@blargbot/logger';
 
 export abstract class BaseService {
     public readonly name: string;

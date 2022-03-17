@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/core/Logger';
 import { GetWorkerProcessMessageHandler, IPCContractMasterGets, IPCContractNames, IPCContracts, IPCContractWorkerGets, LogEntry } from '@blargbot/core/types';
+import { Logger } from '@blargbot/logger';
 
 import { IPCMessageEmitter } from './IPCMessageEmitter';
 
@@ -24,8 +24,8 @@ export abstract class BaseWorker<Contracts extends IPCContracts> {
             this.process.exit();
         });
 
-        this.logger.addPostHook(({ text, level, timestamp }: LogEntry) => {
-            this.send('log', { text, level, timestamp });
+        this.logger.addPostHook(log => {
+            this.send('log', { text: log.text, level: log.level, timestamp: log.timestamp } as LogEntry);
             return null;
         });
 

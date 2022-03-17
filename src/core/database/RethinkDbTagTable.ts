@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/core/Logger';
 import { StoredTag, TagsTable } from '@blargbot/core/types';
+import { Logger } from '@blargbot/logger';
 
 import { RethinkDb, RethinkDbTable } from './base';
 

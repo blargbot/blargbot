@@ -1,6 +1,6 @@
-import { Logger } from '@blargbot/core/Logger';
 import { MutableStoredUser, StoredUser, StoredUsername, StoredUserSettings, UserTable, UserTodo } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
+import { Logger } from '@blargbot/logger';
 import { User } from 'eris';
 
 import { RethinkDb, RethinkDbCachedTable } from './base';

@@ -1,7 +1,7 @@
 import { guard } from '@blargbot/cluster/utils';
 import { config } from '@blargbot/config';
-import { createLogger, Logger } from '@blargbot/core/Logger';
 import { GuildAutoresponses, GuildCommandTag, GuildRolemeEntry, GuildTriggerTag, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableStoredGuild, StoredGuild } from '@blargbot/core/types';
+import { createLogger, Logger } from '@blargbot/logger';
 import { Client as Discord, Constants } from 'eris';
 import * as r from 'rethinkdb';
 

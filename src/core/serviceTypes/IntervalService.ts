@@ -1,4 +1,4 @@
-import { Logger } from '@blargbot/core/Logger';
+import { Logger } from '@blargbot/logger';
 import { Duration, duration, DurationInputArg1, DurationInputArg2 } from 'moment-timezone';
 
 import { BaseService } from './BaseService';

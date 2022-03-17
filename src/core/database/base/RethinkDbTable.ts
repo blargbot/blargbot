@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/core/Logger';
 import { guard } from '@blargbot/core/utils';
+import { Logger } from '@blargbot/logger';
 import { Cursor, Expression, TableQuery, UpdateRequest, WriteResult } from 'rethinkdb';
 
 import { RethinkDb } from './RethinkDb';

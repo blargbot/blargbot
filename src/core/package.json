@@ -5,12 +5,10 @@
     "dependencies": {
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
+        "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
-        "@sentry/node": "^6.15.0",
-        "@sentry/tracing": "^6.15.0",
         "airtable": "^0.11.1",
         "cassandra-driver": "^4.6.3",
-        "cat-loggr": "^1.1.0",
         "catflake": "^1.0.0",
         "color": "^4.1.0",
         "cron": "^1.4.1",
@@ -29,7 +27,6 @@
         "unorm": "^1.4.1"
     },
     "devDependencies": {
-        "@types/cat-loggr": "workspace:^",
         "@types/catflake": "workspace:^",
         "@types/color": "^3.0.2",
         "@types/cron": "^1.7.3",

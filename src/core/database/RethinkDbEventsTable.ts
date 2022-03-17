@@ -1,5 +1,5 @@
-import { Logger } from '@blargbot/core/Logger';
 import { EventsTable, EventType, StoredEvent, StoredEventOptions } from '@blargbot/core/types';
+import { Logger } from '@blargbot/logger';
 import moment, { Moment } from 'moment-timezone';
 
 import { RethinkDb, RethinkDbTable } from './base';

@@ -1,4 +1,4 @@
-import { Logger } from '@blargbot/core/Logger';
+import { Logger } from '@blargbot/logger';
 
 import { ComponentAwaiterFactory } from './ComponentAwaiterFactory';
 import { MessageAwaiterFactory } from './MessageAwaiterFactory';

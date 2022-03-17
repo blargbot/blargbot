@@ -5,6 +5,7 @@
     "dependencies": {
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/logger": "workspace:^",
         "@blargbot/res": "workspace:^",
         "@jimp/custom": "^0.16.1",
         "@jimp/plugin-color": "^0.16.1",
