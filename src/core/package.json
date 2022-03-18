@@ -6,6 +6,7 @@
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/logger": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
         "@blargbot/res": "workspace:^",
         "airtable": "^0.11.1",
         "cassandra-driver": "^4.6.3",

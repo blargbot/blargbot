@@ -9,7 +9,6 @@ export * from './fafo';
 export * from './getRange';
 export * from './guard';
 export * from './humanize';
-export * from './mapping';
 export * from './parse';
 export * from './quote';
 export * from './random';

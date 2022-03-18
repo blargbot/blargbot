@@ -7,6 +7,7 @@
         "@blargbot/core": "workspace:^",
         "@blargbot/image": "workspace:^",
         "@blargbot/logger": "workspace:^",
+        "@blargbot/mapping": "workspace:^",
         "@blargbot/res": "workspace:^",
         "@hunteroi/versioning": "^1.2.0",
         "@types/wolken": "workspace:^",

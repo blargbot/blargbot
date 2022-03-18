@@ -1,7 +1,6 @@
-import { TypeMapping } from '@blargbot/core/types';
-
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping } from './types';
 
 export function mapIn<T extends readonly string[]>(...values: T): TypeMapping<T[number]>;
 export function mapIn<T>(...values: T[]): TypeMapping<T>;

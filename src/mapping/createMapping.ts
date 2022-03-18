@@ -1,6 +1,5 @@
-import { NormalizedTypeMapping, TypeMapping, TypeMappingImpl, TypeMappingResult } from '@blargbot/core/types';
-
 import { result } from './result';
+import { NormalizedTypeMapping, TypeMapping, TypeMappingImpl, TypeMappingResult } from './types';
 
 export function createMapping<T, TArgs extends unknown[] = []>(impl: TypeMappingImpl<T, TArgs>): TypeMapping<T, TArgs> {
     return createMappingCore<T, never, TArgs>(impl, props);

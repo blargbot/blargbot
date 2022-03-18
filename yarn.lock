@@ -269,6 +269,7 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/logger": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
     "@types/express": ^4.17.13
     "@types/express-serve-static-core": ^4.17.28
     "@types/jsonwebtoken": ^8.5.8
@@ -312,6 +313,7 @@ __metadata:
     "@blargbot/core": "workspace:^"
     "@blargbot/image": "workspace:^"
     "@blargbot/logger": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@hunteroi/versioning": ^1.2.0
     "@types/brainfuck-node": "workspace:^"
@@ -370,6 +372,7 @@ __metadata:
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/logger": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
     "@blargbot/res": "workspace:^"
     "@types/catflake": "workspace:^"
     "@types/color": ^3.0.2
@@ -440,6 +443,14 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/mapping@workspace:^, @blargbot/mapping@workspace:src/mapping":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/mapping@workspace:src/mapping"
+  dependencies:
+    moment-timezone: ^0.5.34
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/master@workspace:src/master":
   version: 0.0.0-use.local
   resolution: "@blargbot/master@workspace:src/master"
@@ -467,6 +478,7 @@ __metadata:
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/logger": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
     "@types/eris": "workspace:^"
     "@types/rethinkdb": "workspace:^"
     eris: ^0.16.1

@@ -1,7 +1,6 @@
-import { TypeMapping } from '@blargbot/core/types';
-
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping } from './types';
 
 export const mapJObject: TypeMapping<JObject> = createMapping(value => {
     switch (typeof value) {

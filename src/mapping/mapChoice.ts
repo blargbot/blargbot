@@ -1,7 +1,6 @@
-import { TypeMapping, TypeMappingImpl } from '@blargbot/core/types';
-
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping, TypeMappingImpl } from './types';
 
 export function mapChoice<T extends unknown[]>(...mappings: { [P in keyof T]: TypeMappingImpl<T[P]> }): TypeMapping<T[number]> {
     return createMapping(value => {

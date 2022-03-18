@@ -1,6 +1,7 @@
 import { BaseGlobalCommand } from '@blargbot/cluster/command';
-import { CommandType, humanize, mapping, shuffle } from '@blargbot/cluster/utils';
+import { CommandType, humanize, shuffle } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
+import { mapping } from '@blargbot/mapping';
 import fetch from 'node-fetch';
 
 export class DanbooruCommand extends BaseGlobalCommand {

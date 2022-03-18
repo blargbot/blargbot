@@ -1,5 +1,5 @@
-import { mapping } from '@blargbot/cluster/utils';
 import { VarsTable } from '@blargbot/core/types';
+import { mapping } from '@blargbot/mapping';
 import { UpdateType, Version, VersionManager } from '@hunteroi/versioning';
 
 const mapUpdateType = mapping.choice(

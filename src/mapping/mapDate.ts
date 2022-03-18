@@ -1,8 +1,8 @@
-import { TypeMapping } from '@blargbot/core/types';
 import moment from 'moment-timezone';
 
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping } from './types';
 
 export const mapDate: TypeMapping<Date> = createMapping(value => {
     switch (typeof value) {

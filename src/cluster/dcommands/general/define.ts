@@ -1,6 +1,7 @@
 import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
-import { CommandType, mapping } from '@blargbot/cluster/utils';
+import { CommandType } from '@blargbot/cluster/utils';
 import { guard, humanize } from '@blargbot/core/utils';
+import { mapping } from '@blargbot/mapping';
 import { EmbedOptions } from 'eris';
 import fetch, { RequestInit } from 'node-fetch';
 

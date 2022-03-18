@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
 import { BBTagRuntimeError } from '@blargbot/cluster/bbtag/errors';
-import { guard, mapping, SubtagType } from '@blargbot/cluster/utils';
+import { guard, SubtagType } from '@blargbot/cluster/utils';
+import { mapping } from '@blargbot/mapping';
 import { ApiError, Constants, CreateChannelOptions, DiscordRESTError } from 'eris';
 
 export class ChannelCreateSubtag extends DefinedSubtag {

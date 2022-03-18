@@ -19,8 +19,11 @@ import { mapRecord } from './mapRecord';
 import { mapRegex } from './mapRegex';
 import { mapString } from './mapString';
 import { mapTuple } from './mapTuple';
+import { mapTypeof } from './mapTypeof';
 import { mapUnknown } from './mapUnknown';
 import { result } from './result';
+
+export * from './types';
 
 export const mapping = Object.seal({
     create: createMapping,
@@ -36,6 +39,7 @@ export const mapping = Object.seal({
     guard: mapGuard,
     in: mapIn,
     instanceof: mapInstanceof,
+    typeof: mapTypeof,
     jObject: mapJObject,
     json: mapJson,
     jToken: mapJToken,

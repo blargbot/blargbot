@@ -1,6 +1,7 @@
 import { BBTagContext, DefinedSubtag } from '@blargbot/cluster/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, InvalidChannelError, MessageNotFoundError } from '@blargbot/cluster/bbtag/errors';
-import { guard, mapping, parse, SubtagType } from '@blargbot/cluster/utils';
+import { guard, parse, SubtagType } from '@blargbot/cluster/utils';
+import { mapping } from '@blargbot/mapping';
 import { GuildFeature } from 'discord-api-types';
 import { Constants, CreateThreadOptions, DiscordRESTError, KnownMessage } from 'eris';
 

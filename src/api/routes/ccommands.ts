@@ -2,7 +2,7 @@ import { Api } from '@blargbot/api/Api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { GuildSourceCommandTag, NamedGuildSourceCommandTag } from '@blargbot/core/types';
-import { mapping } from '@blargbot/core/utils';
+import { mapping } from '@blargbot/mapping';
 
 export class CCommandsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {

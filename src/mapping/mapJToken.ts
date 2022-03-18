@@ -1,7 +1,6 @@
-import { TypeMapping } from '@blargbot/core/types';
-
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping } from './types';
 
 export const mapJToken: TypeMapping<JToken> = createMapping(value => {
     switch (typeof value) {

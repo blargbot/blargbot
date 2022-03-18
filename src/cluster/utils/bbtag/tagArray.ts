@@ -1,6 +1,7 @@
 import { BBTagContext } from '@blargbot/cluster/bbtag';
 import { BBTagArray } from '@blargbot/cluster/types';
-import { getRange, mapping, parse } from '@blargbot/core/utils';
+import { getRange, parse } from '@blargbot/core/utils';
+import { mapping } from '@blargbot/mapping';
 
 export const tagArray = Object.freeze({
     serialize(array: JArray | BBTagArray, varName?: string): string {

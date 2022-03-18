@@ -1,7 +1,6 @@
-import { TypeMapping, TypeMappingImpl } from '@blargbot/core/types';
-
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping, TypeMappingImpl } from './types';
 
 export function mapRecord<T>(mapping: TypeMappingImpl<T, [key: string]>, initial?: () => Record<string, T>): TypeMapping<Record<string, T>> {
     return createMapping(value => {

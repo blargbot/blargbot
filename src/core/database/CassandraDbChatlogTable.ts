@@ -1,7 +1,8 @@
 import { metrics } from '@blargbot/core/Metrics';
-import { Chatlog, ChatlogMessage, ChatlogSearchOptions, ChatlogsTable, ChatlogType, TypeMappingResult } from '@blargbot/core/types';
-import { mapping, snowflake } from '@blargbot/core/utils';
+import { Chatlog, ChatlogMessage, ChatlogSearchOptions, ChatlogsTable, ChatlogType } from '@blargbot/core/types';
+import { snowflake } from '@blargbot/core/utils';
 import { Logger } from '@blargbot/logger';
+import { mapping } from '@blargbot/mapping';
 import { Client as Cassandra } from 'cassandra-driver';
 import { Embed } from 'eris';
 import { Duration } from 'moment-timezone';
@@ -47,7 +48,7 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
             { prepare: true, readTimeout: 200000 });
 
         return chatlogs.rows.map(mapChatlog)
-            .filter((c): c is Extract<TypeMappingResult<Chatlog>, { valid: true; }> => c.valid)
+            .filter((c): c is Extract<typeof c, { valid: true; }> => c.valid)
             .map(c => c.value);
     }
 

@@ -13,19 +13,20 @@ export class PromiseCompletionSource<T> {
         this.#resolve = v => resolveVal = { value: v };
         this.#reject = v => rejectVal = { value: v };
         this.promise = new Promise<T>((resolve, reject) => {
+            this.#resolve = resolve;
+            this.#reject = reject;
+
             if (rejectVal !== undefined)
                 reject(rejectVal.value);
             if (resolveVal !== undefined)
                 resolve(resolveVal.value);
-
-            this.#resolve = resolve;
-            this.#reject = reject;
         });
     }
 
     public resolve(value: Awaitable<T>): boolean {
         if (this.#state !== 'pending')
             return false;
+
         this.#state = 'resolved';
         this.#resolve(value);
         return true;

@@ -1,7 +1,6 @@
-import { TypeMapping, TypeMappingImpl, TypeMappings } from '@blargbot/core/types';
-
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping, TypeMappingImpl, TypeMappings } from './types';
 
 export function mapObject<T>(mappings: TypeMappings<T>, options?: { initial?: () => Partial<T>; strict: boolean; }): TypeMapping<T> {
     return createMapping(value => {

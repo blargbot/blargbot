@@ -1,7 +1,6 @@
-import { TypeMapping, TypeMappingImpl } from '@blargbot/core/types';
-
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping, TypeMappingImpl } from './types';
 
 export function mapArray<T>(mapping: TypeMappingImpl<T, [index: number]>): TypeMapping<T[]> {
     return createMapping(value => {

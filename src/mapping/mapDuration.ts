@@ -1,8 +1,8 @@
-import { TypeMapping } from '@blargbot/core/types';
 import { Duration, duration } from 'moment-timezone';
 
 import { createMapping } from './createMapping';
 import { result } from './result';
+import { TypeMapping } from './types';
 
 export const mapDuration: TypeMapping<Duration> = createMapping(value => {
     try {
