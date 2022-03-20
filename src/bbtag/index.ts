@@ -11,6 +11,7 @@ export * from './RegexSubtag';
 export * from './Caching';
 export * from './BBTagEngine';
 export * from './limits';
+export * from './SubtagModuleLoader';
 export * from './ScopeManager';
 export * from './SubtagCallStack';
 export * from './TagCooldownManager';

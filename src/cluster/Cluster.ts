@@ -1,4 +1,4 @@
-import { BBTagEngine, Subtag } from '@blargbot/bbtag';
+import { BBTagEngine, Subtag, SubtagModuleLoader } from '@blargbot/bbtag';
 import { ClusterOptions } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient';
@@ -88,7 +88,7 @@ export class Cluster extends BaseClient {
             custom: new CustomCommandManager(this),
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
         });
-        this.subtags = new ModuleLoader(`${require.resolve('@blargbot/bbtag')}/subtags`, Subtag, [], this.logger, t => [t.name, ...t.aliases]);
+        this.subtags = new SubtagModuleLoader(this.logger);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
