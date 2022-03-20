@@ -9,18 +9,18 @@ export class MessageIdQueue {
         this.#messageQueue = {};
     }
 
-    public push(guildId: string, messageId: string): void {
-        const messageQueue = this.#messageQueue[guildId] ??= new RollingArray(this.maxSize);
+    public push(channelId: string, messageId: string): void {
+        const messageQueue = this.#messageQueue[channelId] ??= new RollingArray(this.maxSize);
         messageQueue.push(messageId);
     }
 
-    public has(guildId: string, messageId: string): boolean {
-        return this.#messageQueue[guildId]?.includes(messageId)
+    public has(channelId: string, messageId: string): boolean {
+        return this.#messageQueue[channelId]?.includes(messageId)
             ?? false;
     }
 
-    public remove(guildId: string, messageId: string): boolean {
-        const messageQueue = this.#messageQueue[guildId];
+    public remove(channelId: string, messageId: string): boolean {
+        const messageQueue = this.#messageQueue[channelId];
         if (messageQueue === undefined)
             return false;
 

@@ -4,6 +4,3 @@ export * from './defaultStaff';
 export * from './guildSettings';
 export * from './moderationType';
 export * from './modlogColour';
-export * from './subtagArgumentKind';
-export * from './subtagType';
-export * from './overrides';

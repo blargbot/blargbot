@@ -1,6 +1,5 @@
-import { getDocsEmbed } from '@blargbot/cluster/bbtag';
 import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
-import { CommandType } from '@blargbot/cluster/utils';
+import { CommandType, getBBTagDocsEmbed } from '@blargbot/cluster/utils';
 import { SendPayload } from '@blargbot/core/types';
 
 export class DocsCommand extends BaseGlobalCommand {
@@ -49,49 +48,49 @@ export class DocsCommand extends BaseGlobalCommand {
     }
 
     public async showGenericDocs(context: CommandContext): Promise<SendPayload> {
-        const embed = await getDocsEmbed(context, 'index');
+        const embed = await getBBTagDocsEmbed(context, 'index');
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;
     }
 
     public async showVariableDocs(context: CommandContext): Promise<SendPayload> {
-        const embed = await getDocsEmbed(context, 'variables');
+        const embed = await getBBTagDocsEmbed(context, 'variables');
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;
     }
 
     public async showParameterTypeDocs(context: CommandContext): Promise<SendPayload> {
-        const embed = await getDocsEmbed(context, 'parameters');
+        const embed = await getBBTagDocsEmbed(context, 'parameters');
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;
     }
 
     public async showTerminologyDocs(context: CommandContext, input?: string): Promise<SendPayload> {
-        const embed = await getDocsEmbed(context, `terminology${input !== undefined ? ' ' + input : ''}`);
+        const embed = await getBBTagDocsEmbed(context, `terminology${input !== undefined ? ' ' + input : ''}`);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;
     }
 
     public async showDynamicDocs(context: CommandContext): Promise<SendPayload> {
-        const embed = await getDocsEmbed(context, 'dynamic');
+        const embed = await getBBTagDocsEmbed(context, 'dynamic');
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;
     }
 
     public async showSubtagsDocs(context: CommandContext, input?: string): Promise<SendPayload> {
-        const embed = await getDocsEmbed(context, `subtags${input !== undefined ? ' ' + input : ''}`);
+        const embed = await getBBTagDocsEmbed(context, `subtags${input !== undefined ? ' ' + input : ''}`);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;
     }
 
     public async showSubtagDocs(context: CommandContext, input: string): Promise<SendPayload> {
-        const embed = await getDocsEmbed(context, input);
+        const embed = await getBBTagDocsEmbed(context, input);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}docs\` for a list of all topics`);
         return embed;

@@ -1,6 +1,7 @@
 import { BaseGuildCommand } from '@blargbot/cluster/command';
-import { FlagResult, GuildCommandContext } from '@blargbot/cluster/types';
+import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, parse } from '@blargbot/cluster/utils';
+import { FlagResult } from '@blargbot/core/types';
 import { Member } from 'eris';
 import moment from 'moment-timezone';
 

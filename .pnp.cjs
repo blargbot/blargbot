@@ -69,6 +69,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/api"\
       },\
       {\
+        "name": "@blargbot/bbtag",\
+        "reference": "workspace:src/bbtag"\
+      },\
+      {\
         "name": "@blargbot/cluster",\
         "reference": "workspace:src/cluster"\
       },\
@@ -105,8 +109,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/res"\
       },\
       {\
-        "name": "@blargbot/cluster-tests",\
-        "reference": "workspace:test/cluster"\
+        "name": "@blargbot/bbtag-tests",\
+        "reference": "workspace:test/bbtag"\
       },\
       {\
         "name": "@blargbot/core-tests",\
@@ -117,8 +121,9 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
     "ignorePatternData": "(^(?:\\\\.yarn\\\\/sdks(?:\\\\/(?!\\\\.{1,2}(?:\\\\/|$))(?:(?:(?!(?:^|\\\\/)\\\\.{1,2}(?:\\\\/|$)).)*?)|$))$)",\
     "fallbackExclusionList": [\
       ["@blargbot/api", ["workspace:src/api"]],\
+      ["@blargbot/bbtag", ["workspace:src/bbtag"]],\
+      ["@blargbot/bbtag-tests", ["workspace:test/bbtag"]],\
       ["@blargbot/cluster", ["workspace:src/cluster"]],\
-      ["@blargbot/cluster-tests", ["workspace:test/cluster"]],\
       ["@blargbot/config", ["workspace:src/config"]],\
       ["@blargbot/core", ["workspace:src/core"]],\
       ["@blargbot/core-tests", ["workspace:test/core"]],\
@@ -465,6 +470,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./src/api/",\
           "packageDependencies": [\
             ["@blargbot/api", "workspace:src/api"],\
+            ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
@@ -482,55 +488,38 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/cluster", [\
-        ["workspace:src/cluster", {\
-          "packageLocation": "./src/cluster/",\
+      ["@blargbot/bbtag", [\
+        ["workspace:src/bbtag", {\
+          "packageLocation": "./src/bbtag/",\
           "packageDependencies": [\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
+            ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/image", "workspace:src/image"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
-            ["@blargbot/res", "workspace:src/res"],\
-            ["@hunteroi/versioning", "npm:1.3.0"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
             ["@types/color", "npm:3.0.3"],\
             ["@types/eris", "workspace:definitions/eris"],\
-            ["@types/md5", "npm:2.3.2"],\
             ["@types/node-fetch", "npm:2.6.1"],\
-            ["@types/require-reload", "workspace:definitions/require-reload"],\
             ["@types/rwlock", "npm:5.0.3"],\
-            ["@types/svg2png", "npm:4.1.1"],\
-            ["@types/twemoji", "workspace:definitions/twemoji"],\
-            ["@types/wolken", "workspace:definitions/wolken"],\
-            ["@types/xml2js", "npm:0.4.9"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["color", "npm:4.2.1"],\
-            ["crypto", "npm:1.0.1"],\
             ["discord-api-types", "npm:0.25.2"],\
             ["eris", "npm:0.16.1"],\
-            ["eventemitter3", "npm:4.0.7"],\
             ["html-entities", "npm:2.3.2"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"],\
-            ["prom-client", "npm:14.0.1"],\
-            ["require-reload", "npm:0.2.2"],\
-            ["rwlock", "npm:5.0.0"],\
-            ["svg2png", "npm:4.1.1"],\
-            ["twemoji", "npm:13.1.0"],\
-            ["wolken", "npm:0.2.1"],\
-            ["xml2js", "npm:0.4.23"]\
+            ["rwlock", "npm:5.0.0"]\
           ],\
           "linkType": "SOFT"\
         }]\
       ]],\
-      ["@blargbot/cluster-tests", [\
-        ["workspace:test/cluster", {\
-          "packageLocation": "./test/cluster/",\
+      ["@blargbot/bbtag-tests", [\
+        ["workspace:test/bbtag", {\
+          "packageLocation": "./test/bbtag/",\
           "packageDependencies": [\
-            ["@blargbot/cluster-tests", "workspace:test/cluster"],\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
+            ["@blargbot/bbtag-tests", "workspace:test/bbtag"],\
+            ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/logger", "workspace:src/logger"],\
@@ -539,14 +528,53 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/eris", "workspace:definitions/eris"],\
             ["@types/mocha", "workspace:definitions/mocha"],\
             ["chai", "npm:4.3.6"],\
-            ["chai-bytes", "virtual:4b78072010b56c2a50ccbfeb84a1583068313b7cfd5a571a569b1494fdf4fbd8b222ef143033aec0d2c153f5b0adcbfb861308a22a6a58c643055bf44e79f444#npm:0.1.2"],\
+            ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
-            ["chai-exclude", "virtual:4b78072010b56c2a50ccbfeb84a1583068313b7cfd5a571a569b1494fdf4fbd8b222ef143033aec0d2c153f5b0adcbfb861308a22a6a58c643055bf44e79f444#npm:2.1.0"],\
+            ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
             ["discord-api-types", "npm:0.25.2"],\
             ["eris", "npm:0.16.1"],\
             ["mocha", "npm:9.2.2"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["ts-mockito", "npm:2.6.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/cluster", [\
+        ["workspace:src/cluster", {\
+          "packageLocation": "./src/cluster/",\
+          "packageDependencies": [\
+            ["@blargbot/cluster", "workspace:src/cluster"],\
+            ["@blargbot/bbtag", "workspace:src/bbtag"],\
+            ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/image", "workspace:src/image"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
+            ["@blargbot/mapping", "workspace:src/mapping"],\
+            ["@blargbot/res", "workspace:src/res"],\
+            ["@hunteroi/versioning", "npm:1.3.0"],\
+            ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
+            ["@types/eris", "workspace:definitions/eris"],\
+            ["@types/md5", "npm:2.3.2"],\
+            ["@types/node-fetch", "npm:2.6.1"],\
+            ["@types/require-reload", "workspace:definitions/require-reload"],\
+            ["@types/svg2png", "npm:4.1.1"],\
+            ["@types/twemoji", "workspace:definitions/twemoji"],\
+            ["@types/wolken", "workspace:definitions/wolken"],\
+            ["@types/xml2js", "npm:0.4.9"],\
+            ["brainfuck-node", "npm:1.0.2"],\
+            ["crypto", "npm:1.0.1"],\
+            ["discord-api-types", "npm:0.25.2"],\
+            ["eris", "npm:0.16.1"],\
+            ["eventemitter3", "npm:4.0.7"],\
+            ["moment-timezone", "npm:0.5.34"],\
+            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"],\
+            ["prom-client", "npm:14.0.1"],\
+            ["require-reload", "npm:0.2.2"],\
+            ["svg2png", "npm:4.1.1"],\
+            ["twemoji", "npm:13.1.0"],\
+            ["wolken", "npm:0.2.1"],\
+            ["xml2js", "npm:0.4.23"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -565,7 +593,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           "packageLocation": "./src/core/",\
           "packageDependencies": [\
             ["@blargbot/core", "workspace:src/core"],\
-            ["@blargbot/cluster", "workspace:src/cluster"],\
+            ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
@@ -3865,10 +3893,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:4b78072010b56c2a50ccbfeb84a1583068313b7cfd5a571a569b1494fdf4fbd8b222ef143033aec0d2c153f5b0adcbfb861308a22a6a58c643055bf44e79f444#npm:0.1.2", {\
-          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-25d1b82c9f/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
+        ["virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2", {\
+          "packageLocation": "./.yarn/__virtual__/chai-bytes-virtual-1cb388634c/0/cache/chai-bytes-npm-0.1.2-0756b83d81-6fedd3a508.zip/node_modules/chai-bytes/",\
           "packageDependencies": [\
-            ["chai-bytes", "virtual:4b78072010b56c2a50ccbfeb84a1583068313b7cfd5a571a569b1494fdf4fbd8b222ef143033aec0d2c153f5b0adcbfb861308a22a6a58c643055bf44e79f444#npm:0.1.2"],\
+            ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
             ["@types/chai", "npm:4.3.0"],\
             ["chai", "npm:4.3.6"]\
           ],\
@@ -3897,10 +3925,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:4b78072010b56c2a50ccbfeb84a1583068313b7cfd5a571a569b1494fdf4fbd8b222ef143033aec0d2c153f5b0adcbfb861308a22a6a58c643055bf44e79f444#npm:2.1.0", {\
-          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-302c645d06/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
+        ["virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0", {\
+          "packageLocation": "./.yarn/__virtual__/chai-exclude-virtual-66c5f67460/0/cache/chai-exclude-npm-2.1.0-47ff9dee55-29d964d9f6.zip/node_modules/chai-exclude/",\
           "packageDependencies": [\
-            ["chai-exclude", "virtual:4b78072010b56c2a50ccbfeb84a1583068313b7cfd5a571a569b1494fdf4fbd8b222ef143033aec0d2c153f5b0adcbfb861308a22a6a58c643055bf44e79f444#npm:2.1.0"],\
+            ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
             ["@types/chai", "npm:4.3.0"],\
             ["chai", "npm:4.3.6"],\
             ["fclone", "npm:1.0.11"]\

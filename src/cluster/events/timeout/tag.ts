@@ -1,7 +1,6 @@
+import { bbtag, BBTagContext, rules } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
-import { BBTagContext, rules } from '@blargbot/cluster/bbtag';
 import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
-import { bbtag } from '@blargbot/cluster/utils';
 import { StoredEvent, TagStoredEventOptions, TagV4StoredEventOptions } from '@blargbot/core/types';
 
 export class TimeoutTagEventService extends TimeoutEventService<'tag'> {

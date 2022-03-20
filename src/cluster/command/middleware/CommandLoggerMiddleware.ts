@@ -12,7 +12,7 @@ export class CommandLoggerMiddleware implements IMiddleware<CommandContext, Comm
         context.logger.command(outputLog);
 
         if (guard.isGuildCommandContext(context))
-            context.cluster.commands.messages.push(context.channel.guild.id, context.message.channel.id);
+            context.cluster.commands.messages.push(context.channel.id, context.message.id);
 
         return next();
     }

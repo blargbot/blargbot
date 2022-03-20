@@ -1,9 +1,9 @@
 import { Cluster } from '@blargbot/cluster';
 import { CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandSignature, FlagDefinition, ICommand } from '@blargbot/cluster/types';
+import { CommandGetCoreResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
 import { guard, humanize } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
-import { CommandPermissions, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
+import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { BaseCommandManager } from './BaseCommandManager';

@@ -1,5 +1,5 @@
+import { ExecutionResult } from '@blargbot/bbtag/types';
 import { Cluster } from '@blargbot/cluster';
-import { ExecutionResult } from '@blargbot/cluster/types';
 import { GuildRolemeEntry } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
 import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';

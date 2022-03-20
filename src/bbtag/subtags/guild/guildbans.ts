@@ -1,0 +1,36 @@
+import { ApiError, DiscordRESTError } from 'eris';
+
+import { BBTagContext } from '../../BBTagContext';
+import { DefinedSubtag } from '../../DefinedSubtag';
+import { BBTagRuntimeError } from '../../errors';
+import { SubtagType } from '../../utils';
+
+export class GuildBansSubtag extends DefinedSubtag {
+    public constructor() {
+        super({
+            name: 'guildbans',
+            category: SubtagType.GUILD,
+            desc: 'Returns an array of banned users in the current guild.',
+            definition: [
+                {
+                    parameters: [],
+                    exampleCode: 'This guild has {length;{guildbans}} banned users.',
+                    exampleOut: 'This guild has 123 banned users.',
+                    returns: 'id[]',
+                    execute: (ctx) => this.getGuildBans(ctx)
+                }
+            ]
+        });
+    }
+
+    public async getGuildBans(context: BBTagContext): Promise<string[]> {
+        try {
+            return (await context.guild.getBans()).map(u => u.user.id);
+        } catch (err: unknown) {
+            if (err instanceof DiscordRESTError && err.code === ApiError.MISSING_PERMISSIONS)
+                throw new BBTagRuntimeError('Missing required permissions');
+
+            throw err;
+        }
+    }
+}

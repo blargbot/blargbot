@@ -1,6 +1,6 @@
 import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
-import { FlagResult } from '@blargbot/cluster/types';
 import { CommandType, guard } from '@blargbot/cluster/utils';
+import { FlagResult } from '@blargbot/core/types';
 import { humanize } from '@blargbot/core/utils';
 import moment from 'moment-timezone';
 

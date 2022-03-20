@@ -1,4 +1,4 @@
-import { BBTagEngine, Subtag } from '@blargbot/cluster/bbtag';
+import { BBTagEngine, Subtag } from '@blargbot/bbtag';
 import { ClusterOptions } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
 import { BaseClient } from '@blargbot/core/BaseClient';
@@ -10,6 +10,7 @@ import { Logger } from '@blargbot/logger';
 import moment, { duration, Moment } from 'moment-timezone';
 import { inspect } from 'util';
 
+import { ClusterBBTagUtilities } from './ClusterBBTagUtilities';
 import { ClusterUtilities } from './ClusterUtilities';
 import { ClusterWorker } from './ClusterWorker';
 import { AggregateCommandManager, AutoresponseManager, AwaiterManager, BotStaffManager, ContributorManager, CustomCommandManager, DefaultCommandManager, DomainManager, GreetingManager, HelpManager, IntervalManager, ModerationManager, PollManager, PrefixManager, RolemeManager, TimeoutManager, VersionStateManager } from './managers';
@@ -76,6 +77,7 @@ export class Cluster extends BaseClient {
                 'directMessageReactions'
             ]
         });
+
         this.id = options.id;
         this.createdAt = Object.freeze(moment());
         this.worker = options.worker;
@@ -86,7 +88,7 @@ export class Cluster extends BaseClient {
             custom: new CustomCommandManager(this),
             default: new DefaultCommandManager(`${__dirname}/dcommands`, this)
         });
-        this.subtags = new ModuleLoader(`${__dirname}/subtags`, Subtag, [], this.logger, t => [t.name, ...t.aliases]);
+        this.subtags = new ModuleLoader(`${require.resolve('@blargbot/bbtag')}/subtags`, Subtag, [], this.logger, t => [t.name, ...t.aliases]);
         this.events = new ModuleLoader(`${__dirname}/events`, BaseService, [this], this.logger, e => e.name);
         this.services = new ModuleLoader(`${__dirname}/services`, BaseService, [this], this.logger, e => e.name);
         this.util = new ClusterUtilities(this);
@@ -97,7 +99,14 @@ export class Cluster extends BaseClient {
         this.botStaff = new BotStaffManager(this);
         this.moderation = new ModerationManager(this);
         this.greetings = new GreetingManager(this);
-        this.bbtag = new BBTagEngine(this);
+        this.bbtag = new BBTagEngine({
+            config: this.config,
+            database: this.database,
+            discord: this.discord,
+            logger: this.logger,
+            subtags: this.subtags,
+            util: new ClusterBBTagUtilities(this)
+        });
         this.intervals = new IntervalManager(this, duration(10, 's'));
         this.rolemes = new RolemeManager(this);
         this.help = new HelpManager(this.commands, this.util);

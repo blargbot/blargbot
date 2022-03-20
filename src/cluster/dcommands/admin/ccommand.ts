@@ -1,10 +1,10 @@
+import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
-import { getDocsEmbed } from '@blargbot/cluster/bbtag';
 import { BaseGuildCommand } from '@blargbot/cluster/command';
-import { CommandResult, CustomCommandShrinkwrap, FlagDefinition, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
-import { bbtag, codeBlock, CommandType, guard, humanize, parse } from '@blargbot/cluster/utils';
+import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
+import { codeBlock, CommandType, getBBTagDocsEmbed, guard, humanize, parse } from '@blargbot/cluster/utils';
 import { Configuration } from '@blargbot/config';
-import { NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@blargbot/core/types';
+import { FlagDefinition, NamedGuildCommandTag, NamedGuildSourceCommandTag, SendContent, SendPayload } from '@blargbot/core/types';
 import { mapping } from '@blargbot/mapping';
 import { createHmac } from 'crypto';
 import { EmbedOptions, FileContent, Role } from 'eris';
@@ -172,7 +172,7 @@ export class CustomCommandCommand extends BaseGuildCommand {
     }
 
     public async showDocs(context: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
-        const embed = await getDocsEmbed(context, topic);
+        const embed = await getBBTagDocsEmbed(context, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${context.prefix}${context.commandName} docs\` for a list of all topics`);
         if (typeof embed === 'string')

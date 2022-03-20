@@ -4,7 +4,7 @@ import { CommandGetResult, CommandManagers, ICommand, ICommandManager } from '@b
 import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
 import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/core/types';
 import { guard, humanize } from '@blargbot/core/utils';
-import { Guild, KnownTextableChannel, PossiblyUncachedMessage, User } from 'eris';
+import { Client as Discord, Guild, KnownTextableChannel, PossiblyUncachedMessage, User } from 'eris';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
     public readonly messages: MessageIdQueue;
@@ -18,6 +18,16 @@ export class AggregateCommandManager implements ICommandManager, CommandManagers
         private readonly cluster: Cluster,
         managers: CommandManagers
     ) {
+        cluster.discord.deleteMessage = (...args) => {
+            this.messages.remove(args[0], args[1]);
+            return Discord.prototype.deleteMessage.call(cluster.discord, ...args);
+        };
+        cluster.discord.deleteMessages = (...args) => {
+            for (const messageId of args[1])
+                this.messages.remove(args[0], messageId);
+            return Discord.prototype.deleteMessages.call(cluster.discord, ...args);
+        };
+
         this.messages = new MessageIdQueue(100);
         this.managersArr = [
             this.custom = managers.custom,

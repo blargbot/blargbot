@@ -1,5 +1,5 @@
+import { BBTagEngine } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import { BBTagEngine } from '@blargbot/cluster/bbtag';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
 import { Database } from '@blargbot/core/database';

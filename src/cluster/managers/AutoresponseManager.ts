@@ -1,6 +1,7 @@
+import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { WhitelistResponse } from '@blargbot/cluster/types';
-import { bbtag, codeBlock, guard, humanize } from '@blargbot/cluster/utils';
+import { codeBlock, guard, humanize } from '@blargbot/cluster/utils';
 import { GuildTriggerTag } from '@blargbot/core/types';
 import { mapping } from '@blargbot/mapping';
 import { KnownGuildTextableChannel, KnownMessage, Message, PartialEmoji, User } from 'eris';

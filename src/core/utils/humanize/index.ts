@@ -2,6 +2,7 @@ import * as channelName from './channelName';
 import * as decancer from './decancer';
 import * as duration from './duration';
 import * as embed from './embed';
+import * as flags from './flags';
 import * as fullName from './fullName';
 import * as permissions from './permissions';
 import * as ram from './ram';
@@ -19,5 +20,6 @@ export const humanize = {
     ...truncate,
     ...ram,
     ...permissions,
-    ...decancer
+    ...decancer,
+    ...flags
 };

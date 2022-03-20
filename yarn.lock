@@ -265,6 +265,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/api@workspace:src/api"
   dependencies:
+    "@blargbot/bbtag": "workspace:^"
     "@blargbot/cluster": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
@@ -281,11 +282,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@blargbot/cluster-tests@workspace:test/cluster":
+"@blargbot/bbtag-tests@workspace:test/bbtag":
   version: 0.0.0-use.local
-  resolution: "@blargbot/cluster-tests@workspace:test/cluster"
+  resolution: "@blargbot/bbtag-tests@workspace:test/bbtag"
   dependencies:
-    "@blargbot/cluster": "workspace:^"
+    "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/logger": "workspace:^"
@@ -305,10 +306,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@blargbot/bbtag@workspace:^, @blargbot/bbtag@workspace:src/bbtag":
+  version: 0.0.0-use.local
+  resolution: "@blargbot/bbtag@workspace:src/bbtag"
+  dependencies:
+    "@blargbot/config": "workspace:^"
+    "@blargbot/core": "workspace:^"
+    "@blargbot/logger": "workspace:^"
+    "@blargbot/mapping": "workspace:^"
+    "@types/brainfuck-node": "workspace:^"
+    "@types/color": ^3.0.2
+    "@types/eris": "workspace:^"
+    "@types/node-fetch": ^2.5.12
+    "@types/rwlock": ^5.0.3
+    brainfuck-node: ^1.0.1
+    color: ^4.1.0
+    discord-api-types: ^0.25.2
+    eris: ^0.16.1
+    html-entities: ^2.3.2
+    moment-timezone: ^0.5.34
+    node-fetch: ^2.6.1
+    rwlock: ^5.0.0
+  languageName: unknown
+  linkType: soft
+
 "@blargbot/cluster@workspace:^, @blargbot/cluster@workspace:src/cluster":
   version: 0.0.0-use.local
   resolution: "@blargbot/cluster@workspace:src/cluster"
   dependencies:
+    "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/core": "workspace:^"
     "@blargbot/image": "workspace:^"
@@ -317,28 +343,23 @@ __metadata:
     "@blargbot/res": "workspace:^"
     "@hunteroi/versioning": ^1.2.0
     "@types/brainfuck-node": "workspace:^"
-    "@types/color": ^3.0.2
     "@types/eris": "workspace:^"
     "@types/md5": ^2.3.1
     "@types/node-fetch": ^2.5.12
     "@types/require-reload": "workspace:^"
-    "@types/rwlock": ^5.0.3
     "@types/svg2png": ^4.1.1
     "@types/twemoji": "workspace:^"
     "@types/wolken": "workspace:^"
     "@types/xml2js": ^0.4.9
     brainfuck-node: ^1.0.1
-    color: ^4.1.0
     crypto: ^1.0.1
     discord-api-types: ^0.25.2
     eris: ^0.16.1
     eventemitter3: ^4.0.7
-    html-entities: ^2.3.2
     moment-timezone: ^0.5.34
     node-fetch: ^2.6.1
     prom-client: ^14.0.0
     require-reload: ^0.2.2
-    rwlock: ^5.0.0
     svg2png: ^4.1.1
     twemoji: 13.1.0
     wolken: ^0.2.1
@@ -369,7 +390,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@blargbot/core@workspace:src/core"
   dependencies:
-    "@blargbot/cluster": "workspace:^"
+    "@blargbot/bbtag": "workspace:^"
     "@blargbot/config": "workspace:^"
     "@blargbot/logger": "workspace:^"
     "@blargbot/mapping": "workspace:^"

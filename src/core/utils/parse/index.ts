@@ -1,3 +1,4 @@
+import { parseFlags } from './flags';
 import { parseBigInt } from './parseBigInt';
 import { parseBoolean } from './parseBoolean';
 import { parseColor } from './parseColor';
@@ -10,6 +11,7 @@ import { parseString } from './parseString';
 import { parseTime } from './parseTime';
 
 export const parse = {
+    flags: parseFlags,
     color: parseColor,
     duration: parseDuration,
     embed: parseEmbed,

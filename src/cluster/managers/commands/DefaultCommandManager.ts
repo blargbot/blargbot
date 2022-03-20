@@ -1,11 +1,11 @@
 import { Cluster } from '@blargbot/cluster';
 import { BaseCommand, CommandContext } from '@blargbot/cluster/command';
-import { CommandGetCoreResult, CommandParameter, CommandResult, CommandSignature, FlagDefinition, ICommand } from '@blargbot/cluster/types';
+import { CommandGetCoreResult, CommandParameter, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
 import { commandTypeDetails, guard } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
-import { CommandPermissions, NextMiddleware } from '@blargbot/core/types';
+import { CommandPermissions, FlagDefinition, NextMiddleware } from '@blargbot/core/types';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { BaseCommandManager } from './BaseCommandManager';

@@ -1,5 +1,5 @@
+import { ExecutionResult } from '@blargbot/bbtag/types';
 import { Cluster } from '@blargbot/cluster';
-import { ExecutionResult } from '@blargbot/cluster/types';
 import { guard, sleep, snowflake } from '@blargbot/cluster/utils';
 import { GuildTriggerTag } from '@blargbot/core/types';
 import { Guild, KnownGuildTextableChannel, Member } from 'eris';

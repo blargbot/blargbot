@@ -1,4 +1,4 @@
-import type { FlagDefinition, SerializedBBTagContext } from '@blargbot/cluster/types'; // TODO Core shouldnt reference cluster
+import type { SerializedBBTagContext } from '@blargbot/bbtag/types';
 import { AirtableConfiguration, CassandraConfiguration, PostgresConfiguration, RethinkConfiguration } from '@blargbot/config';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
@@ -973,4 +973,29 @@ export enum SubtagVariableType {
     GLOBAL = 'GLOBAL',
     TAGGUILD = 'GUILD_TAG',
     GUILDLOCAL = 'LOCAL_CC'
+}
+
+export interface FlagDefinition {
+    readonly flag: Letter;
+    readonly word: string;
+    readonly description: string;
+}
+
+export interface FlagResultValue {
+    get value(): string;
+    get raw(): string;
+}
+
+export interface FlagResultValueSet {
+    merge(start?: number, end?: number): FlagResultValue;
+    length: number;
+    get(index: number): FlagResultValue | undefined;
+    slice(start: number, end?: number): FlagResultValueSet;
+    map<T>(mapFn: (value: FlagResultValue) => T): T[];
+    toArray(): FlagResultValue[];
+}
+
+export type FlagResultBase = { readonly [P in Letter | '_']?: FlagResultValueSet }
+export interface FlagResult extends FlagResultBase {
+    readonly _: FlagResultValueSet;
 }

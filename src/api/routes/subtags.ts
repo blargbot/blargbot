@@ -1,7 +1,7 @@
 import { Api } from '@blargbot/api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
-import { tagTypeDetails } from '@blargbot/cluster/utils/constants/subtagType';
+import { tagTypeDetails } from '@blargbot/bbtag/utils';
 
 export class SubtagsRoute extends BaseRoute {
     public constructor(private readonly api: Api) {

@@ -1,8 +1,8 @@
+import { bbtag } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
-import { getDocsEmbed } from '@blargbot/cluster/bbtag';
 import { BaseGuildCommand, CommandContext } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
-import { bbtag, codeBlock, CommandType, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
+import { codeBlock, CommandType, getBBTagDocsEmbed, guard, humanize, parse, pluralise as p } from '@blargbot/cluster/utils';
 import { SendContent, SendPayload, StoredTag } from '@blargbot/core/types';
 import { EmbedField, EmbedOptions, FileContent, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
@@ -724,7 +724,7 @@ export class TagCommand extends BaseGuildCommand {
     }
 
     private async showDocs(ctx: GuildCommandContext, topic: string | undefined): Promise<SendPayload | string> {
-        const embed = await getDocsEmbed(ctx, topic);
+        const embed = await getBBTagDocsEmbed(ctx, topic);
         if (embed === undefined)
             return this.error(`Oops, I didnt recognise that topic! Try using \`${ctx.prefix}${ctx.commandName} docs\` for a list of all topics`);
         if (typeof embed === 'string')
