@@ -38,7 +38,6 @@ If you are the owner of this server, here are a few things to know.
 - ❗ To change my command prefix for your guild, please do \`${prefix}prefix add <anything>\`. I also have a personnal prefix feature! Check it out with \`${prefix}help personalprefix\`.
 - 🗄 To enable chatlogs, please do \`${prefix}settings makelogs true\`.
 - ⚙ To receive messages whenever there's an update, do \`${prefix}changelog\` in the desired channel. I need the \`embed links\` permission for this.
-- ⚙ Check out my web interface! <https://blargbot.xyz/dashboard/>
 
 ❓ If you have any questions, comments, or concerns, please do \`${prefix}feedback <feedback>\`. Thanks!
 👍 I hope you enjoy my services! 👍`;
