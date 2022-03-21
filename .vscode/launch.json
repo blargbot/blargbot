@@ -42,6 +42,21 @@
             }
         },
         {
+            "type": "node",
+            "request": "launch",
+            "name": "node: api",
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**"
+            ],
+            "autoAttachChildProcesses": true,
+            "console": "integratedTerminal",
+            "program": "${workspaceFolder}/src/api/start.ts",
+            "env": {
+                "NODE_OPTIONS": "--require ${workspaceFolder}/.pnp.cjs"
+            }
+        },
+        {
             "name": "node: current",
             "type": "node",
             "console": "integratedTerminal",

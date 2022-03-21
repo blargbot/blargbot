@@ -1,6 +1,7 @@
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
 import { config } from '@blargbot/config';
+import { mapping } from '@blargbot/mapping';
 import { Request } from 'express';
 import fetch from 'node-fetch';
 
@@ -25,16 +26,20 @@ export class AuthRoute extends BaseRoute {
         super('/auth');
 
         this.addRoute('/validate', {
-            get: (req) => this.validate(req)
+            post: (req) => this.validate(req)
         });
     }
 
     public async validate(request: Request): Promise<ApiResponse> {
+        const mappedBody = mapValidateBody(request.body);
+        if (!mappedBody.valid)
+            return this.badRequest();
+
         const params = new URLSearchParams();
         params.append('client_id', config.website.clientId);
         params.append('client_secret', config.website.secret);
         params.append('grant_type', 'authorization_code');
-        params.append('code', request.query.code as string);
+        params.append('code', mappedBody.value.code);
         params.append('redirect_uri', config.website.callback);
         params.append('scope', 'identify');
 
@@ -59,3 +64,7 @@ export class AuthRoute extends BaseRoute {
         return this.ok(blargbotToken);
     }
 }
+
+const mapValidateBody = mapping.object({
+    code: mapping.string
+});

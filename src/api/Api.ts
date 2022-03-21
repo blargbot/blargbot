@@ -27,6 +27,10 @@ export class Api extends BaseClient {
         this.worker = options.worker;
         this.app = express();
         this.app.use(express.json());
+        this.app.use((req, resp, next) => {
+            resp.once('finish', () => this.logger.website(`[${resp.statusCode} ${resp.statusMessage}]`, req.method, req.url));
+            next();
+        });
 
         this.server = http.createServer(this.app);
     }
