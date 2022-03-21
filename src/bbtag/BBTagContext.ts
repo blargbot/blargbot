@@ -116,7 +116,7 @@ export class BBTagContext implements BBTagContextOptions {
         this.execTimer = new Timer();
         this.dbTimer = new Timer();
         this.dbObjectsCommitted = 0;
-        this.data = {
+        this.data = Object.assign(options.data ?? {}, {
             query: {
                 count: 0,
                 user: {},
@@ -143,7 +143,7 @@ export class BBTagContext implements BBTagContextOptions {
                 everybody: false
             },
             ...options.data ?? {}
-        };
+        });
     }
 
     public permissionIn(channel: KnownGuildChannel): Permission {
@@ -444,7 +444,7 @@ export class BBTagContext implements BBTagContextOptions {
             tagName: obj.tagName,
             authorId: obj.author,
             authorizerId: obj.authorizer,
-            data: obj.state,
+            data: obj.data,
             limit: limit,
             tagVars: obj.tagVars
         });
@@ -472,7 +472,7 @@ export class BBTagContext implements BBTagContextOptions {
                 embeds: this.message.embeds
             },
             isCC: this.isCC,
-            state: newState,
+            data: newState,
             scope: newScope,
             inputRaw: this.inputRaw,
             flags: this.flags,

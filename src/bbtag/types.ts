@@ -91,7 +91,7 @@ export interface SerializedBBTagContext {
         embeds: Embed[];
     };
     isCC: boolean;
-    state: Omit<BBTagContextState, 'cache' | 'overrides'>;
+    data: Omit<BBTagContextState, 'cache'>;
     scope: BBTagRuntimeScope;
     inputRaw: string;
     flags: readonly FlagDefinition[];
