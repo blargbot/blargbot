@@ -21,6 +21,7 @@ runSubtagTests({
                 expect(ctx.input).to.deep.equal([]);
                 expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
+                ctx.data.embeds = [{ title: 'abc' }];
                 return 'Success!';
             })],
             errors: [
@@ -44,6 +45,7 @@ runSubtagTests({
                 expect(ctx.cooldown).to.equal(4);
                 expect(ctx.inputRaw).to.equal('This is some input text');
                 expect(ctx.scopes.local).to.equal(ctx.scopes.root);
+                expect(ctx.data.embeds).to.deep.equal([{ title: 'abc' }]);
                 expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
             }
         },

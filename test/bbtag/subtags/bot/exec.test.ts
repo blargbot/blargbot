@@ -22,6 +22,7 @@ runSubtagTests({
                 expect(ctx.scopes.local).to.not.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.not.equal(ctx.scopes.root);
                 expect(ctx.data.stackSize).to.equal(101);
+                ctx.data.embeds = [{ title: 'abc' }];
                 return 'Success!';
             })],
             errors: [
@@ -51,6 +52,7 @@ runSubtagTests({
                 expect(ctx.scopes.local).to.equal(ctx.scopes.root);
                 expect(ctx.scopes.tag).to.equal(ctx.scopes.root);
                 expect(ctx.data.stackSize).to.equal(100);
+                expect(ctx.data.embeds).to.deep.equal([{ title: 'abc' }]);
             }
         },
         {
