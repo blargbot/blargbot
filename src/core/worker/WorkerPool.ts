@@ -5,10 +5,16 @@ import EventEmitter from 'eventemitter3';
 
 import { WorkerConnection, WorkerState } from './WorkerConnection';
 
+export const enum RespawnStrategy {
+    SPAWN_THEN_KILL,
+    KILL_THEN_SPAWN
+}
+
 export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> {
     readonly #workers: Map<number, Worker>;
     readonly #events: EventEmitter;
     readonly #inProgress: Map<number, boolean>;
+    readonly #respawnStrategy: RespawnStrategy;
 
     public *[Symbol.iterator](): IterableIterator<Worker | undefined> {
         for (let i = 0; i < this.workerCount; i++)
@@ -19,11 +25,14 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
         public readonly type: string,
         public readonly workerCount: number,
         public readonly defaultTimeout: number,
-        public readonly logger: Logger
+        public readonly logger: Logger,
+        respawnStrategy = RespawnStrategy.SPAWN_THEN_KILL
+
     ) {
         this.#workers = new Map();
         this.#events = new EventEmitter();
         this.#inProgress = new Map();
+        this.#respawnStrategy = respawnStrategy;
     }
 
     public on(type: string, handler: (worker: Worker) => void): this {
@@ -53,6 +62,13 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
         return this.#workers.get(id);
     }
 
+    async #killWorker(worker: Worker): Promise<void> {
+        this.#events.emit('killingworker', worker);
+        if (worker.state === WorkerState.RUNNING)
+            await worker.kill();
+        this.#events.emit('killedworker', worker);
+    }
+
     public async spawn(id: number, timeoutMs = this.defaultTimeout): Promise<Worker> {
         if (id >= this.workerCount)
             throw new Error(`${this.type} ${id} doesnt exist`);
@@ -64,16 +80,17 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
             const worker = this.createWorker(id);
             const oldWorker = this.#workers.get(id);
             this.#workers.delete(id);
+            if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.KILL_THEN_SPAWN)
+                await this.#killWorker(oldWorker);
+
             this.#events.emit('spawningworker', worker);
             await worker.connect(timeoutMs);
             this.#workers.set(id, worker);
-            if (oldWorker !== undefined) {
-                this.#events.emit('killingworker', oldWorker);
-                if (oldWorker.state === WorkerState.RUNNING)
-                    await oldWorker.kill();
-                this.#events.emit('killedworker', worker);
-            }
             this.#events.emit('spawnedworker', worker);
+
+            if (oldWorker !== undefined && this.#respawnStrategy === RespawnStrategy.SPAWN_THEN_KILL)
+                await this.#killWorker(oldWorker);
+
             return worker;
         } finally {
             this.#inProgress.set(id, false);
@@ -89,10 +106,7 @@ export abstract class WorkerPool<Worker extends WorkerConnection<IPCContracts>> 
 
         this.#workers.delete(id);
 
-        this.#events.emit('killingworker', worker);
-        if (worker.state === WorkerState.RUNNING)
-            await worker.kill();
-        this.#events.emit('killedworker', worker);
+        await this.#killWorker(worker);
     }
 
     public async spawnAll(timeoutMs = this.defaultTimeout): Promise<Worker[]> {

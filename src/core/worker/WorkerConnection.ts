@@ -15,18 +15,18 @@ export const enum WorkerState {
 
 export abstract class WorkerConnection<Contracts extends IPCContracts> {
     #killed: boolean;
+    readonly #ipc: IPCMessageEmitter;
 
     public get state(): WorkerState {
-        if (this.ipc.process === undefined)
+        if (this.#ipc.process === undefined)
             return WorkerState.READY;
-        if (this.ipc.process.connected)
+        if (this.#ipc.process.connected)
             return WorkerState.RUNNING;
         if (this.#killed)
             return WorkerState.KILLED;
         return WorkerState.EXITED;
     }
 
-    protected readonly ipc: IPCMessageEmitter;
     public readonly args: string[];
     public readonly env: NodeJS.ProcessEnv;
     public readonly created: Moment;
@@ -37,7 +37,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
         public readonly entrypoint: string,
         public readonly logger: Logger
     ) {
-        this.ipc = new IPCMessageEmitter();
+        this.#ipc = new IPCMessageEmitter();
         this.created = moment();
         this.args = [...process.execArgv];
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -49,7 +49,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
     }
 
     public async connect(timeoutMs: number): Promise<unknown> {
-        if (this.ipc.process !== undefined)
+        if (this.#ipc.process !== undefined)
             throw new Error('Cannot connect to a worker multiple times. Create a new instance for a new worker');
 
         Object.freeze(this.args);
@@ -59,7 +59,7 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
         const timer = new Timer();
         timer.start();
 
-        const process = this.ipc.process = child_process.fork(this.entrypoint, {
+        const process = this.#ipc.process = child_process.fork(this.entrypoint, {
             env: this.env,
             execArgv: this.args
         });
@@ -80,49 +80,49 @@ export abstract class WorkerConnection<Contracts extends IPCContracts> {
             this.logger.worker(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid, ') is ready after', timer.elapsed, 'ms and said:\n', result);
             return result;
         } catch (err: unknown) {
-            this.ipc.process.kill();
+            this.#ipc.process.kill();
             this.logger.error(this.worker, 'worker ( ID:', this.id, 'PID:', process.pid, ') failed to start', err);
             throw err;
         }
     }
 
     public async kill(code: NodeJS.Signals | number = 'SIGTERM'): Promise<void> {
-        if (this.ipc.process === undefined || !this.ipc.process.connected)
+        if (this.#ipc.process === undefined || !this.#ipc.process.connected)
             throw new Error('The child process is not connected');
 
-        this.logger.worker('Killing', this.worker, 'worker ( ID:', this.id, 'PID:', this.ipc.process.pid ?? 'NOT RUNNING');
+        this.logger.worker('Killing', this.worker, 'worker ( ID:', this.id, 'PID:', this.#ipc.process.pid ?? 'NOT RUNNING');
 
         try {
-            await this.ipc.request('stop', undefined);
+            await this.#ipc.request('stop', undefined);
         } catch { /* NOOP */ }
 
-        if (<boolean>this.ipc.process.connected)
-            this.ipc.process.kill(code);
+        if (<boolean>this.#ipc.process.connected)
+            this.#ipc.process.kill(code);
 
         this.#killed = true;
     }
 
     public on<Event extends IPCContractNames<Contracts>>(event: Event, handler: GetMasterProcessMessageHandler<Contracts, Event>): this {
-        this.ipc.on(event, handler);
+        this.#ipc.on(event, handler);
         return this;
     }
 
     public once<Event extends IPCContractNames<Contracts>>(event: Event, handler: GetMasterProcessMessageHandler<Contracts, Event>): this {
-        this.ipc.once(event, handler);
+        this.#ipc.once(event, handler);
         return this;
     }
 
     public off<Event extends IPCContractNames<Contracts>>(event: Event, handler: GetMasterProcessMessageHandler<Contracts, Event>): this {
-        this.ipc.off(event, handler);
+        this.#ipc.off(event, handler);
         return this;
     }
 
     public send<Event extends IPCContractNames<Contracts>>(event: Event, data: IPCContractWorkerGets<Contracts, Event>): this {
-        this.ipc.send(event, data);
+        this.#ipc.send(event, data);
         return this;
     }
 
     public async request<Event extends IPCContractNames<Contracts>>(event: Event, data: IPCContractWorkerGets<Contracts, Event>, timeoutMS?: number): Promise<IPCContractMasterGets<Contracts, Event>> {
-        return await this.ipc.request(event, data, timeoutMS);
+        return await this.#ipc.request(event, data, timeoutMS);
     }
 }
