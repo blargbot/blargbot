@@ -43,7 +43,7 @@ export class LogsCommand extends BaseGuildCommand {
     }
     public async generateLogs(context: GuildCommandContext, options: LogsGenerateOptions): Promise<string | SendContent> {
         if (await context.database.guilds.getSetting(context.channel.guild.id, 'makelogs') !== true)
-            return this.error(`This guild has not opted into chatlogs. Please do \`${context.prefix}!settings set makelogs true\` to allow me to start creating chatlogs.`);
+            return this.error(`This guild has not opted into chatlogs. Please do \`${context.prefix}settings set makelogs true\` to allow me to start creating chatlogs.`);
 
         if (options.count > 1000)
             return this.error('You cant get more than 1000 logs at a time');
@@ -94,7 +94,7 @@ export class LogsCommand extends BaseGuildCommand {
 
         if (!Array.isArray(logs)) {
             return {
-                content: `${ping}Your logs are available here: ${context.util.websiteLink(`logs/#${logs.keycode}`)}`,
+                content: `${ping}Your logs are available here: ${context.util.websiteLink(`logs/${logs.keycode}`)}`,
                 allowedMentions: { users: [context.author.id] }
             };
         }

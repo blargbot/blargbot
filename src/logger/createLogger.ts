@@ -38,11 +38,11 @@ const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: 
     trace: { color: CatLoggr._chalk.green.bgBlack, isTrace: true },
     output: { color: CatLoggr._chalk.black.bgMagenta },
     bbtag: { color: CatLoggr._chalk.black.bgGreen },
-    verbose: { color: CatLoggr._chalk.black.bgCyan },
     adebug: { color: CatLoggr._chalk.cyan.bgBlack },
     debug: { color: CatLoggr._chalk.magenta.bgBlack },
     log: { color: CatLoggr._chalk.magenta.bgBlack },
     dir: { color: CatLoggr._chalk.magenta.bgBlack },
+    verbose: { color: CatLoggr._chalk.black.bgCyan },
     database: { color: CatLoggr._chalk.black.bgBlue },
     module: { color: CatLoggr._chalk.black.bgBlue }
 };

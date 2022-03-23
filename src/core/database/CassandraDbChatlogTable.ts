@@ -22,12 +22,15 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
             { channelid: options.channelId },
             { prepare: true, readTimeout: 200000 });
 
+        this.logger.debug(`Found ${chatlogs.rows.length} chatlogs in channel ${options.channelId}`);
+
         const typeLookup = new Set(options.types);
         const userLookup = new Set(options.users);
         const excludeLookup = new Set(options.exclude);
         const result = [];
         for (const row of chatlogs.rows) {
             const chatlog = mapChatlog(row);
+            this.logger.debug(row, chatlog);
             if (!chatlog.valid) continue;
             if (typeLookup.size > 0 && !typeLookup.has(chatlog.value.type)) continue;
             if (userLookup.size > 0 && !userLookup.has(chatlog.value.userid)) continue;

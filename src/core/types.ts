@@ -730,6 +730,13 @@ export interface Dump {
     readonly channelid?: string;
 }
 
+export interface ParsedDump {
+    readonly id: string;
+    readonly content?: string;
+    readonly embeds: unknown[] | null;
+    readonly channelid?: string;
+}
+
 export const enum ChatlogType {
     CREATE = 0,
     UPDATE = 1,
@@ -755,10 +762,24 @@ export interface Chatlog extends ChatlogMessage {
 export interface ChatlogIndex<T = string> {
     readonly keycode: string;
     readonly channel: string;
+    readonly channelName: string;
+    readonly guildName: string;
     readonly users: readonly string[];
     readonly types: readonly ChatlogType[];
     readonly ids: readonly T[];
     readonly limit: number;
+}
+
+export interface ChatlogUser {
+    readonly id: string;
+    readonly username?: string;
+    readonly discriminator?: string;
+    readonly avatarURL?: string;
+}
+
+export interface ExpandedChatlogIndex<T = string> extends ChatlogIndex<T> {
+    readonly messages?: Chatlog[];
+    readonly parsedUsers?: { [key: string]: ChatlogUser; };
 }
 
 export interface ChatlogSearchOptions {
@@ -934,6 +955,7 @@ export interface ChatlogIndexTable {
 
 export interface DumpsTable {
     add(dump: Dump, lifespan?: number | Duration): Promise<void>;
+    getById(id: string): Promise<ParsedDump | undefined>;
 }
 
 export interface TagVariablesTable {

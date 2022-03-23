@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/cluster/utils';
 import { Chatlog, ChatlogIndex, ChatlogSearchOptions, ChatlogType } from '@blargbot/core/types';
-import { KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel } from 'eris';
+import { GuildChannel, KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel  } from 'eris';
 
 export class ChatLogManager {
     public constructor(
@@ -73,9 +73,21 @@ export class ChatLogManager {
     public async createIndex(options: ChatlogSearchOptions): Promise<ChatlogIndex<Chatlog>> {
         const chatlogs = await this.cluster.database.chatlogs.findAll(options);
         const key = snowflake.create().toString();
+
+        const channel = await this.cluster.util.getChannel(options.channelId);
+
+        let channelName = '';
+        let guildName = '';
+        if (channel !== undefined && channel instanceof GuildChannel) {
+            channelName = channel.name;
+            guildName = channel.guild.name;
+        }
+
         const result = {
             keycode: key,
             channel: options.channelId,
+            channelName,
+            guildName,
             ids: chatlogs.map(l => l.id.toString()),
             limit: options.count,
             types: options.types,
