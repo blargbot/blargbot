@@ -72,7 +72,6 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
         if (messages.rows.length === 0)
             return undefined;
         const mapped = mapChatlog(messages.rows[0]);
-        this.logger.info(messages.rows[0]);
         return mapped.valid ? mapped.value : undefined;
     }
 
@@ -132,17 +131,19 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
     }
 }
 
+const mapLongToString = mapping.instanceof(Long).map(v => v.toString());
+
 const mapChatlog = mapping.object<Chatlog>({
     attachment: mapping.string.nullish.map(v => v ?? undefined),
-    channelid: mapping.instanceof(Long).map(v => v.toString()),
+    channelid: mapLongToString,
     content: mapping.string,
     embeds: mapping.json(mapping.array(v => mapping.fake<Embed>(v))),
-    guildid: mapping.instanceof(Long).map(v => v.toString()),
-    id: mapping.instanceof(Long).map(v => v.toString()).chain(mapping.guard(snowflake.test)),
-    msgid: mapping.instanceof(Long).map(v => v.toString()),
+    guildid: mapLongToString,
+    id: mapLongToString.chain(mapping.guard(snowflake.test)),
+    msgid: mapLongToString,
     msgtime: mapping.instanceof(Date),
     type: mapping.in(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
-    userid: mapping.instanceof(Long).map(v => v.toString())
+    userid: mapLongToString
 });
 
 function stringifyType(type: ChatlogType): string {
