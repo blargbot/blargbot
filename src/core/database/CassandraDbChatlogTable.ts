@@ -137,7 +137,7 @@ const mapChatlog = mapping.object<Chatlog>({
     channelid: mapping.instanceof(Long).map(v => v.toString()),
     content: mapping.string,
     embeds: mapping.json(mapping.array(v => mapping.fake<Embed>(v))),
-    guildid: mapping.string,
+    guildid: mapping.instanceof(Long).map(v => v.toString()),
     id: mapping.instanceof(Long).map(v => v.toString()).chain(mapping.guard(snowflake.test)),
     msgid: mapping.instanceof(Long).map(v => v.toString()),
     msgtime: mapping.instanceof(Date),
