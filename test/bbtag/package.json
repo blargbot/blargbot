@@ -21,6 +21,6 @@
         "@types/chai-datetime": "^0.0.37",
         "@types/eris": "workspace:^",
         "@types/mocha": "workspace:^",
-        "discord-api-types": "^0.25.2"
+        "discord-api-types": "^0.29.0"
     }
 }

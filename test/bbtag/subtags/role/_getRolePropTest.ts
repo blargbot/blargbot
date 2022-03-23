@@ -1,6 +1,6 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, RoleNotFoundError } from '@blargbot/bbtag/errors';
-import { APIRole } from 'discord-api-types';
+import { APIRole } from 'discord-api-types/v9';
 import { Guild, Role } from 'eris';
 
 import { argument } from '../../mock';

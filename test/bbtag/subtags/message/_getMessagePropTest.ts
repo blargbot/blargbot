@@ -1,7 +1,7 @@
 import { BBTagContext } from '@blargbot/bbtag';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '@blargbot/bbtag/errors';
 import { snowflake } from '@blargbot/core/utils';
-import { APIChannel, APIMessage } from 'discord-api-types';
+import { APIChannel, APIMessage } from 'discord-api-types/v9';
 import { GuildTextableChannel, KnownGuildChannel, KnownTextableChannel, Message } from 'eris';
 
 import { SubtagTestCase, SubtagTestContext } from '../SubtagTestSuite';

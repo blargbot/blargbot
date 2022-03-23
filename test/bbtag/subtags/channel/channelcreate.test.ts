@@ -1,7 +1,7 @@
 import { BBTagRuntimeError } from '@blargbot/bbtag/errors';
 import { ChannelCreateSubtag } from '@blargbot/bbtag/subtags/channel/channelcreate';
 import { EscapeBbtagSubtag } from '@blargbot/bbtag/subtags/misc/escapebbtag';
-import { ChannelType, OverwriteType } from 'discord-api-types';
+import { ChannelType, OverwriteType } from 'discord-api-types/v9';
 import { ApiError, CategoryChannel, Channel, Constants, NewsChannel, StoreChannel, TextChannel, VoiceChannel } from 'eris';
 
 import { argument } from '../../mock';

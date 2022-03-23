@@ -34,6 +34,6 @@
         "@types/twemoji": "workspace:^",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.9",
-        "discord-api-types": "^0.25.2"
+        "discord-api-types": "^0.29.0"
     }
 }

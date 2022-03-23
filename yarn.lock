@@ -298,7 +298,7 @@ __metadata:
     chai-bytes: ^0.1.2
     chai-datetime: ^1.8.0
     chai-exclude: ^2.1.0
-    discord-api-types: ^0.25.2
+    discord-api-types: ^0.29.0
     eris: ^0.16.1
     mocha: ^9.2.2
     moment-timezone: ^0.5.34
@@ -321,7 +321,7 @@ __metadata:
     "@types/rwlock": ^5.0.3
     brainfuck-node: ^1.0.1
     color: ^4.1.0
-    discord-api-types: ^0.25.2
+    discord-api-types: ^0.29.0
     eris: ^0.16.1
     html-entities: ^2.3.2
     moment-timezone: ^0.5.34
@@ -353,7 +353,7 @@ __metadata:
     "@types/xml2js": ^0.4.9
     brainfuck-node: ^1.0.1
     crypto: ^1.0.1
-    discord-api-types: ^0.25.2
+    discord-api-types: ^0.29.0
     eris: ^0.16.1
     eventemitter3: ^4.0.7
     moment-timezone: ^0.5.34
@@ -3537,10 +3537,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"discord-api-types@npm:^0.25.2":
-  version: 0.25.2
-  resolution: "discord-api-types@npm:0.25.2"
-  checksum: bb80a9db706d8ae391ab5eae4536827832ffe744b69659029597aaf90d9b9ece6e9642bd44eb3f38b32a3783ad1eebce378403fc785ca5405f8b71d8d32678a5
+"discord-api-types@npm:^0.29.0":
+  version: 0.29.0
+  resolution: "discord-api-types@npm:0.29.0"
+  checksum: 1ca74693b4e9c611c3de17f604714425d81d537ee81669d040a8c37fb23fb634a6918dd7d21056ccb90a3f4741bc2750509f6c8dd922bf2b3ed544d18bd0f32a
   languageName: node
   linkType: hard
 

@@ -15,7 +15,7 @@ import * as chai from 'chai';
 import chaiBytes from 'chai-bytes';
 import chaiDateTime from 'chai-datetime';
 import chaiExclude from 'chai-exclude';
-import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types';
+import { APIChannel, APIGuild, APIGuildMember, APIMessage, APIRole, APITextChannel, APIThreadChannel, APIUser, ChannelType, GuildDefaultMessageNotifications, GuildExplicitContentFilter, GuildMFALevel, GuildNSFWLevel, GuildPremiumTier, GuildVerificationLevel } from 'discord-api-types/v9';
 import { BaseData, Channel, Client as Discord, ClientOptions as DiscordOptions, Collection, Constants, DiscordHTTPError, DiscordRESTError, ExtendedUser, Guild, KnownChannel, KnownChannelMap, KnownGuildTextableChannel, KnownTextableChannel, Member, Message, Role, Shard, ShardManager, User } from 'eris';
 import * as fs from 'fs';
 import { ClientRequest, IncomingMessage } from 'http';
@@ -138,8 +138,8 @@ export class SubtagTestContext {
     };
 
     public readonly channels = {
-        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }),
-        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' })
+        command: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'commands' }) as APITextChannel | APIThreadChannel,
+        general: SubtagTestContext.createApiChannel({ id: snowflake.create().toString(), name: 'general' }) as APITextChannel | APIThreadChannel
     };
 
     public readonly guild = SubtagTestContext.createApiGuild(
@@ -426,12 +426,16 @@ export class SubtagTestContext {
     }
 
     public createChannel<T extends ChannelType>(settings: RequireIds<APIChannel> & { type: T; }): KnownChannelMap[T]
+    public createChannel(settings: RequireIds<APITextChannel>): APITextChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel
     public createChannel(settings: RequireIds<APIChannel>): KnownChannel {
         const data = SubtagTestContext.createApiChannel(settings);
         return Channel.from(<BaseData><unknown>data, this.discord.instance);
     }
 
+    public static createApiChannel<T extends ChannelType>(settings: RequireIds<Extract<APIChannel, { type: T; }>> & { type: T; }): Extract<APIChannel, { type: T; }>;
+    public static createApiChannel(settings: RequireIds<APITextChannel>): APITextChannel;
+    public static createApiChannel(settings: RequireIds<APIChannel>): APIChannel;
     public static createApiChannel(settings: RequireIds<APIChannel>): APIChannel {
         return {
             name: 'Test Channel',

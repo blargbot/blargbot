@@ -1,6 +1,6 @@
 import { guard, parse } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
-import { GuildFeature } from 'discord-api-types';
+import { GuildFeature } from 'discord-api-types/v9';
 import { Constants, CreateThreadOptions, DiscordRESTError, KnownMessage } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';

@@ -20,6 +20,6 @@
         "@types/eris": "workspace:^",
         "@types/node-fetch": "^2.5.12",
         "@types/rwlock": "^5.0.3",
-        "discord-api-types": "^0.25.2"
+        "discord-api-types": "^0.29.0"
     }
 }

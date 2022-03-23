@@ -508,7 +508,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/rwlock", "npm:5.0.3"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["color", "npm:4.2.1"],\
-            ["discord-api-types", "npm:0.25.2"],\
+            ["discord-api-types", "npm:0.29.0"],\
             ["eris", "npm:0.16.1"],\
             ["html-entities", "npm:2.3.2"],\
             ["moment-timezone", "npm:0.5.34"],\
@@ -535,7 +535,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
             ["chai-exclude", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:2.1.0"],\
-            ["discord-api-types", "npm:0.25.2"],\
+            ["discord-api-types", "npm:0.29.0"],\
             ["eris", "npm:0.16.1"],\
             ["mocha", "npm:9.2.2"],\
             ["moment-timezone", "npm:0.5.34"],\
@@ -568,7 +568,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/xml2js", "npm:0.4.9"],\
             ["brainfuck-node", "npm:1.0.2"],\
             ["crypto", "npm:1.0.1"],\
-            ["discord-api-types", "npm:0.25.2"],\
+            ["discord-api-types", "npm:0.29.0"],\
             ["eris", "npm:0.16.1"],\
             ["eventemitter3", "npm:4.0.7"],\
             ["moment-timezone", "npm:0.5.34"],\
@@ -4685,10 +4685,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["discord-api-types", [\
-        ["npm:0.25.2", {\
-          "packageLocation": "./.yarn/cache/discord-api-types-npm-0.25.2-114f682047-bb80a9db70.zip/node_modules/discord-api-types/",\
+        ["npm:0.29.0", {\
+          "packageLocation": "./.yarn/cache/discord-api-types-npm-0.29.0-f97abb6038-1ca74693b4.zip/node_modules/discord-api-types/",\
           "packageDependencies": [\
-            ["discord-api-types", "npm:0.25.2"]\
+            ["discord-api-types", "npm:0.29.0"]\
           ],\
           "linkType": "HARD"\
         }]\
