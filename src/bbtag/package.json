@@ -6,19 +6,19 @@
         "@blargbot/core": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
-        "brainfuck-node": "^1.0.1",
-        "color": "^4.1.0",
+        "brainfuck-node": "^1.0.2",
+        "color": "^4.2.1",
         "eris": "^0.16.1",
         "html-entities": "^2.3.2",
         "moment-timezone": "^0.5.34",
-        "node-fetch": "^2.6.1",
+        "node-fetch": "^2.6.7",
         "rwlock": "^5.0.0"
     },
     "devDependencies": {
         "@types/brainfuck-node": "workspace:^",
-        "@types/color": "^3.0.2",
+        "@types/color": "^3.0.3",
         "@types/eris": "workspace:^",
-        "@types/node-fetch": "^2.5.12",
+        "@types/node-fetch": "^2.6.1",
         "@types/rwlock": "^5.0.3",
         "discord-api-types": "^0.29.0"
     }

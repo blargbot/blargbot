@@ -1,6 +1,6 @@
 import { Snowflake } from 'catflake';
 import { PartialEmoji } from 'eris';
-import * as twemoji from 'twemoji';
+import twemoji from 'twemoji';
 
 import { snowflake } from './utils';
 
@@ -38,9 +38,12 @@ export class Emote {
             emotes.push(new Emote(name, id, false));
             return '';
         });
-        text = twemoji.replace(text, emote => {
-            emotes.push(new Emote(emote, undefined, false));
-            return '';
+        twemoji.parse(text, {
+            callback(codepoint) {
+                const emote = twemoji.convert.fromCodePoint(codepoint);
+                emotes.push(new Emote(emote, undefined, false));
+                return text = text.replace(emote, '');
+            }
         });
 
         const result = emotes

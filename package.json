@@ -10,19 +10,19 @@
         "definitions/*"
     ],
     "devDependencies": {
-        "@types/node": "^16.11.11",
-        "@typescript-eslint/eslint-plugin": "^5.5.0",
-        "@typescript-eslint/parser": "^5.5.0",
+        "@types/node": "^16.11.26",
+        "@typescript-eslint/eslint-plugin": "^5.16.0",
+        "@typescript-eslint/parser": "^5.16.0",
         "@yarnpkg/sdks": "^2.6.0",
         "del-cli": "^4.0.1",
-        "eslint": "^8.3.0",
-        "eslint-plugin-import": "^2.25.3",
+        "eslint": "^8.11.0",
+        "eslint-plugin-import": "^2.25.4",
         "eslint-plugin-simple-import-sort": "^7.0.0",
         "mocha": "^9.2.2",
         "nyc": "^15.1.0",
         "ts-node": "^10.7.0",
-        "typescript": "^4.5.2",
-        "yarn": "^1.22.17"
+        "typescript": "^4.6.2",
+        "yarn": "^1.22.18"
     },
     "scripts": {
         "filecount": "cloc ./ --exclude-dir=node_modules --exclude-ext=js,msj,cjs",
@@ -49,6 +49,9 @@
     "homepage": "https://github.com/blargbot/blargbot#readme",
     "dependenciesMeta": {
         "mocha@9.2.2": {
+            "unplugged": true
+        },
+        "svg2png@4.1.1": {
             "unplugged": true
         }
     }

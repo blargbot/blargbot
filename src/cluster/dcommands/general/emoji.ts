@@ -3,7 +3,7 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { Emote } from '@blargbot/core/Emote';
 import { SendPayload } from '@blargbot/core/types';
 import { FileContent } from 'eris';
-import fs from 'fs';
+import fetch from 'node-fetch';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
 
@@ -32,7 +32,7 @@ export class EmojiCommand extends BaseGlobalCommand {
     public async emoji(emoji: string, size: number, svg: boolean): Promise<FileContent | SendPayload> {
         const parsedEmojis = Emote.findAll(emoji);
         if (parsedEmojis.length === 0)
-            return 'No emoji found!';
+            return this.error('No emoji found!');
 
         const parsedEmoji = parsedEmojis[0];
         if (parsedEmoji.id !== undefined) {
@@ -40,21 +40,19 @@ export class EmojiCommand extends BaseGlobalCommand {
             return { embeds: [{ image: { url } }] };
         }
 
-        try {
-            const codePoint = twemoji.convert.toCodePoint(parsedEmoji.name);
-            const file = require.resolve(`twemoji/2/svg/${codePoint}.svg`);
-            const body = fs.readFileSync(file);
-            if (svg)
-                return { name: 'emoji.svg', file: body };
+        const codePoint = twemoji.convert.toCodePoint(parsedEmoji.name);
+        const file = await fetch(`https://twemoji.maxcdn.com/svg/${codePoint}.svg`);
+        if (!file.status.toString().startsWith('2'))
+            return this.error('Failed to get image for emoji');
 
-            const buffer = await svg2png(body, {
-                width: size,
-                height: size
-            });
-            return { name: 'emoji.png', file: buffer };
-        } catch {
-            return 'Invalid emoji!';
-        }
+        const body = await file.buffer();
+        if (svg)
+            return { name: 'emoji.svg', file: body };
 
+        const buffer = await svg2png(body, {
+            width: size,
+            height: size
+        });
+        return { name: 'emoji.png', file: buffer };
     }
 }
