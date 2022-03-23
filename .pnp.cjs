@@ -41,6 +41,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:definitions/eris"\
       },\
       {\
+        "name": "@types/long",\
+        "reference": "workspace:definitions/long"\
+      },\
+      {\
         "name": "@types/mocha",\
         "reference": "workspace:definitions/mocha"\
       },\
@@ -138,6 +142,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@types/catflake", ["workspace:definitions/catflake"]],\
       ["@types/color-thief-jimp", ["workspace:definitions/color-thief-jimp"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
+      ["@types/long", ["workspace:definitions/long"]],\
       ["@types/mocha", ["workspace:definitions/mocha"]],\
       ["@types/phantom", ["workspace:definitions/phantom"]],\
       ["@types/require-reload", ["workspace:definitions/require-reload"]],\
@@ -602,6 +607,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/color", "npm:3.0.3"],\
             ["@types/cron", "npm:1.7.3"],\
             ["@types/eris", "workspace:definitions/eris"],\
+            ["@types/long", "workspace:definitions/long"],\
             ["@types/pg", "npm:8.6.5"],\
             ["@types/require-reload", "workspace:definitions/require-reload"],\
             ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
@@ -617,6 +623,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.16.1"],\
             ["eventemitter3", "npm:4.0.7"],\
             ["limax", "npm:3.0.0"],\
+            ["long", "npm:2.4.0"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["pg", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:8.7.3"],\
             ["pg-hstore", "npm:2.3.4"],\
@@ -2360,6 +2367,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/long", "npm:4.0.1"]\
           ],\
           "linkType": "HARD"\
+        }],\
+        ["workspace:definitions/long", {\
+          "packageLocation": "./definitions/long/",\
+          "packageDependencies": [\
+            ["@types/long", "workspace:definitions/long"]\
+          ],\
+          "linkType": "SOFT"\
         }]\
       ]],\
       ["@types/md5", [\

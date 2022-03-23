@@ -5,6 +5,7 @@ import { Logger } from '@blargbot/logger';
 import { mapping } from '@blargbot/mapping';
 import { Client as Cassandra } from 'cassandra-driver';
 import { Embed } from 'eris';
+import Long from 'long';
 import { Duration } from 'moment-timezone';
 
 export class CassandraDbChatlogTable implements ChatlogsTable {
@@ -132,15 +133,15 @@ export class CassandraDbChatlogTable implements ChatlogsTable {
 
 const mapChatlog = mapping.object<Chatlog>({
     attachment: mapping.string.optional,
-    channelid: mapping.string,
+    channelid: mapping.instanceof(Long).map(v => v.toString()),
     content: mapping.string,
     embeds: mapping.json(mapping.array(v => mapping.fake<Embed>(v))),
     guildid: mapping.string,
-    id: mapping.guard(snowflake.test),
-    msgid: mapping.string,
+    id: mapping.instanceof(Long).map(v => v.toString()).chain(mapping.guard(snowflake.test)),
+    msgid: mapping.instanceof(Long).map(v => v.toString()),
     msgtime: mapping.instanceof(Date),
     type: mapping.in(ChatlogType.CREATE, ChatlogType.DELETE, ChatlogType.UPDATE),
-    userid: mapping.string
+    userid: mapping.instanceof(Long).map(v => v.toString())
 });
 
 function stringifyType(type: ChatlogType): string {
