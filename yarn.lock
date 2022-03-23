@@ -399,6 +399,7 @@ __metadata:
     "@types/color": ^3.0.2
     "@types/cron": ^1.7.3
     "@types/eris": "workspace:^"
+    "@types/long": "workspace:^"
     "@types/pg": ^8.6.1
     "@types/require-reload": "workspace:^"
     "@types/rethinkdb": "workspace:^"
@@ -414,6 +415,7 @@ __metadata:
     eris: ^0.16.1
     eventemitter3: ^4.0.7
     limax: ^3.0.0
+    long: ^2.2.0
     moment-timezone: ^0.5.34
     pg: ^8.7.1
     pg-hstore: ^2.3.4
@@ -1644,6 +1646,12 @@ __metadata:
   checksum: ff9653c33f5000d0f131fd98a950a0343e2e33107dd067a97ac4a3b9678e1a2e39ea44772ad920f54ef6e8f107f76bc92c2584ba905a0dc4253282a4101166d0
   languageName: node
   linkType: hard
+
+"@types/long@workspace:^, @types/long@workspace:definitions/long":
+  version: 0.0.0-use.local
+  resolution: "@types/long@workspace:definitions/long"
+  languageName: unknown
+  linkType: soft
 
 "@types/md5@npm:^2.3.1":
   version: 2.3.2
