@@ -35,7 +35,6 @@
         "watch": "tsc --watch",
         "rebuild": "yarn run clean && yarn run build",
         "lint": "eslint --ext .ts,.mts,.cts ./",
-        "postinstall": "husky install",
         "clean": "del-cli \"**/*.js\" \"**/*.js.map\" \"**/*.mjs\" \"**/*.mjs.map\" \"**/*.cjs\" \"**/*.cjs.map\" \"!node_modules\" \"coverage/\" \".nyc_output/\""
     },
     "repository": {
