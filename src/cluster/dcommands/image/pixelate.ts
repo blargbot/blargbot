@@ -1,9 +1,9 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/core/utils';
 import { ImageResult } from '@blargbot/image/types';
 import { User } from 'eris';
 
-export class PixelateCommand extends BaseGlobalImageCommand {
+export class PixelateCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'pixelate',

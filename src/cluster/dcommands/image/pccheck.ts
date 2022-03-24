@@ -1,7 +1,7 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { ImageResult } from '@blargbot/image/types';
 
-export class PCCheckCommand extends BaseGlobalImageCommand {
+export class PCCheckCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'pccheck',

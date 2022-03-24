@@ -1,11 +1,11 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { guard, humanize } from '@blargbot/core/utils';
 import { mapping } from '@blargbot/mapping';
 import { EmbedOptions } from 'eris';
 import fetch, { RequestInit } from 'node-fetch';
 
-export class DefineCommand extends BaseGlobalCommand {
+export class DefineCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'define',

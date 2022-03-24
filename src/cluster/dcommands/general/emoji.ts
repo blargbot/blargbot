@@ -1,4 +1,4 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { Emote } from '@blargbot/core/Emote';
 import { SendPayload } from '@blargbot/core/types';
@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 import svg2png from 'svg2png';
 import twemoji from 'twemoji';
 
-export class EmojiCommand extends BaseGlobalCommand {
+export class EmojiCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'emoji',

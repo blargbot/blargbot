@@ -1,7 +1,7 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, pluralise as p, randChoose, randInt } from '@blargbot/cluster/utils';
 
-export class RussianRouletteCommand extends BaseGlobalCommand {
+export class RussianRouletteCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'rr',

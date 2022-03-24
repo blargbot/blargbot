@@ -1,9 +1,9 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord, pluralise as p } from '@blargbot/cluster/utils';
 import { EmbedOptions, Member } from 'eris';
 
-export class VoteBanCommand extends BaseGuildCommand {
+export class VoteBanCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'voteban',

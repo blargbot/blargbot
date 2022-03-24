@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import moment from 'moment-timezone';
 
-export class RestartCommand extends BaseGlobalCommand {
+export class RestartCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'restart',

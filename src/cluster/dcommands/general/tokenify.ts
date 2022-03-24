@@ -1,7 +1,7 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randInt } from '@blargbot/cluster/utils';
 
-export class TokenifyCommand extends BaseGlobalCommand {
+export class TokenifyCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'tokenify',

@@ -3,8 +3,8 @@ import { CommandType } from '@blargbot/cluster/utils';
 import { ImageGeneratorMap, ImageResult } from '@blargbot/image/types';
 import { Duration, duration } from 'moment-timezone';
 
-import { BaseGlobalCommand } from './BaseGlobalCommand';
 import { CommandContext } from './CommandContext';
+import { GlobalCommand } from './GlobalCommand';
 import { RatelimitMiddleware, SingleThreadMiddleware } from './middleware';
 
 export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandContext>, 'category'> {
@@ -12,7 +12,7 @@ export interface GlobalImageCommandOptions extends Omit<CommandOptions<CommandCo
     ratelimit?: Duration;
 }
 
-export abstract class BaseGlobalImageCommand extends BaseGlobalCommand {
+export abstract class GlobalImageCommand extends GlobalCommand {
     public constructor(options: GlobalImageCommandOptions) {
         super({
             ...options,

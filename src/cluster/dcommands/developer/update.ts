@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { exec } from 'child_process';
 
-export class UpdateCommand extends BaseGlobalCommand {
+export class UpdateCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'update',

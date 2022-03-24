@@ -1,11 +1,11 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, createSafeRegExp, getRange, parse, randChoose, randInt } from '@blargbot/cluster/utils';
 import { GuildFilteredAutoresponse, GuildTriggerTag, SendContent, SendPayload } from '@blargbot/core/types';
 import { codeBlock, guard } from '@blargbot/core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
-export class AutoResponseCommand extends BaseGuildCommand {
+export class AutoResponseCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'autoresponse',

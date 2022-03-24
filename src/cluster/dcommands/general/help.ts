@@ -1,7 +1,7 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 
-export class HelpCommand extends BaseGlobalCommand {
+export class HelpCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'help',

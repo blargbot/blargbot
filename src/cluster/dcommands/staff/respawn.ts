@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { ClusterRespawnRequest } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 
-export class RespawnCommand extends BaseGlobalCommand {
+export class RespawnCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'respawn',

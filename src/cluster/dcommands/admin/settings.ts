@@ -1,10 +1,10 @@
 import { Cluster } from '@blargbot/cluster';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, defaultStaff, guard, guildSettings, parse } from '@blargbot/cluster/utils';
 import { EmbedOptions, Guild } from 'eris';
 
-export class SettingsCommand extends BaseGuildCommand {
+export class SettingsCommand extends GuildCommand {
     public constructor(cluster: Cluster) {
         super({
             name: 'settings',

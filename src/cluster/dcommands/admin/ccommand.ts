@@ -1,6 +1,6 @@
 import { bbtag } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { CommandResult, CustomCommandShrinkwrap, GuildCommandContext, GuildShrinkwrap, ICommand, SignedGuildShrinkwrap } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, getBBTagDocsEmbed, guard, humanize, parse } from '@blargbot/cluster/utils';
 import { Configuration } from '@blargbot/config';
@@ -11,7 +11,7 @@ import { EmbedOptions, FileContent, Role } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 import fetch from 'node-fetch';
 
-export class CustomCommandCommand extends BaseGuildCommand {
+export class CustomCommandCommand extends GuildCommand {
     public static readonly reservedCommandNames = new Set<string>(['ccommand', 'editcommand']);
 
     public constructor(cluster: Cluster) {

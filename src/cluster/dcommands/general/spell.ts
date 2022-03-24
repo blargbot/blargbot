@@ -1,9 +1,9 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, randChoose } from '@blargbot/cluster/utils';
 import spellsJson from '@blargbot/res/spells.json';
 import { EmbedOptions } from 'eris';
 
-export class SpellCommand extends BaseGlobalCommand {
+export class SpellCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'spell',

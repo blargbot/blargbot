@@ -1,9 +1,9 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/cluster/utils';
 import { ImageResult, TriggeredOptions } from '@blargbot/image/types';
 import { User } from 'eris';
 
-export class TriggeredCommand extends BaseGlobalImageCommand {
+export class TriggeredCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'triggered',

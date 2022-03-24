@@ -5,7 +5,7 @@ import { CommandPermissions } from '@blargbot/core/types';
 import { parse } from '@blargbot/core/utils';
 import { Guild, KnownGuildTextableChannel, User } from 'eris';
 
-export abstract class BaseCommandManager<T> implements ICommandManager<T> {
+export abstract class CommandManager<T> implements ICommandManager<T> {
     public abstract readonly size: number;
 
     protected constructor(

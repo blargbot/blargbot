@@ -1,10 +1,10 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
 import { StoredGuildEventLogType } from '@blargbot/core/types';
 import { EmbedField, EmbedOptions, KnownChannel, Role, User, Webhook } from 'eris';
 
-export class LogCommand extends BaseGuildCommand {
+export class LogCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'log',

@@ -1,12 +1,12 @@
 import { ClusterUtilities } from '@blargbot/cluster';
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { CommandType, commandTypeDetails, guard, randChoose } from '@blargbot/cluster/utils';
 import { SendContent } from '@blargbot/core/types';
 import { ImageResult } from '@blargbot/image/types';
 import cahData from '@blargbot/res/cah.json';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
-export class CAHCommand extends BaseGlobalImageCommand {
+export class CAHCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'cah',

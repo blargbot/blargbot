@@ -1,8 +1,8 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard, humanize } from '@blargbot/core/utils';
 import { ImageResult, ValidFont } from '@blargbot/image/types';
 
-export class CaptionCommand extends BaseGlobalImageCommand {
+export class CaptionCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'caption',

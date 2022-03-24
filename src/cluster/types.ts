@@ -1,5 +1,5 @@
 import { SubtagSignatureDetails, SubtagType } from '@blargbot/bbtag';
-import { BaseCommand, CommandContext, ScopedCommandBase } from '@blargbot/cluster/command';
+import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, FlagDefinition, FlagResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings } from '@blargbot/core/types';
 import { ImageResult } from '@blargbot/image/types';
@@ -75,7 +75,7 @@ export type CommandGetCoreResult<T = unknown> =
 
 export type CommandManagerTypeMap = {
     custom: NamedGuildCommandTag;
-    default: BaseCommand;
+    default: Command;
 };
 
 export type CommandManagers = { [P in keyof CommandManagerTypeMap]: ICommandManager<CommandManagerTypeMap[P]> }
@@ -438,7 +438,7 @@ export interface CommandBinderStateLookupCache {
 
 export interface CommandBinderState<TContext extends CommandContext> {
     readonly context: TContext;
-    readonly command: ScopedCommandBase<TContext>;
+    readonly command: ScopedCommand<TContext>;
     readonly arguments: ReadonlyArray<CommandBinderDeferred | CommandBinderSuccess>;
     readonly flags: FlagResult;
     readonly argIndex: number;

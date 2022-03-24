@@ -6,7 +6,7 @@ import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { CommandContext } from './CommandContext';
 
-export abstract class BaseCommand implements CommandBaseOptions, IMiddleware<CommandContext, CommandResult> {
+export abstract class Command implements CommandBaseOptions, IMiddleware<CommandContext, CommandResult> {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: CommandType;

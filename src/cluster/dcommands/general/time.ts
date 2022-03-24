@@ -1,9 +1,9 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 import moment from 'moment-timezone';
 
-export class TimeCommand extends BaseGlobalCommand {
+export class TimeCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'time',

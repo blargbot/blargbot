@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { BaseCommand, CommandContext } from '@blargbot/cluster/command';
+import { Command, CommandContext } from '@blargbot/cluster/command';
 import { CommandGetCoreResult, CommandParameter, CommandResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
 import { commandTypeDetails, guard } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
@@ -8,16 +8,16 @@ import { Timer } from '@blargbot/core/Timer';
 import { CommandPermissions, FlagDefinition, NextMiddleware } from '@blargbot/core/types';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
-import { BaseCommandManager } from './BaseCommandManager';
+import { CommandManager } from './CommandManager';
 
-export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
-    public readonly modules: ModuleLoader<BaseCommand>;
+export class DefaultCommandManager extends CommandManager<Command> {
+    public readonly modules: ModuleLoader<Command>;
 
     public get size(): number { return this.modules.size; }
 
     public constructor(source: string, cluster: Cluster) {
         super(cluster);
-        this.modules = new ModuleLoader(source, BaseCommand, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
+        this.modules = new ModuleLoader(source, Command, [cluster], cluster.logger, command => [command.name, ...command.aliases]);
     }
 
     public async load(commands?: Iterable<string> | boolean): Promise<void> {
@@ -27,7 +27,7 @@ export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
             this.modules.reload(this.modules.source(commands));
     }
 
-    protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<BaseCommand>> {
+    protected async getCore(name: string, location?: Guild | KnownTextableChannel, user?: User): Promise<CommandGetCoreResult<Command>> {
         const command = this.modules.get(name);
         if (command === undefined || !await command.isVisible(this.cluster.util, location, user))
             return { state: 'NOT_FOUND' };
@@ -70,7 +70,7 @@ export class DefaultCommandManager extends BaseCommandManager<BaseCommand> {
     }
 }
 
-class NormalizedCommand implements ICommand<BaseCommand> {
+class NormalizedCommand implements ICommand<Command> {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly description: string | undefined;
@@ -83,7 +83,7 @@ class NormalizedCommand implements ICommand<BaseCommand> {
     public readonly flags: readonly FlagDefinition[];
 
     public constructor(
-        public readonly implementation: BaseCommand,
+        public readonly implementation: Command,
         permissions: CommandPermissions
     ) {
         this.name = implementation.name;

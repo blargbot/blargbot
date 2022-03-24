@@ -1,9 +1,9 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { guard } from '@blargbot/cluster/utils';
 import { ImageResult } from '@blargbot/image/types';
 import { User } from 'eris';
 
-export class ArtCommand extends BaseGlobalImageCommand {
+export class ArtCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'art',

@@ -1,9 +1,9 @@
-import { BaseGlobalCommand } from '@blargbot/cluster/command';
+import { GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, randChoose } from '@blargbot/cluster/utils';
 import { FileContent } from 'eris';
 import fetch from 'node-fetch';
 
-export class StatusCommand extends BaseGlobalCommand {
+export class StatusCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'status',

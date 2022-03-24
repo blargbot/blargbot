@@ -2,9 +2,9 @@ import { CommandResult, PrivateCommandContext } from '@blargbot/cluster/types';
 import { guard } from '@blargbot/cluster/utils';
 
 import { CommandContext } from './CommandContext';
-import { ScopedCommandBase } from './ScopedCommandBase';
+import { ScopedCommand } from './ScopedCommand';
 
-export abstract class BasePrivateCommand extends ScopedCommandBase<PrivateCommandContext> {
+export abstract class PrivateCommand extends ScopedCommand<PrivateCommandContext> {
     public guardContext(context: CommandContext): context is PrivateCommandContext {
         return guard.isPrivateCommandContext(context);
     }

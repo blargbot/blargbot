@@ -1,9 +1,9 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
-export class KickCommand extends BaseGuildCommand {
+export class KickCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'kick',

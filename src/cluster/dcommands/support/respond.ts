@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { humanize } from '@blargbot/core/utils';
 
-export class RespondCommand extends BaseGlobalCommand {
+export class RespondCommand extends GlobalCommand {
 
     public constructor() {
         super({

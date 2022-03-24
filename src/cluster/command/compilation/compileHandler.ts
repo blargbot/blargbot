@@ -5,13 +5,13 @@ import { Binding } from '@blargbot/core/types';
 import { humanize } from '@blargbot/core/utils';
 
 import { CommandContext } from '../CommandContext';
-import { ScopedCommandBase } from '../ScopedCommandBase';
+import { ScopedCommand } from '../ScopedCommand';
 import * as bindings from './binding';
 import { getLookupCache } from './lookupCache';
 
 export function compileHandler<TContext extends CommandContext>(
     signatures: ReadonlyArray<CommandSignatureHandler<TContext>>,
-    command: ScopedCommandBase<TContext>
+    command: ScopedCommand<TContext>
 ): CommandHandler<TContext> {
     const binder = new Binder(buildBindings(signatures, 0), (current, next) => {
         if (current.bindIndex > next.bindIndex)

@@ -1,9 +1,9 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, pluralise as p } from '@blargbot/cluster/utils';
 import { Member } from 'eris';
 
-export class WarningsCommand extends BaseGuildCommand {
+export class WarningsCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'warnings',

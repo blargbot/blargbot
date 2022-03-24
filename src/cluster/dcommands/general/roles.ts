@@ -1,9 +1,9 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 
-export class RolesCommand extends BaseGuildCommand {
+export class RolesCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'roles',

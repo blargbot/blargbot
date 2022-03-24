@@ -1,5 +1,5 @@
 import { Cluster } from '@blargbot/cluster';
-import { BaseCommand } from '@blargbot/cluster/command';
+import { Command } from '@blargbot/cluster/command';
 import { CommandGetResult, CommandManagers, ICommand, ICommandManager } from '@blargbot/cluster/types';
 import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
 import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/core/types';
@@ -9,7 +9,7 @@ import { Client as Discord, Guild, KnownTextableChannel, PossiblyUncachedMessage
 export class AggregateCommandManager implements ICommandManager, CommandManagers {
     public readonly messages: MessageIdQueue;
     public readonly custom: ICommandManager<NamedGuildCommandTag>;
-    public readonly default: ICommandManager<BaseCommand>;
+    public readonly default: ICommandManager<Command>;
     private readonly managersArr: Array<CommandManagers[keyof CommandManagers]>;
 
     public get size(): number { return this.managersArr.reduce((p, c) => p + c.size, 0); }

@@ -1,9 +1,9 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, humanize, parse } from '@blargbot/cluster/utils';
 import { FlagResult } from '@blargbot/core/types';
 
-export class MassBanCommand extends BaseGuildCommand {
+export class MassBanCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'massban',

@@ -1,4 +1,4 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, parse, randInt } from '@blargbot/cluster/utils';
 import { Emote } from '@blargbot/core/Emote';
@@ -13,7 +13,7 @@ interface PollOptions {
     announce?: boolean;
 }
 
-export class PollCommand extends BaseGuildCommand {
+export class PollCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'poll',

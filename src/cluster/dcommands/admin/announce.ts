@@ -1,11 +1,11 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, discord } from '@blargbot/cluster/utils';
 import { guard, humanize } from '@blargbot/core/utils';
 import { AllowedMentions, Constants, EmbedOptions, KnownChannel, KnownGuildTextableChannel, Role } from 'eris';
 import moment from 'moment-timezone';
 
-export class AnnounceCommand extends BaseGuildCommand {
+export class AnnounceCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'announce',

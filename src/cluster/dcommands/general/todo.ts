@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 
-export class ToDoCommand extends BaseGlobalCommand {
+export class ToDoCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'todo',

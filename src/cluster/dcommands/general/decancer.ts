@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
 import { User } from 'eris';
 
-export class DecancerCommand extends BaseGlobalCommand {
+export class DecancerCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'decancer',

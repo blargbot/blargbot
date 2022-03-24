@@ -4,12 +4,12 @@ import { commandTypeDetails, runMiddleware } from '@blargbot/cluster/utils';
 import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
-import { BaseCommand } from './BaseCommand';
+import { Command } from './Command';
 import { CommandContext } from './CommandContext';
 import { compileSignatures } from './compilation';
 import { InvokeCommandHandlerMiddleware } from './middleware';
 
-export abstract class ScopedCommandBase<TContext extends CommandContext> extends BaseCommand {
+export abstract class ScopedCommand<TContext extends CommandContext> extends Command {
     private readonly handler: InvokeCommandHandlerMiddleware<TContext>;
     protected readonly middleware: Array<IMiddleware<TContext, CommandResult>>;
 

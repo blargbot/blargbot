@@ -1,10 +1,10 @@
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
 import { ChatlogSearchOptions, ChatlogType, SendContent } from '@blargbot/core/types';
 import { guard, sleep } from '@blargbot/core/utils';
 
-export class LogsCommand extends BaseGuildCommand {
+export class LogsCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'logs',

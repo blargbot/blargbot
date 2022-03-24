@@ -1,8 +1,8 @@
-import { BaseGlobalCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalCommand } from '@blargbot/cluster/command';
 import { codeBlock, CommandType, parse, pluralise as p, randChoose, randInt, repeat } from '@blargbot/cluster/utils';
 import { EmbedOptions } from 'eris';
 
-export class RollCommand extends BaseGlobalCommand {
+export class RollCommand extends GlobalCommand {
     public constructor() {
         super({
             name: 'roll',

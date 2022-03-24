@@ -1,11 +1,11 @@
 import { bbtag } from '@blargbot/bbtag';
-import { BaseGuildCommand } from '@blargbot/cluster/command';
+import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
 import { GuildRolemeEntry, SendContent } from '@blargbot/core/types';
 import { Constants, EmbedOptions } from 'eris';
 
-export class RolemeCommand extends BaseGuildCommand {
+export class RolemeCommand extends GuildCommand {
     public constructor() {
         super({
             name: 'roleme',

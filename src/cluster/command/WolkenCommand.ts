@@ -1,11 +1,11 @@
 import { CommandType } from '@blargbot/cluster/utils';
 import { EmbedOptions, User } from 'eris';
-import Wolke from 'wolken';
+import Wolken from 'wolken';
 
-import { BaseGlobalCommand } from './BaseGlobalCommand';
 import { CommandContext } from './CommandContext';
+import { GlobalCommand } from './GlobalCommand';
 
-export interface SocialWolkeOptions {
+export interface WolkeOptions {
     search: string;
     action?: string;
     user?: boolean;
@@ -13,12 +13,12 @@ export interface SocialWolkeOptions {
     wolkeKey: string;
 }
 
-export abstract class BaseSocialWolkeCommand extends BaseGlobalCommand {
-    private readonly client: Wolke;
+export abstract class WolkenCommand extends GlobalCommand {
+    private readonly client: Wolken;
 
     public constructor(
         name: string,
-        options: SocialWolkeOptions
+        options: WolkeOptions
     ) {
         super({
             name: name,
@@ -36,7 +36,7 @@ export abstract class BaseSocialWolkeCommand extends BaseGlobalCommand {
             ]
         });
 
-        this.client = new Wolke(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
+        this.client = new Wolken(options.wolkeKey, 'Wolke', 'blargbot/6.0.0');
     }
 
     public async render(context: CommandContext, type: string, action: string | undefined, target: User | undefined): Promise<EmbedOptions> {

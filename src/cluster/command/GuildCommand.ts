@@ -2,9 +2,9 @@ import { CommandResult, GuildCommandContext } from '@blargbot/cluster/types';
 import { guard } from '@blargbot/cluster/utils';
 
 import { CommandContext } from './CommandContext';
-import { ScopedCommandBase } from './ScopedCommandBase';
+import { ScopedCommand } from './ScopedCommand';
 
-export abstract class BaseGuildCommand extends ScopedCommandBase<GuildCommandContext> {
+export abstract class GuildCommand extends ScopedCommand<GuildCommandContext> {
     public guardContext(context: CommandContext): context is GuildCommandContext {
         return guard.isGuildCommandContext(context);
     }

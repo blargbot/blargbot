@@ -1,7 +1,7 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { ImageResult } from '@blargbot/image/types';
 
-export class ClydeCommand extends BaseGlobalImageCommand {
+export class ClydeCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'clyde',

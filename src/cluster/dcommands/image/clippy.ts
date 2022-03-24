@@ -1,7 +1,7 @@
-import { BaseGlobalImageCommand, CommandContext } from '@blargbot/cluster/command';
+import { CommandContext, GlobalImageCommand } from '@blargbot/cluster/command';
 import { ImageResult } from '@blargbot/image/types';
 
-export class ClippyCommand extends BaseGlobalImageCommand {
+export class ClippyCommand extends GlobalImageCommand {
     public constructor() {
         super({
             name: 'clippy',
