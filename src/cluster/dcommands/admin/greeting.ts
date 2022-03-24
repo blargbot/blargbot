@@ -44,7 +44,7 @@ export class GreetingCommand extends BaseGuildCommand {
                 },
                 {
                     parameters: 'info',
-                    description: 'Shows information about the current farewell message',
+                    description: 'Shows information about the current greeting message',
                     execute: (ctx) => this.getInfo(ctx)
                 }
             ]
