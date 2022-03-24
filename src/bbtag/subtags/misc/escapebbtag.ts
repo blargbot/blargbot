@@ -6,6 +6,7 @@ export class EscapeBbtagSubtag extends DefinedSubtag {
         super({
             name: 'escapebbtag',
             category: SubtagType.MISC,
+            aliases: ['escape'],
             definition: [
                 {
                     parameters: ['~input*'],
