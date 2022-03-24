@@ -1,8 +1,8 @@
+import discordEmoteData from '@blargbot/res/discordEmoteData.json';
 import { Snowflake } from 'catflake';
 import { PartialEmoji } from 'eris';
 import twemoji from 'twemoji';
 
-import discordEmoteData from './discordEmoteData.json';
 import { snowflake } from './utils';
 
 export class Emote {
