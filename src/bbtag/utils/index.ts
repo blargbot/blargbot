@@ -1,8 +1,8 @@
+import { parseBBTag } from '../language/parseBBTag';
 import { createDebugOutput } from './debugOutput';
 import { json } from './json';
 import * as operators from './operators';
 import { overrides } from './overrides';
-import { parseBBTag } from './parseBBTag';
 import { stringify } from './stringify';
 import { stringifyAnalysis } from './stringifyAnalysis';
 import { stringifyLocation } from './stringifyLocation';

@@ -1,11 +1,11 @@
 import { Embed } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class MessageEmbedsSubtag extends DefinedSubtag {
+export class MessageEmbedsSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'messageembeds',

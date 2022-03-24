@@ -2,13 +2,13 @@ import { guard } from '@blargbot/core/utils';
 import Color from 'color';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
 export type ColorFormat = keyof typeof colorConverters;
 
-export class ColorSubtag extends DefinedSubtag {
+export class ColorSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'color',

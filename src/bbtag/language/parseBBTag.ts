@@ -1,5 +1,7 @@
 import { BBTagRuntimeError } from '../errors';
-import { SourceMarker, SourceToken, SourceTokenType, Statement, SubtagCall } from '../types';
+import { SourceMarker } from './SourceMarker';
+import { Statement } from './Statement';
+import { SubtagCall } from './SubtagCall';
 
 type ToMutable<T> = T extends ReadonlyArray<infer E> ? Array<ToMutable<E>>
     : T extends SubtagCall ? MutableSubtagCall
@@ -158,4 +160,18 @@ function modify(str: MutableStatement['values'], index: number, mod: (str: strin
         str.splice(index, 1);
     else
         str[index] = elem;
+}
+
+export interface SourceToken {
+    type: SourceTokenType;
+    content: string;
+    start: SourceMarker;
+    end: SourceMarker;
+}
+
+export const enum SourceTokenType {
+    CONTENT,
+    STARTSUBTAG,
+    ENDSUBTAG,
+    ARGUMENTDELIMITER
 }

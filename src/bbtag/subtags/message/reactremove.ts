@@ -1,13 +1,13 @@
 import { Emote } from '@blargbot/core/Emote';
 import { ApiError, DiscordRESTError, EmbedField, EmbedOptions } from 'eris';
 
+import { SubtagArgumentArray } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError, UserNotFoundError } from '../../errors';
-import { SubtagArgumentArray } from '../../types';
 import { SubtagType } from '../../utils';
 
-export class ReactRemoveSubtag extends DefinedSubtag {
+export class ReactRemoveSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'reactremove',

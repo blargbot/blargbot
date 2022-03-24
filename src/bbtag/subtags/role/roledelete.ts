@@ -1,11 +1,11 @@
 import { ApiError, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, RoleNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class RoleDeleteSubtag extends DefinedSubtag {
+export class RoleDeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'roledelete',

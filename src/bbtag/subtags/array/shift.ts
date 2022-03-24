@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class ShiftSubtag extends DefinedSubtag {
+export class ShiftSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'shift',

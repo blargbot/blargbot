@@ -1,8 +1,8 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
-export class InjectSubtag extends DefinedSubtag {
+export class InjectSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'inject',

@@ -2,13 +2,13 @@ import { Emote } from '@blargbot/core/Emote';
 import { clamp, discord, guard, parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError, UserNotFoundError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
 const defaultCondition = bbtag.parse('true');
 
-export class WaitReactionSubtag extends DefinedSubtag {
+export class WaitReactionSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'waitreaction',

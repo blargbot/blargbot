@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class EveryoneMentionSubtag extends DefinedSubtag {
+export class EveryoneMentionSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'everyonemention',

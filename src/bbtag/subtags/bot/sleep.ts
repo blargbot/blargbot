@@ -1,13 +1,13 @@
 import { parse, sleep } from '@blargbot/core/utils';
 import moment from 'moment-timezone';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
 const maxSleep = moment.duration(5, 'minutes');
 
-export class SleepSubtag extends DefinedSubtag {
+export class SleepSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'sleep',

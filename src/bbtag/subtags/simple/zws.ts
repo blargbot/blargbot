@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class ZwsSubtag extends DefinedSubtag {
+export class ZwsSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'zws',

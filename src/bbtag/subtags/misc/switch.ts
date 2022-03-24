@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
-import { SubtagArgument } from '../../types';
+import { SubtagArgument } from '../../arguments';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class SwitchSubtag extends DefinedSubtag {
+export class SwitchSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'switch',

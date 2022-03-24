@@ -2,11 +2,11 @@ import { parse } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError, RoleNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class RoleSetPosSubtag extends DefinedSubtag {
+export class RoleSetPosSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'rolesetpos',

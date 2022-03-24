@@ -1,4 +1,4 @@
-import { ExecutionResult } from '@blargbot/bbtag/types';
+import { ExecutionResult } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { GuildRolemeEntry } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';

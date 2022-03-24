@@ -1,7 +1,8 @@
 import { parse } from '@blargbot/core/utils';
 
-import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic } from '../logic';
-import { AnySubtagHandlerDefinition, SubtagHandlerCallSignature, SubtagHandlerDefinitionParameterGroup, SubtagHandlerParameter, SubtagHandlerParameterGroup, SubtagHandlerValueParameter, SubtagLogic, SubtagResult, SubtagReturnTypeMap } from '../types';
+import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic, SubtagLogic } from '../logic';
+import { AnySubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagReturnTypeMap, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types';
+import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
 
 export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
     return definitions.map(parseDefinition);
@@ -15,7 +16,7 @@ function parseDefinition(definition: AnySubtagHandlerDefinition): SubtagHandlerC
     };
 }
 
-function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup): SubtagHandlerParameter {
+function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup): SubtagSignatureParameter {
     if (typeof parameter === 'object')
         return createParameterGroup(parameter.repeat.map(parseArgument), parameter.minCount ?? 0);
 
@@ -52,7 +53,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
         }
     }
 
-    const result: SubtagHandlerValueParameter = {
+    const result: SubtagSignatureValueParameter = {
         name: name.slice(0, name.length - 1),
         autoResolve,
         required,
@@ -63,7 +64,7 @@ function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup
     return greedy === false ? result : createParameterGroup([result], greedy);
 }
 
-function createParameterGroup(parameters: SubtagHandlerParameter[], minCount: number): SubtagHandlerParameterGroup {
+function createParameterGroup(parameters: SubtagSignatureParameter[], minCount: number): SubtagSignatureParameterGroup {
     const nested = [];
     for (const p of parameters) {
         if ('nested' in p || !p.required)
@@ -73,12 +74,12 @@ function createParameterGroup(parameters: SubtagHandlerParameter[], minCount: nu
     return { nested, minRepeats: minCount };
 }
 
-function getExecute(definition: AnySubtagHandlerDefinition): SubtagLogic<SubtagResult> {
+function getExecute(definition: AnySubtagHandlerDefinition): SubtagLogic {
     const wrapper = logicWrappers[definition.returns];
     return new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>);
 }
 
-const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic<SubtagResult> } = {
+const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic } = {
     'unknown': DeferredSubtagLogic,
     'number': StringifySubtagLogic,
     'hex': StringSubtagLogic.withConversion(val => val.toString(16).padStart(6, '0')),

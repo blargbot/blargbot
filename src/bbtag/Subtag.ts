@@ -4,7 +4,8 @@ import { abstract } from '@blargbot/core/utils';
 import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from './BBTagContext';
-import { SubtagCall, SubtagOptions, SubtagResult, SubtagSignatureDetails } from './types';
+import { SubtagCall } from './language';
+import { SubtagOptions, SubtagSignatureDetails } from './types';
 import { SubtagType } from './utils';
 
 @abstract
@@ -32,7 +33,7 @@ export abstract class Subtag implements SubtagOptions {
     }
 
     @abstract.sealed
-    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
+    public async * execute(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
         const timer = new Timer().start();
         try {
             yield* this.executeCore(context, subtagName, subtag);
@@ -44,7 +45,7 @@ export abstract class Subtag implements SubtagOptions {
         }
     }
 
-    protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult;
+    protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
 
     public enrichDocs(docs: EmbedOptions): EmbedOptions {
         return docs;

@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class LengthSubtag extends DefinedSubtag {
+export class LengthSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'length',

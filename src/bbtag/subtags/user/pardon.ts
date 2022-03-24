@@ -1,11 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotANumberError, UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class PardonSubtag extends DefinedSubtag {
+export class PardonSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'pardon',

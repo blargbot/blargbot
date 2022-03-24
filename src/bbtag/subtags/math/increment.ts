@@ -1,11 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotABooleanError, NotANumberError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class IncrementSubtag extends DefinedSubtag {
+export class IncrementSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'increment',

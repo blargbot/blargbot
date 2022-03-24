@@ -1,10 +1,10 @@
 import { randChoose } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class RandUserSubtag extends DefinedSubtag {
+export class RandUserSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'randuser',

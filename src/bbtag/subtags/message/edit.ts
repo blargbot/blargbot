@@ -2,11 +2,11 @@ import { guard, parse } from '@blargbot/core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class EditSubtag extends DefinedSubtag {
+export class EditSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'edit',

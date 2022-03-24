@@ -1,8 +1,8 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class GuildOwnerIdSubtag extends DefinedSubtag {
+export class GuildOwnerIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'guildownerid',

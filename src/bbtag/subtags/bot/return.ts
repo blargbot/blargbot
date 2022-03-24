@@ -1,11 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeState } from '../../types';
 import { SubtagType } from '../../utils';
 
-export class ReturnSubtag extends DefinedSubtag {
+export class ReturnSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'return',

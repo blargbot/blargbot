@@ -3,11 +3,11 @@ import { snowflake } from '@blargbot/core/utils';
 import { ApiError, DiscordRESTError, EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ReactListSubtag extends DefinedSubtag {
+export class ReactListSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'reactlist',

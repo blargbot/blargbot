@@ -1,9 +1,10 @@
+import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
-import { BBTagRuntimeState, SubtagArgument } from '../../types';
+import { CompiledSubtag } from '../../compilation';
+import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
-export class MapSubtag extends DefinedSubtag {
+export class MapSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'map',

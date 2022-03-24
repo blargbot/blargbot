@@ -1,8 +1,7 @@
-import { BBTagContext, BBTagEngine, Subtag } from '@blargbot/bbtag';
+import { BBTagContext, BBTagContextOptions, BBTagEngine, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, Subtag, SubtagCall } from '@blargbot/bbtag';
 import { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit';
-import { BBTagContextOptions, BBTagRuntimeScope, LocatedRuntimeError, SourceMarker, SubtagCall, SubtagResult } from '@blargbot/bbtag/types';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils';
 import { Database } from '@blargbot/core/database';
 import { ModuleLoader } from '@blargbot/core/modules';
@@ -516,7 +515,7 @@ export class TestDataSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): SubtagResult {
+    protected async * executeCore(_: unknown, __: unknown, subtag: SubtagCall): AsyncIterable<string> {
         if (subtag.args.length !== 1)
             throw new RangeError(`Subtag ${this.name} must be given 1 argument!`);
         const key = subtag.args[0].source;
@@ -554,7 +553,7 @@ export class AssertSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
+    protected async * executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string> {
         yield await this.assertion(context, subtagName, subtag);
     }
 }
@@ -608,7 +607,7 @@ export class EchoArgsSubtag extends Subtag {
         });
     }
 
-    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): SubtagResult {
+    protected async * executeCore(_: BBTagContext, __: string, subtag: SubtagCall): AsyncIterable<string> {
         await Promise.resolve();
         yield '[';
         yield JSON.stringify(subtag.name.source);

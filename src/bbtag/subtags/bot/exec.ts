@@ -1,12 +1,12 @@
 import { humanize, parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { BBTagRuntimeState } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
-export class ExecSubtag extends DefinedSubtag {
+export class ExecSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'exec',

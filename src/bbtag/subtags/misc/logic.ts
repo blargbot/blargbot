@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError } from '../../errors';
 import { bbtag, LogicOperator, SubtagType } from '../../utils';
 
-export class LogicSubtag extends DefinedSubtag {
+export class LogicSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'logic',

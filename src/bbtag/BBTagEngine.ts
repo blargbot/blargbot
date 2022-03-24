@@ -10,9 +10,10 @@ import { inspect } from 'util';
 import { BBTagContext } from './BBTagContext';
 import { BBTagUtilities, InjectionContext } from './BBTagUtilities';
 import { BBTagRuntimeError, InternalServerError, SubtagStackOverflowError, TagCooldownError } from './errors';
+import { Statement, SubtagCall } from './language';
 import { Subtag } from './Subtag';
 import { TagCooldownManager } from './TagCooldownManager';
-import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult, Statement, SubtagCall } from './types';
+import { AnalysisResults, BBTagContextOptions, BBTagRuntimeState, ExecutionResult } from './types';
 import { bbtag as bbtagUtil } from './utils';
 
 export class BBTagEngine {

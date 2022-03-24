@@ -1,4 +1,4 @@
-import { ExecutionResult } from '@blargbot/bbtag/types';
+import { ExecutionResult } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { snowflake } from '@blargbot/cluster/utils';
 import { GuildTriggerTag } from '@blargbot/core/types';

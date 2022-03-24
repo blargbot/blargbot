@@ -1,11 +1,11 @@
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class DeleteSubtag extends DefinedSubtag {
+export class DeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'delete',

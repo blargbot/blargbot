@@ -1,6 +1,6 @@
 import { createHash, getHashes } from 'crypto';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
@@ -14,7 +14,7 @@ const allowedHashes = new Set([
 
 export const supportedHashes = getHashes().filter(h => allowedHashes.has(h));
 
-export class HashSubtag extends DefinedSubtag {
+export class HashSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'hash',

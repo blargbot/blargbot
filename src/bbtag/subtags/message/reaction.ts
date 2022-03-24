@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ReactionSubtag extends DefinedSubtag {
+export class ReactionSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'reaction',

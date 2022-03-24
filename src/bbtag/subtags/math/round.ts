@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotANumberError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class RoundSubtag extends DefinedSubtag {
+export class RoundSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'round',

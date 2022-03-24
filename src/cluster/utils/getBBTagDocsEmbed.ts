@@ -1,6 +1,6 @@
+import { SubtagSignatureDetails, SubtagSignatureValueParameter } from '@blargbot/bbtag';
 import { limits } from '@blargbot/bbtag/limits';
 import { Subtag } from '@blargbot/bbtag/Subtag';
-import { SubtagHandlerValueParameter, SubtagSignatureDetails } from '@blargbot/bbtag/types';
 import { bbtag, SubtagType, tagTypeDetails } from '@blargbot/bbtag/utils';
 import { codeBlock, humanize, quote } from '@blargbot/core/utils';
 import { EmbedField, EmbedOptions } from 'eris';
@@ -182,7 +182,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
 function toField(subtag: Subtag, signature: SubtagSignatureDetails, index: number): EmbedField {
     let description = codeBlock(bbtag.stringifyParameters(subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
-        .flatMap<SubtagHandlerValueParameter>(p => 'nested' in p ? p.nested : [p])
+        .flatMap<SubtagSignatureValueParameter>(p => 'nested' in p ? p.nested : [p])
         .filter(param => param.defaultValue !== '')
         .map(param => `\`${param.name}\` defaults to \`${param.defaultValue}\` if ${param.required ? 'left blank' : 'omitted or left blank'}`)
         .join('\n');

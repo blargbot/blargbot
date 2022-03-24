@@ -2,7 +2,9 @@ import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from '../BBTagContext';
 import { ArgumentLengthError } from '../errors';
-import { BBTagRuntimeState, Statement, SubtagArgument, SubtagCall, SubtagHandlerValueParameter } from '../types';
+import { Statement, SubtagCall } from '../language';
+import { BBTagRuntimeState, SubtagSignatureValueParameter } from '../types';
+import { SubtagArgument } from './SubtagArgument';
 
 export class ExecutingSubtagArgumentValue implements SubtagArgument {
     #promise?: Promise<string>;
@@ -17,7 +19,7 @@ export class ExecutingSubtagArgumentValue implements SubtagArgument {
     }
 
     public constructor(
-        public readonly parameter: SubtagHandlerValueParameter,
+        public readonly parameter: SubtagSignatureValueParameter,
         private readonly context: BBTagContext,
         private readonly subtagName: string,
         public readonly call: SubtagCall,

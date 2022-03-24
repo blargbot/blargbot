@@ -1,10 +1,10 @@
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class ChannelCategoriesSubtag extends DefinedSubtag {
+export class ChannelCategoriesSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channelcategories',

@@ -1,17 +1,20 @@
 import { parse } from '@blargbot/core/utils';
 
-import { BBTagContext } from './BBTagContext';
-import { compileSignatures, parseDefinitions } from './compilation';
-import { BBTagRuntimeError } from './errors';
-import { Subtag } from './Subtag';
-import { AnySubtagHandlerDefinition, CompositeSubtagHandler, SubtagCall, SubtagOptions, SubtagResult } from './types';
-import { bbtag } from './utils';
+import { BBTagContext } from '../BBTagContext';
+import { BBTagRuntimeError } from '../errors';
+import { SubtagCall } from '../language';
+import { Subtag } from '../Subtag';
+import { AnySubtagHandlerDefinition, SubtagOptions } from '../types';
+import { bbtag } from '../utils';
+import { compileSignatures } from './compileSignatures';
+import { CompositeSubtagHandler } from './CompositeSubtagHandler';
+import { parseDefinitions } from './parseDefinitions';
 
 export interface DefinedSubtagOptions extends Omit<SubtagOptions, 'signatures'> {
     readonly definition: readonly AnySubtagHandlerDefinition[];
 }
 
-export abstract class DefinedSubtag extends Subtag {
+export abstract class CompiledSubtag extends Subtag {
     readonly #handler: CompositeSubtagHandler;
 
     public constructor(options: DefinedSubtagOptions) {
@@ -21,7 +24,7 @@ export abstract class DefinedSubtag extends Subtag {
         this.#handler = compileSignatures(signatures);
     }
 
-    protected executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): SubtagResult {
+    protected executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {
         return this.#handler.execute(context, subtagName, subtag);
     }
 

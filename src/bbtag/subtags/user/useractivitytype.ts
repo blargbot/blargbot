@@ -1,5 +1,5 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
@@ -13,7 +13,7 @@ const activityTypeMap = {
     5: 'competing'
 } as const;
 
-export class UserActivityTypeSubtag extends DefinedSubtag {
+export class UserActivityTypeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'useractivitytype',

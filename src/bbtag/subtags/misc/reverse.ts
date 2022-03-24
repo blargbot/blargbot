@@ -1,8 +1,8 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class ReverseSubtag extends DefinedSubtag {
+export class ReverseSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'reverse',

@@ -1,12 +1,12 @@
 import { parse } from '@blargbot/core/utils';
 import { EmbedOptions } from 'eris';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { SubtagArgumentArray } from '../../arguments';
+import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError, NotANumberError } from '../../errors';
-import { SubtagArgumentArray } from '../../types';
 import { bbtag, LogicOperator, NumericOperator, OrdinalOperator, StringOperator, SubtagType } from '../../utils';
 
-export class OperatorSubtag extends DefinedSubtag {
+export class OperatorSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'operator',

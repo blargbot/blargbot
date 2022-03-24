@@ -1,11 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotAnArrayError, RoleNotFoundError, UserNotFoundError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class UserSetRolesSubtag extends DefinedSubtag {
+export class UserSetRolesSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'usersetroles',

@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class BoolSubtag extends DefinedSubtag {
+export class BoolSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'bool',

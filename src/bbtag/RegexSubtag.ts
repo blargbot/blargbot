@@ -1,9 +1,9 @@
 import { createSafeRegExp } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from './DefinedSubtag';
+import { CompiledSubtag } from './compilation/CompiledSubtag';
 import { BBTagRuntimeError } from './errors';
 
-export abstract class RegexSubtag extends DefinedSubtag {
+export abstract class RegexSubtag extends CompiledSubtag {
 
     protected createRegex(regexStr: string): RegExp {
         try {

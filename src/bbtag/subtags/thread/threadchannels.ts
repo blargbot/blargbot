@@ -1,11 +1,11 @@
 import { guard } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, InvalidChannelError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ThreadChannelsSubtag extends DefinedSubtag {
+export class ThreadChannelsSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'threadchannels',

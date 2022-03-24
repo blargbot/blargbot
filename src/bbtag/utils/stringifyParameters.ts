@@ -1,10 +1,10 @@
-import { SubtagHandlerParameter } from '../types';
+import { SubtagSignatureParameter } from '../types';
 
-export function stringifyParameters(subtagName: string, parameters: readonly SubtagHandlerParameter[]): string {
+export function stringifyParameters(subtagName: string, parameters: readonly SubtagSignatureParameter[]): string {
     return `{${[subtagName, ...parameters.map(stringifyParameter)].join(';')}}`;
 }
 
-function stringifyParameter(parameter: SubtagHandlerParameter): string {
+function stringifyParameter(parameter: SubtagSignatureParameter): string {
     if ('nested' in parameter) {
         if (parameter.nested.length === 1)
             return stringifyParameter(parameter.nested[0]) + '...';

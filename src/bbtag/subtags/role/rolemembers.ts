@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { RoleNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class RoleMembersSubtag extends DefinedSubtag {
+export class RoleMembersSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'rolemembers',

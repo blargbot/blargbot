@@ -1,13 +1,13 @@
 import ReadWriteLock from 'rwlock';
 
+import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { tagVariableScopes } from '../../tagVariables';
-import { SubtagArgument } from '../../types';
 import { SubtagType } from '../../utils';
 
-export class LockSubtag extends DefinedSubtag {
+export class LockSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'lock',

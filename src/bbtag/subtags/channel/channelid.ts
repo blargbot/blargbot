@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ChannelIdSubtag extends DefinedSubtag {
+export class ChannelIdSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'channelid',

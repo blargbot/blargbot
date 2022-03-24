@@ -2,11 +2,11 @@ import { parse } from '@blargbot/core/utils';
 import { DiscordHTTPError, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class WebhookSubtag extends DefinedSubtag {
+export class WebhookSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'webhook',

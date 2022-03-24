@@ -1,6 +1,6 @@
 import { BBTagContext } from '../../BBTagContext';
 import { SubtagDisabledError } from '../../errors';
-import { RuntimeLimitRule } from '../../types';
+import { RuntimeLimitRule } from '../RuntimeLimitRule';
 
 export const disabledRule: RuntimeLimitRule = Object.seal({
     check(context: BBTagContext, subtagName: string): void {

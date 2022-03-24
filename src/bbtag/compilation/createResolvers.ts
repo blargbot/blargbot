@@ -1,5 +1,8 @@
-import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue } from '../arguments';
-import { ArgumentResolver, Statement, SubtagArgument, SubtagHandlerCallSignature, SubtagHandlerParameter, SubtagHandlerValueParameter } from '../types';
+import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue, SubtagArgument } from '../arguments';
+import { Statement } from '../language';
+import { SubtagSignatureParameter, SubtagSignatureValueParameter } from '../types';
+import { ArgumentResolver } from './ArgumentResolver';
+import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
 
 export function* createArgumentResolvers(signature: SubtagHandlerCallSignature): Iterable<ArgumentResolver> {
     const flatParams = [...flatParameters(signature.parameters)];
@@ -19,7 +22,7 @@ export function* createArgumentResolvers(signature: SubtagHandlerCallSignature):
     }
 }
 
-function* flatParameters(parameters: Iterable<SubtagHandlerParameter>): Generator<SubtagHandlerValueParameter> {
+function* flatParameters(parameters: Iterable<SubtagSignatureParameter>): Generator<SubtagSignatureValueParameter> {
     for (const parameter of parameters) {
         if ('nested' in parameter)
             yield* flatParameters(parameter.nested);
@@ -37,7 +40,7 @@ interface ArgumentResolverPermutations {
     }>;
 }
 
-function createResolverOrder(parameters: readonly SubtagHandlerParameter[], flatParameters: readonly SubtagHandlerValueParameter[]): ArgumentResolverPermutations {
+function createResolverOrder(parameters: readonly SubtagSignatureParameter[], flatParameters: readonly SubtagSignatureValueParameter[]): ArgumentResolverPermutations {
     const result: ArgumentResolverPermutations = {
         greedy: [],
         permutations: [{ beforeGreedy: [], afterGreedy: [], emitOptional: true }]
@@ -50,7 +53,7 @@ function createResolverOrder(parameters: readonly SubtagHandlerParameter[], flat
     return result;
 }
 
-function addParameter(result: ArgumentResolverPermutations, parameter: SubtagHandlerParameter, flatParameters: readonly SubtagHandlerValueParameter[]): void {
+function addParameter(result: ArgumentResolverPermutations, parameter: SubtagSignatureParameter, flatParameters: readonly SubtagSignatureValueParameter[]): void {
     if ('nested' in parameter) {
         if (result.greedy.length > 0) {
             throw new Error('Cannot have multiple greedy parameters!');
@@ -114,7 +117,7 @@ function createResolver(
     };
 }
 
-const excessArg: SubtagHandlerValueParameter = {
+const excessArg: SubtagSignatureValueParameter = {
     autoResolve: true,
     defaultValue: '',
     maxLength: 1000000,

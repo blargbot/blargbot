@@ -14,13 +14,14 @@ import { BBTagEngine } from './BBTagEngine';
 import { BBTagUtilities } from './BBTagUtilities';
 import { VariableCache } from './Caching';
 import { BBTagRuntimeError, SubtagStackOverflowError, UnknownSubtagError } from './errors';
-import { limits } from './limits';
+import { Statement, SubtagCall } from './language';
+import { limits, RuntimeLimit } from './limits';
 import { ScopeManager } from './ScopeManager';
 import { Subtag } from './Subtag';
 import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
 import { tagVariableScopes } from './tagVariables';
-import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, RuntimeLimit, SerializedBBTagContext, Statement, SubtagCall } from './types';
+import { BBTagContextMessage, BBTagContextOptions, BBTagContextState, BBTagRuntimeScope, BBTagRuntimeState, FindEntityOptions, LocatedRuntimeError, RuntimeDebugEntry, SerializedBBTagContext } from './types';
 
 function serializeEntity(entity: { id: string; }): { id: string; serialized: string; } {
     return { id: entity.id, serialized: JSON.stringify(entity) };

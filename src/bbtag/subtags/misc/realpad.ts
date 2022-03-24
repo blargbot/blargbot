@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class RealPadSubtag extends DefinedSubtag {
+export class RealPadSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'realpad',

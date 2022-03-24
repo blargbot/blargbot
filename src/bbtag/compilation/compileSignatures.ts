@@ -1,7 +1,11 @@
 import { BBTagContext } from '../BBTagContext';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';
-import { ArgumentResolver, CompositeSubtagHandler, ConditionalSubtagHandler, SubtagCall, SubtagHandlerCallSignature } from '../types';
+import { SubtagCall } from '../language';
+import { ArgumentResolver } from './ArgumentResolver';
+import { CompositeSubtagHandler } from './CompositeSubtagHandler';
+import { ConditionalSubtagHandler } from './ConditionalSubtagHandler';
 import { createArgumentResolvers } from './createResolvers';
+import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
 
 export function compileSignatures(signatures: readonly SubtagHandlerCallSignature[]): CompositeSubtagHandler {
     const handlers: ConditionalSubtagHandler[] = [];

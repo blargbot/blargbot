@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotANumberError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class MathSubtag extends DefinedSubtag {
+export class MathSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'math',

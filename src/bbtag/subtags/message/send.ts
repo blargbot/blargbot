@@ -3,11 +3,11 @@ import { guard, parse } from '@blargbot/core/utils';
 import { DiscordRESTError, EmbedOptions, FileContent } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, ChannelNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class SendSubtag extends DefinedSubtag {
+export class SendSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'send',

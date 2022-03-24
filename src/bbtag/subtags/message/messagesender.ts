@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class MessageSenderSubtag extends DefinedSubtag {
+export class MessageSenderSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'messagesender',

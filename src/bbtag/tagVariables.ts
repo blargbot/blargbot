@@ -2,7 +2,7 @@ import { SubtagVariableType } from '@blargbot/core/types';
 import ReadWriteLock from 'rwlock';
 
 import { BBTagContext } from './BBTagContext';
-import { get as getLock } from './lock';
+import { getLock as getLock } from './getLock';
 
 export const tagVariableScopes: readonly TagVariableScope[] = [
     {

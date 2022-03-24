@@ -2,11 +2,11 @@ import { Lazy } from '@blargbot/core/Lazy';
 import { parse, randInt } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotANumberError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class RandIntSubtag extends DefinedSubtag {
+export class RandIntSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'randint',

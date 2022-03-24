@@ -1,11 +1,11 @@
 import { shuffle } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotAnArrayError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class ShuffleSubtag extends DefinedSubtag {
+export class ShuffleSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'shuffle',

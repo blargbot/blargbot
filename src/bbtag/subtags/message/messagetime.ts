@@ -3,11 +3,11 @@ import { EmbedOptions } from 'eris';
 import moment from 'moment-timezone';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { ChannelNotFoundError, MessageNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class MessageTimeSubtag extends DefinedSubtag {
+export class MessageTimeSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'messagetime',

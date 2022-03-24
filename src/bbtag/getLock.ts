@@ -8,7 +8,7 @@ interface TagLocks {
 
 const tagLocks: TagLocks = {};
 
-export function get(...path: string[]): ReadWriteLock {
+export function getLock(...path: string[]): ReadWriteLock {
     let node = tagLocks;
 
     for (const entry of path)

@@ -1,12 +1,13 @@
 import { parse } from '@blargbot/core/utils';
 
+import { SubtagArgument } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { AggregateBBTagError, BBTagRuntimeError, InvalidOperatorError, NotANumberError } from '../../errors';
-import { BBTagRuntimeState, SubtagArgument } from '../../types';
+import { BBTagRuntimeState } from '../../types';
 import { bbtag, OrdinalOperator, SubtagType } from '../../utils';
 
-export class ForSubtag extends DefinedSubtag {
+export class ForSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'for',

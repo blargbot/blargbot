@@ -1,7 +1,7 @@
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class ConcatSubtag extends DefinedSubtag {
+export class ConcatSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'concat',

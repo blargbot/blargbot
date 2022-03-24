@@ -1,11 +1,11 @@
 import { compare, parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotAnArrayError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class JsonSortSubtag extends DefinedSubtag {
+export class JsonSortSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'jsonsort',

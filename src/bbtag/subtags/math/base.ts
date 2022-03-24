@@ -2,11 +2,11 @@ import { Lazy } from '@blargbot/core/Lazy';
 import { between, parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, NotANumberError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class BaseNumberSubtag extends DefinedSubtag {
+export class BaseNumberSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'base',

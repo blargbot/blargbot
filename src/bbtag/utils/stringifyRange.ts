@@ -1,4 +1,4 @@
-import { SubtagCall } from '../types';
+import { SubtagCall } from '../language';
 import { stringifyLocation } from './stringifyLocation';
 
 export function stringifyRange(bbtag: SubtagCall): string {

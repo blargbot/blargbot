@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { UserNotFoundError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class UserNameSubtag extends DefinedSubtag {
+export class UserNameSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'username',

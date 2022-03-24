@@ -3,13 +3,13 @@ import { mapping } from '@blargbot/mapping';
 import fetch, { BodyInit } from 'node-fetch';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError } from '../../errors';
 import { SubtagType } from '../../utils';
 
 const domainRegex = /^https?:\/\/(.+?)(?:\/.?|$)/i;
 
-export class RequestSubtag extends DefinedSubtag {
+export class RequestSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'request',

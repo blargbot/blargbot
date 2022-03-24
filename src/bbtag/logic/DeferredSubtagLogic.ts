@@ -1,13 +1,15 @@
+import { SubtagArgumentArray } from '../arguments';
 import { BBTagContext } from '../BBTagContext';
-import { SubtagArgumentArray, SubtagCall, SubtagLogic, SubtagResult } from '../types';
+import { SubtagCall } from '../language';
+import { SubtagLogic } from './SubtagLogic';
 import { SubtagLogicWrapper } from './SubtagLogicWrapper';
 
 export class DeferredSubtagLogic extends SubtagLogicWrapper {
-    public constructor(public readonly logic: SubtagLogic<Awaitable<SubtagResult>>) {
+    public constructor(public readonly logic: SubtagLogic<Awaitable<AsyncIterable<string | undefined>>>) {
         super();
     }
 
-    protected getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): Awaitable<SubtagResult> {
-        return this.logic.execute(context, args, subtag);
+    protected async * getResults(context: BBTagContext, args: SubtagArgumentArray, subtag: SubtagCall): AsyncIterable<string | undefined> {
+        yield* await this.logic.execute(context, args, subtag);
     }
 }

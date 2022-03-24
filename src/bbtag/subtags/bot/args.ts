@@ -1,11 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { NotANumberError, NotEnoughArgumentsError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class ArgsSubtag extends DefinedSubtag {
+export class ArgsSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'args',

@@ -1,11 +1,11 @@
 import { Role } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, RoleNotFoundError, UserNotFoundError } from '../../errors';
 import { bbtag, SubtagType } from '../../utils';
 
-export class RoleRemoveSubtag extends DefinedSubtag {
+export class RoleRemoveSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'roleremove',

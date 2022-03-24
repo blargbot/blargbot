@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
-import { SubtagCall } from '../../types';
+import { CompiledSubtag } from '../../compilation';
+import { SubtagCall } from '../../language';
 import { SubtagType } from '../../utils';
 
-export class DebugSubtag extends DefinedSubtag {
+export class DebugSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'debug',

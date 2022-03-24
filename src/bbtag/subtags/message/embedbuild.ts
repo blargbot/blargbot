@@ -1,11 +1,11 @@
 import { discord, guard, MessageComponent, parse } from '@blargbot/core/utils';
 import { EmbedAuthor, EmbedField, EmbedFooter, EmbedOptions } from 'eris';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { InvalidEmbedError } from '../../errors';
 import { SubtagType } from '../../utils';
 
-export class EmbedBuildSubtag extends DefinedSubtag {
+export class EmbedBuildSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'embedbuild',

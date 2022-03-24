@@ -1,11 +1,11 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { SubtagArgument } from '../../arguments';
+import { CompiledSubtag } from '../../compilation';
 import { InvalidOperatorError, NotABooleanError } from '../../errors';
-import { SubtagArgument } from '../../types';
 import { bbtag, SubtagType } from '../../utils';
 
-export class IfSubtag extends DefinedSubtag {
+export class IfSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'if',

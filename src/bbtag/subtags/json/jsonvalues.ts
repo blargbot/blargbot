@@ -1,8 +1,8 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class JsonValuesSubtag extends DefinedSubtag {
+export class JsonValuesSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'jsonvalues',

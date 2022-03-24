@@ -1,9 +1,9 @@
 import { parse } from '@blargbot/core/utils';
 
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
-export class NumFormatSubtag extends DefinedSubtag {
+export class NumFormatSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'numformat',

@@ -1,12 +1,12 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { BBTagRuntimeError, UnknownSubtagError } from '../../errors';
-import { SubtagCall } from '../../types';
+import { SubtagCall } from '../../language';
 import { bbtag, SubtagType } from '../../utils';
 
-export class ApplySubtag extends DefinedSubtag {
+export class ApplySubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'apply',

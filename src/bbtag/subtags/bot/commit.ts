@@ -1,10 +1,10 @@
 import { parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { bbtag, SubtagType } from '../../utils';
 
-export class CommitSubtag extends DefinedSubtag {
+export class CommitSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'commit',

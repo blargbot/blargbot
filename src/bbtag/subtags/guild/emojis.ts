@@ -1,9 +1,9 @@
 import { BBTagContext } from '../../BBTagContext';
-import { DefinedSubtag } from '../../DefinedSubtag';
+import { CompiledSubtag } from '../../compilation';
 import { SubtagType } from '../../utils';
 
 //TODO IMO this should return an array of emoji IDs instead of an array of emojis
-export class EmojisSubtag extends DefinedSubtag {
+export class EmojisSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'emojis',
