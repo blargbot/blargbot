@@ -91,7 +91,7 @@ ${codeBlock(code, 'js')}`
             authorizerId: tag.authorizer,
             inputRaw: msg.content,
             isCC: true,
-            rootTagName: 'autoresponse',
+            rootTagName: `_autoresponse_${id}`,
             silent: id === 'everything'
         });
 
