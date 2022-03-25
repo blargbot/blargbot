@@ -1,18 +1,21 @@
 import { BBTagContext } from '../BBTagContext';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';
 import { SubtagCall } from '../language';
+import { SubtagSignatureDetails } from '../types';
 import { ArgumentResolver } from './ArgumentResolver';
 import { CompositeSubtagHandler } from './CompositeSubtagHandler';
 import { ConditionalSubtagHandler } from './ConditionalSubtagHandler';
 import { createArgumentResolvers } from './createResolvers';
 import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
 
-export function compileSignatures(signatures: readonly SubtagHandlerCallSignature[]): CompositeSubtagHandler {
+export function compileSignatures(signatures: ReadonlyArray<SubtagHandlerCallSignature | SubtagSignatureDetails>): CompositeSubtagHandler {
     const handlers: ConditionalSubtagHandler[] = [];
     let min = initialResolver;
     let max = initialResolver;
 
     for (const signature of signatures) {
+        if (!('implementation' in signature))
+            continue;
         for (const resolver of createArgumentResolvers(signature)) {
             if (resolver.minArgs < min.minArgs)
                 min = resolver;

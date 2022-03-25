@@ -11,15 +11,15 @@ export class EmbedBuildSubtag extends CompiledSubtag {
             name: 'embedbuild',
             category: SubtagType.MESSAGE,
             aliases: ['buildembed'],
-            desc: 'This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
-                'This tag uses a key/value system, with each entry in `values` looking like `key:value`.\n\n' +
-                'Valid keys are:\n' + Object.entries(fields).map(([key, { description }]) => '`' + key + '`' + (description === undefined ? '' : ' - ' + description)).join('\n') + '\n\n' +
-                'You can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) ' +
-                'and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds ' +
-                '[here](https://leovoel.github.io/embed-visualizer/)',
             definition: [
                 {
                     parameters: ['values+'],
+                    description: 'This tag is designed to allow you to generate embed code for `{webhook}` and `{embed}` with much less effort.\n' +
+                        'This tag uses a key/value system, with each entry in `values` looking like `key:value`.\n\n' +
+                        'Valid keys are:\n' + Object.entries(fields).map(([key, { description }]) => '`' + key + '`' + (description === undefined ? '' : ' - ' + description)).join('\n') + '\n\n' +
+                        'You can find information about embeds [here (embed structure)](https://discordapp.com/developers/docs/resources/channel#embed-object) ' +
+                        'and [here (embed limits)](https://discordapp.com/developers/docs/resources/channel#embed-limits) as well as a useful tool for testing embeds ' +
+                        '[here](https://leovoel.github.io/embed-visualizer/)',
                     exampleCode: '{embedbuild;\n  title:hello!;\n  description:I am an example embed;\n  fields.name:Field 1;\n  fields.value:This is the first field!;\n  ' +
                         'fields.name:Field 2;\n  fields.value:This is the next field and is inline!;\n  fields.inline:true\n}',
                     exampleOut: '{"title":"hello!","description":"I am an example embed","fields":[' +

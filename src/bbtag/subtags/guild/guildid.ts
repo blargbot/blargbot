@@ -7,10 +7,10 @@ export class GuildIdSubtag extends CompiledSubtag {
         super({
             name: 'guildid',
             category: SubtagType.GUILD,
-            desc: 'Returns the id of the current guild.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns the id of the current guild.',
                     exampleCode: 'The guild\'s id is {guildid}',
                     exampleOut: 'The guild\'s id is 1234567890123456',
                     returns: 'id',

@@ -7,10 +7,10 @@ export class CommentSubtag extends CompiledSubtag {
             name: 'comment',
             aliases: ['//'],
             category: SubtagType.MISC,
-            desc: 'A subtag that just gets removed. Useful for documenting your code.',
             definition: [
                 {
                     parameters: ['~anything*'],
+                    description: 'Does nothing. Your code is simply ignored.',
                     exampleCode: 'This is a sentence. {//;This is a comment.}',
                     exampleOut: 'This is a sentence.',
                     returns: 'nothing',

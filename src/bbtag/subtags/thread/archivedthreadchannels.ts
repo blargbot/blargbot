@@ -8,7 +8,8 @@ import { SubtagType } from '../../utils';
 export class ArchivedThreadsSubtag extends CompiledSubtag {
     public constructor() {
         super({
-            name: 'archivedthreads',
+            name: 'archivedthreadchannels',
+            aliases: ['archivedthreads'],
             category: SubtagType.THREAD,
             definition: [
                 {

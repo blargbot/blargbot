@@ -27,6 +27,8 @@ export class GetSubtag extends CompiledSubtag {
                     parameters: ['name', 'index'],
                     description: 'When variable `name` is an array this will return the element at index `index`.' +
                         ' If `index` is empty the entire array will be returned. If variable is not an array it will return the whole variable.',
+                    exampleCode: '{set;myArray;["abc","def","ghi"]}{get;myArray;1}',
+                    exampleOut: 'def',
                     returns: 'json|nothing',
                     execute: async (ctx, [name, index]) => await this.getArray(ctx, name.value, index.value)
                 }

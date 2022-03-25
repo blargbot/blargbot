@@ -6,7 +6,7 @@ import { ChoiceQueryResult, EntityPickQueryOptions, FlagDefinition, FlagResult, 
 import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils';
 import { discord } from '@blargbot/core/utils/discord';
 import { Logger } from '@blargbot/logger';
-import { Base, Client as Discord, Constants, Guild, KnownGuildChannel, KnownGuildTextableChannel, Member, Permission, Role, User } from 'eris';
+import { Base, Client as Discord, Constants, Guild, KnownChannel, KnownGuildChannel, KnownGuildTextableChannel, KnownThreadChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';
 import ReadWriteLock from 'rwlock';
 
@@ -301,6 +301,18 @@ export class BBTagContext implements BBTagContextOptions {
         );
     }
 
+    public async queryThread(query: string | undefined, options: FindEntityOptions = {}): Promise<KnownThreadChannel | undefined> {
+        if (guard.isThreadChannel(this.channel) && (query === '' || query === undefined || query === this.channel.id))
+            return this.channel;
+        return await this.queryEntity(
+            query ?? '', 'channel', 'Thread',
+            async (id) => threadsOnly(await this.util.getChannel(this.guild, id)),
+            async (query) => threadsOnly(await this.util.findChannels(this.guild, query)),
+            async (options) => await this.util.queryChannel(options),
+            options
+        );
+    }
+
     private async queryEntity<T extends Base & { id: string; }>(
         queryString: string,
         cacheKey: FilteredKeys<BBTagContextState['query'], Record<string, string | undefined>>,
@@ -492,4 +504,14 @@ export class BBTagContext implements BBTagContextOptions {
                 }, {})
         };
     }
+}
+
+function threadsOnly(channel: KnownChannel | undefined): KnownThreadChannel | undefined
+function threadsOnly(channel: KnownChannel[]): KnownThreadChannel[]
+function threadsOnly(channel: KnownChannel | KnownChannel[] | undefined): KnownThreadChannel | KnownThreadChannel[] | undefined {
+    if (Array.isArray(channel))
+        return channel.filter(guard.isThreadChannel);
+    if (channel === undefined || guard.isThreadChannel(channel))
+        return channel;
+    return undefined;
 }

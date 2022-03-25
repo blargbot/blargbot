@@ -1,6 +1,6 @@
 import { Emote } from '@blargbot/core/Emote';
 import { snowflake } from '@blargbot/core/utils';
-import { ApiError, DiscordRESTError, EmbedOptions } from 'eris';
+import { ApiError, DiscordRESTError } from 'eris';
 
 import { BBTagContext } from '../../BBTagContext';
 import { CompiledSubtag } from '../../compilation';
@@ -15,20 +15,36 @@ export class ReactListSubtag extends CompiledSubtag {
             aliases: ['listreact'],
             definition: [//! overwritten
                 {
+                    hidden: true,
                     parameters: [],
-                    description: 'This just returns `No message found` ***always*** for the sake of backwards compatibility.',
                     returns: 'error',
                     execute: (ctx) => { throw new MessageNotFoundError(ctx.channel.id, ''); }
                 },
                 {
+                    hidden: true,
                     parameters: ['messageid'],
                     returns: 'string[]',
                     execute: (ctx, [messageid]) => this.getReactions(ctx, messageid.value)
                 },
                 {
+                    hidden: true,
                     parameters: ['arguments+2'],
                     returns: 'string[]',
                     execute: (ctx, args) => this.getReactionsOrReactors(ctx, ...this.bindArguments(ctx, args.map(arg => arg.value)))
+                },
+                {
+                    noExecute: true,
+                    parameters: ['channel?', 'messageId'],
+                    description: 'Returns an array of reactions on `messageid` in `channelID`.',
+                    exampleCode: '{reactlist;111111111111111111}',
+                    exampleOut: '["🤔", "👀"]'
+                },
+                {
+                    noExecute: true,
+                    parameters: ['channel?', 'messageId', 'reactions+'],
+                    description: 'Returns an array of users who reacted `reactions` on `messageID` in `channelID`. A user only needs to react to one reaction to be included in the resulting array.',
+                    exampleCode: '{reactlist;111111111111111111;🤔;👀}\n{reactlist;222222222222222222;111111111111111111;👀}',
+                    exampleOut: '["278237925009784832", "134133271750639616"]\n["134133271750639616"]'
                 }
             ]
         });
@@ -93,31 +109,5 @@ export class ReactListSubtag extends CompiledSubtag {
         if (msg === undefined)
             throw new MessageNotFoundError(context.channel.id, messageId);
         return Object.keys(msg.reactions);
-    }
-
-    public enrichDocs(embed: EmbedOptions): EmbedOptions {
-        embed.fields = [
-            {
-                name: 'Usage',
-                value: '```\n{reactlist}```This just returns `No message found` ***always*** for the sake of backwards compatibility.\n\n' +
-                    '**Example code:**\n> {reactlist}\n**Example out:**\n> `No message found`'
-            },
-            {
-                name: '\u200b',
-                value: '```\n{reactlist;[channelID];<messageID>}```\n`channelID` defaults to the current channel\n\n' +
-                    'Returns an array of reactions on `messageid` in `channelID`.\n\n' +
-                    '**Example code:**\n> {reactlist;111111111111111111}\n' +
-                    '**Example out:**\n> ["🤔", "👀"]'
-            },
-            {
-                name: '\u200b',
-                value: '```\n{reactlist;[channelID];<messageID>;<reactions...>}```\n`channelID` defaults to the current channel\n\n' +
-                    'Returns an array of users who reacted `reactions` on `messageID` in `channelID`. A user only needs to react to one reaction to be included in the resulting array.\n\n' +
-                    '**Example code:**\n> {reactlist;111111111111111111;🤔;👀}\n> {reactlist;222222222222222222;111111111111111111;👀}\n' +
-                    '**Example out:**\n> ["278237925009784832", "134133271750639616"]\n> ["134133271750639616"]'
-            }
-        ];
-
-        return embed;
     }
 }

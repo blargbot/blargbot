@@ -180,7 +180,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
 }
 
 function toField(subtag: Subtag, signature: SubtagSignatureDetails, index: number): EmbedField {
-    let description = codeBlock(bbtag.stringifyParameters(subtag.name, signature.parameters));
+    let description = codeBlock(bbtag.stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .flatMap<SubtagSignatureValueParameter>(p => 'nested' in p ? p.nested : [p])
         .filter(param => param.defaultValue !== '')
@@ -226,7 +226,7 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
     if (limitField.value.length > 0)
         fields.push(limitField);
 
-    return subtag.enrichDocs({
+    return {
         title: ` - {${subtag.name}}`,
         url: `/#${encodeURIComponent(subtag.name)}`,
         description: description.length === 0 ? undefined : description.join('\n'),
@@ -235,7 +235,7 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
         footer: {
             text: `For detailed info about the argument syntax, use: ${context.prefix}${context.commandName} docs arguments`
         }
-    });
+    };
 }
 async function lookupSubtag(context: CommandContext, input: string): Promise<Subtag | string | undefined> {
     input = input.replace(/[{}]/, '').toLowerCase();

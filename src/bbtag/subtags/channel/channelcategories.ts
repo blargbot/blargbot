@@ -9,11 +9,11 @@ export class ChannelCategoriesSubtag extends CompiledSubtag {
         super({
             name: 'channelcategories',
             category: SubtagType.CHANNEL,
-            desc: 'Returns an array of category IDs on the current guild.',
             aliases: ['categories'],
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns an array of category IDs on the current guild.',
                     exampleCode: 'This guild has {length;{categories}} categories.',
                     exampleOut: 'This guild has 7 categories.',
                     returns: 'id[]',

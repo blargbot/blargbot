@@ -10,10 +10,10 @@ export class GuildBansSubtag extends CompiledSubtag {
         super({
             name: 'guildbans',
             category: SubtagType.GUILD,
-            desc: 'Returns an array of banned users in the current guild.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns an array of banned users in the current guild.',
                     exampleCode: 'This guild has {length;{guildbans}} banned users.',
                     exampleOut: 'This guild has 123 banned users.',
                     returns: 'id[]',

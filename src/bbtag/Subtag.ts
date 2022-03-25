@@ -1,7 +1,6 @@
 import { metrics } from '@blargbot/core/Metrics';
 import { Timer } from '@blargbot/core/Timer';
 import { abstract } from '@blargbot/core/utils';
-import { EmbedOptions } from 'eris';
 
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './language';
@@ -46,8 +45,4 @@ export abstract class Subtag implements SubtagOptions {
     }
 
     protected abstract executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined>;
-
-    public enrichDocs(docs: EmbedOptions): EmbedOptions {
-        return docs;
-    }
 }

@@ -7,10 +7,10 @@ export class IsCCSubtag extends CompiledSubtag {
         super({
             name: 'iscc',
             category: SubtagType.SIMPLE,
-            desc: 'Checks if the tag is being run from within a cc. Returns a boolean (`true` or `false`)',
             definition: [
                 {
                     parameters: [],
+                    description: 'Checks if the tag is being run from within a cc. Returns a boolean (`true` or `false`)',
                     exampleCode: '{if;{iscc};{dm;{userid};You have mail!};Boo, this only works in cc\'s}',
                     exampleOut: 'Boo, this only works in cc\'s',
                     returns: 'boolean',

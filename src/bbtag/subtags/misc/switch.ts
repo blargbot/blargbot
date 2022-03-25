@@ -12,6 +12,11 @@ export class SwitchSubtag extends CompiledSubtag {
             definition: [
                 {
                     parameters: ['value', { repeat: ['case', '~then'], minCount: 1 }, '~default?'],
+                    description: 'Compares `value` against each `case` and executes the first `then` that matches. If no matches are found, `default` is executed. ' +
+                        'Each `case` can optionally be an array to allow matching against multiple values.',
+                    exampleCode: '{switch;{args;0};\n  hi;Hello!;\n  ["punch","bop","hit"];Got it, i\'ll hit {args;1} for you!;\n  I dont know how to do that!\n}',
+                    exampleIn: 'hit Danny',
+                    exampleOut: 'Got it, i\'ll hit Danny for you!',
                     returns: 'string',
                     execute: (_, [value, ...cases]) => this.switch(value.value, ...splitArgs(cases))
                 }

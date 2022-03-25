@@ -204,17 +204,21 @@ export interface SubtagSignatureParameterGroup {
 }
 
 export interface SubtagSignatureDetails<TArgs = SubtagSignatureParameter> {
+    readonly subtagName?: string;
     readonly parameters: readonly TArgs[];
     readonly description?: string;
     readonly exampleCode?: string;
     readonly exampleIn?: string;
     readonly exampleOut?: string;
-    readonly returns: keyof SubtagReturnTypeMap;
 }
 
-interface SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap>
-    extends SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup>,
-    SubtagLogic<Awaitable<SubtagReturnTypeMap[Type]>> {
+type SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap> =
+    | (SubtagHandlerImplementationDefinition<Type> & { readonly hidden: true; })
+    | (SubtagHandlerImplementationDefinition<Type> & SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup> & { readonly hidden?: false; })
+
+interface SubtagHandlerImplementationDefinition<Type extends keyof SubtagReturnTypeMap> extends SubtagLogic<Awaitable<SubtagReturnTypeMap[Type]>> {
+    readonly parameters: ReadonlyArray<string | SubtagHandlerDefinitionParameterGroup>;
+    readonly noExecute?: false;
     readonly returns: Type;
 }
 
@@ -257,7 +261,9 @@ export type SubtagReturnTypeMap = {
     [P in keyof SubtagReturnTypeMapHelper]: SubtagReturnTypeMapHelper[P]
 }
 
-export type AnySubtagHandlerDefinition = { [P in keyof SubtagReturnTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagReturnTypeMap];
+export type AnySubtagHandlerDefinition =
+    | { [P in keyof SubtagReturnTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagReturnTypeMap]
+    | ({ readonly noExecute: true; } & SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup>);
 
 export interface SubtagHandlerDefinitionParameterGroup {
     readonly minCount?: number;

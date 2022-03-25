@@ -1,5 +1,5 @@
 import { Emote } from '@blargbot/core/Emote';
-import { ApiError, DiscordRESTError, EmbedField, EmbedOptions } from 'eris';
+import { ApiError, DiscordRESTError } from 'eris';
 
 import { SubtagArgumentArray } from '../../arguments';
 import { BBTagContext } from '../../BBTagContext';
@@ -13,11 +13,26 @@ export class ReactRemoveSubtag extends CompiledSubtag {
             name: 'reactremove',
             category: SubtagType.MESSAGE,
             aliases: ['removereact'],
-            definition: [//! overwritten
+            definition: [
                 {
-                    parameters: ['arguments+'], // [channelID];<messageID>;[user];[reactions...]
+                    hidden: true,
+                    parameters: ['arguments+'],
                     returns: 'nothing',
                     execute: async (ctx, args) => await this.removeReactions(ctx, ...await this.bindArguments(ctx, args))
+                },
+                {
+                    noExecute: true,
+                    parameters: ['channel?', 'messageId'],
+                    description: 'Removes all reactions of the executing user from `messageID` in `channel`.',
+                    exampleCode: '{reactremove;12345678901234}',
+                    exampleOut: '(removed all reactions on 12345678901234)'
+                },
+                {
+                    noExecute: true,
+                    parameters: ['channel?', 'messageId', 'reactions+'],
+                    description: 'Removes `reactions` `user` reacted on `messageID` in `channel`.',
+                    exampleCode: '{reactremove;12345678901234;111111111111111111;🤔}',
+                    exampleOut: '(removed the 🤔 reaction on 12345678901234 from user 111111111111111111)'
                 }
             ]
         });
@@ -109,32 +124,5 @@ export class ReactRemoveSubtag extends CompiledSubtag {
         // {reactremove;<messageId>;<user>;<...reactions>}
         // {reactremove;<channel>;<messageId>;<user>;<...reactions>}
         return [channelId, message, userId, args.flatMap(x => Emote.findAll(x.value))];
-    }
-
-    public enrichDocs(embed: EmbedOptions): EmbedOptions {
-        const limitField = <EmbedField>embed.fields?.pop();
-
-        embed.fields = [
-            {
-                name: 'Usage',
-                value: '```\n{reactremove;[channelID];<messageID>}```\n`channelID` defaults to the current channel if omitted\n\n' +
-                    'Removes all reactions of the executing user from `messageID` in `channelID`.\n\n' +
-                    '**Example code:**\n> {reactremove;12345678901234}\n' +
-                    '**Example out:**\n> (removed all reactions on 12345678901234)'
-            },
-            {
-                name: '\u200b',
-                value: '```\n{reactremove;[channelID];<messageID>;[user];[reactions]}```\n`channelID` defaults to the current channel if omitted\n' +
-                    '`reactions` defaults to all reactions if left blank or omitted\n\n' +
-                    'Removes `reactions` `user` reacted on `messageID` in `channelID`.\n' +
-                    '**Example code:**\n> {reactremove;12345678901234;111111111111111111;🤔}\n' +
-                    '**Example out:**\n> (removed the 🤔 reaction on 12345678901234 from user 111111111111111111)'
-            },
-            {
-                ...limitField
-            }
-        ];
-
-        return embed;
     }
 }

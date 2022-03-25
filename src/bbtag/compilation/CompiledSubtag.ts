@@ -19,7 +19,7 @@ export abstract class CompiledSubtag extends Subtag {
 
     public constructor(options: DefinedSubtagOptions) {
         const signatures = parseDefinitions(options.definition);
-        super({ ...options, signatures });
+        super({ ...options, signatures: signatures.filter(s => !('hidden' in s) || s.hidden !== true) });
 
         this.#handler = compileSignatures(signatures);
     }

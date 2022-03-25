@@ -19,24 +19,32 @@ export class IfSubtag extends CompiledSubtag {
                 {
                     parameters: ['boolean', '~then'],
                     description: 'If `boolean` is `true`, return `then`, else do nothing.',
+                    exampleCode: '{if;{iscc};This is a custom command!}',
+                    exampleOut: 'This is a custom command!',
                     returns: 'string',
                     execute: (_, [bool, thenCode]) => this.simpleBooleanCheck(bool.value, thenCode)
                 },
                 {
                     parameters: ['boolean', '~then', '~else'],
                     description: 'If `boolean` is `true`, return `then`, else execute `else`',
+                    exampleCode: '{if;{iscc};This is a custom command!;This isnt a custom command!}',
+                    exampleOut: 'This isnt a custom command!',
                     returns: 'string',
                     execute: (_, [bool, thenCode, elseCode]) => this.simpleBooleanCheck(bool.value, thenCode, elseCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then'],
                     description: '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`.',
+                    exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!}',
+                    exampleOut: 'Hi stupid cat!',
                     returns: 'string',
                     execute: (_, [value1, evaluator, value2, thenCode]) => this.evaluatorCheck(value1.value, evaluator.value, value2.value, thenCode)
                 },
                 {
                     parameters: ['value1', 'evaluator', 'value2', '~then', '~else'],
                     description: '`Value1` is evaluated against `value2` using `evaluator, if the resulting value is `true` then the tag returns `then`, otherwise it returns `else`',
+                    exampleCode: '{if;{userid};==;103347843934212096;Hi stupid cat!;Who are you stranger?}',
+                    exampleOut: 'Who are you stranger?',
                     returns: 'string',
                     execute: (_, [value1, evaluator, value2, thenCode, elseCode]) => this.evaluatorCheck(value1.value, evaluator.value, value2.value, thenCode, elseCode)
                 }

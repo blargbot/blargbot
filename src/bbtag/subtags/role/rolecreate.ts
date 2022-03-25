@@ -11,13 +11,15 @@ export class RoleCreateSubtag extends CompiledSubtag {
         super({
             name: 'rolecreate',
             category: SubtagType.ROLE,
-            desc: '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. ' +
-                'Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
-                '`hoisted` is if the role should be displayed separately from other roles.\n' +
-                'Returns the new role\'s ID.',
             definition: [
                 {
                     parameters: ['name', 'color?:000000', 'permissions?:0', 'mentionable?:false', 'hoisted?:false'],
+                    description: '`color` can be a [HTML color](https://www.w3schools.com/colors/colors_names.asp), hex, (r,g,b) or a valid color number. ' +
+                        'Provide `permissions` as a number, which can be calculated [here](https://discordapi.com/permissions.html) ' +
+                        '`hoisted` is if the role should be displayed separately from other roles.\n' +
+                        'Returns the new role\'s ID.',
+                    exampleCode: '{rolecreate;myNewRole;red}',
+                    exampleOut: '1298731238361728931',
                     returns: 'id',
                     execute: (ctx, [name, color, permissions, mentionable, hoisted]) => this.createRole(ctx, name.value, color.value, permissions.value, mentionable.value, hoisted.value)
                 }

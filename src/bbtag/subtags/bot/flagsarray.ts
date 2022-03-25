@@ -7,10 +7,10 @@ export class FlagsArraySubtag extends CompiledSubtag {
         super({
             name: 'flagsarray',
             category: SubtagType.BOT,
-            desc: 'Returns an array of all flags provided.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Returns an array of all flags provided.',
                     exampleCode: '{flagsarray}',
                     exampleIn: 'Hello -dc world',
                     exampleOut: '["_","d","c"]',

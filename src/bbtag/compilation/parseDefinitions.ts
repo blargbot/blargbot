@@ -1,14 +1,20 @@
 import { parse } from '@blargbot/core/utils';
 
 import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic, SubtagLogic } from '../logic';
-import { AnySubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagReturnTypeMap, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types';
+import { AnySubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagReturnTypeMap, SubtagSignatureDetails, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types';
 import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
 
-export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): readonly SubtagHandlerCallSignature[] {
+export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): ReadonlyArray<SubtagHandlerCallSignature | SubtagSignatureDetails> {
     return definitions.map(parseDefinition);
 }
 
-function parseDefinition(definition: AnySubtagHandlerDefinition): SubtagHandlerCallSignature {
+function parseDefinition(definition: AnySubtagHandlerDefinition): SubtagHandlerCallSignature | SubtagSignatureDetails {
+    if (definition.noExecute === true) {
+        return {
+            ...definition,
+            parameters: definition.parameters.map(parseArgument)
+        };
+    }
     return {
         ...definition,
         parameters: definition.parameters.map(parseArgument),
@@ -74,7 +80,7 @@ function createParameterGroup(parameters: SubtagSignatureParameter[], minCount: 
     return { nested, minRepeats: minCount };
 }
 
-function getExecute(definition: AnySubtagHandlerDefinition): SubtagLogic {
+function getExecute(definition: Extract<AnySubtagHandlerDefinition, { noExecute?: false; }>): SubtagLogic {
     const wrapper = logicWrappers[definition.returns];
     return new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>);
 }

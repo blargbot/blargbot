@@ -7,10 +7,10 @@ export class CommandNameSubtag extends CompiledSubtag {
         super({
             name: 'commandname',
             category: SubtagType.BOT,
-            desc: 'Gets the name of the current tag or custom command.',
             definition: [
                 {
                     parameters: [],
+                    description: 'Gets the name of the current tag or custom command.',
                     exampleCode: 'This command is {commandname}',
                     exampleIn: 'b!cc test',
                     exampleOut: 'This command is test',
