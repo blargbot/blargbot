@@ -15,20 +15,17 @@ export class ReactRemoveSubtag extends CompiledSubtag {
             aliases: ['removereact'],
             definition: [
                 {
-                    hidden: true,
                     parameters: ['arguments+'],
                     returns: 'nothing',
                     execute: async (ctx, args) => await this.removeReactions(ctx, ...await this.bindArguments(ctx, args))
                 },
                 {
-                    noExecute: true,
                     parameters: ['channel?', 'messageId'],
                     description: 'Removes all reactions of the executing user from `messageID` in `channel`.',
                     exampleCode: '{reactremove;12345678901234}',
                     exampleOut: '(removed all reactions on 12345678901234)'
                 },
                 {
-                    noExecute: true,
                     parameters: ['channel?', 'messageId', 'reactions+'],
                     description: 'Removes `reactions` `user` reacted on `messageID` in `channel`.',
                     exampleCode: '{reactremove;12345678901234;111111111111111111;🤔}',

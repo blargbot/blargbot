@@ -1,4 +1,4 @@
-import { SubtagSignatureDetails, SubtagSignatureValueParameter } from '@blargbot/bbtag';
+import { SubtagSignature, SubtagSignatureValueParameter } from '@blargbot/bbtag';
 import { limits } from '@blargbot/bbtag/limits';
 import { Subtag } from '@blargbot/bbtag/Subtag';
 import { bbtag, SubtagType, tagTypeDetails } from '@blargbot/bbtag/utils';
@@ -179,7 +179,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
     }
 }
 
-function toField(subtag: Subtag, signature: SubtagSignatureDetails, index: number): EmbedField {
+function toField(subtag: Subtag, signature: SubtagSignature, index: number): EmbedField {
     let description = codeBlock(bbtag.stringifyParameters(signature.subtagName ?? subtag.name, signature.parameters));
     const defaultDesc = signature.parameters
         .flatMap<SubtagSignatureValueParameter>(p => 'nested' in p ? p.nested : [p])

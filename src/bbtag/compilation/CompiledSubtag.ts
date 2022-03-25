@@ -1,17 +1,18 @@
-import { parse } from '@blargbot/core/utils';
+import { guard, parse } from '@blargbot/core/utils';
 
 import { BBTagContext } from '../BBTagContext';
 import { BBTagRuntimeError } from '../errors';
 import { SubtagCall } from '../language';
 import { Subtag } from '../Subtag';
-import { AnySubtagHandlerDefinition, SubtagOptions } from '../types';
+import { SubtagOptions } from '../types';
 import { bbtag } from '../utils';
+import { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions';
 import { compileSignatures } from './compileSignatures';
 import { CompositeSubtagHandler } from './CompositeSubtagHandler';
 import { parseDefinitions } from './parseDefinitions';
 
 export interface DefinedSubtagOptions extends Omit<SubtagOptions, 'signatures'> {
-    readonly definition: readonly AnySubtagHandlerDefinition[];
+    readonly definition: readonly AnySubtagSignatureOptions[];
 }
 
 export abstract class CompiledSubtag extends Subtag {
@@ -19,9 +20,9 @@ export abstract class CompiledSubtag extends Subtag {
 
     public constructor(options: DefinedSubtagOptions) {
         const signatures = parseDefinitions(options.definition);
-        super({ ...options, signatures: signatures.filter(s => !('hidden' in s) || s.hidden !== true) });
+        super({ ...options, signatures: signatures.map(s => s.signature).filter(guard.hasValue) });
 
-        this.#handler = compileSignatures(signatures);
+        this.#handler = compileSignatures(signatures.map(s => s.implementation).filter(guard.hasValue));
     }
 
     protected executeCore(context: BBTagContext, subtagName: string, subtag: SubtagCall): AsyncIterable<string | undefined> {

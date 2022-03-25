@@ -1,14 +1,13 @@
 import { BBTagContext } from '../BBTagContext';
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '../errors';
 import { SubtagCall } from '../language';
-import { SubtagSignatureDetails } from '../types';
 import { ArgumentResolver } from './ArgumentResolver';
 import { CompositeSubtagHandler } from './CompositeSubtagHandler';
 import { ConditionalSubtagHandler } from './ConditionalSubtagHandler';
 import { createArgumentResolvers } from './createResolvers';
-import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
+import { SubtagSignatureCallable } from './SubtagSignatureCallable';
 
-export function compileSignatures(signatures: ReadonlyArray<SubtagHandlerCallSignature | SubtagSignatureDetails>): CompositeSubtagHandler {
+export function compileSignatures(signatures: readonly SubtagSignatureCallable[]): CompositeSubtagHandler {
     const handlers: ConditionalSubtagHandler[] = [];
     let min = initialResolver;
     let max = initialResolver;
@@ -43,7 +42,7 @@ export function compileSignatures(signatures: ReadonlyArray<SubtagHandlerCallSig
     };
 }
 
-function createConditionalHandler(signature: SubtagHandlerCallSignature, resolver: ArgumentResolver): ConditionalSubtagHandler {
+function createConditionalHandler(signature: SubtagSignatureCallable, resolver: ArgumentResolver): ConditionalSubtagHandler {
     return {
         canHandle(subtag) {
             return resolver.isExactMatch(subtag);

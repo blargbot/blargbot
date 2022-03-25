@@ -16,27 +16,23 @@ export class ReactAddSubtag extends CompiledSubtag {
                 'If I am not, then I will return an error if you are trying to apply the reaction to another message.',
             definition: [//! Overwritten
                 {
-                    hidden: true,
                     parameters: ['arguments+'],
                     returns: 'nothing',
                     execute: (ctx, args) => this.addReactions(ctx, ...this.bindArguments(ctx, args.map(a => a.value)))
                 },
                 {
-                    noExecute: true,
                     parameters: ['reactions+'],
                     description: 'Adds `reactions` to the output message of this tag.',
                     exampleCode: 'This will have reactions! {reactadd;🤔;👀}',
                     exampleOut: 'This will have reactions! (reacted with 🤔 and 👀)'
                 },
                 {
-                    noExecute: true,
                     parameters: ['messageid', 'reactions+'],
                     description: 'Adds `reactions` to `messageid` in the current channel.',
                     exampleCode: '{reactadd;11111111111111111;🤔;👀}',
                     exampleOut: '(11111111111111111 now has reactions 🤔 and 👀)'
                 },
                 {
-                    noExecute: true,
                     parameters: ['channel', 'messageid', 'reactions+'],
                     description: 'Adds `reactions` to `messageid` in `channelid`. `channelid` must be an ID, use of `{channelid} is advised`.',
                     exampleCode: '{reactadd;11111111111111111;22222222222222222;🤔;👀}',

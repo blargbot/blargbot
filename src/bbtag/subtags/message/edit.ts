@@ -23,21 +23,18 @@ export class EditSubtag extends CompiledSubtag {
                     execute: (ctx, [messageId, content]) => this.edit(ctx, ctx.channel.id, messageId.value, content.value)
                 },
                 {
-                    noExecute: true,
                     parameters: ['messageId', 'text', 'embed'],
                     description: 'Edits `messageID` in the current channel to say `text` and `embed`',
                     exampleCode: '{edit;111111111111111111;Hello world;{embedbuild;title:Foo bar}}',
                     exampleOut: ''
                 },
                 {
-                    noExecute: true,
                     parameters: ['channel', 'messageId', 'text|embed'],
                     description: 'Edits `messageID` in `channelID` to say `text` or `embed`',
                     exampleCode: '{edit;111111111111111111;222222222222222222;Hello world}',
                     exampleOut: ''
                 },
                 {
-                    hidden: true,
                     parameters: ['messageId|channelId', 'messageId|text', '(text|embed)|(embed)'],
                     returns: 'nothing',
                     execute: async (ctx, [chanOrMessage, messageOrText, content]) => {

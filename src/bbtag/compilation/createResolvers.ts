@@ -2,9 +2,9 @@ import { DefaultSubtagArgumentValue, ExecutingSubtagArgumentValue, SubtagArgumen
 import { Statement } from '../language';
 import { SubtagSignatureParameter, SubtagSignatureValueParameter } from '../types';
 import { ArgumentResolver } from './ArgumentResolver';
-import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
+import { SubtagSignatureCallable } from './SubtagSignatureCallable';
 
-export function* createArgumentResolvers(signature: SubtagHandlerCallSignature): Iterable<ArgumentResolver> {
+export function* createArgumentResolvers(signature: SubtagSignatureCallable): Iterable<ArgumentResolver> {
     const flatParams = [...flatParameters(signature.parameters)];
     const defaultArgs = flatParams.map(p => new DefaultSubtagArgumentValue(p));
     const bindingOrder = createResolverOrder(signature.parameters, flatParams);

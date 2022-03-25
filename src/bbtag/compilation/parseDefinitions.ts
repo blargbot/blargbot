@@ -1,28 +1,41 @@
 import { parse } from '@blargbot/core/utils';
 
 import { ArrayOrValueSubtagLogicWrapper, ArraySubtagLogic, DeferredSubtagLogic, IgnoreSubtagLogic, StringifySubtagLogic, StringIterableSubtagLogic, StringSubtagLogic, SubtagLogic } from '../logic';
-import { AnySubtagHandlerDefinition, SubtagHandlerDefinitionParameterGroup, SubtagReturnTypeMap, SubtagSignatureDetails, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types';
-import { SubtagHandlerCallSignature } from './SubtagHandlerCallSignature';
+import { SubtagReturnTypeMap, SubtagSignature, SubtagSignatureParameter, SubtagSignatureParameterGroup, SubtagSignatureValueParameter } from '../types';
+import { AnySubtagSignatureOptions } from './AnySubtagSignatureOptions';
+import { SubtagSignatureCallable } from './SubtagSignatureCallable';
+import { SubtagSignatureParameterOptions } from './SubtagSignatureParameterOptions';
 
-export function parseDefinitions(definitions: readonly AnySubtagHandlerDefinition[]): ReadonlyArray<SubtagHandlerCallSignature | SubtagSignatureDetails> {
+export function parseDefinitions(definitions: readonly AnySubtagSignatureOptions[]): ReadonlyArray<{
+    readonly signature?: SubtagSignature;
+    readonly implementation?: SubtagSignatureCallable;
+}> {
     return definitions.map(parseDefinition);
 }
 
-function parseDefinition(definition: AnySubtagHandlerDefinition): SubtagHandlerCallSignature | SubtagSignatureDetails {
-    if (definition.noExecute === true) {
-        return {
-            ...definition,
-            parameters: definition.parameters.map(parseArgument)
-        };
-    }
+function parseDefinition(definition: AnySubtagSignatureOptions): { signature?: SubtagSignature; implementation?: SubtagSignatureCallable; } {
+    const parameters = definition.parameters.map(parseArgument);
     return {
-        ...definition,
-        parameters: definition.parameters.map(parseArgument),
-        implementation: getExecute(definition)
+        signature: getSignature(definition, parameters),
+        implementation: getExecute(definition, parameters)
     };
 }
 
-function parseArgument(parameter: string | SubtagHandlerDefinitionParameterGroup): SubtagSignatureParameter {
+function getSignature(definition: AnySubtagSignatureOptions, parameters: readonly SubtagSignatureParameter[]): SubtagSignature | undefined {
+    if (definition.description === undefined)
+        return undefined;
+
+    return {
+        subtagName: definition.subtagName,
+        description: definition.description,
+        parameters: parameters,
+        exampleCode: definition.exampleCode,
+        exampleOut: definition.exampleOut,
+        exampleIn: definition.exampleIn
+    };
+}
+
+function parseArgument(parameter: SubtagSignatureParameterOptions): SubtagSignatureParameter {
     if (typeof parameter === 'object')
         return createParameterGroup(parameter.repeat.map(parseArgument), parameter.minCount ?? 0);
 
@@ -80,9 +93,14 @@ function createParameterGroup(parameters: SubtagSignatureParameter[], minCount: 
     return { nested, minRepeats: minCount };
 }
 
-function getExecute(definition: Extract<AnySubtagHandlerDefinition, { noExecute?: false; }>): SubtagLogic {
+function getExecute(definition: AnySubtagSignatureOptions, parameters: readonly SubtagSignatureParameter[]): SubtagSignatureCallable | undefined {
+    if (definition.execute === undefined)
+        return undefined;
     const wrapper = logicWrappers[definition.returns];
-    return new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>);
+    return {
+        parameters: parameters,
+        implementation: new wrapper(definition as SubtagLogic<unknown> as SubtagLogic<never>)
+    };
 }
 
 const logicWrappers: { [P in keyof SubtagReturnTypeMap]: new (factory: SubtagLogic<Awaitable<SubtagReturnTypeMap[P]>>) => SubtagLogic } = {

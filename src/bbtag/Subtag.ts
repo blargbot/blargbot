@@ -4,7 +4,7 @@ import { abstract } from '@blargbot/core/utils';
 
 import { BBTagContext } from './BBTagContext';
 import { SubtagCall } from './language';
-import { SubtagOptions, SubtagSignatureDetails } from './types';
+import { SubtagOptions, SubtagSignature } from './types';
 import { SubtagType } from './utils';
 
 @abstract
@@ -16,7 +16,7 @@ export abstract class Subtag implements SubtagOptions {
     public readonly desc: string | undefined;
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
-    public readonly signatures: readonly SubtagSignatureDetails[];
+    public readonly signatures: readonly SubtagSignature[];
     public readonly hidden: boolean;
 
     public constructor(options: SubtagOptions) {

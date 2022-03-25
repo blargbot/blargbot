@@ -11,7 +11,6 @@ export class FunctionInvokeSubtag extends CompiledSubtag {
             hidden: true,
             definition: [
                 {
-                    hidden: true,
                     parameters: ['args*'],
                     returns: 'string',
                     execute: (ctx, args) => this.invokeFunction(ctx, args.subtagName.slice(5), args.map(arg => arg.value))

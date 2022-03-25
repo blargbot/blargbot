@@ -13,7 +13,6 @@ export class OperatorSubtag extends CompiledSubtag {
             category: SubtagType.MISC,
             definition: [
                 {
-                    hidden: true,
                     parameters: ['values+'],
                     returns: 'boolean|number',
                     execute: (_, values) => this.applyOperation(values)
@@ -21,7 +20,6 @@ export class OperatorSubtag extends CompiledSubtag {
                 ...Object.entries(operatorDefinitions).map(([op, def]) => ({
                     ...def,
                     subtagName: op,
-                    noExecute: true,
                     parameters: ['values+']
                 } as const))
             ]
@@ -82,11 +80,6 @@ export class OperatorSubtag extends CompiledSubtag {
 }
 
 const operatorDefinitions: { [P in keyof typeof bbtag['operators']]: { description: string; exampleCode: string; exampleOut: string; } } = {
-    '!': {
-        description: 'Inverts a boolean `value`. All values after the first one are ignored.',
-        exampleCode: '{!;true} {!;false}',
-        exampleOut: 'false true'
-    },
     '%': {
         description: 'Returns the remainder after dividing each pair of `value`s.',
         exampleCode: '{%;24;5} {%;24;5;3} {%;19;5;4}',
@@ -146,6 +139,11 @@ const operatorDefinitions: { [P in keyof typeof bbtag['operators']]: { descripti
         description: 'Returns `true` if each `value` is greater than or equal to the value after it, otherwise `false`',
         exampleCode: '{>=;a} {>=;c;c;b;a} {>=;2;4;3;2;1} {>=;d;c;b;a}',
         exampleOut: 'false true false true'
+    },
+    '!': {
+        description: 'Inverts a boolean `value`. All values after the first one are ignored.',
+        exampleCode: '{!;true} {!;false}',
+        exampleOut: 'false true'
     },
     '&&': {
         description: 'Returns `true` if all of the `value`s are `true`, otherwise `false`',

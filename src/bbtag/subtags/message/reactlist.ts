@@ -15,32 +15,27 @@ export class ReactListSubtag extends CompiledSubtag {
             aliases: ['listreact'],
             definition: [//! overwritten
                 {
-                    hidden: true,
                     parameters: [],
                     returns: 'error',
                     execute: (ctx) => { throw new MessageNotFoundError(ctx.channel.id, ''); }
                 },
                 {
-                    hidden: true,
                     parameters: ['messageid'],
                     returns: 'string[]',
                     execute: (ctx, [messageid]) => this.getReactions(ctx, messageid.value)
                 },
                 {
-                    hidden: true,
                     parameters: ['arguments+2'],
                     returns: 'string[]',
                     execute: (ctx, args) => this.getReactionsOrReactors(ctx, ...this.bindArguments(ctx, args.map(arg => arg.value)))
                 },
                 {
-                    noExecute: true,
                     parameters: ['channel?', 'messageId'],
                     description: 'Returns an array of reactions on `messageid` in `channelID`.',
                     exampleCode: '{reactlist;111111111111111111}',
                     exampleOut: '["🤔", "👀"]'
                 },
                 {
-                    noExecute: true,
                     parameters: ['channel?', 'messageId', 'reactions+'],
                     description: 'Returns an array of users who reacted `reactions` on `messageID` in `channelID`. A user only needs to react to one reaction to be included in the resulting array.',
                     exampleCode: '{reactlist;111111111111111111;🤔;👀}\n{reactlist;222222222222222222;111111111111111111;👀}',

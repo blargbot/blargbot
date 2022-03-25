@@ -7,7 +7,6 @@ import { VariableCache } from './Caching';
 import { BBTagRuntimeError } from './errors';
 import { SourceMarker, Statement, SubtagCall } from './language';
 import type { limits, RuntimeLimit } from './limits';
-import { SubtagLogic } from './logic';
 import { ScopeManager } from './ScopeManager';
 import { SubtagCallStack } from './SubtagCallStack';
 import { TagCooldownManager } from './TagCooldownManager';
@@ -203,23 +202,13 @@ export interface SubtagSignatureParameterGroup {
     readonly nested: readonly RequiredSubtagSignatureParameter[];
 }
 
-export interface SubtagSignatureDetails<TArgs = SubtagSignatureParameter> {
+export interface SubtagSignature {
     readonly subtagName?: string;
-    readonly parameters: readonly TArgs[];
-    readonly description?: string;
-    readonly exampleCode?: string;
+    readonly parameters: readonly SubtagSignatureParameter[];
+    readonly description: string;
+    readonly exampleCode: string;
     readonly exampleIn?: string;
-    readonly exampleOut?: string;
-}
-
-type SubtagHandlerDefinition<Type extends keyof SubtagReturnTypeMap> =
-    | (SubtagHandlerImplementationDefinition<Type> & { readonly hidden: true; })
-    | (SubtagHandlerImplementationDefinition<Type> & SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup> & { readonly hidden?: false; })
-
-interface SubtagHandlerImplementationDefinition<Type extends keyof SubtagReturnTypeMap> extends SubtagLogic<Awaitable<SubtagReturnTypeMap[Type]>> {
-    readonly parameters: ReadonlyArray<string | SubtagHandlerDefinitionParameterGroup>;
-    readonly noExecute?: false;
-    readonly returns: Type;
+    readonly exampleOut: string;
 }
 
 type AwaitableIterable<T> = (Iterable<T> | AsyncIterable<T>); // To exclude string
@@ -261,15 +250,6 @@ export type SubtagReturnTypeMap = {
     [P in keyof SubtagReturnTypeMapHelper]: SubtagReturnTypeMapHelper[P]
 }
 
-export type AnySubtagHandlerDefinition =
-    | { [P in keyof SubtagReturnTypeMap]: SubtagHandlerDefinition<P> }[keyof SubtagReturnTypeMap]
-    | ({ readonly noExecute: true; } & SubtagSignatureDetails<string | SubtagHandlerDefinitionParameterGroup>);
-
-export interface SubtagHandlerDefinitionParameterGroup {
-    readonly minCount?: number;
-    readonly repeat: readonly string[];
-}
-
 export interface SubtagOptions {
     readonly name: string;
     readonly aliases?: readonly string[];
@@ -278,7 +258,7 @@ export interface SubtagOptions {
     readonly deprecated?: string | boolean;
     readonly staff?: boolean;
     readonly hidden?: boolean;
-    readonly signatures: readonly SubtagSignatureDetails[];
+    readonly signatures: readonly SubtagSignature[];
 }
 
 export type SubtagPropertiesSet = { [key in SubtagType]: SubtagProperties; }
