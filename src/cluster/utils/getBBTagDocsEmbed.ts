@@ -189,15 +189,12 @@ function toField(subtag: Subtag, signature: SubtagSignature, index: number): Emb
     if (defaultDesc.length > 0)
         description += defaultDesc + '\n\n';
 
-    if (signature.description !== undefined)
-        description += `${signature.description}\n`;
+    description += `${signature.description}\n`;
     description += '\n';
-    if (signature.exampleCode !== undefined)
-        description += `**Example code:**${quote(signature.exampleCode)}`;
+    description += `**Example code:**${quote(signature.exampleCode)}`;
     if (signature.exampleIn !== undefined)
         description += `**Example user input:**${quote(signature.exampleIn)}`;
-    if (signature.exampleOut !== undefined)
-        description += `**Example output:**${quote(signature.exampleOut)}`;
+    description += `**Example output:**${quote(signature.exampleOut)}`;
     return { name: index === 0 ? '  **Usage**' : '\u200b', value: description.trim() };
 }
 
