@@ -8,7 +8,7 @@ export class UserStatusSubtag extends CompiledSubtag {
         super({
             name: 'userstatus',
             category: SubtagType.USER,
-            desc: 'Returned status can be one of `online`, `idle`, `dnd` or `offline`',
+            description: 'Returned status can be one of `online`, `idle`, `dnd` or `offline`',
             definition: [
                 {
                     parameters: [],

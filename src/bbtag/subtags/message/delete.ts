@@ -9,7 +9,7 @@ export class DeleteSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'delete',
-            desc: 'Only ccommands can delete other messages.',
+            description: 'Only ccommands can delete other messages.',
             category: SubtagType.MESSAGE,
             definition: [
                 {

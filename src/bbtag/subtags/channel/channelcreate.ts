@@ -12,7 +12,7 @@ export class ChannelCreateSubtag extends CompiledSubtag {
         super({
             name: 'channelcreate',
             category: SubtagType.CHANNEL,
-            desc: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
+            description: '`type` is either `text`, `voice`, `category`, `news` or `store`.\n',
             definition: [
                 {
                     parameters: ['name', 'type?:text', 'options?:{}'],

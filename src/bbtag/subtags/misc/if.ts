@@ -10,7 +10,7 @@ export class IfSubtag extends CompiledSubtag {
         super({
             name: 'if',
             category: SubtagType.MISC,
-            desc:
+            description:
                 'If `evaluator` and `value2` are provided, `value1` is evaluated against `value2` using `evaluator`. ' +
                 'If they are not provided, `value1` is read as `true` or `false`. ' +
                 'If the resulting value is `true` then the tag returns `then`, otherwise it returns `else`.\n' +

@@ -1,4 +1,4 @@
-import { SubtagSignature, SubtagType } from '@blargbot/bbtag';
+import { Subtag } from '@blargbot/bbtag';
 import { Command, CommandContext, ScopedCommand } from '@blargbot/cluster/command';
 import { CommandType, ModerationType } from '@blargbot/cluster/utils';
 import { CommandPermissions, EvalRequest, EvalResult, FlagDefinition, FlagResult, GlobalEvalResult, GuildSourceCommandTag, IMiddleware, MasterEvalRequest, NamedGuildCommandTag, SendPayload, StoredGuildSettings } from '@blargbot/core/types';
@@ -252,14 +252,7 @@ export interface SubtagListResult {
     [tagName: string]: SubtagDetails | undefined;
 }
 
-export interface SubtagDetails {
-    readonly category: SubtagType;
-    readonly name: string;
-    readonly signatures: readonly SubtagSignature[];
-    readonly deprecated: boolean | string;
-    readonly staff: boolean;
-    readonly aliases: readonly string[];
-}
+export type SubtagDetails = Omit<Subtag, 'execute' | 'hidden'>;
 
 export interface GuildDetails {
     readonly id: string;

@@ -11,7 +11,7 @@ export class UserSetRolesSubtag extends CompiledSubtag {
             name: 'usersetroles',
             aliases: ['setroles'],
             category: SubtagType.USER,
-            desc: '`roleArray` must be an array formatted like `["role1", "role2"]`',
+            description: '`roleArray` must be an array formatted like `["role1", "role2"]`',
             definition: [
                 {
                     parameters: ['roleArray?'],

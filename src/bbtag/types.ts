@@ -254,7 +254,7 @@ export interface SubtagOptions {
     readonly name: string;
     readonly aliases?: readonly string[];
     readonly category: SubtagType;
-    readonly desc?: string;
+    readonly description?: string;
     readonly deprecated?: string | boolean;
     readonly staff?: boolean;
     readonly hidden?: boolean;

@@ -11,7 +11,7 @@ export class UserHasRoleSubtag extends CompiledSubtag {
             name: 'userhasrole',
             category: SubtagType.USER,
             aliases: ['hasrole'],
-            desc: 'This subtag checks if a user has *any* of the provided `roleids`. Use `{userhasroles}` to check if a user has *all* of the provided `roleids`. `roleids` can be an array of role IDs, or a single role ID. For a list of roles and their corresponding IDs, use `b!roles`' +  //TODO context.getRole instead
+            description: 'This subtag checks if a user has *any* of the provided `roleids`. Use `{userhasroles}` to check if a user has *all* of the provided `roleids`. `roleids` can be an array of role IDs, or a single role ID. For a list of roles and their corresponding IDs, use `b!roles`' +  //TODO context.getRole instead
                 '\nReturns a boolean.',
             definition: [
                 {

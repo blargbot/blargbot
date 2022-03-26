@@ -14,7 +14,7 @@ export class RequestSubtag extends CompiledSubtag {
         super({
             name: 'request',
             category: SubtagType.BOT,
-            desc: 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.' +
+            description: 'Only certain whitelisted domains can be used for `url`. See [here](https://blargbot.xyz/domains) for the list.' +
                 'The output is a JSON object with the following structure. It is recommended to use {jsonget} to navigate it.\n' +
                 '```json\n{\n  "body": {}, // the body of the request\n  "status": 200, // the HTTP status code\n  "statusText": "OK", // the human readable translation of the status code\n' +
                 '  "date": "Thu, 1 Jan 1970 00:00:00 GMT", // the date sent in the headers\n  "contentType": "application/json", // the content type of the response\n' +

@@ -9,7 +9,7 @@ export class CommitSubtag extends CompiledSubtag {
         super({
             name: 'commit',
             category: SubtagType.BOT,
-            desc:
+            description:
                 'For optimization reasons, variables are not stored in the database immediately when you use `{set}`. ' +
                 'Instead they are cached, and will be saved to the database when the tag finishes. If you have some `variables` that ' +
                 'you need to be saved to the database immediately, use this to force an update right now.\nThis comes at a slight ' +

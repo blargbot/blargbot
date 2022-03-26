@@ -12,7 +12,7 @@ export class ChannelPosSubtag extends CompiledSubtag {
             name: 'channelpos',
             aliases: ['categorypos'],
             category: SubtagType.CHANNEL,
-            desc: 'The position is the index per channel type (text, voice or category) in the channel list.',
+            description: 'The position is the index per channel type (text, voice or category) in the channel list.',
             definition: [
                 {
                     parameters: [],

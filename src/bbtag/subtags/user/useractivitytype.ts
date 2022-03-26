@@ -19,7 +19,7 @@ export class UserActivityTypeSubtag extends CompiledSubtag {
             name: 'useractivitytype',
             aliases: ['usergametype'],
             category: SubtagType.USER,
-            desc: 'Activity types can be any of `' + Object.values(activityTypeMap).filter(type => type).join(', ') + '`',
+            description: 'Activity types can be any of `' + Object.values(activityTypeMap).filter(type => type).join(', ') + '`',
             definition: [
                 {
                     parameters: [],

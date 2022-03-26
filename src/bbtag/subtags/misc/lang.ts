@@ -5,8 +5,9 @@ export class LangSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'lang',
-            category: SubtagType.LANG,
+            category: SubtagType.MISC,
             deprecated: true,
+            hidden: true,
             definition: [
                 {
                     parameters: ['language'],

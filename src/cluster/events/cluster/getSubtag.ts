@@ -20,7 +20,8 @@ export class ClusterGetSubtagHandler extends ClusterEventService<'getSubtag'> {
             signatures: subtag.signatures,
             deprecated: subtag.deprecated,
             staff: subtag.staff,
-            aliases: subtag.aliases
+            aliases: subtag.aliases,
+            description: subtag.description
         };
     }
 }

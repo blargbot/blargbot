@@ -8,7 +8,7 @@ export class MessageTypeSubtag extends CompiledSubtag {
         super({
             name: 'messagetype',
             category: SubtagType.MESSAGE,
-            desc: 'For more info about message types, visit the [discord docs]().',
+            description: 'For more info about message types, visit the [discord docs]().',
             definition: [
                 {
                     parameters: [],

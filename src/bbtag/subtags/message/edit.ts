@@ -11,7 +11,7 @@ export class EditSubtag extends CompiledSubtag {
         super({
             name: 'edit',
             category: SubtagType.MESSAGE,
-            desc: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.' +
+            description: '`text` and `embed` can both be set to `_delete` to remove either the message content or embed.' +
                 'Please note that `embed` is the JSON for an embed object or an array of embed objects, don\'t put `{embed}` there, as nothing will show. Only messages created by the bot may be edited.',
             definition: [
                 {

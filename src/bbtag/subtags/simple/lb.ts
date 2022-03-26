@@ -6,7 +6,7 @@ export class LbSubtag extends CompiledSubtag {
         super({
             name: 'lb',
             category: SubtagType.SIMPLE,
-            desc: 'Will be replaced by `{` on execution.',
+            description: 'Will be replaced by `{` on execution.',
             definition: [
                 {
                     parameters: [],

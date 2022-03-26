@@ -6,7 +6,6 @@ export enum SubtagType {
     ARRAY,
     JSON,
     MATH,
-    LANG,
     LOOPS,
     BOT,
     MESSAGE,
@@ -37,11 +36,6 @@ export const tagTypeDetails: SubtagPropertiesSet = {
     [SubtagType.MATH]: {
         name: 'Math',
         desc: 'Subtags designed for mathematical purposes.'
-    },
-    [SubtagType.LANG]: {
-        name: 'Lang',
-        desc: 'Lang',
-        hidden: true
     },
     [SubtagType.LOOPS]: {
         name: 'Loops',

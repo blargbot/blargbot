@@ -11,7 +11,7 @@ export class WebhookSubtag extends CompiledSubtag {
         super({
             name: 'webhook',
             category: SubtagType.MESSAGE,
-            desc: 'Please assign your webhook credentials to private variables! Do not leave them in your code.\n`embed` can be an array of embed objects.',
+            description: 'Please assign your webhook credentials to private variables! Do not leave them in your code.\n`embed` can be an array of embed objects.',
             definition: [
                 {
                     parameters: ['id', 'token'], //! Idk why allowing users to use 2 args is even a thing, it will just error because the message is empty

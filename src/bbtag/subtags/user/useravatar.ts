@@ -8,7 +8,7 @@ export class UserAvatarSubtag extends CompiledSubtag {
         super({
             name: 'useravatar',
             category: SubtagType.USER,
-            desc: 'If no game is being played, this will return \'nothing\'',
+            description: 'If no game is being played, this will return \'nothing\'',
             definition: [
                 {
                     parameters: [],

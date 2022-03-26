@@ -206,8 +206,8 @@ function subtagDocs(context: CommandContext, subtag: Subtag): EmbedOptions {
         description.push('**This subtag is deprecated**');
     if (subtag.aliases.length > 0)
         description.push('**Aliases:**', codeBlock(subtag.aliases.join(', ')));
-    if (subtag.desc !== undefined)
-        description.push(subtag.desc);
+    if (subtag.description !== undefined)
+        description.push(subtag.description);
 
     const fields = subtag.signatures.map((sig, index) => toField(subtag, sig, index));
     const limitField: EmbedField = { name: '__Usage limits__', value: '' };

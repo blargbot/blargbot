@@ -7,7 +7,7 @@ export class RegexReplaceSubtag extends RegexSubtag {
         super({
             name: 'regexreplace',
             category: SubtagType.MISC,
-            desc: 'Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. ' +
+            description: 'Any bbtag in `regex` will not be resolved. Please consider using `{apply}` for a dynamic regex. ' +
                 '`regex` will only succeed to compile if it is deemed a safe regular expression ' +
                 '(safe regexes do not run in exponential time for any input) and is less than 2000 characters long.',
             definition: [

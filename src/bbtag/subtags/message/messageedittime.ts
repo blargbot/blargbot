@@ -11,7 +11,7 @@ export class MessageEditTimeSubtag extends CompiledSubtag {
         super({
             name: 'messageedittime',
             category: SubtagType.MESSAGE,
-            desc: 'If the message is not edited, this will return the current time instead.\n\n**Note:** there are plans to change this behaviour, but due to backwards-compatibility this remains unchanged.', //TODO Change this
+            description: 'If the message is not edited, this will return the current time instead.\n\n**Note:** there are plans to change this behaviour, but due to backwards-compatibility this remains unchanged.', //TODO Change this
             definition: [
                 {
                     parameters: [],

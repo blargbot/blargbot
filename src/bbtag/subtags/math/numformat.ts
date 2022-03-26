@@ -7,7 +7,7 @@ export class NumFormatSubtag extends CompiledSubtag {
     public constructor() {
         super({
             name: 'numformat',
-            desc: 'If `roundTo` is not provided, but the number does have decimals, rounds to `3` by default. Any precision for decimals will be lost e.g: `100.000000000`becomes `100` and `100.3100000000` becomes `100.31`',
+            description: 'If `roundTo` is not provided, but the number does have decimals, rounds to `3` by default. Any precision for decimals will be lost e.g: `100.000000000`becomes `100` and `100.3100000000` becomes `100.31`',
             category: SubtagType.MATH,
             definition: [
                 {

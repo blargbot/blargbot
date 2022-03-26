@@ -8,7 +8,7 @@ export class EmojisSubtag extends CompiledSubtag {
         super({
             name: 'emojis',
             category: SubtagType.GUILD,
-            desc: 'Please not that Discord will remove all the emojis from a message which contains an emoji that blarg can\'t use. For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).',
+            description: 'Please not that Discord will remove all the emojis from a message which contains an emoji that blarg can\'t use. For example, blargbot can\'t use a role-restricted emoji if it doesn\'t have the role. Learn more [here](https://discordapp.com/developers/docs/resources/emoji).',
             definition: [
                 {
                     parameters: [],

@@ -18,7 +18,7 @@ export class BanSubtag extends CompiledSubtag {
         super({
             name: 'ban',
             category: SubtagType.USER,
-            desc: '`daysToDelete` is the number of days to delete messages for. `duration`',
+            description: '`daysToDelete` is the number of days to delete messages for. `duration`',
             definition: [
                 {
                     parameters: ['user', 'daysToDelete?:1'],

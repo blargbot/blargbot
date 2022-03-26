@@ -14,7 +14,7 @@ export class WaitReactionSubtag extends CompiledSubtag {
             name: 'waitreaction',
             category: SubtagType.MESSAGE,
             aliases: ['waitreact'],
-            desc: 'Pauses the command until one of the given `users` adds any given `reaction` on any of the given `messages`. ' +
+            description: 'Pauses the command until one of the given `users` adds any given `reaction` on any of the given `messages`. ' +
                 'When a `reaction` is added, `condition` will be run to determine if the reaction can be accepted. ' +
                 'If no reaction has been accepted within `timeout` then the subtag returns `Wait timed out`, otherwise it returns an array containing ' +
                 'the channel Id, the message Id, the user id and the reaction, in that order. ' +

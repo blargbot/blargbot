@@ -11,7 +11,7 @@ export class SpliceSubtag extends CompiledSubtag {
         super({
             name: 'splice',
             category: SubtagType.ARRAY,
-            desc: 'If used with a variable this will modify the original array.\nReturns an array of removed items.',
+            description: 'If used with a variable this will modify the original array.\nReturns an array of removed items.',
             definition: [
                 {
                     parameters: ['array', 'start', 'deleteCount?:0'],

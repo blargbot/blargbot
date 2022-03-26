@@ -10,7 +10,7 @@ export class PardonSubtag extends CompiledSubtag {
         super({
             name: 'pardon',
             category: SubtagType.USER,
-            desc: '`user` defaults to the executing user. Returns the new warning count',
+            description: '`user` defaults to the executing user. Returns the new warning count',
             definition: [
                 {
                     parameters: ['user?'],

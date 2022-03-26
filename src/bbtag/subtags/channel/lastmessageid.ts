@@ -10,7 +10,7 @@ export class LastMessageIdSubtag extends CompiledSubtag {
         super({
             name: 'lastmessageid',
             category: SubtagType.CHANNEL,
-            desc: 'Returns nothing if the channel doesn\'t have any messages.',
+            description: 'Returns nothing if the channel doesn\'t have any messages.',
             definition: [
                 {
                     parameters: [],

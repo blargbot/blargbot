@@ -11,7 +11,7 @@ export class RoleRemoveSubtag extends CompiledSubtag {
             name: 'roleremove',
             category: SubtagType.ROLE,
             aliases: ['removerole'],
-            desc: '`role` can be either a roleID or role mention.',
+            description: '`role` can be either a roleID or role mention.',
             definition: [
                 {
                     parameters: ['role'],

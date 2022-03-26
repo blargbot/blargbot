@@ -9,7 +9,7 @@ export class TimeSubtag extends CompiledSubtag {
         super({
             name: 'time',
             category: SubtagType.MISC,
-            desc: 'If you provide `time`, you should also provide `parseFormat` to ensure it is being interpreted correctly.\n' +
+            description: 'If you provide `time`, you should also provide `parseFormat` to ensure it is being interpreted correctly.\n' +
                 'See the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more format information.\n' +
                 'See [here](http://momentjs.com/docs/#/parsing/) for parsing documentation. ' +
                 'See [here](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones) for a list of timezone codes.',

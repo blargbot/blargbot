@@ -12,8 +12,7 @@ export abstract class Subtag implements SubtagOptions {
     public readonly name: string;
     public readonly aliases: readonly string[];
     public readonly category: SubtagType;
-    public readonly isTag: true;
-    public readonly desc: string | undefined;
+    public readonly description: string | undefined;
     public readonly deprecated: string | boolean;
     public readonly staff: boolean;
     public readonly signatures: readonly SubtagSignature[];
@@ -23,8 +22,7 @@ export abstract class Subtag implements SubtagOptions {
         this.name = options.name;
         this.aliases = options.aliases ?? [];
         this.category = options.category;
-        this.isTag = true;
-        this.desc = options.desc;
+        this.description = options.description;
         this.deprecated = options.deprecated ?? false;
         this.staff = options.staff ?? false;
         this.hidden = options.hidden ?? false;

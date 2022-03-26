@@ -10,7 +10,7 @@ export class UserJoinedAtSubtag extends CompiledSubtag {
         super({
             name: 'userjoinedat',
             category: SubtagType.USER,
-            desc: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
+            description: 'For a list of formats see the [moment documentation](http://momentjs.com/docs/#/displaying/format/) for more information.',
             definition: [
                 {
                     parameters: ['format?:YYYY-MM-DDTHH:mm:ssZ'],

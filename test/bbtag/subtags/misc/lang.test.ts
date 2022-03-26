@@ -1,4 +1,4 @@
-import { LangSubtag } from '@blargbot/bbtag/subtags/IMPORTANT/lang';
+import { LangSubtag } from '@blargbot/bbtag/subtags/misc/lang';
 
 import { MarkerError, runSubtagTests } from '../SubtagTestSuite';
 

@@ -10,7 +10,7 @@ export class WarnSubtag extends CompiledSubtag {
         super({
             name: 'warn',
             category: SubtagType.USER,
-            desc: '`user` defaults to the executing user.',
+            description: '`user` defaults to the executing user.',
             definition: [
                 {
                     parameters: ['user?'],

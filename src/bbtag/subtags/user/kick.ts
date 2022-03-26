@@ -8,7 +8,7 @@ export class KickSubtag extends CompiledSubtag {
         super({
             name: 'kick',
             category: SubtagType.USER,
-            desc: 'If the kick is successful, `Success` will be returned, otherwise the error will be given. ',
+            description: 'If the kick is successful, `Success` will be returned, otherwise the error will be given. ',
             definition: [
                 {
                     parameters: ['user'],

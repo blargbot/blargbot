@@ -10,7 +10,7 @@ export class ChannelTypeSubtag extends CompiledSubtag {
         super({
             name: 'channeltype',
             category: SubtagType.CHANNEL,
-            desc: 'Possible results: ' + Object.values(channelTypes).map(t => '`' + t + '`').join(', '),
+            description: 'Possible results: ' + Object.values(channelTypes).map(t => '`' + t + '`').join(', '),
             definition: [
                 {
                     parameters: [],
