@@ -56,8 +56,8 @@ export class EventLogManager {
             return;
 
         await Promise.all(details.map(d => this.logMessageDeleted(guildId, d, logChannel)));
-        await this.logEvent('messagedelete', logChannel, this.eventLogEmbed('KnownMessage Deleted', undefined, 0xaf1d1d, {
-            description: 'Bulk KnownMessage Delete',
+        await this.logEvent('messagedelete', logChannel, this.eventLogEmbed('Message Deleted', undefined, 0xaf1d1d, {
+            description: 'Bulk Message Delete',
             fields: [
                 { name: 'Count', value: `${messages.length}`, inline: true },
                 { name: 'Channel', value: messages.map(m => `<#${m.channel.id}>`).join('\n'), inline: true }
@@ -92,12 +92,12 @@ export class EventLogManager {
 
         const lastUpdate = moment(message.editedTimestamp ?? message.createdAt);
 
-        const embed = this.eventLogEmbed('KnownMessage Updated', message.author, 0x771daf, {
+        const embed = this.eventLogEmbed('Message Updated', message.author, 0x771daf, {
             fields: [
-                { name: 'KnownMessage Id', value: message.id, inline: true },
+                { name: 'Message Id', value: message.id, inline: true },
                 { name: 'Channel', value: message.channel.toString(), inline: true },
-                await this.getContentEmbedField(guildId, 'Old KnownMessage', oldMessage?.content, lastUpdate, 2),
-                await this.getContentEmbedField(guildId, 'New KnownMessage', message.content, lastUpdate, 2)
+                await this.getContentEmbedField(guildId, 'Old Message', oldMessage?.content, lastUpdate, 2),
+                await this.getContentEmbedField(guildId, 'New Message', message.content, lastUpdate, 2)
             ]
         });
         await this.logEvent('messageupdate', logChannel, embed);
@@ -214,9 +214,9 @@ export class EventLogManager {
     }
 
     private async logMessageDeleted(guildId: string, message: MessageDetails, logChannel: KnownGuildTextableChannel): Promise<void> {
-        const embed = this.eventLogEmbed('KnownMessage Deleted', message.author, 0xaf1d1d, {
+        const embed = this.eventLogEmbed('Message Deleted', message.author, 0xaf1d1d, {
             fields: [
-                { name: 'KnownMessage Id', value: message.id, inline: true },
+                { name: 'Message Id', value: message.id, inline: true },
                 { name: 'Channel', value: `<#${message.channelId}>`, inline: true },
                 await this.getContentEmbedField(guildId, 'Content', message.content, undefined)
             ]

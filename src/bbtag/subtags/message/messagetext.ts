@@ -21,16 +21,16 @@ export class MessageTextSubtag extends CompiledSubtag {
                 {
                     parameters: ['messageid'],
                     description: 'Returns the text of `messageid` in the current channel.',
-                    exampleCode: 'KnownMessage 1111111111111 contained: "{text;1111111111111}"',
-                    exampleOut: 'KnownMessage 1111111111111 contained: "Hello world!"',
+                    exampleCode: 'Message 1111111111111 contained: "{text;1111111111111}"',
+                    exampleOut: 'Message 1111111111111 contained: "Hello world!"',
                     returns: 'string',
                     execute: (ctx, [messageId]) => this.getMessageText(ctx, ctx.channel.id, messageId.value, false)
                 },
                 {
                     parameters: ['channel', 'messageid', 'quiet?'],
                     description: 'Returns the text of `messageid` in `channel`. If `quiet` is provided and `channel` cannot be found, this will return nothing.',
-                    exampleCode: 'KnownMessage 1111111111111 in #support contained: "{text;support;1111111111111}"',
-                    exampleOut: 'KnownMessage 1111111111111 in #support contained: "Spooky Stuff"',
+                    exampleCode: 'Message 1111111111111 in #support contained: "{text;support;1111111111111}"',
+                    exampleOut: 'Message 1111111111111 in #support contained: "Spooky Stuff"',
                     returns: 'string',
                     execute: (ctx, [channel, messageId, quiet]) => this.getMessageText(ctx, channel.value, messageId.value, quiet.value !== '')
                 }
