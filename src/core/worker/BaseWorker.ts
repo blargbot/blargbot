@@ -14,17 +14,13 @@ export abstract class BaseWorker<Contracts extends IPCContracts> {
     ) {
         this.ipc = new IPCMessageEmitter(process);
 
-        const exit = process.exit.bind(process);
-        process.exit = (...args) => {
-            try {
-                logger.fatal(new Error('process.exit has been called.'));
-            } catch { /* NO-OP */ }
-            exit(...args);
-            throw null;
-        };
-
         process.on('unhandledRejection', (err) =>
             this.logger.error('Unhandled Promise Rejection: Promise', err));
+
+        process.on('disconnect', () => {
+            logger.fatal('The parent process has disconnected!');
+            process.exit();
+        });
 
         this.on('stop', async ({ reply }) => {
             logger.fatal(`Stop command received. PID ${this.id}`);
