@@ -6,5 +6,5 @@ Error.stackTraceLimit = 100;
 const logger = createLogger(config, `CL${process.env.CLUSTER_ID ?? '??'}`);
 logger.setGlobal();
 
-void new ClusterWorker(process, logger, config)
+void new ClusterWorker(logger, config)
     .start();

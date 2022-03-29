@@ -9,11 +9,10 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
     public readonly cluster: Cluster;
 
     public constructor(
-        process: NodeJS.Process,
         logger: Logger,
         public readonly config: Configuration
     ) {
-        super(process, logger);
+        super(logger);
         const clusterId = envNumber(this.env, 'CLUSTER_ID');
 
         this.logger.init(`CLUSTER ${clusterId} (pid ${this.id}) PROCESS INITIALIZED`);

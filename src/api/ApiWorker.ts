@@ -9,11 +9,10 @@ export class ApiWorker extends BaseWorker<ApiIPCContracts> {
     public readonly webServer: Api;
 
     public constructor(
-        process: NodeJS.Process,
         public readonly config: Configuration,
         logger: Logger
     ) {
-        super(process, logger);
+        super(logger);
         this.logger.init(`API (pid ${this.id}) PROCESS INITIALIZED`);
 
         this.webServer = new Api(logger, config, { worker: this });

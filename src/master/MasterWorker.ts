@@ -9,12 +9,11 @@ export class MasterWorker extends BaseWorker<MasterIPCContract> {
     public readonly master: Master;
 
     public constructor(
-        process: NodeJS.Process,
         logger: Logger,
         config: Configuration,
         options: Omit<MasterOptions, 'worker'>
     ) {
-        super(process, logger);
+        super(logger);
 
         logger.info(`
 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
