@@ -20,19 +20,7 @@ export function createLogger(config: Configuration, workerId: string): Logger {
     if (config.sentry.base !== '')
         logger.addPreHook(createSentryPreHook(config, workerId) as unknown as ArgHookCallback);
 
-    const result = logger as unknown as Logger;
-
-    const exit = process.exit.bind(process);
-    process.exit = (...args) => {
-        try {
-            result.fatal(new Error(`process.exit(${args.join(', ')}) has been called`));
-        } finally {
-            exit(...args);
-        }
-        throw null;
-    };
-
-    return result;
+    return logger as unknown as Logger;
 }
 
 const logLevels: Record<LogLevel, { color: typeof CatLoggr['_chalk']; isError?: boolean; isTrace?: boolean; }> = {
