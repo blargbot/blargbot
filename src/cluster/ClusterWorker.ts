@@ -30,6 +30,11 @@ export class ClusterWorker extends BaseWorker<ClusterIPCContract> {
         await this.cluster.start();
         super.start();
     }
+
+    public async stop(): Promise<void> {
+        await this.cluster.images.killAll();
+        await super.stop();
+    }
 }
 
 function envNumber(env: NodeJS.ProcessEnv, key: string): number {
