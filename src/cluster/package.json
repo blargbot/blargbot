@@ -33,6 +33,6 @@
         "@types/svg2png": "^4.1.1",
         "@types/wolken": "workspace:^",
         "@types/xml2js": "^0.4.9",
-        "discord-api-types": "^0.29.0"
+        "discord-api-types": "^0.30.0"
     }
 }

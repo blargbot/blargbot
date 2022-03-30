@@ -14,15 +14,13 @@
         "gifencoder": "^2.0.1",
         "gm": "^1.23.1",
         "jimp": "^0.16.1",
-        "node-fetch": "^2.6.7",
-        "phantom": "^4.0.12"
+        "node-fetch": "^2.6.7"
     },
     "devDependencies": {
         "@types/blargbot-image-api": "workspace:^",
         "@types/color-thief-jimp": "workspace:^",
         "@types/gifencoder": "^2.0.1",
         "@types/gm": "^1.18.11",
-        "@types/node-fetch": "^2.6.1",
-        "@types/phantom": "workspace:^"
+        "@types/node-fetch": "^2.6.1"
     }
 }
