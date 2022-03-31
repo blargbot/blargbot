@@ -14,9 +14,8 @@ export abstract class BaseWorker<Contracts extends IPCContracts> {
     ) {
         this.ipc = new IPCMessageEmitter(process);
 
-        process.on('unhandledRejection', (err) =>
-            this.logger.error('Unhandled Promise Rejection: Promise', err));
-
+        process.on('exit', () => logger.fatal('Process is exiting', new Error().stack?.slice(5)));
+        process.on('unhandledRejection', err => this.logger.error('Unhandled rejection', err));
         process.on('disconnect', () => {
             logger.fatal('The parent process has disconnected!');
             process.exit();

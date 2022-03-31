@@ -124,6 +124,7 @@ export class Cluster extends BaseClient {
 
         await Promise.all([
             super.start(),
+            this.connectDiscordGateway(),
             this.commands.load(),
             this.subtags.init()
         ]);
