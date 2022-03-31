@@ -21,7 +21,7 @@ export class DumpSubtag extends CompiledSubtag {
     }
 
     public async createDump(context: BBTagContext, text: string): Promise<string> {
-        const id = await context.util.generateOutputPage(text, context.channel);
-        return context.util.websiteLink(`output/${id.toString()}`);
+        const id = await context.util.generateDumpPage(text, context.channel);
+        return context.util.websiteLink(`dumps/${id}`);
     }
 }

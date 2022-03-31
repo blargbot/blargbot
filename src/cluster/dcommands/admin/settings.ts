@@ -9,7 +9,7 @@ export class SettingsCommand extends GuildCommand {
         super({
             name: 'settings',
             category: CommandType.ADMIN,
-            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/commands/settings')} for key documentation.`,
+            description: `Gets or sets the settings for the current guild. Visit ${cluster.util.websiteLink('/guilds/settings')} for key documentation.`,
             definitions: [
                 {
                     parameters: 'list',

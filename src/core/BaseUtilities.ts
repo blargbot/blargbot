@@ -66,7 +66,7 @@ export class BaseUtilities {
             return {
                 icon_url: target.avatarURL,
                 name: target.nick ?? target.username,
-                url: this.websiteLink(`user/${target.id}`)
+                url: this.websiteLink(`users/${target.id}`)
             };
         } else if (target instanceof Guild) {
             return {
@@ -77,7 +77,7 @@ export class BaseUtilities {
             return {
                 icon_url: target.avatarURL,
                 name: target.username ?? 'UNKNOWN',
-                url: this.websiteLink(`user/${target.userid}`)
+                url: this.websiteLink(`users/${target.userid}`)
             };
         }
 
@@ -144,11 +144,11 @@ export class BaseUtilities {
         }
 
         if (!guard.checkEmbedSize(payload.embeds)) {
-            const id = await this.generateOutputPage(payload, channel);
-            const output = this.websiteLink('/output');
+            const id = await this.generateDumpPage(payload, channel);
+            const output = this.websiteLink(`/dumps/${id}`);
             payload.content = 'Oops! I tried to send a message that was too long. If you think this is a bug, please report it!\n' +
                 '\n' +
-                `To see what I would have said, please visit ${output}${id.toString()}`;
+                `To see what I would have said, please visit ${output}`;
             if (payload.embeds !== undefined)
                 delete payload.embeds;
         } else if (payload.content !== undefined && !guard.checkMessageSize(payload.content)) {
@@ -315,7 +315,7 @@ export class BaseUtilities {
         return tag;
     }
 
-    public async generateOutputPage(payload: SendContent | string, channel?: KnownTextableChannel): Promise<Snowflake> {
+    public async generateDumpPage(payload: SendContent | string, channel?: KnownTextableChannel): Promise<Snowflake> {
         if (typeof payload === 'string')
             payload = { content: payload };
 

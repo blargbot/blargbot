@@ -94,7 +94,7 @@ export class LogsCommand extends GuildCommand {
 
         if (!Array.isArray(logs)) {
             return {
-                content: `${ping}Your logs are available here: ${context.util.websiteLink(`logs/#${logs.keycode}`)}`,
+                content: `${ping}Your logs are available here: ${context.util.websiteLink(`logs/${logs.keycode}`)}`,
                 allowedMentions: { users: [context.author.id] }
             };
         }

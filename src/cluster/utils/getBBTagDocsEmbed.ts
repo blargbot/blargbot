@@ -20,7 +20,7 @@ export async function getBBTagDocsEmbed(context: CommandContext, topic: string |
     if (typeof embed === 'string')
         return embed;
     embed.title = `BBTag documentation${embed.title ?? ''}`;
-    embed.url = context.cluster.util.websiteLink(`tags${embed.url ?? ''}`);
+    embed.url = context.cluster.util.websiteLink(`bbtag/subtags${embed.url ?? ''}`);
     embed.color ??= 0xefff00;
     return embed;
 }
@@ -31,7 +31,7 @@ async function getTopicBody(context: CommandContext, topic: string | undefined):
     switch (words[0]?.toLowerCase()) {
         case undefined:
         case 'index': return {
-            description: 'Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE](' + context.util.websiteLink('tags/editor') + ') which should make developing a little easier.',
+            description: 'Blargbot is equipped with a system of tags called BBTag, designed to mimic a programming language while still remaining simple. You can use this system as the building-blocks to create your own advanced command system, whether it be through public tags or guild-specific custom commands.\n\nCustomizing can prove difficult via discord, fortunately there is an online [BBTag IDE](' + context.util.websiteLink('bbtag/editor') + ') which should make developing a little easier.',
             fields: [
                 {
                     name: 'Topics',

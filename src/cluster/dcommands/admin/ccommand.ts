@@ -24,8 +24,8 @@ export class CustomCommandCommand extends GuildCommand {
                 + 'disable them entirely. If the command content is "null" (without the quotations), blargbot will have no output '
                 + 'whatsoever, allowing you to disable any built-in command you wish. You cannot overwrite the \'ccommand\' command. '
                 + 'For more in-depth command customization, see the `editcommand` command.\n'
-                + `For more information about BBTag, visit <${cluster.util.websiteLink('/tags')}>.\n`
-                + `By creating a custom command, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/tags/tos')}>)`,
+                + `For more information about BBTag, visit <${cluster.util.websiteLink('/bbtag/subtags')}>.\n`
+                + `By creating a custom command, you acknowledge that you agree to the Terms of Service (<${cluster.util.websiteLink('/bbtag/subtags/tos')}>)`,
             definitions: [
                 {
                     parameters: 'test|eval|exec|vtest',
