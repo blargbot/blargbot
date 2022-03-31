@@ -323,8 +323,9 @@ export class BaseUtilities {
         await this.database.dumps.add({
             id: id.toString(),
             content: payload.content ?? undefined,
-            embeds: JSON.stringify(payload.embeds),
-            channelid: channel?.id
+            embeds: payload.embeds,
+            channelid: channel?.id,
+            expiry: 604800
         });
         return id;
     }

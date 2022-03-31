@@ -726,8 +726,9 @@ export interface UserTodo {
 export interface Dump {
     readonly id: string;
     readonly content?: string;
-    readonly embeds?: string;
+    readonly embeds?: EmbedOptions[];
     readonly channelid?: string;
+    readonly expiry: number;
 }
 
 export const enum ChatlogType {
@@ -933,7 +934,8 @@ export interface ChatlogIndexTable {
 }
 
 export interface DumpsTable {
-    add(dump: Dump, lifespan?: number | Duration): Promise<void>;
+    add(dump: Dump): Promise<void>;
+    get(id: string): Promise<Dump | undefined>;
 }
 
 export interface TagVariablesTable {
