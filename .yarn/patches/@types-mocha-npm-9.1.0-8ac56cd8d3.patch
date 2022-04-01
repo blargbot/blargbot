@@ -1,0 +1,203 @@
+diff --git a/index.d.ts b/index.d.ts
+index b98d334d5529d3b32ea3ce71234b31d91032c6bd..f63fa440a2844cb513fde83de6d551a9241450f4 100755
+--- a/index.d.ts
++++ b/index.d.ts
+@@ -15,7 +15,7 @@
+  *
+  * @see https://mochajs.org/api/mocha
+  */
+-declare class Mocha {
++export class Mocha {
+     private _growl;
+     private _reporter;
+     private _ui;
+@@ -306,7 +306,7 @@ declare class Mocha {
+     enableGlobalTeardown(enabled: boolean): this;
+ }
+ 
+-declare namespace Mocha {
++export namespace Mocha {
+     namespace utils {
+         /**
+          * Compute a slug from the given `str`.
+@@ -2594,7 +2594,7 @@ declare namespace Mocha {
+  *
+  * @see https://mochajs.org/api/global.html#runWithSuite
+  */
+-declare function run(): void;
++export function run(): void;
+ 
+ /**
+  * Execute before running tests.
+@@ -2603,7 +2603,7 @@ declare function run(): void;
+  *
+  * @see https://mochajs.org/api/global.html#before
+  */
+-declare var before: Mocha.HookFunction;
++export var before: Mocha.HookFunction;
+ 
+ /**
+  * Execute before running tests.
+@@ -2612,7 +2612,7 @@ declare var before: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#before
+  */
+-declare var suiteSetup: Mocha.HookFunction;
++export var suiteSetup: Mocha.HookFunction;
+ 
+ /**
+  * Execute after running tests.
+@@ -2621,7 +2621,7 @@ declare var suiteSetup: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#after
+  */
+-declare var after: Mocha.HookFunction;
++export var after: Mocha.HookFunction;
+ 
+ /**
+  * Execute after running tests.
+@@ -2630,7 +2630,7 @@ declare var after: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#after
+  */
+-declare var suiteTeardown: Mocha.HookFunction;
++export var suiteTeardown: Mocha.HookFunction;
+ 
+ /**
+  * Execute before each test case.
+@@ -2639,7 +2639,7 @@ declare var suiteTeardown: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#beforeEach
+  */
+-declare var beforeEach: Mocha.HookFunction;
++export var beforeEach: Mocha.HookFunction;
+ 
+ /**
+  * Execute before each test case.
+@@ -2648,7 +2648,7 @@ declare var beforeEach: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#beforeEach
+  */
+-declare var setup: Mocha.HookFunction;
++export var setup: Mocha.HookFunction;
+ 
+ /**
+  * Execute after each test case.
+@@ -2657,7 +2657,7 @@ declare var setup: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#afterEach
+  */
+-declare var afterEach: Mocha.HookFunction;
++export var afterEach: Mocha.HookFunction;
+ 
+ /**
+  * Execute after each test case.
+@@ -2666,77 +2666,77 @@ declare var afterEach: Mocha.HookFunction;
+  *
+  * @see https://mochajs.org/api/global.html#afterEach
+  */
+-declare var teardown: Mocha.HookFunction;
++export var teardown: Mocha.HookFunction;
+ 
+ /**
+  * Describe a "suite" containing nested suites and tests.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var describe: Mocha.SuiteFunction;
++export var describe: Mocha.SuiteFunction;
+ 
+ /**
+  * Describe a "suite" containing nested suites and tests.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var context: Mocha.SuiteFunction;
++export var context: Mocha.SuiteFunction;
+ 
+ /**
+  * Describe a "suite" containing nested suites and tests.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var suite: Mocha.SuiteFunction;
++export var suite: Mocha.SuiteFunction;
+ 
+ /**
+  * Pending suite.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xdescribe: Mocha.PendingSuiteFunction;
++export var xdescribe: Mocha.PendingSuiteFunction;
+ 
+ /**
+  * Pending suite.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xcontext: Mocha.PendingSuiteFunction;
++export var xcontext: Mocha.PendingSuiteFunction;
+ 
+ /**
+  * Describes a test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var it: Mocha.TestFunction;
++export var it: Mocha.TestFunction;
+ 
+ /**
+  * Describes a test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var specify: Mocha.TestFunction;
++export var specify: Mocha.TestFunction;
+ 
+ /**
+  * Describes a test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var test: Mocha.TestFunction;
++export var test: Mocha.TestFunction;
+ 
+ /**
+  * Describes a pending test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xit: Mocha.PendingTestFunction;
++export var xit: Mocha.PendingTestFunction;
+ 
+ /**
+  * Describes a pending test case.
+  *
+  * - _Only available when invoked via the mocha CLI._
+  */
+-declare var xspecify: Mocha.PendingTestFunction;
++export var xspecify: Mocha.PendingTestFunction;
+ 
+ // #endregion Test interface augmentations
+ 
+@@ -2758,10 +2758,6 @@ declare namespace NodeJS {
+     // NOTE: Mocha *must not* have a direct dependency on @types/node.
+     // tslint:disable-next-line no-empty-interface
+     interface EventEmitter {}
+-
+-    // Augments NodeJS's `global` object when node.d.ts is loaded
+-    // tslint:disable-next-line no-empty-interface
+-    interface Global extends Mocha.MochaGlobals {}
+ }
+ 
+ // #endregion Reporter augmentations
+@@ -2773,7 +2769,7 @@ declare namespace NodeJS {
+  *
+  * - _Only supported in the browser._
+  */
+-declare const mocha: BrowserMocha;
++export const mocha: BrowserMocha;
+ 
+ interface BrowserMocha extends Mocha {
+     /**

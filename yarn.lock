@@ -293,7 +293,7 @@ __metadata:
     "@types/chai": ^4.3.0
     "@types/chai-datetime": ^0.0.37
     "@types/eris": "workspace:^"
-    "@types/mocha": "workspace:^"
+    "@types/mocha": ^9.1.0
     chai: ^4.3.6
     chai-bytes: ^0.1.2
     chai-datetime: ^1.8.0
@@ -378,7 +378,7 @@ __metadata:
   dependencies:
     "@blargbot/core": "workspace:^"
     "@types/chai": ^4.3.0
-    "@types/mocha": "workspace:^"
+    "@types/mocha": ^9.1.0
     chai: ^4.3.6
     mocha: ^9.2.2
     ts-mockito: ^2.6.1
@@ -1670,9 +1670,23 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mocha@workspace:^, @types/mocha@workspace:definitions/mocha":
+"@types/mocha@npm:9.1.0":
+  version: 9.1.0
+  resolution: "@types/mocha@npm:9.1.0"
+  checksum: 21e1000dafcfe387c6812be41c44a47b48c27a74d5a70c3d5ef1bb5c88eadadfc74dba06e93f160e7248c8a57b3977b590f82504c801c9927816ecd4668023c0
+  languageName: node
+  linkType: hard
+
+"@types/mocha@patch:@types/mocha@npm:9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch::locator=blargbot%40workspace%3A.":
+  version: 9.1.0
+  resolution: "@types/mocha@patch:@types/mocha@npm%3A9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch::version=9.1.0&hash=452252&locator=blargbot%40workspace%3A."
+  checksum: f4c9d1cda13f847cc78d4fedebfaae4bf6eece515d47b9db8f560ae37fb26769a86493dc6e989e7ce7e0e2c8eb354abd121f8092a7abe2b4e97616c88ff8c707
+  languageName: node
+  linkType: hard
+
+"@types/mochaaaaa@workspace:definitions/mocha":
   version: 0.0.0-use.local
-  resolution: "@types/mocha@workspace:definitions/mocha"
+  resolution: "@types/mochaaaaa@workspace:definitions/mocha"
   languageName: unknown
   linkType: soft
 

@@ -54,5 +54,8 @@
         "svg2png@4.1.1": {
             "unplugged": true
         }
+    },
+    "resolutions": {
+        "@types/mocha@^9.1.0": "patch:@types/mocha@npm:9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch"
     }
 }

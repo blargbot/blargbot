@@ -45,7 +45,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:definitions/long"\
       },\
       {\
-        "name": "@types/mocha",\
+        "name": "@types/mochaaaaa",\
         "reference": "workspace:definitions/mocha"\
       },\
       {\
@@ -135,7 +135,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@types/color-thief-jimp", ["workspace:definitions/color-thief-jimp"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
       ["@types/long", ["workspace:definitions/long"]],\
-      ["@types/mocha", ["workspace:definitions/mocha"]],\
+      ["@types/mochaaaaa", ["workspace:definitions/mocha"]],\
       ["@types/require-reload", ["workspace:definitions/require-reload"]],\
       ["@types/rethinkdb", ["workspace:definitions/rethinkdb"]],\
       ["@types/wolken", ["workspace:definitions/wolken"]],\
@@ -520,7 +520,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/chai", "npm:4.3.0"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
             ["@types/eris", "workspace:definitions/eris"],\
-            ["@types/mocha", "workspace:definitions/mocha"],\
+            ["@types/mocha", "patch:@types/mocha@npm%3A9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch::version=9.1.0&hash=452252&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.6"],\
             ["chai-bytes", "virtual:94580678571635b8fa683d1ccf0d1493f27441684157cd3c71327884aaa620119eb99f1b6fb9168cfe69174ff44ca73b71d597b5e675b7d6ecf9ae214b4d650b#npm:0.1.2"],\
             ["chai-datetime", "npm:1.8.0"],\
@@ -632,7 +632,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core-tests", "workspace:test/core"],\
             ["@blargbot/core", "workspace:src/core"],\
             ["@types/chai", "npm:4.3.0"],\
-            ["@types/mocha", "workspace:definitions/mocha"],\
+            ["@types/mocha", "patch:@types/mocha@npm%3A9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch::version=9.1.0&hash=452252&locator=blargbot%40workspace%3A."],\
             ["chai", "npm:4.3.6"],\
             ["mocha", "npm:9.2.2"],\
             ["ts-mockito", "npm:2.6.1"]\
@@ -2389,10 +2389,19 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["@types/mocha", [\
+        ["patch:@types/mocha@npm%3A9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch::version=9.1.0&hash=452252&locator=blargbot%40workspace%3A.", {\
+          "packageLocation": "./.yarn/cache/@types-mocha-patch-0bdf9a0f07-f4c9d1cda1.zip/node_modules/@types/mocha/",\
+          "packageDependencies": [\
+            ["@types/mocha", "patch:@types/mocha@npm%3A9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch::version=9.1.0&hash=452252&locator=blargbot%40workspace%3A."]\
+          ],\
+          "linkType": "HARD"\
+        }]\
+      ]],\
+      ["@types/mochaaaaa", [\
         ["workspace:definitions/mocha", {\
           "packageLocation": "./definitions/mocha/",\
           "packageDependencies": [\
-            ["@types/mocha", "workspace:definitions/mocha"]\
+            ["@types/mochaaaaa", "workspace:definitions/mocha"]\
           ],\
           "linkType": "SOFT"\
         }]\

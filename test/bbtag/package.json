@@ -20,7 +20,7 @@
         "@types/chai": "^4.3.0",
         "@types/chai-datetime": "^0.0.37",
         "@types/eris": "workspace:^",
-        "@types/mocha": "workspace:^",
+        "@types/mocha": "^9.1.0",
         "discord-api-types": "^0.30.0"
     }
 }
