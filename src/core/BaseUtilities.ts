@@ -139,7 +139,7 @@ export class BaseUtilities {
             && (payload.embeds?.length ?? 0) === 0
             && (files?.length ?? 0) === 0
             && (payload.components?.length ?? 0) === 0) {
-            this.logger.error('Tried to send an empty message!');
+            this.logger.warn('Tried to send an empty message!');
             throw new Error('No content');
         }
 

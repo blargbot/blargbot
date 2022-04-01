@@ -390,10 +390,9 @@ export class BBTagContext implements BBTagContextOptions {
             throw new Error(`Failed to send: ${text}`);
         } catch (err: unknown) {
             if (err instanceof Error) {
-                if (err.message !== 'No content') {
-                    throw err;
-                }
-                return undefined;
+                if (err.message === 'No content')
+                    return undefined;
+                throw err;
             }
             this.logger.error(`Failed to send: ${text}`, err);
             throw new Error(`Failed to send: ${text}`);
