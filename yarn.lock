@@ -360,7 +360,7 @@ __metadata:
     prom-client: ^14.0.1
     require-reload: ^0.2.2
     svg2png: ^4.1.1
-    twemoji: ^14.0.1
+    twemoji: ^14.0.2
     wolken: ^0.2.1
     xml2js: ^0.4.23
   languageName: unknown
@@ -405,7 +405,7 @@ __metadata:
     "@types/safe-regex": ^1.1.3
     "@types/sequelize": ^4.28.11
     "@types/unorm": ^1.3.28
-    airtable: ^0.11.2
+    airtable: ^0.11.3
     cassandra-driver: ^4.6.3
     catflake: ^1.0.0
     color: ^4.2.1
@@ -422,7 +422,7 @@ __metadata:
     rethinkdb: ^2.4.2
     safe-regex: ^2.1.1
     sequelize: ^6.17.0
-    twemoji: ^14.0.1
+    twemoji: ^14.0.2
     unorm: ^1.6.0
   languageName: unknown
   linkType: soft
@@ -1684,12 +1684,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/mochaaaaa@workspace:definitions/mocha":
-  version: 0.0.0-use.local
-  resolution: "@types/mochaaaaa@workspace:definitions/mocha"
-  languageName: unknown
-  linkType: soft
-
 "@types/ms@npm:*":
   version: 0.7.31
   resolution: "@types/ms@npm:0.7.31"
@@ -2224,16 +2218,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"airtable@npm:^0.11.2":
-  version: 0.11.2
-  resolution: "airtable@npm:0.11.2"
+"airtable@npm:^0.11.3":
+  version: 0.11.3
+  resolution: "airtable@npm:0.11.3"
   dependencies:
     "@types/node": ">=8.0.0 <15"
     abort-controller: ^3.0.0
     abortcontroller-polyfill: ^1.4.0
     lodash: ^4.17.21
     node-fetch: ^2.6.7
-  checksum: bea6d743ed833dd7be4e8c77190139349f98df0720246130e71001c05c5157037a17b0529b4c6b9e1e466ca11fb0e4933340577d18a743b485f80395b6c49e88
+  checksum: 366bda78fe8169ffdff1e28267448873e74fa4f1761124af43228748d8fe5ac1484e80f5be3205ac9d8095c4f824145e1f0e844d65cc0df9a3a5015394463a79
   languageName: node
   linkType: hard
 
@@ -8480,15 +8474,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"twemoji@npm:^14.0.1":
-  version: 14.0.1
-  resolution: "twemoji@npm:14.0.1"
+"twemoji@npm:^14.0.2":
+  version: 14.0.2
+  resolution: "twemoji@npm:14.0.2"
   dependencies:
     fs-extra: ^8.0.1
     jsonfile: ^5.0.0
     twemoji-parser: 14.0.0
     universalify: ^0.1.2
-  checksum: 9a30aa0a8922a82d5e96a144510a6fb14484098ea968f7aa126e169993f5e559c157ac3d5b70873ec491f9a557ea82e1ffd66790e947dd4b8f74df0ba7fe46e5
+  checksum: 686a356a7af3cf15f7894568bfcdfafcea0cd45473b3f8c59d6ca95e549695f1222845d1a8c39ffa3bc4057e9d59e41ab83e4ce3cbcd68823ff50d57e3ff58da
   languageName: node
   linkType: hard
 

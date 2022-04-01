@@ -45,10 +45,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:definitions/long"\
       },\
       {\
-        "name": "@types/mochaaaaa",\
-        "reference": "workspace:definitions/mocha"\
-      },\
-      {\
         "name": "@types/require-reload",\
         "reference": "workspace:definitions/require-reload"\
       },\
@@ -135,7 +131,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@types/color-thief-jimp", ["workspace:definitions/color-thief-jimp"]],\
       ["@types/eris", ["workspace:definitions/eris"]],\
       ["@types/long", ["workspace:definitions/long"]],\
-      ["@types/mochaaaaa", ["workspace:definitions/mocha"]],\
       ["@types/require-reload", ["workspace:definitions/require-reload"]],\
       ["@types/rethinkdb", ["workspace:definitions/rethinkdb"]],\
       ["@types/wolken", ["workspace:definitions/wolken"]],\
@@ -477,7 +472,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["express", "npm:4.17.3"],\
             ["express-promise-router", "virtual:095fcb10883c40f470ac6e6afe01baaad608ecd7018d2aa01600e1b94a63e74e03d9c60d9c4b5eae313115c2ddfa875282bf27ef0d1c898d09652020afc63115#npm:4.1.1"],\
             ["jsonwebtoken", "npm:8.5.1"],\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"]\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -502,7 +497,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.16.1"],\
             ["html-entities", "npm:2.3.3"],\
             ["moment-timezone", "npm:0.5.34"],\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"],\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
             ["rwlock", "npm:5.0.0"]\
           ],\
           "linkType": "SOFT"\
@@ -561,11 +556,11 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["eris", "npm:0.16.1"],\
             ["eventemitter3", "npm:4.0.7"],\
             ["moment-timezone", "npm:0.5.34"],\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"],\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
             ["prom-client", "npm:14.0.1"],\
             ["require-reload", "npm:0.2.2"],\
             ["svg2png", "npm:4.1.1"],\
-            ["twemoji", "npm:14.0.1"],\
+            ["twemoji", "npm:14.0.2"],\
             ["wolken", "npm:0.2.1"],\
             ["xml2js", "npm:0.4.23"]\
           ],\
@@ -602,7 +597,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/safe-regex", "npm:1.1.3"],\
             ["@types/sequelize", "npm:4.28.11"],\
             ["@types/unorm", "npm:1.3.28"],\
-            ["airtable", "npm:0.11.2"],\
+            ["airtable", "npm:0.11.3"],\
             ["cassandra-driver", "npm:4.6.3"],\
             ["catflake", "npm:1.0.0"],\
             ["color", "npm:4.2.1"],\
@@ -619,7 +614,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["rethinkdb", "npm:2.4.2"],\
             ["safe-regex", "npm:2.1.1"],\
             ["sequelize", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:6.17.0"],\
-            ["twemoji", "npm:14.0.1"],\
+            ["twemoji", "npm:14.0.2"],\
             ["unorm", "npm:1.6.0"]\
           ],\
           "linkType": "SOFT"\
@@ -661,7 +656,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["gifencoder", "npm:2.0.1"],\
             ["gm", "npm:1.23.1"],\
             ["jimp", "npm:0.16.1"],\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"]\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -704,7 +699,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/node-fetch", "npm:2.6.1"],\
             ["eris", "npm:0.16.1"],\
             ["moment-timezone", "npm:0.5.34"],\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"],\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
             ["strip-ansi", "npm:6.0.1"]\
           ],\
           "linkType": "SOFT"\
@@ -1702,7 +1697,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["detect-libc", "npm:1.0.3"],\
             ["https-proxy-agent", "npm:5.0.0"],\
             ["make-dir", "npm:3.1.0"],\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"],\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
             ["nopt", "npm:5.0.0"],\
             ["npmlog", "npm:5.0.1"],\
             ["rimraf", "npm:3.0.2"],\
@@ -2395,15 +2390,6 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@types/mocha", "patch:@types/mocha@npm%3A9.1.0#.yarn/patches/@types-mocha-npm-9.1.0-8ac56cd8d3.patch::version=9.1.0&hash=452252&locator=blargbot%40workspace%3A."]\
           ],\
           "linkType": "HARD"\
-        }]\
-      ]],\
-      ["@types/mochaaaaa", [\
-        ["workspace:definitions/mocha", {\
-          "packageLocation": "./definitions/mocha/",\
-          "packageDependencies": [\
-            ["@types/mochaaaaa", "workspace:definitions/mocha"]\
-          ],\
-          "linkType": "SOFT"\
         }]\
       ]],\
       ["@types/ms", [\
@@ -3099,15 +3085,15 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["airtable", [\
-        ["npm:0.11.2", {\
-          "packageLocation": "./.yarn/cache/airtable-npm-0.11.2-a22ef3d946-bea6d743ed.zip/node_modules/airtable/",\
+        ["npm:0.11.3", {\
+          "packageLocation": "./.yarn/cache/airtable-npm-0.11.3-f8064d0caa-366bda78fe.zip/node_modules/airtable/",\
           "packageDependencies": [\
-            ["airtable", "npm:0.11.2"],\
+            ["airtable", "npm:0.11.3"],\
             ["@types/node", "npm:14.18.12"],\
             ["abort-controller", "npm:3.0.0"],\
             ["abortcontroller-polyfill", "npm:1.7.3"],\
             ["lodash", "npm:4.17.21"],\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"]\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"]\
           ],\
           "linkType": "HARD"\
         }]\
@@ -7839,10 +7825,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7", {\
-          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-f1272f2117/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
+        ["virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7", {\
+          "packageLocation": "./.yarn/__virtual__/node-fetch-virtual-796c037e71/0/cache/node-fetch-npm-2.6.7-777aa2a6df-8d816ffd1e.zip/node_modules/node-fetch/",\
           "packageDependencies": [\
-            ["node-fetch", "virtual:a22ef3d946364250da94a09859ce27baaebada36e8ac7ebfbe9aee86e5f38945e15ea3ac60f930ef418d22e1c7d71cef4b2b7a653b823a1c006863f9065b2b42#npm:2.6.7"],\
+            ["node-fetch", "virtual:f8064d0caada6a20bc16e3338ff697ccdf569969ece20c0e9f2d497ceb8f8f4f968ac59bbba11d632ccf5d879ab88e71fbb2e0f5846cb33f2446eff7e63fc611#npm:2.6.7"],\
             ["@types/encoding", null],\
             ["encoding", null],\
             ["whatwg-url", "npm:5.0.0"]\
@@ -10302,10 +10288,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         }]\
       ]],\
       ["twemoji", [\
-        ["npm:14.0.1", {\
-          "packageLocation": "./.yarn/cache/twemoji-npm-14.0.1-374bca7cf6-9a30aa0a89.zip/node_modules/twemoji/",\
+        ["npm:14.0.2", {\
+          "packageLocation": "./.yarn/cache/twemoji-npm-14.0.2-bd5648dce6-686a356a7a.zip/node_modules/twemoji/",\
           "packageDependencies": [\
-            ["twemoji", "npm:14.0.1"],\
+            ["twemoji", "npm:14.0.2"],\
             ["fs-extra", "npm:8.1.0"],\
             ["jsonfile", "npm:5.0.0"],\
             ["twemoji-parser", "npm:14.0.0"],\

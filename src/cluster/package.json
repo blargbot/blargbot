@@ -20,7 +20,7 @@
         "prom-client": "^14.0.1",
         "require-reload": "^0.2.2",
         "svg2png": "^4.1.1",
-        "twemoji": "^14.0.1",
+        "twemoji": "^14.0.2",
         "wolken": "^0.2.1",
         "xml2js": "^0.4.23"
     },
