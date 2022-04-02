@@ -52,6 +52,11 @@ export abstract class BaseImageGenerator<T extends keyof ImageGeneratorMap> {
         return await new Promise<Buffer>((resolve, reject) => {
             source.setFormat(format ?? 'png').toBuffer((err, buffer) => {
                 if (err !== null) {
+                    const oldStack = err.stack;
+                    // eslint-disable-next-line @typescript-eslint/unbound-method
+                    Error.captureStackTrace(err, this.toBuffer);
+                    err.stack = `${oldStack ?? ''}\n${err.stack ?? ''}`;
+
                     reject(err);
                     return;
                 }
