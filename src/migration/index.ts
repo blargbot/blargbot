@@ -1,6 +1,6 @@
 import { guard } from '@blargbot/cluster/utils';
 import { config } from '@blargbot/config';
-import { GuildAutoresponses, GuildCommandTag, GuildRolemeEntry, GuildTriggerTag, MutableCommandPermissions, MutableGuildCensor, MutableGuildCensorRule, MutableStoredGuild, StoredGuild } from '@blargbot/core/types';
+import { CommandPermissions, GuildAutoresponses, GuildCensor, GuildCensorRule, GuildCommandTag, GuildRolemeEntry, GuildTriggerTag, StoredGuild, StoredGuildSettings } from '@blargbot/domain/models';
 import { createLogger, Logger } from '@blargbot/logger';
 import { Client as Discord, Constants } from 'eris';
 import * as r from 'rethinkdb';
@@ -154,12 +154,12 @@ function migrateInterval(guildId: string, guild: OldRethinkGuild, logger: Logger
     }
 
     logger.debug('[migrateGuild]', guildId, 'migrating _interval');
-    context.update.interval = {
+    setProp(context.update, 'interval', {
         author: interval.author,
         authorizer: interval.authorizer,
         content: interval.content
-    };
-    context.update.ccommands = context.ccommands;
+    });
+    setProp(context.update, 'ccommands', context.ccommands);
     context.ccommands['_interval'] = nukedCC('b!interval set <bbtag>');
     return true;
 }
@@ -170,11 +170,12 @@ function migrateGreeting(guildId: string, guild: OldRethinkGuild, logger: Logger
         return false;
 
     logger.debug('[migrateGuild]', guildId, 'migrating', key);
-    context.update.settings = context.settings;
-    (<Record<string, unknown>>context.settings)[key] = r.literal();
-    context.update[key] = typeof value === 'string'
+    setProp(context.update, 'settings', context.settings);
+    setProp(context.settings, key as keyof StoredGuildSettings, r.literal());
+    setProp(context.update, key, typeof value === 'string'
         ? { content: value, author: '' }
-        : value;
+        : value
+    );
     return true;
 }
 
@@ -185,8 +186,8 @@ function migrateEverythingAr(guildId: string, guild: OldRethinkGuild, logger: Lo
 
     const ccommand = guild.ccommands[everythingAr];
     if (ccommand === undefined) {
-        context.update.autoresponse = context.autoresponse;
-        context.autoresponse.everything = { content: '{//;This autoresponse hasnt been set yet!}', author: '' };
+        setProp(context.update, 'autoresponse', context.autoresponse);
+        setProp(context.autoresponse, 'everything', { content: '{//;This autoresponse hasnt been set yet!}', author: '' });
         return true;
     }
 
@@ -200,13 +201,13 @@ function migrateEverythingAr(guildId: string, guild: OldRethinkGuild, logger: Lo
     }
 
     logger.debug('[migrateGuild]', guildId, 'migrating everything autoresponse ', everythingAr);
-    context.update.autoresponse = context.autoresponse;
-    context.autoresponse.everything = {
+    setProp(context.update, 'autoresponse', context.autoresponse);
+    setProp(context.autoresponse, 'everything', {
         author: ccommand.author,
         authorizer: ccommand.authorizer,
         content: ccommand.content
-    };
-    context.update.ccommands = context.ccommands;
+    });
+    setProp(context.update, 'ccommands', context.ccommands);
     context.ccommands[everythingAr] = nukedCC('b!ar set everything <bbtag>');
     return true;
 }
@@ -216,7 +217,7 @@ function migrateFilteredArs(guildId: string, guild: OldRethinkGuild, logger: Log
     if (arList === undefined)
         return false;
 
-    context.update.autoresponse = context.autoresponse;
+    setProp(context.update, 'autoresponse', context.autoresponse);
     (<Record<string, unknown>>context.autoresponse).list = r.literal();
 
     const filtered = {} as r.UpdateData<Exclude<GuildAutoresponses['filtered'], undefined>>;
@@ -225,7 +226,7 @@ function migrateFilteredArs(guildId: string, guild: OldRethinkGuild, logger: Log
     for (const filteredAr of arList) {
         const migrated = migrateFilteredAr(guildId, guild, filteredAr, i, logger, context);
         if (migrated !== undefined) {
-            context.autoresponse.filtered = filtered;
+            setProp(context.autoresponse, 'filtered', filtered);
             filtered[i++] = migrated;
         }
     }
@@ -265,13 +266,13 @@ function migrateCensors(guildId: string, guild: OldRethinkGuild, logger: Logger,
 
     const rules = guild.censor?.rule;
     if (rules !== undefined) {
-        const rule = {} as MutableGuildCensorRule;
+        const rule = {} as Mutable<Partial<GuildCensorRule>>;
         for (const key of ['deleteMessage', 'banMessage', 'kickMessage'] as const) {
             const content = rules[key];
             if (typeof content === 'string') {
                 logger.debug('[migrateGuild]', guildId, 'migrating censor rule', key);
-                context.update.censor = context.censor;
-                context.censor.rule = rule;
+                setProp(context.update, 'censor', context.censor);
+                setProp(context.censor, 'rule', rule);
                 rule[key] = { content: content, author: '' };
                 changed = true;
             }
@@ -281,7 +282,7 @@ function migrateCensors(guildId: string, guild: OldRethinkGuild, logger: Logger,
     const list = guild.censor?.list;
     if (list !== undefined) {
         const newList = Object.values(list)
-            .reduce<Record<string, MutableGuildCensor>>((record, censor, i) => {
+            .reduce<Record<string, Mutable<GuildCensor>>>((record, censor, i) => {
                 record[i] = {
                     ...censor,
                     deleteMessage: undefined,
@@ -299,8 +300,8 @@ function migrateCensors(guildId: string, guild: OldRethinkGuild, logger: Logger,
             }, {});
 
         try {
-            context.censor.list = r.literal(stripUndef(newList));
-            context.update.censor = context.censor;
+            setProp(context.censor, 'list', r.literal(stripUndef(newList)));
+            setProp(context.update, 'censor', context.censor);
             changed = true;
         } catch (err: unknown) {
             logger.error('[migrateGuild]', guildId, 'migrating censor list failed: r.literal(list) error', err);
@@ -338,7 +339,7 @@ function migrateRolemes(guildId: string, guild: OldRethinkGuild, logger: Logger,
         return false;
 
     try {
-        context.update.roleme = r.literal(stripUndef(update));
+        setProp(context.update, 'roleme', r.literal(stripUndef(update)));
         return true;
     } catch (err: unknown) {
         logger.error('[migrateGuild]', guildId, 'migrating rolemes failed: r.literal(update) error', err);
@@ -349,7 +350,7 @@ function migrateRolemes(guildId: string, guild: OldRethinkGuild, logger: Logger,
 function migrateCommandPerms(guildId: string, guild: OldRethinkGuild, logger: Logger, context: GuildMigrateContext): boolean {
     let changed = false;
     for (const [commandName, perms] of Object.entries(guild.commandperms)) {
-        const newPerm: r.UpdateData<MutableCommandPermissions> = {};
+        const newPerm: r.UpdateData<Mutable<CommandPermissions>> = {};
         if (perms === undefined)
             continue;
 
@@ -380,7 +381,7 @@ function migrateCommandPerms(guildId: string, guild: OldRethinkGuild, logger: Lo
     }
 
     if (changed)
-        context.update.commandperms = context.commandperms;
+        setProp(context.update, 'commandperms', context.commandperms);
 
     return changed;
 }
@@ -391,23 +392,23 @@ function migrateSettings(guildId: string, guild: OldRethinkGuild, logger: Logger
     if (guild.settings.staffperms !== undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating setting staffperms');
         changed = true;
-        context.settings.staffperms = guild.settings.staffperms.toString();
+        setProp(context.settings, 'staffperms', guild.settings.staffperms.toString());
     }
 
     if (guild.settings.kickoverride !== undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating setting kickoverride');
         changed = true;
-        context.settings.kickoverride = guild.settings.kickoverride.toString();
+        setProp(context.settings, 'kickoverride', guild.settings.kickoverride.toString());
     }
 
     if (guild.settings.banoverride !== undefined) {
         logger.debug('[migrateGuild]', guildId, 'migrating setting banoverride');
         changed = true;
-        context.settings.banoverride = guild.settings.banoverride.toString();
+        setProp(context.settings, 'banoverride', guild.settings.banoverride.toString());
     }
 
     if (changed)
-        context.update.settings = context.settings;
+        setProp(context.update, 'settings', context.settings);
 
     return changed;
 }
@@ -443,10 +444,14 @@ function stripUndef<T>(value: T): T {
 }
 
 interface GuildMigrateContext {
-    censor: r.UpdateData<Exclude<MutableStoredGuild['censor'], undefined>>;
-    ccommands: r.UpdateData<MutableStoredGuild['ccommands']>;
-    settings: r.UpdateData<MutableStoredGuild['settings']>;
-    autoresponse: r.UpdateData<Exclude<MutableStoredGuild['autoresponse'], undefined>>;
-    commandperms: r.UpdateData<Exclude<MutableStoredGuild['commandperms'], undefined>>;
-    update: r.UpdateData<MutableStoredGuild>;
+    censor: r.UpdateData<Exclude<StoredGuild['censor'], undefined>>;
+    ccommands: r.UpdateData<StoredGuild['ccommands']>;
+    settings: r.UpdateData<StoredGuild['settings']>;
+    autoresponse: r.UpdateData<Exclude<StoredGuild['autoresponse'], undefined>>;
+    commandperms: r.UpdateData<Exclude<StoredGuild['commandperms'], undefined>>;
+    update: r.UpdateData<StoredGuild>;
+}
+
+function setProp<Target, Key extends keyof Target>(target: Target, key: Key, value: Target[Key]): void {
+    target[key] = value;
 }

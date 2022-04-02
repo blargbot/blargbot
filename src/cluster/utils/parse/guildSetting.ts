@@ -1,6 +1,6 @@
 import { ClusterUtilities } from '@blargbot/cluster';
-import { StoredGuildSettings } from '@blargbot/core/types';
 import { guard, parse } from '@blargbot/core/utils';
+import { StoredGuildSettings } from '@blargbot/domain/models';
 import { UserChannelInteraction } from 'eris';
 
 import { guildSettings } from '../constants';

@@ -1,6 +1,6 @@
 import { Configuration } from '@blargbot/config';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { Database } from '@blargbot/core/database';
+import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, ClientOptions as DiscordOptions, OAuthTeamMemberState } from 'eris';
 
@@ -24,11 +24,12 @@ export class BaseClient {
 
         this.database = new Database({
             logger: this.logger,
-            discord: this.discord,
             rethink: this.config.rethink,
             cassandra: this.config.cassandra,
             postgres: this.config.postgres,
-            airtable: this.config.airtable
+            airtable: this.config.airtable,
+            shouldCacheGuild: id => this.discord.guilds.has(id),
+            shouldCacheUser: id => this.discord.users.has(id)
         });
     }
 

@@ -1,7 +1,7 @@
 import { NotAnArrayError } from '@blargbot/bbtag/errors';
 import { JoinSubtag } from '@blargbot/bbtag/subtags/array/join';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

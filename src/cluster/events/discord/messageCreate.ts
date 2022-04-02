@@ -6,7 +6,7 @@ import { IMiddleware } from '@blargbot/core/types';
 import { KnownMessage, Message, PossiblyUncachedTextableChannel } from 'eris';
 import moment from 'moment-timezone';
 
-import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatlogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
+import { AutoresponseMiddleware, CensorMiddleware, ChannelBlacklistMiddleware, ChatLogMiddleware, CleverbotMiddleware, CommandMiddleware, IgnoreBotsMiddleware, IgnoreSelfMiddleware, MessageAwaiterMiddleware, RolemesMiddleware, TableflipMiddleware, UpsertUserMiddleware } from './middleware';
 
 export class DiscordMessageCreateHandler extends DiscordEventService<'messageCreate'> {
     private readonly middleware: Array<IMiddleware<KnownMessage, boolean>>;
@@ -18,7 +18,7 @@ export class DiscordMessageCreateHandler extends DiscordEventService<'messageCre
         this.middleware = [
             new IgnoreSelfMiddleware(cluster.logger, cluster.discord),
             new UpsertUserMiddleware(cluster.database.users),
-            new ChatlogMiddleware(cluster.moderation.chatLog),
+            new ChatLogMiddleware(cluster.moderation.chatLog),
             new CensorMiddleware(cluster.moderation.censors),
             new ChannelBlacklistMiddleware(cluster.util),
             new RolemesMiddleware(cluster.rolemes),

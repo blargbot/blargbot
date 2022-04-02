@@ -1,8 +1,9 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType } from '@blargbot/cluster/utils';
-import { ChatlogSearchOptions, ChatlogType, SendContent } from '@blargbot/core/types';
+import { SendContent } from '@blargbot/core/types';
 import { guard, sleep } from '@blargbot/core/utils';
+import { ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
 
 export class LogsCommand extends GuildCommand {
     public constructor() {
@@ -21,9 +22,9 @@ export class LogsCommand extends GuildCommand {
                         count: number.asInteger,
                         users: flags.u?.map(f => f.value) ?? [],
                         types: [
-                            flags.C !== undefined ? ChatlogType.CREATE : undefined,
-                            flags.U !== undefined ? ChatlogType.UPDATE : undefined,
-                            flags.D !== undefined ? ChatlogType.DELETE : undefined
+                            flags.C !== undefined ? ChatLogType.CREATE : undefined,
+                            flags.U !== undefined ? ChatLogType.UPDATE : undefined,
+                            flags.D !== undefined ? ChatLogType.DELETE : undefined
                         ].filter(guard.hasValue),
                         channel: flags.c?.merge().value ?? ctx.channel.id,
                         json: flags.j !== undefined
@@ -74,7 +75,7 @@ export class LogsCommand extends GuildCommand {
         if (info === undefined)
             return this.error('I wasnt able to send the message containing the logs!');
 
-        const searchOptions: ChatlogSearchOptions = { channelId: channel.value.id, types: options.types, users, exclude: [info.id, context.id], count: options.count };
+        const searchOptions: ChatLogSearchOptions = { channelId: channel.value.id, types: options.types, users, exclude: [info.id, context.id], count: options.count };
         const generatePromise = options.json
             ? context.cluster.moderation.chatLog.find(searchOptions)
             : context.cluster.moderation.chatLog.createIndex(searchOptions);
@@ -115,7 +116,7 @@ export class LogsCommand extends GuildCommand {
 interface LogsGenerateOptions {
     count: number;
     users: string[];
-    types: ChatlogType[];
+    types: ChatLogType[];
     channel: string;
     json: boolean;
 }

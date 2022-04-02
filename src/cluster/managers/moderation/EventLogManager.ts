@@ -1,7 +1,7 @@
 import { Cluster } from '@blargbot/cluster';
 import { discord, guard, humanize } from '@blargbot/cluster/utils';
 import { BaseUtilities } from '@blargbot/core/BaseUtilities';
-import { StoredGuildEventLogType } from '@blargbot/core/types';
+import { StoredGuildEventLogType } from '@blargbot/domain/models';
 import { ApiError, AuditLogActionType, DiscordRESTError, EmbedAuthor, EmbedField, EmbedOptions, Guild, GuildAuditLog, KnownGuildTextableChannel, KnownMessage, Member, Message, OldMessage, PossiblyUncachedMessage, PossiblyUncachedTextableChannel, User } from 'eris';
 import moment, { Moment } from 'moment-timezone';
 
@@ -199,12 +199,12 @@ export class EventLogManager {
         switch (content) {
             case undefined: {
                 if (await this.cluster.database.guilds.getSetting(guildId, 'makelogs') !== true)
-                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging is currently turned off' };
+                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. ChatLogging is currently turned off' };
                 if (timestamp === undefined)
-                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging was off when it was sent, or it is older than 2 weeks' };
+                    return { name: name + ' (Unavailable)', value: 'This message wasnt logged. ChatLogging was off when it was sent, or it is older than 2 weeks' };
                 if (timestamp.add(2, 'weeks').isAfter(moment()))
                     return { name: name + ' (Unavailable)', value: 'This message is no longer logged as it is older than 2 weeks' };
-                return { name: name + ' (Unavailable)', value: 'This message wasnt logged. Chatlogging was off when it was sent.' };
+                return { name: name + ' (Unavailable)', value: 'This message wasnt logged. ChatLogging was off when it was sent.' };
             }
             case '':
                 return { name: name + ' (Empty)', value: 'This message has no content. It had either an attachment or an embed' };
@@ -242,10 +242,10 @@ export class EventLogManager {
 
         return {
             id: message.id,
-            author: chatlog.userid,
-            authorId: chatlog.userid,
+            author: chatlog.userid.toString(),
+            authorId: chatlog.userid.toString(),
             content: chatlog.content,
-            channelId: chatlog.channelid
+            channelId: chatlog.channelid.toString()
         };
     }
 

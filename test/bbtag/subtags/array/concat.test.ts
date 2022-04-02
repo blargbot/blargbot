@@ -1,6 +1,6 @@
 import { ConcatSubtag } from '@blargbot/bbtag/subtags/array/concat';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

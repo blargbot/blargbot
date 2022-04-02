@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { guard, snowflake } from '@blargbot/cluster/utils';
-import { Chatlog, ChatlogIndex, ChatlogSearchOptions, ChatlogType } from '@blargbot/core/types';
+import { ChatLog, ChatLogIndex, ChatLogSearchOptions, ChatLogType } from '@blargbot/domain/models';
 import { KnownMessage, Message, PossiblyUncachedMessage, PossiblyUncachedTextableChannel } from 'eris';
 
 export class ChatLogManager {
@@ -22,7 +22,7 @@ export class ChatLogManager {
             msgid: message.id,
             userid: message.author.id,
             attachment: message.attachments[0]?.url
-        }, ChatlogType.CREATE);
+        }, ChatLogType.CREATE);
     }
 
     public async messageDeleted(message: PossiblyUncachedMessage): Promise<void> {
@@ -48,7 +48,7 @@ export class ChatLogManager {
             msgid: message.id,
             userid: chatlog.userid,
             attachment: chatlog.attachment
-        }, ChatlogType.DELETE);
+        }, ChatLogType.DELETE);
     }
 
     public async messageUpdated(message: Message<PossiblyUncachedTextableChannel>): Promise<void> {
@@ -63,14 +63,14 @@ export class ChatLogManager {
             msgid: message.id,
             userid: message.author.id,
             attachment: message.attachments[0]?.url
-        }, ChatlogType.UPDATE);
+        }, ChatLogType.UPDATE);
     }
 
-    public async find(options: ChatlogSearchOptions): Promise<readonly Chatlog[]> {
+    public async find(options: ChatLogSearchOptions): Promise<readonly ChatLog[]> {
         return await this.cluster.database.chatlogs.findAll(options);
     }
 
-    public async createIndex(options: ChatlogSearchOptions): Promise<ChatlogIndex<Chatlog>> {
+    public async createIndex(options: ChatLogSearchOptions): Promise<ChatLogIndex<ChatLog>> {
         const chatlogs = await this.cluster.database.chatlogs.findAll(options);
         const key = snowflake.create().toString();
         const result = {
@@ -85,7 +85,7 @@ export class ChatLogManager {
         return { ...result, ids: chatlogs };
     }
 
-    public async getIndex(id: string): Promise<ChatlogIndex<Chatlog> | undefined> {
+    public async getIndex(id: string): Promise<ChatLogIndex<ChatLog> | undefined> {
         const index = await this.cluster.database.chatlogIndex.get(id);
         if (index === undefined)
             return undefined;

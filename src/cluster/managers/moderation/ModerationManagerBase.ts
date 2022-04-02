@@ -1,6 +1,6 @@
 import { Cluster } from '@blargbot/cluster';
 import { defaultStaff, discord, parse } from '@blargbot/cluster/utils';
-import { StoredGuildSettings } from '@blargbot/core/types';
+import { StoredGuildSettings } from '@blargbot/domain/models';
 import { Constants, Guild } from 'eris';
 
 import { ModerationManager } from '../ModerationManager';

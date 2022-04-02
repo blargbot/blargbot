@@ -1,7 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize } from '@blargbot/cluster/utils';
-import { FlagResult } from '@blargbot/core/types';
+import { FlagResult } from '@blargbot/domain/models';
 
 export class UnbanCommand extends GuildCommand {
     public constructor() {

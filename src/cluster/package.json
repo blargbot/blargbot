@@ -6,6 +6,8 @@
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/database": "workspace:^",
+        "@blargbot/domain": "workspace:^",
         "@blargbot/image": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",

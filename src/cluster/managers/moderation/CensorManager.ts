@@ -1,6 +1,6 @@
 import { bbtag } from '@blargbot/bbtag';
 import { guard, ModerationType } from '@blargbot/cluster/utils';
-import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@blargbot/core/types';
+import { GuildCensor, GuildCensorExceptions, GuildTriggerTag } from '@blargbot/domain/models';
 import { KnownGuildTextableChannel, Message } from 'eris';
 import moment from 'moment-timezone';
 

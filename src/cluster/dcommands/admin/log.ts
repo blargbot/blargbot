@@ -1,7 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, guard, humanize } from '@blargbot/cluster/utils';
-import { StoredGuildEventLogType } from '@blargbot/core/types';
+import { StoredGuildEventLogType } from '@blargbot/domain/models';
 import { EmbedField, EmbedOptions, KnownChannel, Role, User, Webhook } from 'eris';
 
 export class LogCommand extends GuildCommand {

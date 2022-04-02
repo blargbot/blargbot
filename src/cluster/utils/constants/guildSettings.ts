@@ -1,11 +1,11 @@
 import { GuildSettingDescriptor } from '@blargbot/cluster/types';
-import { StoredGuildSettings } from '@blargbot/core/types';
+import { StoredGuildSettings } from '@blargbot/domain/models';
 
 // prefix excluded as it is an array of strings
-export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix' | 'greeting' | 'farewell'>]-?: GuildSettingDescriptor<P> } = {
+export const guildSettings: { [P in Exclude<keyof StoredGuildSettings, 'prefix'>]-?: GuildSettingDescriptor<P> } = {
     makelogs: {
         key: 'makelogs',
-        name: 'Make Chatlogs',
+        name: 'Make ChatLogs',
         desc: 'Whether to record chat logs or not.',
         type: 'bool'
     },

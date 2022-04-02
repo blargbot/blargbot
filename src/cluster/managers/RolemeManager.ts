@@ -1,7 +1,7 @@
 import { ExecutionResult } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
-import { GuildRolemeEntry } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
+import { GuildRolemeEntry } from '@blargbot/domain/models';
 import { KnownGuildTextableChannel, KnownMessage, Message } from 'eris';
 
 export class RolemeManager {

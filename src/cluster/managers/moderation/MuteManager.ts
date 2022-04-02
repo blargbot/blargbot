@@ -1,6 +1,6 @@
 import { EnsureMutedRoleResult, MuteResult, UnmuteResult } from '@blargbot/cluster/types';
 import { discord, guard, humanize } from '@blargbot/cluster/utils';
-import { UnmuteEventOptions } from '@blargbot/core/types';
+import { UnmuteEventOptions } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 import { Constants, Guild, KnownGuildChannel, Member, Role, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';

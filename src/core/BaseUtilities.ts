@@ -1,12 +1,13 @@
 import { Configuration } from '@blargbot/config/Configuration';
-import { DMContext, SendContent, SendContext, SendPayload, StoredUser } from '@blargbot/core/types';
+import { DMContext, SendContent, SendContext, SendPayload } from '@blargbot/core/types';
+import { Database } from '@blargbot/database';
+import { StoredUser } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Snowflake } from 'catflake';
 import { ApiError, ChannelInteraction, Client as Discord, DiscordRESTError, EmbedAuthor, EmbedOptions, ExtendedUser, Guild, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, UserChannelInteraction, Webhook } from 'eris';
 import moment from 'moment-timezone';
 
 import { BaseClient } from './BaseClient';
-import { Database } from './database';
 import { Emote } from './Emote';
 import { metrics } from './Metrics';
 import { guard, humanize, parse, snowflake } from './utils';
@@ -321,10 +322,10 @@ export class BaseUtilities {
 
         const id = snowflake.create();
         await this.database.dumps.add({
-            id: id.toString(),
+            id: id,
             content: payload.content ?? undefined,
             embeds: payload.embeds,
-            channelid: channel?.id,
+            channelid: snowflake.parse(channel?.id),
             expiry: 604800
         });
         return id;

@@ -1,7 +1,7 @@
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { CommandType, humanize, ModerationType, parse, pluralise as p } from '@blargbot/cluster/utils';
-import { FlagResult } from '@blargbot/core/types';
+import { FlagResult } from '@blargbot/domain/models';
 import { Member } from 'eris';
 
 export class WarnCommand extends GuildCommand {

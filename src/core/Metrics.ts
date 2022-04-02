@@ -19,7 +19,7 @@ export const metrics = {
         name: 'bot_send_counter', help: 'Messages the bot has sent'
     }),
     chatlogCounter: new Prometheus.Counter({
-        name: 'bot_chatlog_counter', help: 'Chatlogs created',
+        name: 'bot_chatlog_counter', help: 'ChatLogs created',
         labelNames: ['type']
     }),
     cleverbotStats: new Prometheus.Counter({

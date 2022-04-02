@@ -2,9 +2,9 @@ import { BBTagEngine } from '@blargbot/bbtag';
 import { Cluster, ClusterUtilities } from '@blargbot/cluster';
 import { CommandResult, GuildCommandContext, ICommand } from '@blargbot/cluster/types';
 import { Configuration } from '@blargbot/config';
-import { Database } from '@blargbot/core/database';
 import { ChoiceQueryResult, DMContext, SendContext, SendPayload, SlimEntityFindQueryOptions, SlimEntityPickQueryOptions, SlimEntityQueryOptions, SlimTextQueryOptions, SlimTextQueryOptionsParsed, TextQueryResult } from '@blargbot/core/types';
 import { guard } from '@blargbot/core/utils';
+import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord, KnownChannel, KnownGuildChannel, KnownMessage, KnownTextableChannel, Member, Message, Role, User, Webhook } from 'eris';
 

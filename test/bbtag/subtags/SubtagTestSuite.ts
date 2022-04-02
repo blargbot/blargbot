@@ -3,11 +3,12 @@ import { BBTagUtilities, InjectionContext } from '@blargbot/bbtag/BBTagUtilities
 import { BBTagRuntimeError, NotEnoughArgumentsError, TooManyArgumentsError } from '@blargbot/bbtag/errors';
 import { BaseRuntimeLimit } from '@blargbot/bbtag/limits/BaseRuntimeLimit';
 import { bbtag, SubtagType } from '@blargbot/bbtag/utils';
-import { Database } from '@blargbot/core/database';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
-import { GuildCommandTag, GuildTable, StoredTag, SubtagVariableType, TagsTable, TagVariablesTable, UserTable } from '@blargbot/core/types';
 import { pluralise as p, repeat, snowflake } from '@blargbot/core/utils';
+import { Database } from '@blargbot/database';
+import { GuildCommandTag, StoredTag, SubtagVariableType } from '@blargbot/domain/models';
+import { GuildsTable, TagsTable, TagVariablesTable, UsersTable } from '@blargbot/domain/stores';
 import { Logger } from '@blargbot/logger';
 import { expect } from 'chai';
 import * as chai from 'chai';
@@ -96,8 +97,8 @@ export class SubtagTestContext {
     public readonly database = this.createMock(Database);
     public readonly tagVariablesTable = this.createMock<TagVariablesTable>();
     public readonly tagsTable = this.createMock<TagsTable>();
-    public readonly guildTable = this.createMock<GuildTable>();
-    public readonly userTable = this.createMock<UserTable>();
+    public readonly guildTable = this.createMock<GuildsTable>();
+    public readonly userTable = this.createMock<UsersTable>();
     public readonly limit = this.createMock(BaseRuntimeLimit);
     public readonly discordOptions: DiscordOptions;
     public isStaff = false;
@@ -197,7 +198,7 @@ export class SubtagTestContext {
         this.tagsTable.setup(m => m.get(argument.isTypeof('string').value), false)
             .thenCall((...args: Parameters<TagsTable['get']>) => this.tags[args[0]]);
         this.guildTable.setup(m => m.getCommand(this.guild.id, argument.isTypeof('string').value), false)
-            .thenCall((...args: Parameters<GuildTable['getCommand']>) => this.ccommands[args[1]]);
+            .thenCall((...args: Parameters<GuildsTable['getCommand']>) => this.ccommands[args[1]]);
 
         this.discord.setup(m => m.shards, false).thenReturn(this.shards.instance);
         this.discord.setup(m => m.guildShardMap, false).thenReturn({});

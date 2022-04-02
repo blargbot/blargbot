@@ -3,7 +3,7 @@ import { CommandContext } from '@blargbot/cluster/command';
 import { CommandGetCoreResult, CommandSignature, ICommand } from '@blargbot/cluster/types';
 import { guard, humanize } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
-import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
+import { CommandPermissions, FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { CommandManager } from './CommandManager';

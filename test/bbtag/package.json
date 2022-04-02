@@ -6,6 +6,8 @@
         "@blargbot/bbtag": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/database": "workspace:^",
+        "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "chai": "^4.3.6",
         "chai-bytes": "^0.1.2",

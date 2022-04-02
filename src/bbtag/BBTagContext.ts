@@ -1,10 +1,11 @@
-import { Database } from '@blargbot/core/database';
 import { Emote } from '@blargbot/core/Emote';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
-import { ChoiceQueryResult, EntityPickQueryOptions, FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
+import { ChoiceQueryResult, EntityPickQueryOptions } from '@blargbot/core/types';
 import { guard, hasFlag, humanize, parse } from '@blargbot/core/utils';
 import { discord } from '@blargbot/core/utils/discord';
+import { Database } from '@blargbot/database';
+import { FlagDefinition, FlagResult, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Logger } from '@blargbot/logger';
 import { Base, Client as Discord, Constants, Guild, KnownChannel, KnownGuildChannel, KnownGuildTextableChannel, KnownThreadChannel, Member, Permission, Role, User } from 'eris';
 import { Duration, Moment } from 'moment-timezone';

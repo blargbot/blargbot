@@ -2,7 +2,8 @@ import { bbtag } from '@blargbot/bbtag';
 import { GuildCommand } from '@blargbot/cluster/command';
 import { GuildCommandContext } from '@blargbot/cluster/types';
 import { codeBlock, CommandType, guard } from '@blargbot/cluster/utils';
-import { GuildRolemeEntry, SendContent } from '@blargbot/core/types';
+import { SendContent } from '@blargbot/core/types';
+import { GuildRolemeEntry } from '@blargbot/domain/models';
 import { Constants, EmbedOptions } from 'eris';
 
 export class RolemeCommand extends GuildCommand {

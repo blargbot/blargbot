@@ -77,6 +77,14 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
         "reference": "workspace:src/core"\
       },\
       {\
+        "name": "@blargbot/database",\
+        "reference": "workspace:src/database"\
+      },\
+      {\
+        "name": "@blargbot/domain",\
+        "reference": "workspace:src/domain"\
+      },\
+      {\
         "name": "@blargbot/image",\
         "reference": "workspace:src/image"\
       },\
@@ -119,6 +127,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
       ["@blargbot/config", ["workspace:src/config"]],\
       ["@blargbot/core", ["workspace:src/core"]],\
       ["@blargbot/core-tests", ["workspace:test/core"]],\
+      ["@blargbot/database", ["workspace:src/database"]],\
+      ["@blargbot/domain", ["workspace:src/domain"]],\
       ["@blargbot/image", ["workspace:src/image"]],\
       ["@blargbot/logger", ["workspace:src/logger"]],\
       ["@blargbot/mapping", ["workspace:src/mapping"]],\
@@ -463,6 +473,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@types/express", "npm:4.17.13"],\
@@ -484,6 +495,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/database", "workspace:src/database"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@types/brainfuck-node", "workspace:definitions/brainfuck-node"],\
@@ -511,6 +524,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/database", "workspace:src/database"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@types/chai", "npm:4.3.0"],\
             ["@types/chai-datetime", "npm:0.0.37"],\
@@ -537,6 +552,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/database", "workspace:src/database"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/image", "workspace:src/image"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
@@ -583,6 +600,8 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/core", "workspace:src/core"],\
             ["@blargbot/bbtag", "workspace:src/bbtag"],\
             ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/database", "workspace:src/database"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@blargbot/res", "workspace:src/res"],\
@@ -607,13 +626,13 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["limax", "npm:3.0.0"],\
             ["long", "npm:2.4.0"],\
             ["moment-timezone", "npm:0.5.34"],\
-            ["pg", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:8.7.3"],\
+            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.7.3"],\
             ["pg-hstore", "npm:2.3.4"],\
             ["prom-client", "npm:14.0.1"],\
             ["require-reload", "npm:0.2.2"],\
             ["rethinkdb", "npm:2.4.2"],\
             ["safe-regex", "npm:2.1.1"],\
-            ["sequelize", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:6.17.0"],\
+            ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.17.0"],\
             ["twemoji", "npm:14.0.2"],\
             ["unorm", "npm:1.6.0"]\
           ],\
@@ -631,6 +650,44 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["chai", "npm:4.3.6"],\
             ["mocha", "npm:9.2.2"],\
             ["ts-mockito", "npm:2.6.1"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/database", [\
+        ["workspace:src/database", {\
+          "packageLocation": "./src/database/",\
+          "packageDependencies": [\
+            ["@blargbot/database", "workspace:src/database"],\
+            ["@blargbot/config", "workspace:src/config"],\
+            ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
+            ["@blargbot/logger", "workspace:src/logger"],\
+            ["@blargbot/mapping", "workspace:src/mapping"],\
+            ["@types/catflake", "workspace:definitions/catflake"],\
+            ["@types/long", "workspace:definitions/long"],\
+            ["@types/pg", "npm:8.6.5"],\
+            ["@types/rethinkdb", "workspace:definitions/rethinkdb"],\
+            ["@types/sequelize", "npm:4.28.11"],\
+            ["airtable", "npm:0.11.3"],\
+            ["cassandra-driver", "npm:4.6.3"],\
+            ["catflake", "npm:1.0.0"],\
+            ["long", "npm:2.4.0"],\
+            ["moment-timezone", "npm:0.5.34"],\
+            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.7.3"],\
+            ["pg-hstore", "npm:2.3.4"],\
+            ["rethinkdb", "npm:2.4.2"],\
+            ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.17.0"]\
+          ],\
+          "linkType": "SOFT"\
+        }]\
+      ]],\
+      ["@blargbot/domain", [\
+        ["workspace:src/domain", {\
+          "packageLocation": "./src/domain/",\
+          "packageDependencies": [\
+            ["@blargbot/domain", "workspace:src/domain"],\
+            ["moment-timezone", "npm:0.5.34"]\
           ],\
           "linkType": "SOFT"\
         }]\
@@ -713,6 +770,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["@blargbot/cluster", "workspace:src/cluster"],\
             ["@blargbot/config", "workspace:src/config"],\
             ["@blargbot/core", "workspace:src/core"],\
+            ["@blargbot/domain", "workspace:src/domain"],\
             ["@blargbot/logger", "workspace:src/logger"],\
             ["@blargbot/mapping", "workspace:src/mapping"],\
             ["@types/eris", "workspace:definitions/eris"],\
@@ -8460,16 +8518,16 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:8.7.3", {\
-          "packageLocation": "./.yarn/__virtual__/pg-virtual-68908fc167/0/cache/pg-npm-8.7.3-5d68c1b41b-d0e7040967.zip/node_modules/pg/",\
+        ["virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.7.3", {\
+          "packageLocation": "./.yarn/__virtual__/pg-virtual-947b574546/0/cache/pg-npm-8.7.3-5d68c1b41b-d0e7040967.zip/node_modules/pg/",\
           "packageDependencies": [\
-            ["pg", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:8.7.3"],\
+            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.7.3"],\
             ["@types/pg-native", null],\
             ["buffer-writer", "npm:2.0.0"],\
             ["packet-reader", "npm:1.0.0"],\
             ["pg-connection-string", "npm:2.5.0"],\
             ["pg-native", null],\
-            ["pg-pool", "virtual:68908fc167e0d2186d328b94c707fb11e86881c8d189231ace80255f07d4ef7071b2872e82b77b2c97274fb44901a375aa9dafb075e03e2b0c56df7d48875669#npm:3.5.1"],\
+            ["pg-pool", "virtual:947b5745460fb97a830a1fd8a729bee9f3d1acea7f474ee4930f20cb5d19627b03ec0e83498eeeb6a3f4bebeae9e1fe39e9b127fa9d9c5b5fdbf6f1f89dc7a2c#npm:3.5.1"],\
             ["pg-protocol", "npm:1.5.0"],\
             ["pg-types", "npm:2.2.0"],\
             ["pgpass", "npm:1.0.5"]\
@@ -8517,12 +8575,12 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:68908fc167e0d2186d328b94c707fb11e86881c8d189231ace80255f07d4ef7071b2872e82b77b2c97274fb44901a375aa9dafb075e03e2b0c56df7d48875669#npm:3.5.1", {\
-          "packageLocation": "./.yarn/__virtual__/pg-pool-virtual-3ac0d0d83f/0/cache/pg-pool-npm-3.5.1-cba2f25ddc-42833c25f1.zip/node_modules/pg-pool/",\
+        ["virtual:947b5745460fb97a830a1fd8a729bee9f3d1acea7f474ee4930f20cb5d19627b03ec0e83498eeeb6a3f4bebeae9e1fe39e9b127fa9d9c5b5fdbf6f1f89dc7a2c#npm:3.5.1", {\
+          "packageLocation": "./.yarn/__virtual__/pg-pool-virtual-96284f81d1/0/cache/pg-pool-npm-3.5.1-cba2f25ddc-42833c25f1.zip/node_modules/pg-pool/",\
           "packageDependencies": [\
-            ["pg-pool", "virtual:68908fc167e0d2186d328b94c707fb11e86881c8d189231ace80255f07d4ef7071b2872e82b77b2c97274fb44901a375aa9dafb075e03e2b0c56df7d48875669#npm:3.5.1"],\
+            ["pg-pool", "virtual:947b5745460fb97a830a1fd8a729bee9f3d1acea7f474ee4930f20cb5d19627b03ec0e83498eeeb6a3f4bebeae9e1fe39e9b127fa9d9c5b5fdbf6f1f89dc7a2c#npm:3.5.1"],\
             ["@types/pg", null],\
-            ["pg", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:8.7.3"]\
+            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.7.3"]\
           ],\
           "packagePeers": [\
             "@types/pg",\
@@ -9404,10 +9462,10 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
           ],\
           "linkType": "SOFT"\
         }],\
-        ["virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:6.17.0", {\
-          "packageLocation": "./.yarn/__virtual__/sequelize-virtual-afe8ab8f26/0/cache/sequelize-npm-6.17.0-495aefbf59-54bef508cf.zip/node_modules/sequelize/",\
+        ["virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.17.0", {\
+          "packageLocation": "./.yarn/__virtual__/sequelize-virtual-d58b804cb4/0/cache/sequelize-npm-6.17.0-495aefbf59-54bef508cf.zip/node_modules/sequelize/",\
           "packageDependencies": [\
-            ["sequelize", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:6.17.0"],\
+            ["sequelize", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:6.17.0"],\
             ["@types/debug", "npm:4.1.7"],\
             ["@types/ibm_db", null],\
             ["@types/mariadb", null],\
@@ -9427,7 +9485,7 @@ function $$SETUP_STATE(hydrateRuntimeState, basePath) {
             ["moment", "npm:2.29.1"],\
             ["moment-timezone", "npm:0.5.34"],\
             ["mysql2", null],\
-            ["pg", "virtual:69dc7110a25d85c91fea873161a918a57f99897b486c0505879c84d5f831ce891d6089b9c80306bd1948cdb1fc827ff3d6d0b5ba6cbe165eeb96388e9428c1cc#npm:8.7.3"],\
+            ["pg", "virtual:856d594ef58e3ff5ddd3d480c84f517a2b37719cc82ea2e4c1df0be5f76a9b525389c170d2c5e2be74c4b863231c45eb9094936473db96bd4b8e5e940ae574b6#npm:8.7.3"],\
             ["pg-connection-string", "npm:2.5.0"],\
             ["pg-hstore", "npm:2.3.4"],\
             ["retry-as-promised", "npm:5.0.0"],\

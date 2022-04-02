@@ -1,7 +1,7 @@
-import { Database } from '@blargbot/core/database';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
 import { discord, parse, sleep } from '@blargbot/core/utils';
+import { Database } from '@blargbot/database';
 import { Logger } from '@blargbot/logger';
 import { Client as Discord } from 'eris';
 import moment from 'moment-timezone';

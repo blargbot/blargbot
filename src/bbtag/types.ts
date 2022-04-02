@@ -1,5 +1,5 @@
 import { Emote } from '@blargbot/core/Emote';
-import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/core/types';
+import { FlagDefinition, NamedGuildCommandTag, StoredTag } from '@blargbot/domain/models';
 import { Attachment, Embed, EmbedOptions, FileContent, KnownGuildTextableChannel, KnownMessage, Message, User } from 'eris';
 import ReadWriteLock from 'rwlock';
 

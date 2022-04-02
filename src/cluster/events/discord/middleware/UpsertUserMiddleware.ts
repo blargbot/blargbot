@@ -1,8 +1,9 @@
-import { IMiddleware, NextMiddleware, UserTable } from '@blargbot/core/types';
+import { IMiddleware, NextMiddleware } from '@blargbot/core/types';
+import { UsersTable } from '@blargbot/domain/stores';
 import { KnownMessage } from 'eris';
 
 export class UpsertUserMiddleware implements IMiddleware<KnownMessage, boolean> {
-    public constructor(private readonly database: UserTable) {
+    public constructor(private readonly database: UsersTable) {
     }
 
     public async execute(context: KnownMessage, next: NextMiddleware<boolean>): Promise<boolean> {

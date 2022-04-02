@@ -1,4 +1,4 @@
-import { VarsTable } from '@blargbot/core/types';
+import { VarsTable } from '@blargbot/domain/stores';
 import { mapping } from '@blargbot/mapping';
 import { UpdateType, Version, VersionManager } from '@hunteroi/versioning';
 

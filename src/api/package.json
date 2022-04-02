@@ -7,6 +7,7 @@
         "@blargbot/cluster": "workspace:^",
         "@blargbot/config": "workspace:^",
         "@blargbot/core": "workspace:^",
+        "@blargbot/domain": "workspace:^",
         "@blargbot/logger": "workspace:^",
         "@blargbot/mapping": "workspace:^",
         "express": "^4.17.3",

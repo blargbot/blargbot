@@ -4,7 +4,7 @@ import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
 import { ReturnSubtag } from '@blargbot/bbtag/subtags/bot/return';
 import { IfSubtag } from '@blargbot/bbtag/subtags/misc/if';
 import { BBTagRuntimeState } from '@blargbot/bbtag/types';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 import { expect } from 'chai';
 
 import { runSubtagTests } from '../SubtagTestSuite';

@@ -1,6 +1,6 @@
 import { IsArraySubtag } from '@blargbot/bbtag/subtags/array/isarray';
 import { GetSubtag } from '@blargbot/bbtag/subtags/bot/get';
-import { SubtagVariableType } from '@blargbot/core/types';
+import { SubtagVariableType } from '@blargbot/domain/models';
 
 import { runSubtagTests } from '../SubtagTestSuite';
 

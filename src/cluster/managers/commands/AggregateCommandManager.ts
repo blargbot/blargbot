@@ -2,8 +2,8 @@ import { Cluster } from '@blargbot/cluster';
 import { Command } from '@blargbot/cluster/command';
 import { CommandGetResult, CommandManagers, ICommand, ICommandManager } from '@blargbot/cluster/types';
 import { MessageIdQueue } from '@blargbot/core/MessageIdQueue';
-import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/core/types';
 import { guard, humanize } from '@blargbot/core/utils';
+import { CommandPermissions, NamedGuildCommandTag } from '@blargbot/domain/models';
 import { Client as Discord, Guild, KnownTextableChannel, PossiblyUncachedMessage, User } from 'eris';
 
 export class AggregateCommandManager implements ICommandManager, CommandManagers {

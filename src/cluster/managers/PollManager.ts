@@ -1,8 +1,8 @@
 import { Cluster } from '@blargbot/cluster';
 import { PollResponse } from '@blargbot/cluster/types';
 import { Emote } from '@blargbot/core/Emote';
-import { PollEventOptions } from '@blargbot/core/types';
 import { pluralise as p } from '@blargbot/core/utils';
+import { PollEventOptions } from '@blargbot/domain/models';
 import { KnownGuildTextableChannel, User } from 'eris';
 import moment, { Duration } from 'moment-timezone';
 

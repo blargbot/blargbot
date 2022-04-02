@@ -5,7 +5,8 @@ import { commandTypeDetails, guard } from '@blargbot/cluster/utils';
 import { metrics } from '@blargbot/core/Metrics';
 import { ModuleLoader } from '@blargbot/core/modules';
 import { Timer } from '@blargbot/core/Timer';
-import { CommandPermissions, FlagDefinition, NextMiddleware } from '@blargbot/core/types';
+import { NextMiddleware } from '@blargbot/core/types';
+import { CommandPermissions, FlagDefinition } from '@blargbot/domain/models';
 import { Guild, KnownTextableChannel, User } from 'eris';
 
 import { CommandManager } from './CommandManager';

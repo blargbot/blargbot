@@ -1,4 +1,5 @@
-import { FlagDefinition, FlagResult, FlagResultValueSet } from '../../types';
+import { FlagDefinition, FlagResult, FlagResultValueSet } from '@blargbot/domain/models';
+
 import { guard, humanize } from '../../utils';
 
 export function parseFlags(definitions: Iterable<FlagDefinition>, text: string, strict = false): FlagResult {

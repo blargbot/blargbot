@@ -312,21 +312,21 @@ export module 'rethinkdb' {
 
     export interface Expression<T> extends Writeable<T>, Operation<T>, HasFields<T, Expression<T>> {
         <K extends string & keyof T>(prop: K): Expression<T[K]>;
-        <R, K extends string & keyof R>(this: Expression<R[]>, prop: K): Expression<Array<R[K]>>;
+        <R extends readonly unknown[], K extends string & keyof R[number]>(this: Expression<R>, prop: K): Expression<Array<R[number][K]>>;
         merge<R>(query: R | Expression<R>): Expression<T & R>;
         append(this: Expression<string>, prop: string | Expression<string>): Expression<string>;
-        append<R>(this: Expression<R[]>, prop: R | Expression<R>): Expression<R[]>;
-        setInsert<R>(this: Expression<R[]>, prop: R): Expression<R[]>;
-        setUnion<R>(this: Expression<R[]>, prop: R[] | Expression<R[]>): Expression<R[]>;
-        setIntersection<R>(this: Expression<R[]>, prop: R[] | Expression<R[]>): Expression<R[]>;
-        setDifference<R>(this: Expression<R[]>, prop: R[] | Expression<R[]>): Expression<R[]>;
+        append<R extends readonly unknown[]>(this: Expression<R>, prop: R[number] | Expression<R[number]>): Expression<R>;
+        setInsert<R extends readonly unknown[]>(this: Expression<R>, prop: R[number]): Expression<R>;
+        setUnion<R extends readonly unknown[]>(this: Expression<R>, prop: readonly R[number][] | Expression<R>): Expression<R>;
+        setIntersection<R extends readonly unknown[]>(this: Expression<R>, prop: readonly R[number][] | Expression<readonly R[number][]>): Expression<R>;
+        setDifference<R extends readonly unknown[]>(this: Expression<R>, prop: readonly R[number][] | Expression<readonly R[number][]>): Expression<R>;
         contains(this: Expression<string>, prop: string): Expression<boolean>;
-        contains<R>(this: Expression<R[]>, prop: R | Expression<R>): Expression<boolean>;
+        contains<R extends readonly unknown[]>(this: Expression<R>, prop: R[number] | Expression<R[number]>): Expression<boolean>;
 
-        filter<R>(this: Expression<R[]>, rql: ExpressionFunction<R, boolean>): Expression<T>;
-        filter<R>(this: Expression<R[]>, rql: Expression<boolean>): Expression<T>;
-        filter<R>(this: Expression<R[]>, obj: FilterMap<R>): Expression<T>;
-        map<R, P>(this: Expression<R[]>, mapexpr: ExpressionFunction<R, P>): Expression<P[]>;
+        filter<R extends readonly unknown[]>(this: Expression<R>, rql: ExpressionFunction<R[number], boolean>): Expression<T>;
+        filter<R extends readonly unknown[]>(this: Expression<R>, rql: Expression<boolean>): Expression<T>;
+        filter<R extends readonly unknown[]>(this: Expression<R>, obj: FilterMap<R[number]>): Expression<T>;
+        map<R extends readonly unknown[], P>(this: Expression<R>, mapexpr: ExpressionFunction<R[number], P>): Expression<P[]>;
 
         and(this: Expression<boolean>, b: boolean | Expression<boolean>): Expression<boolean>;
         or(this: Expression<boolean>, b: boolean | Expression<boolean>): Expression<boolean>;
@@ -349,18 +349,18 @@ export module 'rethinkdb' {
         div(this: Expression<number>, n: number): Expression<number>;
         mod(this: Expression<number>, n: number): Expression<number>;
 
-        max(this: Expression<number[]>): Expression<number>;
-        max<R, K extends PropertyNamesOfType<R, number>>(this: Expression<R[]>, name: K): Expression<number>;
+        max(this: Expression<readonly number[]>): Expression<number>;
+        max<R extends readonly unknown[], K extends PropertyNamesOfType<R[number], number>>(this: Expression<R>, name: K): Expression<number>;
 
         distance(this: Expression<Geometry>, geometry: Geometry, options?: DistanceOptions): Expression<number>;
 
         default(value: Exclude<T, null | undefined>): Expression<Exclude<T, null | undefined>>;
         default(value: Expression<Exclude<T, null | undefined>>): Expression<Exclude<T, null | undefined>>;
         getField<K extends string & keyof T>(name: K): Expression<T[K]>;
-        getField<R, K extends string & keyof R>(this: Expression<R[]>, name: K): Expression<Array<R[K]>>;
+        getField<R extends readonly unknown[], K extends string & keyof R[number]>(this: Expression<R>, name: K): Expression<Array<R[number][K]>>;
         match(this: Expression<string>, re2: string): Expression<MatchResult | null>;
-        spliceAt<R>(this: Expression<R[]>, index: number, replacement: R[]): Expression<T>;
-        deleteAt<R>(this: Expression<R[]>, index: number): Expression<T>;
+        spliceAt<R extends readonly unknown[]>(this: Expression<R>, index: number, replacement: R): Expression<T>;
+        deleteAt<R extends readonly unknown[]>(this: Expression<R>, index: number): Expression<T>;
 
         values(): Expression<Array<Exclude<T[keyof T], undefined>>>;
     }

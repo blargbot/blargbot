@@ -1,33 +1,21 @@
-import { bbtag, BBTagContext, rules } from '@blargbot/bbtag';
+import { bbtag, BBTagContext, rules, SerializedBBTagContext } from '@blargbot/bbtag';
 import { Cluster } from '@blargbot/cluster';
 import { TimeoutEventService } from '@blargbot/cluster/serviceTypes';
-import { StoredEvent, TagStoredEventOptions, TagV4StoredEventOptions } from '@blargbot/core/types';
+import { StoredEvent } from '@blargbot/domain/models';
 
 export class TimeoutTagEventService extends TimeoutEventService<'tag'> {
     public constructor(protected readonly cluster: Cluster) {
         super(cluster.timeouts, 'tag', cluster.logger);
     }
     public async execute(event: StoredEvent<'tag'>): Promise<void> {
-        const migratedEvent = this.migrateEvent(event);
-        if (migratedEvent === undefined)
+        if (event.version !== 4)
             return;
 
-        const context = await BBTagContext.deserialize(this.cluster.bbtag, migratedEvent.context);
+        const context = await BBTagContext.deserialize(this.cluster.bbtag, JSON.parse(event.context) as unknown as SerializedBBTagContext);
         context.limit.addRules(['timer', 'output'], rules.disabledRule);
         context.data.stackSize--;
 
-        const ast = bbtag.parse(migratedEvent.content);
+        const ast = bbtag.parse(event.content);
         await context.engine.eval(ast, context);
-    }
-
-    private migrateEvent<T extends TagStoredEventOptions>(event: T): TagV4StoredEventOptions | undefined {
-        switch (event.version) {
-            case undefined: // TODO actual migration
-            case 0: return undefined;
-            case 1: return undefined;
-            case 2: return undefined;
-            case 3: return undefined;
-            case 4: return event;
-        }
     }
 }

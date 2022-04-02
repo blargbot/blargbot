@@ -1,7 +1,7 @@
 import { Api } from '@blargbot/api';
 import { BaseRoute } from '@blargbot/api/BaseRoute';
 import { ApiResponse } from '@blargbot/api/types';
-import { StoredTag } from '@blargbot/core/types';
+import { StoredTag } from '@blargbot/domain/models';
 import { mapping } from '@blargbot/mapping';
 
 export class TagsRoute extends BaseRoute {
